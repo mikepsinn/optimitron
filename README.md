@@ -29,14 +29,19 @@ what they want    →    what actually works    →    optimal allocation
 
 ## The Core Insight
 
-The same causal inference engine works across all domains:
+`@optomitron/causal` is **completely domain-agnostic**. Give it any two time series and it tells you: does X cause Y? By how much? What's the optimal value of X?
 
-| Application | Predictor → Outcome | Example |
-|-------------|-------------------|---------|
-| **Drug Assessment (dFDA)** | Drug → Symptom | "Does magnesium improve sleep?" |
-| **Policy Analysis (OPG)** | Policy → Welfare | "Does tobacco tax reduce smoking?" |
-| **Budget Optimization (OBG)** | Spending → Welfare | "What's the optimal education budget?" |
-| **Preference Alignment (RAPPA)** | Alignment → Welfare | "Do responsive politicians produce better outcomes?" |
+| Domain | X → Y | Question |
+|--------|-------|----------|
+| **Health** | Drug → Symptom | "Does magnesium improve sleep?" |
+| **Policy** | Policy → Welfare | "Does tobacco tax reduce smoking?" |
+| **Budget** | Spending → Welfare | "What's the optimal education budget?" |
+| **Governance** | Alignment → Welfare | "Do responsive politicians produce better outcomes?" |
+| **Business** | Ad spend → Revenue | "What's the optimal marketing budget?" |
+| **Business** | Price → Conversions | "What price maximizes sales?" |
+| **Manufacturing** | Temperature → Defects | "What setting minimizes defects?" |
+
+Same engine. Same math. Different data.
 
 ## Papers
 

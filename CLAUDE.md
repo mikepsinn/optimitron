@@ -67,16 +67,31 @@ optomitron/
 
 ## The Core Insight
 
-The same causal inference engine works across all domains:
+`@optomitron/causal` is **completely domain-agnostic**. It takes any two time series and answers: "Does changing X cause Y to change? By how much? What's the optimal value of X?"
 
-| Application | Predictor | Outcome | Example |
-|-------------|-----------|---------|---------|
-| **dFDA** | Drug/Supplement | Symptom/Biomarker | "Does magnesium improve sleep?" |
-| **OPG** | Policy | Welfare metrics | "Does tobacco tax reduce smoking?" |
-| **OBG** | Spending level | Welfare metrics | "What's the optimal education budget?" |
-| **RAPPA** | Alignment score | Welfare metrics | "Do high-alignment politicians produce better outcomes?" |
+This works for ANY optimization problem with time series data:
 
-All use: **Temporal alignment** → **Bradford Hill criteria** → **Predictor Impact Score**
+| Domain | Predictor (X) | Outcome (Y) | Question |
+|--------|--------------|-------------|----------|
+| **Health (dFDA)** | Drug/Supplement | Symptom/Biomarker | "Does magnesium improve sleep?" |
+| **Policy (OPG)** | Policy change | Welfare metric | "Does tobacco tax reduce smoking?" |
+| **Budget (OBG)** | Spending level | Welfare metric | "What's the optimal education budget?" |
+| **Governance (RAPPA)** | Alignment score | Welfare metric | "Do responsive politicians produce better outcomes?" |
+| **Business** | Ad spend | Revenue | "What's the optimal marketing budget?" |
+| **Business** | Pricing change | Conversion rate | "What price maximizes conversions?" |
+| **Business** | Feature release | User retention | "Did this feature improve retention?" |
+| **Agriculture** | Fertilizer amount | Crop yield | "What's the optimal fertilizer level?" |
+| **Manufacturing** | Temperature setting | Defect rate | "What temperature minimizes defects?" |
+
+All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria** → **Predictor Impact Score** → **Optimal value**
+
+**The library doesn't know what it's optimizing.** It just sees predictor time series and outcome time series. The domain-specific packages (opg, obg, rappa) add context on top.
+
+### Implications for Code
+- **NEVER put domain-specific logic in `@optomitron/causal`** — no references to "drugs", "policies", "budgets", "politicians"
+- Use generic terms: predictor, outcome, variable, measurement, effect
+- Domain-specific naming belongs in opg/obg/rappa/data
+- A business analyst should be able to `npm install @optomitron/causal` and use it for revenue optimization without ever seeing the word "government"
 
 ## Package Dependencies
 
