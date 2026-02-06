@@ -172,6 +172,49 @@ function parseCsvLine(line: string): string[] {
 }
 
 // ---------------------------------------------------------------------------
+// Local submodule helper — read CSV from the economic-data git submodule
+// ---------------------------------------------------------------------------
+
+import { readFileSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+
+/**
+ * Root of the economic-data submodule (packages/data/economic-data/data/).
+ * Works whether the consumer runs from the repo root or from packages/data/.
+ */
+const ECONOMIC_DATA_DIR = resolve(__dirname, '..', 'economic-data', 'data');
+
+/**
+ * Load a CSV file from the local economic-data git submodule and parse it.
+ *
+ * @param filename - CSV filename inside `economic-data/data/`, e.g.
+ *   `"data_health_alcohol_consumption_per_adult_15plus_litres.csv"`
+ */
+export function loadEconomicDataCsv(
+  filename: string,
+  options: Omit<ParseCsvOptions, 'datasetId' | 'source'> = {},
+): CsvTimeSeries[] {
+  const filePath = join(ECONOMIC_DATA_DIR, filename);
+  const csvText = readFileSync(filePath, 'utf-8');
+  const datasetId = filename.replace(/\.csv$/i, '');
+
+  return parseGapminderCsv(csvText, {
+    ...options,
+    datasetId,
+    source: `economic-data/${filename}`,
+  });
+}
+
+/**
+ * List all `.csv` files available in the local economic-data submodule.
+ */
+export function listEconomicDataCsvFiles(): string[] {
+  return readdirSync(ECONOMIC_DATA_DIR).filter(f =>
+    f.toLowerCase().endsWith('.csv'),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Fetch helper — download a CSV from the economic-data repo on GitHub
 // ---------------------------------------------------------------------------
 
@@ -180,6 +223,9 @@ const GITHUB_RAW_BASE =
 
 /**
  * Fetch a single CSV file from the mikepsinn/economic-data repo and parse it.
+ *
+ * @deprecated Prefer {@link loadEconomicDataCsv} which reads from the local
+ * git submodule and doesn't require network access.
  */
 export async function fetchEconomicDataCsv(
   filename: string,

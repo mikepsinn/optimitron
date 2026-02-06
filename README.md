@@ -83,6 +83,12 @@ Citizens donate to a transparent crypto treasury. Smart contracts automatically 
 ## Development
 
 ```bash
+# Clone with submodules (includes economic-data dataset)
+git clone --recurse-submodules https://github.com/mikepsinn/optomitron.git
+
+# If you already cloned without --recurse-submodules:
+git submodule update --init --recursive
+
 pnpm install
 pnpm check     # typecheck + lint + test
 pnpm build     # build all packages
