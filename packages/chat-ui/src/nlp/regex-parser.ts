@@ -310,7 +310,20 @@ function parseSegment(text: string): ParsedMeasurement[] {
     }
   }
 
-  // --- Pattern 3: "Y X <unit>" (e.g. "vitamin D 5000 IU") ---
+  // --- Pattern 3: "weight X lbs/kg" (must come before name-first dose pattern) ---
+  const weightPatternEarly = /\b(?:weight|weigh|weighed)\s+(\d+(?:\.\d+)?)\s*(lbs?|kg|pounds?|kilograms?)\b/i;
+  const weightMatchEarly = text.match(weightPatternEarly);
+  if (weightMatchEarly) {
+    const value = parseFloat(weightMatchEarly[1]);
+    const unit = normalizeUnit(weightMatchEarly[2]) ?? 'lb';
+    results.push(makeMeasurement(
+      'Body Weight', value, unit,
+      'Vital Sign', 'MEAN', text,
+    ));
+    return results;
+  }
+
+  // --- Pattern 3b: "Y X <unit>" (e.g. "vitamin D 5000 IU") ---
   const nameFirstPattern = /^(.+?)\s+(\d+(?:\.\d+)?)\s*(mg|g|kg|mcg|ug|µg|iu|ml|tablets?|tabs?|capsules?|caps?|doses?|pills?)$/i;
   const nameFirstMatch = text.match(nameFirstPattern);
   if (nameFirstMatch) {
@@ -470,18 +483,7 @@ function parseSegment(text: string): ParsedMeasurement[] {
     return results;
   }
 
-  // --- Pattern 11: "weight X lbs/kg" or "weigh X lbs/kg" ---
-  const weightPattern = /\b(?:weight|weigh|weighed)\s+(\d+(?:\.\d+)?)\s*(lbs?|kg|pounds?|kilograms?)\b/i;
-  const weightMatch = text.match(weightPattern);
-  if (weightMatch) {
-    const value = parseFloat(weightMatch[1]);
-    const unit = normalizeUnit(weightMatch[2]) ?? 'lb';
-    results.push(makeMeasurement(
-      'Body Weight', value, unit,
-      'Vital Sign', 'MEAN', text,
-    ));
-    return results;
-  }
+  // (Pattern 11 — weight — moved to Pattern 3 above nameFirstPattern)
 
   // --- Pattern 12: Standalone common food/drink name ---
   const lowerText = text.toLowerCase().trim();
