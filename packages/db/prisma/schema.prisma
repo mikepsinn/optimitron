@@ -1,6 +1,28 @@
+// ============================================================================
 // Optomitron Database Schema
-// Multi-tenant governance platform: preferences, outcomes, alignment
-// Each jurisdiction (city/county/state/country) is a tenant
+// ============================================================================
+//
+// Two-layer architecture:
+//
+// LAYER 1 — Universal Measurement System (domain-agnostic)
+//   GlobalVariable, VariableCategory, Unit, UserVariable, Measurement,
+//   TrackingReminder, CausalAnalysis
+//   These models form a general-purpose quantified-self / data collection
+//   platform. Any variable (health, economic, environmental, policy outcome)
+//   can be tracked, aggregated, and analyzed for causal relationships.
+//   Inspired by the CureDAO open-source schema.
+//
+// LAYER 2 — Domain-Specific Governance
+//   Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight,
+//   AggregationRun, Politician, PoliticianVote, AlignmentScore
+//   These models implement the governance preference-elicitation system:
+//   pairwise budget comparisons, eigenvector aggregation, and politician
+//   alignment scoring. They are scoped to jurisdictions (multi-tenant).
+//
+// The two layers can interoperate: governance Items can reference
+// GlobalVariables as outcome metrics, and CausalAnalysis can link policy
+// variables to health/economic outcomes.
+// ============================================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -11,59 +33,411 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================================================
+// LAYER 1 — Universal Measurement System
+// ============================================================================
+
+/// A unit of measurement (mg, IU, serving, $/day, 1-5 scale, %, etc.)
+model Unit {
+  id String @id @default(cuid())
+
+  /// Human-readable name (e.g. "Milligrams")
+  name String @unique
+
+  /// Short form shown in UI (e.g. "mg")
+  abbreviatedName String @unique
+
+  /// Grouping: Weight, Volume, Count, Rating, Currency, Percent, Duration, etc.
+  unitCategoryId String
+
+  /// Allowed value bounds for a single measurement in this unit
+  minimumValue Float?
+  maximumValue Float?
+
+  /// How to handle missing data: "zero" | "none" | "interpolation" | "value"
+  fillingType String @default("none")
+
+  /// Measurement scale: "nominal" | "ordinal" | "interval" | "ratio"
+  scale String @default("ratio")
+
+  /// JSON-encoded conversion steps to convert to the category's base unit
+  conversionSteps String?
+
+  /// If true, hide from simple UI — only show in advanced mode
+  advanced Boolean @default(false)
+
+  /// If true, show this unit in the manual tracking UI
+  manualTracking Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  globalVariables      GlobalVariable[]   @relation("GlobalVariableDefaultUnit")
+  variableCategories   VariableCategory[] @relation("VariableCategoryDefaultUnit")
+  userVariables        UserVariable[]     @relation("UserVariableDefaultUnit")
+  measurements         Measurement[]      @relation("MeasurementUnit")
+  measurementsOriginal Measurement[]      @relation("MeasurementOriginalUnit")
+
+  @@index([unitCategoryId])
+}
+
+/// A category of variables: Treatment, Symptom, Emotion, Food, Activity,
+/// Sleep, Vital Sign, Lab Result, Environment, Economic, Policy, etc.
+model VariableCategory {
+  id String @id @default(cuid())
+
+  name        String  @unique
+  description String?
+
+  /// Default unit for variables in this category
+  defaultUnitId String?
+  defaultUnit   Unit?   @relation("VariableCategoryDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// How to aggregate multiple measurements within a time window
+  combinationOperation String @default("SUM") // "SUM" | "MEAN"
+
+  /// Default onset delay for variables in this category (seconds)
+  onsetDelay Int @default(0)
+
+  /// Default duration of action for variables in this category (seconds)
+  durationOfAction Int @default(86400)
+
+  /// Category-level defaults: can variables here only be causes / outcomes?
+  causeOnly Boolean  @default(false)
+  outcome   Boolean?
+
+  imageUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  globalVariables GlobalVariable[]
+
+  @@index([name])
+}
+
+/// The canonical variable catalog — shared across all users.
+/// Examples: "Ibuprofen 200mg", "Overall Mood", "Steps", "GDP per Capita"
+model GlobalVariable {
+  id String @id @default(cuid())
+
+  /// Unique human-readable name
+  name        String  @unique
+  description String?
+
+  /// Category (Treatment, Symptom, etc.)
+  variableCategoryId String
+  variableCategory   VariableCategory @relation(fields: [variableCategoryId], references: [id])
+
+  /// Default unit for measurements of this variable
+  defaultUnitId String
+  defaultUnit   Unit   @relation("GlobalVariableDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// How to aggregate within a time window: "SUM" (e.g. mg taken) or "MEAN" (e.g. mood rating)
+  combinationOperation String @default("SUM")
+
+  /// Seconds before this variable's effect begins after a measurement
+  onsetDelay Int?
+
+  /// Seconds the effect of a measurement lasts
+  durationOfAction Int?
+
+  /// Value to substitute for missing data (-1 = none, 0 = zero-fill)
+  fillingValue Float? @default(-1)
+
+  /// If true, this variable can only be a predictor, never an outcome
+  causeOnly Boolean @default(false)
+
+  /// If true, this variable is an outcome people want to optimize
+  outcome Boolean?
+
+  /// Reasonable bounds for a single measurement
+  minimumAllowedValue Float?
+  maximumAllowedValue Float?
+
+  imageUrl         String?
+  informationalUrl String?
+
+  /// Comma-separated synonyms for search
+  synonyms String?
+
+  /// Is higher better? "positive" | "negative" | "neutral"
+  valence String @default("neutral")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  userVariables     UserVariable[]
+  measurements      Measurement[]
+  trackingReminders TrackingReminder[]
+  causalAsCause     CausalAnalysis[]   @relation("CausalCause")
+  causalAsEffect    CausalAnalysis[]   @relation("CausalEffect")
+
+  @@index([variableCategoryId])
+  @@index([defaultUnitId])
+  @@index([name])
+}
+
+/// Per-user instance of a GlobalVariable with personal overrides and running stats.
+/// Created automatically when a user first tracks a variable.
+model UserVariable {
+  id String @id @default(cuid())
+
+  userId     String
+  variableId String
+  variable   GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// User's preferred unit (overrides global default)
+  defaultUnitId String?
+  defaultUnit   Unit?   @relation("UserVariableDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// Personal overrides for onset delay and duration of action (seconds)
+  onsetDelay       Int?
+  durationOfAction Int?
+
+  /// Personal override for missing-data fill
+  fillingValue Float?
+
+  /// Personal reasonable-value bounds
+  minimumAllowedValue Float?
+  maximumAllowedValue Float?
+
+  // -- Running statistics (updated on each new measurement) --
+  numberOfMeasurements Int       @default(0)
+  lastMeasurementAt    DateTime?
+  mean                 Float?
+  median               Float?
+  standardDeviation    Float?
+  minimumRecordedValue Float?
+  maximumRecordedValue Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  measurements      Measurement[]
+  trackingReminders TrackingReminder[]
+
+  @@unique([userId, variableId])
+  @@index([userId])
+  @@index([variableId])
+}
+
+/// A single data point: who measured what, when, and how much.
+/// The core of the entire measurement system.
+model Measurement {
+  id String @id @default(cuid())
+
+  userId String
+
+  /// Link to the user's personal variable instance
+  userVariableId String
+  userVariable   UserVariable @relation(fields: [userVariableId], references: [id])
+
+  /// Link to the canonical variable
+  variableId String
+  variable   GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// When the measurement was taken / event started
+  startTime DateTime
+
+  /// Value converted to the variable's default unit
+  value Float
+
+  /// Unit of the converted value (should match variable's default unit)
+  unitId String
+  unit   Unit   @relation("MeasurementUnit", fields: [unitId], references: [id])
+
+  /// Value as originally entered by the user (before conversion)
+  originalValue Float
+
+  /// Unit of the original value
+  originalUnitId String
+  originalUnit   Unit   @relation("MeasurementOriginalUnit", fields: [originalUnitId], references: [id])
+
+  /// Duration of the event in seconds (e.g. 30 min exercise)
+  duration Int?
+
+  /// Free-text note from the user
+  note String?
+
+  /// Name of the app or device that provided this data
+  sourceName String?
+
+  /// Geolocation at time of measurement
+  latitude  Float?
+  longitude Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, variableId, startTime])
+  @@index([userId])
+  @@index([variableId])
+  @@index([userVariableId])
+  @@index([startTime])
+  @@index([userId, variableId, startTime])
+}
+
+/// A scheduled reminder to collect data for a variable.
+/// E.g. "Remind me to rate my mood every day at 8:00 AM"
+model TrackingReminder {
+  id String @id @default(cuid())
+
+  userId String
+
+  /// Link to the user's personal variable instance
+  userVariableId String
+  userVariable   UserVariable @relation(fields: [userVariableId], references: [id])
+
+  /// Link to the canonical variable
+  variableId String
+  variable   GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// Pre-filled default value when tracking
+  defaultValue Float?
+
+  /// Local time of day for the reminder (e.g. "08:00")
+  reminderStartTime String
+
+  /// End of quiet hours — no reminders after this time (e.g. "22:00")
+  reminderEndTime String?
+
+  /// Seconds between reminders (e.g. 86400 = daily, 3600 = hourly)
+  reminderFrequency Int
+
+  /// Whether this reminder is currently active
+  active Boolean @default(true)
+
+  /// Instructions shown to the user when the reminder fires
+  instructions String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, variableId, reminderStartTime, reminderFrequency])
+  @@index([userId])
+  @@index([variableId])
+  @@index([active])
+}
+
+/// Precomputed causal analysis results between variable pairs.
+/// Stores Predictor Impact Scores (PIS), correlations, and optimal parameters.
+/// userId = null means this is an aggregate analysis across all users.
+model CausalAnalysis {
+  id String @id @default(cuid())
+
+  /// The predictor / cause variable
+  causeVariableId String
+  causeVariable   GlobalVariable @relation("CausalCause", fields: [causeVariableId], references: [id])
+
+  /// The outcome / effect variable
+  effectVariableId String
+  effectVariable   GlobalVariable @relation("CausalEffect", fields: [effectVariableId], references: [id])
+
+  /// If null, this is a population-level aggregate. If set, it's a personal analysis.
+  userId String?
+
+  /// Pearson or Spearman correlation coefficient
+  correlation Float
+
+  /// Statistical significance (< 0.05 = significant)
+  pValue Float?
+
+  /// Standardized effect size (Cohen's d or similar)
+  effectSize Float?
+
+  /// Predictor Impact Score — composite importance metric
+  predictorImpactScore Float?
+
+  /// Letter grade summarizing evidence quality: A/B/C/D/F
+  evidenceGrade String?
+
+  /// Number of measurement pairs used in the analysis
+  sampleSize Int
+
+  /// Optimal onset delay found during analysis (seconds)
+  onsetDelay Int?
+
+  /// Optimal duration of action found during analysis (seconds)
+  durationOfAction Int?
+
+  /// The predictor value associated with the best outcome
+  optimalValue Float?
+
+  /// When this analysis was last computed
+  analyzedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([causeVariableId, effectVariableId, userId])
+  @@index([causeVariableId])
+  @@index([effectVariableId])
+  @@index([userId])
+  @@index([analyzedAt])
+}
+
+// ============================================================================
+// LAYER 2 — Domain-Specific Governance
+// ============================================================================
+
 /// A jurisdiction (city, county, state, country) — the tenant
 model Jurisdiction {
-  id          String  @id @default(cuid())
-  name        String
-  type        String  // "city" | "county" | "state" | "country"
-  parentId    String? // e.g. city → county → state → country
-  parent      Jurisdiction? @relation("JurisdictionHierarchy", fields: [parentId], references: [id])
-  children    Jurisdiction[] @relation("JurisdictionHierarchy")
+  id       String         @id @default(cuid())
+  name     String
+  type     String // "city" | "county" | "state" | "country"
+  parentId String? // e.g. city → county → state → country
+  parent   Jurisdiction?  @relation("JurisdictionHierarchy", fields: [parentId], references: [id])
+  children Jurisdiction[] @relation("JurisdictionHierarchy")
 
   /// ISO codes, FIPS codes, etc.
-  code        String?  @unique // e.g. "US", "US-CA", "US-CA-037"
-  currency    String   @default("USD")
-  population  Int?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  code       String? @unique // e.g. "US", "US-CA", "US-CA-037"
+  currency   String  @default("USD")
+  population Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   items           Item[]
   participants    Participant[]
   politicians     Politician[]
   aggregationRuns AggregationRun[]
-  
+
   @@index([type])
   @@index([parentId])
 }
 
 /// A priority/wish/budget item that can be compared
 model Item {
-  id              String  @id @default(cuid())
-  jurisdictionId  String
-  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
-  
+  id             String       @id @default(cuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
   name        String
   description String?
   category    String?
-  
+
   /// Current actual budget allocation (for preference gap analysis)
   currentAllocationUsd Float?
   currentAllocationPct Float?
-  
+
   /// URL to supporting documentation
-  sourceUrl   String?
-  
+  sourceUrl String?
+
   /// Whether this item is active for comparisons
-  active      Boolean @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   comparisonsAsA PairwiseComparison[] @relation("itemA")
   comparisonsAsB PairwiseComparison[] @relation("itemB")
   weights        PreferenceWeight[]
-  
+
   @@index([jurisdictionId])
   @@index([category])
   @@index([active])
@@ -71,49 +445,49 @@ model Item {
 
 /// A participant who makes pairwise comparisons
 model Participant {
-  id              String  @id @default(cuid())
-  jurisdictionId  String
-  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
-  
+  id             String       @id @default(cuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
   /// Anonymous ID (no PII stored)
-  externalId  String? @unique
-  
+  externalId String? @unique
+
   /// Optional demographics for analysis (all voluntary)
-  ageRange    String?  // e.g. "25-34"
-  region      String?  // e.g. "US-CA"
-  
-  createdAt   DateTime @default(now())
-  
+  ageRange String? // e.g. "25-34"
+  region   String? // e.g. "US-CA"
+
+  createdAt DateTime @default(now())
+
   comparisons PairwiseComparison[]
-  
+
   @@index([jurisdictionId])
   @@index([region])
 }
 
 /// A single pairwise comparison: "Given $100, how would you split it?"
 model PairwiseComparison {
-  id            String  @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   participantId String
   participant   Participant @relation(fields: [participantId], references: [id])
-  
-  itemAId       String
-  itemA         Item @relation("itemA", fields: [itemAId], references: [id])
-  
-  itemBId       String
-  itemB         Item @relation("itemB", fields: [itemBId], references: [id])
-  
+
+  itemAId String
+  itemA   Item   @relation("itemA", fields: [itemAId], references: [id])
+
+  itemBId String
+  itemB   Item   @relation("itemB", fields: [itemBId], references: [id])
+
   /// Allocation to item A (0-100). Item B gets (100 - allocationA).
-  allocationA   Float
-  
+  allocationA Float
+
   /// Response time in milliseconds (engagement quality signal)
   responseTimeMs Int?
-  
+
   /// Session ID to group comparisons from same sitting
-  sessionId     String?
-  
-  createdAt     DateTime @default(now())
-  
+  sessionId String?
+
+  createdAt DateTime @default(now())
+
   @@unique([participantId, itemAId, itemBId])
   @@index([itemAId, itemBId])
   @@index([participantId])
@@ -122,108 +496,108 @@ model PairwiseComparison {
 
 /// Aggregated preference weights (output of eigenvector calculation)
 model PreferenceWeight {
-  id        String @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   /// Which calculation run produced this
-  runId     String
-  run       AggregationRun @relation(fields: [runId], references: [id])
-  
-  itemId    String
-  item      Item @relation(fields: [itemId], references: [id])
-  
+  runId String
+  run   AggregationRun @relation(fields: [runId], references: [id])
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
   /// Normalized weight (0-1, all weights in a run sum to 1)
-  weight    Float
-  rank      Int
-  
+  weight Float
+  rank   Int
+
   /// Confidence interval
-  ciLow     Float?
-  ciHigh    Float?
-  
+  ciLow  Float?
+  ciHigh Float?
+
   @@unique([runId, itemId])
   @@index([runId])
 }
 
 /// Record of each aggregation calculation
 model AggregationRun {
-  id                String @id @default(cuid())
-  jurisdictionId    String
-  jurisdiction      Jurisdiction @relation(fields: [jurisdictionId], references: [id])
-  
+  id             String       @id @default(cuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
   /// Total comparisons included
-  comparisonCount   Int
+  comparisonCount  Int
   /// Total unique participants
-  participantCount  Int
+  participantCount Int
   /// AHP consistency ratio (< 0.1 = good)
-  consistencyRatio  Float?
-  
+  consistencyRatio Float?
+
   /// Filter: which categories were included (null = all)
-  categoryFilter    String?
+  categoryFilter String?
   /// Filter: which region (null = all)
-  regionFilter      String?
-  
-  createdAt         DateTime @default(now())
-  
-  weights           PreferenceWeight[]
-  
+  regionFilter   String?
+
+  createdAt DateTime @default(now())
+
+  weights PreferenceWeight[]
+
   @@index([jurisdictionId])
 }
 
 /// Politician/legislator/official voting records for alignment scoring
 model Politician {
-  id              String @id @default(cuid())
-  jurisdictionId  String
-  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
-  
-  name        String
-  party       String?
-  title       String?  // "Senator", "Mayor", "Council Member", etc.
-  district    String?  // state, ward, district — varies by jurisdiction
-  chamber     String?  // "house" | "senate" | "council" | null
-  externalId  String?  @unique // bioguide ID, local govt ID, etc.
-  
-  votes       PoliticianVote[]
-  alignments  AlignmentScore[]
-  
+  id             String       @id @default(cuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
+  name       String
+  party      String?
+  title      String? // "Senator", "Mayor", "Council Member", etc.
+  district   String? // state, ward, district — varies by jurisdiction
+  chamber    String? // "house" | "senate" | "council" | null
+  externalId String? @unique // bioguide ID, local govt ID, etc.
+
+  votes      PoliticianVote[]
+  alignments AlignmentScore[]
+
   @@index([jurisdictionId])
   @@index([party])
 }
 
 /// A politician's vote/position on a budget item
 model PoliticianVote {
-  id            String @id @default(cuid())
-  
-  politicianId  String
-  politician    Politician @relation(fields: [politicianId], references: [id])
-  
+  id String @id @default(cuid())
+
+  politicianId String
+  politician   Politician @relation(fields: [politicianId], references: [id])
+
   /// What budget category this vote affects
-  itemCategory  String
-  
+  itemCategory String
+
   /// Their allocated/voted percentage
   allocationPct Float
-  
+
   /// Source bill/vote reference
-  billId        String?
-  voteDate      DateTime?
-  
+  billId   String?
+  voteDate DateTime?
+
   @@index([politicianId])
   @@index([itemCategory])
 }
 
 /// Calculated alignment between citizen preferences and politician votes
 model AlignmentScore {
-  id            String @id @default(cuid())
-  
-  politicianId  String
-  politician    Politician @relation(fields: [politicianId], references: [id])
-  
-  runId         String  // Which aggregation run's weights were used
-  
+  id String @id @default(cuid())
+
+  politicianId String
+  politician   Politician @relation(fields: [politicianId], references: [id])
+
+  runId String // Which aggregation run's weights were used
+
   /// Overall alignment (0-100%)
   score         Float
   votesCompared Int
-  
-  createdAt     DateTime @default(now())
-  
+
+  createdAt DateTime @default(now())
+
   @@unique([politicianId, runId])
   @@index([score])
 }
