@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@optomitron/causal": "workspace:*",
-    "@optomitron/rappa": "workspace:*"
+    "@optomitron/wishocracy": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",

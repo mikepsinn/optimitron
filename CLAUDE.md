@@ -31,7 +31,7 @@ These papers define the algorithms you're implementing. **Read the local QMD fil
 
 ### How to Use the Papers
 1. Working on `@optomitron/causal`? → Read dFDA Spec (PIS, temporal alignment, effect size)
-2. Working on `@optomitron/rappa`? → Read Wishocracy (RAPPA, eigenvector, Citizen Alignment Scores)
+2. Working on `@optomitron/wishocracy`? → Read Wishocracy (RAPPA, eigenvector, Citizen Alignment Scores)
 3. Working on `@optomitron/opg`? → Read Optimal Policy Generator (Policy Impact Score, CCS)
 4. Working on `@optomitron/obg`? → Read Optimal Budget Generator (OSL, diminishing returns, BIS)
 5. Working on welfare metrics? → Read Optimocracy (two-metric welfare function)
@@ -46,7 +46,7 @@ optomitron/
 │   ├── causal/       # 🧠 Domain-agnostic causal inference engine
 │   │   └── Temporal alignment, Bradford Hill, PIS, effect size
 │   │
-│   ├── rappa/        # 🗳️ Preference aggregation (Wishocracy/RAPPA)
+│   ├── wishocracy/   # 🗳️ Preference aggregation (Wishocracy/RAPPA)
 │   │   └── Pairwise comparisons, eigenvector, alignment scores
 │   │
 │   ├── opg/          # 📋 Optimal Policy Generator
@@ -105,7 +105,7 @@ Any jurisdiction (city, county, state, country) should be able to deploy Optomit
 - **Comparison across jurisdictions** is a key feature: "City A spends X on education and gets Y outcomes; City B spends Z..."
 
 ### What This Means for Library Code
-- `causal`, `rappa`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
+- `causal`, `wishocracy`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
 - `db` schema needs `jurisdictionId` on relevant models
 - `data` fetchers take jurisdiction config as a parameter
 - The **web app** handles multi-tenancy (auth, routing, tenant isolation)
@@ -131,12 +131,12 @@ This works for ANY optimization problem with time series data:
 
 All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria** → **Predictor Impact Score** → **Optimal value**
 
-**The library doesn't know what it's optimizing.** It just sees predictor time series and outcome time series. The domain-specific packages (opg, obg, rappa) add context on top.
+**The library doesn't know what it's optimizing.** It just sees predictor time series and outcome time series. The domain-specific packages (opg, obg, wishocracy) add context on top.
 
 ### Implications for Code
 - **NEVER put domain-specific logic in `@optomitron/causal`** — no references to "drugs", "policies", "budgets", "politicians"
 - Use generic terms: predictor, outcome, variable, measurement, effect
-- Domain-specific naming belongs in opg/obg/rappa/data
+- Domain-specific naming belongs in opg/obg/wishocracy/data
 - A business analyst should be able to `npm install @optomitron/causal` and use it for revenue optimization without ever seeing the word "government"
 
 ## Package Dependencies
@@ -144,15 +144,15 @@ All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria**
 ```
 causal ← opg (uses causal for policy scoring)
 causal ← obg (uses causal for budget optimization)
-causal ← rappa (alignment → outcome analysis)
+causal ← wishocracy (alignment → outcome analysis)
 data   ← opg, obg (fetches real-world data)
 db     ← (standalone, Prisma schema for web app)
-rappa  ← (standalone pure math, NO db imports)
+wishocracy ← (standalone pure math, NO db imports)
 ```
 
 Key rules:
 - **`causal` depends on NOTHING** — it's the foundation
-- **`rappa` has ZERO database imports** — pure functions only
+- **`wishocracy` has ZERO database imports** — pure functions only
 - **`db` is for the web app layer** — libraries never import it
 - **No circular deps** — if you need something from both directions, it belongs in `causal`
 

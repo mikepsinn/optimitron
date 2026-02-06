@@ -78,7 +78,7 @@ export default function AboutPage() {
           <pre className="text-gray-600 dark:text-gray-400 overflow-x-auto">{`optomitron/
 ├── packages/
 │   ├── causal/    🧠 Domain-agnostic causal inference engine
-│   ├── rappa/     🗳️ Preference aggregation (RAPPA)
+│   ├── wishocracy/ 🗳️ Preference aggregation (RAPPA)
 │   ├── opg/       📋 Optimal Policy Generator
 │   ├── obg/       💰 Optimal Budget Generator
 │   ├── data/      📊 Data fetchers (OECD, WHO, FRED, ...)

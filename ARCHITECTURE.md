@@ -114,7 +114,7 @@ optomitron/
 │   │   │   └── index.ts                  Public API re-exports
 │   │   └── __tests__/                    4 test suites (smoke, PIS, stats, temporal)
 │   │
-│   ├── rappa/        🗳️  Preference aggregation (Wishocracy/RAPPA)
+│   ├── wishocracy/   🗳️  Preference aggregation (Wishocracy/RAPPA)
 │   │   ├── src/
 │   │   │   ├── types.ts                  PairwiseComparison, Item, MatrixEntry,
 │   │   │   │                             PreferenceWeight, AlignmentScore, PreferenceGap
@@ -199,8 +199,8 @@ optomitron/
               │           │           │
               ▼           ▼           │
         ┌─────────┐ ┌─────────┐      │
-        │   opg   │ │  rappa  │      │  (rappa is standalone — no deps)
-        └────┬────┘ └─────────┘      │
+        │   opg   │ │wishocracy│     │  (wishocracy is standalone — no deps)
+        └────┬────┘ └──────────┘     │
              │                        │
              ▼                        │
         ┌─────────┐                   │
@@ -217,7 +217,7 @@ optomitron/
 
    HARD RULES:
    • causal depends on NOTHING
-   • rappa has ZERO database imports (pure functions)
+   • wishocracy has ZERO database imports (pure functions)
    • Library packages never import db
    • No circular dependencies
 ```
@@ -237,7 +237,7 @@ optomitron/
 
 All use the same pipeline: **Temporal alignment → Bradford Hill criteria → Predictor Impact Score → Optimal value**
 
-The library doesn't know what it's optimizing. Domain-specific packages (`opg`, `obg`, `rappa`) add context on top.
+The library doesn't know what it's optimizing. Domain-specific packages (`opg`, `obg`, `wishocracy`) add context on top.
 
 ---
 
@@ -264,7 +264,7 @@ The library doesn't know what it's optimizing. Domain-specific packages (`opg`, 
   - Predictor Impact Score (PIS) calculation
   - Effect size estimation with confidence intervals
   - Optimal value analysis (what dosage/level produces best outcomes)
-- `@optomitron/rappa` — pairwise preference surveys, eigenvector preference weights
+- `@optomitron/wishocracy` — pairwise preference surveys, eigenvector preference weights
 
 **What it generates (personal, stays local by default):**
 - Personal optimal values for every tracked predictor
@@ -341,11 +341,11 @@ The library doesn't know what it's optimizing. Domain-specific packages (`opg`, 
 |----------|-----------|---------|
 | **Meta-analysis** | Weighted average of PIS scores across submissions, adjusting for sample size and evidence quality | `@optomitron/causal` |
 | **Population treatment rankings** | Aggregate effect sizes + confidence intervals across all anonymous submitters | `@optomitron/causal` |
-| **Citizen preference weights** | Eigenvector aggregation of RAPPA submissions, with convergence analysis and matrix completion for sparse pairs | `@optomitron/rappa` |
+| **Citizen preference weights** | Eigenvector aggregation of RAPPA submissions, with convergence analysis and matrix completion for sparse pairs | `@optomitron/wishocracy` |
 | **Policy recommendations** | OPG: enact/replace/repeal/maintain based on cross-jurisdiction quasi-experimental evidence + Bradford Hill CCS scoring | `@optomitron/opg` |
 | **Budget optimization** | OBG: diminishing returns modeling + cost-effectiveness threshold analysis → Optimal Spending Levels per category | `@optomitron/obg` |
-| **Politician alignment scores** | Citizen Alignment Score = weighted distance between citizen preference vector and politician voting record | `@optomitron/rappa` |
-| **Preference gap analysis** | Difference between aggregated citizen preferences and actual budget allocation | `@optomitron/rappa` |
+| **Politician alignment scores** | Citizen Alignment Score = weighted distance between citizen preference vector and politician voting record | `@optomitron/wishocracy` |
+| **Preference gap analysis** | Difference between aggregated citizen preferences and actual budget allocation | `@optomitron/wishocracy` |
 
 **Multi-tenancy (Government OS):**
 Any jurisdiction (city, county, state, country) can deploy Optomitron as its governance operating system. The database is multi-tenant — every jurisdiction is a tenant with its own items, participants, officials, and data. Cross-jurisdiction comparison ("City A spends X on education and gets Y outcomes vs. City B") is a core feature.
@@ -513,7 +513,7 @@ where:
 
 **Evidence grades:** A (≥0.5) · B (≥0.3) · C (≥0.1) · D (≥0.05) · F (<0.05)
 
-### RAPPA — `@optomitron/rappa`
+### RAPPA — `@optomitron/wishocracy`
 
 Randomized Aggregated Pairwise Preference Allocation.
 
@@ -587,7 +587,7 @@ Two estimation methods, take the one with better fit:
 **Status:** 🟡 Alpha — packages exist with tests, APIs stabilizing.
 
 - [x] `@optomitron/causal` — temporal alignment, Bradford Hill, PIS, effect size, optimal values
-- [x] `@optomitron/rappa` — pairwise aggregation, eigenvector weights, alignment scores, convergence analysis, matrix completion
+- [x] `@optomitron/wishocracy` — pairwise aggregation, eigenvector weights, alignment scores, convergence analysis, matrix completion
 - [x] `@optomitron/opg` — welfare function, jurisdiction model, policy types, Bradford Hill CCS, method weights
 - [x] `@optomitron/obg` — diminishing returns, cost-effectiveness, BIS, spending gap analysis
 - [x] `@optomitron/data` — OECD + World Bank fetchers, Gapminder CSV loader, 60+ dataset catalog
@@ -661,7 +661,7 @@ The algorithms in this codebase are defined in the following papers. **Read the 
 | Paper | Implements | Local QMD | Web |
 |-------|-----------|-----------|-----|
 | **dFDA Specification** | `@optomitron/causal` — PIS, temporal alignment, Bradford Hill, effect size | `knowledge/appendix/dfda-spec-paper.qmd` | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
-| **Wishocracy** | `@optomitron/rappa` — RAPPA, eigenvector, alignment scores, convergence | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
+| **Wishocracy** | `@optomitron/wishocracy` — RAPPA, eigenvector, alignment scores, convergence | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
 | **Optimal Policy Generator** | `@optomitron/opg` — Policy Impact Score, CCS, method weights, welfare function | `knowledge/appendix/optimal-policy-generator-spec.qmd` | [opg.warondisease.org](https://opg.warondisease.org) |
 | **Optimal Budget Generator** | `@optomitron/obg` — Diminishing returns, OSL, BIS, cost-effectiveness | `knowledge/appendix/optimal-budget-generator-spec.qmd` | [obg.warondisease.org](https://obg.warondisease.org) |
 | **Incentive Alignment Bonds** | `@optomitron/treasury` (Phase 5) — IAB mechanism, campaign funding | `knowledge/appendix/incentive-alignment-bonds-paper.qmd` | [iab.warondisease.org](https://iab.warondisease.org) |

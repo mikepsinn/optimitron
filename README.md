@@ -67,7 +67,7 @@ npx tsx packages/examples/src/alignment-demo.ts
 | Package | Description | Tests | Status |
 |---------|-------------|:-----:|--------|
 | [`@optomitron/causal`](packages/causal/) | 🧠 Domain-agnostic causal inference — temporal alignment, Bradford Hill criteria, Predictor Impact Score, effect sizes, optimal values | 4 suites · 176 cases | 🟡 Alpha |
-| [`@optomitron/rappa`](packages/rappa/) | 🗳️ RAPPA preference aggregation — pairwise comparisons, eigenvector weights, Citizen Alignment Scores, matrix completion, convergence analysis | 9 suites · 162 cases | 🟡 Alpha |
+| [`@optomitron/wishocracy`](packages/wishocracy/) | 🗳️ RAPPA preference aggregation — pairwise comparisons, eigenvector weights, Citizen Alignment Scores, matrix completion, convergence analysis | 9 suites · 162 cases | 🟡 Alpha |
 | [`@optomitron/opg`](packages/opg/) | 📋 Optimal Policy Generator — policy scoring, Causal Confidence Score, jurisdiction analysis, Bradford Hill for policy evaluation | 7 suites · 213 cases | 🟡 Alpha |
 | [`@optomitron/obg`](packages/obg/) | 💰 Optimal Budget Generator — diminishing returns modeling, cost-effectiveness analysis, Budget Impact Score, Optimal Spending Levels | 6 suites · 143 cases | 🟡 Alpha |
 | [`@optomitron/data`](packages/data/) | 📊 Data fetchers & loaders — OECD, World Bank, FRED, WHO APIs + 60 Gapminder CSV datasets | 7 suites · 87 cases | 🟡 Alpha |
@@ -175,7 +175,7 @@ All use the same pipeline: **Temporal alignment → Bradford Hill → Predictor 
               │           │           │
               ▼           ▼           │
         ┌─────────┐ ┌─────────┐      │
-        │   opg   │ │  rappa  │      │  (rappa is standalone)
+        │   opg   │ │wishocracy│     │  (wishocracy is standalone)
         └────┬────┘ └─────────┘      │
              │                        │
              ▼                        │
@@ -231,7 +231,7 @@ Every algorithm in this codebase is defined in a published paper with exact form
 | Paper | Implements | Web |
 |-------|-----------|-----|
 | **dFDA Specification** | `@optomitron/causal` — PIS, temporal alignment, Bradford Hill, effect sizes | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
-| **Wishocracy** | `@optomitron/rappa` — RAPPA, eigenvector weights, Citizen Alignment Scores | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
+| **Wishocracy** | `@optomitron/wishocracy` — RAPPA, eigenvector weights, Citizen Alignment Scores | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
 | **Optimal Policy Generator** | `@optomitron/opg` — Policy Impact Score, Causal Confidence Score, method weights | [opg.warondisease.org](https://opg.warondisease.org) |
 | **Optimal Budget Generator** | `@optomitron/obg` — Diminishing returns, Optimal Spending Level, Budget Impact Score | [obg.warondisease.org](https://obg.warondisease.org) |
 | **Incentive Alignment Bonds** | `@optomitron/treasury` — IAB mechanism, smart contract campaign funding | [iab.warondisease.org](https://iab.warondisease.org) |

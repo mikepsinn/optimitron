@@ -14,8 +14,8 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 1 | Fix build — `pnpm build` passing for ALL packages | done | All 6 packages build: causal, rappa, opg, obg, data, db. Issue was missing node_modules. |
-| 2 | Add vitest config to all packages | done | vitest.config.ts + smoke tests for causal, rappa, opg, obg, data. 27 tests passing. |
+| 1 | Fix build — `pnpm build` passing for ALL packages | done | All 6 packages build: causal, wishocracy, opg, obg, data, db. Issue was missing node_modules. |
+| 2 | Add vitest config to all packages | done | vitest.config.ts + smoke tests for causal, wishocracy, opg, obg, data. 27 tests passing. |
 | 3 | Resolve type errors from `core` → `opg`/`obg` split | done | Types already correctly placed; build passes with strict mode |
 
 ## P1: Tests for Existing Code
@@ -25,10 +25,10 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 4 | Tests for `@optomitron/causal` temporal alignment | done | dFDA paper examples |
 | 5 | Tests for `@optomitron/causal` Bradford Hill scoring | done | |
 | 6 | Tests for `@optomitron/causal` PIS calculation | done | |
-| 7 | Tests for `@optomitron/rappa` aggregateComparisons() | done | Wishocracy paper's Alice scenario |
-| 8 | Tests for `@optomitron/rappa` principalEigenvector() | done | Verified against known AHP examples |
-| 9 | Tests for `@optomitron/rappa` consistencyRatio() | done | CR < 0.1 for consistent matrices |
-| 10 | Tests for `@optomitron/rappa` alignment scoring | done | |
+| 7 | Tests for `@optomitron/wishocracy` aggregateComparisons() | done | Wishocracy paper's Alice scenario |
+| 8 | Tests for `@optomitron/wishocracy` principalEigenvector() | done | Verified against known AHP examples |
+| 9 | Tests for `@optomitron/wishocracy` consistencyRatio() | done | CR < 0.1 for consistent matrices |
+| 10 | Tests for `@optomitron/wishocracy` alignment scoring | done | |
 | 11 | Tests for `@optomitron/opg` Bradford Hill | done | 213 tests: bradford-hill, welfare, policy, jurisdiction, budget, integration |
 | 12 | Tests for `@optomitron/obg` diminishing returns | done | 36 tests: fitLogModel, fitSaturationModel, marginalReturn, findOSL, estimateOSL + edge cases |
 | 13 | Tests for `@optomitron/obg` cost-effectiveness | done | 107 additional tests: cost-effectiveness (32), BIS (37), welfare (17), budget schemas (18), smoke (3) |

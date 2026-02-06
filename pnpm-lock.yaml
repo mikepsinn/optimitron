@@ -119,9 +119,9 @@ importers:
       '@optomitron/causal':
         specifier: workspace:*
         version: link:../causal
-      '@optomitron/rappa':
+      '@optomitron/wishocracy':
         specifier: workspace:*
-        version: link:../rappa
+        version: link:../wishocracy
     devDependencies:
       '@types/node':
         specifier: ^25.2.1
@@ -186,22 +186,6 @@ importers:
         specifier: ^1.2.0
         version: 1.6.1(@types/node@20.19.32)(jsdom@23.2.0)
 
-  packages/rappa:
-    dependencies:
-      zod:
-        specifier: ^3.22.4
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.10.0
-        version: 20.19.32
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
-      vitest:
-        specifier: ^1.2.0
-        version: 1.6.1(@types/node@20.19.32)(jsdom@23.2.0)
-
   packages/web:
     dependencies:
       next:
@@ -244,6 +228,22 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+
+  packages/wishocracy:
+    dependencies:
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.32
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+      vitest:
+        specifier: ^1.2.0
+        version: 1.6.1(@types/node@20.19.32)(jsdom@23.2.0)
 
 packages:
 
