@@ -76,11 +76,28 @@ All use:
 
 ## Development Guidelines
 
-### Testing
+### ⚠️ HARD RULE: Every Change Gets Tests
+
+**No code ships without tests. Period.**
+
+- Every new function → unit test
+- Every new module → integration test
+- Every bug fix → regression test that would have caught it
+- Every data fetcher → test with mocked API responses
+- If you touch a file, check if it has tests. If not, add them.
+
+Test files go next to the source: `foo.ts` → `foo.test.ts`
+
 ```bash
 pnpm test                    # Run all tests
 pnpm --filter @optomitron/causal test  # Test specific package
 ```
+
+### Test Quality Standards
+- Test happy path AND edge cases (empty arrays, NaN, zero division, etc.)
+- Test with realistic data from the papers (not just trivial examples)
+- Aim for >90% coverage on calculation modules
+- Data fetchers: mock the HTTP responses, don't hit real APIs in tests
 
 ### Code Style
 - Use Zod for runtime type validation
@@ -99,11 +116,15 @@ Follow conventional commits:
 
 When you run, prioritize in this order:
 
-1. **Fix any failing tests** (if tests exist)
-2. **Add tests for untested code** (high priority)
-3. **Implement `@optomitron/data`** (needed for real usage)
-4. **Improve documentation** (README, JSDoc, examples)
-5. **Optimize algorithms** (performance, accuracy)
+1. **Fix any failing tests or build errors** (always first)
+2. **Check test coverage** — if ANY module has <80% coverage, write tests before new features
+3. **Pick from TASKS.md** — follow the prioritized queue
+4. **Every change must include tests** — this is non-negotiable
+
+### The Test Rule
+If you implement a function, you write its tests in the same PR. 
+If you find existing code without tests, writing those tests IS a valid task.
+No exceptions. No "I'll add tests later." Tests ship with code.
 
 ## Workflow
 
