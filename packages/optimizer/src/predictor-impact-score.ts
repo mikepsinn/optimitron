@@ -25,7 +25,9 @@ import type {
   PredictorImpactScore,
   DataQuality,
 } from './types.js';
-import { mean, std, calculateCorrelation, calculateEffectSize } from './statistics.js';
+import { mean, std, calculateCorrelation, calculateEffectSize, calculateTTestPValue } from './statistics.js';
+import { calculateInterestingFactor } from './interesting-factor.js';
+import type { InterestingFactorConfig } from './interesting-factor.js';
 
 /**
  * Saturation constants for Bradford Hill scoring
@@ -274,7 +276,6 @@ export function getRecommendation(
  * 
  * TODO: Port from legacy API — auto-generate reverse pairs from the same data
  * TODO: Port from legacy API — vote-weighted significance (upVotes+4)/(upVotes+downVotes+4)
- * TODO: Port from legacy API — interesting factor filtering (same-category, non-controllable)
  */
 export function calculatePredictorImpactScore(
   forwardPairs: AlignedPair[],
@@ -285,6 +286,8 @@ export function calculatePredictorImpactScore(
     coherenceScore?: number;
     analogyScore?: number;
     specificityScore?: number;
+    /** Interesting factor configuration — penalizes tautological/non-actionable pairs */
+    interestingFactorConfig?: InterestingFactorConfig;
   }
 ): PredictorImpactScore {
   const {
@@ -293,6 +296,7 @@ export function calculatePredictorImpactScore(
     coherenceScore = 0.5,
     analogyScore = 0.5,
     specificityScore = 0.5,
+    interestingFactorConfig,
   } = options ?? {};
   
   // Calculate forward correlation
@@ -340,8 +344,18 @@ export function calculatePredictorImpactScore(
   // Aggregate modifiers (if multiple subjects)
   const φUsers = saturation(subjectCount, SATURATION_CONSTANTS.N_SIG);
   const φPairs = saturation(forwardPairs.length, SATURATION_CONSTANTS.N_PAIRS_SIG);
-  const aggregatePIS = pis * φUsers * φPairs;
-  
+  let aggregatePIS = pis * φUsers * φPairs;
+
+  // Interesting factor: penalize non-actionable / tautological relationships
+  let interestingFactor: number | undefined;
+  if (interestingFactorConfig) {
+    interestingFactor = calculateInterestingFactor(interestingFactorConfig);
+    aggregatePIS *= interestingFactor;
+  }
+
+  // Independent t-test p-value for outcome group comparison
+  const tTestPValue = calculateTTestPValue(forwardPairs);
+
   return {
     score: aggregatePIS,
     forwardCorrelation,
@@ -350,6 +364,8 @@ export function calculatePredictorImpactScore(
     bradfordHill,
     temporalityFactor,
     optimalValue,
+    interestingFactor,
+    tTestPValue,
     evidenceGrade: getEvidenceGrade(aggregatePIS),
     recommendation: getRecommendation(aggregatePIS),
   };

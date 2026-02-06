@@ -72,6 +72,7 @@ export {
   spearmanCorrelation,
   calculateCorrelation,
   calculateEffectSize,
+  calculateTTestPValue,
   correlationTStatistic,
   tToPValue,
   calculateReversePearson,
@@ -94,6 +95,15 @@ export {
   getRecommendation,
   SATURATION_CONSTANTS,
 } from './predictor-impact-score.js';
+
+// Interesting factor & trivial filtering
+export {
+  calculateInterestingFactor,
+  isTrivial,
+  editDistance,
+  TRIVIAL_FACTOR_THRESHOLD,
+} from './interesting-factor.js';
+export type { InterestingFactorConfig } from './interesting-factor.js';
 
 // Change-from-baseline analysis & optimal daily values
 export {

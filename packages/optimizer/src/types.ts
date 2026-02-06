@@ -201,6 +201,10 @@ export const PredictorImpactScoreSchema = z.object({
   temporalityFactor: z.number(),
   /** Optimal predictor values */
   optimalValue: OptimalValueSchema.optional(),
+  /** Interesting factor (0-1) — penalizes non-actionable/tautological relationships */
+  interestingFactor: z.number().min(0).max(1).optional(),
+  /** Independent t-test p-value for outcome group comparison */
+  tTestPValue: z.number().min(0).max(1).optional(),
   /** Evidence grade */
   evidenceGrade: z.enum(['A', 'B', 'C', 'D', 'F']),
   /** Recommended action */

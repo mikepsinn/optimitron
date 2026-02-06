@@ -244,6 +244,81 @@ export function calculateCorrelation(pairs: AlignedPair[]): CorrelationResult {
 }
 
 /**
+ * Calculate independent samples t-test p-value.
+ *
+ * Splits aligned pairs into two groups based on whether the predictor value
+ * is above or below the predictor mean, then tests whether the two groups
+ * have significantly different outcome values.
+ *
+ * This is separate from the correlation p-value — it answers: "Do days with
+ * high predictor values have different outcomes than days with low predictor values?"
+ *
+ * Legacy API equivalent: QMUserCorrelation::calculatePValue() around line 2373
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMUserCorrelation.php#L2373
+ *
+ * The legacy PHP computes:
+ *   t = |meanHigh - meanLow| / sqrt(var1/n1 + var2/n2)
+ *   p = (1/sqrt(2π)) * exp(-0.5 * t²)    (normal approximation)
+ *   clamp p >= 0.001
+ */
+export function calculateTTestPValue(pairs: AlignedPair[], outcomeMean?: number): number {
+  if (pairs.length < 4) return 1; // Not enough data
+
+  const predictorValues = pairs.map(p => p.predictorValue);
+  const predictorMean = mean(predictorValues);
+
+  // Split into above-mean-predictor and below-mean-predictor groups
+  const highPredictorOutcomes: number[] = [];
+  const lowPredictorOutcomes: number[] = [];
+
+  for (const p of pairs) {
+    if (p.predictorValue >= predictorMean) {
+      highPredictorOutcomes.push(p.outcomeValue);
+    } else {
+      lowPredictorOutcomes.push(p.outcomeValue);
+    }
+  }
+
+  // Need at least 2 observations in each group
+  if (highPredictorOutcomes.length < 2 || lowPredictorOutcomes.length < 2) {
+    return 1;
+  }
+
+  const meanHigh = mean(highPredictorOutcomes);
+  const meanLow = mean(lowPredictorOutcomes);
+
+  const stdHigh = std(highPredictorOutcomes, 1); // sample std
+  const stdLow = std(lowPredictorOutcomes, 1);
+
+  const nHigh = highPredictorOutcomes.length;
+  const nLow = lowPredictorOutcomes.length;
+
+  const varHigh = stdHigh * stdHigh;
+  const varLow = stdLow * stdLow;
+
+  const standardError = Math.sqrt(varHigh / nHigh + varLow / nLow);
+
+  if (standardError === 0) {
+    // Both groups have zero variance — means are either identical (p=1) or trivially different
+    return meanHigh === meanLow ? 1 : 0;
+  }
+
+  const tValue = Math.abs(meanHigh - meanLow) / standardError;
+
+  // Welch's degrees of freedom
+  const num = (varHigh / nHigh + varLow / nLow) ** 2;
+  const den =
+    (varHigh / nHigh) ** 2 / (nHigh - 1) +
+    (varLow / nLow) ** 2 / (nLow - 1);
+  const df = den > 0 ? num / den : nHigh + nLow - 2;
+
+  // Use the existing tToPValue for accuracy
+  const pValue = tToPValue(tValue, df);
+
+  return Math.max(0, Math.min(1, pValue));
+}
+
+/**
  * Calculate effect size (baseline vs follow-up comparison)
  * Reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMUserCorrelation.php#L2811
  * Legacy API's calculateOutcomeBaselineStatistics() and generateBaselineAndFollowupPairs() split pairs
