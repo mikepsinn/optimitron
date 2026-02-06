@@ -120,16 +120,18 @@ describe('calculateBIS', () => {
     expect(result.score).toBeLessThanOrEqual(1);
     expect(result.estimateCount).toBe(1);
     expect(result.qualityWeight).toBe(1.0); // RCT
-    expect(result.precisionWeight).toBe(100); // 1/0.1²
+    // precisionWeight is average: 1/0.1² = 100, but floating point
+    expect(result.precisionWeight).toBeCloseTo(100, 5);
     expect(result.recencyWeight).toBeCloseTo(Math.exp(-0.03 * 2), 5);
   });
 
   it('weights RCT evidence higher than cross-sectional', () => {
+    // Use large SE so that individual scores stay below K=10 cap
     const rctEstimate: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.1, method: 'rct', year: 2023 },
+      { beta: 0.5, standardError: 2.0, method: 'rct', year: 2023 },
     ];
     const csEstimate: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.1, method: 'cross_sectional', year: 2023 },
+      { beta: 0.5, standardError: 2.0, method: 'cross_sectional', year: 2023 },
     ];
     const rctResult = calculateBIS(rctEstimate, 2025);
     const csResult = calculateBIS(csEstimate, 2025);
@@ -138,11 +140,12 @@ describe('calculateBIS', () => {
   });
 
   it('more precise estimates get higher BIS', () => {
+    // Use cross_sectional with larger SEs so values stay under cap
     const precise: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.05, method: 'rct', year: 2023 },
+      { beta: 0.5, standardError: 1.0, method: 'cross_sectional', year: 2023 },
     ];
     const imprecise: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.5, method: 'rct', year: 2023 },
+      { beta: 0.5, standardError: 5.0, method: 'cross_sectional', year: 2023 },
     ];
     const preciseResult = calculateBIS(precise, 2025);
     const impreciseResult = calculateBIS(imprecise, 2025);
@@ -151,11 +154,12 @@ describe('calculateBIS', () => {
   });
 
   it('recent studies get higher BIS', () => {
+    // Use larger SE so individual scores don't hit cap
     const recent: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.1, method: 'rct', year: 2024 },
+      { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2024 },
     ];
     const old: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.1, method: 'rct', year: 2000 },
+      { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2000 },
     ];
     const recentResult = calculateBIS(recent, 2025);
     const oldResult = calculateBIS(old, 2025);
@@ -164,13 +168,14 @@ describe('calculateBIS', () => {
   });
 
   it('multiple estimates increase BIS (more evidence = more confidence)', () => {
+    // Use weaker method + larger SEs to avoid saturation at 1.0
     const single: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.2, method: 'rct', year: 2023 },
+      { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2023 },
     ];
     const multiple: EffectEstimate[] = [
-      { beta: 0.5, standardError: 0.2, method: 'rct', year: 2023 },
-      { beta: 0.6, standardError: 0.15, method: 'difference_in_differences', year: 2022 },
-      { beta: 0.4, standardError: 0.25, method: 'rct', year: 2020 },
+      { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2023 },
+      { beta: 0.6, standardError: 4.0, method: 'cross_sectional', year: 2022 },
+      { beta: 0.4, standardError: 5.0, method: 'cross_sectional', year: 2020 },
     ];
     const singleResult = calculateBIS(single, 2025);
     const multipleResult = calculateBIS(multiple, 2025);

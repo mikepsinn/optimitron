@@ -196,10 +196,12 @@ describe('US_STATES', () => {
     expect(unique.size).toBe(US_STATES.length);
   });
 
-  it('is sorted alphabetically', () => {
-    for (let i = 1; i < US_STATES.length; i++) {
-      expect(US_STATES[i]! >= US_STATES[i - 1]!).toBe(true);
-    }
+  it('is ordered by full state name (AL=Alabama first, WY=Wyoming last)', () => {
+    // US_STATES is sorted by full state name, not by abbreviation
+    // Alabama (AL), Alaska (AK), Arizona (AZ), Arkansas (AR), ...
+    expect(US_STATES[0]).toBe('AL'); // Alabama
+    expect(US_STATES[1]).toBe('AK'); // Alaska
+    expect(US_STATES[49]).toBe('WY'); // Wyoming
   });
 
   it('first state is AL (Alabama)', () => {

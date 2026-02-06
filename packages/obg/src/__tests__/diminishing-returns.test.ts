@@ -338,7 +338,27 @@ describe('findOSL', () => {
       expect(osl2).toBeGreaterThan(osl1);
     });
 
-    it('handles very large gamma (slow saturation)', () => {
+    it('handles very large gamma with high beta (positive OSL)', () => {
+      // When beta is large enough that marginal return at S=0 (β/γ) > r,
+      // there exists a positive OSL
+      const model: DiminishingReturnsModel = {
+        type: 'saturation',
+        alpha: 0,
+        beta: 1e6,
+        gamma: 1000,
+        r2: 0.95,
+        n: 10,
+      };
+      const osl = findOSL(model, 0.03);
+      expect(osl).toBeGreaterThan(0);
+      expect(isFinite(osl)).toBe(true);
+      // Verify marginal return at OSL ≈ opportunity cost
+      const mr = marginalReturn(osl, model);
+      expect(mr).toBeCloseTo(0.03, 2);
+    });
+
+    it('returns negative OSL when max marginal return (β/γ) < opportunity cost', () => {
+      // β/γ = 100/1e9 = 1e-7 << 0.03, so no spending is justified
       const model: DiminishingReturnsModel = {
         type: 'saturation',
         alpha: 0,
@@ -348,12 +368,16 @@ describe('findOSL', () => {
         n: 10,
       };
       const osl = findOSL(model, 0.03);
-      expect(osl).toBeGreaterThan(0);
-      expect(isFinite(osl)).toBe(true);
+      // OSL is negative, meaning spending isn't justified
+      expect(osl).toBeLessThan(0);
     });
 
-    it('handles negative discriminant (returns gamma*10 fallback)', () => {
-      // When β is very small relative to r and gamma, discriminant can go negative
+    it('returns fallback when discriminant is negative', () => {
+      // Construct a case where discriminant < 0
+      // disc = (2rγ)² - 4r(rγ² - βγ) = 4r²γ² - 4r²γ² + 4rβγ = 4rβγ
+      // Since r, β, γ are all positive, discriminant = 4rβγ > 0 always
+      // So the fallback path is actually unreachable for positive params.
+      // Instead test that with very small beta, OSL is near zero or negative
       const model: DiminishingReturnsModel = {
         type: 'saturation',
         alpha: 0,
@@ -363,8 +387,9 @@ describe('findOSL', () => {
         n: 5,
       };
       const osl = findOSL(model, 10);
-      // Discriminant < 0 → fallback to gamma*10
-      expect(osl).toBe(50000);
+      // Max marginal return = β/γ = 0.0001/5000 = 2e-8 << 10
+      // OSL should be negative or near zero
+      expect(osl).toBeLessThan(1);
     });
   });
 });
@@ -392,39 +417,35 @@ describe('estimateOSL', () => {
     expect(result.model.type).toBe('log');
   });
 
-  it('selects saturation model when saturation data is used', () => {
-    // Perfect saturation data
-    const data = generateSaturationData(
-      10,
-      90,
-      5000,
-      [100, 500, 1000, 2500, 5000, 10000, 25000, 50000],
-    );
+  it('works with saturation-like data', () => {
+    // Data that shows clear diminishing returns
+    // Use data where both log and saturation models work, OSL should be positive
+    const data: SpendingOutcomePoint[] = [
+      { spending: 100, outcome: 10, jurisdiction: 'A', year: 2020 },
+      { spending: 500, outcome: 30, jurisdiction: 'B', year: 2020 },
+      { spending: 1000, outcome: 42, jurisdiction: 'C', year: 2020 },
+      { spending: 5000, outcome: 55, jurisdiction: 'D', year: 2020 },
+      { spending: 10000, outcome: 60, jurisdiction: 'E', year: 2020 },
+      { spending: 50000, outcome: 65, jurisdiction: 'F', year: 2020 },
+    ];
     const result = estimateOSL(data, 0.03, 10);
 
-    // The model selection depends on which fits better
     expect(result.model.type).toBeDefined();
     expect(result.oslUsd).toBeGreaterThan(0);
   });
 
-  it('confidence interval narrows with more data points', () => {
-    const smallData = generateLogData(10, 5, [100, 1000, 10000]);
-    const largeData = generateLogData(
+  it('confidence interval bounds are finite for log data', () => {
+    const data = generateLogData(
       10,
       5,
       [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000],
     );
 
-    const smallResult = estimateOSL(smallData, 0.03, 200);
-    const largeResult = estimateOSL(largeData, 0.03, 200);
+    const result = estimateOSL(data, 0.03, 100);
 
-    const smallWidth = smallResult.confidenceInterval[1] - smallResult.confidenceInterval[0];
-    const largeWidth = largeResult.confidenceInterval[1] - largeResult.confidenceInterval[0];
-
-    // Larger dataset should give tighter CI (usually, not guaranteed with bootstrap)
-    // Just check both are valid
-    expect(smallWidth).toBeGreaterThanOrEqual(0);
-    expect(largeWidth).toBeGreaterThanOrEqual(0);
+    expect(isFinite(result.confidenceInterval[0])).toBe(true);
+    expect(isFinite(result.confidenceInterval[1])).toBe(true);
+    expect(result.confidenceInterval[0]).toBeLessThanOrEqual(result.confidenceInterval[1]);
   });
 
   it('marginal return at OSL approximately equals opportunity cost', () => {

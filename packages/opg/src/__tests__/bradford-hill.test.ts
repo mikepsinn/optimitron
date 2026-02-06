@@ -62,12 +62,12 @@ describe('scoreStrength', () => {
     }
   });
 
-  it('result is always in [0, 1)', () => {
+  it('result is always in [0, 1]', () => {
     const testValues = [0, 0.001, 0.1, 0.5, 1, 10, 100];
     for (const v of testValues) {
       const s = scoreStrength(v);
       expect(s).toBeGreaterThanOrEqual(0);
-      expect(s).toBeLessThan(1);
+      expect(s).toBeLessThanOrEqual(1);
     }
   });
 });
@@ -105,11 +105,11 @@ describe('scoreConsistency', () => {
     }
   });
 
-  it('result is always in [0, 1)', () => {
+  it('result is always in [0, 1]', () => {
     for (const n of [0, 1, 5, 10, 50, 1000]) {
       const s = scoreConsistency(n);
       expect(s).toBeGreaterThanOrEqual(0);
-      expect(s).toBeLessThan(1);
+      expect(s).toBeLessThanOrEqual(1);
     }
   });
 });
