@@ -1,0 +1,17 @@
+{
+  "name": "@optomitron/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome extension for personal health tracking (Digital Twin Safe) — Layer 1 of Optomitron",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests yet'"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}

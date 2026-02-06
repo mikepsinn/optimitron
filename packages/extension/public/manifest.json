@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Digital Twin Safe",
+  "version": "0.1.0",
+  "description": "Personal health tracking — treatments, symptoms, mood, and food logging. All data stays on your device.",
+  "permissions": ["alarms", "storage", "notifications"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "options_page": "options/options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

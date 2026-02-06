@@ -1,0 +1,374 @@
+/* === Reset & Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 380px;
+  min-height: 500px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  color: #1a1a2e;
+  background: #f8f9fc;
+}
+
+#app {
+  padding: 0;
+}
+
+/* === Navigation === */
+.nav {
+  display: flex;
+  background: #1a1a2e;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: transparent;
+  color: #a0a0c0;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-btn:hover {
+  color: #e0e0ff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.active {
+  color: #7c5cfc;
+  border-bottom-color: #7c5cfc;
+}
+
+/* === Tab content === */
+.tab-content {
+  display: none;
+  padding: 16px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1a1a2e;
+}
+
+h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* === Buttons === */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  background: #7c5cfc;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #6a48e8;
+}
+
+.btn-success {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #16a34a;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e1;
+}
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* === Treatment Cards === */
+.treatment-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.treatment-card .name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.treatment-card .dose {
+  color: #666;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.treatment-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.treatment-actions .btn {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+/* === Snooze dropdown === */
+.snooze-dropdown {
+  position: relative;
+  flex: 1;
+}
+
+.snooze-options {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-bottom: 4px;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.snooze-options.show {
+  display: block;
+}
+
+.snooze-option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: white;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.snooze-option:hover {
+  background: #f1f5f9;
+}
+
+/* === Emoji mood rating === */
+.emoji-rating {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.mood-btn {
+  font-size: 28px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.mood-btn:hover {
+  border-color: #7c5cfc;
+  transform: scale(1.15);
+}
+
+.mood-btn.selected {
+  border-color: #7c5cfc;
+  background: #f0ecfe;
+  transform: scale(1.15);
+}
+
+/* === Symptom rating === */
+.symptom-item {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.symptom-item .symptom-name {
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.symptom-scale {
+  display: flex;
+  gap: 4px;
+}
+
+.symptom-scale .scale-btn {
+  flex: 1;
+  padding: 6px 2px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.symptom-scale .scale-btn:hover {
+  border-color: #7c5cfc;
+  background: #f0ecfe;
+}
+
+.symptom-scale .scale-btn.selected {
+  border-color: #7c5cfc;
+  background: #7c5cfc;
+  color: white;
+}
+
+/* === Food input === */
+.food-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.food-input-group input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.food-input-group input:focus {
+  border-color: #7c5cfc;
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+}
+
+/* === Recent foods chips === */
+.food-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 2px 4px 2px 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.food-chip:hover {
+  border-color: #7c5cfc;
+  background: #f0ecfe;
+}
+
+/* === Log entries === */
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-time {
+  color: #94a3b8;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+}
+
+.log-action {
+  font-size: 14px;
+}
+
+.log-text {
+  flex: 1;
+}
+
+/* === Empty state === */
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.empty-state .emoji {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+/* === Toast notification === */
+.toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1a1a2e;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}

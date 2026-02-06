@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Safe</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <nav id="nav" class="nav">
+      <button class="nav-btn active" data-tab="treatments">💊 Treatments</button>
+      <button class="nav-btn" data-tab="symptoms">📊 Symptoms</button>
+      <button class="nav-btn" data-tab="food">🍽️ Food</button>
+    </nav>
+
+    <section id="tab-treatments" class="tab-content active">
+      <h2>Today's Treatments</h2>
+      <div id="treatment-reminders"></div>
+      <h3>Today's Log</h3>
+      <div id="treatment-log"></div>
+    </section>
+
+    <section id="tab-symptoms" class="tab-content">
+      <h2>How are you feeling?</h2>
+      <div id="mood-section">
+        <h3>Mood</h3>
+        <div id="mood-rating" class="emoji-rating">
+          <button class="mood-btn" data-value="1">😢</button>
+          <button class="mood-btn" data-value="2">😐</button>
+          <button class="mood-btn" data-value="3">🙂</button>
+          <button class="mood-btn" data-value="4">😊</button>
+          <button class="mood-btn" data-value="5">😄</button>
+        </div>
+      </div>
+      <div id="symptom-list"></div>
+      <div id="symptom-log"></div>
+    </section>
+
+    <section id="tab-food" class="tab-content">
+      <h2>Food Log</h2>
+      <div class="food-input-group">
+        <input type="text" id="food-input" placeholder="What did you eat?" autocomplete="off">
+        <button id="food-add-btn" class="btn btn-primary">Add</button>
+      </div>
+      <h3>Recent Foods</h3>
+      <div id="recent-foods"></div>
+      <h3>Today's Log</h3>
+      <div id="food-log"></div>
+    </section>
+  </div>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>

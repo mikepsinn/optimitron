@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Safe — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>⚙️ Digital Twin Safe Settings</h1>
+      <p class="subtitle">All data stays on your device. Nothing is sent anywhere.</p>
+    </header>
+
+    <section class="settings-section">
+      <h2>💊 Treatments &amp; Supplements</h2>
+      <div id="treatment-list"></div>
+      <div class="add-form" id="add-treatment-form">
+        <input type="text" id="treatment-name" placeholder="Name (e.g., Vitamin D)">
+        <input type="text" id="treatment-dose" placeholder="Dose (e.g., 5000)">
+        <select id="treatment-unit">
+          <option value="mg">mg</option>
+          <option value="mcg">mcg</option>
+          <option value="IU">IU</option>
+          <option value="g">g</option>
+          <option value="ml">ml</option>
+          <option value="tablets">tablets</option>
+          <option value="capsules">capsules</option>
+          <option value="drops">drops</option>
+          <option value="">other</option>
+        </select>
+        <select id="treatment-frequency">
+          <option value="daily">Daily</option>
+          <option value="twice-daily">Twice daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="as-needed">As needed</option>
+        </select>
+        <button id="add-treatment-btn" class="btn btn-primary">+ Add</button>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>📊 Tracked Symptoms</h2>
+      <div id="symptom-presets">
+        <h3>Common Symptoms</h3>
+        <div id="preset-symptoms"></div>
+      </div>
+      <div id="custom-symptoms">
+        <h3>Custom Symptoms</h3>
+        <div id="custom-symptom-list"></div>
+        <div class="add-form">
+          <input type="text" id="custom-symptom-name" placeholder="Custom symptom name">
+          <button id="add-custom-symptom-btn" class="btn btn-primary">+ Add</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>⏰ Reminders</h2>
+      <div class="form-group">
+        <label for="reminder-frequency">Check-in frequency</label>
+        <select id="reminder-frequency">
+          <option value="60">Every hour</option>
+          <option value="120">Every 2 hours</option>
+          <option value="240">Every 4 hours</option>
+          <option value="480">Every 8 hours</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Quiet hours (no reminders)</label>
+        <div class="time-range">
+          <input type="time" id="quiet-start" value="22:00">
+          <span>to</span>
+          <input type="time" id="quiet-end" value="08:00">
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>📤 Data Export</h2>
+      <p class="section-desc">Export your data for backup or analysis. Compatible with @optomitron/causal TimeSeries format.</p>
+      <div class="export-buttons">
+        <button id="export-json-btn" class="btn btn-primary">Export as JSON</button>
+        <button id="export-csv-btn" class="btn btn-secondary">Export as CSV</button>
+      </div>
+      <div class="danger-zone">
+        <h3>⚠️ Danger Zone</h3>
+        <button id="clear-data-btn" class="btn btn-danger">Clear All Data</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>
