@@ -33,7 +33,8 @@
   "lint-staged": {
     "packages/*/src/**/*.ts": [
       "eslint --fix",
-      "bash -c 'pnpm typecheck'"
+      "bash -c 'pnpm typecheck'",
+      "bash -c 'pnpm test'"
     ]
   },
   "packageManager": "pnpm@8.14.0",
