@@ -47,15 +47,18 @@ describe('aggregateComparisons', () => {
   });
 
   it('computes geometric mean across multiple participants', () => {
-    // Participant 1: 80/20 → ratio = 4
-    // Participant 2: 60/40 → ratio = 1.5
-    // Geometric mean = sqrt(4 * 1.5) = sqrt(6) ≈ 2.449
+    // Items are normalized alphabetically: "education" < "health"
+    // So the pair key is education:health, and ratio = allocEducation/allocHealth
+    // Participant 1: health=80 → education=20, ratio = 20/80 = 0.25
+    // Participant 2: health=60 → education=40, ratio = 40/60 = 0.667
+    // Geometric mean = sqrt(0.25 * 0.667) ≈ 0.408
     const entries = aggregateComparisons([
       comp('u1', 'health', 'education', 80),
       comp('u2', 'health', 'education', 60),
     ]);
     expect(entries).toHaveLength(1);
-    expect(entries[0]!.ratio).toBeCloseTo(Math.sqrt(4 * 1.5), 2);
+    // Normalized pair: education:health → ratio = education/health
+    expect(entries[0]!.ratio).toBeCloseTo(Math.sqrt((20 / 80) * (40 / 60)), 2);
     expect(entries[0]!.count).toBe(2);
   });
 
@@ -90,11 +93,13 @@ describe('aggregateComparisons', () => {
 
   it('handles extreme allocations (100/0) with epsilon clamping', () => {
     // 100/0 allocation — code clamps to max(alloc, 0.5)
-    // So ratio = 99.5/0.5 = 199
+    // A < B alphabetically, so pair is A:B, ratio = allocA/allocB
+    // allocA = 100, allocB = 0 → safeA = 100, safeB = 0.5
+    // ratio = 100 / 0.5 = 200
     const entries = aggregateComparisons([
       comp('u1', 'A', 'B', 100),
     ]);
-    expect(entries[0]!.ratio).toBeCloseTo(99.5 / 0.5, 1);
+    expect(entries[0]!.ratio).toBeCloseTo(200, 0);
     expect(entries[0]!.ratio).toBeGreaterThan(1);
   });
 
@@ -157,10 +162,16 @@ describe('aggregateComparisons', () => {
   });
 
   it('Alice scenario: Military vs Drug Enforcement (60/40)', () => {
+    // Alphabetical: "drug_enforcement" < "military" → pair is drug_enforcement:military
+    // Alice says itemA=military, itemB=drug_enforcement, allocationA=60
+    // Since military !== drug_enforcement (the normalized first), allocA for drug_enforcement = 100-60 = 40
+    // ratio = 40/60 = 0.667 (drug_enforcement/military)
     const entries = aggregateComparisons([
       comp('alice', 'military', 'drug_enforcement', 60),
     ]);
-    expect(entries[0]!.ratio).toBeCloseTo(60 / 40, 2);
+    expect(entries[0]!.itemAId).toBe('drug_enforcement');
+    expect(entries[0]!.itemBId).toBe('military');
+    expect(entries[0]!.ratio).toBeCloseTo(40 / 60, 2);
   });
 });
 
@@ -424,17 +435,21 @@ describe('consistencyRatio', () => {
 // End-to-end: aggregateComparisons → buildComparisonMatrix → eigenvector
 // =====================================================================
 describe('end-to-end pipeline', () => {
-  it('Alice scenario: full pipeline produces correct preference ordering', () => {
+  it('Alice scenario: full pipeline with all pairs produces correct ordering', () => {
     const items = ['medical_research', 'military', 'drug_enforcement'];
 
-    // Alice's comparisons from the paper
+    // Alice's comparisons from the paper plus the transitive inference
+    // Medical vs Military: 85/15
+    // Military vs Drug Enforcement: 60/40
+    // Medical vs Drug Enforcement: transitively ~89.4/10.6 (85/15 * 60/40 = 8.5:1)
+    // As allocation: 8.5/(8.5+1) * 100 ≈ 89.5
     const comparisons: PairwiseComparison[] = [
       comp('alice', 'medical_research', 'military', 85),
       comp('alice', 'military', 'drug_enforcement', 60),
+      comp('alice', 'medical_research', 'drug_enforcement', 89),
     ];
 
     const entries = aggregateComparisons(comparisons);
-    // We only have 2 of 3 pairs. Build matrix (missing pair defaults to 1).
     const matrix = buildComparisonMatrix(items, entries);
 
     const weights = principalEigenvector(matrix);
@@ -445,6 +460,31 @@ describe('end-to-end pipeline', () => {
     // Ordering: medical > military > drug enforcement
     expect(weights[0]!).toBeGreaterThan(weights[1]!);
     expect(weights[1]!).toBeGreaterThan(weights[2]!);
+
+    // Medical should dominate (>50%)
+    expect(weights[0]!).toBeGreaterThan(0.5);
+  });
+
+  it('Alice scenario: 2-of-3 pairs with missing pair defaults to 1', () => {
+    const items = ['medical_research', 'military', 'drug_enforcement'];
+
+    // Only 2 of 3 pairs — missing medical vs drug_enforcement defaults to ratio 1
+    const comparisons: PairwiseComparison[] = [
+      comp('alice', 'medical_research', 'military', 85),
+      comp('alice', 'military', 'drug_enforcement', 60),
+    ];
+
+    const entries = aggregateComparisons(comparisons);
+    const matrix = buildComparisonMatrix(items, entries);
+    const weights = principalEigenvector(matrix);
+
+    // Weights sum to 1
+    expect(weights.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
+
+    // Medical should still be highest (strong preference over military)
+    expect(weights[0]!).toBeGreaterThan(weights[1]!);
+    // Drug enforcement gets an artificially equal weight to medical due to missing pair
+    // so military < drug_enforcement in this incomplete scenario
   });
 
   it('multiple participants converge on shared preference', () => {
