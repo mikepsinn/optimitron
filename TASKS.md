@@ -22,14 +22,14 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 4 | Tests for `@optomitron/causal` temporal alignment | todo | Use dFDA paper examples |
-| 5 | Tests for `@optomitron/causal` Bradford Hill scoring | todo | |
-| 6 | Tests for `@optomitron/causal` PIS calculation | todo | |
-| 7 | Tests for `@optomitron/rappa` aggregateComparisons() | todo | Use Wishocracy paper's Alice scenario |
-| 8 | Tests for `@optomitron/rappa` principalEigenvector() | todo | Verify against known AHP examples |
-| 9 | Tests for `@optomitron/rappa` consistencyRatio() | todo | CR < 0.1 for consistent matrices |
-| 10 | Tests for `@optomitron/rappa` alignment scoring | todo | |
-| 11 | Tests for `@optomitron/opg` Bradford Hill | todo | |
+| 4 | Tests for `@optomitron/causal` temporal alignment | done | dFDA paper examples |
+| 5 | Tests for `@optomitron/causal` Bradford Hill scoring | done | |
+| 6 | Tests for `@optomitron/causal` PIS calculation | done | |
+| 7 | Tests for `@optomitron/rappa` aggregateComparisons() | done | Wishocracy paper's Alice scenario |
+| 8 | Tests for `@optomitron/rappa` principalEigenvector() | done | Verified against known AHP examples |
+| 9 | Tests for `@optomitron/rappa` consistencyRatio() | done | CR < 0.1 for consistent matrices |
+| 10 | Tests for `@optomitron/rappa` alignment scoring | done | |
+| 11 | Tests for `@optomitron/opg` Bradford Hill | done | 213 tests: bradford-hill, welfare, policy, jurisdiction, budget, integration |
 | 12 | Tests for `@optomitron/obg` diminishing returns | done | 36 tests: fitLogModel, fitSaturationModel, marginalReturn, findOSL, estimateOSL + edge cases |
 | 13 | Tests for `@optomitron/obg` cost-effectiveness | done | 107 additional tests: cost-effectiveness (32), BIS (37), welfare (17), budget schemas (18), smoke (3) |
 
