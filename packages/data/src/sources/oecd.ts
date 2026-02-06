@@ -205,11 +205,14 @@ export async function fetchOECDHealthExpenditure(
   }
 }
 
-function parseOECDHealthResponse(data: OECDApiResponse): SpendingData[] {
-  // Similar parsing logic - simplified for now
-  const results: SpendingData[] = [];
-  // TODO: Implement full parsing
-  return results;
+function parseOECDHealthResponse(_data: OECDApiResponse): SpendingData[] {
+  // OECD SDMX JSON format requires dimension-key mapping to parse observations.
+  // This is non-trivial and needs dedicated work. For now, throw so callers
+  // know it's not silently returning empty.
+  throw new Error(
+    'OECD health expenditure parsing not yet implemented. ' +
+    'Use @optomitron/data datasets (US_FEDERAL_BUDGET, HEALTH_SYSTEM_COMPARISON) for pre-curated data.',
+  );
 }
 
 /**

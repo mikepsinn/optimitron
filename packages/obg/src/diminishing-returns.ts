@@ -70,6 +70,12 @@ export function fitLogModel(
     denominator += (ls - meanLogS) ** 2;
   }
   
+  // Guard: zero denominator means constant log-spending (already handled above, belt-and-suspenders)
+  if (denominator === 0) {
+    const meanOutcome = outcomes.reduce((a, b) => a + b, 0) / n;
+    return { type: 'log', alpha: meanOutcome, beta: 0, r2: 0, n };
+  }
+
   const beta = numerator / denominator;
   const alpha = meanY - beta * meanLogS;
   
@@ -77,7 +83,8 @@ export function fitLogModel(
   const predictions = logSpending.map(ls => alpha + beta * ls);
   const ssRes = outcomes.reduce((sum, y, i) => sum + (y - predictions[i]!) ** 2, 0);
   const ssTot = outcomes.reduce((sum, y) => sum + (y - meanY) ** 2, 0);
-  const r2 = 1 - ssRes / ssTot;
+  // Guard: constant outcomes → ssTot = 0 → R² undefined; treat as 0
+  const r2 = ssTot === 0 ? 0 : 1 - ssRes / ssTot;
   
   return { type: 'log', alpha, beta, r2, n };
 }
@@ -94,11 +101,14 @@ export function fitSaturationModel(
   const sortedSpending = [...data.map(d => d.spending)].sort((a, b) => a - b);
   const gamma = initialGamma ?? sortedSpending[Math.floor(sortedSpending.length / 2)]!;
   
+  // Guard: if gamma <= 0, transformed values blow up; clamp
+  const safeGamma = gamma > 0 ? gamma : 0.001;
+
   const n = data.length;
   const outcomes = data.map(d => d.outcome);
   
   // Transform: x_i = S_i / (S_i + γ)
-  const transformed = data.map(d => d.spending / (d.spending + gamma));
+  const transformed = data.map(d => d.spending / (d.spending + safeGamma));
   
   // OLS on transformed data
   const meanX = transformed.reduce((a, b) => a + b, 0) / n;
@@ -114,6 +124,11 @@ export function fitSaturationModel(
     denominator += (ti - meanX) ** 2;
   }
   
+  // Guard: zero denominator (constant transformed values)
+  if (denominator === 0) {
+    return { type: 'saturation', alpha: meanY, beta: 0, gamma: safeGamma, r2: 0, n };
+  }
+
   const beta = numerator / denominator;
   const alpha = meanY - beta * meanX;
   
@@ -121,9 +136,10 @@ export function fitSaturationModel(
   const predictions = transformed.map(x => alpha + beta * x);
   const ssRes = outcomes.reduce((sum, y, i) => sum + (y - predictions[i]!) ** 2, 0);
   const ssTot = outcomes.reduce((sum, y) => sum + (y - meanY) ** 2, 0);
-  const r2 = 1 - ssRes / ssTot;
+  // Guard: constant outcomes → ssTot = 0 → R² undefined; treat as 0
+  const r2 = ssTot === 0 ? 0 : 1 - ssRes / ssTot;
   
-  return { type: 'saturation', alpha, beta, gamma, r2, n };
+  return { type: 'saturation', alpha, beta, gamma: safeGamma, r2, n };
 }
 
 /**
@@ -135,11 +151,13 @@ export function marginalReturn(
   spending: number,
   model: DiminishingReturnsModel
 ): number {
+  // Clamp spending to small epsilon to avoid division by zero / -Infinity
+  const safeSpending = Math.max(spending, 0.001);
   if (model.type === 'log') {
-    return model.beta / spending;
+    return model.beta / safeSpending;
   } else {
     const gamma = model.gamma!;
-    return (model.beta * gamma) / (spending + gamma) ** 2;
+    return (model.beta * gamma) / (safeSpending + gamma) ** 2;
   }
 }
 

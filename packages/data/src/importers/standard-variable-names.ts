@@ -273,6 +273,12 @@ const CATEGORY_ALIASES: Record<string, string> = {
   'Workout': 'Physical Activity',
   'Workouts': 'Physical Activity',
   'Activities': 'Activity',
+  'Symptoms': 'Symptom',
+  'Emotions': 'Emotion',
+  'Moods': 'Mood',
+  'Environments': 'Environment',
+  'Physical Measurements': 'Physical Measurement',
+  'Sleeps': 'Sleep',
 };
 
 /**
@@ -285,5 +291,36 @@ const CATEGORY_ALIASES: Record<string, string> = {
  * resolveCategory('Sleep')       // → 'Sleep' (already canonical)
  */
 export function resolveCategory(importerCategory: string): string {
-  return CATEGORY_ALIASES[importerCategory] ?? importerCategory;
+  // Fast path: exact match
+  if (CATEGORY_ALIASES[importerCategory]) {
+    return CATEGORY_ALIASES[importerCategory];
+  }
+  // Case-insensitive fallback
+  const lower = importerCategory.toLowerCase();
+  for (const [alias, canonical] of Object.entries(CATEGORY_ALIASES)) {
+    if (alias.toLowerCase() === lower) {
+      return canonical;
+    }
+  }
+  return importerCategory;
+}
+
+/**
+ * Resolve a native variable name AND normalize its category.
+ *
+ * Returns an object with both the canonical variable name and the normalized category.
+ * If the variable is known in STANDARD_VARIABLES, the category comes from there.
+ * If a rawCategory is provided and the variable is unknown, the category is normalized via resolveCategory().
+ */
+export function resolveVariableWithCategory(
+  nativeName: string,
+  importerKey: string,
+  rawCategory?: string,
+): { variableName: string; category: string | undefined } {
+  const variableName = resolveVariableName(nativeName, importerKey);
+  const def = STANDARD_VARIABLES[variableName];
+  if (def) {
+    return { variableName, category: def.category };
+  }
+  return { variableName, category: rawCategory ? resolveCategory(rawCategory) : undefined };
 }

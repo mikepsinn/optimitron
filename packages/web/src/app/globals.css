@@ -2,45 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Unified neobrutalist design system with cohesive color palette */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 250, 250, 250;
-  --background-end-rgb: 255, 255, 255;
+  /* Base colors - high contrast neobrutalism */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+
+  /* Card & Popover */
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+
+  /* Primary - Brutal Pink */
+  --primary: 330 83% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary - Brutal Yellow */
+  --secondary: 48 100% 67%;
+  --secondary-foreground: 0 0% 0%;
+
+  /* Accent - Brutal Cyan */
+  --accent: 186 68% 70%;
+  --accent-foreground: 0 0% 0%;
+
+  /* Muted - Light gray for subtle backgrounds */
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 25%;
+
+  /* Destructive - Keep as red for warnings */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders & Inputs - Always black for neobrutalism */
+  --border: 0 0% 0%;
+  --input: 0 0% 0%;
+  --ring: 330 83% 60%;
+
+  /* Chart colors */
+  --chart-1: 330 83% 60%;
+  --chart-2: 186 68% 70%;
+  --chart-3: 48 100% 67%;
+  --chart-4: 142 77% 73%;
+  --chart-5: 263 70% 85%;
+
+  /* Radius - 0 for sharp neobrutalist edges */
+  --radius: 0px;
+
+  /* Neobrutalist color tokens - raw RGB for use with bg-brutal-* */
+  --brutal-pink: 236, 70, 153;
+  --brutal-cyan: 123, 221, 234;
+  --brutal-yellow: 255, 221, 87;
+  --brutal-red: 239, 68, 68;
 }
 
+/* Dark mode with inverted neobrutalist aesthetic */
 .dark {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 10, 10, 10;
-  --background-end-rgb: 20, 20, 30;
+  /* Base colors - inverted */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+
+  /* Card & Popover */
+  --card: 0 0% 9%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 9%;
+  --popover-foreground: 0 0% 100%;
+
+  /* Primary - Brighter pink for dark mode */
+  --primary: 330 90% 70%;
+  --primary-foreground: 0 0% 0%;
+
+  /* Secondary - Brighter yellow for dark mode */
+  --secondary: 48 98% 64%;
+  --secondary-foreground: 0 0% 0%;
+
+  /* Accent - Brighter cyan for dark mode */
+  --accent: 186 90% 82%;
+  --accent-foreground: 0 0% 0%;
+
+  /* Muted */
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 64%;
+
+  /* Destructive */
+  --destructive: 0 90% 71%;
+  --destructive-foreground: 0 0% 0%;
+
+  /* Borders & Inputs - White for dark mode */
+  --border: 0 0% 100%;
+  --input: 0 0% 100%;
+  --ring: 330 90% 70%;
+
+  /* Chart colors - Brighter for dark mode */
+  --chart-1: 330 90% 70%;
+  --chart-2: 186 90% 82%;
+  --chart-3: 48 98% 64%;
+  --chart-4: 142 77% 73%;
+  --chart-5: 263 70% 85%;
+
+  /* Dark mode neobrutalist colors */
+  --brutal-pink: 244, 114, 182;
+  --brutal-cyan: 165, 243, 252;
+  --brutal-yellow: 253, 224, 71;
+  --brutal-red: 248, 113, 113;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  min-height: 100vh;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 
-/* Custom scrollbar for dark mode */
-.dark ::-webkit-scrollbar {
-  width: 8px;
-}
-.dark ::-webkit-scrollbar-track {
-  background: rgb(20, 20, 30);
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: rgb(55, 65, 81);
-  border-radius: 4px;
-}
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgb(75, 85, 99);
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }

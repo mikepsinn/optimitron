@@ -475,3 +475,86 @@ describe('estimateOSL', () => {
     expect(result.model.r2).toBeGreaterThan(0.8);
   });
 });
+
+// ========================= NaN / edge-case guards ==========================
+
+describe('diminishing returns NaN guards', () => {
+  it('fitLogModel handles zero spending by filtering it out', () => {
+    const data: SpendingOutcomePoint[] = [
+      { spending: 0, outcome: 10, jurisdiction: 'A', year: 2020 },
+      { spending: 100, outcome: 50, jurisdiction: 'B', year: 2020 },
+      { spending: 1000, outcome: 70, jurisdiction: 'C', year: 2020 },
+      { spending: 10000, outcome: 80, jurisdiction: 'D', year: 2020 },
+    ];
+    const model = fitLogModel(data);
+    expect(model.n).toBe(3);
+    expect(Number.isFinite(model.alpha)).toBe(true);
+    expect(Number.isFinite(model.beta)).toBe(true);
+    expect(Number.isFinite(model.r2)).toBe(true);
+  });
+
+  it('fitLogModel handles negative spending by filtering it out', () => {
+    const data: SpendingOutcomePoint[] = [
+      { spending: -500, outcome: 10, jurisdiction: 'A', year: 2020 },
+      { spending: -100, outcome: 20, jurisdiction: 'B', year: 2020 },
+      { spending: 100, outcome: 50, jurisdiction: 'C', year: 2020 },
+      { spending: 1000, outcome: 70, jurisdiction: 'D', year: 2020 },
+    ];
+    const model = fitLogModel(data);
+    expect(model.n).toBe(2);
+    expect(Number.isFinite(model.r2)).toBe(true);
+  });
+
+  it('fitLogModel handles constant spending without NaN', () => {
+    const data: SpendingOutcomePoint[] = [
+      { spending: 100, outcome: 50, jurisdiction: 'A', year: 2020 },
+      { spending: 100, outcome: 55, jurisdiction: 'B', year: 2020 },
+      { spending: 100, outcome: 45, jurisdiction: 'C', year: 2020 },
+    ];
+    const model = fitLogModel(data);
+    expect(model.n).toBe(3);
+    expect(model.beta).toBe(0);
+    expect(model.r2).toBe(0);
+    expect(Number.isFinite(model.alpha)).toBe(true);
+  });
+
+  it('fitLogModel handles constant outcomes without NaN', () => {
+    const data: SpendingOutcomePoint[] = [
+      { spending: 100, outcome: 50, jurisdiction: 'A', year: 2020 },
+      { spending: 1000, outcome: 50, jurisdiction: 'B', year: 2020 },
+      { spending: 10000, outcome: 50, jurisdiction: 'C', year: 2020 },
+    ];
+    const model = fitLogModel(data);
+    expect(Number.isFinite(model.r2)).toBe(true);
+    expect(model.r2).toBe(0);
+  });
+
+  it('marginalReturn clamps zero spending to epsilon', () => {
+    const logModel: DiminishingReturnsModel = {
+      type: 'log', alpha: 10, beta: 5, r2: 0.99, n: 10,
+    };
+    const mr = marginalReturn(0, logModel);
+    expect(Number.isFinite(mr)).toBe(true);
+    expect(mr).toBeGreaterThan(0);
+  });
+
+  it('marginalReturn clamps negative spending to epsilon', () => {
+    const logModel: DiminishingReturnsModel = {
+      type: 'log', alpha: 10, beta: 5, r2: 0.99, n: 10,
+    };
+    const mr = marginalReturn(-1000, logModel);
+    expect(Number.isFinite(mr)).toBe(true);
+    expect(mr).toBeGreaterThan(0);
+  });
+
+  it('fitSaturationModel handles constant outcomes without NaN', () => {
+    const data: SpendingOutcomePoint[] = [
+      { spending: 100, outcome: 50, jurisdiction: 'A', year: 2020 },
+      { spending: 1000, outcome: 50, jurisdiction: 'B', year: 2020 },
+      { spending: 10000, outcome: 50, jurisdiction: 'C', year: 2020 },
+    ];
+    const model = fitSaturationModel(data);
+    expect(Number.isFinite(model.r2)).toBe(true);
+    expect(model.r2).toBe(0);
+  });
+});
