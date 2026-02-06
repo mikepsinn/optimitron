@@ -356,7 +356,7 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
       aggregateValuePredictingHighOutcome: null,
       aggregateValuePredictingLowOutcome: null,
       aggregateOptimalDailyValue: null,
-      aggregateEffectFollowUpPercentChangeFromBaseline: null,
+      aggregateOutcomeFollowUpPercentChangeFromBaseline: null,
       weightedAveragePIS: 0,
       totalPairs: 0,
     };
@@ -425,7 +425,7 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
     aggregateValuePredictingHighOutcome: weightedAvgOptional(u => u.valuePredictingHighOutcome),
     aggregateValuePredictingLowOutcome: weightedAvgOptional(u => u.valuePredictingLowOutcome),
     aggregateOptimalDailyValue: weightedAvgOptional(u => u.optimalDailyValue),
-    aggregateEffectFollowUpPercentChangeFromBaseline: weightedAvgOptional(u => u.effectFollowUpPercentChangeFromBaseline),
+    aggregateOutcomeFollowUpPercentChangeFromBaseline: weightedAvgOptional(u => u.outcomeFollowUpPercentChangeFromBaseline),
     weightedAveragePIS: weightedAvg(userCorrelations.map(u => {
       // PIS approximation: |forwardPearson| × statisticalSignificance
       // This mirrors the legacy qm_score weighting

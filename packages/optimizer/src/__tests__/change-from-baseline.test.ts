@@ -141,9 +141,9 @@ describe('calculateBaselineFollowup', () => {
     ];
     const result = calculateBaselineFollowup(pairs);
 
-    expect(result.effectBaselineAverage).toBe(100);
-    expect(result.effectFollowUpAverage).toBe(200);
-    expect(result.effectFollowUpPercentChangeFromBaseline).toBe(100);
+    expect(result.outcomeBaselineAverage).toBe(100);
+    expect(result.outcomeFollowUpAverage).toBe(200);
+    expect(result.outcomeFollowUpPercentChangeFromBaseline).toBe(100);
   });
 
   it('handles zero baseline average with absolute difference', () => {
@@ -153,10 +153,10 @@ describe('calculateBaselineFollowup', () => {
     const pairs = [pair(0, 0), pair(10, 50)];
     const result = calculateBaselineFollowup(pairs);
 
-    expect(result.effectBaselineAverage).toBe(0);
-    expect(result.effectFollowUpAverage).toBe(50);
+    expect(result.outcomeBaselineAverage).toBe(0);
+    expect(result.outcomeFollowUpAverage).toBe(50);
     // When baseline=0, falls back to absolute difference
-    expect(result.effectFollowUpPercentChangeFromBaseline).toBe(50);
+    expect(result.outcomeFollowUpPercentChangeFromBaseline).toBe(50);
   });
 
   it('computes predictor baseline and followup averages', () => {
@@ -177,7 +177,7 @@ describe('calculateBaselineFollowup', () => {
     const result = calculateBaselineFollowup(pairs);
 
     // baseline outcomes: [100, 120], sample std = sqrt(200) ≈ 14.14
-    expect(result.effectBaselineStandardDeviation).toBeCloseTo(14.142, 1);
+    expect(result.outcomeBaselineStandardDeviation).toBeCloseTo(14.142, 1);
   });
 
   it('computes relative standard deviation', () => {
@@ -186,7 +186,7 @@ describe('calculateBaselineFollowup', () => {
 
     // baseline mean = 110, std ≈ 14.14
     // RSD = 14.14 / 110 * 100 ≈ 12.86
-    expect(result.effectBaselineRelativeStandardDeviation).toBeCloseTo(
+    expect(result.outcomeBaselineRelativeStandardDeviation).toBeCloseTo(
       12.856,
       0,
     );
@@ -208,7 +208,7 @@ describe('calculateBaselineFollowup', () => {
     const pairs = [pair(0, 100), pair(0, 100), pair(10, 200)];
     const result = calculateBaselineFollowup(pairs);
 
-    expect(result.effectBaselineRelativeStandardDeviation).toBe(0);
+    expect(result.outcomeBaselineRelativeStandardDeviation).toBe(0);
     expect(result.zScore).toBe(0);
   });
 
@@ -219,7 +219,7 @@ describe('calculateBaselineFollowup', () => {
 
     expect(result.baselinePairs).toHaveLength(0);
     expect(result.followupPairs).toHaveLength(3);
-    expect(result.effectBaselineAverage).toBe(0);
+    expect(result.outcomeBaselineAverage).toBe(0);
     expect(result.predictorBaselineAverage).toBe(0);
   });
 
@@ -242,12 +242,12 @@ describe('calculateBaselineFollowup', () => {
     // mean predictor = 0
     // baseline: -10, -5 → outcomes: -50, -30 → avg = -40
     // followup: 5, 10 → outcomes: 30, 50 → avg = 40
-    expect(result.effectBaselineAverage).toBe(-40);
-    expect(result.effectFollowUpAverage).toBe(40);
+    expect(result.outcomeBaselineAverage).toBe(-40);
+    expect(result.outcomeFollowUpAverage).toBe(40);
     // percent change = (40 - (-40)) / (-40) * 100 = -200%
     // Legacy PHP divides by baselineMean directly (not abs), so negative baseline
     // produces a negative percent change even when outcome improves.
-    expect(result.effectFollowUpPercentChangeFromBaseline).toBe(-200);
+    expect(result.outcomeFollowUpPercentChangeFromBaseline).toBe(-200);
   });
 
   it('rounds percent change to 1 decimal place', () => {
@@ -262,7 +262,7 @@ describe('calculateBaselineFollowup', () => {
 
     // baseline avg = 101.5, followup avg = 148.5
     // change = (148.5 - 101.5)/101.5 * 100 = 46.305... → rounds to 46.3
-    const pctStr = result.effectFollowUpPercentChangeFromBaseline.toString();
+    const pctStr = result.outcomeFollowUpPercentChangeFromBaseline.toString();
     const decimals = pctStr.includes('.')
       ? pctStr.split('.')[1]!.length
       : 0;
@@ -275,7 +275,7 @@ describe('calculateBaselineFollowup', () => {
 
     expect(result.baselinePairs.length).toBeGreaterThan(0);
     expect(result.followupPairs.length).toBeGreaterThan(0);
-    expect(result.effectFollowUpPercentChangeFromBaseline).toBeGreaterThan(0);
+    expect(result.outcomeFollowUpPercentChangeFromBaseline).toBeGreaterThan(0);
   });
 
   it('known synthetic data: exact values', () => {
@@ -289,11 +289,11 @@ describe('calculateBaselineFollowup', () => {
 
     expect(result.baselinePairs).toHaveLength(4);
     expect(result.followupPairs).toHaveLength(4);
-    expect(result.effectBaselineAverage).toBe(10);
-    expect(result.effectFollowUpAverage).toBe(20);
-    expect(result.effectFollowUpPercentChangeFromBaseline).toBe(100);
-    expect(result.effectBaselineStandardDeviation).toBe(0);
-    expect(result.effectBaselineRelativeStandardDeviation).toBe(0);
+    expect(result.outcomeBaselineAverage).toBe(10);
+    expect(result.outcomeFollowUpAverage).toBe(20);
+    expect(result.outcomeFollowUpPercentChangeFromBaseline).toBe(100);
+    expect(result.outcomeBaselineStandardDeviation).toBe(0);
+    expect(result.outcomeBaselineRelativeStandardDeviation).toBe(0);
     expect(result.predictorBaselineAverage).toBe(2.5);
     expect(result.predictorFollowUpAverage).toBe(7.5);
     expect(result.zScore).toBe(0); // RSD is 0
@@ -330,15 +330,15 @@ describe('calculateOptimalValues', () => {
     expect(result.optimalDailyValue).toBe(result.valuePredictingHighOutcome);
   });
 
-  it('calculates averageEffectFollowingHighPredictor', () => {
+  it('calculates averageOutcomeFollowingHighPredictor', () => {
     // predictor mean = 2.5
     // high predictor (>=2.5): pairs with pred 3,4 → outcomes 30, 40 → avg = 35
     // low predictor (<2.5): pairs with pred 1,2 → outcomes 10, 20 → avg = 15
     const pairs = [pair(1, 10), pair(2, 20), pair(3, 30), pair(4, 40)];
     const result = calculateOptimalValues(pairs);
 
-    expect(result.averageEffectFollowingHighPredictor).toBe(35);
-    expect(result.averageEffectFollowingLowPredictor).toBe(15);
+    expect(result.averageOutcomeFollowingHighPredictor).toBe(35);
+    expect(result.averageOutcomeFollowingLowPredictor).toBe(15);
   });
 
   it('calculates averageDailyHighPredictor and Low', () => {
@@ -373,20 +373,20 @@ describe('calculateOptimalValues', () => {
     expect(isFinite(result.groupedValueClosestToValuePredictingLowOutcome)).toBe(true);
   });
 
-  it('predictsHighEffectChange is positive for clear high-outcome group', () => {
+  it('predictsHighOutcomeChange is positive for clear high-outcome group', () => {
     // outcome spread: 10 to 40 = 30
     // high group avg outcome > overall avg → positive change
     const pairs = [pair(1, 10), pair(2, 20), pair(3, 30), pair(4, 40)];
     const result = calculateOptimalValues(pairs);
 
-    expect(result.predictsHighEffectChange).toBeGreaterThan(0);
+    expect(result.predictsHighOutcomeChange).toBeGreaterThan(0);
   });
 
-  it('predictsLowEffectChange is negative for clear low-outcome group', () => {
+  it('predictsLowOutcomeChange is negative for clear low-outcome group', () => {
     const pairs = [pair(1, 10), pair(2, 20), pair(3, 30), pair(4, 40)];
     const result = calculateOptimalValues(pairs);
 
-    expect(result.predictsLowEffectChange).toBeLessThan(0);
+    expect(result.predictsLowOutcomeChange).toBeLessThan(0);
   });
 
   it('handles all identical outcomes gracefully', () => {
@@ -399,8 +399,8 @@ describe('calculateOptimalValues', () => {
     expect(result.valuePredictingHighOutcome).toBe(2.5);
     expect(result.valuePredictingLowOutcome).toBe(2.5);
     // Spread = 0 → predictsChange = 0
-    expect(result.predictsHighEffectChange).toBe(0);
-    expect(result.predictsLowEffectChange).toBe(0);
+    expect(result.predictsHighOutcomeChange).toBe(0);
+    expect(result.predictsLowOutcomeChange).toBe(0);
   });
 
   it('handles all identical predictors', () => {
@@ -452,8 +452,8 @@ describe('calculateOptimalValues', () => {
     expect(result.valuePredictingHighOutcome).toBeGreaterThan(50);
     expect(result.valuePredictingLowOutcome).toBeLessThan(50);
     expect(result.optimalDailyValue).toBeGreaterThan(0);
-    expect(result.predictsHighEffectChange).toBeGreaterThan(0);
-    expect(result.predictsLowEffectChange).toBeLessThan(0);
+    expect(result.predictsHighOutcomeChange).toBeGreaterThan(0);
+    expect(result.predictsLowOutcomeChange).toBeLessThan(0);
   });
 
   it('grouped values are coarser than raw values', () => {
@@ -493,16 +493,16 @@ describe('integration: baseline + optimal analysis', () => {
     const optimal = calculateOptimalValues(pairs);
 
     // Follow-up (high predictor) should have better outcomes
-    expect(baseline.effectFollowUpAverage).toBeGreaterThan(
-      baseline.effectBaselineAverage,
+    expect(baseline.outcomeFollowUpAverage).toBeGreaterThan(
+      baseline.outcomeBaselineAverage,
     );
-    expect(baseline.effectFollowUpPercentChangeFromBaseline).toBeGreaterThan(0);
+    expect(baseline.outcomeFollowUpPercentChangeFromBaseline).toBeGreaterThan(0);
 
     // Optimal should recommend higher predictor values
     expect(optimal.valuePredictingHighOutcome).toBeGreaterThan(
       optimal.valuePredictingLowOutcome,
     );
-    expect(optimal.predictsHighEffectChange).toBeGreaterThan(0);
+    expect(optimal.predictsHighOutcomeChange).toBeGreaterThan(0);
   });
 
   it('inverse relationship: more predictor → worse outcome', () => {
@@ -517,10 +517,10 @@ describe('integration: baseline + optimal analysis', () => {
     const optimal = calculateOptimalValues(pairs);
 
     // Follow-up (high predictor) should have worse outcomes
-    expect(baseline.effectFollowUpAverage).toBeLessThan(
-      baseline.effectBaselineAverage,
+    expect(baseline.outcomeFollowUpAverage).toBeLessThan(
+      baseline.outcomeBaselineAverage,
     );
-    expect(baseline.effectFollowUpPercentChangeFromBaseline).toBeLessThan(0);
+    expect(baseline.outcomeFollowUpPercentChangeFromBaseline).toBeLessThan(0);
 
     // Optimal: high outcome associated with lower predictor
     expect(optimal.valuePredictingHighOutcome).toBeLessThan(
@@ -537,7 +537,7 @@ describe('integration: baseline + optimal analysis', () => {
 
     const baseline = calculateBaselineFollowup(pairs);
 
-    expect(baseline.effectFollowUpPercentChangeFromBaseline).toBe(0);
+    expect(baseline.outcomeFollowUpPercentChangeFromBaseline).toBe(0);
     expect(baseline.zScore).toBe(0);
   });
 

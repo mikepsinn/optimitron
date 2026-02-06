@@ -34,7 +34,7 @@ describe('aggregateCorrelations', () => {
     expect(result.aggregateValuePredictingHighOutcome).toBeNull();
     expect(result.aggregateValuePredictingLowOutcome).toBeNull();
     expect(result.aggregateOptimalDailyValue).toBeNull();
-    expect(result.aggregateEffectFollowUpPercentChangeFromBaseline).toBeNull();
+    expect(result.aggregateOutcomeFollowUpPercentChangeFromBaseline).toBeNull();
     expect(result.weightedAveragePIS).toBe(0);
     expect(result.totalPairs).toBe(0);
   });
@@ -52,7 +52,7 @@ describe('aggregateCorrelations', () => {
       valuePredictingHighOutcome: 50,
       valuePredictingLowOutcome: 10,
       optimalDailyValue: 30,
-      effectFollowUpPercentChangeFromBaseline: 25,
+      outcomeFollowUpPercentChangeFromBaseline: 25,
     });
     const result = aggregateCorrelations([user]);
 
@@ -65,7 +65,7 @@ describe('aggregateCorrelations', () => {
     expect(result.aggregateValuePredictingHighOutcome).toBeCloseTo(50, 5);
     expect(result.aggregateValuePredictingLowOutcome).toBeCloseTo(10, 5);
     expect(result.aggregateOptimalDailyValue).toBeCloseTo(30, 5);
-    expect(result.aggregateEffectFollowUpPercentChangeFromBaseline).toBeCloseTo(25, 5);
+    expect(result.aggregateOutcomeFollowUpPercentChangeFromBaseline).toBeCloseTo(25, 5);
     expect(result.totalPairs).toBe(200);
   });
 
@@ -179,7 +179,7 @@ describe('aggregateCorrelations', () => {
     expect(result.aggregateValuePredictingHighOutcome).toBeNull();
     expect(result.aggregateValuePredictingLowOutcome).toBeNull();
     expect(result.aggregateOptimalDailyValue).toBeNull();
-    expect(result.aggregateEffectFollowUpPercentChangeFromBaseline).toBeNull();
+    expect(result.aggregateOutcomeFollowUpPercentChangeFromBaseline).toBeNull();
   });
 
   // ─── Negative correlations aggregate correctly ─────────
@@ -231,14 +231,14 @@ describe('aggregateCorrelations', () => {
   });
 
   // ─── Effect follow-up percent change ───────────────────
-  it('should aggregate effectFollowUpPercentChangeFromBaseline', () => {
+  it('should aggregate outcomeFollowUpPercentChangeFromBaseline', () => {
     const users = [
-      makeUser({ userId: 'u1', statisticalSignificance: 1.0, effectFollowUpPercentChangeFromBaseline: 20, numberOfPairs: 100 }),
-      makeUser({ userId: 'u2', statisticalSignificance: 1.0, effectFollowUpPercentChangeFromBaseline: 30, numberOfPairs: 100 }),
+      makeUser({ userId: 'u1', statisticalSignificance: 1.0, outcomeFollowUpPercentChangeFromBaseline: 20, numberOfPairs: 100 }),
+      makeUser({ userId: 'u2', statisticalSignificance: 1.0, outcomeFollowUpPercentChangeFromBaseline: 30, numberOfPairs: 100 }),
     ];
     const result = aggregateCorrelations(users);
 
-    expect(result.aggregateEffectFollowUpPercentChangeFromBaseline).toBeCloseTo(25, 5);
+    expect(result.aggregateOutcomeFollowUpPercentChangeFromBaseline).toBeCloseTo(25, 5);
   });
 
   // ─── Predictive Pearson aggregation ────────────────────

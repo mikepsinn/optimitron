@@ -273,7 +273,7 @@ export const UserCorrelationSummarySchema = z.object({
   /** Optimal daily predictor value */
   optimalDailyValue: z.number().optional(),
   /** Percent change from baseline in follow-up period */
-  effectFollowUpPercentChangeFromBaseline: z.number().optional(),
+  outcomeFollowUpPercentChangeFromBaseline: z.number().optional(),
 });
 
 export type UserCorrelationSummary = z.infer<typeof UserCorrelationSummarySchema>;
@@ -305,7 +305,7 @@ export const AggregateCorrelationSchema = z.object({
   /** Weighted average optimal daily value */
   aggregateOptimalDailyValue: z.number().nullable(),
   /** Weighted average effect follow-up percent change from baseline */
-  aggregateEffectFollowUpPercentChangeFromBaseline: z.number().nullable(),
+  aggregateOutcomeFollowUpPercentChangeFromBaseline: z.number().nullable(),
   /** Weighted average Predictor Impact Score (PIS) */
   weightedAveragePIS: z.number(),
   /** Total number of aligned pairs across all users */

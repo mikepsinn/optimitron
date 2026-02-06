@@ -12,7 +12,7 @@
  * - generateBaselineAndFollowupPairs(): QMUserCorrelation.php ~line 2886
  * - calculateOutcomeBaselineStatistics(): QMUserCorrelation.php ~line 2811
  * - calculateAverageCauseForPairSubset(): QMUserCorrelation.php ~line 2434
- * - getHighEffectCutoffMinimumValue(): QMUserCorrelation.php ~line 2513
+ * - getHighOutcomeCutoffMinimumValue(): QMUserCorrelation.php ~line 2513
  * - CorrelationEffectBaselineAverageProperty.php
  * - CorrelationEffectFollowUpAverageProperty.php
  * - CorrelationEffectFollowUpPercentChangeFromBaselineProperty.php
@@ -23,8 +23,8 @@
  * - CorrelationAverageEffectFollowingHighCauseProperty.php
  * - CorrelationAverageEffectFollowingLowCauseProperty.php
  * - CorrelationGroupedCauseValueClosestToValuePredictingHighOutcomeProperty.php
- * - CorrelationPredictsHighEffectChangeProperty.php
- * - CorrelationPredictsLowEffectChangeProperty.php
+ * - CorrelationPredictsHighOutcomeChangeProperty.php
+ * - CorrelationPredictsLowOutcomeChangeProperty.php
  */
 
 import type { AlignedPair } from './types.js';
@@ -49,23 +49,23 @@ export interface BaselineFollowupAnalysis {
 
   // -- Outcome stats in each group --
   /** Mean outcome in the baseline group */
-  effectBaselineAverage: number;
+  outcomeBaselineAverage: number;
   /** Sample standard deviation of outcome in the baseline group */
-  effectBaselineStandardDeviation: number;
+  outcomeBaselineStandardDeviation: number;
   /**
    * Relative standard deviation of baseline outcomes (coefficient of variation × 100).
    * RSD = (stddev / mean) × 100.  Returns 0 when baseline mean is 0.
    */
-  effectBaselineRelativeStandardDeviation: number;
+  outcomeBaselineRelativeStandardDeviation: number;
   /** Mean outcome in the follow-up group */
-  effectFollowUpAverage: number;
+  outcomeFollowUpAverage: number;
   /**
    * Percent change from baseline.
    * When baseline mean is 0 we fall back to the absolute difference
    * (followUp − baseline) instead of dividing by zero.
    * Legacy: CorrelationEffectFollowUpPercentChangeFromBaselineProperty
    */
-  effectFollowUpPercentChangeFromBaseline: number;
+  outcomeFollowUpPercentChangeFromBaseline: number;
 
   // -- Predictor stats --
   /** Average predictor in the baseline group (low dose) */
@@ -74,7 +74,7 @@ export interface BaselineFollowupAnalysis {
   predictorFollowUpAverage: number;
 
   /**
-   * Z-score = |effectFollowUpPercentChangeFromBaseline| / effectBaselineRelativeStandardDeviation.
+   * Z-score = |outcomeFollowUpPercentChangeFromBaseline| / outcomeBaselineRelativeStandardDeviation.
    * Returns 0 when RSD is 0 or not meaningful.
    * Legacy: CorrelationZScoreProperty
    */
@@ -94,9 +94,9 @@ export interface OptimalValueAnalysis {
   valuePredictingLowOutcome: number;
 
   /** Average outcome following high-predictor days (predictor >= predictor mean) */
-  averageEffectFollowingHighPredictor: number;
+  averageOutcomeFollowingHighPredictor: number;
   /** Average outcome following low-predictor days (predictor < predictor mean) */
-  averageEffectFollowingLowPredictor: number;
+  averageOutcomeFollowingLowPredictor: number;
 
   /** Average predictor value on high-predictor days */
   averageDailyHighPredictor: number;
@@ -116,15 +116,15 @@ export interface OptimalValueAnalysis {
   /**
    * Predicted effect change (percent of spread) when predictor is at
    * valuePredictingHighOutcome.
-   * Legacy: CorrelationPredictsHighEffectChangeProperty
+   * Legacy: CorrelationPredictsHighOutcomeChangeProperty
    */
-  predictsHighEffectChange: number;
+  predictsHighOutcomeChange: number;
   /**
    * Predicted effect change (percent of spread) when predictor is at
    * valuePredictingLowOutcome.
-   * Legacy: CorrelationPredictsLowEffectChangeProperty
+   * Legacy: CorrelationPredictsLowOutcomeChangeProperty
    */
-  predictsLowEffectChange: number;
+  predictsLowOutcomeChange: number;
 
   /**
    * The main recommendation: optimal daily predictor value.
@@ -218,30 +218,30 @@ export function calculateBaselineFollowup(
   const followupOutcomes = followupPairs.map((p) => p.outcomeValue);
 
   // Outcome stats — use 0 / NaN for degenerate groups
-  const effectBaselineAverage =
+  const outcomeBaselineAverage =
     baselineOutcomes.length > 0 ? mean(baselineOutcomes) : 0;
-  const effectBaselineStandardDeviation =
+  const outcomeBaselineStandardDeviation =
     baselineOutcomes.length > 1 ? std(baselineOutcomes, 1) : 0;
-  const effectBaselineRelativeStandardDeviation =
-    effectBaselineAverage !== 0
-      ? (effectBaselineStandardDeviation / Math.abs(effectBaselineAverage)) * 100
+  const outcomeBaselineRelativeStandardDeviation =
+    outcomeBaselineAverage !== 0
+      ? (outcomeBaselineStandardDeviation / Math.abs(outcomeBaselineAverage)) * 100
       : 0;
-  const effectFollowUpAverage =
+  const outcomeFollowUpAverage =
     followupOutcomes.length > 0 ? mean(followupOutcomes) : 0;
 
   // Percent change — legacy: if baseline == 0, fall back to absolute difference
-  let effectFollowUpPercentChangeFromBaseline: number;
-  if (effectBaselineAverage === 0) {
-    effectFollowUpPercentChangeFromBaseline =
-      effectFollowUpAverage - effectBaselineAverage;
+  let outcomeFollowUpPercentChangeFromBaseline: number;
+  if (outcomeBaselineAverage === 0) {
+    outcomeFollowUpPercentChangeFromBaseline =
+      outcomeFollowUpAverage - outcomeBaselineAverage;
   } else {
-    effectFollowUpPercentChangeFromBaseline =
-      ((effectFollowUpAverage - effectBaselineAverage) /
-        effectBaselineAverage) *
+    outcomeFollowUpPercentChangeFromBaseline =
+      ((outcomeFollowUpAverage - outcomeBaselineAverage) /
+        outcomeBaselineAverage) *
       100;
   }
   // Round to 1 decimal like legacy
-  effectFollowUpPercentChangeFromBaseline = Math.round(effectFollowUpPercentChangeFromBaseline * 10) / 10;
+  outcomeFollowUpPercentChangeFromBaseline = Math.round(outcomeFollowUpPercentChangeFromBaseline * 10) / 10;
 
   // Predictor stats
   const predictorBaselineAverage =
@@ -255,19 +255,19 @@ export function calculateBaselineFollowup(
 
   // Z-score
   const zScore =
-    effectBaselineRelativeStandardDeviation !== 0
-      ? Math.abs(effectFollowUpPercentChangeFromBaseline) /
-        effectBaselineRelativeStandardDeviation
+    outcomeBaselineRelativeStandardDeviation !== 0
+      ? Math.abs(outcomeFollowUpPercentChangeFromBaseline) /
+        outcomeBaselineRelativeStandardDeviation
       : 0;
 
   return {
     baselinePairs,
     followupPairs,
-    effectBaselineAverage,
-    effectBaselineStandardDeviation,
-    effectBaselineRelativeStandardDeviation,
-    effectFollowUpAverage,
-    effectFollowUpPercentChangeFromBaseline,
+    outcomeBaselineAverage,
+    outcomeBaselineStandardDeviation,
+    outcomeBaselineRelativeStandardDeviation,
+    outcomeFollowUpAverage,
+    outcomeFollowUpPercentChangeFromBaseline,
     predictorBaselineAverage,
     predictorFollowUpAverage,
     zScore,
@@ -284,8 +284,8 @@ export function calculateBaselineFollowup(
  *
  * Also computes:
  * - averageDailyHighPredictor / averageDailyLowPredictor  (predictor split)
- * - averageEffectFollowingHighPredictor / Low             (outcome split by predictor)
- * - predictsHighEffectChange / Low                        (% of spread)
+ * - averageOutcomeFollowingHighPredictor / Low             (outcome split by predictor)
+ * - predictsHighOutcomeChange / Low                        (% of spread)
  * - groupedValueClosestToValuePredictingHigh / Low        (rounded)
  * - optimalDailyValue                                     (main recommendation)
  *
@@ -296,8 +296,8 @@ export function calculateBaselineFollowup(
  * - CorrelationAverageDailyLowCauseProperty::calculate()
  * - CorrelationAverageEffectFollowingHighCauseProperty::calculate()
  * - CorrelationAverageEffectFollowingLowCauseProperty::calculate()
- * - CorrelationPredictsHighEffectChangeProperty::calculate()
- * - CorrelationPredictsLowEffectChangeProperty::calculate()
+ * - CorrelationPredictsHighOutcomeChangeProperty::calculate()
+ * - CorrelationPredictsLowOutcomeChangeProperty::calculate()
  *
  * @param pairs - Temporally aligned predictor-outcome pairs
  * @returns Full optimal value analysis
@@ -316,10 +316,10 @@ export function calculateOptimalValues(
   const predictorValues = pairs.map((p) => p.predictorValue);
   const outcomeMean = mean(outcomeValues);
   const predictorMean = mean(predictorValues);
-  const overallEffectAverage = outcomeMean;
+  const overallOutcomeAverage = outcomeMean;
 
   // --- Split by outcome mean (high-effect vs low-effect) ---
-  // Legacy: getHighEffectCutoffMinimumValue() returns averageEffect
+  // Legacy: getHighOutcomeCutoffMinimumValue() returns averageOutcome
   const highEffectPairs = pairs.filter((p) => p.outcomeValue > outcomeMean);
   const lowEffectPairs = pairs.filter((p) => p.outcomeValue <= outcomeMean);
 
@@ -340,11 +340,11 @@ export function calculateOptimalValues(
     (p) => p.predictorValue < predictorMean,
   );
 
-  const averageEffectFollowingHighPredictor =
+  const averageOutcomeFollowingHighPredictor =
     highPredictorPairs.length > 0
       ? mean(highPredictorPairs.map((p) => p.outcomeValue))
       : outcomeMean;
-  const averageEffectFollowingLowPredictor =
+  const averageOutcomeFollowingLowPredictor =
     lowPredictorPairs.length > 0
       ? mean(lowPredictorPairs.map((p) => p.outcomeValue))
       : outcomeMean;
@@ -365,36 +365,36 @@ export function calculateOptimalValues(
     groupToPracticalValue(valuePredictingLowOutcome);
 
   // --- Predicted effect changes ---
-  // Legacy: predictsHighEffectChange = 100 * (avgEffectWhenExpectedHigh - avgEffect) / spread
+  // Legacy: predictsHighOutcomeChange = 100 * (avgEffectWhenExpectedHigh - avgEffect) / spread
   // "spread" = max outcome - min outcome (from legacy getSpread())
   const outcomeMin = Math.min(...outcomeValues);
   const outcomeMax = Math.max(...outcomeValues);
   const spread = outcomeMax - outcomeMin;
 
   // "Effect values expected to be higher" = high-effect group outcomes
-  const avgHighEffectOutcome =
+  const avgHighOutcomeOutcome =
     highEffectPairs.length > 0
       ? mean(highEffectPairs.map((p) => p.outcomeValue))
-      : overallEffectAverage;
-  const avgLowEffectOutcome =
+      : overallOutcomeAverage;
+  const avgLowOutcomeOutcome =
     lowEffectPairs.length > 0
       ? mean(lowEffectPairs.map((p) => p.outcomeValue))
-      : overallEffectAverage;
+      : overallOutcomeAverage;
 
-  let predictsHighEffectChange: number;
-  let predictsLowEffectChange: number;
+  let predictsHighOutcomeChange: number;
+  let predictsLowOutcomeChange: number;
   if (spread !== 0) {
-    predictsHighEffectChange =
+    predictsHighOutcomeChange =
       Math.round(
-        ((avgHighEffectOutcome - overallEffectAverage) / spread) * 100 * 100,
+        ((avgHighOutcomeOutcome - overallOutcomeAverage) / spread) * 100 * 100,
       ) / 100;
-    predictsLowEffectChange =
+    predictsLowOutcomeChange =
       Math.round(
-        ((avgLowEffectOutcome - overallEffectAverage) / spread) * 100 * 100,
+        ((avgLowOutcomeOutcome - overallOutcomeAverage) / spread) * 100 * 100,
       ) / 100;
   } else {
-    predictsHighEffectChange = 0;
-    predictsLowEffectChange = 0;
+    predictsHighOutcomeChange = 0;
+    predictsLowOutcomeChange = 0;
   }
 
   // Optimal daily value = the predictor value associated with high outcomes
@@ -403,14 +403,14 @@ export function calculateOptimalValues(
   return {
     valuePredictingHighOutcome,
     valuePredictingLowOutcome,
-    averageEffectFollowingHighPredictor,
-    averageEffectFollowingLowPredictor,
+    averageOutcomeFollowingHighPredictor,
+    averageOutcomeFollowingLowPredictor,
     averageDailyHighPredictor,
     averageDailyLowPredictor,
     groupedValueClosestToValuePredictingHighOutcome,
     groupedValueClosestToValuePredictingLowOutcome,
-    predictsHighEffectChange,
-    predictsLowEffectChange,
+    predictsHighOutcomeChange,
+    predictsLowOutcomeChange,
     optimalDailyValue,
   };
 }
