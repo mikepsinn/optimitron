@@ -58,7 +58,7 @@ export default function WishocracySection() {
         <WishocracyStatusBar
           show={!state.isLoading && !state.showIntro && !state.showCategorySelection}
           isLoading={state.isLoading}
-          isAuthenticated={state.status === "authenticated"}
+          isAuthenticated={false}
           referralCode={null}
           onShowAuthPrompt={() => handlers.setShowAuthPrompt(true)}
         />
@@ -88,7 +88,7 @@ export default function WishocracySection() {
         {/* Auth Prompt (disabled) */}
         <WishocracyAuthPromptCard
           show={state.showAuthPrompt}
-          isAuthenticated={state.status === "authenticated"}
+          isAuthenticated={false}
           comparisonsCount={state.comparisons.length}
           referralCode={null}
           authCardRef={state.authCardRef}

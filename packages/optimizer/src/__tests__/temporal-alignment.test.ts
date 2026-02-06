@@ -582,3 +582,91 @@ describe('temporal alignment edge cases', () => {
     expect(pairs.length).toBeGreaterThan(0);
   });
 });
+
+// ─── Interpolation filling type ──────────────────────────────────────
+
+describe('interpolation filling type', () => {
+  function interpolationConfig(
+    onsetDelaySeconds = 1800,
+    durationOfActionSeconds = 86400
+  ): PredictorConfig {
+    return {
+      onsetDelaySeconds,
+      durationOfActionSeconds,
+      fillingType: 'interpolation',
+    };
+  }
+
+  it('linearly interpolates between two known predictor values', () => {
+    const predictor = ts('pred', [m(0, 100), m(240, 200)]);
+    const outcome = ts('out', [m(120, 5)]);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toHaveLength(1);
+    expect(pairs[0]!.predictorValue).toBeGreaterThan(140);
+    expect(pairs[0]!.predictorValue).toBeLessThan(160);
+  });
+
+  it('uses nearest known value when outcome is before all predictors', () => {
+    const predictor = ts('pred', [m(10, 50), m(20, 100)]);
+    const outcome = ts('out', [m(2, 7)]);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toHaveLength(1);
+    expect(pairs[0]!.predictorValue).toBe(50);
+  });
+
+  it('uses nearest known value when outcome is after all predictors', () => {
+    const predictor = ts('pred', [m(0, 30), m(5, 60)]);
+    const outcome = ts('out', [m(100, 3)]);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toHaveLength(1);
+    expect(pairs[0]!.predictorValue).toBe(60);
+  });
+
+  it('returns no pairs when predictor series is empty', () => {
+    const predictor = ts('pred', []);
+    const outcome = ts('out', [m(5, 10)]);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toEqual([]);
+  });
+
+  it('handles same-time predictor points without division by zero', () => {
+    const predictor = ts('pred', [m(0, 100), m(0, 200)]);
+    const outcome = ts('out', [m(2, 5)]);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toHaveLength(1);
+    expect(Number.isFinite(pairs[0]!.predictorValue)).toBe(true);
+  });
+
+  it('produces monotonically increasing interpolation for linear ramp', () => {
+    const predictor = ts('pred', [m(0, 0), m(96, 400)]);
+    const outcomeMeasurements: Measurement[] = [];
+    for (let day = 0; day <= 4; day++) {
+      outcomeMeasurements.push(m(day * 24, day * 10));
+    }
+    const outcome = ts('out', outcomeMeasurements);
+    const config = interpolationConfig(0, 3600);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs.length).toBe(5);
+    for (let i = 1; i < pairs.length; i++) {
+      expect(pairs[i]!.predictorValue).toBeGreaterThanOrEqual(pairs[i - 1]!.predictorValue);
+    }
+  });
+
+  it('does not silently drop pairs (regression test)', () => {
+    const predictor = ts('pred', [m(0, 10), m(48, 50)]);
+    const outcome = ts('out', [m(12, 1), m(24, 2), m(36, 3)]);
+    const config = interpolationConfig(0, 7200);
+    const pairs = alignOutcomeBased(predictor, outcome, config);
+    expect(pairs).toHaveLength(3);
+    for (const pair of pairs) {
+      expect(Number.isFinite(pair.predictorValue)).toBe(true);
+      expect(pair.predictorValue).toBeGreaterThanOrEqual(10);
+      expect(pair.predictorValue).toBeLessThanOrEqual(50);
+    }
+  });
+});

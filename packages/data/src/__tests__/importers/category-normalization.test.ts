@@ -20,8 +20,8 @@ describe('resolveCategory', () => {
     expect(resolveCategory('Foods')).toBe('Food');
   });
 
-  it('normalizes "Nutrients" to "Food"', () => {
-    expect(resolveCategory('Nutrients')).toBe('Food');
+  it('normalizes "Nutrients" to "Nutrient"', () => {
+    expect(resolveCategory('Nutrients')).toBe('Nutrient');
   });
 
   it('normalizes "Physique" to "Physical Measurement"', () => {
@@ -32,8 +32,12 @@ describe('resolveCategory', () => {
     expect(resolveCategory('Treatments')).toBe('Treatment');
   });
 
-  it('normalizes "Activities" to "Physical Activity"', () => {
-    expect(resolveCategory('Activities')).toBe('Physical Activity');
+  it('normalizes "Activities" to "Activity"', () => {
+    expect(resolveCategory('Activities')).toBe('Activity');
+  });
+
+  it('normalizes "Symptoms" to "Symptom"', () => {
+    expect(resolveCategory('Symptoms')).toBe('Symptom');
   });
 
   it('returns already-canonical categories unchanged', () => {
@@ -46,7 +50,7 @@ describe('resolveCategory', () => {
   it('handles case-insensitive matching', () => {
     expect(resolveCategory('vital signs')).toBe('Vital Sign');
     expect(resolveCategory('FOODS')).toBe('Food');
-    expect(resolveCategory('nutrients')).toBe('Food');
+    expect(resolveCategory('nutrients')).toBe('Nutrient');
   });
 
   it('returns unknown categories unchanged', () => {
@@ -83,8 +87,8 @@ describe('resolveVariableWithCategory', () => {
     expect(result.category).toBe('Physical Activity'); // From STANDARD_VARIABLES
   });
 
-  it('normalizes "Nutrients" category for nutrient variables', () => {
+  it('normalizes "Nutrients" category for unknown nutrient variables', () => {
     const result = resolveVariableWithCategory('SomeCustomNutrient', 'cronometer', 'Nutrients');
-    expect(result.category).toBe('Food');
+    expect(result.category).toBe('Nutrient');
   });
 });

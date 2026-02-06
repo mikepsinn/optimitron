@@ -151,13 +151,13 @@ export function marginalReturn(
   spending: number,
   model: DiminishingReturnsModel
 ): number {
-  // Clamp spending to small epsilon to avoid division by zero / -Infinity
-  const safeSpending = Math.max(spending, 0.001);
   if (model.type === 'log') {
+    // Clamp spending to small epsilon to avoid division by zero / -Infinity
+    const safeSpending = Math.max(spending, 0.001);
     return model.beta / safeSpending;
   } else {
     const gamma = model.gamma!;
-    return (model.beta * gamma) / (safeSpending + gamma) ** 2;
+    return (model.beta * gamma) / (spending + gamma) ** 2;
   }
 }
 

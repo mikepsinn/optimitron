@@ -200,6 +200,10 @@ export async function fetchOECDHealthExpenditure(
     // Parse similar to spending response
     return parseOECDHealthResponse(data);
   } catch (error) {
+    // Re-throw NOT_IMPLEMENTED errors so callers know the function is a stub
+    if (error instanceof Error && error.message.includes('not yet implemented')) {
+      throw error;
+    }
     console.error('Error fetching OECD health expenditure:', error);
     return [];
   }
