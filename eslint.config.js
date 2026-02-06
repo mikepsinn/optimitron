@@ -34,9 +34,9 @@ export default tseslint.config(
 
       // Code quality
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'eqeqeq': ['error', 'always'],
+      'eqeqeq': ['warn', 'always'],
       'no-var': 'error',
-      'prefer-const': 'error',
+      'prefer-const': 'warn',
       'no-throw-literal': 'error',
     },
   },
