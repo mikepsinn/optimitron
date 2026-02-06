@@ -2,7 +2,7 @@
   "name": "optomitron",
   "version": "0.1.0",
   "private": true,
-  "description": "Optimal Policy & Budget Generator - Evidence-based governance calculations",
+  "description": "AI governance platform: causal inference, preference aggregation, health tracking, optimal policy & budget generation",
   "repository": {
     "type": "git",
     "url": "https://github.com/mikepsinn/optomitron.git"
@@ -18,7 +18,9 @@
     "lint": "eslint 'packages/*/src/**/*.ts'",
     "typecheck": "pnpm -r exec tsc --noEmit",
     "check": "pnpm typecheck && pnpm lint && pnpm test",
-    "report": "pnpm --filter @optomitron/core report"
+    "db:generate": "pnpm --filter @optomitron/db prisma generate",
+    "db:migrate": "pnpm --filter @optomitron/db prisma migrate dev",
+    "db:push": "pnpm --filter @optomitron/db prisma db push"
   },
   "devDependencies": {
     "eslint": "^9.0.0",

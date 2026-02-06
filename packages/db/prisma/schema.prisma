@@ -1,0 +1,187 @@
+// Wishocracy Database Schema
+// Collects pairwise comparisons and computes preference weights
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// A priority/wish/budget item that can be compared
+model Item {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  category    String?
+  
+  /// Current actual budget allocation (for preference gap analysis)
+  currentAllocationUsd Float?
+  currentAllocationPct Float?
+  
+  /// URL to supporting documentation
+  sourceUrl   String?
+  
+  /// Whether this item is active for comparisons
+  active      Boolean @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  comparisonsAsA PairwiseComparison[] @relation("itemA")
+  comparisonsAsB PairwiseComparison[] @relation("itemB")
+  weights        PreferenceWeight[]
+  
+  @@index([category])
+  @@index([active])
+}
+
+/// A participant who makes pairwise comparisons
+model Participant {
+  id          String  @id @default(cuid())
+  
+  /// Anonymous ID (no PII stored)
+  externalId  String? @unique
+  
+  /// Optional demographics for analysis (all voluntary)
+  ageRange    String?  // e.g. "25-34"
+  region      String?  // e.g. "US-CA"
+  
+  createdAt   DateTime @default(now())
+  
+  comparisons PairwiseComparison[]
+  
+  @@index([region])
+}
+
+/// A single pairwise comparison: "Given $100, how would you split it?"
+model PairwiseComparison {
+  id            String  @id @default(cuid())
+  
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id])
+  
+  itemAId       String
+  itemA         Item @relation("itemA", fields: [itemAId], references: [id])
+  
+  itemBId       String
+  itemB         Item @relation("itemB", fields: [itemBId], references: [id])
+  
+  /// Allocation to item A (0-100). Item B gets (100 - allocationA).
+  allocationA   Float
+  
+  /// Response time in milliseconds (engagement quality signal)
+  responseTimeMs Int?
+  
+  /// Session ID to group comparisons from same sitting
+  sessionId     String?
+  
+  createdAt     DateTime @default(now())
+  
+  @@unique([participantId, itemAId, itemBId])
+  @@index([itemAId, itemBId])
+  @@index([participantId])
+  @@index([sessionId])
+}
+
+/// Aggregated preference weights (output of eigenvector calculation)
+model PreferenceWeight {
+  id        String @id @default(cuid())
+  
+  /// Which calculation run produced this
+  runId     String
+  run       AggregationRun @relation(fields: [runId], references: [id])
+  
+  itemId    String
+  item      Item @relation(fields: [itemId], references: [id])
+  
+  /// Normalized weight (0-1, all weights in a run sum to 1)
+  weight    Float
+  rank      Int
+  
+  /// Confidence interval
+  ciLow     Float?
+  ciHigh    Float?
+  
+  @@unique([runId, itemId])
+  @@index([runId])
+}
+
+/// Record of each aggregation calculation
+model AggregationRun {
+  id                String @id @default(cuid())
+  
+  /// Total comparisons included
+  comparisonCount   Int
+  /// Total unique participants
+  participantCount  Int
+  /// AHP consistency ratio (< 0.1 = good)
+  consistencyRatio  Float?
+  
+  /// Filter: which categories were included (null = all)
+  categoryFilter    String?
+  /// Filter: which region (null = all)
+  regionFilter      String?
+  
+  createdAt         DateTime @default(now())
+  
+  weights           PreferenceWeight[]
+}
+
+/// Politician/legislator voting records for alignment scoring
+model Politician {
+  id          String @id @default(cuid())
+  name        String
+  party       String?
+  state       String?
+  chamber     String?  // "house" | "senate"
+  externalId  String?  @unique // e.g. bioguide ID
+  
+  votes       PoliticianVote[]
+  alignments  AlignmentScore[]
+  
+  @@index([party])
+  @@index([state])
+}
+
+/// A politician's vote/position on a budget item
+model PoliticianVote {
+  id            String @id @default(cuid())
+  
+  politicianId  String
+  politician    Politician @relation(fields: [politicianId], references: [id])
+  
+  /// What budget category this vote affects
+  itemCategory  String
+  
+  /// Their allocated/voted percentage
+  allocationPct Float
+  
+  /// Source bill/vote reference
+  billId        String?
+  voteDate      DateTime?
+  
+  @@index([politicianId])
+  @@index([itemCategory])
+}
+
+/// Calculated alignment between citizen preferences and politician votes
+model AlignmentScore {
+  id            String @id @default(cuid())
+  
+  politicianId  String
+  politician    Politician @relation(fields: [politicianId], references: [id])
+  
+  runId         String  // Which aggregation run's weights were used
+  
+  /// Overall alignment (0-100%)
+  score         Float
+  votesCompared Int
+  
+  createdAt     DateTime @default(now())
+  
+  @@unique([politicianId, runId])
+  @@index([score])
+}
