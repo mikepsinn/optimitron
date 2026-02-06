@@ -6,7 +6,9 @@
 //
 // LAYER 1 — Universal Measurement System (domain-agnostic)
 //   GlobalVariable, VariableCategory, Unit, UserVariable, Measurement,
-//   TrackingReminder, UserVariableRelationship, GlobalVariableRelationship
+//   TrackingReminder, TrackingReminderNotification,
+//   UserVariableRelationship, GlobalVariableRelationship,
+//   IntegrationProvider
 //   These models form a general-purpose quantified-self / data collection
 //   platform. Any variable (health, economic, environmental, policy outcome)
 //   can be tracked, aggregated, and analyzed for causal relationships.
@@ -39,6 +41,7 @@ datasource db {
 
 /// A unit of measurement (mg, IU, serving, $/day, 1-5 scale, %, etc.)
 model Unit {
+  /// Unique identifier for this unit
   id String @id @default(cuid())
 
   /// Human-readable name (e.g. "Milligrams")
@@ -50,8 +53,10 @@ model Unit {
   /// Grouping: Weight, Volume, Count, Rating, Currency, Percent, Duration, etc.
   unitCategoryId String
 
-  /// Allowed value bounds for a single measurement in this unit
+  /// Minimum allowed value for a single measurement in this unit
   minimumValue Float?
+
+  /// Maximum allowed value for a single measurement in this unit
   maximumValue Float?
 
   /// How to handle missing data: "zero" | "none" | "interpolation" | "value"
@@ -60,7 +65,8 @@ model Unit {
   /// Measurement scale: "nominal" | "ordinal" | "interval" | "ratio"
   scale String @default("ratio")
 
-  /// JSON-encoded conversion steps to convert to the category's base unit
+  /// JSON-encoded conversion steps to convert to the category's base unit.
+  /// Each step is an operation (multiply, add, etc.) applied sequentially.
   conversionSteps String?
 
   /// If true, hide from simple UI — only show in advanced mode
@@ -69,8 +75,14 @@ model Unit {
   /// If true, show this unit in the manual tracking UI
   manualTracking Boolean @default(true)
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
 
   // -- Relations --
   globalVariables      GlobalVariable[]   @relation("GlobalVariableDefaultUnit")
@@ -78,8 +90,6 @@ model Unit {
   userVariables        UserVariable[]     @relation("UserVariableDefaultUnit")
   measurements         Measurement[]      @relation("MeasurementUnit")
   measurementsOriginal Measurement[]      @relation("MeasurementOriginalUnit")
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@index([unitCategoryId])
 }
@@ -87,17 +97,23 @@ model Unit {
 /// A category of variables: Treatment, Symptom, Emotion, Food, Activity,
 /// Sleep, Vital Sign, Lab Result, Environment, Economic, Policy, etc.
 model VariableCategory {
+  /// Unique identifier for this variable category
   id String @id @default(cuid())
 
-  name        String  @unique
+  /// Human-readable category name (e.g. "Treatment", "Symptom")
+  name String @unique
+
+  /// Longer explanation of what variables in this category represent
   description String?
 
   /// Default unit for variables in this category
   defaultUnitId String?
-  defaultUnit   Unit?   @relation("VariableCategoryDefaultUnit", fields: [defaultUnitId], references: [id])
 
-  /// How to aggregate multiple measurements within a time window
-  combinationOperation String @default("SUM") // "SUM" | "MEAN"
+  /// Relation to the default Unit for this category
+  defaultUnit Unit? @relation("VariableCategoryDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// How to aggregate multiple measurements within a time window: "SUM" | "MEAN"
+  combinationOperation String @default("SUM")
 
   /// Default onset delay for variables in this category (seconds)
   onsetDelay Int @default(0)
@@ -105,19 +121,26 @@ model VariableCategory {
   /// Default duration of action for variables in this category (seconds)
   durationOfAction Int @default(86400)
 
-  /// Category-level defaults: can variables here only be causes / outcomes?
-  predictorOnly Boolean  @default(false)
-  outcome   Boolean?
+  /// If true, variables in this category can only be predictors (causes), never outcomes
+  causeOnly Boolean @default(false)
 
+  /// If true, variables in this category are outcomes people want to optimize
+  outcome Boolean?
+
+  /// URL of the category's representative image / icon
   imageUrl String?
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
 
   // -- Relations --
   globalVariables GlobalVariable[]
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@index([name])
 }
@@ -125,19 +148,26 @@ model VariableCategory {
 /// The canonical variable catalog — shared across all users.
 /// Examples: "Ibuprofen 200mg", "Overall Mood", "Steps", "GDP per Capita"
 model GlobalVariable {
+  /// Unique identifier for this global variable
   id String @id @default(cuid())
 
-  /// Unique human-readable name
-  name        String  @unique
+  /// Unique human-readable name (e.g. "Ibuprofen 200mg", "Overall Mood")
+  name String @unique
+
+  /// Longer explanation of what this variable measures
   description String?
 
-  /// Category (Treatment, Symptom, etc.)
+  /// Category this variable belongs to (Treatment, Symptom, etc.)
   variableCategoryId String
-  variableCategory   VariableCategory @relation(fields: [variableCategoryId], references: [id])
+
+  /// Relation to the VariableCategory
+  variableCategory VariableCategory @relation(fields: [variableCategoryId], references: [id])
 
   /// Default unit for measurements of this variable
   defaultUnitId String
-  defaultUnit   Unit   @relation("GlobalVariableDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// Relation to the default Unit
+  defaultUnit Unit @relation("GlobalVariableDefaultUnit", fields: [defaultUnitId], references: [id])
 
   /// How to aggregate within a time window: "SUM" (e.g. mg taken) or "MEAN" (e.g. mood rating)
   combinationOperation String @default("SUM")
@@ -148,41 +178,89 @@ model GlobalVariable {
   /// Seconds the effect of a measurement lasts
   durationOfAction Int?
 
-  /// Value to substitute for missing data (-1 = none, 0 = zero-fill)
+  /// How to handle missing data for this variable: "zero" | "none" | "interpolation" | "value"
+  fillingType String @default("none")
+
+  /// Value to substitute for missing data when fillingType is "value" (-1 = none, 0 = zero-fill)
   fillingValue Float? @default(-1)
 
   /// If true, this variable can only be a predictor, never an outcome
-  predictorOnly Boolean @default(false)
+  causeOnly Boolean @default(false)
 
   /// If true, this variable is an outcome people want to optimize
   outcome Boolean?
 
-  /// Reasonable bounds for a single measurement
+  /// Minimum reasonable value for a single measurement of this variable
   minimumAllowedValue Float?
+
+  /// Maximum reasonable value for a single measurement of this variable
   maximumAllowedValue Float?
 
-  imageUrl         String?
+  /// Total number of measurements across all users for this variable
+  numberOfMeasurements Int @default(0)
+
+  /// Timestamp of the most recent measurement for this variable (any user)
+  latestMeasurementStartAt DateTime?
+
+  /// Timestamp of the earliest measurement for this variable (any user)
+  earliestMeasurementStartAt DateTime?
+
+  /// Mean value across all measurements for this variable
+  mean Float?
+
+  /// Median value across all measurements for this variable
+  median Float?
+
+  /// Standard deviation of all measurements for this variable
+  standardDeviation Float?
+
+  /// Variance of all measurements for this variable
+  variance Float?
+
+  /// Kurtosis of the measurement distribution (measures tail heaviness)
+  kurtosis Float?
+
+  /// Skewness of the measurement distribution (measures asymmetry)
+  skewness Float?
+
+  /// Processing status: "WAITING" | "ANALYZING" | "DONE" | "ERROR"
+  status String @default("WAITING")
+
+  /// When the last statistical analysis began for this variable
+  analysisStartedAt DateTime?
+
+  /// When the last statistical analysis completed for this variable
+  analysisEndedAt DateTime?
+
+  /// URL of the variable's representative image / icon
+  imageUrl String?
+
+  /// URL to more information about this variable
   informationalUrl String?
 
-  /// Comma-separated synonyms for search
+  /// Comma-separated synonyms for search (e.g. "Advil,Motrin" for Ibuprofen)
   synonyms String?
 
   /// Is higher better? "positive" | "negative" | "neutral"
   valence String @default("neutral")
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
 
-  // -- Relations --
-  userVariables               UserVariable[]
-  measurements                Measurement[]
-  trackingReminders           TrackingReminder[]
-  userRelationshipsAsPredictor    UserVariableRelationship[]   @relation("UserRelPredictor")
-  userRelationshipsAsOutcome   UserVariableRelationship[]   @relation("UserRelOutcome")
-  globalRelationshipsAsPredictor  GlobalVariableRelationship[] @relation("GlobalRelPredictor")
-  globalRelationshipsAsOutcome GlobalVariableRelationship[] @relation("GlobalRelOutcome")
-  /// Soft delete timestamp. Null means active record.
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
+
+  // -- Relations --
+  userVariables                  UserVariable[]
+  measurements                   Measurement[]
+  trackingReminders              TrackingReminder[]
+  userRelationshipsAsPredictor   UserVariableRelationship[]   @relation("UserRelPredictor")
+  userRelationshipsAsOutcome     UserVariableRelationship[]   @relation("UserRelOutcome")
+  globalRelationshipsAsPredictor GlobalVariableRelationship[] @relation("GlobalRelPredictor")
+  globalRelationshipsAsOutcome   GlobalVariableRelationship[] @relation("GlobalRelOutcome")
 
   @@index([variableCategoryId])
   @@index([defaultUnitId])
@@ -192,44 +270,101 @@ model GlobalVariable {
 /// Per-user instance of a GlobalVariable with personal overrides and running stats.
 /// Created automatically when a user first tracks a variable.
 model UserVariable {
+  /// Unique identifier for this user-variable instance
   id String @id @default(cuid())
 
-  userId     String
+  /// ID of the user who owns this variable instance
+  userId String
+
+  /// ID of the canonical GlobalVariable this is an instance of
   variableId String
-  variable   GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// Relation to the canonical GlobalVariable
+  variable GlobalVariable @relation(fields: [variableId], references: [id])
 
   /// User's preferred unit (overrides global default)
   defaultUnitId String?
-  defaultUnit   Unit?   @relation("UserVariableDefaultUnit", fields: [defaultUnitId], references: [id])
 
-  /// Personal overrides for onset delay and duration of action (seconds)
-  onsetDelay       Int?
+  /// Relation to the user's preferred Unit
+  defaultUnit Unit? @relation("UserVariableDefaultUnit", fields: [defaultUnitId], references: [id])
+
+  /// Personal override for onset delay (seconds)
+  onsetDelay Int?
+
+  /// Personal override for duration of action (seconds)
   durationOfAction Int?
 
-  /// Personal override for missing-data fill
+  /// How to handle missing data for this user: "zero" | "none" | "interpolation" | "value"
+  fillingType String @default("none")
+
+  /// Personal override for the fill value when fillingType is "value"
   fillingValue Float?
 
-  /// Personal reasonable-value bounds
+  /// Personal minimum reasonable value for a single measurement
   minimumAllowedValue Float?
+
+  /// Personal maximum reasonable value for a single measurement
   maximumAllowedValue Float?
 
   // -- Running statistics (updated on each new measurement) --
-  numberOfMeasurements Int       @default(0)
-  lastMeasurementAt    DateTime?
-  mean                 Float?
-  median               Float?
-  standardDeviation    Float?
+
+  /// Total number of measurements this user has recorded for this variable
+  numberOfMeasurements Int @default(0)
+
+  /// Timestamp of this user's most recent measurement for this variable
+  latestMeasurementStartAt DateTime?
+
+  /// Timestamp of this user's earliest measurement for this variable
+  earliestMeasurementStartAt DateTime?
+
+  /// Timestamp of this user's most recent measurement (alias kept for backward compat)
+  lastMeasurementAt DateTime?
+
+  /// Arithmetic mean of this user's measurements
+  mean Float?
+
+  /// Median of this user's measurements
+  median Float?
+
+  /// Standard deviation of this user's measurements
+  standardDeviation Float?
+
+  /// Variance of this user's measurements
+  variance Float?
+
+  /// Kurtosis of this user's measurement distribution
+  kurtosis Float?
+
+  /// Skewness of this user's measurement distribution
+  skewness Float?
+
+  /// Lowest value this user has ever recorded
   minimumRecordedValue Float?
+
+  /// Highest value this user has ever recorded
   maximumRecordedValue Float?
 
+  /// Processing status: "WAITING" | "ANALYZING" | "DONE" | "ERROR"
+  status String @default("WAITING")
+
+  /// When the last statistical analysis began for this user-variable
+  analysisStartedAt DateTime?
+
+  /// When the last statistical analysis completed for this user-variable
+  analysisEndedAt DateTime?
+
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
 
   // -- Relations --
   measurements      Measurement[]
   trackingReminders TrackingReminder[]
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@unique([userId, variableId])
   @@index([userId])
@@ -239,17 +374,23 @@ model UserVariable {
 /// A single data point: who measured what, when, and how much.
 /// The core of the entire measurement system.
 model Measurement {
+  /// Unique identifier for this measurement
   id String @id @default(cuid())
 
+  /// ID of the user who recorded this measurement
   userId String
 
   /// Link to the user's personal variable instance
   userVariableId String
-  userVariable   UserVariable @relation(fields: [userVariableId], references: [id])
+
+  /// Relation to the UserVariable
+  userVariable UserVariable @relation(fields: [userVariableId], references: [id])
 
   /// Link to the canonical variable
   variableId String
-  variable   GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// Relation to the GlobalVariable
+  variable GlobalVariable @relation(fields: [variableId], references: [id])
 
   /// When the measurement was taken / event started
   startTime DateTime
@@ -259,31 +400,41 @@ model Measurement {
 
   /// Unit of the converted value (should match variable's default unit)
   unitId String
-  unit   Unit   @relation("MeasurementUnit", fields: [unitId], references: [id])
+
+  /// Relation to the converted value's Unit
+  unit Unit @relation("MeasurementUnit", fields: [unitId], references: [id])
 
   /// Value as originally entered by the user (before conversion)
   originalValue Float
 
-  /// Unit of the original value
+  /// Unit of the original value (before conversion)
   originalUnitId String
-  originalUnit   Unit   @relation("MeasurementOriginalUnit", fields: [originalUnitId], references: [id])
 
-  /// Duration of the event in seconds (e.g. 30 min exercise)
+  /// Relation to the original Unit
+  originalUnit Unit @relation("MeasurementOriginalUnit", fields: [originalUnitId], references: [id])
+
+  /// Duration of the event in seconds (e.g. 1800 for 30 min exercise)
   duration Int?
 
   /// Free-text note from the user
   note String?
 
-  /// Name of the app or device that provided this data
+  /// Name of the app, device, or integration that provided this data (e.g. "Fitbit", "manual")
   sourceName String?
 
-  /// Geolocation at time of measurement
-  latitude  Float?
+  /// Latitude of the user's location at time of measurement
+  latitude Float?
+
+  /// Longitude of the user's location at time of measurement
   longitude Float?
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([userId, variableId, startTime])
@@ -297,19 +448,25 @@ model Measurement {
 /// A scheduled reminder to collect data for a variable.
 /// E.g. "Remind me to rate my mood every day at 8:00 AM"
 model TrackingReminder {
+  /// Unique identifier for this tracking reminder
   id String @id @default(cuid())
 
+  /// ID of the user who owns this reminder
   userId String
 
   /// Link to the user's personal variable instance
   userVariableId String
-  userVariable   UserVariable @relation(fields: [userVariableId], references: [id])
+
+  /// Relation to the UserVariable
+  userVariable UserVariable @relation(fields: [userVariableId], references: [id])
 
   /// Link to the canonical variable
   variableId String
-  variable   GlobalVariable @relation(fields: [variableId], references: [id])
 
-  /// Pre-filled default value when tracking
+  /// Relation to the GlobalVariable
+  variable GlobalVariable @relation(fields: [variableId], references: [id])
+
+  /// Pre-filled default value when tracking from this reminder
   defaultValue Float?
 
   /// Local time of day for the reminder (e.g. "08:00")
@@ -327,10 +484,26 @@ model TrackingReminder {
   /// Instructions shown to the user when the reminder fires
   instructions String?
 
+  /// When the user last tracked this variable via any reminder
+  lastTracked DateTime?
+
+  /// Date (inclusive) from which this reminder should start firing
+  startTrackingDate DateTime?
+
+  /// Date (inclusive) after which this reminder should stop firing
+  stopTrackingDate DateTime?
+
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
+
+  // -- Relations --
+  notifications TrackingReminderNotification[]
 
   @@unique([userId, variableId, reminderStartTime, reminderFrequency])
   @@index([userId])
@@ -338,22 +511,70 @@ model TrackingReminder {
   @@index([active])
 }
 
-/// Personal n-of-1 causal analysis between two variables for a single user.
-/// Replaces CureDAO's `correlations` table. Each row answers:
-/// "For THIS user, how does variable A predict variable B?"
+/// A queued notification for a tracking reminder.
+/// Each row represents a single pending or sent notification instance.
+model TrackingReminderNotification {
+  /// Unique identifier for this notification
+  id String @id @default(cuid())
+
+  /// ID of the user this notification is for
+  userId String
+
+  /// The tracking reminder that generated this notification
+  trackingReminderId String
+
+  /// Relation to the parent TrackingReminder
+  trackingReminder TrackingReminder @relation(fields: [trackingReminderId], references: [id])
+
+  /// Scheduled time for this notification to be sent
+  notifyAt DateTime
+
+  /// When the notification was actually delivered (null if pending)
+  notifiedAt DateTime?
+
+  /// When the user responded to this notification (null if not yet responded)
+  receivedAt DateTime?
+
+  /// The value the user tracked in response (null if not yet tracked)
+  trackedValue Float?
+
+  /// Status of this notification: "pending" | "sent" | "tracked" | "skipped" | "snoozed"
+  status String @default("pending")
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  @@index([userId, status])
+  @@index([trackingReminderId])
+  @@index([notifyAt])
+}
+
+/// Personal n-of-1 causal inference analysis between two variables for a single user.
+/// Each row answers: "For THIS user, how does variable A predict variable B?"
 model UserVariableRelationship {
+  /// Unique identifier for this user-level relationship
   id String @id @default(cuid())
 
   /// The user who owns this analysis
   userId String
 
-  /// The predictor variable
+  /// The predictor (input/cause) variable in this relationship
   predictorVariableId String
-  predictorVariable   GlobalVariable @relation("UserRelPredictor", fields: [predictorVariableId], references: [id])
 
-  /// The outcome variable
+  /// Relation to the predictor GlobalVariable
+  predictorVariable GlobalVariable @relation("UserRelPredictor", fields: [predictorVariableId], references: [id])
+
+  /// The outcome (effect/result) variable in this relationship
   outcomeVariableId String
-  outcomeVariable   GlobalVariable @relation("UserRelOutcome", fields: [outcomeVariableId], references: [id])
+
+  /// Relation to the outcome GlobalVariable
+  outcomeVariable GlobalVariable @relation("UserRelOutcome", fields: [outcomeVariableId], references: [id])
 
   // -- Statistical fields --
 
@@ -399,21 +620,21 @@ model UserVariableRelationship {
 
   // -- Temporal parameters --
 
-  /// Time after predictor measurement before a perceivable outcome is observed (seconds)
+  /// Time after predictor measurement before a perceivable outcome change is observed (seconds)
   onsetDelay Int
 
-  /// Time over which the predictor produces a perceivable outcome following onset (seconds)
+  /// Time over which the predictor produces a perceivable outcome change following onset (seconds)
   durationOfAction Int
 
   /// The onset delay (seconds) that produced the strongest Pearson correlation
   onsetDelayWithStrongestCorrelation Int?
 
-  // -- Effect / prediction fields --
+  // -- Outcome / prediction fields --
 
-  /// Cause value that predicts an above-average outcome (in cause's default unit)
+  /// Predictor value that predicts an above-average outcome (in predictor's default unit)
   valuePredictingHighOutcome Float?
 
-  /// Cause value that predicts a below-average outcome (in cause's default unit)
+  /// Predictor value that predicts a below-average outcome (in predictor's default unit)
   valuePredictingLowOutcome Float?
 
   /// Percent change in outcome typically seen when predictor value is high
@@ -430,6 +651,12 @@ model UserVariableRelationship {
 
   /// Average outcome value following a below-average predictor value
   averageOutcomeFollowingLowPredictor Float?
+
+  /// Average daily predictor value on days associated with high outcome
+  averageDailyHighPredictor Float?
+
+  /// Average daily predictor value on days associated with low outcome
+  averageDailyLowPredictor Float?
 
   /// Standardized effect size (Cohen's d or similar)
   effectSize Float?
@@ -495,9 +722,13 @@ model UserVariableRelationship {
   /// When this analysis was last computed
   analyzedAt DateTime
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([userId, predictorVariableId, outcomeVariableId])
@@ -507,19 +738,23 @@ model UserVariableRelationship {
   @@index([analyzedAt])
 }
 
-/// Population-level causal analysis aggregated across all users.
-/// Replaces CureDAO's `aggregate_correlations` table. Each row answers:
-/// "Across ALL users, how does variable A predict variable B?"
+/// Population-level causal inference analysis aggregated across all users.
+/// Each row answers: "Across ALL users, how does variable A predict variable B?"
 model GlobalVariableRelationship {
+  /// Unique identifier for this global-level relationship
   id String @id @default(cuid())
 
-  /// The predictor variable
+  /// The predictor (input/cause) variable in this relationship
   predictorVariableId String
-  predictorVariable   GlobalVariable @relation("GlobalRelPredictor", fields: [predictorVariableId], references: [id])
 
-  /// The outcome variable
+  /// Relation to the predictor GlobalVariable
+  predictorVariable GlobalVariable @relation("GlobalRelPredictor", fields: [predictorVariableId], references: [id])
+
+  /// The outcome (effect/result) variable in this relationship
   outcomeVariableId String
-  outcomeVariable   GlobalVariable @relation("GlobalRelOutcome", fields: [outcomeVariableId], references: [id])
+
+  /// Relation to the outcome GlobalVariable
+  outcomeVariable GlobalVariable @relation("GlobalRelOutcome", fields: [outcomeVariableId], references: [id])
 
   // -- Statistical fields --
 
@@ -565,21 +800,21 @@ model GlobalVariableRelationship {
 
   // -- Temporal parameters --
 
-  /// Time after predictor measurement before a perceivable outcome is observed (seconds)
+  /// Time after predictor measurement before a perceivable outcome change is observed (seconds)
   onsetDelay Int
 
-  /// Time over which the predictor produces a perceivable outcome following onset (seconds)
+  /// Time over which the predictor produces a perceivable outcome change following onset (seconds)
   durationOfAction Int
 
   /// The onset delay (seconds) that produced the strongest Pearson correlation
   onsetDelayWithStrongestCorrelation Int?
 
-  // -- Effect / prediction fields --
+  // -- Outcome / prediction fields --
 
-  /// Cause value that predicts an above-average outcome (in cause's default unit)
+  /// Predictor value that predicts an above-average outcome (in predictor's default unit)
   valuePredictingHighOutcome Float?
 
-  /// Cause value that predicts a below-average outcome (in cause's default unit)
+  /// Predictor value that predicts a below-average outcome (in predictor's default unit)
   valuePredictingLowOutcome Float?
 
   /// Percent change in outcome typically seen when predictor value is high
@@ -596,6 +831,12 @@ model GlobalVariableRelationship {
 
   /// Average outcome value following a below-average predictor value
   averageOutcomeFollowingLowPredictor Float?
+
+  /// Average daily predictor value on days associated with high outcome
+  averageDailyHighPredictor Float?
+
+  /// Average daily predictor value on days associated with low outcome
+  averageDailyLowPredictor Float?
 
   /// Standardized effect size (Cohen's d or similar)
   effectSize Float?
@@ -675,9 +916,13 @@ model GlobalVariableRelationship {
   /// When this analysis was last computed
   analyzedAt DateTime
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([predictorVariableId, outcomeVariableId])
@@ -687,109 +932,224 @@ model GlobalVariableRelationship {
   @@index([numberOfUsers])
 }
 
+/// Metadata about an external data source / integration (e.g. Fitbit, Apple Health, Oura).
+/// Used to track which integrations are available and their connection status per user.
+model IntegrationProvider {
+  /// Unique identifier for this integration provider
+  id String @id @default(cuid())
+
+  /// Machine-readable key (e.g. "fitbit", "apple-health", "oura", "strava")
+  key String @unique
+
+  /// Human-readable display name (e.g. "Fitbit", "Apple Health")
+  displayName String
+
+  /// Description of what data this integration provides
+  description String?
+
+  /// URL of the provider's logo / icon
+  logoUrl String?
+
+  /// Base URL for the provider's API (e.g. "https://api.fitbit.com")
+  apiBaseUrl String?
+
+  /// OAuth2 authorization URL (if applicable)
+  authorizationUrl String?
+
+  /// OAuth2 token URL (if applicable)
+  tokenUrl String?
+
+  /// Comma-separated list of OAuth2 scopes required
+  scopes String?
+
+  /// Whether this integration is currently enabled in the platform
+  enabled Boolean @default(true)
+
+  /// Whether this integration supports real-time data push (webhook)
+  supportsWebhook Boolean @default(false)
+
+  /// Whether this integration supports periodic polling for new data
+  supportsPolling Boolean @default(true)
+
+  /// Default polling interval in seconds (e.g. 3600 = hourly)
+  defaultPollIntervalSeconds Int @default(3600)
+
+  /// Comma-separated list of variable category names this provider typically supplies
+  dataCategories String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  @@index([enabled])
+}
+
 // ============================================================================
 // LAYER 2 — Domain-Specific Governance
 // ============================================================================
 
-/// A jurisdiction (city, county, state, country) — the tenant
+/// A jurisdiction (city, county, state, country) — the tenant for governance data
 model Jurisdiction {
-  id       String         @id @default(cuid())
-  name     String
-  type     String // "city" | "county" | "state" | "country"
-  parentId String? // e.g. city → county → state → country
-  parent   Jurisdiction?  @relation("JurisdictionHierarchy", fields: [parentId], references: [id])
+  /// Unique identifier for this jurisdiction
+  id String @id @default(cuid())
+
+  /// Human-readable name (e.g. "California", "United States")
+  name String
+
+  /// Level of government: "city" | "county" | "state" | "country"
+  type String
+
+  /// Parent jurisdiction ID for hierarchy (e.g. city → county → state → country)
+  parentId String?
+
+  /// Relation to the parent Jurisdiction
+  parent Jurisdiction? @relation("JurisdictionHierarchy", fields: [parentId], references: [id])
+
+  /// Child jurisdictions in the hierarchy
   children Jurisdiction[] @relation("JurisdictionHierarchy")
 
-  /// ISO codes, FIPS codes, etc.
-  code       String? @unique // e.g. "US", "US-CA", "US-CA-037"
-  currency   String  @default("USD")
+  /// ISO codes, FIPS codes, etc. (e.g. "US", "US-CA", "US-CA-037")
+  code String? @unique
+
+  /// Currency code used in this jurisdiction (e.g. "USD", "EUR")
+  currency String @default("USD")
+
+  /// Estimated population of this jurisdiction
   population Int?
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
 
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
   items           Item[]
   participants    Participant[]
   politicians     Politician[]
   aggregationRuns AggregationRun[]
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@index([type])
   @@index([parentId])
 }
 
-/// A priority/wish/budget item that can be compared
+/// A priority/wish/budget item that can be compared in pairwise evaluations
 model Item {
-  id             String       @id @default(cuid())
+  /// Unique identifier for this item
+  id String @id @default(cuid())
+
+  /// Jurisdiction this item belongs to
   jurisdictionId String
-  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
 
-  name        String
+  /// Relation to the Jurisdiction
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
+  /// Human-readable name of the item (e.g. "National Defense", "Medicare")
+  name String
+
+  /// Longer explanation of what this item covers
   description String?
-  category    String?
 
-  /// Current actual budget allocation (for preference gap analysis)
+  /// Budget category: "Mandatory" | "Discretionary" | "Other" or custom
+  category String?
+
+  /// Current actual budget allocation in USD (for preference gap analysis)
   currentAllocationUsd Float?
+
+  /// Current actual budget allocation as a percentage of total (for preference gap analysis)
   currentAllocationPct Float?
 
-  /// URL to supporting documentation
+  /// URL to supporting documentation or source data
   sourceUrl String?
 
   /// Whether this item is active for comparisons
   active Boolean @default(true)
 
+  /// When this record was created
   createdAt DateTime @default(now())
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
 
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
   comparisonsAsA PairwiseComparison[] @relation("itemA")
   comparisonsAsB PairwiseComparison[] @relation("itemB")
   weights        PreferenceWeight[]
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@index([jurisdictionId])
   @@index([category])
   @@index([active])
 }
 
-/// A participant who makes pairwise comparisons
+/// A participant who makes pairwise comparisons (anonymous by design)
 model Participant {
-  id             String       @id @default(cuid())
-  jurisdictionId String
-  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  /// Unique identifier for this participant
+  id String @id @default(cuid())
 
-  /// Anonymous ID (no PII stored)
+  /// Jurisdiction this participant is associated with
+  jurisdictionId String
+
+  /// Relation to the Jurisdiction
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
+  /// Anonymous external ID (no PII stored)
   externalId String? @unique
 
-  /// Optional demographics for analysis (all voluntary)
-  ageRange String? // e.g. "25-34"
-  region   String? // e.g. "US-CA"
+  /// Optional age range for demographic analysis (e.g. "25-34")
+  ageRange String?
 
+  /// Optional region for geographic analysis (e.g. "US-CA")
+  region String?
+
+  /// When this record was created
   createdAt DateTime @default(now())
 
-  comparisons PairwiseComparison[]
-  /// Timestamp when this record was last updated
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
+
+  // -- Relations --
+  comparisons PairwiseComparison[]
 
   @@index([jurisdictionId])
   @@index([region])
 }
 
-/// A single pairwise comparison: "Given $100, how would you split it?"
+/// A single pairwise comparison: "Given $100, how would you split it between A and B?"
 model PairwiseComparison {
+  /// Unique identifier for this comparison
   id String @id @default(cuid())
 
+  /// The participant who made this comparison
   participantId String
-  participant   Participant @relation(fields: [participantId], references: [id])
 
+  /// Relation to the Participant
+  participant Participant @relation(fields: [participantId], references: [id])
+
+  /// First item in the comparison pair
   itemAId String
-  itemA   Item   @relation("itemA", fields: [itemAId], references: [id])
 
+  /// Relation to the first Item
+  itemA Item @relation("itemA", fields: [itemAId], references: [id])
+
+  /// Second item in the comparison pair
   itemBId String
-  itemB   Item   @relation("itemB", fields: [itemBId], references: [id])
+
+  /// Relation to the second Item
+  itemB Item @relation("itemB", fields: [itemBId], references: [id])
 
   /// Allocation to item A (0-100). Item B gets (100 - allocationA).
   allocationA Float
@@ -797,13 +1157,16 @@ model PairwiseComparison {
   /// Response time in milliseconds (engagement quality signal)
   responseTimeMs Int?
 
-  /// Session ID to group comparisons from same sitting
+  /// Session ID to group comparisons from the same sitting
   sessionId String?
 
+  /// When this record was created
   createdAt DateTime @default(now())
-  /// Timestamp when this record was last updated
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([participantId, itemAId, itemBId])
@@ -814,94 +1177,143 @@ model PairwiseComparison {
 
 /// Aggregated preference weights (output of eigenvector calculation)
 model PreferenceWeight {
+  /// Unique identifier for this preference weight
   id String @id @default(cuid())
 
-  /// Which calculation run produced this
+  /// Which calculation run produced this weight
   runId String
-  run   AggregationRun @relation(fields: [runId], references: [id])
 
+  /// Relation to the AggregationRun
+  run AggregationRun @relation(fields: [runId], references: [id])
+
+  /// The item this weight applies to
   itemId String
-  item   Item   @relation(fields: [itemId], references: [id])
+
+  /// Relation to the Item
+  item Item @relation(fields: [itemId], references: [id])
 
   /// Normalized weight (0-1, all weights in a run sum to 1)
   weight Float
-  rank   Int
 
-  /// Confidence interval
-  ciLow  Float?
+  /// Rank of this item within the run (1 = highest priority)
+  rank Int
+
+  /// Lower bound of the confidence interval for this weight
+  ciLow Float?
+
+  /// Upper bound of the confidence interval for this weight
   ciHigh Float?
-  /// Timestamp when this record was created
+
+  /// When this record was created
   createdAt DateTime @default(now())
-  /// Timestamp when this record was last updated
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([runId, itemId])
   @@index([runId])
 }
 
-/// Record of each aggregation calculation
+/// Record of each aggregation calculation (eigenvector computation run)
 model AggregationRun {
-  id             String       @id @default(cuid())
-  jurisdictionId String
-  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  /// Unique identifier for this aggregation run
+  id String @id @default(cuid())
 
-  /// Total comparisons included
-  comparisonCount  Int
-  /// Total unique participants
+  /// Jurisdiction this run was computed for
+  jurisdictionId String
+
+  /// Relation to the Jurisdiction
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+
+  /// Total comparisons included in this run
+  comparisonCount Int
+
+  /// Total unique participants included in this run
   participantCount Int
+
   /// AHP consistency ratio (< 0.1 = good)
   consistencyRatio Float?
 
   /// Filter: which categories were included (null = all)
   categoryFilter String?
-  /// Filter: which region (null = all)
-  regionFilter   String?
 
+  /// Filter: which region was included (null = all)
+  regionFilter String?
+
+  /// When this record was created
   createdAt DateTime @default(now())
 
-  weights PreferenceWeight[]
-  /// Timestamp when this record was last updated
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
+
+  // -- Relations --
+  weights PreferenceWeight[]
 
   @@index([jurisdictionId])
 }
 
 /// Politician/legislator/official voting records for alignment scoring
 model Politician {
-  id             String       @id @default(cuid())
+  /// Unique identifier for this politician
+  id String @id @default(cuid())
+
+  /// Jurisdiction this politician represents
   jurisdictionId String
-  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
 
-  name       String
-  party      String?
-  title      String? // "Senator", "Mayor", "Council Member", etc.
-  district   String? // state, ward, district — varies by jurisdiction
-  chamber    String? // "house" | "senate" | "council" | null
-  externalId String? @unique // bioguide ID, local govt ID, etc.
+  /// Relation to the Jurisdiction
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
 
+  /// Full name of the politician
+  name String
+
+  /// Political party affiliation
+  party String?
+
+  /// Title: "Senator", "Mayor", "Council Member", etc.
+  title String?
+
+  /// State, ward, district — varies by jurisdiction
+  district String?
+
+  /// Legislative chamber: "house" | "senate" | "council" | null
+  chamber String?
+
+  /// External identifier: bioguide ID, local govt ID, etc.
+  externalId String? @unique
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
   votes      PoliticianVote[]
   alignments AlignmentScore[]
-  /// Timestamp when this record was created
-  createdAt DateTime @default(now())
-  /// Timestamp when this record was last updated
-  updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
-  deletedAt DateTime?
 
   @@index([jurisdictionId])
   @@index([party])
 }
 
-/// A politician's vote/position on a budget item
+/// A politician's vote or position on a budget item category
 model PoliticianVote {
+  /// Unique identifier for this vote record
   id String @id @default(cuid())
 
+  /// The politician who cast this vote
   politicianId String
-  politician   Politician @relation(fields: [politicianId], references: [id])
+
+  /// Relation to the Politician
+  politician Politician @relation(fields: [politicianId], references: [id])
 
   /// What budget category this vote affects
   itemCategory String
@@ -909,14 +1321,19 @@ model PoliticianVote {
   /// Their allocated/voted percentage
   allocationPct Float
 
-  /// Source bill/vote reference
-  billId   String?
+  /// Source bill or vote reference identifier
+  billId String?
+
+  /// Date of the vote
   voteDate DateTime?
-  /// Timestamp when this record was created
+
+  /// When this record was created
   createdAt DateTime @default(now())
-  /// Timestamp when this record was last updated
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@index([politicianId])
@@ -925,21 +1342,31 @@ model PoliticianVote {
 
 /// Calculated alignment between citizen preferences and politician votes
 model AlignmentScore {
+  /// Unique identifier for this alignment score
   id String @id @default(cuid())
 
+  /// The politician being scored
   politicianId String
-  politician   Politician @relation(fields: [politicianId], references: [id])
 
-  runId String // Which aggregation run's weights were used
+  /// Relation to the Politician
+  politician Politician @relation(fields: [politicianId], references: [id])
 
-  /// Overall alignment (0-100%)
-  score         Float
+  /// Which aggregation run's weights were used to compute this score
+  runId String
+
+  /// Overall alignment score (0-100%)
+  score Float
+
+  /// Number of votes compared in this calculation
   votesCompared Int
 
+  /// When this record was created
   createdAt DateTime @default(now())
-  /// Timestamp when this record was last updated
+
+  /// When this record was last updated
   updatedAt DateTime @updatedAt
-  /// Soft delete timestamp. Null means active record.
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
   @@unique([politicianId, runId])
