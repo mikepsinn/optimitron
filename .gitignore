@@ -16,10 +16,21 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Environment
+# Environment / Secrets — NEVER COMMIT THESE
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+
+# API keys, tokens, credentials
+secrets/
+credentials/
+*.secret
+*.credential
 
 # Logs
 *.log
@@ -29,6 +40,14 @@ pnpm-debug.log*
 # Test coverage
 coverage/
 
-# Generated reports (keep structure, ignore content)
+# Generated reports
 reports/*.md
 !reports/.gitkeep
+
+# Prisma
+packages/db/prisma/migrations/
+packages/db/prisma/dev.db
+
+# Terraform / infra state
+*.tfstate
+*.tfstate.backup

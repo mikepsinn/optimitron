@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# 1. Check for secrets/credentials before committing
+echo "🔒 Checking for secrets..."
+
+# Get staged files, excluding binary, lock files, and this hook itself
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -v -E '\.(jpg|png|gif|svg|ico|woff|ttf|eot)$' \
+  | grep -v 'pnpm-lock.yaml' \
+  | grep -v '.husky/' \
+  | grep -v 'SECURITY.md')
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+# Check for common secret patterns in staged file contents
+FOUND=0
+PATTERNS="AKIA[0-9A-Z]{16}|sk-ant-api|ghp_[a-zA-Z0-9]{36}|xox[baprs]-[a-zA-Z0-9]|-----BEGIN.*PRIVATE KEY"
+
+MATCHES=$(echo "$STAGED_FILES" | xargs grep -lE "$PATTERNS" 2>/dev/null || true)
+if [ -n "$MATCHES" ]; then
+  echo "❌ BLOCKED: Potential secret found in:"
+  echo "$MATCHES"
+  echo ""
+  echo "⛔ Commit blocked! Remove secrets before committing."
+  echo "   Use .env files (gitignored) for credentials."
+  echo "   To bypass (DANGEROUS): git commit --no-verify"
+  exit 1
+fi
+
+echo "✅ No secrets found"
+
+# 2. Run lint-staged
+npx lint-staged

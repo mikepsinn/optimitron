@@ -20,12 +20,21 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test",
     "db:generate": "pnpm --filter @optomitron/db prisma generate",
     "db:migrate": "pnpm --filter @optomitron/db prisma migrate dev",
-    "db:push": "pnpm --filter @optomitron/db prisma db push"
+    "db:push": "pnpm --filter @optomitron/db prisma db push",
+    "prepare": "husky"
   },
   "devDependencies": {
     "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.0.0"
+  },
+  "lint-staged": {
+    "packages/*/src/**/*.ts": [
+      "eslint --fix",
+      "bash -c 'pnpm typecheck'"
+    ]
   },
   "packageManager": "pnpm@8.14.0",
   "engines": {
