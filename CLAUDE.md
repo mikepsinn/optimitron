@@ -62,8 +62,34 @@ optomitron/
 │   │   └── All survey responses, health data, preferences
 │   │
 │   └── web/          # 🌐 Next.js (Phase 3 — after libraries work)
-│       └── Dashboard, pairwise UI, health tracking, reports
+│       └── Multi-tenant jurisdiction dashboard
 ```
+
+## Jurisdiction Model ("Government OS")
+
+Any jurisdiction (city, county, state, country) should be able to deploy Optomitron as its governance operating system. The libraries are already agnostic — the jurisdiction-specific stuff is **configuration, not code**.
+
+### What a Jurisdiction Gets
+1. **Preference collection** — citizens do pairwise comparisons on LOCAL priorities
+2. **Outcome tracking** — local health/wealth/satisfaction data
+3. **Causal analysis** — "did that road project reduce commute times?"
+4. **Policy recommendations** — "based on similar jurisdictions, here's what works"
+5. **Budget optimization** — "here's where your budget has the most impact"
+6. **Accountability** — "how do your officials' votes align with citizen preferences?"
+
+### Architecture Implications
+- **DB schema is multi-tenant**: Every model should have a `jurisdictionId` field
+- **Items/priorities are per-jurisdiction**: Federal budget categories ≠ city budget categories
+- **Data fetchers are pluggable**: A city uses different data sources than a country
+- **Officials are per-jurisdiction**: Politicians, council members, mayors — all fit the same `Politician` model
+- **Comparison across jurisdictions** is a key feature: "City A spends X on education and gets Y outcomes; City B spends Z..."
+
+### What This Means for Library Code
+- `causal`, `rappa`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
+- `db` schema needs `jurisdictionId` on relevant models
+- `data` fetchers take jurisdiction config as a parameter
+- The **web app** handles multi-tenancy (auth, routing, tenant isolation)
+- Think of it like Shopify but for governments: same platform, each jurisdiction is a "store"
 
 ## The Core Insight
 

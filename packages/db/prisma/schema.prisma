@@ -1,5 +1,6 @@
-// Wishocracy Database Schema
-// Collects pairwise comparisons and computes preference weights
+// Optomitron Database Schema
+// Multi-tenant governance platform: preferences, outcomes, alignment
+// Each jurisdiction (city/county/state/country) is a tenant
 
 generator client {
   provider = "prisma-client-js"
@@ -10,9 +11,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// A jurisdiction (city, county, state, country) — the tenant
+model Jurisdiction {
+  id          String  @id @default(cuid())
+  name        String
+  type        String  // "city" | "county" | "state" | "country"
+  parentId    String? // e.g. city → county → state → country
+  parent      Jurisdiction? @relation("JurisdictionHierarchy", fields: [parentId], references: [id])
+  children    Jurisdiction[] @relation("JurisdictionHierarchy")
+
+  /// ISO codes, FIPS codes, etc.
+  code        String?  @unique // e.g. "US", "US-CA", "US-CA-037"
+  currency    String   @default("USD")
+  population  Int?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  items           Item[]
+  participants    Participant[]
+  politicians     Politician[]
+  aggregationRuns AggregationRun[]
+  
+  @@index([type])
+  @@index([parentId])
+}
+
 /// A priority/wish/budget item that can be compared
 model Item {
-  id          String  @id @default(cuid())
+  id              String  @id @default(cuid())
+  jurisdictionId  String
+  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  
   name        String
   description String?
   category    String?
@@ -34,13 +64,16 @@ model Item {
   comparisonsAsB PairwiseComparison[] @relation("itemB")
   weights        PreferenceWeight[]
   
+  @@index([jurisdictionId])
   @@index([category])
   @@index([active])
 }
 
 /// A participant who makes pairwise comparisons
 model Participant {
-  id          String  @id @default(cuid())
+  id              String  @id @default(cuid())
+  jurisdictionId  String
+  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
   
   /// Anonymous ID (no PII stored)
   externalId  String? @unique
@@ -53,6 +86,7 @@ model Participant {
   
   comparisons PairwiseComparison[]
   
+  @@index([jurisdictionId])
   @@index([region])
 }
 
@@ -112,6 +146,8 @@ model PreferenceWeight {
 /// Record of each aggregation calculation
 model AggregationRun {
   id                String @id @default(cuid())
+  jurisdictionId    String
+  jurisdiction      Jurisdiction @relation(fields: [jurisdictionId], references: [id])
   
   /// Total comparisons included
   comparisonCount   Int
@@ -128,22 +164,28 @@ model AggregationRun {
   createdAt         DateTime @default(now())
   
   weights           PreferenceWeight[]
+  
+  @@index([jurisdictionId])
 }
 
-/// Politician/legislator voting records for alignment scoring
+/// Politician/legislator/official voting records for alignment scoring
 model Politician {
-  id          String @id @default(cuid())
+  id              String @id @default(cuid())
+  jurisdictionId  String
+  jurisdiction    Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  
   name        String
   party       String?
-  state       String?
-  chamber     String?  // "house" | "senate"
-  externalId  String?  @unique // e.g. bioguide ID
+  title       String?  // "Senator", "Mayor", "Council Member", etc.
+  district    String?  // state, ward, district — varies by jurisdiction
+  chamber     String?  // "house" | "senate" | "council" | null
+  externalId  String?  @unique // bioguide ID, local govt ID, etc.
   
   votes       PoliticianVote[]
   alignments  AlignmentScore[]
   
+  @@index([jurisdictionId])
   @@index([party])
-  @@index([state])
 }
 
 /// A politician's vote/position on a budget item

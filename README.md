@@ -53,6 +53,28 @@ The algorithms are defined in peer-reviewed papers:
 - **[Optimal Budget Generator](https://obg.warondisease.org)** — Budget optimization
 - **[Optimocracy](https://optimocracy.warondisease.org)** — Two-metric welfare function
 
+## Government OS
+
+Any jurisdiction can deploy Optomitron as its governance operating system:
+
+```
+Your City installs Optomitron
+         ↓
+Citizens do pairwise comparisons on local priorities
+         ↓
+Local outcome data flows in (health, education, crime, satisfaction)
+         ↓
+Causal engine identifies what's actually working
+         ↓
+OPG recommends policies based on evidence from similar jurisdictions
+         ↓
+OBG optimizes budget allocation for maximum impact
+         ↓
+Alignment scores show which officials represent citizen preferences
+```
+
+The database is multi-tenant — every jurisdiction is a tenant with its own items, participants, officials, and data. Cross-jurisdiction comparison ("City A spends X on education and gets Y outcomes vs. City B") is a core feature.
+
 ## Development
 
 ```bash
