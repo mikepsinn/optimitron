@@ -34,8 +34,11 @@
 // Types
 export * from './types.js';
 
-// Data sources
+// Data sources (legacy)
 export * from './sources/index.js';
+
+// API fetchers (OECD, World Bank, WHO, FRED)
+export * from './fetchers/index.js';
 
 // CSV loader (Gapminder-format parser)
 export * from './csv-loader.js';

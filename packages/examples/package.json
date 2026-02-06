@@ -1,0 +1,20 @@
+{
+  "name": "@optomitron/examples",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Worked examples — federal budget, causal analysis, alignment scoring",
+  "type": "module",
+  "scripts": {
+    "demo:budget": "tsx src/federal-budget-demo.ts",
+    "demo:causal": "tsx src/causal-analysis-demo.ts",
+    "demo:alignment": "tsx src/alignment-demo.ts"
+  },
+  "dependencies": {
+    "@optomitron/causal": "workspace:*",
+    "@optomitron/rappa": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
