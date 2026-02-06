@@ -27,7 +27,7 @@ export interface PolicyEffect {
   confidence: 'high' | 'medium' | 'low';
 }
 
-export interface PolicyData {
+export interface USPolicyData {
   /** Policy name */
   name: string;
   /** Budget category this primarily affects */
@@ -46,7 +46,7 @@ export interface PolicyData {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-export const US_POLICIES: PolicyData[] = [
+export const US_POLICIES: USPolicyData[] = [
   // ─── Education ─────────────────────────────────────────────────────
   {
     name: 'Universal Pre-K (ages 3-4)',
@@ -1029,7 +1029,7 @@ export const US_POLICIES: PolicyData[] = [
 /**
  * Get all policies for a given category (case-insensitive partial match).
  */
-export function getPoliciesByCategory(category: string): PolicyData[] {
+export function getPoliciesByCategory(category: string): USPolicyData[] {
   const lower = category.toLowerCase();
   return US_POLICIES.filter((p) => p.category.toLowerCase().includes(lower));
 }
@@ -1037,7 +1037,7 @@ export function getPoliciesByCategory(category: string): PolicyData[] {
 /**
  * Get policies by evidence grade (e.g. "A" returns only A-grade policies).
  */
-export function getPoliciesByGrade(grade: string): PolicyData[] {
+export function getPoliciesByGrade(grade: string): USPolicyData[] {
   return US_POLICIES.filter(
     (p) => p.evidenceGrade.toUpperCase() === grade.toUpperCase(),
   );
@@ -1046,7 +1046,7 @@ export function getPoliciesByGrade(grade: string): PolicyData[] {
 /**
  * Get policies that save money (negative cost).
  */
-export function getRevenuePolicies(): PolicyData[] {
+export function getRevenuePolicies(): USPolicyData[] {
   return US_POLICIES.filter((p) => p.estimatedCost < 0);
 }
 

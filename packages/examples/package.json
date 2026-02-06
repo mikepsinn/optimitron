@@ -10,6 +10,10 @@
     "demo:alignment": "tsx src/alignment-demo.ts",
     "generate:budget": "tsx src/us-federal-analysis/generate-budget-analysis.ts",
     "generate:policy": "tsx src/us-federal-analysis/generate-policy-analysis.ts",
+    "generate:health": "tsx src/international-analysis/generate-health-comparison.ts",
+    "generate:drug-policy": "tsx src/international-analysis/generate-drug-policy-comparison.ts",
+    "generate:education": "tsx src/international-analysis/generate-education-comparison.ts",
+    "generate:cross-country": "tsx src/international-analysis/generate-cross-country-analysis.ts",
     "test": "vitest run",
     "test:integration": "vitest run src/integration-tests/"
   },

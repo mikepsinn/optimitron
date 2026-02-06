@@ -16,7 +16,7 @@ import {
   getRevenuePolicies,
   getTotalPolicyCost,
   getTotalSourceCount,
-  type PolicyData,
+  type USPolicyData,
 } from '../../datasets/us-policies.js';
 
 // ─── Budget Dataset Tests ────────────────────────────────────────────────────
