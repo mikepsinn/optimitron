@@ -47,7 +47,7 @@ describe('calculateAlignmentScore', () => {
     expect(result.score).toBeLessThan(50);
   });
 
-  it('handles no matching votes (score = 100 default)', () => {
+  it('handles no matching votes (score = 0 when unknown)', () => {
     const prefs: PreferenceWeight[] = [
       weight('medical', 0.5, 1),
     ];
@@ -55,9 +55,9 @@ describe('calculateAlignmentScore', () => {
       ['defense', 50],
     ]);
     const result = calculateAlignmentScore(prefs, votes, 'pol-3');
-    // No overlapping items → avgWeightedDistance = 0 → score = 100
+    // No overlapping items → alignment is unknown → score = 0
     expect(result.votesCompared).toBe(0);
-    expect(result.score).toBe(100);
+    expect(result.score).toBe(0);
   });
 
   it('partial overlap only compares matching items', () => {
