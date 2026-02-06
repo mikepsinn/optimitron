@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build
-        run: pnpm build --filter '!@optomitron/web'
+        run: pnpm --filter '!@optomitron/web' run build
 
       - name: Typecheck
         run: pnpm typecheck
