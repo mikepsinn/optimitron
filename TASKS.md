@@ -30,8 +30,8 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 9 | Tests for `@optomitron/rappa` consistencyRatio() | todo | CR < 0.1 for consistent matrices |
 | 10 | Tests for `@optomitron/rappa` alignment scoring | todo | |
 | 11 | Tests for `@optomitron/opg` Bradford Hill | todo | |
-| 12 | Tests for `@optomitron/obg` diminishing returns | todo | |
-| 13 | Tests for `@optomitron/obg` cost-effectiveness | todo | |
+| 12 | Tests for `@optomitron/obg` diminishing returns | done | 36 tests: fitLogModel, fitSaturationModel, marginalReturn, findOSL, estimateOSL + edge cases |
+| 13 | Tests for `@optomitron/obg` cost-effectiveness | done | 107 additional tests: cost-effectiveness (32), BIS (37), welfare (17), budget schemas (18), smoke (3) |
 
 ## P2: RAPPA Math (Wishocracy)
 
