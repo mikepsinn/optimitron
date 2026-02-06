@@ -78,6 +78,8 @@ model Unit {
   userVariables        UserVariable[]     @relation("UserVariableDefaultUnit")
   measurements         Measurement[]      @relation("MeasurementUnit")
   measurementsOriginal Measurement[]      @relation("MeasurementOriginalUnit")
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([unitCategoryId])
 }
@@ -104,7 +106,7 @@ model VariableCategory {
   durationOfAction Int @default(86400)
 
   /// Category-level defaults: can variables here only be causes / outcomes?
-  causeOnly Boolean  @default(false)
+  predictorOnly Boolean  @default(false)
   outcome   Boolean?
 
   imageUrl String?
@@ -114,6 +116,8 @@ model VariableCategory {
 
   // -- Relations --
   globalVariables GlobalVariable[]
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([name])
 }
@@ -148,7 +152,7 @@ model GlobalVariable {
   fillingValue Float? @default(-1)
 
   /// If true, this variable can only be a predictor, never an outcome
-  causeOnly Boolean @default(false)
+  predictorOnly Boolean @default(false)
 
   /// If true, this variable is an outcome people want to optimize
   outcome Boolean?
@@ -173,10 +177,12 @@ model GlobalVariable {
   userVariables               UserVariable[]
   measurements                Measurement[]
   trackingReminders           TrackingReminder[]
-  userRelationshipsAsCause    UserVariableRelationship[]   @relation("UserRelCause")
-  userRelationshipsAsEffect   UserVariableRelationship[]   @relation("UserRelEffect")
-  globalRelationshipsAsCause  GlobalVariableRelationship[] @relation("GlobalRelCause")
-  globalRelationshipsAsEffect GlobalVariableRelationship[] @relation("GlobalRelEffect")
+  userRelationshipsAsPredictor    UserVariableRelationship[]   @relation("UserRelPredictor")
+  userRelationshipsAsOutcome   UserVariableRelationship[]   @relation("UserRelOutcome")
+  globalRelationshipsAsPredictor  GlobalVariableRelationship[] @relation("GlobalRelPredictor")
+  globalRelationshipsAsOutcome GlobalVariableRelationship[] @relation("GlobalRelOutcome")
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([variableCategoryId])
   @@index([defaultUnitId])
@@ -222,6 +228,8 @@ model UserVariable {
   // -- Relations --
   measurements      Measurement[]
   trackingReminders TrackingReminder[]
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([userId, variableId])
   @@index([userId])
@@ -275,6 +283,8 @@ model Measurement {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([userId, variableId, startTime])
   @@index([userId])
@@ -319,6 +329,8 @@ model TrackingReminder {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([userId, variableId, reminderStartTime, reminderFrequency])
   @@index([userId])
@@ -335,20 +347,20 @@ model UserVariableRelationship {
   /// The user who owns this analysis
   userId String
 
-  /// The predictor / cause variable
-  causeVariableId String
-  causeVariable   GlobalVariable @relation("UserRelCause", fields: [causeVariableId], references: [id])
+  /// The predictor variable
+  predictorVariableId String
+  predictorVariable   GlobalVariable @relation("UserRelPredictor", fields: [predictorVariableId], references: [id])
 
-  /// The outcome / effect variable
-  effectVariableId String
-  effectVariable   GlobalVariable @relation("UserRelEffect", fields: [effectVariableId], references: [id])
+  /// The outcome variable
+  outcomeVariableId String
+  outcomeVariable   GlobalVariable @relation("UserRelOutcome", fields: [outcomeVariableId], references: [id])
 
   // -- Statistical fields --
 
-  /// Pearson correlation with cause preceding effect (expected causal direction)
+  /// Pearson correlation with predictor preceding outcome (expected causal direction)
   forwardPearsonCorrelation Float
 
-  /// Pearson correlation with effect preceding cause — if reverse > forward,
+  /// Pearson correlation with outcome preceding predictor — if reverse > forward,
   /// the assumed causal direction may be wrong
   reversePearsonCorrelation Float
 
@@ -373,7 +385,7 @@ model UserVariableRelationship {
   /// Standard deviations from the mean — z > 2 means p < 0.05
   zScore Float?
 
-  /// Number of cause-effect measurement pairs used in the analysis
+  /// Number of predictor-outcome measurement pairs used in the analysis
   numberOfPairs Int
 
   /// Number of days of data included in the analysis
@@ -387,10 +399,10 @@ model UserVariableRelationship {
 
   // -- Temporal parameters --
 
-  /// Time after cause measurement before a perceivable effect is observed (seconds)
+  /// Time after predictor measurement before a perceivable outcome is observed (seconds)
   onsetDelay Int
 
-  /// Time over which the cause produces a perceivable effect following onset (seconds)
+  /// Time over which the predictor produces a perceivable outcome following onset (seconds)
   durationOfAction Int
 
   /// The onset delay (seconds) that produced the strongest Pearson correlation
@@ -405,42 +417,42 @@ model UserVariableRelationship {
   valuePredictingLowOutcome Float?
 
   /// Percent change in outcome typically seen when predictor value is high
-  predictsHighEffectChange Int?
+  predictsHighOutcomeChange Int?
 
   /// Percent change in outcome typically seen when predictor value is low
-  predictsLowEffectChange Int?
+  predictsLowOutcomeChange Int?
 
   /// Average outcome value across all measurements
-  averageEffect Float?
+  averageOutcomeChange Float?
 
-  /// Average outcome value following an above-average cause value
-  averageEffectFollowingHighCause Float?
+  /// Average outcome value following an above-average predictor value
+  averageOutcomeFollowingHighPredictor Float?
 
-  /// Average outcome value following a below-average cause value
-  averageEffectFollowingLowCause Float?
+  /// Average outcome value following a below-average predictor value
+  averageOutcomeFollowingLowPredictor Float?
 
   /// Standardized effect size (Cohen's d or similar)
   effectSize Float?
 
   // -- Baseline / treatment comparison --
 
-  /// Average daily cause value during non-treatment (baseline) periods
-  causeBaselineAveragePerDay Float?
+  /// Average daily predictor value during non-treatment (baseline) periods
+  predictorBaselineAveragePerDay Float?
 
-  /// Average daily cause value during treatment periods
-  causeTreatmentAveragePerDay Float?
+  /// Average daily predictor value during treatment periods
+  predictorTreatmentAveragePerDay Float?
 
   /// Average outcome value during baseline (no treatment) periods
-  effectBaselineAverage Float?
+  outcomeBaselineAverage Float?
 
   /// Standard deviation of outcome during baseline periods
-  effectBaselineStandardDeviation Float?
+  outcomeBaselineStandardDeviation Float?
 
   /// Average outcome value during follow-up (post-treatment) periods
-  effectFollowUpAverage Float?
+  outcomeFollowUpAverage Float?
 
   /// Percent change in outcome from baseline to follow-up
-  effectFollowUpPercentChangeFromBaseline Float?
+  outcomeFollowUpPercentChangeFromBaseline Float?
 
   // -- Quality / meta fields --
 
@@ -459,11 +471,11 @@ model UserVariableRelationship {
   /// Letter grade summarizing evidence quality: A/B/C/D/F
   evidenceGrade String?
 
-  /// Number of times the cause measurement value changed from the preceding value
-  causeChanges Int?
+  /// Number of times the predictor measurement value changed from the preceding value
+  predictorChanges Int?
 
-  /// Number of times the effect measurement value changed from the preceding value
-  effectChanges Int?
+  /// Number of times the outcome measurement value changed from the preceding value
+  outcomeChanges Int?
 
   /// True if the relationship is obvious, uncontrollable, or low confidence
   boring Boolean?
@@ -485,11 +497,13 @@ model UserVariableRelationship {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
-  @@unique([userId, causeVariableId, effectVariableId])
+  @@unique([userId, predictorVariableId, outcomeVariableId])
   @@index([userId])
-  @@index([causeVariableId])
-  @@index([effectVariableId])
+  @@index([predictorVariableId])
+  @@index([outcomeVariableId])
   @@index([analyzedAt])
 }
 
@@ -499,20 +513,20 @@ model UserVariableRelationship {
 model GlobalVariableRelationship {
   id String @id @default(cuid())
 
-  /// The predictor / cause variable
-  causeVariableId String
-  causeVariable   GlobalVariable @relation("GlobalRelCause", fields: [causeVariableId], references: [id])
+  /// The predictor variable
+  predictorVariableId String
+  predictorVariable   GlobalVariable @relation("GlobalRelPredictor", fields: [predictorVariableId], references: [id])
 
-  /// The outcome / effect variable
-  effectVariableId String
-  effectVariable   GlobalVariable @relation("GlobalRelEffect", fields: [effectVariableId], references: [id])
+  /// The outcome variable
+  outcomeVariableId String
+  outcomeVariable   GlobalVariable @relation("GlobalRelOutcome", fields: [outcomeVariableId], references: [id])
 
   // -- Statistical fields --
 
-  /// Pearson correlation with cause preceding effect (expected causal direction)
+  /// Pearson correlation with predictor preceding outcome (expected causal direction)
   forwardPearsonCorrelation Float
 
-  /// Pearson correlation with effect preceding cause — if reverse > forward,
+  /// Pearson correlation with outcome preceding predictor — if reverse > forward,
   /// the assumed causal direction may be wrong
   reversePearsonCorrelation Float
 
@@ -537,7 +551,7 @@ model GlobalVariableRelationship {
   /// Standard deviations from the mean — z > 2 means p < 0.05
   zScore Float?
 
-  /// Number of cause-effect measurement pairs used in the analysis
+  /// Number of predictor-outcome measurement pairs used in the analysis
   numberOfPairs Int
 
   /// Number of days of data included in the analysis
@@ -551,10 +565,10 @@ model GlobalVariableRelationship {
 
   // -- Temporal parameters --
 
-  /// Time after cause measurement before a perceivable effect is observed (seconds)
+  /// Time after predictor measurement before a perceivable outcome is observed (seconds)
   onsetDelay Int
 
-  /// Time over which the cause produces a perceivable effect following onset (seconds)
+  /// Time over which the predictor produces a perceivable outcome following onset (seconds)
   durationOfAction Int
 
   /// The onset delay (seconds) that produced the strongest Pearson correlation
@@ -569,42 +583,42 @@ model GlobalVariableRelationship {
   valuePredictingLowOutcome Float?
 
   /// Percent change in outcome typically seen when predictor value is high
-  predictsHighEffectChange Int?
+  predictsHighOutcomeChange Int?
 
   /// Percent change in outcome typically seen when predictor value is low
-  predictsLowEffectChange Int?
+  predictsLowOutcomeChange Int?
 
   /// Average outcome value across all measurements
-  averageEffect Float?
+  averageOutcomeChange Float?
 
-  /// Average outcome value following an above-average cause value
-  averageEffectFollowingHighCause Float?
+  /// Average outcome value following an above-average predictor value
+  averageOutcomeFollowingHighPredictor Float?
 
-  /// Average outcome value following a below-average cause value
-  averageEffectFollowingLowCause Float?
+  /// Average outcome value following a below-average predictor value
+  averageOutcomeFollowingLowPredictor Float?
 
   /// Standardized effect size (Cohen's d or similar)
   effectSize Float?
 
   // -- Baseline / treatment comparison --
 
-  /// Average daily cause value during non-treatment (baseline) periods
-  causeBaselineAveragePerDay Float?
+  /// Average daily predictor value during non-treatment (baseline) periods
+  predictorBaselineAveragePerDay Float?
 
-  /// Average daily cause value during treatment periods
-  causeTreatmentAveragePerDay Float?
+  /// Average daily predictor value during treatment periods
+  predictorTreatmentAveragePerDay Float?
 
   /// Average outcome value during baseline (no treatment) periods
-  effectBaselineAverage Float?
+  outcomeBaselineAverage Float?
 
   /// Standard deviation of outcome during baseline periods
-  effectBaselineStandardDeviation Float?
+  outcomeBaselineStandardDeviation Float?
 
   /// Average outcome value during follow-up (post-treatment) periods
-  effectFollowUpAverage Float?
+  outcomeFollowUpAverage Float?
 
   /// Percent change in outcome from baseline to follow-up
-  effectFollowUpPercentChangeFromBaseline Float?
+  outcomeFollowUpPercentChangeFromBaseline Float?
 
   // -- Quality / meta fields --
 
@@ -623,11 +637,11 @@ model GlobalVariableRelationship {
   /// Letter grade summarizing evidence quality: A/B/C/D/F
   evidenceGrade String?
 
-  /// Number of times the cause measurement value changed from the preceding value
-  causeChanges Int?
+  /// Number of times the predictor measurement value changed from the preceding value
+  predictorChanges Int?
 
-  /// Number of times the effect measurement value changed from the preceding value
-  effectChanges Int?
+  /// Number of times the outcome measurement value changed from the preceding value
+  outcomeChanges Int?
 
   /// True if the relationship is obvious, uncontrollable, or low confidence
   boring Boolean?
@@ -663,10 +677,12 @@ model GlobalVariableRelationship {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
-  @@unique([causeVariableId, effectVariableId])
-  @@index([causeVariableId])
-  @@index([effectVariableId])
+  @@unique([predictorVariableId, outcomeVariableId])
+  @@index([predictorVariableId])
+  @@index([outcomeVariableId])
   @@index([analyzedAt])
   @@index([numberOfUsers])
 }
@@ -696,6 +712,8 @@ model Jurisdiction {
   participants    Participant[]
   politicians     Politician[]
   aggregationRuns AggregationRun[]
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([type])
   @@index([parentId])
@@ -727,6 +745,8 @@ model Item {
   comparisonsAsA PairwiseComparison[] @relation("itemA")
   comparisonsAsB PairwiseComparison[] @relation("itemB")
   weights        PreferenceWeight[]
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([jurisdictionId])
   @@index([category])
@@ -749,6 +769,10 @@ model Participant {
   createdAt DateTime @default(now())
 
   comparisons PairwiseComparison[]
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([jurisdictionId])
   @@index([region])
@@ -777,6 +801,10 @@ model PairwiseComparison {
   sessionId String?
 
   createdAt DateTime @default(now())
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([participantId, itemAId, itemBId])
   @@index([itemAId, itemBId])
@@ -802,6 +830,12 @@ model PreferenceWeight {
   /// Confidence interval
   ciLow  Float?
   ciHigh Float?
+  /// Timestamp when this record was created
+  createdAt DateTime @default(now())
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([runId, itemId])
   @@index([runId])
@@ -828,6 +862,10 @@ model AggregationRun {
   createdAt DateTime @default(now())
 
   weights PreferenceWeight[]
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([jurisdictionId])
 }
@@ -847,6 +885,12 @@ model Politician {
 
   votes      PoliticianVote[]
   alignments AlignmentScore[]
+  /// Timestamp when this record was created
+  createdAt DateTime @default(now())
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([jurisdictionId])
   @@index([party])
@@ -868,6 +912,12 @@ model PoliticianVote {
   /// Source bill/vote reference
   billId   String?
   voteDate DateTime?
+  /// Timestamp when this record was created
+  createdAt DateTime @default(now())
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@index([politicianId])
   @@index([itemCategory])
@@ -887,6 +937,10 @@ model AlignmentScore {
   votesCompared Int
 
   createdAt DateTime @default(now())
+  /// Timestamp when this record was last updated
+  updatedAt DateTime @updatedAt
+  /// Soft delete timestamp. Null means active record.
+  deletedAt DateTime?
 
   @@unique([politicianId, runId])
   @@index([score])
