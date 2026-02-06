@@ -245,3 +245,71 @@ export const DataQualitySchema = z.object({
 });
 
 export type DataQuality = z.infer<typeof DataQualitySchema>;
+
+/**
+ * Summary of a single user's correlation analysis.
+ * Used as input for population-level aggregation.
+ *
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Correlation.php
+ */
+export const UserCorrelationSummarySchema = z.object({
+  userId: z.string(),
+  /** Forward Pearson r (predictor → outcome) */
+  forwardPearson: z.number(),
+  /** Reverse Pearson r (outcome → predictor) */
+  reversePearson: z.number(),
+  /** Predictive Pearson = forwardPearson - reversePearson */
+  predictivePearson: z.number(),
+  /** Effect size (percent change from baseline) */
+  effectSize: z.number(),
+  /** Statistical significance — used as weight for aggregation */
+  statisticalSignificance: z.number(),
+  /** Number of aligned pairs used in the analysis */
+  numberOfPairs: z.number(),
+  /** Predictor value associated with highest outcome values */
+  valuePredictingHighOutcome: z.number().optional(),
+  /** Predictor value associated with lowest outcome values */
+  valuePredictingLowOutcome: z.number().optional(),
+  /** Optimal daily predictor value */
+  optimalDailyValue: z.number().optional(),
+  /** Percent change from baseline in follow-up period */
+  effectFollowUpPercentChangeFromBaseline: z.number().optional(),
+});
+
+export type UserCorrelationSummary = z.infer<typeof UserCorrelationSummarySchema>;
+
+/**
+ * Population-level aggregate correlation across multiple users.
+ * All numeric fields are weighted averages (by statistical significance).
+ *
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/HasMany/HasManyCorrelations.php
+ */
+export const AggregateCorrelationSchema = z.object({
+  /** Number of users contributing to this aggregate */
+  numberOfUsers: z.number(),
+  /** Weighted average forward Pearson correlation */
+  aggregateForwardPearson: z.number(),
+  /** Weighted average reverse Pearson correlation */
+  aggregateReversePearson: z.number(),
+  /** Weighted average predictive Pearson (forward - reverse) */
+  aggregatePredictivePearson: z.number(),
+  /** Weighted average effect size */
+  aggregateEffectSize: z.number(),
+  /** Weighted average statistical significance */
+  aggregateStatisticalSignificance: z.number(),
+  /** Weighted average value predicting high outcome */
+  aggregateValuePredictingHighOutcome: z.number().nullable(),
+  /** Weighted average value predicting low outcome */
+  aggregateValuePredictingLowOutcome: z.number().nullable(),
+  /** Weighted average optimal daily value */
+  aggregateOptimalDailyValue: z.number().nullable(),
+  /** Weighted average effect follow-up percent change from baseline */
+  aggregateEffectFollowUpPercentChangeFromBaseline: z.number().nullable(),
+  /** Weighted average Predictor Impact Score (PIS) */
+  weightedAveragePIS: z.number(),
+  /** Total number of aligned pairs across all users */
+  totalPairs: z.number(),
+});
+
+export type AggregateCorrelation = z.infer<typeof AggregateCorrelationSchema>;

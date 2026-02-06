@@ -74,6 +74,9 @@ export {
   calculateEffectSize,
   correlationTStatistic,
   tToPValue,
+  calculateReversePearson,
+  calculatePredictivePearson,
+  aggregateCorrelations,
 } from './statistics.js';
 
 // Predictor Impact Score
@@ -91,6 +94,17 @@ export {
   getRecommendation,
   SATURATION_CONSTANTS,
 } from './predictor-impact-score.js';
+
+// Change-from-baseline analysis & optimal daily values
+export {
+  calculateBaselineFollowup,
+  calculateOptimalValues as calculateOptimalDailyValues,
+  groupToPracticalValue,
+} from './change-from-baseline.js';
+export type {
+  BaselineFollowupAnalysis,
+  OptimalValueAnalysis,
+} from './change-from-baseline.js';
 
 // Version
 export const VERSION = '0.1.0';

@@ -9,7 +9,7 @@
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationForwardPearsonCorrelationCoefficientProperty.php
  */
 
-import type { AlignedPair, CorrelationResult, EffectSize } from './types.js';
+import type { AlignedPair, CorrelationResult, EffectSize, UserCorrelationSummary, AggregateCorrelation } from './types.js';
 
 /**
  * Calculate mean of an array
@@ -287,5 +287,150 @@ export function calculateEffectSize(pairs: AlignedPair[]): EffectSize {
     baselineStd,
     baselineN: baseline.length,
     followUpN: followUp.length,
+  };
+}
+
+/**
+ * Calculate reverse Pearson correlation by swapping predictor/outcome roles.
+ *
+ * The legacy API computes this by creating a new QMUserCorrelation with
+ * effect variable as cause and cause variable as effect, then calling
+ * ForwardPearsonCorrelationCoefficientProperty::calculate() on the swapped pair.
+ *
+ * If |reverseR| > |forwardR|, the assumed causality direction may be wrong
+ * (the outcome might actually be driving the predictor).
+ *
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationReversePearsonCorrelationCoefficientProperty.php
+ */
+export function calculateReversePearson(pairs: AlignedPair[]): number {
+  if (pairs.length < 2) return NaN;
+
+  // Swap roles: outcome becomes predictor, predictor becomes outcome
+  const x = pairs.map(p => p.outcomeValue);
+  const y = pairs.map(p => p.predictorValue);
+
+  return pearsonCorrelation(x, y);
+}
+
+/**
+ * Calculate predictive Pearson correlation coefficient.
+ *
+ * predictivePearson = forwardPearson - reversePearson
+ *
+ * Interpretation:
+ *   > 0  → forward direction (predictor → outcome) is stronger — correct direction
+ *   = 0  → no clear directionality
+ *   < 0  → reverse direction is stronger — outcome may actually drive predictor (suspicious)
+ *
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationPredictivePearsonCorrelationCoefficientProperty.php
+ */
+export function calculatePredictivePearson(forwardR: number, reverseR: number): number {
+  return forwardR - reverseR;
+}
+
+/**
+ * Aggregate user-level correlations into a population-level summary.
+ *
+ * Follows the legacy API approach: weight each user's metrics by their
+ * statistical significance, normalized by the average significance across users.
+ *
+ * weight_i = statisticalSignificance_i / mean(statisticalSignificance)
+ * aggregateMetric = mean(metric_i × weight_i)
+ *
+ * This means users with higher statistical significance (more data, stronger signal)
+ * contribute more to the population estimate.
+ *
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/HasMany/HasManyCorrelations.php#L57
+ * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
+ */
+export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]): AggregateCorrelation {
+  // Edge case: no users
+  if (userCorrelations.length === 0) {
+    return {
+      numberOfUsers: 0,
+      aggregateForwardPearson: 0,
+      aggregateReversePearson: 0,
+      aggregatePredictivePearson: 0,
+      aggregateEffectSize: 0,
+      aggregateStatisticalSignificance: 0,
+      aggregateValuePredictingHighOutcome: null,
+      aggregateValuePredictingLowOutcome: null,
+      aggregateOptimalDailyValue: null,
+      aggregateEffectFollowUpPercentChangeFromBaseline: null,
+      weightedAveragePIS: 0,
+      totalPairs: 0,
+    };
+  }
+
+  const n = userCorrelations.length;
+
+  // Calculate average statistical significance for normalization
+  const avgSignificance = userCorrelations.reduce((sum, u) => sum + u.statisticalSignificance, 0) / n;
+
+  /**
+   * Weighted average following the legacy PHP pattern:
+   *   weight_i = significance_i / avgSignificance  (or 1 if avgSignificance is 0)
+   *   result = mean(value_i × weight_i)
+   *
+   * When all significances are equal, weights are 1 and this reduces to simple mean.
+   * When avgSignificance is 0, fall back to simple mean (all weights = 1).
+   */
+  function weightedAvg(values: number[]): number {
+    if (values.length === 0) return 0;
+    let sum = 0;
+    let count = 0;
+    for (let i = 0; i < values.length; i++) {
+      const val = values[i]!;
+      const sig = userCorrelations[i]!.statisticalSignificance;
+      const weight = avgSignificance > 0 ? sig / avgSignificance : 1;
+      sum += val * weight;
+      count++;
+    }
+    return count > 0 ? sum / count : 0;
+  }
+
+  /**
+   * Weighted average for optional numeric fields.
+   * Only includes users that have a defined value for the field.
+   * Returns null if no users have the field defined.
+   */
+  function weightedAvgOptional(extractor: (u: UserCorrelationSummary) => number | undefined): number | null {
+    const validEntries: { value: number; significance: number }[] = [];
+    for (const u of userCorrelations) {
+      const val = extractor(u);
+      if (val !== undefined && val !== null) {
+        validEntries.push({ value: val, significance: u.statisticalSignificance });
+      }
+    }
+    if (validEntries.length === 0) return null;
+
+    const localAvgSig = validEntries.reduce((s, e) => s + e.significance, 0) / validEntries.length;
+    let sum = 0;
+    for (const entry of validEntries) {
+      const weight = localAvgSig > 0 ? entry.significance / localAvgSig : 1;
+      sum += entry.value * weight;
+    }
+    return sum / validEntries.length;
+  }
+
+  const totalPairs = userCorrelations.reduce((sum, u) => sum + u.numberOfPairs, 0);
+
+  return {
+    numberOfUsers: n,
+    aggregateForwardPearson: weightedAvg(userCorrelations.map(u => u.forwardPearson)),
+    aggregateReversePearson: weightedAvg(userCorrelations.map(u => u.reversePearson)),
+    aggregatePredictivePearson: weightedAvg(userCorrelations.map(u => u.predictivePearson)),
+    aggregateEffectSize: weightedAvg(userCorrelations.map(u => u.effectSize)),
+    aggregateStatisticalSignificance: weightedAvg(userCorrelations.map(u => u.statisticalSignificance)),
+    aggregateValuePredictingHighOutcome: weightedAvgOptional(u => u.valuePredictingHighOutcome),
+    aggregateValuePredictingLowOutcome: weightedAvgOptional(u => u.valuePredictingLowOutcome),
+    aggregateOptimalDailyValue: weightedAvgOptional(u => u.optimalDailyValue),
+    aggregateEffectFollowUpPercentChangeFromBaseline: weightedAvgOptional(u => u.effectFollowUpPercentChangeFromBaseline),
+    weightedAveragePIS: weightedAvg(userCorrelations.map(u => {
+      // PIS approximation: |forwardPearson| × statisticalSignificance
+      // This mirrors the legacy qm_score weighting
+      return Math.abs(u.forwardPearson) * u.statisticalSignificance;
+    })),
+    totalPairs,
   };
 }
