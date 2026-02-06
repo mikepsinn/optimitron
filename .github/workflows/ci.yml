@@ -37,10 +37,10 @@ jobs:
         run: pnpm --filter '!@optomitron/web' run build
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm --filter '!@optomitron/web' run typecheck
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm --filter '!@optomitron/web' run lint
 
       - name: Test
-        run: pnpm test
+        run: pnpm --filter '!@optomitron/web' run test
