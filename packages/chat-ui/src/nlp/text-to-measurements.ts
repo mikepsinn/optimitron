@@ -304,8 +304,8 @@ function parseLLMResponse(raw: string, originalText: string, currentLocalDateTim
     // Maybe the LLM returned an array directly or used a different key
     if (Array.isArray(parsed)) {
       items = parsed as unknown as LLMParseResponse['measurements'];
-    } else if (Array.isArray((parsed as Record<string, unknown>).data)) {
-      items = (parsed as Record<string, unknown>).data as LLMParseResponse['measurements'];
+    } else if (Array.isArray((parsed as unknown as Record<string, unknown>)['data'])) {
+      items = (parsed as unknown as Record<string, unknown>)['data'] as LLMParseResponse['measurements'];
     } else {
       return [];
     }

@@ -11,6 +11,8 @@
 
 import {
   type ParsedMeasurement,
+  type VariableCategoryName,
+  type UnitAbbreviation,
   VariableCategoryNames,
   UnitAbbreviations,
   CATEGORY_DEFAULTS,

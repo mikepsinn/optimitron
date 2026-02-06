@@ -278,9 +278,9 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const tookPattern = /\btook\s+(\d+(?:\.\d+)?)\s*(mg|g|kg|mcg|ug|µg|iu|ml|tablets?|tabs?|capsules?|caps?|doses?|pills?)\s+(?:of\s+)?(.+)/i;
   const tookMatch = text.match(tookPattern);
   if (tookMatch) {
-    const value = parseFloat(tookMatch[1]);
-    const unit = normalizeUnit(tookMatch[2]);
-    const name = cleanVariableName(tookMatch[3]);
+    const value = parseFloat(tookMatch[1]!);
+    const unit = normalizeUnit(tookMatch[2]!);
+    const name = cleanVariableName(tookMatch[3]!);
     if (unit && name) {
       results.push(makeMeasurement(
         name, value, unit,
@@ -296,9 +296,9 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const dosePattern = /^(\d+(?:\.\d+)?)\s*(mg|g|kg|mcg|ug|µg|iu|ml|tablets?|tabs?|capsules?|caps?|doses?|pills?)\s+(?:of\s+)?(.+)/i;
   const doseMatch = text.match(dosePattern);
   if (doseMatch) {
-    const value = parseFloat(doseMatch[1]);
-    const unit = normalizeUnit(doseMatch[2]);
-    const name = cleanVariableName(doseMatch[3]);
+    const value = parseFloat(doseMatch[1]!);
+    const unit = normalizeUnit(doseMatch[2]!);
+    const name = cleanVariableName(doseMatch[3]!);
     if (unit && name) {
       results.push(makeMeasurement(
         name, value, unit,
@@ -314,8 +314,8 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const weightPatternEarly = /\b(?:weight|weigh|weighed)\s+(\d+(?:\.\d+)?)\s*(lbs?|kg|pounds?|kilograms?)\b/i;
   const weightMatchEarly = text.match(weightPatternEarly);
   if (weightMatchEarly) {
-    const value = parseFloat(weightMatchEarly[1]);
-    const unit = normalizeUnit(weightMatchEarly[2]) ?? 'lb';
+    const value = parseFloat(weightMatchEarly[1]!);
+    const unit = normalizeUnit(weightMatchEarly[2]!) ?? 'lb';
     results.push(makeMeasurement(
       'Body Weight', value, unit,
       'Vital Sign', 'MEAN', text,
@@ -327,9 +327,9 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const nameFirstPattern = /^(.+?)\s+(\d+(?:\.\d+)?)\s*(mg|g|kg|mcg|ug|µg|iu|ml|tablets?|tabs?|capsules?|caps?|doses?|pills?)$/i;
   const nameFirstMatch = text.match(nameFirstPattern);
   if (nameFirstMatch) {
-    const name = cleanVariableName(nameFirstMatch[1]);
-    const value = parseFloat(nameFirstMatch[2]);
-    const unit = normalizeUnit(nameFirstMatch[3]);
+    const name = cleanVariableName(nameFirstMatch[1]!);
+    const value = parseFloat(nameFirstMatch[2]!);
+    const unit = normalizeUnit(nameFirstMatch[3]!);
     if (unit && name && !RATING_VARIABLES[name.toLowerCase()]) {
       results.push(makeMeasurement(
         name, value, unit,
@@ -346,9 +346,9 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const ratingPattern = /^(.+?)\s+(?:severity\s+)?(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+)|out\s+of\s+(\d+))/i;
   const ratingMatch = text.match(ratingPattern);
   if (ratingMatch) {
-    const rawName = ratingMatch[1].trim().toLowerCase();
-    const value = parseFloat(ratingMatch[2]);
-    const maxVal = parseInt(ratingMatch[3] ?? ratingMatch[4], 10);
+    const rawName = ratingMatch[1]!.trim().toLowerCase();
+    const value = parseFloat(ratingMatch[2]!);
+    const maxVal = parseInt(ratingMatch[3]! ?? ratingMatch[4], 10);
     const ratingVar = RATING_VARIABLES[rawName];
     const unitAbbr: UnitAbbreviation = maxVal <= 5 ? '1-5' : '1-10';
 
@@ -371,8 +371,8 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const severityPattern = /^(.+?)\s+severity\s+(\d+(?:\.\d+)?)\s*$/i;
   const severityMatch = text.match(severityPattern);
   if (severityMatch) {
-    const rawName = severityMatch[1].trim().toLowerCase();
-    const value = parseFloat(severityMatch[2]);
+    const rawName = severityMatch[1]!.trim().toLowerCase();
+    const value = parseFloat(severityMatch[2]!);
     const ratingVar = RATING_VARIABLES[rawName];
     const unitAbbr: UnitAbbreviation = value > 5 ? '1-10' : '1-5';
 
@@ -394,8 +394,8 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const simpleRatingPattern = /^(mood|energy|motivation|happiness|stress|anxiety|depression|pain|nausea|fatigue|headache|insomnia|brain fog|focus|concentration|sleep quality)\s+(\d+(?:\.\d+)?)\s*$/i;
   const simpleRatingMatch = text.match(simpleRatingPattern);
   if (simpleRatingMatch) {
-    const rawName = simpleRatingMatch[1].trim().toLowerCase();
-    const value = parseFloat(simpleRatingMatch[2]);
+    const rawName = simpleRatingMatch[1]!.trim().toLowerCase();
+    const value = parseFloat(simpleRatingMatch[2]!);
     const ratingVar = RATING_VARIABLES[rawName];
     const unitAbbr: UnitAbbreviation = value > 5 ? '1-10' : '1-5';
 
@@ -412,7 +412,7 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const mealPattern = /^(?:had|ate|eaten|eat|drinking|drank|had a|ate a|had an|ate an)\s+(.+?)(?:\s+for\s+(breakfast|lunch|dinner|supper|snack|brunch))?\s*$/i;
   const mealMatch = text.match(mealPattern);
   if (mealMatch) {
-    const foodText = mealMatch[1].trim().toLowerCase();
+    const foodText = mealMatch[1]!.trim().toLowerCase();
     const meal = mealMatch[2]?.toLowerCase();
     const startAt = meal ? mealTimeStartAt(meal) : undefined;
 
@@ -437,8 +437,8 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const foodForMealPattern = /^(.+?)\s+for\s+(breakfast|lunch|dinner|supper|snack|brunch)\s*$/i;
   const foodForMealMatch = text.match(foodForMealPattern);
   if (foodForMealMatch) {
-    const foodText = foodForMealMatch[1].trim().toLowerCase();
-    const meal = foodForMealMatch[2].toLowerCase();
+    const foodText = foodForMealMatch[1]!.trim().toLowerCase();
+    const meal = foodForMealMatch[2]!.toLowerCase();
     const startAt = mealTimeStartAt(meal);
 
     const foodInfo = COMMON_FOODS[foodText];
@@ -461,7 +461,7 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const sleepPattern = /\bslept\s+(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\b/i;
   const sleepMatch = text.match(sleepPattern);
   if (sleepMatch) {
-    const value = parseFloat(sleepMatch[1]);
+    const value = parseFloat(sleepMatch[1]!);
     results.push(makeMeasurement(
       'Sleep Duration', value, 'h',
       'Sleep', 'SUM', text,
@@ -473,8 +473,8 @@ function parseSegment(text: string): ParsedMeasurement[] {
   const exercisePattern = /\b(?:walked|ran|jogged|hiked|biked|cycled)\s+(\d+(?:\.\d+)?)\s*(steps?|miles?|km|kilometers?|minutes?|min|hours?|hrs?|h)\b/i;
   const exerciseMatch = text.match(exercisePattern);
   if (exerciseMatch) {
-    const value = parseFloat(exerciseMatch[1]);
-    const rawUnit = exerciseMatch[2].toLowerCase();
+    const value = parseFloat(exerciseMatch[1]!);
+    const rawUnit = exerciseMatch[2]!.toLowerCase();
     const unit = normalizeUnit(rawUnit) ?? 'min';
     results.push(makeMeasurement(
       'Exercise Duration', value, unit,
