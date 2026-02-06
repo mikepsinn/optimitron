@@ -144,10 +144,42 @@ No exceptions. No "I'll add tests later." Tests ship with code.
 1. `cd /mnt/e/code/optomitron`
 2. `git pull` (get latest)
 3. Check for issues: `pnpm test`, `pnpm build`
-4. Make improvements
-5. `git add -A && git commit -m "..."` 
-6. `git push`
-7. Report what you did
+4. **Self-review pass** (see below)
+5. Make improvements
+6. `git add -A && git commit -m "..."` 
+7. `git push`
+8. Report what you did
+
+## Self-Review: Be Ruthlessly Critical
+
+Every run, before picking a new task, spend 2 minutes scanning the codebase with fresh eyes. Ask yourself:
+
+### Code Smells to Fix Immediately
+- **Dead code**: Unused imports, unreachable branches, commented-out code → delete it
+- **Copy-paste**: Same logic in multiple places → extract to shared function
+- **Over-engineering**: Abstract base classes nobody extends, factories that create one thing, "generic" wrappers with one use case → simplify
+- **Wrong abstractions**: If a function takes 8 parameters, it's doing too much → split it
+- **Misleading names**: If you have to read the implementation to understand what a function does, rename it
+- **Magic numbers**: Unexplained constants → named constants with comments citing the paper
+- **Stale TODOs**: TODO comments older than 1 week with no plan → either do it or delete it
+
+### Architecture Smells
+- **Packages that import each other circularly** → restructure
+- **Giant files** (>500 lines) → split by responsibility
+- **Types duplicated across packages** → move to shared types
+- **Unnecessary dependencies** → if you can do it in 10 lines, don't import a library
+- **Over-abstraction**: Don't build "frameworks" — build working code. If there's only one implementation, you don't need an interface.
+
+### The Simplicity Test
+For every piece of code, ask: **"Could a junior developer understand this in 30 seconds?"**
+If not, simplify it. This is a library for calculating correlations and scoring evidence — it should not feel like enterprise Java.
+
+### What Good Looks Like
+- Functions are <30 lines
+- Files are <300 lines
+- Module names tell you exactly what's inside
+- Tests read like documentation
+- No unnecessary abstractions — just functions that take data and return results
 
 ## Contact
 
