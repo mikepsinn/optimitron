@@ -139,8 +139,8 @@ export interface RankedCountry {
 
 export interface ComparisonResult {
   dataset: string;
-  country1: Record<string, unknown>;
-  country2: Record<string, unknown>;
+  country1: Record<string, any>;
+  country2: Record<string, any>;
   /** For every numeric field, country1 value − country2 value */
   differences: Record<string, number>;
 }
@@ -1251,7 +1251,7 @@ export const CRIMINAL_JUSTICE_COMPARISON: CountryCriminalJustice[] = [
  * @param ascending - If true, lowest value ranks first (default: true)
  * @returns Sorted array of RankedCountry objects
  */
-export function rankCountries<T extends Record<string, unknown>>(
+export function rankCountries<T extends Record<string, any>>(
   dataset: T[],
   metric: string,
   ascending = true,
@@ -1277,7 +1277,7 @@ export function rankCountries<T extends Record<string, unknown>>(
  * @param n - Number of top performers to return
  * @param ascending - If true, lowest values are "best" (default: true — lower mortality = better)
  */
-export function getTopPerformers<T extends Record<string, unknown>>(
+export function getTopPerformers<T extends Record<string, any>>(
   dataset: T[],
   metric: string,
   n: number,
@@ -1295,7 +1295,7 @@ export function getTopPerformers<T extends Record<string, unknown>>(
  * @param datasetName - Label for the dataset (used in the result)
  * @returns ComparisonResult or null if either country is not found
  */
-export function getCountryComparison<T extends Record<string, unknown>>(
+export function getCountryComparison<T extends Record<string, any>>(
   country1: string,
   country2: string,
   dataset: T[],
@@ -1321,8 +1321,8 @@ export function getCountryComparison<T extends Record<string, unknown>>(
 
   return {
     dataset: datasetName,
-    country1: { ...(c1 as Record<string, unknown>) },
-    country2: { ...(c2 as Record<string, unknown>) },
+    country1: { ...(c1 as Record<string, any>) },
+    country2: { ...(c2 as Record<string, any>) },
     differences,
   };
 }

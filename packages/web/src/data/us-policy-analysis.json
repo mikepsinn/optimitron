@@ -1,0 +1,463 @@
+{
+  "jurisdiction": "United States of America",
+  "analysisDate": "2026-02-06",
+  "policies": [
+    {
+      "name": "Double NIH Research Funding",
+      "type": "budget_allocation",
+      "category": "health_research",
+      "description": "Double NIH budget from $48B to $96B over 5 years",
+      "recommendationType": "replace",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7529358084619813,
+      "policyImpactScore": 0.7517614850771888,
+      "welfareScore": 75,
+      "incomeEffect": 0.25,
+      "healthEffect": 0.5,
+      "bradfordHillScores": {
+        "strength": 0.8646647167633873,
+        "consistency": 0.6321205588285577,
+        "temporality": 1,
+        "gradient": 0.6923076923076923,
+        "experiment": 0.6900000000000001,
+        "plausibility": 1,
+        "coherence": 0.9997751326758212,
+        "analogy": 0.85,
+        "specificity": 0.3394536660667255
+      },
+      "rationale": "Previous NIH doubling (1998-2003) led to genomic revolution. ROI on biomedical research estimated at 40-50%.",
+      "currentStatus": "$48B annual NIH budget",
+      "recommendedTarget": "$96B annual NIH budget",
+      "blockingFactors": [
+        "budget_constraint"
+      ]
+    },
+    {
+      "name": "Earned Income Tax Credit Expansion",
+      "type": "tax_policy",
+      "category": "income_security",
+      "description": "Expand EITC eligibility and benefit amounts for childless workers and families",
+      "recommendationType": "replace",
+      "evidenceGrade": "A",
+      "causalConfidenceScore": 0.8135158993495617,
+      "policyImpactScore": 0.728109539609737,
+      "welfareScore": 60,
+      "incomeEffect": 0.45,
+      "healthEffect": 0.15,
+      "bradfordHillScores": {
+        "strength": 0.7768698398515702,
+        "consistency": 0.6988057880877979,
+        "temporality": 1,
+        "gradient": 0.674648620510151,
+        "experiment": 0.95,
+        "plausibility": 1,
+        "coherence": 0.9998765901959134,
+        "analogy": 0.85,
+        "specificity": 0.41905978419640516
+      },
+      "rationale": "Strong RCT evidence shows EITC expansion reduces poverty, increases labor force participation, and improves child outcomes.",
+      "currentStatus": "$7,430 max credit (family w/ 3+ children)",
+      "recommendedTarget": "$10,000 max credit with expanded childless worker eligibility",
+      "blockingFactors": [
+        "budget_constraint",
+        "political"
+      ]
+    },
+    {
+      "name": "Permanent Expanded Child Tax Credit",
+      "type": "tax_policy",
+      "category": "income_security",
+      "description": "Make 2021 expanded CTC ($3,600/child) permanent and fully refundable",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7902720076490526,
+      "policyImpactScore": 0.6941632045894315,
+      "welfareScore": 55.00000000000001,
+      "incomeEffect": 0.4,
+      "healthEffect": 0.15,
+      "bradfordHillScores": {
+        "strength": 0.8233055542434032,
+        "consistency": 0.7768698398515702,
+        "temporality": 1,
+        "gradient": 0.6621621621621621,
+        "experiment": 0.76,
+        "plausibility": 1,
+        "coherence": 0.9990881180344455,
+        "analogy": 0.9,
+        "specificity": 0.3581970477838151
+      },
+      "rationale": "2021 expansion cut child poverty by 46%. Canada CDB shows sustained poverty reduction effects.",
+      "blockingFactors": [
+        "budget_constraint",
+        "political"
+      ]
+    },
+    {
+      "name": "Universal Pre-K (Ages 3-4)",
+      "type": "budget_allocation",
+      "category": "education",
+      "description": "Federally funded universal pre-kindergarten for all 3-4 year olds",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7400650853835291,
+      "policyImpactScore": 0.6640390512301175,
+      "welfareScore": 55.00000000000001,
+      "incomeEffect": 0.35,
+      "healthEffect": 0.2,
+      "bradfordHillScores": {
+        "strength": 0.8401202539203061,
+        "consistency": 0.7768698398515702,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.92,
+        "plausibility": 1,
+        "coherence": 0.9994995485665594,
+        "analogy": 0.8,
+        "specificity": 0.3581970477838151
+      },
+      "rationale": "Perry Preschool and Head Start RCTs show long-term gains in earnings, education, and reduced crime. ROI estimated at 7:1.",
+      "blockingFactors": [
+        "budget_constraint",
+        "political"
+      ]
+    },
+    {
+      "name": "Medicare Drug Price Negotiation Expansion",
+      "type": "regulation",
+      "category": "medicare",
+      "description": "Expand IRA drug negotiation to cover more drugs sooner",
+      "recommendationType": "replace",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7792980837163797,
+      "policyImpactScore": 0.6675788502298278,
+      "welfareScore": 50,
+      "incomeEffect": 0.2,
+      "healthEffect": 0.3,
+      "bradfordHillScores": {
+        "strength": 0.7182307109050416,
+        "consistency": 0.8646647167633873,
+        "temporality": 1,
+        "gradient": 0.6282527881040892,
+        "experiment": 0.7200000000000001,
+        "plausibility": 1,
+        "coherence": 0.9975212478233336,
+        "analogy": 0.9,
+        "specificity": 0.383224293337255
+      },
+      "rationale": "All peer OECD nations negotiate drug prices. Cross-country evidence shows 30-60% savings with no reduction in innovation.",
+      "currentStatus": "10 drugs negotiated in 2026",
+      "recommendedTarget": "50+ drugs by 2028, covering Part D and Part B",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "National Paid Family Leave",
+      "type": "law",
+      "category": "income_security",
+      "description": "12 weeks paid family and medical leave at 66% wage replacement",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7716880389017244,
+      "policyImpactScore": 0.6430128233410347,
+      "welfareScore": 45,
+      "incomeEffect": 0.2,
+      "healthEffect": 0.25,
+      "bradfordHillScores": {
+        "strength": 0.7364028618842733,
+        "consistency": 0.8347011117784134,
+        "temporality": 1,
+        "gradient": 0.5736698499317872,
+        "experiment": 0.7360000000000001,
+        "plausibility": 1,
+        "coherence": 0.998338442726826,
+        "analogy": 0.9,
+        "specificity": 0.3581970477838151
+      },
+      "rationale": "US is only OECD nation without federal paid leave. State programs (CA, NJ, WA) show improved maternal/infant health and labor force participation.",
+      "blockingFactors": [
+        "budget_constraint",
+        "political"
+      ]
+    },
+    {
+      "name": "High-Skill Immigration Reform",
+      "type": "law",
+      "category": "general_govt",
+      "description": "Increase H-1B cap, create startup visa, clear green card backlog",
+      "recommendationType": "replace",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.6915216508676161,
+      "policyImpactScore": 0.5949129905205697,
+      "welfareScore": 45,
+      "incomeEffect": 0.4,
+      "healthEffect": 0.05,
+      "bradfordHillScores": {
+        "strength": 0.6885967760854024,
+        "consistency": 0.5506710358827784,
+        "temporality": 1,
+        "gradient": 0.5475113122171946,
+        "experiment": 0.7040000000000001,
+        "plausibility": 1,
+        "coherence": 0.9877226600969315,
+        "analogy": 0.75,
+        "specificity": 0.383224293337255
+      },
+      "rationale": "Canada and Australia points-based systems show high-skill immigration boosts GDP per capita and innovation.",
+      "currentStatus": "85,000 H-1B annual cap",
+      "recommendedTarget": "200,000+ H-1B cap with startup visa category",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "Sustained Infrastructure Investment (IIJA+)",
+      "type": "budget_allocation",
+      "category": "transportation",
+      "description": "Maintain IIJA spending levels beyond 2026 with expanded transit and broadband",
+      "recommendationType": "replace",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7355808637587262,
+      "policyImpactScore": 0.6013485182552358,
+      "welfareScore": 40,
+      "incomeEffect": 0.3,
+      "healthEffect": 0.1,
+      "bradfordHillScores": {
+        "strength": 0.7364028618842733,
+        "consistency": 0.6321205588285577,
+        "temporality": 1,
+        "gradient": 0.5901639344262295,
+        "experiment": 0.765,
+        "plausibility": 1,
+        "coherence": 0.996302136283517,
+        "analogy": 0.8,
+        "specificity": 0.3581970477838151
+      },
+      "rationale": "ASCE rates US infrastructure C−. Multiplier effects of 1.5-2.0x on GDP; reduces commute times and freight costs.",
+      "currentStatus": "IIJA $550B new spending (2022-2026)",
+      "recommendedTarget": "Sustained $150B/year above baseline",
+      "blockingFactors": [
+        "budget_constraint",
+        "political"
+      ]
+    },
+    {
+      "name": "National Clean Energy Standard",
+      "type": "regulation",
+      "category": "energy",
+      "description": "80% clean electricity by 2030, 100% by 2035",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7231888217401028,
+      "policyImpactScore": 0.5939132930440617,
+      "welfareScore": 40,
+      "incomeEffect": 0.1,
+      "healthEffect": 0.3,
+      "bradfordHillScores": {
+        "strength": 0.7768698398515702,
+        "consistency": 0.5934303402594009,
+        "temporality": 1,
+        "gradient": 0.6059268600252207,
+        "experiment": 0.7040000000000001,
+        "plausibility": 1,
+        "coherence": 0.9877226600969315,
+        "analogy": 0.8,
+        "specificity": 0.383224293337255
+      },
+      "rationale": "State-level RPS data shows clean energy standards reduce emissions 10-20% with modest electricity cost increases.",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "Federal Incentives for Zoning Reform",
+      "type": "regulation",
+      "category": "housing",
+      "description": "Tie federal transportation/HUD funding to local zoning reform for housing supply",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.6778561905994225,
+      "policyImpactScore": 0.5667137143596535,
+      "welfareScore": 40,
+      "incomeEffect": 0.3,
+      "healthEffect": 0.1,
+      "bradfordHillScores": {
+        "strength": 0.7534030360583935,
+        "consistency": 0.4511883639059735,
+        "temporality": 1,
+        "gradient": 0.5736698499317872,
+        "experiment": 0.68,
+        "plausibility": 1,
+        "coherence": 0.9726762775527075,
+        "analogy": 0.7,
+        "specificity": 0.41905978419640516
+      },
+      "rationale": "Supply-side housing reform in Japan, Auckland, and US state-level (OR, CA) show reduced housing costs.",
+      "blockingFactors": [
+        "political",
+        "federal_preemption"
+      ]
+    },
+    {
+      "name": "Carbon Pricing / Carbon Fee-and-Dividend",
+      "type": "tax_policy",
+      "category": "environment",
+      "description": "Economy-wide carbon fee starting at $50/ton with revenue returned as dividends",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.7330500135653008,
+      "policyImpactScore": 0.5798300081391804,
+      "welfareScore": 35,
+      "incomeEffect": 0.1,
+      "healthEffect": 0.25,
+      "bradfordHillScores": {
+        "strength": 0.8111243971624382,
+        "consistency": 0.5506710358827784,
+        "temporality": 1,
+        "gradient": 0.6490735541830432,
+        "experiment": 0.748,
+        "plausibility": 1,
+        "coherence": 0.9932620530009145,
+        "analogy": 0.75,
+        "specificity": 0.383224293337255
+      },
+      "rationale": "BC carbon tax and EU ETS show emissions reduction with minimal GDP impact. Dividend return makes it progressive.",
+      "blockingFactors": [
+        "political",
+        "constitutional"
+      ]
+    },
+    {
+      "name": "Shift Drug Policy from Criminal to Health Approach",
+      "type": "law",
+      "category": "justice",
+      "description": "Redirect drug enforcement spending to treatment and harm reduction",
+      "recommendationType": "replace",
+      "evidenceGrade": "C",
+      "causalConfidenceScore": 0.5540252024038045,
+      "policyImpactScore": 0.4724151214422827,
+      "welfareScore": 35,
+      "incomeEffect": 0.1,
+      "healthEffect": 0.25,
+      "bradfordHillScores": {
+        "strength": 0.6885967760854024,
+        "consistency": 0.5034146962085905,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.533,
+        "plausibility": 0.8,
+        "coherence": 0.9816843611112658,
+        "analogy": 0.7,
+        "specificity": 0.383224293337255
+      },
+      "rationale": "Portugal decriminalization (2001) shows reduced overdose deaths, HIV, and incarceration without increased use.",
+      "currentStatus": "Criminal penalties for drug possession in most states",
+      "recommendedTarget": "Civil penalties with mandatory treatment referrals",
+      "blockingFactors": [
+        "political",
+        "federal_preemption"
+      ]
+    },
+    {
+      "name": "Occupational Licensing Reform",
+      "type": "regulation",
+      "category": "general_govt",
+      "description": "Federal incentives for states to reduce unnecessary occupational licensing barriers",
+      "recommendationType": "enact",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.6724534118503491,
+      "policyImpactScore": 0.5114720471102094,
+      "welfareScore": 27,
+      "incomeEffect": 0.25,
+      "healthEffect": 0.02,
+      "bradfordHillScores": {
+        "strength": 0.6067592791314018,
+        "consistency": 0.5506710358827784,
+        "temporality": 1,
+        "gradient": 0.5,
+        "experiment": 0.7200000000000001,
+        "plausibility": 1,
+        "coherence": 0.9816843611112658,
+        "analogy": 0.65,
+        "specificity": 0.41905978419640516
+      },
+      "rationale": "Licensing reform in AZ and universal recognition states show increased labor mobility and lower consumer prices.",
+      "blockingFactors": [
+        "federal_preemption",
+        "political"
+      ]
+    },
+    {
+      "name": "NEPA & Permitting Reform",
+      "type": "regulation",
+      "category": "general_govt",
+      "description": "Streamline environmental review and permitting for infrastructure and clean energy",
+      "recommendationType": "enact",
+      "evidenceGrade": "C",
+      "causalConfidenceScore": 0.5531796386938812,
+      "policyImpactScore": 0.4319077832163287,
+      "welfareScore": 25,
+      "incomeEffect": 0.2,
+      "healthEffect": 0.05,
+      "bradfordHillScores": {
+        "strength": 0.6321205588285577,
+        "consistency": 0.3934693402873666,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.6375,
+        "plausibility": 0.9,
+        "coherence": 0.950212931632136,
+        "analogy": 0.65,
+        "specificity": 0.41905978419640516
+      },
+      "rationale": "Average permitting time of 4.5 years delays critical projects. Germany and EU permitting reform shows 50% time reduction.",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "Defense Spending Efficiency Audit & Reform",
+      "type": "regulation",
+      "category": "defense",
+      "description": "Achieve clean DoD audit, reduce procurement waste, close redundant bases",
+      "recommendationType": "replace",
+      "evidenceGrade": "C",
+      "causalConfidenceScore": 0.44381839852255395,
+      "policyImpactScore": 0.33429103911353236,
+      "welfareScore": 17,
+      "incomeEffect": 0.15,
+      "healthEffect": 0.02,
+      "bradfordHillScores": {
+        "strength": 0.486582880967408,
+        "consistency": 0.3934693402873666,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.32000000000000006,
+        "plausibility": 0.8,
+        "coherence": 0.9092820467105875,
+        "analogy": 0.6,
+        "specificity": 0.41905978419640516
+      },
+      "rationale": "GAO estimates $100-200B in potential savings. Allied nations achieve comparable readiness at lower cost.",
+      "currentStatus": "DoD has failed 6 consecutive audits",
+      "recommendedTarget": "Clean audit by 2028, 5% efficiency savings",
+      "blockingFactors": [
+        "political",
+        "implementation_capacity"
+      ]
+    }
+  ],
+  "topRecommendations": [
+    "Modify: Double NIH Research Funding (Grade B, welfare +75)",
+    "Modify: Earned Income Tax Credit Expansion (Grade A, welfare +60)",
+    "Enact: Permanent Expanded Child Tax Credit (Grade B, welfare +55)",
+    "Enact: Universal Pre-K (Ages 3-4) (Grade B, welfare +55)",
+    "Modify: Medicare Drug Price Negotiation Expansion (Grade B, welfare +50)",
+    "Enact: National Paid Family Leave (Grade B, welfare +45)",
+    "Modify: High-Skill Immigration Reform (Grade B, welfare +45)",
+    "Modify: Sustained Infrastructure Investment (IIJA+) (Grade B, welfare +40)",
+    "Enact: National Clean Energy Standard (Grade B, welfare +40)",
+    "Enact: Federal Incentives for Zoning Reform (Grade B, welfare +40)"
+  ],
+  "generatedAt": "2026-02-06T22:29:22.002Z"
+}
