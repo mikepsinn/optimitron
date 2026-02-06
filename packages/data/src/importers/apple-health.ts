@@ -16,6 +16,8 @@
  * ```
  */
 
+import { resolveVariableName } from './standard-variable-names.js';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -548,6 +550,11 @@ export function parseAppleHealthXML(xmlString: string): ParsedHealthRecord[] {
     if (record) {
       records.push(record);
     }
+  }
+
+  // Normalize variable names to canonical forms
+  for (const record of records) {
+    record.variableName = resolveVariableName(record.variableName, 'apple_health');
   }
 
   return records;

@@ -15,6 +15,7 @@
  */
 
 import type { ParsedHealthRecord } from './apple-health.js';
+import { resolveVariableName } from './standard-variable-names.js';
 import { buildImportSummary, type ImportSummary } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -283,6 +284,11 @@ export function parseOuraExport(json: string): ParsedHealthRecord[] {
   records.push(...parseSleep(data.sleep ?? data.daily_sleep ?? []));
   records.push(...parseActivity(data.activity ?? data.daily_activity ?? []));
   records.push(...parseReadiness(data.readiness ?? data.daily_readiness ?? []));
+
+  // Normalize variable names to canonical forms
+  for (const record of records) {
+    record.variableName = resolveVariableName(record.variableName, 'oura');
+  }
 
   return records;
 }

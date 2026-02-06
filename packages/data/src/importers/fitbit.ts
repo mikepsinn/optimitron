@@ -29,6 +29,7 @@
  */
 
 import type { ParsedHealthRecord } from './apple-health.js';
+import { resolveVariableName } from './standard-variable-names.js';
 import { buildImportSummary, type ImportSummary } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -379,6 +380,11 @@ export function parseFitbitExport(files: FitbitExportFiles): ParsedHealthRecord[
   for (const json of files.heartRate ?? []) records.push(...parseFitbitHeartRateFile(json));
   for (const json of files.exercise ?? []) records.push(...parseFitbitExerciseFile(json));
   for (const json of files.body ?? []) records.push(...parseFitbitBodyFile(json));
+
+  // Normalize variable names to canonical forms
+  for (const record of records) {
+    record.variableName = resolveVariableName(record.variableName, 'fitbit');
+  }
 
   return records;
 }
