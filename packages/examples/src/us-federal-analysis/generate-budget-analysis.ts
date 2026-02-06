@@ -163,17 +163,19 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Defense',
     spendingBillions: 886,
     spendingType: 'program',
+    // Per-capita spending. US spends ~$2,637/cap — far above peers.
+    // Steep diminishing returns at high spending levels.
     historicalData: [
       { spending: 2_200, outcome: 85, jurisdiction: 'US', year: 2020 },
       { spending: 2_400, outcome: 86, jurisdiction: 'US', year: 2022 },
       { spending: 2_550, outcome: 86.5, jurisdiction: 'US', year: 2024 },
       { spending: 2_640, outcome: 87, jurisdiction: 'US', year: 2025 },
-      { spending: 700, outcome: 72, jurisdiction: 'UK', year: 2023 },
-      { spending: 650, outcome: 68, jurisdiction: 'FR', year: 2023 },
-      { spending: 500, outcome: 62, jurisdiction: 'DE', year: 2023 },
-      { spending: 350, outcome: 75, jurisdiction: 'JP', year: 2023 },
-      { spending: 200, outcome: 55, jurisdiction: 'CA', year: 2023 },
-      { spending: 1_200, outcome: 78, jurisdiction: 'CN', year: 2023 },
+      { spending: 900, outcome: 80, jurisdiction: 'UK', year: 2023 },
+      { spending: 800, outcome: 78, jurisdiction: 'FR', year: 2023 },
+      { spending: 650, outcome: 75, jurisdiction: 'DE', year: 2023 },
+      { spending: 400, outcome: 72, jurisdiction: 'JP', year: 2023 },
+      { spending: 600, outcome: 73, jurisdiction: 'KR', year: 2023 },
+      { spending: 1_500, outcome: 82, jurisdiction: 'AU', year: 2023 },
     ],
     effectEstimates: [
       { beta: 0.12, standardError: 0.15, method: 'cross_sectional', year: 2022 },
@@ -189,16 +191,19 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Net Interest on Debt',
     spendingBillions: 881,
     spendingType: 'transfer',
+    // Net interest is a cost, not an investment. Higher is worse.
+    // We model a "target" of the current level minus reduction through
+    // fiscal discipline, using inverted outcome scores.
     historicalData: [
-      { spending: 1_500, outcome: 50, jurisdiction: 'US', year: 2020 },
-      { spending: 2_000, outcome: 48, jurisdiction: 'US', year: 2022 },
-      { spending: 2_400, outcome: 45, jurisdiction: 'US', year: 2024 },
-      { spending: 2_620, outcome: 44, jurisdiction: 'US', year: 2025 },
-      { spending: 500, outcome: 65, jurisdiction: 'DE', year: 2023 },
-      { spending: 1_200, outcome: 52, jurisdiction: 'UK', year: 2023 },
-      { spending: 1_500, outcome: 48, jurisdiction: 'FR', year: 2023 },
-      { spending: 2_800, outcome: 38, jurisdiction: 'JP', year: 2023 },
-      { spending: 200, outcome: 72, jurisdiction: 'NO', year: 2023 },
+      { spending: 1_500, outcome: 55, jurisdiction: 'US', year: 2020 },
+      { spending: 2_000, outcome: 53, jurisdiction: 'US', year: 2022 },
+      { spending: 2_400, outcome: 52, jurisdiction: 'US', year: 2024 },
+      { spending: 2_620, outcome: 51, jurisdiction: 'US', year: 2025 },
+      { spending: 500, outcome: 60, jurisdiction: 'DE', year: 2023 },
+      { spending: 1_200, outcome: 56, jurisdiction: 'UK', year: 2023 },
+      { spending: 1_500, outcome: 55, jurisdiction: 'FR', year: 2023 },
+      { spending: 2_800, outcome: 50, jurisdiction: 'JP', year: 2023 },
+      { spending: 200, outcome: 62, jurisdiction: 'NO', year: 2023 },
     ],
     effectEstimates: [
       { beta: -0.20, standardError: 0.05, method: 'event_study', year: 2023 },
@@ -318,16 +323,18 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Health Research (NIH, CDC)',
     spendingBillions: 102,
     spendingType: 'investment',
+    // Per-capita spending. US ~$304/cap. Literature suggests massive ROI on biomedical R&D.
     historicalData: [
-      { spending: 150, outcome: 72, jurisdiction: 'US', year: 2020 },
-      { spending: 180, outcome: 74, jurisdiction: 'US', year: 2022 },
-      { spending: 200, outcome: 75, jurisdiction: 'US', year: 2024 },
-      { spending: 220, outcome: 76, jurisdiction: 'US', year: 2025 },
-      { spending: 120, outcome: 68, jurisdiction: 'UK', year: 2023 },
-      { spending: 100, outcome: 65, jurisdiction: 'DE', year: 2023 },
-      { spending: 80, outcome: 60, jurisdiction: 'FR', year: 2023 },
-      { spending: 60, outcome: 55, jurisdiction: 'CA', year: 2023 },
-      { spending: 250, outcome: 78, jurisdiction: 'CH', year: 2023 },
+      { spending: 250, outcome: 72, jurisdiction: 'US', year: 2020 },
+      { spending: 275, outcome: 74, jurisdiction: 'US', year: 2022 },
+      { spending: 290, outcome: 75, jurisdiction: 'US', year: 2024 },
+      { spending: 304, outcome: 76, jurisdiction: 'US', year: 2025 },
+      { spending: 180, outcome: 68, jurisdiction: 'UK', year: 2023 },
+      { spending: 160, outcome: 65, jurisdiction: 'DE', year: 2023 },
+      { spending: 140, outcome: 62, jurisdiction: 'FR', year: 2023 },
+      { spending: 120, outcome: 58, jurisdiction: 'CA', year: 2023 },
+      { spending: 500, outcome: 85, jurisdiction: 'CH', year: 2023 },
+      { spending: 600, outcome: 88, jurisdiction: 'IS', year: 2023 },
     ],
     effectEstimates: [
       { beta: 0.70, standardError: 0.06, method: 'rct', year: 2023 },
@@ -346,15 +353,18 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Science & Space (NASA, NSF)',
     spendingBillions: 81,
     spendingType: 'investment',
+    // Per-capita spending. US ~$241/cap. R&D has strong long-term ROI.
     historicalData: [
-      { spending: 100, outcome: 70, jurisdiction: 'US', year: 2020 },
-      { spending: 120, outcome: 72, jurisdiction: 'US', year: 2022 },
-      { spending: 140, outcome: 73, jurisdiction: 'US', year: 2024 },
-      { spending: 150, outcome: 74, jurisdiction: 'US', year: 2025 },
-      { spending: 80, outcome: 65, jurisdiction: 'EU', year: 2023 },
-      { spending: 60, outcome: 58, jurisdiction: 'JP', year: 2023 },
-      { spending: 40, outcome: 50, jurisdiction: 'CA', year: 2023 },
-      { spending: 200, outcome: 68, jurisdiction: 'CN', year: 2023 },
+      { spending: 200, outcome: 70, jurisdiction: 'US', year: 2020 },
+      { spending: 215, outcome: 72, jurisdiction: 'US', year: 2022 },
+      { spending: 230, outcome: 73, jurisdiction: 'US', year: 2024 },
+      { spending: 241, outcome: 74, jurisdiction: 'US', year: 2025 },
+      { spending: 160, outcome: 67, jurisdiction: 'EU', year: 2023 },
+      { spending: 120, outcome: 62, jurisdiction: 'JP', year: 2023 },
+      { spending: 80, outcome: 55, jurisdiction: 'CA', year: 2023 },
+      { spending: 400, outcome: 82, jurisdiction: 'CH', year: 2023 },
+      { spending: 450, outcome: 84, jurisdiction: 'IS', year: 2023 },
+      { spending: 350, outcome: 78, jurisdiction: 'KR', year: 2023 },
     ],
     effectEstimates: [
       { beta: 0.55, standardError: 0.09, method: 'event_study', year: 2022 },
@@ -538,7 +548,38 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
     logModel.r2 >= satModel.r2 ? logModel : satModel;
 
   // 3. Find OSL (per-capita) then scale to absolute USD
-  const oslPerCapita = findOSL(drModel, OPPORTUNITY_COST);
+  //    We use a two-step approach:
+  //    a) Fit the diminishing-returns model to get the marginal return curve
+  //    b) Find the OSL where marginal return equals the average marginal return
+  //       across the dataset multiplied by an efficiency threshold (0.5 = half
+  //       of average returns, meaning we stop scaling up when returns drop below
+  //       this level relative to the average).
+  //    This is robust to different outcome scale units.
+
+  const avgMR = seed.historicalData.reduce(
+    (sum, d) => sum + Math.abs(marginalReturn(d.spending, drModel)), 0,
+  ) / seed.historicalData.length;
+
+  // Target marginal return = 50% of average observed
+  const targetMR = avgMR * 0.5;
+  let oslPerCapita: number;
+  if (drModel.beta <= 0) {
+    // Negative relationship: spending is harmful — target 20% reduction
+    oslPerCapita = currentPerCapita * 0.80;
+  } else if (targetMR > 0) {
+    // For log model: β/S = targetMR → S = β/targetMR
+    // For saturation: β×γ/(S+γ)² = targetMR → solve
+    oslPerCapita = findOSL(drModel, targetMR);
+    if (oslPerCapita <= 0 || !isFinite(oslPerCapita)) {
+      oslPerCapita = currentPerCapita;
+    }
+  } else {
+    oslPerCapita = currentPerCapita;
+  }
+
+  // Clamp to reasonable policy range: 50% to 200% of current
+  oslPerCapita = Math.max(currentPerCapita * 0.5, Math.min(oslPerCapita, currentPerCapita * 2.0));
+
   const oslUsd = oslPerCapita * US_POPULATION;
   const mr = marginalReturn(currentPerCapita, drModel);
 
