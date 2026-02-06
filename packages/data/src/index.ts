@@ -47,5 +47,8 @@ export * from './csv-loader.js';
 // Economic data catalog
 export * from './catalog.js';
 
+// Health data importers (Apple Health, etc.)
+export * from './importers/index.js';
+
 // Version
 export const VERSION = '0.1.0';
