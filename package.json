@@ -1,0 +1,28 @@
+{
+  "name": "optomitron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Optimal Policy & Budget Generator - Evidence-based governance calculations",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikepsinn/optomitron.git"
+  },
+  "author": "Mike P. Sinn <m@thinkbynumbers.org>",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "report": "pnpm --filter @optomitron/core report"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.14.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

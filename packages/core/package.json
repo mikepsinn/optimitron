@@ -1,0 +1,33 @@
+{
+  "name": "@optomitron/core",
+  "version": "0.1.0",
+  "description": "Core calculations for Optimal Policy & Budget Generator",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "report": "tsx src/cli/report.ts"
+  },
+  "keywords": [
+    "policy",
+    "budget",
+    "governance",
+    "evidence-based",
+    "optimocracy"
+  ],
+  "author": "Mike P. Sinn <m@thinkbynumbers.org>",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
