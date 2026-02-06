@@ -59,5 +59,8 @@ export * from './daily-aggregation.js';
 // Measurement validation
 export * from './measurement-validation.js';
 
+// Variable statistics (user-level & global aggregation)
+export * from './variable-statistics.js';
+
 // Version
 export const VERSION = '0.1.0';
