@@ -157,12 +157,13 @@ const NUTRIENT_MAP: Array<{ pattern: RegExp; def: NutrientDef }> = [
   // Vitamins
   { pattern: /^vitamin\s*a\s*\(.*\)$/i, def: { variableName: 'Vitamin A', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
   { pattern: /^vitamin\s*a$/i, def: { variableName: 'Vitamin A', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
-  { pattern: /^b1\s*\(thiamine\)|^thiamine|^vitamin\s*b1/i, def: { variableName: 'Vitamin B1 (Thiamine)', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
+  // B12 must come before B1 to avoid B1 matching "B12"
+  { pattern: /^b12\s*\(cobalamin\)|^cobalamin|^vitamin\s*b12/i, def: { variableName: 'Vitamin B12', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
+  { pattern: /^b1\s*\(thiamine\)|^thiamine|^vitamin\s*b1(?!\d)/i, def: { variableName: 'Vitamin B1 (Thiamine)', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
   { pattern: /^b2\s*\(riboflavin\)|^riboflavin|^vitamin\s*b2/i, def: { variableName: 'Vitamin B2 (Riboflavin)', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
   { pattern: /^b3\s*\(niacin\)|^niacin|^vitamin\s*b3/i, def: { variableName: 'Vitamin B3 (Niacin)', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
   { pattern: /^b5\s*\(pantothenic\)|^pantothenic|^vitamin\s*b5/i, def: { variableName: 'Vitamin B5 (Pantothenic Acid)', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
   { pattern: /^b6\s*\(pyridoxine\)|^pyridoxine|^vitamin\s*b6/i, def: { variableName: 'Vitamin B6', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },
-  { pattern: /^b12\s*\(cobalamin\)|^cobalamin|^vitamin\s*b12/i, def: { variableName: 'Vitamin B12', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
   { pattern: /^folate|^folic\s*acid|^b9/i, def: { variableName: 'Folate', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
   { pattern: /^biotin|^b7/i, def: { variableName: 'Biotin', unit: 'Micrograms', abbr: 'µg', category: 'Nutrients' } },
   { pattern: /^choline/i, def: { variableName: 'Choline', unit: 'Milligrams', abbr: 'mg', category: 'Nutrients' } },

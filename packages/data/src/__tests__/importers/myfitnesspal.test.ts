@@ -40,9 +40,9 @@ describe('MyFitnessPal importer', () => {
       expect(calories[0]!.value).toBe(350);
       expect(calories[0]!.sourceName).toBe('MyFitnessPal');
 
-      // Check protein
+      // Check protein (Apple has 0 protein, so it's skipped → 4 not 5)
       const protein = records.filter((r) => r.variableName === 'Protein');
-      expect(protein.length).toBe(5);
+      expect(protein.length).toBe(4);
       expect(protein[0]!.value).toBe(12);
 
       // Check sodium
