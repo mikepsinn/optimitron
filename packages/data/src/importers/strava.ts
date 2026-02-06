@@ -1,6 +1,8 @@
 /**
  * Strava Bulk Export Importer
  *
+ * QuantiModo reference: https://github.com/mikepsinn/quantimodo-api/blob/main/app/DataSources/Connectors/StravaConnector.php
+ *
  * Parses Strava's bulk export. Users request their data from
  * strava.com/athlete/delete_your_account (Download or Delete Your Account).
  * The export zip contains:

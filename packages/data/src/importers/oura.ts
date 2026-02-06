@@ -1,6 +1,8 @@
 /**
  * Oura Ring Export Importer
  *
+ * QuantiModo reference: https://github.com/mikepsinn/quantimodo-api/blob/main/app/DataSources/Connectors/OuraConnector.php
+ *
  * Parses Oura Ring JSON export data. Users can export their data from the
  * Oura web dashboard. The export contains daily summaries for sleep,
  * readiness, and activity.

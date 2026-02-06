@@ -6,6 +6,15 @@ import { z } from 'zod';
  * These are agnostic to the specific domain (dFDA, policy, budget).
  * The predictor can be a drug, policy, or spending level.
  * The outcome can be a symptom, welfare metric, or any measurable value.
+ * 
+ * QuantiModo model references:
+ * - Measurement type → https://github.com/mikepsinn/quantimodo-api/blob/main/app/Models/Measurement.php
+ * - TimeSeries → https://github.com/mikepsinn/quantimodo-api/blob/main/app/Models/UserVariable.php
+ * - PredictorConfig → https://github.com/mikepsinn/quantimodo-api/blob/main/app/Models/UserVariable.php (onset_delay, duration_of_action, filling_value)
+ * - AlignedPair → https://github.com/mikepsinn/quantimodo-api/blob/main/app/Slim/Model/Measurement/Pair.php
+ * - CorrelationResult → https://github.com/mikepsinn/quantimodo-api/blob/main/app/Models/Correlation.php
+ * - PredictorImpactScore → QuantiModo's qm_score column on correlations table
+ * - BradfordHillScores → implicit in QuantiModo's scoring system, explicit here
  */
 
 /**

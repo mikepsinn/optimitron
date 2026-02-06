@@ -1,6 +1,8 @@
 /**
  * Google Fit / Google Takeout Export Importer
  *
+ * QuantiModo reference: https://github.com/mikepsinn/quantimodo-api/blob/main/app/DataSources/Connectors/GoogleFitConnector.php
+ *
  * Parses Google Fit data from a Google Takeout export. The Takeout zip
  * contains JSON files under `Takeout/Fit/` organised by data type:
  *   - Daily activity metrics/

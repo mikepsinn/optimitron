@@ -59,8 +59,17 @@ describe('precisionWeight', () => {
     expect(precisionWeight(0.01)).toBe(10_000);
   });
 
-  it('returns Infinity for SE = 0', () => {
-    expect(precisionWeight(0)).toBe(Infinity);
+  it('returns clamped precision for SE = 0 (no Infinity)', () => {
+    // SE is clamped to 0.001 minimum, so 1/0.001² = 1_000_000
+    const w = precisionWeight(0);
+    expect(Number.isFinite(w)).toBe(true);
+    expect(w).toBe(1_000_000);
+  });
+
+  it('returns clamped precision for very small SE below clamp', () => {
+    // SE = 0.0001 is below the 0.001 clamp
+    const w = precisionWeight(0.0001);
+    expect(w).toBe(1_000_000); // clamped to 0.001
   });
 });
 
@@ -313,5 +322,32 @@ describe('calculatePriorityScore', () => {
 
     // Military has highest absolute priority due to enormous gap
     expect(military).toBeGreaterThan(pragmatic);
+  });
+});
+
+// ======================== SE=0 edge case ===================================
+
+describe('BIS with standardError=0', () => {
+  it('produces finite score when SE is exactly 0', () => {
+    const estimates: EffectEstimate[] = [
+      { beta: 0.5, standardError: 0, method: 'rct', year: 2024 },
+    ];
+    const result = calculateBIS(estimates, 2025);
+    expect(Number.isFinite(result.score)).toBe(true);
+    expect(result.score).toBeGreaterThan(0);
+    expect(result.score).toBeLessThanOrEqual(1);
+    expect(Number.isFinite(result.precisionWeight)).toBe(true);
+  });
+
+  it('mixed SE=0 and normal SE produces finite results', () => {
+    const estimates: EffectEstimate[] = [
+      { beta: 0.5, standardError: 0, method: 'rct', year: 2024 },
+      { beta: 0.3, standardError: 0.5, method: 'cross_sectional', year: 2020 },
+    ];
+    const result = calculateBIS(estimates, 2025);
+    expect(Number.isFinite(result.score)).toBe(true);
+    expect(Number.isFinite(result.precisionWeight)).toBe(true);
+    expect(Number.isFinite(result.qualityWeight)).toBe(true);
+    expect(Number.isFinite(result.recencyWeight)).toBe(true);
   });
 });

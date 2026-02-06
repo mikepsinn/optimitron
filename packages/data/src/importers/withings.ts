@@ -1,6 +1,8 @@
 /**
  * Withings (Health Mate) Export Importer
  *
+ * QuantiModo reference: https://github.com/mikepsinn/quantimodo-api/blob/main/app/DataSources/Connectors/WithingsConnector.php
+ *
  * Parses Withings CSV exports from the Health Mate app.
  * Export contains separate CSV files: weight.csv, blood_pressure.csv,
  * sleep.csv, activity.csv, heart_rate.csv, etc.

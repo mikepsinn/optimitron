@@ -12,7 +12,7 @@
 //   These models form a general-purpose quantified-self / data collection
 //   platform. Any variable (health, economic, environmental, policy outcome)
 //   can be tracked, aggregated, and analyzed for causal relationships.
-//   Inspired by the CureDAO open-source schema.
+//   Inspired by the QuantiModo open-source schema.
 //
 // LAYER 2 — Domain-Specific Governance
 //   Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight,
@@ -145,6 +145,9 @@ enum JurisdictionType {
 // ============================================================================
 
 /// A unit of measurement (mg, IU, serving, $/day, 1-5 scale, %, etc.)
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Unit.php
+/// CureDAO DDL: units table. Conversion logic: https://github.com/mikepsinn/curedao-api/blob/main/app/Slim/Model/QMUnit.php
+/// TODO: Port from CureDAO — runtime unit conversion logic (QMUnit::convertTo)
 model Unit {
   /// Unique identifier for this unit
   id String @id @default(cuid())
@@ -201,6 +204,9 @@ model Unit {
 
 /// A category of variables: Treatment, Symptom, Emotion, Food, Activity,
 /// Sleep, Vital Sign, Lab Result, Environment, Economic, Policy, etc.
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/VariableCategory.php
+/// CureDAO hardcoded categories: https://github.com/mikepsinn/curedao-api/blob/main/app/VariableCategories/
+/// TODO: Port from CureDAO — seed data with sensible defaults per category
 model VariableCategory {
   /// Unique identifier for this variable category
   id String @id @default(cuid())
@@ -252,6 +258,9 @@ model VariableCategory {
 
 /// The canonical variable catalog — shared across all users.
 /// Examples: "Ibuprofen 200mg", "Overall Mood", "Steps", "GDP per Capita"
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Variable.php
+/// CureDAO analysis: https://github.com/mikepsinn/curedao-api/blob/main/app/Variables/QMCommonVariable.php
+/// TODO: Port from CureDAO — global variable statistics aggregation
 model GlobalVariable {
   /// Unique identifier for this global variable
   id String @id @default(cuid())
@@ -395,6 +404,11 @@ model GlobalVariable {
 
 /// Per-user instance of a GlobalVariable with personal overrides and running stats.
 /// Created automatically when a user first tracks a variable.
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/UserVariable.php
+/// CureDAO analysis: https://github.com/mikepsinn/curedao-api/blob/main/app/Variables/QMUserVariable.php
+/// CureDAO daily aggregation: QMUserVariable::getDailyMeasurementsWithTagsAndFillingInTimeRange()
+/// TODO: Port from CureDAO — running statistics calculation (mean, median, stddev, kurtosis, skewness)
+/// TODO: Port from CureDAO — daily value aggregation pipeline
 model UserVariable {
   /// Unique identifier for this user-variable instance
   id String @id @default(cuid())
@@ -496,6 +510,9 @@ model UserVariable {
 
 /// A single data point: who measured what, when, and how much.
 /// The core of the entire measurement system.
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Measurement.php
+/// CureDAO processing: https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/ModelTraits/MeasurementTrait.php
+/// TODO: Port from CureDAO — measurement value validation (min/max, unit constraints)
 model Measurement {
   /// Unique identifier for this measurement
   id String @id @default(cuid())
@@ -576,6 +593,7 @@ model Measurement {
 
 /// A scheduled reminder to collect data for a variable.
 /// E.g. "Remind me to rate my mood every day at 8:00 AM"
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/TrackingReminder.php
 model TrackingReminder {
   /// Unique identifier for this tracking reminder
   id String @id @default(cuid())
@@ -642,6 +660,7 @@ model TrackingReminder {
 
 /// A queued notification for a tracking reminder.
 /// Each row represents a single pending or sent notification instance.
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/TrackingReminderNotification.php
 model TrackingReminderNotification {
   /// Unique identifier for this notification
   id String @id @default(cuid())
@@ -686,6 +705,9 @@ model TrackingReminderNotification {
 
 /// Personal n-of-1 causal inference analysis between two variables for a single user.
 /// Each row answers: "For THIS user, how does variable A predict variable B?"
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Correlation.php
+/// CureDAO analysis pipeline: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMUserCorrelation.php
+/// CureDAO calculation properties: https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/
 model UserVariableRelationship {
   /// Unique identifier for this user-level relationship
   id String @id @default(cuid())
@@ -869,6 +891,10 @@ model UserVariableRelationship {
 
 /// Population-level causal inference analysis aggregated across all users.
 /// Each row answers: "Across ALL users, how does variable A predict variable B?"
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/AggregateCorrelation.php
+/// CureDAO analysis pipeline: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
+/// CureDAO aggregates UserCorrelations via weighted averaging by statistical significance.
+/// TODO: Port from CureDAO — weighted aggregation pipeline across users
 model GlobalVariableRelationship {
   /// Unique identifier for this global-level relationship
   id String @id @default(cuid())
@@ -1063,6 +1089,8 @@ model GlobalVariableRelationship {
 
 /// Metadata about an external data source / integration (e.g. Fitbit, Apple Health, Oura).
 /// Used to track which integrations are available and their connection status per user.
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Connector.php
+/// CureDAO connectors: https://github.com/mikepsinn/curedao-api/blob/main/app/DataSources/Connectors/
 model IntegrationProvider {
   /// Unique identifier for this integration provider
   id String @id @default(cuid())
@@ -1122,6 +1150,7 @@ model IntegrationProvider {
 }
 
 /// A user's connection to an integration provider (e.g., "User #42 connected to Fitbit")
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Connection.php
 model IntegrationConnection {
   /// Unique identifier for this connection
   id String @id @default(cuid())
@@ -1179,6 +1208,7 @@ model IntegrationConnection {
 }
 
 /// Log of each sync attempt for an integration connection
+/// CureDAO reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/ConnectorImport.php
 model IntegrationSyncLog {
   /// Unique identifier for this sync log entry
   id String @id @default(cuid())

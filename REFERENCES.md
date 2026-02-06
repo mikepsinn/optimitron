@@ -7,7 +7,7 @@
 ## Table of Contents
 
 - [Papers (Source of All Algorithms)](#papers-source-of-all-algorithms)
-- [Source Schema (CureDAO Database)](#source-schema-curedao-database)
+- [Source Schema (QuantiModo Database)](#source-schema-quantimodo-database)
 - [Data APIs](#data-apis)
 - [Health Data Standards](#health-data-standards)
 - [Proof of Personhood / Identity](#proof-of-personhood--identity)
@@ -37,17 +37,17 @@ https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/append
 
 ---
 
-## Source Schema (CureDAO Database)
+## Source Schema (QuantiModo Database)
 
-The Prisma schema in `@optomitron/db` was ported from the CureDAO/Quantimodo PostgreSQL database. We extracted the essential ~8 tables needed for the universal measurement system from the original 115-table schema.
+The Prisma schema in `@optomitron/db` was ported from the QuantiModo/Quantimodo PostgreSQL database. We extracted the essential ~8 tables needed for the universal measurement system from the original 115-table schema.
 
-**Source Repository:** [mikepsinn/curedao-api](https://github.com/mikepsinn/curedao-api)
+**Source Repository:** [mikepsinn/quantimodo-api](https://github.com/mikepsinn/quantimodo-api)
 
 **Schema Location:** `database/ddl/postgres-v0/public/`
 
 ### Table Mapping
 
-| CureDAO DDL File | Optomitron Model | Purpose |
+| QuantiModo DDL File | Optomitron Model | Purpose |
 |------------------|-----------------|---------|
 | `measurements.sql` | `Measurement` | Individual data points (timestamp, value, unit, source) |
 | `variables.sql` | `GlobalVariable` | Canonical variable definitions (name, category, default unit, combination method) |
@@ -58,7 +58,7 @@ The Prisma schema in `@optomitron/db` was ported from the CureDAO/Quantimodo Pos
 | `correlations.sql` | `UserVariableRelationship` | Per-user causal analysis results (PIS, effect size, optimal value) |
 | `aggregate_correlations.sql` | `GlobalVariableRelationship` | Population-level aggregated causal analysis results |
 
-**Note:** The original CureDAO database has 115 tables covering OAuth, social features, purchases, studies, and more. We intentionally ported only the core measurement and analysis tables — the minimal set needed for the universal measurement system and causal inference pipeline.
+**Note:** The original QuantiModo database has 115 tables covering OAuth, social features, purchases, studies, and more. We intentionally ported only the core measurement and analysis tables — the minimal set needed for the universal measurement system and causal inference pipeline.
 
 ---
 
@@ -106,7 +106,7 @@ External APIs used by `@optomitron/data` and planned integrations. See [DATA_SOU
 
 ## Health Data Standards
 
-Standards referenced for data import/export and interoperability. Optomitron does **not** use these as its internal schema — the internal schema derives from the CureDAO measurement system (see above).
+Standards referenced for data import/export and interoperability. Optomitron does **not** use these as its internal schema — the internal schema derives from the QuantiModo measurement system (see above).
 
 | Standard | URL | Usage in Optomitron |
 |----------|-----|---------------------|
