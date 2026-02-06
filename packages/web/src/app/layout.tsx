@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Optomitron — AI Governance Platform",
+  title: "Optomitron — Optimize Health, Wealth & Happiness",
   description:
-    "Maximizing median health and happiness through causal inference, preference aggregation, and optimal policy generation.",
+    "Optomitron optimizes everyone's health, wealth, and happiness using time series data and causal inference. The operating system for evidence-based decision-making.",
+  openGraph: {
+    title: "Optomitron — Optimize Health, Wealth & Happiness",
+    description:
+      "The operating system for evidence-based decision-making. Universal causal inference engine for health, governance, and business optimization.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -20,10 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <Providers>
-          <Navbar />
-          <main>{children}</main>
-        </Providers>
+        <Navbar />
+        <main className="min-h-screen">{children}</main>
+        <Footer />
       </body>
     </html>
   );

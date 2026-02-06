@@ -44,10 +44,15 @@ export function calculateAlignmentScore(
     const maxPossibleDistance = Math.max(pref.weight * 100, 100 - pref.weight * 100);
     const itemAlignment = maxPossibleDistance > 0
       ? (1 - distance / maxPossibleDistance) * 100
-      : 100;
+      : 0;
     categoryScores[pref.itemId] = Math.max(0, Math.min(100, itemAlignment));
   }
   
+  // If no votes were compared, alignment is unknown — return 0
+  if (votesCompared === 0) {
+    return { politicianId, score: 0, votesCompared: 0, categoryScores };
+  }
+
   // Overall alignment: 100% = perfect match, 0% = total misalignment
   const avgWeightedDistance = totalWeight > 0 ? totalWeightedDistance / totalWeight : 0;
   const score = Math.max(0, Math.min(100, 100 - avgWeightedDistance));

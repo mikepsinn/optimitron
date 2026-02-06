@@ -53,6 +53,8 @@ enum FillingType {
   NONE
   /// Linearly interpolate between nearest values
   INTERPOLATION
+  /// Use a specific constant value (set fillingValue on the variable)
+  VALUE
 }
 
 /// Whether higher values are better or worse

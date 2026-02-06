@@ -24,3 +24,23 @@ body {
     rgb(var(--background-start-rgb));
   min-height: 100vh;
 }
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: rgb(20, 20, 30);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(55, 65, 81);
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(75, 85, 99);
+}

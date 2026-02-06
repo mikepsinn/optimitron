@@ -100,6 +100,15 @@ importers:
 
   packages/examples:
     dependencies:
+      '@optomitron/data':
+        specifier: workspace:*
+        version: link:../data
+      '@optomitron/obg':
+        specifier: workspace:*
+        version: link:../obg
+      '@optomitron/opg':
+        specifier: workspace:*
+        version: link:../opg
       '@optomitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
@@ -116,6 +125,9 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+      vitest:
+        specifier: ^1.2.0
+        version: 1.6.1(@types/node@25.2.1)(jsdom@23.2.0)
 
   packages/extension:
     devDependencies:

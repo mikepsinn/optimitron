@@ -44,7 +44,9 @@ export function qualityWeight(method: AnalysisMethod): number {
  * Calculate precision weight (inverse variance)
  */
 export function precisionWeight(standardError: number): number {
-  return 1 / (standardError ** 2);
+  // Clamp to prevent Infinity when SE is 0
+  const clampedSE = Math.max(standardError, 0.001);
+  return 1 / (clampedSE ** 2);
 }
 
 /**

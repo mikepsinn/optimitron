@@ -39,14 +39,28 @@ export function fitLogModel(
   data: SpendingOutcomePoint[]
 ): DiminishingReturnsModel {
   const n = data.length;
+
+  // Filter out non-positive spending (can't take log of 0 or negative)
+  const validData = data.filter(d => d.spending > 0);
+  if (validData.length < 2) {
+    return { alpha: 0, beta: 0, rSquared: 0, predict: () => 0 };
+  }
   
   // Transform spending to log
-  const logSpending = data.map(d => Math.log(d.spending));
-  const outcomes = data.map(d => d.outcome);
+  const logSpending = validData.map(d => Math.log(d.spending));
+  const outcomes = validData.map(d => d.outcome);
+  const validN = validData.length;
+  
+  // Check for constant inputs (all same spending or all same outcome)
+  const uniqueLog = new Set(logSpending.map(v => v.toFixed(10)));
+  if (uniqueLog.size < 2) {
+    const meanOutcome = outcomes.reduce((a, b) => a + b, 0) / validN;
+    return { alpha: meanOutcome, beta: 0, rSquared: 0, predict: () => meanOutcome };
+  }
   
   // Simple OLS
-  const meanLogS = logSpending.reduce((a, b) => a + b, 0) / n;
-  const meanY = outcomes.reduce((a, b) => a + b, 0) / n;
+  const meanLogS = logSpending.reduce((a, b) => a + b, 0) / validN;
+  const meanY = outcomes.reduce((a, b) => a + b, 0) / validN;
   
   let numerator = 0;
   let denominator = 0;
