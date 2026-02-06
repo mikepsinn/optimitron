@@ -4,6 +4,21 @@
 // Seeds: Units, VariableCategories, GlobalVariables, Jurisdictions, Items
 // Run: npx prisma db seed (or: npx tsx prisma/seed.ts)
 // ============================================================================
+//
+// Variable category defaults sourced from:
+// https://github.com/mikepsinn/curedao-api/tree/main/app/VariableCategories
+//
+// Key semantics:
+//   combinationOperation: SUM = additive (doses, calories, steps)
+//                         MEAN = instantaneous (mood, heart rate, temp)
+//   fillingType on GlobalVariable:
+//     ZERO  = "no measurement recorded ⇒ value is 0" (treatments, foods, activities)
+//     NONE  = "no measurement recorded ⇒ leave gap"  (symptoms, vitals, emotions)
+//   onsetDelay: seconds before a measurement's effect begins
+//   durationOfAction: seconds the effect persists
+//   predictorOnly: can only be a cause (treatments, foods)
+//   outcome: something a user wants to optimise (symptoms, mood, vitals)
+// ============================================================================
 
 import {
   PrismaClient,
@@ -80,6 +95,9 @@ async function seedUnits() {
     { name: "Doses", abbreviatedName: "doses", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
     { name: "Tablets", abbreviatedName: "tablets", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
     { name: "Capsules", abbreviatedName: "capsules", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
+    { name: "Applications", abbreviatedName: "applications", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
+    { name: "Sprays", abbreviatedName: "sprays", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
+    { name: "Drops", abbreviatedName: "drops", unitCategoryId: "Count", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
 
     // Rating
     { name: "1 to 5 Rating", abbreviatedName: "1-5", unitCategoryId: "Rating", scale: MeasurementScale.ORDINAL, fillingType: FillingType.NONE, manualTracking: true, minimumValue: 1, maximumValue: 5 },
@@ -105,6 +123,12 @@ async function seedUnits() {
     { name: "Yes/No", abbreviatedName: "yes/no", unitCategoryId: "Rating", scale: MeasurementScale.NOMINAL, fillingType: FillingType.ZERO, manualTracking: true, minimumValue: 0, maximumValue: 1 },
     { name: "Millimeters of Mercury", abbreviatedName: "mmHg", unitCategoryId: "Pressure", scale: MeasurementScale.RATIO, fillingType: FillingType.NONE, manualTracking: true },
     { name: "Degrees Fahrenheit", abbreviatedName: "°F", unitCategoryId: "Temperature", scale: MeasurementScale.INTERVAL, fillingType: FillingType.NONE, manualTracking: true },
+    { name: "Degrees Celsius", abbreviatedName: "°C", unitCategoryId: "Temperature", scale: MeasurementScale.INTERVAL, fillingType: FillingType.NONE, manualTracking: true },
+    { name: "Index", abbreviatedName: "index", unitCategoryId: "Rating", scale: MeasurementScale.RATIO, fillingType: FillingType.NONE, manualTracking: false },
+    { name: "Milligrams per Deciliter", abbreviatedName: "mg/dL", unitCategoryId: "Concentration", scale: MeasurementScale.RATIO, fillingType: FillingType.NONE, manualTracking: true },
+    { name: "Meters", abbreviatedName: "m", unitCategoryId: "Distance", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
+    { name: "Kilometers", abbreviatedName: "km", unitCategoryId: "Distance", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
+    { name: "Miles", abbreviatedName: "mi", unitCategoryId: "Distance", scale: MeasurementScale.RATIO, fillingType: FillingType.ZERO, manualTracking: true },
   ];
 
   const created: Record<string, string> = {};
@@ -117,28 +141,105 @@ async function seedUnits() {
 }
 
 // ============================================================================
-// B) VARIABLE CATEGORIES (~15)
+// B) VARIABLE CATEGORIES
+// ============================================================================
+// Sourced from legacy curedao-api/app/VariableCategories/*.php
+// The schema's VariableCategory model has: name, description, defaultUnitId,
+// combinationOperation, onsetDelay, durationOfAction, predictorOnly, outcome
+// (fillingType/fillingValue/min/max live on GlobalVariable, not VariableCategory)
 // ============================================================================
 
 async function seedVariableCategories(unitMap: Record<string, string>) {
   console.log("📂 Seeding variable categories...");
 
+  // Defines per-category defaults. fillingType/fillingValue are documented here
+  // for reference but applied at the GlobalVariable level.
   const categories = [
-    { name: "Treatment",    description: "Medications, supplements, and other treatments",  combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,   durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "mg" },
-    { name: "Supplement",   description: "Dietary supplements and vitamins",                combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,   durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "mg" },
-    { name: "Food",         description: "Foods and dietary intake",                        combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,   durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "servings" },
-    { name: "Drink",        description: "Beverages and fluid intake",                      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,   durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "servings" },
-    { name: "Activity",     description: "General activities and behaviors",                combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "min" },
-    { name: "Exercise",     description: "Physical exercise and workouts",                  combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "min" },
-    { name: "Sleep",        description: "Sleep duration and quality",                      combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "h" },
-    { name: "Symptom",      description: "Physical and mental symptoms",                    combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
-    { name: "Emotion",      description: "Emotional states and mood",                       combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
-    { name: "Vital Sign",   description: "Physiological measurements",                     combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
-    { name: "Lab Result",   description: "Laboratory test results",                         combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 604800, predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
-    { name: "Environment",  description: "Environmental factors (weather, air quality)",     combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
-    { name: "Economic",     description: "Economic indicators and financial metrics",        combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 2592000,predictorOnly: false, outcome: true,  defaultUnitAbbr: "USD" },
-    { name: "Policy",       description: "Government policies and regulations",              combinationOperation: CombinationOperation.MEAN, onsetDelay: 2592000,durationOfAction: 31536000,predictorOnly: true, outcome: false, defaultUnitAbbr: "count" },
-    { name: "Goal",         description: "Personal goals and targets",                       combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,      durationOfAction: 86400,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "%" },
+    // --- Causes / Predictors ---
+    // Legacy: TreatmentsVariableCategory — SUM, onset 1800, duration 86400, ZERO fill, predictor, min 0
+    { name: "Treatment",          description: "Medications, supplements, and other interventional treatments",          combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: separate from Treatment for clarity; same defaults
+    { name: "Supplement",         description: "Dietary supplements, vitamins, and nutraceuticals",                      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "mg" },
+    // Legacy: FoodsVariableCategory — SUM, onset 1800, duration 864000 (10d), ZERO fill, predictor, min 0
+    { name: "Food",               description: "Foods and dietary intake",                                                combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "servings" },
+    // Legacy: no separate Drink category; modeled as sub-type of Food
+    { name: "Drink",              description: "Beverages and fluid intake",                                              combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "servings" },
+    // Legacy: NutrientsVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor
+    { name: "Nutrient",           description: "Macronutrients, micronutrients, and dietary compounds",                   combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "g" },
+
+    // --- Activities ---
+    // Legacy: ActivitiesVariableCategory — SUM, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Activity",           description: "General activities and behaviors",                                        combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: null,  defaultUnitAbbr: "min" },
+    // Legacy: same pattern as Activity; separated for UI
+    { name: "Exercise",           description: "Physical exercise and workouts",                                          combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: null,  defaultUnitAbbr: "min" },
+    // Legacy: PhysicalActivityVariableCategory — SUM, onset 0, duration 86400, ZERO fill, predictor+outcome
+    { name: "Physical Activity",  description: "Physical activity metrics like steps, distance, and active minutes",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
+    // Legacy: SleepVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor+outcome
+    { name: "Sleep",              description: "Sleep duration, quality, and related metrics",                             combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "h" },
+    // Legacy: SocialInteractionsVariableCategory — MEAN, onset 0, duration 86400, ZERO fill, predictor+outcome
+    { name: "Social Interaction", description: "Social activities, communication, and relationship interactions",          combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
+
+    // --- Outcomes ---
+    // Legacy: SymptomsVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor+outcome
+    { name: "Symptom",            description: "Physical and mental health symptoms",                                     combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
+    // Legacy: EmotionsVariableCategory — MEAN, onset 0, duration 86400, NONE fill, outcome
+    { name: "Emotion",            description: "Emotional states, mood, and subjective well-being",                       combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
+    // Legacy: VitalSignsVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor+outcome
+    { name: "Vital Sign",         description: "Physiological measurements (heart rate, blood pressure, etc.)",           combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
+    // Legacy: BiomarkersVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor+outcome
+    { name: "Biomarker",          description: "Lab results, biomarkers, and clinical test values",                        combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
+    // Legacy: ConditionsVariableCategory — MEAN, onset 0, duration 86400, null fill, outcome
+    { name: "Condition",          description: "Medical conditions and diagnoses",                                         combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
+    // Legacy: CognitivePerformanceVariableCategory — MEAN, onset 0, duration 86400, NONE fill, outcome-only
+    { name: "Cognitive Performance", description: "Cognitive function, memory, reaction time, and mental performance",     combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
+    // Legacy: PhysiqueVariableCategory — MEAN, onset 0, duration 604800, NONE fill, predictor+outcome
+    { name: "Physique",           description: "Body composition and physical measurements (weight, body fat, BMI)",       combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 604800,  predictorOnly: false, outcome: true,  defaultUnitAbbr: "count" },
+    // Legacy: GoalsVariableCategory — MEAN, onset 0, duration 86400, NONE fill, outcome
+    { name: "Goal",               description: "Personal goals, targets, and progress metrics",                            combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "%" },
+
+    // --- Environment ---
+    // Legacy: EnvironmentVariableCategory — MEAN, onset 0, duration 86400, NONE fill, predictor
+    { name: "Environment",        description: "Environmental factors (air quality, noise, allergens)",                    combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Weather is a sub-type of Environment in legacy; separated for clarity
+    { name: "Weather",            description: "Weather conditions (temperature, humidity, barometric pressure)",           combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: LocationsVariableCategory — MEAN, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Location",           description: "Location and place-based data (time at locations)",                        combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "min" },
+
+    // --- Productivity & Work ---
+    // Work category — SUM, onset 0, duration 86400, ZERO fill
+    { name: "Work",               description: "Work activities, tasks, and time tracking",                                combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: null,  defaultUnitAbbr: "h" },
+    // Productivity as an outcome measure
+    { name: "Productivity",       description: "Productivity ratings and output metrics",                                  combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "1-5" },
+    // Legacy: SoftwareVariableCategory — SUM, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Software",           description: "Software and app usage tracking",                                          combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "min" },
+    // Legacy: ITMetricsVariableCategory — SUM, onset 0, duration 86400, NONE fill, predictor
+    { name: "IT Metric",          description: "IT and technical metrics (commits, deployments, uptime)",                   combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+
+    // --- Financial ---
+    // Legacy: EconomicIndicatorsVariableCategory — MEAN, onset 0, duration 86400, NONE fill
+    { name: "Economic",           description: "Economic indicators and financial metrics",                                combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 2592000, predictorOnly: false, outcome: true,  defaultUnitAbbr: "USD" },
+    // Legacy: PaymentsVariableCategory — SUM, onset 0, duration 2592000, ZERO fill, predictor
+    { name: "Payment",            description: "Financial transactions and spending",                                      combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 2592000, predictorOnly: true,  outcome: false, defaultUnitAbbr: "USD" },
+    // Legacy: InvestmentStrategiesVariableCategory — MEAN, onset 0, duration 86400, NONE fill
+    { name: "Investment Strategy", description: "Investment strategies and portfolio performance",                          combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: true,  defaultUnitAbbr: "%" },
+
+    // --- Media & Entertainment ---
+    // Legacy: ElectronicsVariableCategory — SUM, onset 1800, duration 604800, ZERO fill, predictor
+    { name: "Electronics",        description: "Electronics usage and device interactions",                                combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,    durationOfAction: 604800,  predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: MoviesAndTVVariableCategory — SUM, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Movies and TV",      description: "Movies, TV shows, and video content consumption",                          combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: MusicVariableCategory — SUM, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Music",              description: "Music listening and audio content",                                        combinationOperation: CombinationOperation.SUM,  onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: BooksVariableCategory — MEAN, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Books",              description: "Books, reading, and literary content",                                     combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+
+    // --- Other ---
+    // Legacy: CausesOfIllnessVariableCategory — MEAN, onset 0, duration 86400, ZERO fill, predictor
+    { name: "Causes of Illness",  description: "Pathogens, allergens, and illness triggers",                               combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Policy: long onset, long duration
+    { name: "Policy",             description: "Government policies and regulations",                                      combinationOperation: CombinationOperation.MEAN, onsetDelay: 2592000, durationOfAction: 31536000, predictorOnly: true,  outcome: false, defaultUnitAbbr: "count" },
+    // Legacy: MiscellaneousVariableCategory — MEAN, onset 0, duration 86400
+    { name: "Miscellaneous",      description: "Uncategorized variables",                                                  combinationOperation: CombinationOperation.MEAN, onsetDelay: 0,       durationOfAction: 86400,   predictorOnly: false, outcome: null,  defaultUnitAbbr: "count" },
   ];
 
   const created: Record<string, string> = {};
@@ -155,7 +256,10 @@ async function seedVariableCategories(unitMap: Record<string, string>) {
 }
 
 // ============================================================================
-// C) GLOBAL VARIABLES (~50)
+// C) GLOBAL VARIABLES
+// ============================================================================
+// Each variable inherits sensible defaults from its category but can override.
+// fillingType + fillingValue are set per-variable (they live on GlobalVariable).
 // ============================================================================
 
 async function seedGlobalVariables(
@@ -164,13 +268,14 @@ async function seedGlobalVariables(
 ) {
   console.log("🌐 Seeding global variables...");
 
-  // Helper to shorten definitions
   type VarDef = {
     name: string;
     description?: string;
     category: string;
     unit: string;
     combinationOperation?: CombinationOperation;
+    fillingType?: FillingType;
+    fillingValue?: number;
     onsetDelay?: number;
     durationOfAction?: number;
     predictorOnly?: boolean;
@@ -182,73 +287,196 @@ async function seedGlobalVariables(
   };
 
   const variables: VarDef[] = [
-    // ---- Treatments ----
-    { name: "Vitamin D",        category: "Supplement", unit: "IU",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, synonyms: "cholecalciferol,D3" },
-    { name: "Omega-3",          category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, synonyms: "fish oil,EPA,DHA" },
-    { name: "Magnesium",        category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Melatonin",        category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 28800,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Caffeine",         category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 900,   durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.NEUTRAL,  synonyms: "coffee,tea,energy drink" },
-    { name: "Ibuprofen",        category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, synonyms: "Advil,Motrin" },
-    { name: "Aspirin",          category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 14400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Acetaminophen",    category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  onsetDelay: 1800,  durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, synonyms: "Tylenol,paracetamol" },
+    // ========================================================================
+    // TREATMENTS — SUM, onset 1800, duration 86400, ZERO fill, predictor-only
+    // ========================================================================
+    { name: "Caffeine",          category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 900,   durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.NEUTRAL,  minimumAllowedValue: 0, synonyms: "coffee,tea,energy drink" },
+    { name: "Ibuprofen",         category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "Advil,Motrin" },
+    { name: "Aspirin",           category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 14400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Acetaminophen",     category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "Tylenol,paracetamol" },
+    { name: "Metformin",         category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 43200,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Prednisone",        category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Benadryl",          category: "Treatment",  unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 21600,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "diphenhydramine" },
 
-    // ---- Symptoms ----
-    { name: "Headache Severity",   category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Fatigue",             category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Anxiety",             category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Depression Severity", category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Pain",                category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Nausea",              category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Insomnia Severity",   category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Brain Fog",           category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    // ========================================================================
+    // SUPPLEMENTS — SUM, onset 1800, duration 86400, ZERO fill, predictor-only
+    // ========================================================================
+    { name: "Vitamin D",         category: "Supplement", unit: "IU",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "cholecalciferol,D3" },
+    { name: "Omega-3",           category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "fish oil,EPA,DHA" },
+    { name: "Magnesium",         category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Melatonin",         category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 28800,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Zinc",              category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Vitamin C",         category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 43200,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "ascorbic acid" },
+    { name: "Vitamin B12",       category: "Supplement", unit: "mcg",     combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "cobalamin" },
+    { name: "Probiotics",        category: "Supplement", unit: "count",   combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Iron",              category: "Supplement", unit: "mg",      combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Creatine",          category: "Supplement", unit: "g",       combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800,  durationOfAction: 86400,  predictorOnly: true, outcome: false, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
 
-    // ---- Emotions ----
-    { name: "Overall Mood",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
-    { name: "Energy Level",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
-    { name: "Motivation",       category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
-    { name: "Stress Level",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
-    { name: "Happiness",        category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    // ========================================================================
+    // SYMPTOMS — MEAN, onset 0, duration 86400, NONE fill, outcome
+    // ========================================================================
+    { name: "Headache Severity",   category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Fatigue",             category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Anxiety",             category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Depression Severity", category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Pain",                category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Nausea",              category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Insomnia Severity",   category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Brain Fog",           category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Joint Pain",         category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Bloating",           category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Dizziness",          category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Congestion",         category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, synonyms: "stuffy nose,sinus" },
+    { name: "Back Pain",          category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Itching",            category: "Symptom", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
 
-    // ---- Vital Signs ----
-    { name: "Heart Rate",         category: "Vital Sign", unit: "bpm",  combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL, minimumAllowedValue: 30, maximumAllowedValue: 220 },
-    { name: "Blood Pressure Systolic",  category: "Vital Sign", unit: "mmHg", combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 60, maximumAllowedValue: 300, synonyms: "systolic,SBP" },
-    { name: "Blood Pressure Diastolic", category: "Vital Sign", unit: "mmHg", combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 30, maximumAllowedValue: 200, synonyms: "diastolic,DBP" },
-    { name: "Body Weight",        category: "Vital Sign", unit: "lb",   combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL, minimumAllowedValue: 1, maximumAllowedValue: 1000 },
-    { name: "Body Temperature",   category: "Vital Sign", unit: "°F",   combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL, minimumAllowedValue: 90, maximumAllowedValue: 115 },
-    { name: "Sleep Duration",     category: "Sleep",      unit: "h",    combinationOperation: CombinationOperation.SUM,  predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 24 },
-    { name: "Daily Step Count",   category: "Vital Sign", unit: "steps",combinationOperation: CombinationOperation.SUM,  predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 100000 },
-    { name: "Blood Oxygen Saturation", category: "Vital Sign", unit: "%", combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 50, maximumAllowedValue: 100, synonyms: "SpO2,O2 sat" },
+    // ========================================================================
+    // EMOTIONS — MEAN, onset 0, duration 86400, NONE fill, outcome
+    // ========================================================================
+    { name: "Overall Mood",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Energy Level",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Motivation",       category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Stress Level",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Happiness",        category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Irritability",     category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Calmness",         category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Gratitude",        category: "Emotion", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
 
-    // ---- Foods / Drinks ----
-    { name: "Coffee",             category: "Drink", unit: "servings",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
-    { name: "Alcohol",            category: "Drink", unit: "servings",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, synonyms: "beer,wine,spirits,drinks" },
-    { name: "Sugar Intake",       category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE },
-    { name: "Processed Food",     category: "Food",  unit: "servings",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE },
-    { name: "Vegetable Intake",   category: "Food",  unit: "servings",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Water Intake",       category: "Drink", unit: "mL",        combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Caloric Intake",     category: "Food",  unit: "kcal",      combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
-    { name: "Protein Intake",     category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Fiber Intake",       category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    // ========================================================================
+    // VITAL SIGNS — MEAN, onset 0, duration 86400, NONE fill
+    // ========================================================================
+    { name: "Heart Rate",                  category: "Vital Sign", unit: "bpm",   combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  minimumAllowedValue: 30, maximumAllowedValue: 220 },
+    { name: "Blood Pressure Systolic",     category: "Vital Sign", unit: "mmHg",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 60, maximumAllowedValue: 300, synonyms: "systolic,SBP" },
+    { name: "Blood Pressure Diastolic",    category: "Vital Sign", unit: "mmHg",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 30, maximumAllowedValue: 200, synonyms: "diastolic,DBP" },
+    { name: "Body Temperature",            category: "Vital Sign", unit: "°F",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  minimumAllowedValue: 90, maximumAllowedValue: 115 },
+    { name: "Blood Oxygen Saturation",     category: "Vital Sign", unit: "%",     combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 50, maximumAllowedValue: 100, synonyms: "SpO2,O2 sat" },
+    { name: "Respiratory Rate",            category: "Vital Sign", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  minimumAllowedValue: 5,  maximumAllowedValue: 60, synonyms: "breaths per minute" },
+    { name: "Resting Heart Rate",          category: "Vital Sign", unit: "bpm",   combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 30, maximumAllowedValue: 120, synonyms: "RHR" },
+    { name: "Heart Rate Variability",      category: "Vital Sign", unit: "s",     combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0,  maximumAllowedValue: 300, synonyms: "HRV,RMSSD" },
 
-    // ---- Activities ----
-    { name: "Exercise Duration",  category: "Exercise", unit: "min",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Meditation",         category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Screen Time",        category: "Activity", unit: "h",    combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE },
-    { name: "Time Outdoors",      category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
-    { name: "Social Interaction", category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    // ========================================================================
+    // BIOMARKERS — MEAN, onset 0, duration 86400, NONE fill
+    // ========================================================================
+    { name: "Blood Glucose",               category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  minimumAllowedValue: 20, maximumAllowedValue: 600, synonyms: "blood sugar,glucose" },
+    { name: "HbA1c",                       category: "Biomarker", unit: "%",      combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 3,  maximumAllowedValue: 15, synonyms: "A1c,glycated hemoglobin" },
+    { name: "Total Cholesterol",           category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 50, maximumAllowedValue: 500 },
+    { name: "LDL Cholesterol",             category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 10, maximumAllowedValue: 400, synonyms: "LDL,bad cholesterol" },
+    { name: "HDL Cholesterol",             category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 10, maximumAllowedValue: 150, synonyms: "HDL,good cholesterol" },
+    { name: "Triglycerides",               category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 10, maximumAllowedValue: 1000 },
+    { name: "TSH",                         category: "Biomarker", unit: "count",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  synonyms: "thyroid stimulating hormone" },
+    { name: "Vitamin D Level",             category: "Biomarker", unit: "count",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, synonyms: "25-OH vitamin D,25-hydroxyvitamin D" },
+    { name: "C-Reactive Protein",          category: "Biomarker", unit: "mg/dL",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, synonyms: "CRP,hs-CRP" },
 
-    // ---- Environment ----
-    { name: "Outdoor Temperature",category: "Environment", unit: "°F",   combinationOperation: CombinationOperation.MEAN, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
-    { name: "Air Quality Index",  category: "Environment", unit: "count",combinationOperation: CombinationOperation.MEAN, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, minimumAllowedValue: 0, maximumAllowedValue: 500, synonyms: "AQI" },
+    // ========================================================================
+    // PHYSIQUE / BODY MEASUREMENTS — MEAN, onset 0, duration 604800, NONE fill
+    // ========================================================================
+    { name: "Body Weight",        category: "Physique", unit: "lb",   combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL,  minimumAllowedValue: 1, maximumAllowedValue: 1000 },
+    { name: "Body Fat Percentage", category: "Physique", unit: "%",   combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 1, maximumAllowedValue: 60 },
+    { name: "Waist Circumference", category: "Physique", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "BMI",                 category: "Physique", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEUTRAL, minimumAllowedValue: 10, maximumAllowedValue: 80, synonyms: "body mass index" },
 
-    // ---- Economic ----
-    { name: "Daily Spending",     category: "Economic", unit: "USD", combinationOperation: CombinationOperation.SUM,  predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
-    { name: "Income",             category: "Economic", unit: "USD", combinationOperation: CombinationOperation.SUM,  predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    // ========================================================================
+    // SLEEP — MEAN (per legacy), onset 0, duration 86400, NONE fill
+    // ========================================================================
+    { name: "Sleep Duration",      category: "Sleep",     unit: "h",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 24 },
+    { name: "Sleep Quality",       category: "Sleep",     unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Deep Sleep Duration", category: "Sleep",     unit: "h",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 12 },
+    { name: "REM Sleep Duration",  category: "Sleep",     unit: "h",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 12 },
+    { name: "Sleep Latency",       category: "Sleep",     unit: "min",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 0, synonyms: "time to fall asleep" },
+    { name: "Number of Awakenings", category: "Sleep",    unit: "count", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, minimumAllowedValue: 0 },
 
-    // ---- Goals ----
-    { name: "Goal Progress",      category: "Goal", unit: "%",   combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 100 },
-    { name: "Productivity Rating",category: "Goal", unit: "1-10",combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
-    { name: "Life Satisfaction",   category: "Goal", unit: "1-10",combinationOperation: CombinationOperation.MEAN, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    // ========================================================================
+    // PHYSICAL ACTIVITY — SUM, onset 0, duration 86400, ZERO fill
+    // ========================================================================
+    { name: "Daily Step Count",    category: "Physical Activity", unit: "steps",  combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 100000 },
+    { name: "Active Minutes",      category: "Physical Activity", unit: "min",   combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Distance Walked",     category: "Physical Activity", unit: "km",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Calories Burned",     category: "Physical Activity", unit: "kcal",  combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0 },
+    { name: "Flights of Stairs",   category: "Physical Activity", unit: "count", combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, synonyms: "floors climbed" },
+
+    // ========================================================================
+    // FOODS — SUM, onset 1800, duration 86400, ZERO fill, predictor
+    // ========================================================================
+    { name: "Coffee",             category: "Drink", unit: "servings",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Alcohol",            category: "Drink", unit: "servings",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, synonyms: "beer,wine,spirits,drinks" },
+    { name: "Sugar Intake",       category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE },
+    { name: "Processed Food",     category: "Food",  unit: "servings",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE },
+    { name: "Vegetable Intake",   category: "Food",  unit: "servings",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    { name: "Water Intake",       category: "Drink", unit: "mL",        combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    { name: "Caloric Intake",     category: "Food",  unit: "kcal",      combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Protein Intake",     category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    { name: "Fiber Intake",       category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    { name: "Fruit Intake",       category: "Food",  unit: "servings",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.POSITIVE },
+    { name: "Fat Intake",         category: "Food",  unit: "g",         combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Carbohydrate Intake", category: "Food", unit: "g",         combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL, synonyms: "carbs" },
+    { name: "Sodium Intake",      category: "Nutrient", unit: "mg",     combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, onsetDelay: 1800, durationOfAction: 86400, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, synonyms: "salt" },
+
+    // ========================================================================
+    // ACTIVITIES — SUM, onset 0, duration 86400, ZERO fill, predictor
+    // ========================================================================
+    { name: "Exercise Duration",  category: "Exercise", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Meditation",         category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Screen Time",        category: "Activity", unit: "h",    combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.NEGATIVE },
+    { name: "Time Outdoors",      category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Social Interaction Time", category: "Social Interaction", unit: "min", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Reading Time",       category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Journaling",         category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Cold Shower",        category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Stretching",         category: "Activity", unit: "min",  combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+
+    // ========================================================================
+    // ENVIRONMENT — MEAN, onset 0, duration 86400, NONE fill, predictor
+    // ========================================================================
+    { name: "Outdoor Temperature", category: "Weather",     unit: "°F",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Humidity",            category: "Weather",     unit: "%",     combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL, minimumAllowedValue: 0, maximumAllowedValue: 100 },
+    { name: "Barometric Pressure", category: "Weather",     unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "UV Index",            category: "Weather",     unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL, minimumAllowedValue: 0, maximumAllowedValue: 15 },
+    { name: "Air Quality Index",   category: "Environment", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, minimumAllowedValue: 0, maximumAllowedValue: 500, synonyms: "AQI" },
+    { name: "Pollen Count",        category: "Environment", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, minimumAllowedValue: 0 },
+    { name: "Indoor Temperature",  category: "Environment", unit: "°F",   combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Noise Level",         category: "Environment", unit: "count", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: true, outcome: false, valence: Valence.NEGATIVE, synonyms: "decibels,dB" },
+
+    // ========================================================================
+    // COGNITIVE PERFORMANCE — MEAN, onset 0, duration 86400, NONE fill, outcome
+    // ========================================================================
+    { name: "Focus Rating",        category: "Cognitive Performance", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Memory Rating",       category: "Cognitive Performance", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Reaction Time",       category: "Cognitive Performance", unit: "s",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Mental Clarity",      category: "Cognitive Performance", unit: "1-5",  combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+
+    // ========================================================================
+    // WORK / PRODUCTIVITY — SUM/MEAN
+    // ========================================================================
+    { name: "Hours Worked",        category: "Work",        unit: "h",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Tasks Completed",     category: "Work",        unit: "count", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE },
+    { name: "Productivity Rating", category: "Productivity", unit: "1-5", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Deep Work Duration",  category: "Work",        unit: "h",    combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.POSITIVE, synonyms: "focused work" },
+    { name: "Meetings",            category: "Work",        unit: "count", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: false, valence: Valence.NEUTRAL },
+
+    // ========================================================================
+    // GOALS — MEAN, onset 0, duration 86400, NONE fill, outcome
+    // ========================================================================
+    { name: "Goal Progress",       category: "Goal", unit: "%",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE, minimumAllowedValue: 0, maximumAllowedValue: 100 },
+    { name: "Life Satisfaction",   category: "Goal", unit: "1-10", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+
+    // ========================================================================
+    // ECONOMIC — MEAN/SUM
+    // ========================================================================
+    { name: "Daily Spending",      category: "Payment",  unit: "USD", combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: true, outcome: false, valence: Valence.NEUTRAL },
+    { name: "Income",              category: "Economic", unit: "USD", combinationOperation: CombinationOperation.SUM,  fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+
+    // ========================================================================
+    // SOCIAL INTERACTIONS — SUM, onset 0, duration 86400, ZERO fill
+    // ========================================================================
+    { name: "Phone Calls Made",    category: "Social Interaction", unit: "count", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+    { name: "Messages Sent",      category: "Social Interaction", unit: "count", combinationOperation: CombinationOperation.SUM, fillingType: FillingType.ZERO, fillingValue: 0, predictorOnly: false, outcome: true, valence: Valence.POSITIVE },
+
+    // ========================================================================
+    // CONDITIONS — MEAN, onset 0, duration 86400, NONE fill, outcome
+    // ========================================================================
+    { name: "Migraine",           category: "Condition", unit: "yes/no", combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Allergies",          category: "Condition", unit: "1-5",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE },
+    { name: "Cold/Flu",           category: "Condition", unit: "1-5",    combinationOperation: CombinationOperation.MEAN, fillingType: FillingType.NONE, predictorOnly: false, outcome: true, valence: Valence.NEGATIVE, synonyms: "cold,flu,sick" },
   ];
 
   let count = 0;
@@ -269,6 +497,8 @@ async function seedGlobalVariables(
       variableCategoryId: categoryId,
       defaultUnitId: unitId,
       combinationOperation: v.combinationOperation,
+      fillingType: v.fillingType,
+      fillingValue: v.fillingValue,
       onsetDelay: v.onsetDelay,
       durationOfAction: v.durationOfAction,
       predictorOnly: v.predictorOnly,
