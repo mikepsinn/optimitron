@@ -106,5 +106,20 @@ export type {
   OptimalValueAnalysis,
 } from './change-from-baseline.js';
 
+// Pipeline (end-to-end analysis)
+export {
+  runFullAnalysis,
+} from './pipeline.js';
+export type {
+  AnalysisConfig,
+  DataQualityResult,
+  FullAnalysisResult,
+} from './pipeline.js';
+
+// Report generator
+export {
+  generateMarkdownReport,
+} from './report.js';
+
 // Version
 export const VERSION = '0.1.0';

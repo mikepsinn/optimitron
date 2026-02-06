@@ -30,6 +30,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Zod schemas are manually maintained in ../src/zod/index.ts
+// (zod-prisma-types generator was too slow on WSL2; may re-enable later)
+// generator zod {
+//   provider         = "zod-prisma-types"
+//   output           = "../src/zod"
+//   createInputTypes = false
+//   addIncludeType   = false
+//   addSelectType    = false
+// }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

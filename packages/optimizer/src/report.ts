@@ -1,0 +1,195 @@
+/**
+ * Markdown Report Generator
+ *
+ * Produces a human-readable markdown report from a FullAnalysisResult.
+ *
+ * @see https://dfda-spec.warondisease.org — dFDA Specification
+ */
+
+import type { FullAnalysisResult } from './pipeline.js';
+import { groupToPracticalValue } from './change-from-baseline.js';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Describe the strength of a correlation coefficient.
+ */
+function describeCorrelation(r: number): string {
+  const absR = Math.abs(r);
+  const direction = r >= 0 ? 'positive' : 'negative';
+  if (absR >= 0.7) return `strong ${direction}`;
+  if (absR >= 0.4) return `moderate ${direction}`;
+  if (absR >= 0.2) return `weak ${direction}`;
+  if (absR >= 0.1) return `very weak ${direction}`;
+  return 'negligible';
+}
+
+/**
+ * Describe the evidence grade.
+ */
+function describeEvidenceGrade(grade: string): string {
+  switch (grade) {
+    case 'A': return 'strong causal relationship';
+    case 'B': return 'probable causal relationship';
+    case 'C': return 'possible association';
+    case 'D': return 'weak evidence';
+    case 'F': return 'insufficient evidence';
+    default: return 'unknown';
+  }
+}
+
+/**
+ * Describe predictive Pearson direction.
+ */
+function describePredictiveDirection(predictivePearson: number): string {
+  if (predictivePearson > 0.05) return 'correct direction confirmed';
+  if (predictivePearson < -0.05) return 'reverse direction — outcome may drive predictor';
+  return 'no clear directionality';
+}
+
+/**
+ * Format a number to a given number of decimal places.
+ */
+function fmt(value: number, decimals: number = 2): string {
+  if (!isFinite(value)) return 'N/A';
+  return value.toFixed(decimals);
+}
+
+/**
+ * Compute Bradford Hill composite score (sum of all 9 criteria).
+ */
+function bradfordHillTotal(bh: FullAnalysisResult['bradfordHill']): number {
+  return (
+    bh.strength +
+    bh.consistency +
+    bh.temporality +
+    (bh.gradient ?? 0) +
+    bh.experiment +
+    bh.plausibility +
+    bh.coherence +
+    bh.analogy +
+    bh.specificity
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main generator
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate a human-readable markdown report from a FullAnalysisResult.
+ *
+ * The report includes:
+ * - Summary with key finding
+ * - Key findings (optimal value, outcome change, correlation, evidence grade, PIS)
+ * - Causality assessment (forward, reverse, predictive Pearson, Bradford Hill)
+ * - Optimal values (high/low outcome values, practical recommendation)
+ * - Data quality (pairs, date range, evidence grade)
+ *
+ * @param result - Complete analysis result from runFullAnalysis
+ * @returns Markdown-formatted report string
+ */
+export function generateMarkdownReport(result: FullAnalysisResult): string {
+  const {
+    predictorName,
+    outcomeName,
+    forwardPearson,
+    reversePearson,
+    predictivePearson,
+    pValue,
+    effectSize,
+    baselineFollowup,
+    optimalValues,
+    bradfordHill,
+    pis,
+    dataQuality,
+    dateRange,
+    numberOfPairs,
+  } = result;
+
+  const percentChange = baselineFollowup.outcomeFollowUpPercentChangeFromBaseline;
+  const direction = percentChange >= 0 ? 'improvement' : 'worsening';
+  const absPercentChange = Math.abs(percentChange);
+
+  const practicalValue = groupToPracticalValue(optimalValues.optimalDailyValue);
+  const pisScore = pis.score * 100; // Display on 0–100 scale
+  const bhTotal = bradfordHillTotal(bradfordHill);
+
+  const lines: string[] = [];
+
+  // --- Title ---
+  lines.push(`# Analysis: ${predictorName} → ${outcomeName}`);
+  lines.push('');
+
+  // --- Summary ---
+  lines.push('## Summary');
+  lines.push('');
+  lines.push(
+    `Taking **${fmt(practicalValue, 0)} ${predictorName}** daily is associated ` +
+    `with a **${fmt(absPercentChange, 1)}% ${direction}** in ${outcomeName}.`,
+  );
+  lines.push('');
+
+  // --- Key Findings ---
+  lines.push('## Key Findings');
+  lines.push('');
+  lines.push(`- **Optimal Daily Value:** ${fmt(practicalValue, 0)} (practical recommendation)`);
+  lines.push(
+    `- **Outcome Change:** ${outcomeName} is ${fmt(absPercentChange, 1)}% ` +
+    `${percentChange >= 0 ? 'higher' : 'lower'} on treatment days vs baseline`,
+  );
+  lines.push(
+    `- **Correlation:** r = ${fmt(forwardPearson)} (${describeCorrelation(forwardPearson)})`,
+  );
+  lines.push(
+    `- **Evidence Grade:** ${pis.evidenceGrade} (${describeEvidenceGrade(pis.evidenceGrade)})`,
+  );
+  lines.push(`- **Predictor Impact Score:** ${fmt(pisScore, 1)}/100`);
+  lines.push('');
+
+  // --- Causality Assessment ---
+  lines.push('## Causality Assessment');
+  lines.push('');
+  lines.push(`- Forward Pearson: ${fmt(forwardPearson)}`);
+  lines.push(`- Reverse Pearson: ${fmt(reversePearson)}`);
+  lines.push(
+    `- Predictive Pearson: ${fmt(predictivePearson)} (${describePredictiveDirection(predictivePearson)})`,
+  );
+  lines.push(`- Bradford Hill Score: ${fmt(bhTotal, 1)}/9`);
+  lines.push(`- p-value: ${pValue < 0.001 ? '< 0.001' : fmt(pValue, 4)}`);
+  lines.push('');
+
+  // --- Optimal Values ---
+  lines.push('## Optimal Values');
+  lines.push('');
+  lines.push(
+    `- Value predicting high outcome: ${fmt(optimalValues.valuePredictingHighOutcome)} → ` +
+    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingHighPredictor)}`,
+  );
+  lines.push(
+    `- Value predicting low outcome: ${fmt(optimalValues.valuePredictingLowOutcome)} → ` +
+    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}`,
+  );
+  lines.push(`- Practical recommendation: **Take ${fmt(practicalValue, 0)} ${predictorName} daily**`);
+  lines.push('');
+
+  // --- Data Quality ---
+  lines.push('## Data Quality');
+  lines.push('');
+  lines.push(`- Pairs analyzed: ${numberOfPairs}`);
+  lines.push(`- Date range: ${dateRange.start} to ${dateRange.end}`);
+  lines.push(`- Evidence grade: ${pis.evidenceGrade}`);
+  lines.push(`- Data quality: ${dataQuality.isValid ? 'PASS' : 'FAIL'}`);
+
+  if (!dataQuality.isValid && dataQuality.failureReasons.length > 0) {
+    for (const reason of dataQuality.failureReasons) {
+      lines.push(`  - ⚠️ ${reason}`);
+    }
+  }
+
+  lines.push('');
+
+  return lines.join('\n');
+}

@@ -247,7 +247,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
     it('should parse step data from Fitbit JSON', () => {
       // Fitbit names it "Daily Step Count"
       expect(fitbitStepRecords.length).toBeGreaterThan(0);
-      const stepRecords = fitbitStepRecords.filter(r => r.variableName === 'Daily Step Count');
+      const stepRecords = fitbitStepRecords.filter(r => r.variableName === 'Steps');
       expect(stepRecords.length).toBeGreaterThan(0);
     });
 
@@ -288,7 +288,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
       // Oura should have these specific variable names
       expect(varNames.has('Overall Sleep Score')).toBe(true);
       expect(varNames.has('Sleep Duration')).toBe(true);
-      expect(varNames.has('Daily Step Count')).toBe(true);
+      expect(varNames.has('Steps')).toBe(true);
     });
 
     it('should produce valid ParsedHealthRecord objects', () => {
@@ -353,8 +353,8 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
 
     it('should merge step count data from both Fitbit and Oura', () => {
       // Both Fitbit and Oura use "Daily Step Count"
-      const fitbitSteps = recordsToTimeSeries(allFitbitRecords, 'Daily Step Count', 'daily_steps');
-      const ouraSteps = recordsToTimeSeries(ouraRecords, 'Daily Step Count', 'daily_steps');
+      const fitbitSteps = recordsToTimeSeries(allFitbitRecords, 'Steps', 'daily_steps');
+      const ouraSteps = recordsToTimeSeries(ouraRecords, 'Steps', 'daily_steps');
 
       expect(fitbitSteps).not.toBeNull();
       expect(ouraSteps).not.toBeNull();
@@ -372,7 +372,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
     // (testing cross-device analysis)
 
     it('should align steps (Fitbit) with sleep score (Oura) time series', () => {
-      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Daily Step Count', 'daily_steps');
+      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Steps', 'daily_steps');
       const ouraSleepScoreSeries = recordsToTimeSeries(ouraRecords, 'Overall Sleep Score', 'sleep_score');
 
       expect(stepsSeries).not.toBeNull();
@@ -393,7 +393,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
 
     it('should validate data quality on aligned pairs', () => {
       const fitbitSleep = recordsToTimeSeries(allFitbitRecords, 'Sleep Duration', 'sleep_duration');
-      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Daily Step Count', 'daily_steps');
+      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Steps', 'daily_steps');
 
       expect(fitbitSleep).not.toBeNull();
       expect(stepsSeries).not.toBeNull();
@@ -414,7 +414,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
 
     it('should calculate correlation between steps and sleep', () => {
       const fitbitSleep = recordsToTimeSeries(allFitbitRecords, 'Sleep Duration', 'sleep_duration');
-      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Daily Step Count', 'daily_steps');
+      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Steps', 'daily_steps');
 
       expect(fitbitSleep).not.toBeNull();
       expect(stepsSeries).not.toBeNull();
@@ -437,7 +437,7 @@ describe('Importer-to-Analysis Pipeline — End-to-End', () => {
 
     it('should run full PIS calculation on cross-device data', () => {
       const fitbitSleep = recordsToTimeSeries(allFitbitRecords, 'Sleep Duration', 'sleep_duration');
-      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Daily Step Count', 'daily_steps');
+      const stepsSeries = recordsToTimeSeries(allFitbitRecords, 'Steps', 'daily_steps');
 
       expect(fitbitSleep).not.toBeNull();
       expect(stepsSeries).not.toBeNull();
