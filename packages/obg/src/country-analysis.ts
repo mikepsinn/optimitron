@@ -157,8 +157,8 @@ function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const n = sorted.length;
   return n % 2 === 0
-    ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2
-    : sorted[Math.floor(n / 2)];
+    ? ((sorted[n / 2 - 1] ?? 0) + (sorted[n / 2] ?? 0)) / 2
+    : (sorted[Math.floor(n / 2)] ?? 0);
 }
 
 /** Convert AnnualTimeSeries to optimizer TimeSeries format */
