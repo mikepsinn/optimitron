@@ -152,8 +152,8 @@ for (const a of analyses) {
   const causalDir = result.predictivePearson;
   const p = result.pValue;
   const n = result.numberOfPairs;
-  const bfBase = result.baselineFollowup.baselineMean;
-  const bfFollow = result.baselineFollowup.followupMean;
+  const bfBase = result.baselineFollowup.outcomeBaselineAverage;
+  const bfFollow = result.baselineFollowup.outcomeFollowUpAverage;
   const pctChange = result.effectSize.percentChange;
   const grade = result.pis.evidenceGrade;
   const pisScore = result.pis.score;
