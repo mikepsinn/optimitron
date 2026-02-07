@@ -190,9 +190,9 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
       ],
     },
 
-    // ─── Defense ────────────────────────────────────────────────────────
+    // ─── Military ────────────────────────────────────────────────────────
     {
-      name: 'Defense',
+      name: 'Military',
       spending: 886,
       percentOfTotal: 12.9,
       type: 'discretionary',
@@ -235,7 +235,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
           trend: 'declining',
         },
         {
-          name: 'Defense spending as % GDP',
+          name: 'Military spending as % GDP',
           value: 3.0,
           unit: '%',
           year: 2025,

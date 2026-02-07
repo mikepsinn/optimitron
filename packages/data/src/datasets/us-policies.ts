@@ -683,10 +683,10 @@ export const US_POLICIES: USPolicyData[] = [
     ],
   },
 
-  // ─── Defense ───────────────────────────────────────────────────────
+  // ─── Military ───────────────────────────────────────────────────────
   {
     name: 'Military Housing Quality Standards',
-    category: 'Defense',
+    category: 'Military',
     description:
       'Enforce mandatory quality standards for privatized military family housing ' +
       'and fund $3B in remediation. GAO investigations found widespread health hazards.',

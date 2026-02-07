@@ -90,7 +90,7 @@ describe('US Federal Budget Dataset', () => {
     });
 
     it('should include major discretionary programs', () => {
-      const defense = getCategoryByName('Defense');
+      const defense = getCategoryByName('Military');
       expect(defense).toBeDefined();
       expect(defense!.type).toBe('discretionary');
 
@@ -197,8 +197,8 @@ describe('US Federal Budget Dataset', () => {
 
   describe('Utility functions', () => {
     it('getCategoryByName should find categories case-insensitively', () => {
-      expect(getCategoryByName('defense')).toBeDefined();
-      expect(getCategoryByName('DEFENSE')).toBeDefined();
+      expect(getCategoryByName('military')).toBeDefined();
+      expect(getCategoryByName('MILITARY')).toBeDefined();
       expect(getCategoryByName('social security')).toBeDefined();
     });
 
@@ -215,15 +215,15 @@ describe('US Federal Budget Dataset', () => {
     });
 
     it('getHistoricalSeries should return data for known categories', () => {
-      const series = getHistoricalSeries('Defense');
+      const series = getHistoricalSeries('Military');
       expect(series).toBeDefined();
       expect(series!.length).toBe(11);
     });
 
     it('getSpendingCAGR should return a reasonable growth rate', () => {
-      const cagr = getSpendingCAGR('Defense');
+      const cagr = getSpendingCAGR('Military');
       expect(cagr).toBeDefined();
-      // Defense CAGR should be between 0% and 10% annually
+      // Military CAGR should be between 0% and 10% annually
       expect(cagr!).toBeGreaterThan(0);
       expect(cagr!).toBeLessThan(0.10);
     });

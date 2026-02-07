@@ -16,7 +16,7 @@
       "interestOnDebt": 0.30
     },
     "topAligned": ["Healthcare", "Education", "Environment"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
@@ -39,7 +39,7 @@
       "environment": 0.20,
       "interestOnDebt": 0.40
     },
-    "topAligned": ["Defense", "Veterans Affairs"],
+    "topAligned": ["Military", "Veterans Affairs"],
     "topMisaligned": ["Healthcare", "Environment", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -64,7 +64,7 @@
       "interestOnDebt": 0.20
     },
     "topAligned": ["Healthcare", "Social Security", "Education"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -87,7 +87,7 @@
       "environment": 0.15,
       "interestOnDebt": 0.35
     },
-    "topAligned": ["Defense"],
+    "topAligned": ["Military"],
     "topMisaligned": ["Environment", "Healthcare", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -112,7 +112,7 @@
       "interestOnDebt": 0.25
     },
     "topAligned": ["Healthcare", "Education", "Social Security"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
       { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true },
@@ -135,7 +135,7 @@
       "environment": 0.10,
       "interestOnDebt": 0.50
     },
-    "topAligned": ["Defense"],
+    "topAligned": ["Military"],
     "topMisaligned": ["Environment", "Healthcare", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
@@ -160,7 +160,7 @@
       "interestOnDebt": 0.22
     },
     "topAligned": ["Environment", "Healthcare", "Education"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -183,7 +183,7 @@
       "environment": 0.45,
       "interestOnDebt": 0.38
     },
-    "topAligned": ["Defense", "Infrastructure"],
+    "topAligned": ["Military", "Infrastructure"],
     "topMisaligned": ["Environment", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -208,7 +208,7 @@
       "interestOnDebt": 0.28
     },
     "topAligned": ["Education", "Healthcare", "Social Security"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -256,7 +256,7 @@
       "interestOnDebt": 0.28
     },
     "topAligned": ["Healthcare", "Education", "Infrastructure"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
@@ -279,7 +279,7 @@
       "environment": 0.10,
       "interestOnDebt": 0.55
     },
-    "topAligned": ["Defense"],
+    "topAligned": ["Military"],
     "topMisaligned": ["Environment", "Healthcare", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
@@ -304,7 +304,7 @@
       "interestOnDebt": 0.15
     },
     "topAligned": ["Environment", "Healthcare", "Education"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -327,7 +327,7 @@
       "environment": 0.08,
       "interestOnDebt": 0.60
     },
-    "topAligned": ["Defense"],
+    "topAligned": ["Military"],
     "topMisaligned": ["Environment", "Healthcare", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
@@ -352,7 +352,7 @@
       "interestOnDebt": 0.25
     },
     "topAligned": ["Healthcare", "Education", "Social Security"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
@@ -375,7 +375,7 @@
       "environment": 0.12,
       "interestOnDebt": 0.48
     },
-    "topAligned": ["Defense"],
+    "topAligned": ["Military"],
     "topMisaligned": ["Environment", "Healthcare", "Education"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
@@ -400,7 +400,7 @@
       "interestOnDebt": 0.20
     },
     "topAligned": ["Healthcare", "Environment", "Education"],
-    "topMisaligned": ["Defense", "Interest on Debt"],
+    "topMisaligned": ["Military", "Interest on Debt"],
     "keyVotes": [
       { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true },
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
@@ -423,7 +423,7 @@
       "environment": 0.48,
       "interestOnDebt": 0.35
     },
-    "topAligned": ["Infrastructure", "Defense"],
+    "topAligned": ["Infrastructure", "Military"],
     "topMisaligned": ["Interest on Debt", "Environment"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -447,7 +447,7 @@
       "environment": 0.18,
       "interestOnDebt": 0.42
     },
-    "topAligned": ["Defense", "Infrastructure"],
+    "topAligned": ["Military", "Infrastructure"],
     "topMisaligned": ["Environment", "Healthcare"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
@@ -472,7 +472,7 @@
       "interestOnDebt": 0.30
     },
     "topAligned": ["Infrastructure", "Healthcare", "Education"],
-    "topMisaligned": ["Interest on Debt", "Defense"],
+    "topMisaligned": ["Interest on Debt", "Military"],
     "keyVotes": [
       { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
       { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },

@@ -189,7 +189,7 @@ describe('SpendingGapSchema', () => {
   it('validates a spending gap for overspending (decrease)', () => {
     const result = SpendingGapSchema.safeParse({
       categoryId: 'defense',
-      categoryName: 'Defense',
+      categoryName: 'Military',
       currentSpendingUsd: 800000000000,
       oslUsd: 600000000000,
       gapUsd: -200000000000,

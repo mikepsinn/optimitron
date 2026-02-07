@@ -336,7 +336,7 @@
       ]
     },
     {
-      "name": "Defense Spending Efficiency Audit",
+      "name": "Military Spending Efficiency Audit",
       "type": "budget_allocation",
       "category": "defense",
       "description": "Mandatory independent audit of DoD spending; redirect savings to underfunded categories.",
@@ -359,7 +359,7 @@
         "specificity": 0.477
       },
       "rationale": "Pentagon has failed every audit since they became mandatory in 2018. GAO estimates $100-200B/yr in waste, fraud, and cost overruns. F-35 program alone is $180B over budget.",
-      "currentStatus": "$886B defense budget; failed 6th consecutive audit",
+      "currentStatus": "$886B military budget; failed 6th consecutive audit",
       "recommendedTarget": "Independent audit with binding recommendations; freeze until clean audit",
       "blockingFactors": [
         "political_opposition",
@@ -367,7 +367,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-02-07T04:02:05.098Z",
+  "generatedAt": "2026-02-07T04:45:33.024Z",
   "generatedBy": "@optomitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence. Not mock data."
 }

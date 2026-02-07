@@ -65,7 +65,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
   const defense = makeCategoryAnalysis({
     category: makeCategory({
       id: 'defense',
-      name: 'Defense',
+      name: 'Military',
       spendingType: 'program',
       currentSpendingUsd: 850_000_000_000,
     }),
@@ -77,7 +77,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
     }),
     gap: makeGap({
       categoryId: 'defense',
-      categoryName: 'Defense',
+      categoryName: 'Military',
       currentSpendingUsd: 850_000_000_000,
       oslUsd: 459_000_000_000,
       gapUsd: -391_000_000_000,
@@ -183,15 +183,15 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('## Current vs Optimal Allocation');
     expect(report).toContain('| Category | Current ($) | Current (%) | Optimal ($) | Optimal (%) | Gap |');
     expect(report).toContain('Education');
-    expect(report).toContain('Defense');
+    expect(report).toContain('Military');
     expect(report).toContain('Healthcare');
   });
 
   it('sorts allocation table by absolute gap size', () => {
     const report = generateBudgetReport(makeFullResult());
-    const defenseIdx = report.indexOf('Defense');
+    const defenseIdx = report.indexOf('Military');
     const educationIdx = report.indexOf('Education');
-    // Defense has larger absolute gap (-391B vs +12B)
+    // Military has larger absolute gap (-391B vs +12B)
     expect(defenseIdx).toBeLessThan(educationIdx);
   });
 
@@ -234,15 +234,15 @@ describe('generateBudgetReport', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Top Recommendations');
     expect(report).toContain('Increase Education');
-    expect(report).toContain('Decrease Defense');
+    expect(report).toContain('Decrease Military');
   });
 
   it('sorts recommendations by priority score', () => {
     const report = generateBudgetReport(makeFullResult());
     const lines = report.split('\n');
     const recLines = lines.filter(l => /^\d+\./.test(l));
-    // Defense has higher priority score (195.5B vs 8.4B)
-    expect(recLines[0]).toContain('Defense');
+    // Military has higher priority score (195.5B vs 8.4B)
+    expect(recLines[0]).toContain('Military');
     expect(recLines[1]).toContain('Education');
   });
 
@@ -269,11 +269,11 @@ describe('generateBudgetReport', () => {
 
   it('sorts BIS table by score descending', () => {
     const report = generateBudgetReport(makeFullResult());
-    // After the BIS table header, Healthcare (0.90) should appear before Education (0.70) and Defense (0.50)
+    // After the BIS table header, Healthcare (0.90) should appear before Education (0.70) and Military (0.50)
     const bisSection = report.split('## Budget Impact Scores')[1]!;
     const healthcareIdx = bisSection.indexOf('Healthcare');
     const educationIdx = bisSection.indexOf('Education');
-    const defenseIdx = bisSection.indexOf('Defense');
+    const defenseIdx = bisSection.indexOf('Military');
     expect(healthcareIdx).toBeLessThan(educationIdx);
     expect(educationIdx).toBeLessThan(defenseIdx);
   });
