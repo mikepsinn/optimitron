@@ -13,3 +13,4 @@ export * from './us-drug-war.js';
 export * from './us-immigration-tariffs.js';
 export * from './us-minimum-wage.js';
 export * from './us-laffer-curve.js';
+export * from './us-healthcare-spending.js';
