@@ -11,6 +11,7 @@
  * - World Bank (CO2)
  *
  * Modeling-grade dataset with interpolations and static placeholders.
+ * All numeric outcome values below are SIMULATED placeholders.
  * Do not treat as raw observations.
  */
 
@@ -25,19 +26,19 @@ export type DataProvenance = DataQuality;
 export interface OECDDirectOutcomeDataPoint {
   jurisdictionIso3: string;
   year: number;
-  /** OECD PISA — reading+math+science average; observed triennially only. */
+  /** SIMULATED — OECD PISA reading+math+science average. Real source: OECD PISA database (triennial). */
   pisaScoreAvg: number | null;
-  /** Drug overdose deaths per 100k population; partial coverage, interpolated between years. */
+  /** SIMULATED — Drug overdose deaths per 100k population. Real source: OECD Health Statistics or WHO Mortality Database. */
   overdoseDeathsPer100k: number | null;
-  /** Preventable (amenable) mortality per 100k; partial coverage, interpolated between years. */
+  /** SIMULATED — Preventable (amenable) mortality per 100k. Real source: OECD Health Statistics. */
   preventableDeathsPer100k: number | null;
-  /** Patent applications per million people; partial coverage, interpolated between years. */
+  /** SIMULATED — Patent applications per million people. Real source: WIPO Statistics Data Center. */
   patentsPerMillion: number | null;
-  /** Poverty rate (50% median income threshold); static placeholder repeated, needs update. */
+  /** SIMULATED — Poverty rate (50% median income threshold). Real source: OECD Income Distribution Database. */
   povertyRatePercent: number | null;
-  /** Intentional homicide rate per 100k; partial coverage, interpolated between years. */
+  /** SIMULATED — Intentional homicide rate per 100k. Real source: UNODC homicide statistics. */
   crimeRatePer100k: number | null;
-  /** CO2 emissions metric tons per capita; partial coverage, interpolated between years. */
+  /** SIMULATED — CO2 emissions metric tons per capita. Real source: World Bank WDI (EN.ATM.CO2E.PC). */
   co2PerCapitaTons: number | null;
 }
 
