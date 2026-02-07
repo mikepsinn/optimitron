@@ -75,9 +75,9 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **8.5% impr
 
 ## Causality Assessment
 
-- Forward Pearson: 0.43
-- Reverse Pearson: 0.43
-- Predictive Pearson: 0.00 (no clear directionality)
+- Forward Pearson (predictor → outcome): 0.43
+- Reverse Pearson (outcome → predictor): 0.08
+- Causal Direction Score (forward − reverse): 0.36 (strong forward causation — predictor drives outcome)
 - Bradford Hill Score: 5.0/9
 - p-value: < 0.001
 
@@ -113,9 +113,9 @@ Taking **8 Sleep Duration** daily is associated with a **7.5% improvement** in O
 
 ## Causality Assessment
 
-- Forward Pearson: 0.43
-- Reverse Pearson: 0.43
-- Predictive Pearson: 0.00 (no clear directionality)
+- Forward Pearson (predictor → outcome): 0.43
+- Reverse Pearson (outcome → predictor): 0.09
+- Causal Direction Score (forward − reverse): 0.34 (strong forward causation — predictor drives outcome)
 - Bradford Hill Score: 5.1/9
 - p-value: < 0.001
 
@@ -151,9 +151,9 @@ Taking **3 Coffee Intake** daily is associated with a **2.8% worsening** in Slee
 
 ## Causality Assessment
 
-- Forward Pearson: -0.25
-- Reverse Pearson: -0.25
-- Predictive Pearson: 0.00 (no clear directionality)
+- Forward Pearson (predictor → outcome): -0.25
+- Reverse Pearson (outcome → predictor): -0.11
+- Causal Direction Score (forward − reverse): -0.13 (weak reverse causation — outcome may drive predictor)
 - Bradford Hill Score: 4.7/9
 - p-value: < 0.001
 
@@ -189,9 +189,9 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **1.1% impr
 
 ## Causality Assessment
 
-- Forward Pearson: 0.11
-- Reverse Pearson: 0.11
-- Predictive Pearson: 0.00 (no clear directionality)
+- Forward Pearson (predictor → outcome): 0.11
+- Reverse Pearson (outcome → predictor): -0.07
+- Causal Direction Score (forward − reverse): 0.19 (weak forward causation)
 - Bradford Hill Score: 4.0/9
 - p-value: 0.1273
 
