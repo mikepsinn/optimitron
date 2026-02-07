@@ -649,6 +649,22 @@ interface WebsitePolicyData {
   generatedAt: string;
 }
 
+export interface PolicyAnalysisArtifacts {
+  result: PolicyRankingResult;
+  websiteData: WebsitePolicyData;
+  reportMarkdown: string;
+  outputPaths: {
+    markdown: string;
+    json: string;
+  };
+}
+
+export interface PolicyAnalysisOptions {
+  outputDir?: string;
+  writeFiles?: boolean;
+  logSummary?: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------

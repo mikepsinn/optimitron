@@ -57,7 +57,7 @@ export interface EducationInsight {
   key: string;
   title: string;
   description: string;
-  supportingData: Record<string, number | string>;
+  supportingData: Record<string, number | string | boolean>;
 }
 
 export interface EducationExemplar {
@@ -181,7 +181,7 @@ function generateInsights(
         finlandSpending: fi.educationSpendingPctGDP,
         finlandSTR: fi.studentTeacherRatio,
         finlandTeacherPay: fi.teacherSalaryRelativeToGDP,
-        finlandPreK: fi.universalPreK,
+        finlandPreK: fi.universalPreK ? 'yes' : 'no',
       },
     },
     {
@@ -199,7 +199,7 @@ function generateInsights(
         usEfficiency: us.efficiencyScore,
         usTeacherPay: us.teacherSalaryRelativeToGDP,
         usRank: usRank,
-        usPreK: us.universalPreK,
+        usPreK: us.universalPreK ? 'yes' : 'no',
       },
     },
     {

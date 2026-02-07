@@ -546,27 +546,33 @@ describe('statistics edge cases', () => {
 describe('partialCorrelation', () => {
   it('removes spurious correlation driven by a confounder', () => {
     // Z causes X and Y. X and Y should be uncorrelated controlling for Z.
-    // Z = uniform(0, 10)
-    // X = 2*Z + noise
-    // Y = 3*Z + noise
-    const z: number[] = [];
-    const x: number[] = [];
-    const y: number[] = [];
-    
-    for(let i=0; i<50; i++) {
-      const zi = Math.random() * 10;
-      z.push(zi);
-      x.push(2 * zi + (Math.random() - 0.5)); // High correlation with Z
-      y.push(3 * zi + (Math.random() - 0.5)); // High correlation with Z
-    }
-    
+    // Deterministic construction to avoid flaky tests.
+    const n = 50;
+    const z = Array.from({ length: n }, (_, i) => i + 1);
+    const meanZ = mean(z);
+    const zCentered = z.map(v => v - meanZ);
+
+    const dot = (a: number[], b: number[]) => a.reduce((sum, v, i) => sum + v * b[i]!, 0);
+    const projScale = (a: number[], b: number[]) => dot(a, b) / dot(b, b);
+
+    const baseA = z.map((_, i) => Math.sin(i * 0.31));
+    const baseB = z.map((_, i) => Math.cos(i * 0.47));
+
+    // Orthogonalize noise to Z and to each other
+    const a = baseA.map((v, i) => v - projScale(baseA, zCentered) * zCentered[i]!);
+    const b0 = baseB.map((v, i) => v - projScale(baseB, zCentered) * zCentered[i]!);
+    const b = b0.map((v, i) => v - projScale(b0, a) * a[i]!);
+
+    const x = zCentered.map((v, i) => v + a[i]!);
+    const y = zCentered.map((v, i) => v + b[i]!);
+
     // Raw correlation between X and Y should be high
     const r_xy = pearsonCorrelation(x, y);
     expect(r_xy).toBeGreaterThan(0.9);
-    
+
     // Partial correlation controlling for Z should be near 0
     const r_xy_z = partialCorrelation(x, y, z);
-    expect(Math.abs(r_xy_z)).toBeLessThan(0.3);
+    expect(Math.abs(r_xy_z)).toBeLessThan(0.05);
   });
 
   it('preserves correlation when Z is unrelated', () => {
@@ -574,19 +580,19 @@ describe('partialCorrelation', () => {
     const z: number[] = [];
     const x: number[] = [];
     const y: number[] = [];
-    
-    for(let i=0; i<50; i++) {
-      const xi = Math.random() * 10;
+
+    for (let i = 0; i < 50; i++) {
+      const xi = i * 0.5;
       x.push(xi);
-      y.push(2 * xi + (Math.random() - 0.5));
-      z.push(Math.random()); // Unrelated
+      y.push(2 * xi + Math.sin(i * 0.19) * 0.5);
+      z.push(Math.sin(i * 1.73)); // Unrelated periodic signal
     }
-    
+
     const r_xy = pearsonCorrelation(x, y);
     const r_xy_z = partialCorrelation(x, y, z);
-    
+
     // Should be very similar
-    expect(Math.abs(r_xy - r_xy_z)).toBeLessThan(0.1);
+    expect(Math.abs(r_xy - r_xy_z)).toBeLessThan(0.02);
   });
 
   it('returns NaN for insufficient data', () => {

@@ -45,7 +45,7 @@ interface PolicyDataType {
   generatedAt: string;
 }
 
-const data = policyData as PolicyDataType;
+const data = policyData as unknown as PolicyDataType;
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */

@@ -44,11 +44,14 @@ function toTS(
 function yoyChange(data: Array<{ year: number; value: number }>): Array<{ year: number; value: number }> {
   const result: Array<{ year: number; value: number }> = [];
   for (let i = 1; i < data.length; i++) {
-    const prev = data[i - 1].value;
+    const current = data[i];
+    const prevPoint = data[i - 1];
+    if (!current || !prevPoint) continue;
+    const prev = prevPoint.value;
     if (prev === 0) continue;
     result.push({
-      year: data[i].year,
-      value: ((data[i].value - prev) / Math.abs(prev)) * 100,
+      year: current.year,
+      value: ((current.value - prev) / Math.abs(prev)) * 100,
     });
   }
   return result;

@@ -252,13 +252,13 @@ describe('Health Tracking Pipeline — End-to-End', () => {
     const forwardPairs = alignTimeSeries(vitaminD, mood, {
       onsetDelaySeconds: ONSET_DELAY_DAYS * 86400,
       durationOfActionSeconds: DURATION_DAYS * 86400,
-      fillingType: 'ZERO',
+      fillingType: 'zero',
     });
 
     const reversePairs = alignTimeSeries(mood, vitaminD, {
       onsetDelaySeconds: ONSET_DELAY_DAYS * 86400,
       durationOfActionSeconds: DURATION_DAYS * 86400,
-      fillingType: 'NONE',
+      fillingType: 'none',
     });
 
     it('Step 2: should produce aligned pairs with temporal alignment', () => {

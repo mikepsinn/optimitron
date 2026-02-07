@@ -38,12 +38,13 @@ interface Policy {
 
 interface PolicyData {
   jurisdiction: string;
-  analysisDate: string;
+  generatedAt: string;
+  generatedBy: string;
+  note: string;
   policies: Policy[];
-  topRecommendations: string[];
 }
 
-const data = policyData as PolicyData;
+const data = policyData as unknown as PolicyData;
 
 type SortKey = "welfareScore" | "evidenceGrade" | "causalConfidenceScore" | "policyImpactScore";
 const gradeOrder: Record<string, number> = { A: 1, B: 2, C: 3, D: 4, F: 5 };
@@ -227,7 +228,7 @@ export default function PoliciesPage() {
       </div>
 
       <p className="text-xs text-black/40 mt-8 font-bold">
-        Analysis date: {data.analysisDate} · Source: Optomitron OPG (Optimal Policy Generator)
+        Analysis date: {data.generatedAt} · Source: Optomitron OPG (Optimal Policy Generator)
       </p>
     </div>
   );

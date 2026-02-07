@@ -77,6 +77,7 @@ export {
   tToPValue,
   calculateReversePearson,
   calculatePredictivePearson,
+  partialCorrelation,
   aggregateCorrelations,
 } from './statistics.js';
 

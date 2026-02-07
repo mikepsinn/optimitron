@@ -663,6 +663,22 @@ interface WebsiteBudgetData {
   generatedAt: string;
 }
 
+export interface BudgetAnalysisArtifacts {
+  result: BudgetOptimizationResult;
+  websiteData: WebsiteBudgetData;
+  reportMarkdown: string;
+  outputPaths: {
+    markdown: string;
+    json: string;
+  };
+}
+
+export interface BudgetAnalysisOptions {
+  outputDir?: string;
+  writeFiles?: boolean;
+  logSummary?: boolean;
+}
+
 function mapRecommendation(
   action: SpendingGap['recommendedAction'],
 ): 'increase' | 'decrease' | 'maintain' {
@@ -682,7 +698,15 @@ function mapRecommendation(
 // Main
 // ---------------------------------------------------------------------------
 
-function main(): void {
+export function generateBudgetAnalysisArtifacts(
+  options: BudgetAnalysisOptions = {},
+): BudgetAnalysisArtifacts {
+  const {
+    outputDir = OUTPUT_DIR,
+    writeFiles = true,
+    logSummary = true,
+  } = options;
+
   // Run analysis for every category
   const categoryAnalyses = CATEGORIES.map(runCategoryAnalysis);
 
@@ -741,33 +765,53 @@ function main(): void {
     generatedAt: new Date().toISOString(),
   };
 
-  // Write outputs
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  const outputPaths = {
+    markdown: path.join(outputDir, 'us-budget-report.md'),
+    json: path.join(outputDir, 'us-budget-analysis.json'),
+  };
 
-  const mdPath = path.join(OUTPUT_DIR, 'us-budget-report.md');
-  fs.writeFileSync(mdPath, report, 'utf-8');
-  console.log(`✅ Markdown report written to ${mdPath}`);
+  if (writeFiles) {
+    fs.mkdirSync(outputDir, { recursive: true });
 
-  const jsonPath = path.join(OUTPUT_DIR, 'us-budget-analysis.json');
-  fs.writeFileSync(jsonPath, JSON.stringify(websiteData, null, 2), 'utf-8');
-  console.log(`✅ JSON analysis written to ${jsonPath}`);
+    fs.writeFileSync(outputPaths.markdown, report, 'utf-8');
+    console.log(`✅ Markdown report written to ${outputPaths.markdown}`);
 
-  // Print summary
-  console.log('\n--- Budget Optimization Summary ---');
-  console.log(`Categories analyzed: ${categoryAnalyses.length}`);
-  console.log(
-    `Total current budget: $${(TOTAL_BUDGET_USD / 1e12).toFixed(2)}T`,
-  );
-  console.log(
-    `Total optimal budget: $${(totalOptimalUsd / 1e12).toFixed(2)}T`,
-  );
-  console.log(
-    `Welfare improvement potential: ${welfareImprovementPct.toFixed(1)}%`,
-  );
-  console.log('\nTop 5 recommendations:');
-  websiteData.topRecommendations.slice(0, 5).forEach((r, i) => {
-    console.log(`  ${i + 1}. ${r}`);
-  });
+    fs.writeFileSync(
+      outputPaths.json,
+      JSON.stringify(websiteData, null, 2),
+      'utf-8',
+    );
+    console.log(`✅ JSON analysis written to ${outputPaths.json}`);
+  }
+
+  if (logSummary) {
+    console.log('\n--- Budget Optimization Summary ---');
+    console.log(`Categories analyzed: ${categoryAnalyses.length}`);
+    console.log(
+      `Total current budget: $${(TOTAL_BUDGET_USD / 1e12).toFixed(2)}T`,
+    );
+    console.log(
+      `Total optimal budget: $${(totalOptimalUsd / 1e12).toFixed(2)}T`,
+    );
+    console.log(
+      `Welfare improvement potential: ${welfareImprovementPct.toFixed(1)}%`,
+    );
+    console.log('\nTop 5 recommendations:');
+    websiteData.topRecommendations.slice(0, 5).forEach((r, i) => {
+      console.log(`  ${i + 1}. ${r}`);
+    });
+  }
+
+  return {
+    result,
+    websiteData,
+    reportMarkdown: report,
+    outputPaths,
+  };
+}
+
+function main(): void {
+  generateBudgetAnalysisArtifacts();
 }
 
 main();
