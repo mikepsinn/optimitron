@@ -1,0 +1,12 @@
+{
+  "id": "data-infrastructure-v2",
+  "title": "OECD + Direct Outcomes + FRED Improvements",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "L",
+  "agentTier": "Codex",
+  "dependencies": [],
+  "createdAt": "2026-02-07",
+  "updatedAt": "2026-02-07"
+}

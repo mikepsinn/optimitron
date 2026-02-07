@@ -1,0 +1,16 @@
+{
+  "id": "testing-strategy-v1",
+  "title": "Hypothesis-Driven Tests for Findings",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "M",
+  "agentTier": "Codex",
+  "dependencies": [
+    "optimizer-core-v2",
+    "optimal-budget-v2",
+    "opg-core-v1"
+  ],
+  "createdAt": "2026-02-07",
+  "updatedAt": "2026-02-07"
+}

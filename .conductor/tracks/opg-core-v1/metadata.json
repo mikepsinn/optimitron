@@ -1,0 +1,15 @@
+{
+  "id": "opg-core-v1",
+  "title": "OPG Evidence + Policy Scoring Expansion",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "M",
+  "agentTier": "Codex",
+  "dependencies": [
+    "optimizer-core-v2",
+    "data-infrastructure-v2"
+  ],
+  "createdAt": "2026-02-07",
+  "updatedAt": "2026-02-07"
+}

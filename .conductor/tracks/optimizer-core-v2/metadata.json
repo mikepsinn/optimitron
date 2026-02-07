@@ -1,0 +1,12 @@
+{
+  "id": "optimizer-core-v2",
+  "title": "Partial Correlations + Diminishing Returns Detection",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "M",
+  "agentTier": "Codex",
+  "dependencies": [],
+  "createdAt": "2026-02-07",
+  "updatedAt": "2026-02-07"
+}

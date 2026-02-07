@@ -1,0 +1,15 @@
+{
+  "id": "optimal-budget-v2",
+  "title": "OBG Minimum Effective Spending + Efficient Frontier",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "L",
+  "agentTier": "Codex",
+  "dependencies": [
+    "data-infrastructure-v2",
+    "optimizer-core-v2"
+  ],
+  "createdAt": "2026-02-07",
+  "updatedAt": "2026-02-07"
+}
