@@ -30,6 +30,20 @@ export const WB_INDICATOR_CODES = {
   POPULATION: 'SP.POP.TOTL',
   GDP_GROWTH: 'NY.GDP.MKTP.KD.ZG',
   INFLATION: 'FP.CPI.TOTL.ZG',
+  /** Net migration (total, not rate) */
+  NET_MIGRATION: 'SM.POP.NETM',
+  /** Military expenditure (% of GDP) */
+  MILITARY_EXPENDITURE_PCT_GDP: 'MS.MIL.XPND.GD.ZS',
+  /** R&D expenditure (% of GDP) */
+  RD_EXPENDITURE_PCT_GDP: 'GB.XPD.RSDV.GD.ZS',
+  /** Government expenditure on education (% of GDP) */
+  GOV_EDUCATION_EXPENDITURE_PCT_GDP: 'SE.XPD.TOTL.GD.ZS',
+  /** Incidence of tuberculosis (per 100K) — proxy for public health system quality */
+  TB_INCIDENCE: 'SH.TBS.INCD',
+  /** Access to clean water (% of population) */
+  CLEAN_WATER_ACCESS: 'SH.H2O.SMDW.ZS',
+  /** Homicide rate (per 100K) */
+  HOMICIDE_RATE: 'VC.IHR.PSRC.P5',
 } as const;
 
 /** Shape of a single record in the World Bank JSON response */
@@ -180,4 +194,53 @@ export async function fetchGdpPerCapita(options: FetchOptions = {}): Promise<Dat
  */
 export async function fetchHealthExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
   return fetchWorldBankIndicator(WB_INDICATOR_CODES.HEALTH_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch net migration (total).
+ */
+export async function fetchNetMigration(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.NET_MIGRATION, options);
+}
+
+/**
+ * Fetch military expenditure as % of GDP.
+ */
+export async function fetchMilitaryExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.MILITARY_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch R&D expenditure as % of GDP.
+ */
+export async function fetchRDExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.RD_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch education expenditure as % of GDP.
+ */
+export async function fetchEducationExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.EDUCATION_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch Gini index (income inequality).
+ */
+export async function fetchGiniIndex(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GINI_INDEX, options);
+}
+
+/**
+ * Fetch infant mortality rate (per 1000 live births).
+ */
+export async function fetchInfantMortality(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.INFANT_MORTALITY, options);
+}
+
+/**
+ * Fetch homicide rate (per 100K population).
+ */
+export async function fetchHomicideRate(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.HOMICIDE_RATE, options);
 }
