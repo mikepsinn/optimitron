@@ -2,12 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 
- * Neobrutalist design system — adapted from dih-earth
- * Using HSL for Tailwind v3 shadcn compatibility
- * Colors, shadows, and radius match dih-earth exactly
- */
-
+/* Unified neobrutalist design system with cohesive color palette */
 :root {
   /* Base colors - high contrast neobrutalism */
   --background: 0 0% 100%;
@@ -19,23 +14,23 @@
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 0%;
 
-  /* Primary - Brutal Pink: rgb(236, 70, 153) → hsl(330, 83%, 60%) */
+  /* Primary - Brutal Pink */
   --primary: 330 83% 60%;
   --primary-foreground: 0 0% 100%;
 
-  /* Secondary - Brutal Yellow: rgb(255, 221, 87) → hsl(48, 100%, 67%) */
+  /* Secondary - Brutal Yellow */
   --secondary: 48 100% 67%;
   --secondary-foreground: 0 0% 0%;
 
-  /* Accent - Brutal Cyan: rgb(123, 221, 234) → hsl(187, 68%, 70%) */
-  --accent: 187 68% 70%;
+  /* Accent - Brutal Cyan */
+  --accent: 186 68% 70%;
   --accent-foreground: 0 0% 0%;
 
-  /* Muted - Light gray */
+  /* Muted - Light gray for subtle backgrounds */
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 25%;
 
-  /* Destructive - Red: rgb(239, 68, 68) */
+  /* Destructive - Keep as red for warnings */
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
@@ -44,86 +39,21 @@
   --input: 0 0% 0%;
   --ring: 330 83% 60%;
 
-  /* Chart colors - Neobrutalist palette */
-  --chart-1: 330 83% 60%;  /* Pink */
-  --chart-2: 187 68% 70%;  /* Cyan */
-  --chart-3: 48 100% 67%;  /* Yellow */
-  --chart-4: 142 77% 73%;  /* Light green */
-  --chart-5: 263 70% 85%;  /* Light purple */
+  /* Chart colors */
+  --chart-1: 330 83% 60%;
+  --chart-2: 186 68% 70%;
+  --chart-3: 48 100% 67%;
+  --chart-4: 142 77% 73%;
+  --chart-5: 263 70% 85%;
 
   /* Radius - 0 for sharp neobrutalist edges */
   --radius: 0px;
 
-  /* Neobrutalist color tokens */
+  /* Neobrutalist color tokens - raw RGB for use with bg-brutal-* */
   --brutal-pink: 236, 70, 153;
-  --brutal-pink-foreground: 255, 255, 255;
   --brutal-cyan: 123, 221, 234;
-  --brutal-cyan-foreground: 0, 0, 0;
   --brutal-yellow: 255, 221, 87;
-  --brutal-yellow-foreground: 0, 0, 0;
   --brutal-red: 239, 68, 68;
-  --brutal-red-foreground: 255, 255, 255;
-
-  /* Shadow system - hard shadows for neobrutalism (matches dih-earth) */
-  --shadow-x: 8px;
-  --shadow-y: 8px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-color: rgba(0, 0, 0, 1);
-}
-
-/* Dark mode with inverted neobrutalist aesthetic */
-.dark {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
-
-  --card: 0 0% 9%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 9%;
-  --popover-foreground: 0 0% 100%;
-
-  /* Brighter pink for dark mode */
-  --primary: 330 90% 70%;
-  --primary-foreground: 0 0% 0%;
-
-  /* Brighter yellow */
-  --secondary: 48 98% 64%;
-  --secondary-foreground: 0 0% 0%;
-
-  /* Brighter cyan */
-  --accent: 187 90% 82%;
-  --accent-foreground: 0 0% 0%;
-
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 64%;
-
-  --destructive: 0 74% 71%;
-  --destructive-foreground: 0 0% 0%;
-
-  /* White borders for dark mode */
-  --border: 0 0% 100%;
-  --input: 0 0% 100%;
-  --ring: 330 90% 70%;
-
-  /* Brighter chart colors */
-  --chart-1: 330 90% 70%;
-  --chart-2: 187 90% 82%;
-  --chart-3: 48 98% 64%;
-  --chart-4: 142 77% 73%;
-  --chart-5: 263 70% 85%;
-
-  /* Dark mode neobrutalist tokens */
-  --brutal-pink: 244, 114, 182;
-  --brutal-pink-foreground: 0, 0, 0;
-  --brutal-cyan: 165, 243, 252;
-  --brutal-cyan-foreground: 0, 0, 0;
-  --brutal-yellow: 253, 224, 71;
-  --brutal-yellow-foreground: 0, 0, 0;
-  --brutal-red: 248, 113, 113;
-  --brutal-red-foreground: 0, 0, 0;
-
-  /* White shadows for dark mode */
-  --shadow-color: rgba(255, 255, 255, 1);
 }
 
 @layer base {
@@ -135,6 +65,43 @@
   }
   html {
     scroll-behavior: smooth;
+  }
+}
+
+/* Neobrutalist utility classes */
+@layer components {
+  .card {
+    @apply bg-white border-2 border-black p-6;
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+
+  .section-title {
+    @apply text-2xl font-black uppercase tracking-tight text-black mb-6;
+  }
+
+  /* Progress bars — neobrutalist flat style */
+  .bar-current {
+    @apply bg-pink-500;
+  }
+  .bar-optimal {
+    @apply bg-cyan-300;
+  }
+
+  /* Evidence grade badges */
+  .badge-A {
+    @apply bg-emerald-400 text-black border-2 border-black;
+  }
+  .badge-B {
+    @apply bg-cyan-300 text-black border-2 border-black;
+  }
+  .badge-C {
+    @apply bg-yellow-300 text-black border-2 border-black;
+  }
+  .badge-D {
+    @apply bg-orange-400 text-black border-2 border-black;
+  }
+  .badge-F {
+    @apply bg-red-400 text-black border-2 border-black;
   }
 }
 
@@ -154,33 +121,4 @@
   to {
     height: 0;
   }
-}
-
-/* Neobrutalist card utility */
-.card {
-  @apply bg-white border-2 border-black p-6;
-  box-shadow: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-}
-
-.card-hover {
-  @apply bg-white border-2 border-black p-6 transition-all;
-  box-shadow: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-}
-.card-hover:hover {
-  box-shadow: calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-  transform: translate(4px, 4px);
-}
-
-/* Neobrutalist button base */
-.btn-brutal {
-  @apply font-black uppercase border-2 border-black transition-all;
-  box-shadow: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-}
-.btn-brutal:hover {
-  box-shadow: calc(var(--shadow-x) * 0.25) calc(var(--shadow-y) * 0.25) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-  transform: translate(6px, 6px);
-}
-.btn-brutal:active {
-  box-shadow: none;
-  transform: translate(8px, 8px);
 }
