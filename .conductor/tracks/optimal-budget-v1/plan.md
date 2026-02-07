@@ -24,7 +24,17 @@
 - [ ] Swap US deflator from CPI to GDP deflator
 - [ ] Add World Bank PPP constant dollar series for all spending categories
 
-## Phase 5: Robust Panel Analysis (v4)
+## Phase 4b: Wealth Confound Test ✅ COMPLETE
+Key finding: Health and Education spending → LE **flip negative** after controlling for GDP per capita.
+- Health: simple r=+0.168, partial r=−0.102 (SIGN FLIP)
+- Education: simple r=+0.153, partial r=−0.075 (SIGN FLIP)
+- Social: simple r=+0.301, partial r=+0.175 (SURVIVES)
+- R&D: simple r=+0.303, partial r=+0.189 (SURVIVES)
+- Military: simple r=−0.114, partial r=−0.164 (REAL NEGATIVE)
+
+Implication: Only Social Protection and R&D have robust cross-country evidence. Health/Education correlations were entirely wealth confounding.
+
+## Phase 5: Robust Panel Analysis (v5)
 - [ ] N-of-1 within each country, then aggregate across countries
 - [ ] Lead with change-from-baseline + z-score (NOT Pearson r)
 - [ ] Auto-test multiple lag structures (0, 1, 2, 3, 5, 10 years)
