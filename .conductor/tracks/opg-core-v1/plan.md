@@ -4,4 +4,4 @@
 - [x] 2. Add `PolicyImpactScore` computed from optimizer `FullAnalysisResult`.
 - [x] 3. Add `policyEvidenceGrade` derivation (Bradford Hill + predictive Pearson).
 - [x] 4. Add unit tests for policy score derivation.
-- [ ] 5. Generate sample policy report JSON for web.
+- [x] 5. Generate sample policy report JSON for web.
