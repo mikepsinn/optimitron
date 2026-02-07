@@ -12,12 +12,19 @@
  *   - OECD StatExtracts / OECD.Stat
  *     https://stats.oecd.org/
  *
- * Indicator mapping:
+ * Indicator mapping (% GDP — context/comparison):
  *   healthSpendingPercentGdp    → WB SH.XPD.CHEX.GD.ZS (Current health expenditure % GDP)
  *   educationSpendingPercentGdp → WB SE.XPD.TOTL.GD.ZS  (Govt expenditure on education % GDP)
  *   militarySpendingPercentGdp  → WB MS.MIL.XPND.GD.ZS  (Military expenditure % GDP)
  *   socialSpendingPercentGdp    → OECD SOCX             (Public social spending % GDP)
  *   rdSpendingPercentGdp        → WB GB.XPD.RSDV.GD.ZS  (R&D expenditure % GDP)
+ *
+ * Derived per-capita PPP (constant 2017 intl $ — PRIMARY for optimizer):
+ *   *SpendingPerCapitaPpp       = *PercentGdp × gdpPerCapitaPpp / 100
+ *   These avoid the GDP-denominator distortion where GDP growth makes
+ *   flat real spending look like cuts.
+ *
+ * Outcome indicators:
  *   lifeExpectancyYears         → WB SP.DYN.LE00.IN      (Life expectancy at birth, total)
  *   gdpPerCapitaPpp             → WB NY.GDP.PCAP.PP.KD   (GDP per capita, PPP constant 2017 intl $)
  *   infantMortalityPer1000      → WB SP.DYN.IMRT.IN      (Mortality rate, infant per 1000 live births)
@@ -25,6 +32,8 @@
  *
  * Notes:
  *   - null values indicate data not available for that country-year
+ *   - Per-capita PPP fields are derived (percentGdp × gdpPerCapitaPpp / 100),
+ *     rounded to nearest integer. Null if either input is null.
  *   - Education spending has gaps for many countries in certain years
  *   - Gini index is the sparsest variable (surveys not conducted annually)
  *   - Social spending (OECD SOCX) includes pensions, health (social component),
@@ -40,6 +49,8 @@ export interface OECDBudgetPanelDataPoint {
   jurisdictionIso3: string;
   /** Calendar year */
   year: number;
+
+  // ── Spending as % of GDP (context/comparison) ──────────────────────
   /** Current health expenditure as % of GDP (WB SH.XPD.CHEX.GD.ZS) */
   healthSpendingPercentGdp: number | null;
   /** Government expenditure on education as % of GDP (WB SE.XPD.TOTL.GD.ZS) */
@@ -50,6 +61,21 @@ export interface OECDBudgetPanelDataPoint {
   socialSpendingPercentGdp: number | null;
   /** Research and development expenditure as % of GDP (WB GB.XPD.RSDV.GD.ZS) */
   rdSpendingPercentGdp: number | null;
+
+  // ── Spending per capita PPP (PRIMARY — for optimizer analysis) ─────
+  // Derived: percentGdp × gdpPerCapitaPpp / 100, constant 2017 intl $
+  /** Health spending per capita, PPP constant 2017 intl $ */
+  healthSpendingPerCapitaPpp: number | null;
+  /** Education spending per capita, PPP constant 2017 intl $ */
+  educationSpendingPerCapitaPpp: number | null;
+  /** Military spending per capita, PPP constant 2017 intl $ */
+  militarySpendingPerCapitaPpp: number | null;
+  /** Social spending per capita, PPP constant 2017 intl $ */
+  socialSpendingPerCapitaPpp: number | null;
+  /** R&D spending per capita, PPP constant 2017 intl $ */
+  rdSpendingPerCapitaPpp: number | null;
+
+  // ── Outcome indicators ─────────────────────────────────────────────
   /** Life expectancy at birth, total years (WB SP.DYN.LE00.IN) */
   lifeExpectancyYears: number | null;
   /** GDP per capita, PPP constant 2017 international $ (WB NY.GDP.PCAP.PP.KD) */
@@ -72,6 +98,11 @@ export const OECD_PANEL_YEARS = Array.from({ length: 23 }, (_, i) => 2000 + i);
 
 // ─── Helper to construct rows ─────────────────────────────────────────
 
+/** Derive per-capita PPP: percentGdp × gdpPerCapitaPpp / 100, rounded to nearest int */
+function ppp(pct: number | null, gdpPc: number | null): number | null {
+  return pct != null && gdpPc != null ? Math.round(pct * gdpPc / 100) : null;
+}
+
 function r(
   jurisdictionIso3: string,
   year: number,
@@ -93,6 +124,11 @@ function r(
     militarySpendingPercentGdp: military,
     socialSpendingPercentGdp: social,
     rdSpendingPercentGdp: rd,
+    healthSpendingPerCapitaPpp: ppp(health, gdpPc),
+    educationSpendingPerCapitaPpp: ppp(education, gdpPc),
+    militarySpendingPerCapitaPpp: ppp(military, gdpPc),
+    socialSpendingPerCapitaPpp: ppp(social, gdpPc),
+    rdSpendingPerCapitaPpp: ppp(rd, gdpPc),
     lifeExpectancyYears: lifeExp,
     gdpPerCapitaPpp: gdpPc,
     infantMortalityPer1000: infantMort,
@@ -754,11 +790,19 @@ export const OECD_BUDGET_PANEL_META = {
     'OECD StatExtracts',
   ],
   indicators: {
+    // % GDP (context/comparison)
     healthSpendingPercentGdp: 'WB SH.XPD.CHEX.GD.ZS',
     educationSpendingPercentGdp: 'WB SE.XPD.TOTL.GD.ZS',
     militarySpendingPercentGdp: 'WB MS.MIL.XPND.GD.ZS',
     socialSpendingPercentGdp: 'OECD SOCX',
     rdSpendingPercentGdp: 'WB GB.XPD.RSDV.GD.ZS',
+    // Per-capita PPP (PRIMARY — derived: %GDP × gdpPerCapitaPpp / 100)
+    healthSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    educationSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    militarySpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    socialSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    rdSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    // Outcomes
     lifeExpectancyYears: 'WB SP.DYN.LE00.IN',
     gdpPerCapitaPpp: 'WB NY.GDP.PCAP.PP.KD',
     infantMortalityPer1000: 'WB SP.DYN.IMRT.IN',
