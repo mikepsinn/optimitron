@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-07T03:55:07.462Z",
+  "generatedAt": "2026-02-07T03:57:45.151Z",
   "generatedBy": "@optomitron/obg + @optomitron/data (real API data)",
   "dataSource": {
     "fetchedAt": "2026-02-07T03:54:56.243Z",
@@ -22,8 +22,8 @@
     "n": 50,
     "oslPerCapita": 161,
     "oslConfidenceInterval": [
-      116,
-      223
+      114,
+      222
     ],
     "marginalReturnAtOSL": 0.03,
     "insight": "Optimal health spending is ~$161/capita. Beyond this, additional spending has diminishing returns on life expectancy."
