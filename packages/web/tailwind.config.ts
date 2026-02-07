@@ -42,16 +42,27 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Neobrutalist color tokens
+        // Neobrutalist color tokens (matching dih-earth)
         "brutal-pink": "rgb(var(--brutal-pink))",
+        "brutal-pink-foreground": "rgb(var(--brutal-pink-foreground))",
         "brutal-cyan": "rgb(var(--brutal-cyan))",
+        "brutal-cyan-foreground": "rgb(var(--brutal-cyan-foreground))",
         "brutal-yellow": "rgb(var(--brutal-yellow))",
+        "brutal-yellow-foreground": "rgb(var(--brutal-yellow-foreground))",
         "brutal-red": "rgb(var(--brutal-red))",
+        "brutal-red-foreground": "rgb(var(--brutal-red-foreground))",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        // Hard neobrutalist shadows (matching dih-earth shadow system)
+        brutal: "var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color)",
+        "brutal-sm": "calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) var(--shadow-blur) var(--shadow-spread) var(--shadow-color)",
+        "brutal-lg": "calc(var(--shadow-x) * 1.5) calc(var(--shadow-y) * 1.5) var(--shadow-blur) var(--shadow-spread) var(--shadow-color)",
+        "brutal-xl": "calc(var(--shadow-x) * 2) calc(var(--shadow-y) * 2) var(--shadow-blur) var(--shadow-spread) var(--shadow-color)",
       },
       keyframes: {
         "accordion-down": {

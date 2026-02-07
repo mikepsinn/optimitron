@@ -8,7 +8,7 @@ interface CardProps {
 export function Card({ children, className = "" }: CardProps) {
   return (
     <div
-      className={`p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 ${className}`}
+      className={`p-6 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${className}`}
     >
       {children}
     </div>
@@ -25,9 +25,9 @@ export function CardHeader({ icon, title, description }: CardHeaderProps) {
   return (
     <div className="mb-4">
       {icon && <div className="text-3xl mb-3">{icon}</div>}
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <h3 className="text-lg font-black text-black">{title}</h3>
       {description && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-black/60 mt-1 font-medium">
           {description}
         </p>
       )}
@@ -45,9 +45,9 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, change, changeType = "neutral" }: StatCardProps) {
   const changeColors = {
-    positive: "text-green-500",
-    negative: "text-red-500",
-    neutral: "text-gray-400",
+    positive: "text-emerald-600",
+    negative: "text-red-600",
+    neutral: "text-black/60",
   };
 
   return (
@@ -55,11 +55,11 @@ export function StatCard({ icon, label, value, change, changeType = "neutral" }:
       <div className="flex items-start justify-between">
         <div>
           <div className="text-2xl mb-2">{icon}</div>
-          <div className="text-3xl font-bold">{value}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{label}</div>
+          <div className="text-3xl font-black text-black">{value}</div>
+          <div className="text-sm text-black/60 mt-1 font-bold">{label}</div>
         </div>
         {change && (
-          <span className={`text-sm font-medium ${changeColors[changeType]}`}>
+          <span className={`text-sm font-black ${changeColors[changeType]}`}>
             {change}
           </span>
         )}
