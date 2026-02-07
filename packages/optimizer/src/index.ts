@@ -132,5 +132,22 @@ export {
   generateMarkdownReport,
 } from './report.js';
 
+// Hypothesis-driven tests
+export {
+  runHypothesisTestCase,
+  resolveHypothesisData,
+  evaluateHypothesis,
+  isEvidenceGradeAtLeast,
+} from './hypothesis-test.js';
+export type {
+  EvidenceGrade,
+  HypothesisDirection,
+  HypothesisExpected,
+  HypothesisActual,
+  HypothesisDataSource,
+  HypothesisTestCase,
+  HypothesisTestResult,
+} from './hypothesis-test.js';
+
 // Version
 export const VERSION = '0.1.0';
