@@ -11,4 +11,3 @@ export * from './optimize-budget-multi-outcome.js';
 export * from './minimum-effective-spending.js';
 export * from './efficient-frontier.js';
 export * from './overspend-ratio.js';
-export * from './overspend-ratio.js';
