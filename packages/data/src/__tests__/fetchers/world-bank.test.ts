@@ -6,6 +6,7 @@ import {
   fetchLifeExpectancy,
   fetchGdpPerCapita,
   fetchHealthExpenditure,
+  fetchCO2Emissions,
   WB_INDICATOR_CODES,
 } from '../../fetchers/world-bank.js';
 import type { WBRecord, WBMeta } from '../../fetchers/world-bank.js';
@@ -266,6 +267,12 @@ describe('World Bank Fetcher', () => {
         ok: true,
         json: () => Promise.resolve([mockMeta, mockRecords]),
       });
+    });
+
+    it('fetchCO2Emissions returns data', async () => {
+      const result = await fetchCO2Emissions();
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0]?.source).toBe('World Bank WDI (EN.ATM.CO2E.PC)');
     });
 
     it('fetchLifeExpectancy uses correct indicator', async () => {

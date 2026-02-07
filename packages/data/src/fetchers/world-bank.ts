@@ -30,6 +30,8 @@ export const WB_INDICATOR_CODES = {
   POPULATION: 'SP.POP.TOTL',
   GDP_GROWTH: 'NY.GDP.MKTP.KD.ZG',
   INFLATION: 'FP.CPI.TOTL.ZG',
+  /** CO2 emissions (metric tons per capita) */
+  CO2_EMISSIONS_PER_CAPITA: 'EN.ATM.CO2E.PC',
   /** Net migration (total, not rate) */
   NET_MIGRATION: 'SM.POP.NETM',
   /** Military expenditure (% of GDP) */
@@ -336,4 +338,11 @@ export async function fetchGovDebt(options: FetchOptions = {}): Promise<DataPoin
  */
 export async function fetchLaborForceParticipation(options: FetchOptions = {}): Promise<DataPoint[]> {
   return fetchWorldBankIndicator(WB_INDICATOR_CODES.LABOR_FORCE_PARTICIPATION, options);
+}
+
+/**
+ * Fetch CO2 emissions per capita (metric tons).
+ */
+export async function fetchCO2Emissions(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.CO2_EMISSIONS_PER_CAPITA, options);
 }

@@ -18,6 +18,7 @@ import {
   fetchRDExpenditure, fetchEducationExpenditure, fetchGiniIndex,
   fetchInfantMortality, fetchHomicideRate, fetchGniPerCapita,
   fetchGovDebt, fetchGovRevenue, fetchLaborForceParticipation,
+  fetchCO2Emissions,
 } from '../fetchers/world-bank.js';
 import { fetchWHOLifeExpectancy, fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who.js';
 import { fetchFREDSeries } from '../fetchers/fred.js';
@@ -327,6 +328,15 @@ export async function fetchAllCountryData(
     mergeIntoCountries(countries, dataPointsToTimeSeries(lfpData, 'labor_force_participation', 'Labor Force Participation (% of 15+)'), 'labor_force_participation');
     sources.push('World Bank WDI (SL.TLF.CACT.ZS)');
     console.log(`     ✅ ${lfpData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 21. CO2 emissions per capita (metric tons)
+  try {
+    console.log('  📊 World Bank: CO2 emissions per capita...');
+    const co2Data = await fetchCO2Emissions(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(co2Data, 'co2_emissions_per_capita', 'CO2 Emissions (metric tons per capita)'), 'co2_emissions_per_capita');
+    sources.push('World Bank WDI (EN.ATM.CO2E.PC)');
+    console.log(`     ✅ ${co2Data.length} data points`);
   } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
 
   // Count unique variables
