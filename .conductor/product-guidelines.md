@@ -39,6 +39,25 @@
 - Include COVID sensitivity check for any analysis touching 2020-2021
 - Be honest about limitations — better to be credibly modest than impressively wrong
 
+### Direct Outcome Mapping
+Always use the MOST DIRECT outcome for each spending category, not just generic LE/income:
+
+| Category | Direct Outcomes | Why |
+|----------|----------------|-----|
+| Drug enforcement | Overdose deaths, drug use rates, drug seizures | Direct causal pathway |
+| Education | PISA scores, graduation rates, literacy | Proximal to intervention |
+| Healthcare | Preventable deaths, infant mortality, HALE | Measures healthcare quality |
+| Criminal justice | Crime rates, recidivism, incarceration rate | Direct policy target |
+| Military | Conflict deaths, defense capability index | Security outcomes |
+| R&D | Patents filed, productivity growth, tech exports | Innovation output |
+| Environmental | CO2 emissions, air quality index, cancer rates | Environmental health |
+| Social protection | Poverty rate, food insecurity, homelessness | Direct welfare measures |
+| Infrastructure | Commute times, broadband access, bridge condition | Infrastructure quality |
+| Foreign aid | Recipient country LE/poverty, refugee flows | Aid effectiveness |
+
+Generic outcomes (LE, GDP/capita) are SUPPLEMENTARY — they show the full chain but dilute the signal.
+Run analyses with BOTH direct and generic outcomes, lead with direct in reports.
+
 ### Data Rules
 - **Deflator**: GDP deflator for US govt spending, World Bank PPP for cross-country
 - **NOT CPI** for government spending (CPI reflects consumer basket, not govt mix)
