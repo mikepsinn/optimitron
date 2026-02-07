@@ -1,0 +1,482 @@
+[
+  {
+    "id": "S000148",
+    "name": "Chuck Schumer",
+    "party": "D",
+    "state": "NY",
+    "chamber": "senate",
+    "alignmentScore": 0.72,
+    "budgetAlignment": {
+      "education": 0.85,
+      "defense": 0.45,
+      "healthcare": 0.90,
+      "infrastructure": 0.78,
+      "socialSecurity": 0.82,
+      "environment": 0.80,
+      "interestOnDebt": 0.30
+    },
+    "topAligned": ["Healthcare", "Education", "Environment"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": false }
+    ]
+  },
+  {
+    "id": "M000355",
+    "name": "Mitch McConnell",
+    "party": "R",
+    "state": "KY",
+    "chamber": "senate",
+    "alignmentScore": 0.48,
+    "budgetAlignment": {
+      "education": 0.35,
+      "defense": 0.88,
+      "healthcare": 0.30,
+      "infrastructure": 0.55,
+      "socialSecurity": 0.50,
+      "environment": 0.20,
+      "interestOnDebt": 0.40
+    },
+    "topAligned": ["Defense", "Veterans Affairs"],
+    "topMisaligned": ["Healthcare", "Environment", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "S000033",
+    "name": "Bernie Sanders",
+    "party": "I",
+    "state": "VT",
+    "chamber": "senate",
+    "alignmentScore": 0.78,
+    "budgetAlignment": {
+      "education": 0.92,
+      "defense": 0.25,
+      "healthcare": 0.95,
+      "infrastructure": 0.85,
+      "socialSecurity": 0.95,
+      "environment": 0.90,
+      "interestOnDebt": 0.20
+    },
+    "topAligned": ["Healthcare", "Social Security", "Education"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Nay", "aligned": true }
+    ]
+  },
+  {
+    "id": "W000437",
+    "name": "Roger Wicker",
+    "party": "R",
+    "state": "MS",
+    "chamber": "senate",
+    "alignmentScore": 0.41,
+    "budgetAlignment": {
+      "education": 0.30,
+      "defense": 0.92,
+      "healthcare": 0.28,
+      "infrastructure": 0.50,
+      "socialSecurity": 0.45,
+      "environment": 0.15,
+      "interestOnDebt": 0.35
+    },
+    "topAligned": ["Defense"],
+    "topMisaligned": ["Environment", "Healthcare", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "W000817",
+    "name": "Elizabeth Warren",
+    "party": "D",
+    "state": "MA",
+    "chamber": "senate",
+    "alignmentScore": 0.75,
+    "budgetAlignment": {
+      "education": 0.90,
+      "defense": 0.30,
+      "healthcare": 0.92,
+      "infrastructure": 0.80,
+      "socialSecurity": 0.88,
+      "environment": 0.85,
+      "interestOnDebt": 0.25
+    },
+    "topAligned": ["Healthcare", "Education", "Social Security"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": false }
+    ]
+  },
+  {
+    "id": "C001098",
+    "name": "Ted Cruz",
+    "party": "R",
+    "state": "TX",
+    "chamber": "senate",
+    "alignmentScore": 0.38,
+    "budgetAlignment": {
+      "education": 0.25,
+      "defense": 0.85,
+      "healthcare": 0.22,
+      "infrastructure": 0.40,
+      "socialSecurity": 0.42,
+      "environment": 0.10,
+      "interestOnDebt": 0.50
+    },
+    "topAligned": ["Defense"],
+    "topMisaligned": ["Environment", "Healthcare", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "M001176",
+    "name": "Jeff Merkley",
+    "party": "D",
+    "state": "OR",
+    "chamber": "senate",
+    "alignmentScore": 0.76,
+    "budgetAlignment": {
+      "education": 0.88,
+      "defense": 0.28,
+      "healthcare": 0.90,
+      "infrastructure": 0.82,
+      "socialSecurity": 0.85,
+      "environment": 0.92,
+      "interestOnDebt": 0.22
+    },
+    "topAligned": ["Environment", "Healthcare", "Education"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Nay", "aligned": true }
+    ]
+  },
+  {
+    "id": "C001035",
+    "name": "Susan Collins",
+    "party": "R",
+    "state": "ME",
+    "chamber": "senate",
+    "alignmentScore": 0.58,
+    "budgetAlignment": {
+      "education": 0.60,
+      "defense": 0.75,
+      "healthcare": 0.55,
+      "infrastructure": 0.70,
+      "socialSecurity": 0.65,
+      "environment": 0.45,
+      "interestOnDebt": 0.38
+    },
+    "topAligned": ["Defense", "Infrastructure"],
+    "topMisaligned": ["Environment", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "M001111",
+    "name": "Patty Murray",
+    "party": "D",
+    "state": "WA",
+    "chamber": "senate",
+    "alignmentScore": 0.74,
+    "budgetAlignment": {
+      "education": 0.88,
+      "defense": 0.40,
+      "healthcare": 0.88,
+      "infrastructure": 0.78,
+      "socialSecurity": 0.85,
+      "environment": 0.82,
+      "interestOnDebt": 0.28
+    },
+    "topAligned": ["Education", "Healthcare", "Social Security"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Bipartisan Safer Communities Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "R000122",
+    "name": "Jack Reed",
+    "party": "D",
+    "state": "RI",
+    "chamber": "senate",
+    "alignmentScore": 0.70,
+    "budgetAlignment": {
+      "education": 0.82,
+      "defense": 0.60,
+      "healthcare": 0.85,
+      "infrastructure": 0.75,
+      "socialSecurity": 0.80,
+      "environment": 0.75,
+      "interestOnDebt": 0.30
+    },
+    "topAligned": ["Healthcare", "Education"],
+    "topMisaligned": ["Interest on Debt"],
+    "keyVotes": [
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true },
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "P000197",
+    "name": "Nancy Pelosi",
+    "party": "D",
+    "state": "CA",
+    "chamber": "house",
+    "alignmentScore": 0.71,
+    "budgetAlignment": {
+      "education": 0.85,
+      "defense": 0.48,
+      "healthcare": 0.88,
+      "infrastructure": 0.80,
+      "socialSecurity": 0.82,
+      "environment": 0.78,
+      "interestOnDebt": 0.28
+    },
+    "topAligned": ["Healthcare", "Education", "Infrastructure"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "J000299",
+    "name": "Mike Johnson",
+    "party": "R",
+    "state": "LA",
+    "chamber": "house",
+    "alignmentScore": 0.35,
+    "budgetAlignment": {
+      "education": 0.22,
+      "defense": 0.90,
+      "healthcare": 0.20,
+      "infrastructure": 0.35,
+      "socialSecurity": 0.40,
+      "environment": 0.10,
+      "interestOnDebt": 0.55
+    },
+    "topAligned": ["Defense"],
+    "topMisaligned": ["Environment", "Healthcare", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "O000172",
+    "name": "Alexandria Ocasio-Cortez",
+    "party": "D",
+    "state": "NY",
+    "chamber": "house",
+    "alignmentScore": 0.77,
+    "budgetAlignment": {
+      "education": 0.92,
+      "defense": 0.18,
+      "healthcare": 0.95,
+      "infrastructure": 0.88,
+      "socialSecurity": 0.92,
+      "environment": 0.95,
+      "interestOnDebt": 0.15
+    },
+    "topAligned": ["Environment", "Healthcare", "Education"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Nay", "aligned": true }
+    ]
+  },
+  {
+    "id": "G000578",
+    "name": "Matt Gaetz",
+    "party": "R",
+    "state": "FL",
+    "chamber": "house",
+    "alignmentScore": 0.30,
+    "budgetAlignment": {
+      "education": 0.18,
+      "defense": 0.82,
+      "healthcare": 0.15,
+      "infrastructure": 0.30,
+      "socialSecurity": 0.35,
+      "environment": 0.08,
+      "interestOnDebt": 0.60
+    },
+    "topAligned": ["Defense"],
+    "topMisaligned": ["Environment", "Healthcare", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Nay", "aligned": false },
+      { "bill": "Debt Limit Suspension", "vote": "Nay", "aligned": false }
+    ]
+  },
+  {
+    "id": "J000032",
+    "name": "Sheila Jackson Lee",
+    "party": "D",
+    "state": "TX",
+    "chamber": "house",
+    "alignmentScore": 0.73,
+    "budgetAlignment": {
+      "education": 0.88,
+      "defense": 0.42,
+      "healthcare": 0.90,
+      "infrastructure": 0.78,
+      "socialSecurity": 0.85,
+      "environment": 0.75,
+      "interestOnDebt": 0.25
+    },
+    "topAligned": ["Healthcare", "Education", "Social Security"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "George Floyd Justice in Policing Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "S001183",
+    "name": "Steve Scalise",
+    "party": "R",
+    "state": "LA",
+    "chamber": "house",
+    "alignmentScore": 0.37,
+    "budgetAlignment": {
+      "education": 0.25,
+      "defense": 0.88,
+      "healthcare": 0.22,
+      "infrastructure": 0.42,
+      "socialSecurity": 0.45,
+      "environment": 0.12,
+      "interestOnDebt": 0.48
+    },
+    "topAligned": ["Defense"],
+    "topMisaligned": ["Environment", "Healthcare", "Education"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Nay", "aligned": false },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "K000389",
+    "name": "Ro Khanna",
+    "party": "D",
+    "state": "CA",
+    "chamber": "house",
+    "alignmentScore": 0.76,
+    "budgetAlignment": {
+      "education": 0.90,
+      "defense": 0.25,
+      "healthcare": 0.92,
+      "infrastructure": 0.85,
+      "socialSecurity": 0.88,
+      "environment": 0.90,
+      "interestOnDebt": 0.20
+    },
+    "topAligned": ["Healthcare", "Environment", "Education"],
+    "topMisaligned": ["Defense", "Interest on Debt"],
+    "keyVotes": [
+      { "bill": "CHIPS and Science Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Nay", "aligned": true }
+    ]
+  },
+  {
+    "id": "M001195",
+    "name": "Lisa Murkowski",
+    "party": "R",
+    "state": "AK",
+    "chamber": "senate",
+    "alignmentScore": 0.56,
+    "budgetAlignment": {
+      "education": 0.55,
+      "defense": 0.72,
+      "healthcare": 0.50,
+      "infrastructure": 0.75,
+      "socialSecurity": 0.60,
+      "environment": 0.48,
+      "interestOnDebt": 0.35
+    },
+    "topAligned": ["Infrastructure", "Defense"],
+    "topMisaligned": ["Interest on Debt", "Environment"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "Bipartisan Safer Communities Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "T000476",
+    "name": "Thom Tillis",
+    "party": "R",
+    "state": "NC",
+    "chamber": "senate",
+    "alignmentScore": 0.44,
+    "budgetAlignment": {
+      "education": 0.32,
+      "defense": 0.85,
+      "healthcare": 0.30,
+      "infrastructure": 0.55,
+      "socialSecurity": 0.48,
+      "environment": 0.18,
+      "interestOnDebt": 0.42
+    },
+    "topAligned": ["Defense", "Infrastructure"],
+    "topMisaligned": ["Environment", "Healthcare"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Nay", "aligned": false },
+      { "bill": "Bipartisan Safer Communities Act", "vote": "Yea", "aligned": true }
+    ]
+  },
+  {
+    "id": "C001059",
+    "name": "Jim Costa",
+    "party": "D",
+    "state": "CA",
+    "chamber": "house",
+    "alignmentScore": 0.65,
+    "budgetAlignment": {
+      "education": 0.75,
+      "defense": 0.55,
+      "healthcare": 0.78,
+      "infrastructure": 0.80,
+      "socialSecurity": 0.72,
+      "environment": 0.68,
+      "interestOnDebt": 0.30
+    },
+    "topAligned": ["Infrastructure", "Healthcare", "Education"],
+    "topMisaligned": ["Interest on Debt", "Defense"],
+    "keyVotes": [
+      { "bill": "Infrastructure Investment and Jobs Act", "vote": "Yea", "aligned": true },
+      { "bill": "Inflation Reduction Act", "vote": "Yea", "aligned": true },
+      { "bill": "National Defense Authorization Act FY2024", "vote": "Yea", "aligned": false }
+    ]
+  }
+]

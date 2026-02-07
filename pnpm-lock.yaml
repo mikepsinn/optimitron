@@ -59,6 +59,9 @@ importers:
 
   packages/data:
     dependencies:
+      '@optomitron/optimizer':
+        specifier: workspace:*
+        version: link:../optimizer
       zod:
         specifier: ^3.22.4
         version: 3.25.76

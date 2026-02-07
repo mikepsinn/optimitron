@@ -22,6 +22,7 @@
   "author": "Mike P. Sinn <m@thinkbynumbers.org>",
   "license": "MIT",
   "dependencies": {
+    "@optomitron/optimizer": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
