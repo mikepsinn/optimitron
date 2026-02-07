@@ -67,3 +67,4 @@ export * from './datasets/index.js';
 
 // Version
 export const VERSION = '0.1.0';
+export * from './pipelines/fetch-country-timeseries.js';

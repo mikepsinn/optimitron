@@ -1,0 +1,585 @@
+{
+  "generatedAt": "2026-02-07T03:55:07.462Z",
+  "generatedBy": "@optomitron/obg + @optomitron/data (real API data)",
+  "dataSource": {
+    "fetchedAt": "2026-02-07T03:54:56.243Z",
+    "sources": [
+      "World Bank WDI (SP.DYN.LE00.IN)",
+      "World Bank WDI (NY.GDP.PCAP.PP.CD)",
+      "World Bank WDI (SH.XPD.CHEX.GD.ZS)",
+      "WHO GHO (WHOSIS_000002)",
+      "WHO GHO (UHC_INDEX_REPORTED)"
+    ],
+    "countriesCount": 50,
+    "yearRange": [
+      2000,
+      2023
+    ],
+    "variablesCount": 3
+  },
+  "healthSpendingVsLifeExpectancy": {
+    "pearsonR": 0.661,
+    "n": 50,
+    "oslPerCapita": 161,
+    "oslConfidenceInterval": [
+      116,
+      223
+    ],
+    "marginalReturnAtOSL": 0.03,
+    "insight": "Optimal health spending is ~$161/capita. Beyond this, additional spending has diminishing returns on life expectancy."
+  },
+  "efficiencyRanking": [
+    {
+      "iso3": "IND",
+      "spending": 345,
+      "lifeExpectancy": 72.003,
+      "efficiency": 208.8574371153573
+    },
+    {
+      "iso3": "IDN",
+      "spending": 417,
+      "lifeExpectancy": 71.146,
+      "efficiency": 170.78017899275198
+    },
+    {
+      "iso3": "NGA",
+      "spending": 365,
+      "lifeExpectancy": 54.462,
+      "efficiency": 149.27927585426133
+    },
+    {
+      "iso3": "PHL",
+      "spending": 560,
+      "lifeExpectancy": 69.833,
+      "efficiency": 124.61012816600278
+    },
+    {
+      "iso3": "VNM",
+      "spending": 686,
+      "lifeExpectancy": 74.588,
+      "efficiency": 108.77494650090898
+    },
+    {
+      "iso3": "EGY",
+      "spending": 905,
+      "lifeExpectancy": 71.633,
+      "efficiency": 79.16608493582099
+    },
+    {
+      "iso3": "THA",
+      "spending": 1067,
+      "lifeExpectancy": 76.412,
+      "efficiency": 71.59556416609166
+    },
+    {
+      "iso3": "MEX",
+      "spending": 1389,
+      "lifeExpectancy": 75.069,
+      "efficiency": 54.03055723223392
+    },
+    {
+      "iso3": "MYS",
+      "spending": 1443,
+      "lifeExpectancy": 76.657,
+      "efficiency": 53.115483275926415
+    },
+    {
+      "iso3": "CHN",
+      "spending": 1497,
+      "lifeExpectancy": 77.953,
+      "efficiency": 52.08607502889571
+    },
+    {
+      "iso3": "UKR",
+      "spending": 1449,
+      "lifeExpectancy": 73.422,
+      "efficiency": 50.66927988679651
+    },
+    {
+      "iso3": "ZAF",
+      "spending": 1354,
+      "lifeExpectancy": 66.139,
+      "efficiency": 48.8382558607171
+    },
+    {
+      "iso3": "COL",
+      "spending": 1733,
+      "lifeExpectancy": 77.725,
+      "efficiency": 44.840645368001965
+    },
+    {
+      "iso3": "TUR",
+      "spending": 1829,
+      "lifeExpectancy": 77.156,
+      "efficiency": 42.17985203802585
+    },
+    {
+      "iso3": "BRA",
+      "spending": 2061,
+      "lifeExpectancy": 75.848,
+      "efficiency": 36.808980576859
+    },
+    {
+      "iso3": "HUN",
+      "spending": 2967,
+      "lifeExpectancy": 76.7707317073171,
+      "efficiency": 25.872038797820228
+    },
+    {
+      "iso3": "ARG",
+      "spending": 3104,
+      "lifeExpectancy": 77.395,
+      "efficiency": 24.93715274607921
+    },
+    {
+      "iso3": "LVA",
+      "spending": 3099,
+      "lifeExpectancy": 75.6780487804878,
+      "efficiency": 24.42297296379101
+    },
+    {
+      "iso3": "CHL",
+      "spending": 3372,
+      "lifeExpectancy": 81.167,
+      "efficiency": 24.067688182535594
+    },
+    {
+      "iso3": "RUS",
+      "spending": 3118,
+      "lifeExpectancy": 73.2546341463415,
+      "efficiency": 23.49064572031833
+    },
+    {
+      "iso3": "SVK",
+      "spending": 3380,
+      "lifeExpectancy": 78.0170731707317,
+      "efficiency": 23.07999345162352
+    },
+    {
+      "iso3": "GRC",
+      "spending": 3585,
+      "lifeExpectancy": 81.5365853658537,
+      "efficiency": 22.743950964306595
+    },
+    {
+      "iso3": "POL",
+      "spending": 3460,
+      "lifeExpectancy": 78.5073170731707,
+      "efficiency": 22.688363498506778
+    },
+    {
+      "iso3": "EST",
+      "spending": 3634,
+      "lifeExpectancy": 78.490243902439,
+      "efficiency": 21.60125268638522
+    },
+    {
+      "iso3": "ISR",
+      "spending": 3916,
+      "lifeExpectancy": 83.1951219512195,
+      "efficiency": 21.243961230596092
+    },
+    {
+      "iso3": "LTU",
+      "spending": 3831,
+      "lifeExpectancy": 76.9878048780488,
+      "efficiency": 20.09676895570642
+    },
+    {
+      "iso3": "CZE",
+      "spending": 4699,
+      "lifeExpectancy": 79.8780487804878,
+      "efficiency": 16.999360659813483
+    },
+    {
+      "iso3": "KOR",
+      "spending": 4919,
+      "lifeExpectancy": 83.4292682926829,
+      "efficiency": 16.960952238597923
+    },
+    {
+      "iso3": "PRT",
+      "spending": 4949,
+      "lifeExpectancy": 82.2804878048781,
+      "efficiency": 16.625978286576785
+    },
+    {
+      "iso3": "ITA",
+      "spending": 5046,
+      "lifeExpectancy": 83.7,
+      "efficiency": 16.587830563900443
+    },
+    {
+      "iso3": "ESP",
+      "spending": 5134,
+      "lifeExpectancy": 83.8829268292683,
+      "efficiency": 16.337851612704036
+    },
+    {
+      "iso3": "SVN",
+      "spending": 5214,
+      "lifeExpectancy": 81.9780487804878,
+      "efficiency": 15.722646241951285
+    },
+    {
+      "iso3": "JPN",
+      "spending": 5441,
+      "lifeExpectancy": 84.0412195121951,
+      "efficiency": 15.446000245869769
+    },
+    {
+      "iso3": "NZL",
+      "spending": 5541,
+      "lifeExpectancy": 83.0048780487805,
+      "efficiency": 14.981319648237093
+    },
+    {
+      "iso3": "SGP",
+      "spending": 6458,
+      "lifeExpectancy": 82.8951219512195,
+      "efficiency": 12.83535099071816
+    },
+    {
+      "iso3": "GBR",
+      "spending": 6585,
+      "lifeExpectancy": 81.2380975609756,
+      "efficiency": 12.336785947912153
+    },
+    {
+      "iso3": "FIN",
+      "spending": 6642,
+      "lifeExpectancy": 81.6853658536585,
+      "efficiency": 12.298271777880649
+    },
+    {
+      "iso3": "FRA",
+      "spending": 7008,
+      "lifeExpectancy": 82.9292682926829,
+      "efficiency": 11.832684526886466
+    },
+    {
+      "iso3": "CAN",
+      "spending": 7184,
+      "lifeExpectancy": 81.6465853658537,
+      "efficiency": 11.364791415444465
+    },
+    {
+      "iso3": "AUS",
+      "spending": 7515,
+      "lifeExpectancy": 83.0512195121951,
+      "efficiency": 11.050963077520391
+    },
+    {
+      "iso3": "DNK",
+      "spending": 7444,
+      "lifeExpectancy": 81.8536585365854,
+      "efficiency": 10.995337827908804
+    },
+    {
+      "iso3": "SWE",
+      "spending": 7721,
+      "lifeExpectancy": 83.309756097561,
+      "efficiency": 10.790366090467716
+    },
+    {
+      "iso3": "BEL",
+      "spending": 7773,
+      "lifeExpectancy": 82.3975609756098,
+      "efficiency": 10.600678954251999
+    },
+    {
+      "iso3": "NLD",
+      "spending": 8035,
+      "lifeExpectancy": 81.9146341463415,
+      "efficiency": 10.194529099579343
+    },
+    {
+      "iso3": "AUT",
+      "spending": 8202,
+      "lifeExpectancy": 81.5414634146342,
+      "efficiency": 9.94115209576675
+    },
+    {
+      "iso3": "IRL",
+      "spending": 8527,
+      "lifeExpectancy": 82.8609756097561,
+      "efficiency": 9.717333697400733
+    },
+    {
+      "iso3": "DEU",
+      "spending": 8419,
+      "lifeExpectancy": 80.5414634146342,
+      "efficiency": 9.566882885501439
+    },
+    {
+      "iso3": "NOR",
+      "spending": 9772,
+      "lifeExpectancy": 83.1121951219512,
+      "efficiency": 8.504923175865377
+    },
+    {
+      "iso3": "CHE",
+      "spending": 11123,
+      "lifeExpectancy": 84.0560975609756,
+      "efficiency": 7.5569853999850345
+    },
+    {
+      "iso3": "USA",
+      "spending": 13740,
+      "lifeExpectancy": 78.3853658536585,
+      "efficiency": 5.704879655673725
+    }
+  ],
+  "countryLatestValues": {
+    "ARG": {
+      "life_expectancy": 77.395,
+      "gdp_per_capita": 30221.4976888753,
+      "health_expenditure_pct_gdp": 10.2695179
+    },
+    "AUS": {
+      "life_expectancy": 83.0512195121951,
+      "gdp_per_capita": 72272.7092136683,
+      "health_expenditure_pct_gdp": 10.39852047
+    },
+    "AUT": {
+      "life_expectancy": 81.5414634146342,
+      "gdp_per_capita": 73544.6567230487,
+      "health_expenditure_pct_gdp": 11.15297318
+    },
+    "BEL": {
+      "life_expectancy": 82.3975609756098,
+      "gdp_per_capita": 71946.1447190292,
+      "health_expenditure_pct_gdp": 10.80371571
+    },
+    "BRA": {
+      "life_expectancy": 75.848,
+      "gdp_per_capita": 21175.6186988214,
+      "health_expenditure_pct_gdp": 9.73092747
+    },
+    "CAN": {
+      "life_expectancy": 81.6465853658537,
+      "gdp_per_capita": 64219.3173928637,
+      "health_expenditure_pct_gdp": 11.18692875
+    },
+    "CHE": {
+      "life_expectancy": 84.0560975609756,
+      "gdp_per_capita": 95141.5960943632,
+      "health_expenditure_pct_gdp": 11.69096088
+    },
+    "CHL": {
+      "life_expectancy": 81.167,
+      "gdp_per_capita": 33145.403552025,
+      "health_expenditure_pct_gdp": 10.17470455
+    },
+    "CHN": {
+      "life_expectancy": 77.953,
+      "gdp_per_capita": 25179.1193066383,
+      "health_expenditure_pct_gdp": 5.94388866
+    },
+    "COL": {
+      "life_expectancy": 77.725,
+      "gdp_per_capita": 21246.3762695201,
+      "health_expenditure_pct_gdp": 8.15838146
+    },
+    "CZE": {
+      "life_expectancy": 79.8780487804878,
+      "gdp_per_capita": 55761.3798291375,
+      "health_expenditure_pct_gdp": 8.42677402
+    },
+    "DEU": {
+      "life_expectancy": 80.5414634146342,
+      "gdp_per_capita": 71684.0311875583,
+      "health_expenditure_pct_gdp": 11.74428654
+    },
+    "DNK": {
+      "life_expectancy": 81.8536585365854,
+      "gdp_per_capita": 77892.2932609904,
+      "health_expenditure_pct_gdp": 9.5572958
+    },
+    "EGY": {
+      "life_expectancy": 71.633,
+      "gdp_per_capita": 18524.8392997937,
+      "health_expenditure_pct_gdp": 4.88449335
+    },
+    "ESP": {
+      "life_expectancy": 83.8829268292683,
+      "gdp_per_capita": 55682.2402603093,
+      "health_expenditure_pct_gdp": 9.2206583
+    },
+    "EST": {
+      "life_expectancy": 78.490243902439,
+      "gdp_per_capita": 48637.1802208795,
+      "health_expenditure_pct_gdp": 7.47082138
+    },
+    "FIN": {
+      "life_expectancy": 81.6853658536585,
+      "gdp_per_capita": 63414.9936878177,
+      "health_expenditure_pct_gdp": 10.47389507
+    },
+    "FRA": {
+      "life_expectancy": 82.9292682926829,
+      "gdp_per_capita": 60838.9416716424,
+      "health_expenditure_pct_gdp": 11.51974583
+    },
+    "GBR": {
+      "life_expectancy": 81.2380975609756,
+      "gdp_per_capita": 59911.3467663209,
+      "health_expenditure_pct_gdp": 10.99128914
+    },
+    "GRC": {
+      "life_expectancy": 81.5365853658537,
+      "gdp_per_capita": 42710.5058010314,
+      "health_expenditure_pct_gdp": 8.39367008
+    },
+    "HUN": {
+      "life_expectancy": 76.7707317073171,
+      "gdp_per_capita": 46592.3856070073,
+      "health_expenditure_pct_gdp": 6.36868954
+    },
+    "IDN": {
+      "life_expectancy": 71.146,
+      "gdp_per_capita": 15415.7079259527,
+      "health_expenditure_pct_gdp": 2.70239949
+    },
+    "IND": {
+      "life_expectancy": 72.003,
+      "gdp_per_capita": 10323.4998734428,
+      "health_expenditure_pct_gdp": 3.33944035
+    },
+    "IRL": {
+      "life_expectancy": 82.8609756097561,
+      "gdp_per_capita": 129682.607150517,
+      "health_expenditure_pct_gdp": 6.57538509
+    },
+    "ISR": {
+      "life_expectancy": 83.1951219512195,
+      "gdp_per_capita": 55171.2318814321,
+      "health_expenditure_pct_gdp": 7.09822369
+    },
+    "ITA": {
+      "life_expectancy": 83.7,
+      "gdp_per_capita": 60029.871712398,
+      "health_expenditure_pct_gdp": 8.40559483
+    },
+    "JPN": {
+      "life_expectancy": 84.0412195121951,
+      "gdp_per_capita": 50661.7663463109,
+      "health_expenditure_pct_gdp": 10.73979473
+    },
+    "KOR": {
+      "life_expectancy": 83.4292682926829,
+      "gdp_per_capita": 57429.8031076402,
+      "health_expenditure_pct_gdp": 8.5650692
+    },
+    "LTU": {
+      "life_expectancy": 76.9878048780488,
+      "gdp_per_capita": 52348.2468215268,
+      "health_expenditure_pct_gdp": 7.31801939
+    },
+    "LVA": {
+      "life_expectancy": 75.6780487804878,
+      "gdp_per_capita": 42576.4060799457,
+      "health_expenditure_pct_gdp": 7.27783823
+    },
+    "MEX": {
+      "life_expectancy": 75.069,
+      "gdp_per_capita": 25243.1644887582,
+      "health_expenditure_pct_gdp": 5.50398684
+    },
+    "MYS": {
+      "life_expectancy": 76.657,
+      "gdp_per_capita": 36466.8914938333,
+      "health_expenditure_pct_gdp": 3.95760036
+    },
+    "NGA": {
+      "life_expectancy": 54.462,
+      "gdp_per_capita": 8705.43426693539,
+      "health_expenditure_pct_gdp": 4.19086456
+    },
+    "NLD": {
+      "life_expectancy": 81.9146341463415,
+      "gdp_per_capita": 81728.6904629268,
+      "health_expenditure_pct_gdp": 9.83150005
+    },
+    "NOR": {
+      "life_expectancy": 83.1121951219512,
+      "gdp_per_capita": 103637.516843678,
+      "health_expenditure_pct_gdp": 9.42925453
+    },
+    "NZL": {
+      "life_expectancy": 83.0048780487805,
+      "gdp_per_capita": 54697.382252318,
+      "health_expenditure_pct_gdp": 10.12947655
+    },
+    "PHL": {
+      "life_expectancy": 69.833,
+      "gdp_per_capita": 10985.8292627505,
+      "health_expenditure_pct_gdp": 5.10122538
+    },
+    "POL": {
+      "life_expectancy": 78.5073170731707,
+      "gdp_per_capita": 48473.0940286419,
+      "health_expenditure_pct_gdp": 7.13848782
+    },
+    "PRT": {
+      "life_expectancy": 82.2804878048781,
+      "gdp_per_capita": 49352.8388613032,
+      "health_expenditure_pct_gdp": 10.02761173
+    },
+    "RUS": {
+      "life_expectancy": 73.2546341463415,
+      "gdp_per_capita": 44268.73046875,
+      "health_expenditure_pct_gdp": 7.04438496
+    },
+    "SGP": {
+      "life_expectancy": 82.8951219512195,
+      "gdp_per_capita": 143786.136293013,
+      "health_expenditure_pct_gdp": 4.49163246
+    },
+    "SVK": {
+      "life_expectancy": 78.0170731707317,
+      "gdp_per_capita": 45973.9406902991,
+      "health_expenditure_pct_gdp": 7.35262203
+    },
+    "SVN": {
+      "life_expectancy": 81.9780487804878,
+      "gdp_per_capita": 56064.0974596742,
+      "health_expenditure_pct_gdp": 9.30008888
+    },
+    "SWE": {
+      "life_expectancy": 83.309756097561,
+      "gdp_per_capita": 69226.3272756663,
+      "health_expenditure_pct_gdp": 11.152915
+    },
+    "THA": {
+      "life_expectancy": 76.412,
+      "gdp_per_capita": 23519.2120979823,
+      "health_expenditure_pct_gdp": 4.53787661
+    },
+    "TUR": {
+      "life_expectancy": 77.156,
+      "gdp_per_capita": 42786.2004948664,
+      "health_expenditure_pct_gdp": 4.27524424
+    },
+    "UKR": {
+      "life_expectancy": 73.422,
+      "gdp_per_capita": 17665.34375,
+      "health_expenditure_pct_gdp": 8.2027483
+    },
+    "USA": {
+      "life_expectancy": 78.3853658536585,
+      "gdp_per_capita": 82304.6204272866,
+      "health_expenditure_pct_gdp": 16.69414902
+    },
+    "VNM": {
+      "life_expectancy": 74.588,
+      "gdp_per_capita": 15033.8768594355,
+      "health_expenditure_pct_gdp": 4.56109476
+    },
+    "ZAF": {
+      "life_expectancy": 66.139,
+      "gdp_per_capita": 15199.7329823776,
+      "health_expenditure_pct_gdp": 8.90966797
+    }
+  }
+}

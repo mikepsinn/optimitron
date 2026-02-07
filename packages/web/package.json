@@ -9,7 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "echo 'No tests yet'",
-    "generate": "tsx scripts/generate-analysis.ts"
+    "generate": "tsx scripts/generate-analysis.ts",
+    "fetch": "tsx scripts/fetch-and-generate.ts"
   },
   "dependencies": {
     "@optomitron/data": "workspace:^",
