@@ -9,28 +9,53 @@
  * - OECD (Poverty)
  * - UNODC (Crime/Homicide)
  * - World Bank (CO2)
- * 
- * DENSE DATASET GENERATED FOR MODELING
+ *
+ * Modeling-grade dataset with interpolations and static placeholders.
+ * Do not treat as raw observations.
  */
+
+export interface DataQuality {
+  source: string;
+  quality: "observed" | "interpolated" | "static";
+  years: "triennial" | "annual" | "constant";
+}
+
+export type DataProvenance = DataQuality;
 
 export interface OECDDirectOutcomeDataPoint {
   jurisdictionIso3: string;
   year: number;
-  /** OECD PISA — reading+math+science average, every 3 years */
+  /** OECD PISA — reading+math+science average; observed triennially only. */
   pisaScoreAvg: number | null;
-  /** Drug overdose deaths per 100k population */
+  /** Drug overdose deaths per 100k population; partial coverage, interpolated between years. */
   overdoseDeathsPer100k: number | null;
-  /** Preventable (amenable) mortality per 100k */
+  /** Preventable (amenable) mortality per 100k; partial coverage, interpolated between years. */
   preventableDeathsPer100k: number | null;
-  /** Patent applications per million people */
+  /** Patent applications per million people; partial coverage, interpolated between years. */
   patentsPerMillion: number | null;
-  /** Poverty rate (50% median income threshold) */
+  /** Poverty rate (50% median income threshold); static placeholder repeated, needs update. */
   povertyRatePercent: number | null;
-  /** Intentional homicide rate per 100k */
+  /** Intentional homicide rate per 100k; partial coverage, interpolated between years. */
   crimeRatePer100k: number | null;
-  /** CO2 emissions metric tons per capita */
+  /** CO2 emissions metric tons per capita; partial coverage, interpolated between years. */
   co2PerCapitaTons: number | null;
 }
+
+export const DATA_PROVENANCE: Record<keyof OECDDirectOutcomeDataPoint, DataProvenance> = {
+  jurisdictionIso3: { source: "ISO 3166-1 alpha-3", quality: "observed", years: "annual" },
+  year: { source: "Calendar year", quality: "observed", years: "annual" },
+  pisaScoreAvg: { source: "OECD PISA", quality: "observed", years: "triennial" },
+  overdoseDeathsPer100k: { source: "EMCDDA/CDC", quality: "interpolated", years: "annual" },
+  preventableDeathsPer100k: { source: "OECD Health Statistics", quality: "interpolated", years: "annual" },
+  patentsPerMillion: { source: "WIPO", quality: "interpolated", years: "annual" },
+  povertyRatePercent: { source: "OECD", quality: "static", years: "constant" },
+  crimeRatePer100k: { source: "UNODC", quality: "interpolated", years: "annual" },
+  co2PerCapitaTons: { source: "World Bank", quality: "interpolated", years: "annual" },
+};
+
+export const getDataQuality = (
+  field: keyof OECDDirectOutcomeDataPoint
+): DataQuality => DATA_PROVENANCE[field];
 
 export const OECD_DIRECT_OUTCOMES: OECDDirectOutcomeDataPoint[] = [
   // USA
