@@ -42,7 +42,7 @@ const DEFAULT_CONFIG: Required<MinimumEffectiveSpendingConfig> = {
 function normalizeDeciles(deciles: SpendingDecile[]): SpendingDecile[] {
   return deciles
     .filter(d => Number.isFinite(d.avgSpending) && Number.isFinite(d.outcome))
-    .sort((a, b) => a.avgSpending - b.avgSpending);
+    .sort((a, b) => a.avgSpending - b.avgSpending || a.decile - b.decile);
 }
 
 function clampTolerance(value?: number): number {

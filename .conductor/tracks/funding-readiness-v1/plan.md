@@ -17,10 +17,10 @@
 
 ## Phase 4: Productization
 - [ ] Provide a clean, repeatable CLI for report generation.
-- [ ] Add a short "How to reproduce" section with exact commands.
+- [x] Add a short "How to reproduce" section with exact commands.
 - [ ] Package a minimal demo bundle for external reviewers.
 
 ## Phase 5: Funding Readiness
-- [ ] Write a short funder targeting memo (philanthropy, civic tech, public benefit R&D).
-- [ ] Add a concise risk and mitigation section for the pilot.
+- [x] Write a short funder targeting memo (philanthropy, civic tech, public benefit R&D).
+- [x] Add a concise risk and mitigation section for the pilot.
 - [ ] Prepare a one-slide diagram of the system flow (for decks).

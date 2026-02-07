@@ -4,12 +4,12 @@
 
 The key insight: more spending doesn't improve outcomes. The optimal level is the MINIMUM that doesn't produce worse outcomes.
 
-- [ ] 1. Add `findMinimumEffectiveSpending()` to `packages/obg` — decile analysis, find floor per category
-- [ ] 2. Add `efficientFrontier()` — rank countries by outcome-per-dollar
-- [ ] 3. Add `overspendRatio()` — current spending / floor level per category  
-- [ ] 4. Tests encoding expected findings (Japan/Korea efficient, US inefficient on health)
-- [ ] 5. Generate `reports/us-optimal-budget-v6.md` with minimum effective framing
-- [ ] 6. Generate JSON for web (`efficient-frontier.json` already exists from ad-hoc script)
+- [x] 1. Add `findMinimumEffectiveSpending()` to `packages/obg` — decile analysis, find floor per category
+- [x] 2. Add `efficientFrontier()` — rank countries by outcome-per-dollar
+- [x] 3. Add `overspendRatio()` — current spending / floor level per category  
+- [x] 4. Tests encoding expected findings (Japan/Korea efficient, US inefficient on health)
+- [x] 5. Generate `reports/us-optimal-budget-v6.md` with minimum effective framing
+- [x] 6. Generate JSON for web (`efficient-frontier.json` already exists from ad-hoc script)
 
 ## DEFERRED — Only add if needed
 - ~~Wire partial correlations into OBG report~~ (already proven in scripts, adds complexity)

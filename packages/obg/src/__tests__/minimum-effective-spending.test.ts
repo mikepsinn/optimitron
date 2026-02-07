@@ -84,4 +84,39 @@ describe('findMinimumEffectiveSpending', () => {
     expect(result!.floorSpending).toBe(0);
     expect(result!.topDecile).toBeNull();
   });
+
+  it('sorts by spending and ignores non-finite deciles', () => {
+    const category: SpendingDecileCategory = {
+      categoryId: 'education',
+      deciles: [
+        { decile: 3, avgSpending: 300, outcome: 10.0 },
+        { decile: 2, avgSpending: Number.NaN, outcome: 99 },
+        { decile: 1, avgSpending: 100, outcome: 9.8 },
+        { decile: 2, avgSpending: 200, outcome: 10.0 },
+      ],
+    };
+
+    const [result] = findMinimumEffectiveSpending([category], {
+      outcomeTolerance: 0.1,
+      outcomeDirection: 'higher',
+    });
+
+    expect(result!.topSpending).toBe(300);
+    expect(result!.floorSpending).toBe(200);
+  });
+
+  it('returns empty values when all deciles are invalid', () => {
+    const category: SpendingDecileCategory = {
+      categoryId: 'invalid',
+      deciles: [
+        { decile: 1, avgSpending: Number.NaN, outcome: 1 },
+        { decile: 2, avgSpending: 200, outcome: Number.NaN },
+      ],
+    };
+
+    const [result] = findMinimumEffectiveSpending([category]);
+
+    expect(result!.floorDecile).toBeNull();
+    expect(result!.topDecile).toBeNull();
+  });
 });

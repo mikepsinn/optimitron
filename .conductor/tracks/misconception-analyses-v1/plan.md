@@ -32,12 +32,12 @@
 - [x] Climate spending → CO2 / GDP — r=-0.960 but trend-driven; no GDP harm from renewables
 
 ## Phase 4: Website Integration
-- [ ] Create `/misconceptions` page with ranked findings
-- [ ] Interactive "myth vs reality" cards with data viz
-- [ ] Link each finding to full methodology / data sources
-- [ ] Generate `misconceptions.json` data file for web app
+- [x] Create `/misconceptions` page with ranked findings
+- [x] Interactive "myth vs reality" cards with data viz
+- [x] Link each finding to full methodology / data sources
+- [x] Generate `misconceptions.json` data file for web app
 
 ## Phase 5: Reports
-- [ ] Generate "Life Years Gained per $1M" ranking across all categories
-- [ ] Consolidated markdown report: "15 Things Everyone Believes That Data Contradicts"
-- [ ] Executive summary for grant applications
+- [x] Generate "Life Years Gained per $1M" ranking across all categories
+- [x] Consolidated markdown report: "15 Things Everyone Believes That Data Contradicts"
+- [x] Executive summary for grant applications

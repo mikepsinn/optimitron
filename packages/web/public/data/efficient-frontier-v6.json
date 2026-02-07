@@ -1,0 +1,542 @@
+{
+  "version": 6,
+  "generatedAt": "2026-02-07T11:08:03.048Z",
+  "methodology": "minimum-effective-spending",
+  "floors": [
+    {
+      "categoryId": "health",
+      "categoryName": "Healthcare",
+      "floorSpending": 2100,
+      "topSpending": 10200,
+      "floorOutcome": 78.1,
+      "topOutcome": 78.6,
+      "outcomeGap": 0.5
+    },
+    {
+      "categoryId": "education",
+      "categoryName": "Education",
+      "floorSpending": 1600,
+      "topSpending": 4800,
+      "floorOutcome": 490,
+      "topOutcome": 489,
+      "outcomeGap": -1
+    },
+    {
+      "categoryId": "social_protection",
+      "categoryName": "Social Protection",
+      "floorSpending": 1500,
+      "topSpending": 10000,
+      "floorOutcome": 18.5,
+      "topOutcome": 5.5,
+      "outcomeGap": -13
+    },
+    {
+      "categoryId": "rd",
+      "categoryName": "Research & Development",
+      "floorSpending": 1800,
+      "topSpending": 2200,
+      "floorOutcome": 98,
+      "topOutcome": 100,
+      "outcomeGap": 2
+    },
+    {
+      "categoryId": "defense",
+      "categoryName": "Defense",
+      "floorSpending": 850,
+      "topSpending": 2400,
+      "floorOutcome": 0.18,
+      "topOutcome": 0.08,
+      "outcomeGap": 0.09999999999999999
+    }
+  ],
+  "efficientFrontier": [
+    {
+      "countryCode": "KR",
+      "countryName": "South Korea",
+      "spending": 2400,
+      "outcome": 83.7,
+      "efficiencyScore": 0.034875,
+      "rank": 1
+    },
+    {
+      "countryCode": "IT",
+      "countryName": "Italy",
+      "spending": 2700,
+      "outcome": 83,
+      "efficiencyScore": 0.030740740740740742,
+      "rank": 2
+    },
+    {
+      "countryCode": "ES",
+      "countryName": "Spain",
+      "spending": 2800,
+      "outcome": 83.2,
+      "efficiencyScore": 0.029714285714285714,
+      "rank": 3
+    },
+    {
+      "countryCode": "JP",
+      "countryName": "Japan",
+      "spending": 3400,
+      "outcome": 84.5,
+      "efficiencyScore": 0.024852941176470588,
+      "rank": 4
+    },
+    {
+      "countryCode": "GB",
+      "countryName": "United Kingdom",
+      "spending": 3800,
+      "outcome": 81.2,
+      "efficiencyScore": 0.021368421052631578,
+      "rank": 5
+    },
+    {
+      "countryCode": "FR",
+      "countryName": "France",
+      "spending": 4100,
+      "outcome": 82.5,
+      "efficiencyScore": 0.020121951219512196,
+      "rank": 6
+    },
+    {
+      "countryCode": "CA",
+      "countryName": "Canada",
+      "spending": 4300,
+      "outcome": 81.7,
+      "efficiencyScore": 0.019,
+      "rank": 7
+    },
+    {
+      "countryCode": "AU",
+      "countryName": "Australia",
+      "spending": 4400,
+      "outcome": 83,
+      "efficiencyScore": 0.018863636363636364,
+      "rank": 8
+    },
+    {
+      "countryCode": "NL",
+      "countryName": "Netherlands",
+      "spending": 4600,
+      "outcome": 82,
+      "efficiencyScore": 0.017826086956521738,
+      "rank": 9
+    },
+    {
+      "countryCode": "SE",
+      "countryName": "Sweden",
+      "spending": 5200,
+      "outcome": 82.8,
+      "efficiencyScore": 0.015923076923076922,
+      "rank": 10
+    },
+    {
+      "countryCode": "DE",
+      "countryName": "Germany",
+      "spending": 5800,
+      "outcome": 81.2,
+      "efficiencyScore": 0.014,
+      "rank": 11
+    },
+    {
+      "countryCode": "US",
+      "countryName": "United States",
+      "spending": 10200,
+      "outcome": 78.6,
+      "efficiencyScore": 0.007705882352941176,
+      "rank": 12
+    }
+  ],
+  "overspend": [
+    {
+      "categoryId": "health",
+      "categoryName": "Healthcare",
+      "floorSpending": 2100,
+      "avgOverspendRatio": 2.209,
+      "countries": [
+        {
+          "countryCode": "US",
+          "countryName": "United States",
+          "actualSpending": 10200,
+          "overspendRatio": 4.857,
+          "excessSpending": 8100
+        },
+        {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "actualSpending": 5800,
+          "overspendRatio": 2.762,
+          "excessSpending": 3700
+        },
+        {
+          "countryCode": "SE",
+          "countryName": "Sweden",
+          "actualSpending": 5200,
+          "overspendRatio": 2.476,
+          "excessSpending": 3100
+        },
+        {
+          "countryCode": "AU",
+          "countryName": "Australia",
+          "actualSpending": 4400,
+          "overspendRatio": 2.095,
+          "excessSpending": 2300
+        },
+        {
+          "countryCode": "CA",
+          "countryName": "Canada",
+          "actualSpending": 4300,
+          "overspendRatio": 2.048,
+          "excessSpending": 2200
+        },
+        {
+          "countryCode": "FR",
+          "countryName": "France",
+          "actualSpending": 4100,
+          "overspendRatio": 1.952,
+          "excessSpending": 2000
+        },
+        {
+          "countryCode": "GB",
+          "countryName": "United Kingdom",
+          "actualSpending": 3800,
+          "overspendRatio": 1.81,
+          "excessSpending": 1700
+        },
+        {
+          "countryCode": "JP",
+          "countryName": "Japan",
+          "actualSpending": 3400,
+          "overspendRatio": 1.619,
+          "excessSpending": 1300
+        },
+        {
+          "countryCode": "ES",
+          "countryName": "Spain",
+          "actualSpending": 2800,
+          "overspendRatio": 1.333,
+          "excessSpending": 700
+        },
+        {
+          "countryCode": "KR",
+          "countryName": "South Korea",
+          "actualSpending": 2400,
+          "overspendRatio": 1.143,
+          "excessSpending": 300
+        }
+      ]
+    },
+    {
+      "categoryId": "education",
+      "categoryName": "Education",
+      "floorSpending": 1600,
+      "avgOverspendRatio": 1.7,
+      "countries": [
+        {
+          "countryCode": "SE",
+          "countryName": "Sweden",
+          "actualSpending": 3400,
+          "overspendRatio": 2.125,
+          "excessSpending": 1800
+        },
+        {
+          "countryCode": "US",
+          "countryName": "United States",
+          "actualSpending": 3200,
+          "overspendRatio": 2,
+          "excessSpending": 1600
+        },
+        {
+          "countryCode": "AU",
+          "countryName": "Australia",
+          "actualSpending": 3000,
+          "overspendRatio": 1.875,
+          "excessSpending": 1400
+        },
+        {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "actualSpending": 2800,
+          "overspendRatio": 1.75,
+          "excessSpending": 1200
+        },
+        {
+          "countryCode": "CA",
+          "countryName": "Canada",
+          "actualSpending": 2800,
+          "overspendRatio": 1.75,
+          "excessSpending": 1200
+        },
+        {
+          "countryCode": "KR",
+          "countryName": "South Korea",
+          "actualSpending": 2600,
+          "overspendRatio": 1.625,
+          "excessSpending": 1000
+        },
+        {
+          "countryCode": "GB",
+          "countryName": "United Kingdom",
+          "actualSpending": 2600,
+          "overspendRatio": 1.625,
+          "excessSpending": 1000
+        },
+        {
+          "countryCode": "JP",
+          "countryName": "Japan",
+          "actualSpending": 2400,
+          "overspendRatio": 1.5,
+          "excessSpending": 800
+        },
+        {
+          "countryCode": "FR",
+          "countryName": "France",
+          "actualSpending": 2400,
+          "overspendRatio": 1.5,
+          "excessSpending": 800
+        },
+        {
+          "countryCode": "ES",
+          "countryName": "Spain",
+          "actualSpending": 2000,
+          "overspendRatio": 1.25,
+          "excessSpending": 400
+        }
+      ]
+    },
+    {
+      "categoryId": "social_protection",
+      "categoryName": "Social Protection",
+      "floorSpending": 1500,
+      "avgOverspendRatio": 3.813,
+      "countries": [
+        {
+          "countryCode": "SE",
+          "countryName": "Sweden",
+          "actualSpending": 8200,
+          "overspendRatio": 5.467,
+          "excessSpending": 6700
+        },
+        {
+          "countryCode": "FR",
+          "countryName": "France",
+          "actualSpending": 8000,
+          "overspendRatio": 5.333,
+          "excessSpending": 6500
+        },
+        {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "actualSpending": 7600,
+          "overspendRatio": 5.067,
+          "excessSpending": 6100
+        },
+        {
+          "countryCode": "GB",
+          "countryName": "United Kingdom",
+          "actualSpending": 5800,
+          "overspendRatio": 3.867,
+          "excessSpending": 4300
+        },
+        {
+          "countryCode": "ES",
+          "countryName": "Spain",
+          "actualSpending": 5600,
+          "overspendRatio": 3.733,
+          "excessSpending": 4100
+        },
+        {
+          "countryCode": "JP",
+          "countryName": "Japan",
+          "actualSpending": 5200,
+          "overspendRatio": 3.467,
+          "excessSpending": 3700
+        },
+        {
+          "countryCode": "AU",
+          "countryName": "Australia",
+          "actualSpending": 5000,
+          "overspendRatio": 3.333,
+          "excessSpending": 3500
+        },
+        {
+          "countryCode": "CA",
+          "countryName": "Canada",
+          "actualSpending": 4800,
+          "overspendRatio": 3.2,
+          "excessSpending": 3300
+        },
+        {
+          "countryCode": "US",
+          "countryName": "United States",
+          "actualSpending": 4200,
+          "overspendRatio": 2.8,
+          "excessSpending": 2700
+        },
+        {
+          "countryCode": "KR",
+          "countryName": "South Korea",
+          "actualSpending": 2800,
+          "overspendRatio": 1.867,
+          "excessSpending": 1300
+        }
+      ]
+    },
+    {
+      "categoryId": "rd",
+      "categoryName": "Research & Development",
+      "floorSpending": 1800,
+      "avgOverspendRatio": 0.528,
+      "countries": [
+        {
+          "countryCode": "US",
+          "countryName": "United States",
+          "actualSpending": 1800,
+          "overspendRatio": 1,
+          "excessSpending": 0
+        },
+        {
+          "countryCode": "KR",
+          "countryName": "South Korea",
+          "actualSpending": 1400,
+          "overspendRatio": 0.778,
+          "excessSpending": -400
+        },
+        {
+          "countryCode": "SE",
+          "countryName": "Sweden",
+          "actualSpending": 1200,
+          "overspendRatio": 0.667,
+          "excessSpending": -600
+        },
+        {
+          "countryCode": "JP",
+          "countryName": "Japan",
+          "actualSpending": 1100,
+          "overspendRatio": 0.611,
+          "excessSpending": -700
+        },
+        {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "actualSpending": 1100,
+          "overspendRatio": 0.611,
+          "excessSpending": -700
+        },
+        {
+          "countryCode": "FR",
+          "countryName": "France",
+          "actualSpending": 800,
+          "overspendRatio": 0.444,
+          "excessSpending": -1000
+        },
+        {
+          "countryCode": "GB",
+          "countryName": "United Kingdom",
+          "actualSpending": 600,
+          "overspendRatio": 0.333,
+          "excessSpending": -1200
+        },
+        {
+          "countryCode": "AU",
+          "countryName": "Australia",
+          "actualSpending": 600,
+          "overspendRatio": 0.333,
+          "excessSpending": -1200
+        },
+        {
+          "countryCode": "CA",
+          "countryName": "Canada",
+          "actualSpending": 500,
+          "overspendRatio": 0.278,
+          "excessSpending": -1300
+        },
+        {
+          "countryCode": "ES",
+          "countryName": "Spain",
+          "actualSpending": 400,
+          "overspendRatio": 0.222,
+          "excessSpending": -1400
+        }
+      ]
+    },
+    {
+      "categoryId": "defense",
+      "categoryName": "Defense",
+      "floorSpending": 850,
+      "avgOverspendRatio": 0.891,
+      "countries": [
+        {
+          "countryCode": "US",
+          "countryName": "United States",
+          "actualSpending": 2400,
+          "overspendRatio": 2.824,
+          "excessSpending": 1550
+        },
+        {
+          "countryCode": "GB",
+          "countryName": "United Kingdom",
+          "actualSpending": 900,
+          "overspendRatio": 1.059,
+          "excessSpending": 50
+        },
+        {
+          "countryCode": "KR",
+          "countryName": "South Korea",
+          "actualSpending": 750,
+          "overspendRatio": 0.882,
+          "excessSpending": -100
+        },
+        {
+          "countryCode": "FR",
+          "countryName": "France",
+          "actualSpending": 680,
+          "overspendRatio": 0.8,
+          "excessSpending": -170
+        },
+        {
+          "countryCode": "SE",
+          "countryName": "Sweden",
+          "actualSpending": 600,
+          "overspendRatio": 0.706,
+          "excessSpending": -250
+        },
+        {
+          "countryCode": "AU",
+          "countryName": "Australia",
+          "actualSpending": 550,
+          "overspendRatio": 0.647,
+          "excessSpending": -300
+        },
+        {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "actualSpending": 520,
+          "overspendRatio": 0.612,
+          "excessSpending": -330
+        },
+        {
+          "countryCode": "CA",
+          "countryName": "Canada",
+          "actualSpending": 450,
+          "overspendRatio": 0.529,
+          "excessSpending": -400
+        },
+        {
+          "countryCode": "JP",
+          "countryName": "Japan",
+          "actualSpending": 400,
+          "overspendRatio": 0.471,
+          "excessSpending": -450
+        },
+        {
+          "countryCode": "ES",
+          "countryName": "Spain",
+          "actualSpending": 320,
+          "overspendRatio": 0.376,
+          "excessSpending": -530
+        }
+      ]
+    }
+  ]
+}
