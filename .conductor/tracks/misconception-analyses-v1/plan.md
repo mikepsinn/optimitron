@@ -24,12 +24,12 @@
 - [x] Incarceration → crime — near-zero YoY correlations (r=0.09-0.23). Crime drives policy, not reverse.
 - [x] Gun ownership → homicide — all Grade F, only 23 data points. Need state-level panel data.
 
-## Phase 3: Tier 2 Datasets + Analyses
-- [ ] Death penalty → homicide rate
-- [ ] Foreign aid → conflict / migration
-- [ ] Abstinence education → teen pregnancy (state-level)
-- [ ] Welfare spending → labor force participation (expand existing)
-- [ ] Regulation burden → GDP growth (World Bank Ease of Doing Business)
+## Phase 3: Tier 2 Datasets + Analyses ✅ COMPLETE
+- [x] Death penalty → homicide rate — r=-0.655 absolute vanishes to r=-0.013 YoY (spurious)
+- [x] Foreign aid → conflict / poverty — reactive spending (r=+0.715 conflict), not causal
+- [x] Abstinence education → teen pregnancy — STRONGEST causal dir (+0.713), funding worsens outcomes
+- [x] Regulation → GDP / business — complete nulls, no regulation→economy link
+- [x] Climate spending → CO2 / GDP — r=-0.960 but trend-driven; no GDP harm from renewables
 
 ## Phase 4: Website Integration
 - [ ] Create `/misconceptions` page with ranked findings
