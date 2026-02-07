@@ -44,5 +44,10 @@
   "packageManager": "pnpm@8.14.0",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob@>=10.2.0 <10.5.0": ">=10.5.0"
+    }
   }
 }
