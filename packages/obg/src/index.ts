@@ -6,3 +6,4 @@ export * from './welfare.js';
 export * from './report.js';
 export * from './country-analysis.js';
 export * from './country-report.js';
+export * from './optimize-budget.js';
