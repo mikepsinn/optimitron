@@ -40,6 +40,7 @@ export * from './sources/index.js';
 // API fetchers (OECD, World Bank, WHO, FRED)
 // Exported as namespace to avoid name collisions with legacy sources
 export * as fetchers from './fetchers/index.js';
+export * from './fetchers/who-hale.js';
 
 // CSV loader (Gapminder-format parser)
 export * from './csv-loader.js';
