@@ -6,4 +6,5 @@ export * from './policy-mapping.js';
 export * from './budget.js';
 export * from './bradford-hill.js';
 export * from './policy-impact-score.js';
+export * from './evidence-grade.js';
 export * from './report.js';

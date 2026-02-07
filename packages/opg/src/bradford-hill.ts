@@ -29,6 +29,8 @@ export interface BradfordHillScores {
   specificity: number;
 }
 
+export type CausalConfidenceScore = number;
+
 export interface EffectEstimate {
   beta: number;           // Effect size
   standardError: number;  // Standard error
@@ -199,7 +201,7 @@ export function scoreSpecificity(outcomeCount: number): number {
 export function calculateCCS(
   scores: BradfordHillScores,
   weights: typeof CRITERION_WEIGHTS = CRITERION_WEIGHTS
-): number {
+): CausalConfidenceScore {
   // Temporality is a gate - if violated, CCS is 0
   if (scores.temporality === 0) {
     return 0;
