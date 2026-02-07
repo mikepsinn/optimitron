@@ -58,6 +58,17 @@ Always use the MOST DIRECT outcome for each spending category, not just generic 
 Generic outcomes (LE, GDP/capita) are SUPPLEMENTARY — they show the full chain but dilute the signal.
 Run analyses with BOTH direct and generic outcomes, lead with direct in reports.
 
+### Confound Control (CRITICAL)
+Cross-country correlations are confounded by wealth. Rich countries spend more on EVERYTHING and have better outcomes. Every cross-country analysis MUST:
+
+1. **Compute partial correlations controlling for GDP per capita** — `partial_r(spending, outcome | GDP)`
+2. **Flag categories where the effect vanishes after controlling** — "confounded, insufficient evidence"
+3. **Report BOTH simple and partial correlations** — the gap reveals how much was just "being rich"
+4. **Sign flips are disqualifying** — if education→LE is positive simple but zero/negative partial, the recommendation is bogus
+5. **Within-country YoY analysis is the tiebreaker** — if cross-country says positive but within-country YoY says null/negative, trust the YoY
+
+The optimizer library should do this automatically: `runFullAnalysis()` with cross-country data should compute partial correlations as a standard step.
+
 ### Data Rules
 - **Deflator**: GDP deflator for US govt spending, World Bank PPP for cross-country
 - **NOT CPI** for government spending (CPI reflects consumer basket, not govt mix)

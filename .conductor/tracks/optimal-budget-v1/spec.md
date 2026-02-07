@@ -30,6 +30,9 @@ The current `optimizeBudget()` works for single-outcome optimization per categor
 - **Lag optimization**: Auto-test 0, 1, 2, 3, 5, 10 year onset delays — report best fit per category (education ≠ military ≠ R&D)
 - **Reverse causation detection**: Predictive Pearson (forward r vs reverse r) + Causal Direction Score
 - **COVID robustness**: Run with and without 2020-2021 to check sensitivity
+- **Wealth confound control**: ALWAYS compute partial correlations controlling for GDP per capita. Cross-country "spending → outcome" correlations are heavily confounded by wealth. If effect vanishes after controlling for GDP, the recommendation is bogus.
+- **Sign-flip test**: If simple r is positive but partial r (controlling GDP) is zero or negative, flag as "confounded — insufficient causal evidence"
+- **Within-country YoY as tiebreaker**: If cross-country says positive but within-country YoY says null/reverse, trust the YoY
 
 ### Report Format
 Lead with intuitive findings:
