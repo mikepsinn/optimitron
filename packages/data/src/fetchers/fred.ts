@@ -31,6 +31,26 @@ export const FRED_SERIES = {
   SP500: 'SP500',
   /** Personal Consumption Expenditures Price Index (PCE) */
   PCE_PRICE_INDEX: 'PCEPI',
+
+  // ── US Government Spending by Category (BEA NIPA, billions, annual, 1959+) ──
+  /** Total government education spending (federal + state + local, billions) */
+  GOV_EDUCATION_SPENDING: 'G160291A027NBEA',
+  /** Federal-only education spending (billions) */
+  FED_EDUCATION_SPENDING: 'G160681A027NBEA',
+  /** Total government health spending (federal + state + local, billions) */
+  GOV_HEALTH_SPENDING: 'G160271A027NBEA',
+  /** Federal national defense spending (billions) */
+  FED_MILITARY_SPENDING: 'G160461A027NBEA',
+  /** Federal nondefense spending (billions) */
+  FED_NONDEFENSE_SPENDING: 'G160471A027NBEA',
+  /** Total government social benefits (billions) */
+  GOV_SOCIAL_BENEFITS: 'W823RC1Q027SBEA',
+  /** Government consumption expenditures & gross investment (billions) */
+  GOV_TOTAL_SPENDING: 'GCE',
+  /** Population (for per-capita conversion) */
+  US_POPULATION: 'POPTHM',
+  /** Real GDP (billions, 2017 dollars) — for inflation-adjusted comparisons */
+  REAL_GDP: 'GDPC1',
 } as const;
 
 export type FREDSeriesKey = keyof typeof FRED_SERIES;
@@ -164,4 +184,50 @@ export async function fetchInflation(options: FetchOptions = {}): Promise<DataPo
  */
 export async function fetchGDPGrowth(options: FetchOptions = {}): Promise<DataPoint[]> {
   return fetchFREDSeries(FRED_SERIES.GDP_GROWTH, options);
+}
+
+// ─── US Government Spending by Category (FRED/BEA) ──────────────────
+
+/**
+ * Fetch total US government education spending (billions, annual, 1959+).
+ * Includes federal + state + local government education expenditures.
+ */
+export async function fetchUSEducationSpending(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.GOV_EDUCATION_SPENDING, options);
+}
+
+/**
+ * Fetch US federal-only education spending (billions, annual, 1959+).
+ */
+export async function fetchUSFedEducationSpending(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.FED_EDUCATION_SPENDING, options);
+}
+
+/**
+ * Fetch total US government health spending (billions, annual, 1959+).
+ * Includes Medicare, Medicaid, VA, public health — all levels of government.
+ */
+export async function fetchUSHealthSpending(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.GOV_HEALTH_SPENDING, options);
+}
+
+/**
+ * Fetch US federal military spending (billions, annual, 1959+).
+ */
+export async function fetchUSMilitarySpending(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.FED_MILITARY_SPENDING, options);
+}
+
+/**
+ * Fetch US median household income (annual).
+ */
+export async function fetchUSMedianIncome(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.MEDIAN_INCOME, options);
+}
+
+/**
+ * Fetch US real GDP (billions, 2017 dollars, quarterly).
+ */
+export async function fetchUSRealGDP(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchFREDSeries(FRED_SERIES.REAL_GDP, options);
 }
