@@ -12,17 +12,17 @@
 - [x] Incarceration rate → crime rates (`us-incarceration.ts`)
 - [x] Gun ownership / NICS checks → homicide (`us-gun-data.ts`)
 
-## Phase 2: Analyses Run
+## Phase 2: Analyses ✅ COMPLETE
 - [x] Drug war → overdose analysis (commit `886e061`)
 - [x] Drug war → crime analysis (commit `ada32d2`)
 - [x] Immigration enforcement → income analysis (commit `bbd06e1`)
 - [x] Tariff → income / inflation analysis (commit `bbd06e1`)
-- [x] Laffer curve analysis (Telegram msg 1272)
-- [x] Minimum wage analysis (Telegram msg 1270)
-- [x] Healthcare spending analysis (Telegram msg 1271)
-- [ ] Police spending → crime analysis
-- [ ] Incarceration → crime analysis
-- [ ] Gun ownership → homicide analysis
+- [x] Laffer curve analysis — Hauser's Law confirmed, revenue stays 15-20% GDP at any top rate
+- [x] Minimum wage analysis — results sent to Telegram
+- [x] Healthcare spending analysis — US spends 2.2x OECD avg, 2.4 fewer years LE
+- [x] Police spending → crime — crime drives spending (reactive), not preventive. All Grade F.
+- [x] Incarceration → crime — near-zero YoY correlations (r=0.09-0.23). Crime drives policy, not reverse.
+- [x] Gun ownership → homicide — all Grade F, only 23 data points. Need state-level panel data.
 
 ## Phase 3: Tier 2 Datasets + Analyses
 - [ ] Death penalty → homicide rate
