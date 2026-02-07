@@ -22,4 +22,6 @@ export * from './us-outcomes.js';
 export * from './us-abstinence-education.js';
 export * from './us-budget-categories.js';
 export * from './us-foreign-aid.js';
-export * from './us-death-penalty.js';export * from './us-climate-spending.js';
+export * from './us-death-penalty.js';
+export * from './us-climate-spending.js';
+export * from './oecd-budget-panel.js';
