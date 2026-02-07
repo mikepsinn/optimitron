@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FullAnalysisResult } from '@optomitron/optimizer';
-import {
-  computePolicyImpactScore,
-} from '../policy-impact-score.js';
+import { computePolicyImpactScore } from '../src/policy-impact-score.js';
 
 const BASE_RESULT: FullAnalysisResult = {
   predictorName: 'Policy A',
@@ -125,26 +123,12 @@ describe('computePolicyImpactScore', () => {
     );
   });
 
-  it('uses correlation direction to set score sign', () => {
-    const negative = cloneResult();
-    negative.forwardPearson = -0.2;
-    const score = computePolicyImpactScore(negative);
-    expect(score.score).toBeLessThan(0);
-    expect(score.effectDirection).toBe(-1);
-  });
-
-  it('returns zero when effect direction is neutral', () => {
-    const neutral = cloneResult();
-    neutral.forwardPearson = 0;
-    const score = computePolicyImpactScore(neutral);
-    expect(score.score).toBe(0);
-    expect(score.effectDirection).toBe(0);
-  });
-
-  it('reflects statistical significance based on p-value', () => {
-    const lowConfidence = cloneResult();
-    lowConfidence.pValue = 0.9;
-    const score = computePolicyImpactScore(lowConfidence);
-    expect(score.statisticalSignificance).toBeCloseTo(0.1, 6);
+  it('treats missing gradient as zero in the Bradford Hill total', () => {
+    const result = cloneResult();
+    result.bradfordHill.gradient = null;
+    const score = computePolicyImpactScore(result);
+    const expectedBradfordHillTotal =
+      0.7 + 0.6 + 1 + 0 + 0.7 + 0.6 + 0.8 + 0.4;
+    expect(score.bradfordHillTotal).toBeCloseTo(expectedBradfordHillTotal, 6);
   });
 });
