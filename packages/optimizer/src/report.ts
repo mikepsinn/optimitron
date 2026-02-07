@@ -44,8 +44,10 @@ function describeEvidenceGrade(grade: string): string {
  * Describe predictive Pearson direction.
  */
 function describePredictiveDirection(predictivePearson: number): string {
-  if (predictivePearson > 0.05) return 'correct direction confirmed';
-  if (predictivePearson < -0.05) return 'reverse direction — outcome may drive predictor';
+  if (predictivePearson > 0.2) return 'strong forward causation — predictor drives outcome';
+  if (predictivePearson > 0.05) return 'weak forward causation';
+  if (predictivePearson < -0.2) return 'strong reverse causation — outcome drives predictor';
+  if (predictivePearson < -0.05) return 'weak reverse causation — outcome may drive predictor';
   return 'no clear directionality';
 }
 
@@ -152,10 +154,10 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   // --- Causality Assessment ---
   lines.push('## Causality Assessment');
   lines.push('');
-  lines.push(`- Forward Pearson: ${fmt(forwardPearson)}`);
-  lines.push(`- Reverse Pearson: ${fmt(reversePearson)}`);
+  lines.push(`- Forward Pearson (predictor → outcome): ${fmt(forwardPearson)}`);
+  lines.push(`- Reverse Pearson (outcome → predictor): ${fmt(reversePearson)}`);
   lines.push(
-    `- Predictive Pearson: ${fmt(predictivePearson)} (${describePredictiveDirection(predictivePearson)})`,
+    `- Causal Direction Score (forward − reverse): ${fmt(predictivePearson)} (${describePredictiveDirection(predictivePearson)})`,
   );
   lines.push(`- Bradford Hill Score: ${fmt(bhTotal, 1)}/9`);
   lines.push(`- p-value: ${pValue < 0.001 ? '< 0.001' : fmt(pValue, 4)}`);

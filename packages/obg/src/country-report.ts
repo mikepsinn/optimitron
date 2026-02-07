@@ -182,7 +182,7 @@ export function generateCountryAnalysisReport(
       lines.push(`- **Effect size**: z = ${fmt(a.effectSize.zScore)} (${Math.abs(a.effectSize.zScore) < 1 ? 'small' : Math.abs(a.effectSize.zScore) < 2 ? 'medium' : 'large'} effect)`);
       lines.push(`- **Optimal value**: ${formatUsd(a.optimalValues.valuePredictingHighOutcome)} associated with highest outcome`);
       lines.push(`- **Correlation**: r = ${fmt(a.forwardPearson)} (${describeStrength(a.forwardPearson)})`);
-      lines.push(`- **Predictive Pearson**: ${fmt(a.predictivePearson)} — ${a.predictivePearson > 0.05 ? 'predictor drives outcome' : a.predictivePearson < -0.05 ? 'outcome may drive predictor (reverse causation)' : 'no clear causal direction'}`);
+      lines.push(`- **Causal Direction Score** (forward − reverse): ${fmt(a.predictivePearson)} — ${a.predictivePearson > 0.2 ? '✅ strong forward causation (predictor → outcome)' : a.predictivePearson > 0.05 ? 'weak forward causation' : a.predictivePearson < -0.2 ? '🔄 strong reverse causation (outcome → predictor)' : a.predictivePearson < -0.05 ? '🔄 weak reverse causation' : '⚪ no clear causal direction'}`);
       lines.push(`- **Data points**: ${a.numberOfPairs} aligned pairs`);
       lines.push('');
 

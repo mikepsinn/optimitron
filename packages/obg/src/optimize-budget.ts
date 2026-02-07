@@ -84,6 +84,7 @@ export interface CategoryOptimizationResult {
   /** Total countries analyzed */
   countriesAnalyzed: number;
   /** Mean forward Pearson */
+  /** Mean Pearson r across countries (predictor → outcome direction) */
   meanForwardPearson: number;
   /** Outcome description */
   outcomeDescription: string;
@@ -378,7 +379,15 @@ export function generateOptimalBudgetReport(result: OptimalBudgetResult): string
 
     if (c.targetJurisdictionResult) {
       const a = c.targetJurisdictionResult.analysis;
+      const predDir = a.predictivePearson > 0.2 ? '✅ forward causation (spending → outcome)'
+        : a.predictivePearson > 0.05 ? 'weak forward causation'
+        : a.predictivePearson < -0.2 ? '🔄 reverse causation (outcome → spending)'
+        : a.predictivePearson < -0.05 ? 'weak reverse causation'
+        : '⚪ no clear causal direction';
       lines.push(`**${result.jurisdictionName} specifically:**`);
+      lines.push(`- Correlation (predictor → outcome): r = ${a.forwardPearson.toFixed(3)}`);
+      lines.push(`- Correlation (outcome → predictor): r = ${a.reversePearson.toFixed(3)}`);
+      lines.push(`- Causal Direction Score: ${a.predictivePearson.toFixed(3)} — ${predDir}`);
       lines.push(`- Baseline outcome: ${a.baselineFollowup.outcomeBaselineAverage.toFixed(2)} → Follow-up: ${a.baselineFollowup.outcomeFollowUpAverage.toFixed(2)} (${a.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline.toFixed(2)}% change)`);
       lines.push(`- Optimal spending level: ${fmtUsd(a.optimalValues.valuePredictingHighOutcome)}`);
       lines.push(`- z-score: ${a.effectSize.zScore.toFixed(2)}`);

@@ -373,16 +373,16 @@ describe('generateMarkdownReport', () => {
   });
 
   it('contains Forward Pearson value', () => {
-    expect(report).toContain('Forward Pearson:');
+    expect(report).toContain('Forward Pearson (predictor → outcome)');
     expect(report).toContain(result.forwardPearson.toFixed(2));
   });
 
   it('contains Reverse Pearson value', () => {
-    expect(report).toContain('Reverse Pearson:');
+    expect(report).toContain('Reverse Pearson (outcome → predictor)');
   });
 
   it('contains Predictive Pearson value', () => {
-    expect(report).toContain('Predictive Pearson:');
+    expect(report).toContain('Causal Direction Score (forward − reverse)');
   });
 
   it('contains Bradford Hill Score', () => {

@@ -214,6 +214,6 @@ describe('generateCountryAnalysisReport', () => {
 
     expect(report).toContain('### Alphaland Deep Dive');
     expect(report).toContain('Correlation');
-    expect(report).toContain('Predictive Pearson');
+    expect(report).toContain('Causal Direction Score');
   });
 });
