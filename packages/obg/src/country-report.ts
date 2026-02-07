@@ -84,16 +84,16 @@ export function generateCountryAnalysisReport(
   lines.push('| Metric | Value |');
   lines.push('|--------|-------|');
   lines.push(`| Jurisdictions analyzed | ${agg.n} |`);
-  lines.push(`| Mean within-jurisdiction correlation | r = ${fmt(agg.meanForwardPearson)} |`);
-  lines.push(`| Median within-jurisdiction correlation | r = ${fmt(agg.medianForwardPearson)} |`);
-  lines.push(`| Positive correlation | ${agg.positiveCount}/${agg.n} (${((agg.positiveCount / agg.n) * 100).toFixed(0)}%) |`);
-  lines.push(`| Negative correlation | ${agg.negativeCount}/${agg.n} |`);
-  lines.push(`| Mean effect size (z-score) | ${fmt(agg.meanEffectSize)} |`);
-  lines.push(`| Mean outcome change from baseline | ${fmt(agg.meanPercentChange, 2)}% |`);
-  lines.push(`| Mean Predictor Impact Score | ${fmt(agg.meanPIS * 100, 1)}/100 |`);
+  lines.push(`| **Mean outcome change from baseline** | **${fmt(agg.meanPercentChange, 2)}%** |`);
+  lines.push(`| **Mean effect size (z-score)** | **${fmt(agg.meanEffectSize)}** |`);
   lines.push(`| Mean optimal predictor value | ${formatUsd(agg.meanOptimalValue)} |`);
+  lines.push(`| Jurisdictions with positive effect | ${agg.positiveCount}/${agg.n} (${((agg.positiveCount / agg.n) * 100).toFixed(0)}%) |`);
+  lines.push(`| Jurisdictions with negative effect | ${agg.negativeCount}/${agg.n} |`);
+  lines.push(`| Mean within-jurisdiction correlation | r = ${fmt(agg.meanForwardPearson)} |`);
   lines.push(`| Onset delay | ${config.onsetDelayDays} days |`);
   lines.push(`| Duration of action | ${config.durationOfActionDays} days |`);
+  lines.push('');
+  lines.push('*Change from baseline measures how much the outcome changes when the predictor is above vs below its own mean within each jurisdiction. This is more robust than Pearson correlation: no normality assumption, works for binary policy changes, and the z-score normalizes across different scales.*');
   lines.push('');
 
   // ─── Bradford Hill ───────────────────────────────────────────────
@@ -116,28 +116,30 @@ export function generateCountryAnalysisReport(
   lines.push('');
 
   // ─── Individual Results Table ────────────────────────────────────
+  // Sort by z-score (effect size) — more meaningful than Pearson for policy analysis
   const sorted = [...jurisdictions].sort((a, b) =>
-    b.analysis.pis.score - a.analysis.pis.score
+    Math.abs(b.analysis.effectSize.zScore) - Math.abs(a.analysis.effectSize.zScore)
   );
 
   lines.push('## Individual Jurisdiction Results');
   lines.push('');
-  lines.push('Sorted by Predictor Impact Score (strongest evidence first):');
+  lines.push('Sorted by effect size (z-score). Change from baseline is the primary metric:');
+  lines.push('when the predictor is above its mean, how much does the outcome change?');
   lines.push('');
-  lines.push('| Jurisdiction | Forward r | Predictive r | z-score | % Change | Optimal Value | PIS | Grade |');
-  lines.push('|-------------|-----------|-------------|---------|----------|--------------|-----|-------|');
+  lines.push('| Jurisdiction | % Change from Baseline | z-score | Baseline Avg | Follow-up Avg | Optimal Value | Forward r |');
+  lines.push('|-------------|----------------------|---------|-------------|--------------|--------------|-----------|');
 
   for (const r of sorted) {
     const a = r.analysis;
+    const bfu = a.baselineFollowup;
     lines.push(
       `| ${r.jurisdictionName} ` +
-      `| ${fmt(a.forwardPearson)} ` +
-      `| ${fmt(a.predictivePearson)} ` +
+      `| ${fmt(bfu.outcomeFollowUpPercentChangeFromBaseline, 2)}% ` +
       `| ${fmt(a.effectSize.zScore)} ` +
-      `| ${fmt(a.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline, 2)}% ` +
+      `| ${fmt(bfu.outcomeBaselineAverage, 2)} ` +
+      `| ${fmt(bfu.outcomeFollowUpAverage, 2)} ` +
       `| ${formatUsd(a.optimalValues.valuePredictingHighOutcome)} ` +
-      `| ${fmt(a.pis.score * 100, 1)} ` +
-      `| ${a.pis.evidenceGrade} |`
+      `| ${fmt(a.forwardPearson)} |`
     );
   }
   lines.push('');
@@ -176,12 +178,11 @@ export function generateCountryAnalysisReport(
       const a = highlighted.analysis;
       lines.push(`### ${highlighted.jurisdictionName} Deep Dive`);
       lines.push('');
-      lines.push(`- **Forward correlation**: r = ${fmt(a.forwardPearson)} (${describeStrength(a.forwardPearson)})`);
-      lines.push(`- **Predictive Pearson**: ${fmt(a.predictivePearson)} — ${a.predictivePearson > 0.05 ? 'predictor drives outcome' : a.predictivePearson < -0.05 ? 'outcome may drive predictor (reverse causation)' : 'no clear causal direction'}`);
-      lines.push(`- **Effect size**: z = ${fmt(a.effectSize.zScore)}`);
-      lines.push(`- **Baseline → Follow-up**: ${result.outcomeName} went from ${fmt(a.baselineFollowup.outcomeBaselineAverage, 2)} to ${fmt(a.baselineFollowup.outcomeFollowUpAverage, 2)} (${fmt(a.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline, 2)}% change)`);
+      lines.push(`- **Change from baseline**: ${result.outcomeName} went from **${fmt(a.baselineFollowup.outcomeBaselineAverage, 2)}** (when ${result.predictorName} below average) to **${fmt(a.baselineFollowup.outcomeFollowUpAverage, 2)}** (when above average) — **${fmt(a.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline, 2)}% change**`);
+      lines.push(`- **Effect size**: z = ${fmt(a.effectSize.zScore)} (${Math.abs(a.effectSize.zScore) < 1 ? 'small' : Math.abs(a.effectSize.zScore) < 2 ? 'medium' : 'large'} effect)`);
       lines.push(`- **Optimal value**: ${formatUsd(a.optimalValues.valuePredictingHighOutcome)} associated with highest outcome`);
-      lines.push(`- **Evidence grade**: ${a.pis.evidenceGrade}`);
+      lines.push(`- **Correlation**: r = ${fmt(a.forwardPearson)} (${describeStrength(a.forwardPearson)})`);
+      lines.push(`- **Predictive Pearson**: ${fmt(a.predictivePearson)} — ${a.predictivePearson > 0.05 ? 'predictor drives outcome' : a.predictivePearson < -0.05 ? 'outcome may drive predictor (reverse causation)' : 'no clear causal direction'}`);
       lines.push(`- **Data points**: ${a.numberOfPairs} aligned pairs`);
       lines.push('');
 

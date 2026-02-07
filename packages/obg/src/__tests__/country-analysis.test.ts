@@ -213,7 +213,7 @@ describe('generateCountryAnalysisReport', () => {
     });
 
     expect(report).toContain('### Alphaland Deep Dive');
-    expect(report).toContain('Forward correlation');
+    expect(report).toContain('Correlation');
     expect(report).toContain('Predictive Pearson');
   });
 });
