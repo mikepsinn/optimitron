@@ -11,3 +11,5 @@ export * from './policy-exemplars.js';
 export * from './to-time-series.js';
 export * from './us-drug-war.js';
 export * from './us-immigration-tariffs.js';
+export * from './us-minimum-wage.js';
+export * from './us-laffer-curve.js';
