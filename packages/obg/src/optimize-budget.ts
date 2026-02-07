@@ -51,6 +51,13 @@ export interface BudgetOptimizationInput {
   totalBudgetUsd: number;
   /** Budget categories with data */
   categories: BudgetCategoryInput[];
+  /**
+   * Population of the target jurisdiction.
+   * When provided, converts per-capita optimal values from cross-country
+   * analysis back to total budget amounts.
+   * When omitted, assumes spending series are already in total (not per-capita) units.
+   */
+  population?: number;
   /** Analysis config overrides */
   config?: Partial<CountryAnalysisConfig>;
 }
@@ -127,6 +134,7 @@ function analyzeCategory(
   category: BudgetCategoryInput,
   targetJurisdictionId: string,
   config: CountryAnalysisConfig,
+  input: BudgetOptimizationInput,
 ): CategoryOptimizationResult {
   const results: JurisdictionResult[] = [];
   let targetResult: JurisdictionResult | null = null;
@@ -189,10 +197,16 @@ function analyzeCategory(
   ).length;
 
   // The optimal spending for the target jurisdiction:
-  // Use the target's own optimal if available, else use cross-country mean
-  const optimalSpendingUsd = targetResult
+  // Use the target's own optimal if available, else use cross-country mean.
+  // The analysis returns per-capita values from cross-country data.
+  // If population is provided, convert per-capita → total budget.
+  const optimalPerUnit = targetResult
     ? targetResult.analysis.optimalValues.valuePredictingHighOutcome
     : meanOptimal;
+
+  const optimalSpendingUsd = input.population
+    ? optimalPerUnit * input.population
+    : optimalPerUnit;
 
   const gapUsd = optimalSpendingUsd - category.currentSpendingUsd;
   const gapPct = category.currentSpendingUsd > 0
@@ -234,7 +248,7 @@ export function optimizeBudget(input: BudgetOptimizationInput): OptimalBudgetRes
 
   // Analyze each category
   const categoryResults = input.categories.map(cat =>
-    analyzeCategory(cat, input.jurisdictionId, config),
+    analyzeCategory(cat, input.jurisdictionId, config, input),
   );
 
   // Calculate total optimal

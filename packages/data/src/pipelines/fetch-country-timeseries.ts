@@ -11,7 +11,13 @@
 
 import type { DataPoint } from '../types.js';
 import type { TimeSeries, Measurement } from '@optomitron/optimizer';
-import { fetchLifeExpectancy, fetchGdpPerCapita, fetchHealthExpenditure } from '../fetchers/world-bank.js';
+import {
+  fetchLifeExpectancy, fetchGdpPerCapita, fetchHealthExpenditure,
+  fetchGovHealthExpenditure, fetchPrivateHealthExpenditure, fetchOutOfPocketHealth,
+  fetchTaxRevenue, fetchGovExpenditure, fetchMilitaryExpenditure,
+  fetchRDExpenditure, fetchEducationExpenditure, fetchGiniIndex,
+  fetchInfantMortality, fetchHomicideRate, fetchGniPerCapita,
+} from '../fetchers/world-bank.js';
 import { fetchWHOLifeExpectancy, fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who.js';
 import { fetchFREDSeries } from '../fetchers/fred.js';
 
@@ -186,6 +192,114 @@ export async function fetchAllCountryData(
   } catch (e) {
     console.log(`     ⚠️ Failed: ${e}`);
   }
+
+  // 6. Government health expenditure (% GDP) — the policy lever
+  try {
+    console.log('  📊 World Bank: Government health expenditure...');
+    const govHealthData = await fetchGovHealthExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(govHealthData, 'gov_health_expenditure_pct_gdp', 'Government Health Expenditure (% GDP)'), 'gov_health_expenditure_pct_gdp');
+    sources.push('World Bank WDI (SH.XPD.GHED.GD.ZS)');
+    console.log(`     ✅ ${govHealthData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 7. Private health expenditure (% of total health)
+  try {
+    console.log('  📊 World Bank: Private health expenditure...');
+    const privHealthData = await fetchPrivateHealthExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(privHealthData, 'private_health_expenditure_pct', 'Private Health Expenditure (% of Total)'), 'private_health_expenditure_pct');
+    sources.push('World Bank WDI (SH.XPD.PVTD.CH.ZS)');
+    console.log(`     ✅ ${privHealthData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 8. Out-of-pocket (% of total health)
+  try {
+    console.log('  📊 World Bank: Out-of-pocket health...');
+    const oopData = await fetchOutOfPocketHealth(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(oopData, 'out_of_pocket_health_pct', 'Out-of-Pocket Health (% of Total)'), 'out_of_pocket_health_pct');
+    sources.push('World Bank WDI (SH.XPD.OOPC.CH.ZS)');
+    console.log(`     ✅ ${oopData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 9. Tax revenue (% GDP)
+  try {
+    console.log('  📊 World Bank: Tax revenue...');
+    const taxData = await fetchTaxRevenue(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(taxData, 'tax_revenue_pct_gdp', 'Tax Revenue (% GDP)'), 'tax_revenue_pct_gdp');
+    sources.push('World Bank WDI (GC.TAX.TOTL.GD.ZS)');
+    console.log(`     ✅ ${taxData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 10. Government expenditure (% GDP)
+  try {
+    console.log('  📊 World Bank: Government expenditure...');
+    const govExpData = await fetchGovExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(govExpData, 'gov_expenditure_pct_gdp', 'Government Expenditure (% GDP)'), 'gov_expenditure_pct_gdp');
+    sources.push('World Bank WDI (GC.XPN.TOTL.GD.ZS)');
+    console.log(`     ✅ ${govExpData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 11. Military expenditure (% GDP)
+  try {
+    console.log('  📊 World Bank: Military expenditure...');
+    const milData = await fetchMilitaryExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(milData, 'military_expenditure_pct_gdp', 'Military Expenditure (% GDP)'), 'military_expenditure_pct_gdp');
+    sources.push('World Bank WDI (MS.MIL.XPND.GD.ZS)');
+    console.log(`     ✅ ${milData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 12. R&D expenditure (% GDP)
+  try {
+    console.log('  📊 World Bank: R&D expenditure...');
+    const rdData = await fetchRDExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(rdData, 'rd_expenditure_pct_gdp', 'R&D Expenditure (% GDP)'), 'rd_expenditure_pct_gdp');
+    sources.push('World Bank WDI (GB.XPD.RSDV.GD.ZS)');
+    console.log(`     ✅ ${rdData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 13. Education expenditure (% GDP)
+  try {
+    console.log('  📊 World Bank: Education expenditure...');
+    const eduData = await fetchEducationExpenditure(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(eduData, 'education_expenditure_pct_gdp', 'Education Expenditure (% GDP)'), 'education_expenditure_pct_gdp');
+    sources.push('World Bank WDI (SE.XPD.TOTL.GD.ZS)');
+    console.log(`     ✅ ${eduData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 14. Gini index (income inequality)
+  try {
+    console.log('  📊 World Bank: Gini index...');
+    const giniData = await fetchGiniIndex(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(giniData, 'gini_index', 'Gini Index (Income Inequality)'), 'gini_index');
+    sources.push('World Bank WDI (SI.POV.GINI)');
+    console.log(`     ✅ ${giniData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 15. Infant mortality
+  try {
+    console.log('  📊 World Bank: Infant mortality...');
+    const imData = await fetchInfantMortality(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(imData, 'infant_mortality', 'Infant Mortality (per 1000 births)'), 'infant_mortality');
+    sources.push('World Bank WDI (SP.DYN.IMRT.IN)');
+    console.log(`     ✅ ${imData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 16. GNI per capita (proxy for disposable income)
+  try {
+    console.log('  📊 World Bank: GNI per capita...');
+    const gniData = await fetchGniPerCapita(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(gniData, 'gni_per_capita', 'GNI per Capita (USD)'), 'gni_per_capita');
+    sources.push('World Bank WDI (NY.GNP.PCAP.CD)');
+    console.log(`     ✅ ${gniData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
+
+  // 17. Homicide rate
+  try {
+    console.log('  📊 World Bank: Homicide rate...');
+    const homData = await fetchHomicideRate(options);
+    mergeIntoCountries(countries, dataPointsToTimeSeries(homData, 'homicide_rate', 'Homicide Rate (per 100K)'), 'homicide_rate');
+    sources.push('World Bank WDI (VC.IHR.PSRC.P5)');
+    console.log(`     ✅ ${homData.length} data points`);
+  } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
 
   // Count unique variables
   const allVars = new Set<string>();

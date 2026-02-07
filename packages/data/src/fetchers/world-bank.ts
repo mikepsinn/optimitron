@@ -44,6 +44,26 @@ export const WB_INDICATOR_CODES = {
   CLEAN_WATER_ACCESS: 'SH.H2O.SMDW.ZS',
   /** Homicide rate (per 100K) */
   HOMICIDE_RATE: 'VC.IHR.PSRC.P5',
+  /** Government health expenditure (% of GDP) — the policy lever */
+  GOV_HEALTH_EXPENDITURE_PCT_GDP: 'SH.XPD.GHED.GD.ZS',
+  /** Private domestic health expenditure (% of current health expenditure) */
+  PRIVATE_HEALTH_EXPENDITURE_PCT: 'SH.XPD.PVTD.CH.ZS',
+  /** Out-of-pocket health expenditure (% of current health expenditure) */
+  OUT_OF_POCKET_HEALTH_PCT: 'SH.XPD.OOPC.CH.ZS',
+  /** Tax revenue (% of GDP) */
+  TAX_REVENUE_PCT_GDP: 'GC.TAX.TOTL.GD.ZS',
+  /** General government revenue (% of GDP) */
+  GOV_REVENUE_PCT_GDP: 'GC.REV.XGRT.GD.ZS',
+  /** General government expenditure (% of GDP) */
+  GOV_EXPENDITURE_PCT_GDP: 'GC.XPN.TOTL.GD.ZS',
+  /** Government debt (% of GDP) */
+  GOV_DEBT_PCT_GDP: 'GC.DOD.TOTL.GD.ZS',
+  /** GNI per capita, Atlas method (current US$) — proxy for disposable income */
+  GNI_PER_CAPITA: 'NY.GNP.PCAP.CD',
+  /** Poverty headcount ratio at $2.15/day (% of population) */
+  POVERTY_RATE: 'SI.POV.DDAY',
+  /** Labor force participation rate (% of total population 15+) */
+  LABOR_FORCE_PARTICIPATION: 'SL.TLF.CACT.ZS',
 } as const;
 
 /** Shape of a single record in the World Bank JSON response */
@@ -243,4 +263,61 @@ export async function fetchInfantMortality(options: FetchOptions = {}): Promise<
  */
 export async function fetchHomicideRate(options: FetchOptions = {}): Promise<DataPoint[]> {
   return fetchWorldBankIndicator(WB_INDICATOR_CODES.HOMICIDE_RATE, options);
+}
+
+/**
+ * Fetch government health expenditure (% of GDP) — the policy lever.
+ * Excludes private insurance, out-of-pocket, etc.
+ */
+export async function fetchGovHealthExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GOV_HEALTH_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch private health expenditure (% of current health expenditure).
+ */
+export async function fetchPrivateHealthExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.PRIVATE_HEALTH_EXPENDITURE_PCT, options);
+}
+
+/**
+ * Fetch out-of-pocket health expenditure (% of current health expenditure).
+ */
+export async function fetchOutOfPocketHealth(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.OUT_OF_POCKET_HEALTH_PCT, options);
+}
+
+/**
+ * Fetch tax revenue (% of GDP).
+ */
+export async function fetchTaxRevenue(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.TAX_REVENUE_PCT_GDP, options);
+}
+
+/**
+ * Fetch general government revenue (% of GDP).
+ */
+export async function fetchGovRevenue(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GOV_REVENUE_PCT_GDP, options);
+}
+
+/**
+ * Fetch general government expenditure (% of GDP).
+ */
+export async function fetchGovExpenditure(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GOV_EXPENDITURE_PCT_GDP, options);
+}
+
+/**
+ * Fetch GNI per capita (Atlas method, current US$).
+ */
+export async function fetchGniPerCapita(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GNI_PER_CAPITA, options);
+}
+
+/**
+ * Fetch poverty rate (% at $2.15/day).
+ */
+export async function fetchPovertyRate(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.POVERTY_RATE, options);
 }
