@@ -2,6 +2,7 @@
  * Re-export all API data fetchers.
  */
 export * from './oecd.js';
+export * from './oecd-direct-outcomes.js';
 export * from './world-bank.js';
 export * from './who.js';
 export * from './fred.js';

@@ -35,6 +35,15 @@ export const OECD_DATASETS = {
     measure: 'B1GQ', // GDP
     unitMeasure: 'USD_PPP', // USD PPP per capita
   },
+  /** PISA Education Outcomes (Science, Reading, Math) */
+  PISA: {
+    // Note: PISA dataflows are often specific to the cycle (e.g. PISA2022).
+    // This is a placeholder for the harmonized trend dataset if available,
+    // or requires updating with the specific cycle ID.
+    dataflow: 'OECD.EDU.PISA,DSD_PISA@DF_PISA_TRND,', 
+    measure: '_T', // Total (average)
+    unitMeasure: 'AVSCORE', // Average Score
+  },
 } as const;
 
 export type OECDDatasetKey = keyof typeof OECD_DATASETS;
@@ -227,4 +236,20 @@ export async function fetchOECDGdpPerCapita(
   const ds = OECD_DATASETS.GDP_PER_CAPITA;
   const filter = `${countries}.${ds.measure}.${ds.unitMeasure}`;
   return fetchOECDData(ds.dataflow, filter, options, 'OECD GDP Per Capita');
+}
+
+/**
+ * Fetch PISA average scores (Science, Reading, Math) for given countries.
+ * Note: This fetches the trend dataset.
+ */
+export async function fetchPisaScores(
+  options: FetchOptions = {},
+): Promise<DataPoint[]> {
+  const { jurisdictions } = options;
+  const countries = jurisdictions?.join('+') ?? '';
+  const ds = OECD_DATASETS.PISA;
+  // Filter for Total (Both Sexes) and Average Score. 
+  // SUBJECT needs to be expanded or specific. Using _T for now to match generic fetch.
+  const filter = `${countries}.${ds.measure}.${ds.unitMeasure}`;
+  return fetchOECDData(ds.dataflow, filter, options, 'OECD PISA Scores');
 }
