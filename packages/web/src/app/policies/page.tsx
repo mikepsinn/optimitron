@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import policyData from "@/data/us-policy-analysis.json";
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 interface BradfordHillScores {
   strength: number;
@@ -125,7 +133,7 @@ export default function PoliciesPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="text-black font-black truncate">{policy.name}</h3>
+                    <Link href={`/policies/${slugify(policy.name)}`} className="text-black font-black truncate hover:text-pink-500 transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
                     <GradeBadge grade={policy.evidenceGrade} />
                     <span className="text-xs text-black/50 px-2 py-0.5 bg-gray-100 border border-black font-bold">
                       {policy.category.replace(/_/g, " ")}
@@ -210,6 +218,14 @@ export default function PoliciesPage() {
                     </div>
                   </div>
                 </div>
+
+                <Link
+                  href={`/policies/${slugify(policy.name)}`}
+                  className="inline-block mt-2 border-2 border-black bg-pink-500 text-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  View Full Analysis →
+                </Link>
               </div>
             )}
           </div>

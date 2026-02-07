@@ -1,6 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import budgetData from "@/data/us-budget-analysis.json";
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 interface Category {
   name: string;
@@ -87,7 +95,7 @@ export default function BudgetPage() {
         <h2 className="section-title">📊 Current vs Optimal Spending</h2>
         <div className="space-y-4">
           {sorted.map((cat) => (
-            <div key={cat.name} className="card">
+            <Link key={cat.name} href={`/budget/${slugify(cat.name)}`} className="card block hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-shadow">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                 <h3 className="text-sm font-black text-black">{cat.name}</h3>
                 <span
@@ -122,7 +130,7 @@ export default function BudgetPage() {
                   <span className="text-xs text-black/60 w-20 text-right font-bold">{fmt(cat.optimalSpending)}</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -144,8 +152,8 @@ export default function BudgetPage() {
             </thead>
             <tbody>
               {sorted.map((cat) => (
-                <tr key={cat.name} className="border-b border-black hover:bg-cyan-50">
-                  <td className="py-3 px-2 text-black font-bold">{cat.name}</td>
+                <tr key={cat.name} className="border-b border-black hover:bg-cyan-50 cursor-pointer">
+                  <td className="py-3 px-2 text-black font-bold underline">{cat.name}</td>
                   <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.currentSpending)}</td>
                   <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.optimalSpending)}</td>
                   <td className={`py-3 px-2 text-right font-black ${cat.gap >= 0 ? "text-emerald-600" : "text-red-600"}`}>

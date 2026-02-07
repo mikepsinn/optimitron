@@ -1,9 +1,6 @@
 import Link from "next/link";
 import policyData from "@/data/us-policy-analysis.json";
-
-/* ------------------------------------------------------------------ */
-/*  Types                                                             */
-/* ------------------------------------------------------------------ */
+import { slugify } from "@/lib/slugify";
 
 interface BradfordHillScores {
   strength: number;
@@ -30,369 +27,210 @@ interface Policy {
   incomeEffect: number;
   healthEffect: number;
   bradfordHillScores: BradfordHillScores;
-  rationale: string;
+  rationale?: string;
   currentStatus?: string;
   recommendedTarget?: string;
-  blockingFactors: string[];
+  blockingFactors?: string[];
 }
 
-interface PolicyDataType {
+interface PolicyData {
   jurisdiction: string;
-  analysisDate: string;
   policies: Policy[];
-  topRecommendations: string[];
   generatedAt: string;
 }
 
-const data = policyData as PolicyDataType;
+const data = policyData as PolicyData;
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                           */
-/* ------------------------------------------------------------------ */
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+export function generateStaticParams() {
+  return data.policies.map((p) => ({ slug: slugify(p.name) }));
 }
 
-const BRADFORD_HILL_CRITERIA: Record<string, string> = {
-  strength:
-    "How large is the association between the policy and the outcome? Larger effect sizes increase confidence in causation.",
-  consistency:
-    "Has the relationship been observed across different populations, settings, and times? Replication strengthens causal claims.",
-  temporality:
-    "Does the policy change precede the outcome change? Temporal ordering is a necessary condition for causation.",
-  gradient:
-    "Is there a dose-response relationship? More of the policy leads to more of the effect? Gradients support causation.",
-  experiment:
-    "Is there evidence from randomized controlled trials or natural experiments? Experimental evidence is the gold standard.",
-  plausibility:
-    "Is there a plausible mechanism explaining how the policy causes the outcome? Mechanistic understanding increases confidence.",
-  coherence:
-    "Does the causal interpretation fit with existing knowledge? The relationship should not contradict established facts.",
-  analogy:
-    "Are there analogous policies that have produced similar effects? Similar interventions with known effects support the claim.",
-  specificity:
-    "Is the effect specific to this policy rather than a general phenomenon? Specific associations are more likely causal.",
-};
-
 function gradeColor(grade: string): string {
-  switch (grade) {
-    case "A":
-      return "bg-emerald-400 text-black";
-    case "B":
-      return "bg-yellow-300 text-black";
-    case "C":
-      return "bg-orange-400 text-black";
-    default:
-      return "bg-red-400 text-black";
-  }
+  if (grade === "A") return "bg-emerald-400 text-black border-black";
+  if (grade === "B") return "bg-yellow-300 text-black border-black";
+  return "bg-orange-300 text-black border-black";
 }
 
 function gradeLabel(grade: string): string {
-  switch (grade) {
-    case "A":
-      return "Strong Evidence";
-    case "B":
-      return "Moderate Evidence";
-    case "C":
-      return "Limited Evidence";
-    default:
-      return "Insufficient Evidence";
-  }
+  if (grade === "A") return "Strong Evidence";
+  if (grade === "B") return "Moderate Evidence";
+  return "Limited Evidence";
 }
 
-/* ------------------------------------------------------------------ */
-/*  Static params                                                     */
-/* ------------------------------------------------------------------ */
+const bhLabels: Record<string, string> = {
+  strength: "Strength of Association",
+  consistency: "Consistency",
+  temporality: "Temporality",
+  gradient: "Biological Gradient",
+  experiment: "Experiment",
+  plausibility: "Plausibility",
+  coherence: "Coherence",
+  analogy: "Analogy",
+  specificity: "Specificity",
+};
 
-export function generateStaticParams() {
-  return data.policies.map((p) => ({
-    slug: slugify(p.name),
-  }));
+const bhDescriptions: Record<string, string> = {
+  strength: "How strong is the statistical association between the policy and outcome?",
+  consistency: "Has this effect been observed across different populations and settings?",
+  temporality: "Does the policy change precede the outcome change? (Always 1.0 for policies)",
+  gradient: "Does more of the policy produce more of the outcome (dose-response)?",
+  experiment: "Is there experimental or quasi-experimental evidence?",
+  plausibility: "Is there a plausible mechanism explaining how this policy causes the outcome?",
+  coherence: "Does the association fit with existing knowledge?",
+  analogy: "Are there analogous policies with similar effects?",
+  specificity: "Is the effect specific to this policy, or could many factors explain it?",
+};
+
+function barColor(val: number): string {
+  if (val >= 0.8) return "bg-emerald-500";
+  if (val >= 0.6) return "bg-yellow-400";
+  if (val >= 0.4) return "bg-orange-400";
+  return "bg-red-400";
 }
 
-/* ------------------------------------------------------------------ */
-/*  Page                                                              */
-/* ------------------------------------------------------------------ */
+export default function PolicyDetailPage({ params }: { params: { slug: string } }) {
+  const pol = data.policies.find((p) => slugify(p.name) === params.slug);
 
-export default async function PolicyDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const policy = data.policies.find((p) => slugify(p.name) === slug);
-
-  if (!policy) {
+  if (!pol) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <h1 className="text-3xl font-black uppercase text-black mb-4">Policy Not Found</h1>
-        <Link href="/policies" className="text-pink-500 font-bold underline">
-          ← Back to Policy Rankings
-        </Link>
+      <div className="mx-auto max-w-4xl px-4 py-24 text-center">
+        <h1 className="text-3xl font-black text-black mb-4">Policy Not Found</h1>
+        <Link href="/policies" className="text-pink-500 font-bold hover:underline">← Back to Policies</Link>
       </div>
     );
   }
 
-  const bhEntries = Object.entries(policy.bradfordHillScores) as [string, number][];
+  const bhEntries = Object.entries(pol.bradfordHillScores).sort(([, a], [, b]) => b - a);
   const avgBH = bhEntries.reduce((s, [, v]) => s + v, 0) / bhEntries.length;
+
+  // Find rank
+  const sorted = [...data.policies].sort((a, b) => b.policyImpactScore - a.policyImpactScore);
+  const rank = sorted.findIndex((p) => p.name === pol.name) + 1;
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
-      {/* Back link */}
-      <Link
-        href="/policies"
-        className="inline-block mb-6 text-sm font-bold text-black/50 hover:text-black transition-colors"
-      >
-        ← Back to Policy Rankings
+      <Link href="/policies" className="text-sm font-bold text-black/50 hover:text-pink-500 transition-colors mb-6 inline-block uppercase">
+        ← All Policies
       </Link>
 
       {/* Hero */}
-      <div className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 sm:p-8 mb-8">
-        <div className="flex flex-wrap items-start gap-3 mb-4">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight text-black">
-            {policy.name}
-          </h1>
-          <span
-            className={`inline-block border-2 border-black px-3 py-1 text-sm font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${gradeColor(
-              policy.evidenceGrade
-            )}`}
-          >
-            Grade {policy.evidenceGrade} — {gradeLabel(policy.evidenceGrade)}
+      <div className="bg-white border-4 border-black p-8 mb-8" style={{ boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)" }}>
+        <div className="flex flex-wrap items-start gap-4 mb-4">
+          <span className={`text-sm font-black px-3 py-1 border-2 ${gradeColor(pol.evidenceGrade)}`}>
+            Grade {pol.evidenceGrade} — {gradeLabel(pol.evidenceGrade)}
+          </span>
+          <span className="text-sm font-bold text-black/50">
+            Rank #{rank} of {data.policies.length}
           </span>
         </div>
-        <p className="text-black/60 font-medium mb-6">{policy.description}</p>
+        <h1 className="text-3xl md:text-4xl font-black uppercase text-black mb-3">{pol.name}</h1>
+        <p className="text-black/70 font-medium">{pol.description}</p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="border-2 border-black p-4 bg-pink-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase opacity-80 mb-1">Welfare Score</div>
-            <div className="text-2xl sm:text-3xl font-black">+{policy.welfareScore}</div>
+        <div className="flex flex-wrap gap-6 mt-6">
+          <div>
+            <div className="text-xs font-black uppercase text-black/50">Causal Confidence</div>
+            <div className="text-3xl font-black text-black">{(pol.causalConfidenceScore * 100).toFixed(0)}%</div>
           </div>
-          <div className="border-2 border-black p-4 bg-cyan-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-black/60 mb-1">Causal Confidence</div>
-            <div className="text-2xl sm:text-3xl font-black text-black">
-              {(policy.causalConfidenceScore * 100).toFixed(0)}%
-            </div>
+          <div>
+            <div className="text-xs font-black uppercase text-black/50">Policy Impact</div>
+            <div className="text-3xl font-black text-pink-500">{(pol.policyImpactScore * 100).toFixed(0)}%</div>
           </div>
-          <div className="border-2 border-black p-4 bg-yellow-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-black/60 mb-1">Policy Impact</div>
-            <div className="text-2xl sm:text-3xl font-black text-black">
-              {(policy.policyImpactScore * 100).toFixed(0)}%
-            </div>
-          </div>
-          <div className="border-2 border-black p-4 bg-emerald-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-black/60 mb-1">BH Average</div>
-            <div className="text-2xl sm:text-3xl font-black text-black">
-              {(avgBH * 100).toFixed(0)}%
-            </div>
+          <div>
+            <div className="text-xs font-black uppercase text-black/50">Welfare Score</div>
+            <div className="text-3xl font-black text-cyan-600">{pol.welfareScore}</div>
           </div>
         </div>
       </div>
 
+      {/* Impact Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white border-2 border-black p-6" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+          <h3 className="text-sm font-black uppercase text-black/50 mb-1">💰 Income Effect</h3>
+          <div className="text-4xl font-black text-black">{pol.incomeEffect > 0 ? "+" : ""}{(pol.incomeEffect * 100).toFixed(0)}%</div>
+          <p className="text-xs text-black/50 mt-1">Expected change in economic outcomes</p>
+        </div>
+        <div className="bg-white border-2 border-black p-6" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+          <h3 className="text-sm font-black uppercase text-black/50 mb-1">❤️ Health Effect</h3>
+          <div className="text-4xl font-black text-black">{pol.healthEffect > 0 ? "+" : ""}{(pol.healthEffect * 100).toFixed(0)}%</div>
+          <p className="text-xs text-black/50 mt-1">Expected change in health outcomes</p>
+        </div>
+      </div>
+
+      {/* Rationale */}
+      {pol.rationale && (
+        <div className="bg-yellow-50 border-2 border-black p-6 mb-8" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+          <h2 className="text-lg font-black uppercase text-black mb-2">💡 Rationale</h2>
+          <p className="text-black/80 font-medium">{pol.rationale}</p>
+          {pol.currentStatus && (
+            <div className="mt-3 text-sm">
+              <span className="font-black text-black/50">Current: </span>
+              <span className="text-black/70">{pol.currentStatus}</span>
+            </div>
+          )}
+          {pol.recommendedTarget && (
+            <div className="text-sm">
+              <span className="font-black text-black/50">Target: </span>
+              <span className="text-pink-600 font-bold">{pol.recommendedTarget}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Bradford Hill Scores */}
-      <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">
-          📊 Bradford Hill Criteria Scores
-        </h2>
-        <div className="space-y-3">
+      <div className="bg-white border-2 border-black p-6 mb-8" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-black uppercase text-black">🔬 Bradford Hill Criteria</h2>
+          <span className="text-sm font-black text-black/50">Avg: {(avgBH * 100).toFixed(0)}%</span>
+        </div>
+        <div className="space-y-4">
           {bhEntries.map(([key, val]) => (
             <div key={key}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-bold text-black capitalize">{key}</span>
-                <span className="text-sm font-black text-black">
-                  {(val * 100).toFixed(0)}%
-                </span>
+                <span className="text-sm font-bold text-black">{bhLabels[key] || key}</span>
+                <span className="text-sm font-black text-black">{(val * 100).toFixed(0)}%</span>
               </div>
-              <div className="h-6 bg-gray-100 border-2 border-black overflow-hidden">
-                <div
-                  className={`h-full ${
-                    val >= 0.8
-                      ? "bg-emerald-400"
-                      : val >= 0.5
-                        ? "bg-yellow-300"
-                        : "bg-red-300"
-                  }`}
-                  style={{ width: `${val * 100}%` }}
-                />
+              <div className="h-6 bg-gray-100 border-2 border-black relative">
+                <div className={`h-full ${barColor(val)}`} style={{ width: `${val * 100}%` }} />
               </div>
+              <p className="text-xs text-black/40 mt-0.5">{bhDescriptions[key]}</p>
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* Impact Breakdown */}
-      <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">💥 Impact Breakdown</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="border-2 border-black p-4 bg-emerald-100">
-            <div className="text-xs font-bold uppercase text-black/50 mb-1">Income Effect</div>
-            <div className="text-3xl font-black text-emerald-700">
-              +{(policy.incomeEffect * 100).toFixed(0)}%
-            </div>
-            <div className="mt-2 h-3 bg-gray-100 border border-black overflow-hidden">
-              <div
-                className="h-full bg-emerald-500"
-                style={{ width: `${policy.incomeEffect * 100}%` }}
-              />
-            </div>
-          </div>
-          <div className="border-2 border-black p-4 bg-pink-100">
-            <div className="text-xs font-bold uppercase text-black/50 mb-1">Health Effect</div>
-            <div className="text-3xl font-black text-pink-700">
-              +{(policy.healthEffect * 100).toFixed(0)}%
-            </div>
-            <div className="mt-2 h-3 bg-gray-100 border border-black overflow-hidden">
-              <div
-                className="h-full bg-pink-500"
-                style={{ width: `${policy.healthEffect * 100}%` }}
-              />
-            </div>
-          </div>
-          <div className="border-2 border-black p-4 bg-cyan-100">
-            <div className="text-xs font-bold uppercase text-black/50 mb-1">
-              Combined Welfare
-            </div>
-            <div className="text-3xl font-black text-cyan-700">+{policy.welfareScore}</div>
-            <div className="mt-2 h-3 bg-gray-100 border border-black overflow-hidden">
-              <div
-                className="h-full bg-cyan-500"
-                style={{ width: `${Math.min(policy.welfareScore, 100)}%` }}
-              />
-            </div>
+      {/* Blocking Factors */}
+      {pol.blockingFactors && pol.blockingFactors.length > 0 && (
+        <div className="bg-red-50 border-2 border-black p-6 mb-8" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+          <h2 className="text-lg font-black uppercase text-black mb-3">⚠️ Blocking Factors</h2>
+          <div className="flex flex-wrap gap-2">
+            {pol.blockingFactors.map((f) => (
+              <span key={f} className="text-sm font-bold px-3 py-1 bg-red-200 border-2 border-black text-black">
+                {f.replace(/_/g, " ")}
+              </span>
+            ))}
           </div>
         </div>
-      </section>
+      )}
 
-      {/* Details */}
-      <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">📋 Policy Details</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-3 text-sm">
-            <Detail label="Type" value={policy.type.replace(/_/g, " ")} />
-            <Detail label="Category" value={policy.category.replace(/_/g, " ")} />
-            <Detail label="Recommendation" value={policy.recommendationType} />
-            {policy.currentStatus && (
-              <Detail label="Current Status" value={policy.currentStatus} />
-            )}
-            {policy.recommendedTarget && (
-              <Detail label="Recommended Target" value={policy.recommendedTarget} />
-            )}
-          </div>
-          <div>
-            <div className="text-xs font-bold uppercase text-black/50 mb-2">Rationale</div>
-            <p className="text-sm text-black/70 font-medium border-l-4 border-pink-500 pl-3">
-              {policy.rationale}
-            </p>
-
-            {policy.blockingFactors.length > 0 && (
-              <div className="mt-4">
-                <div className="text-xs font-bold uppercase text-black/50 mb-2">
-                  Blocking Factors
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {policy.blockingFactors.map((f) => (
-                    <span
-                      key={f}
-                      className="text-xs bg-red-200 text-red-800 px-2 py-1 border-2 border-red-800 font-bold"
-                    >
-                      {f.replace(/_/g, " ")}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Evidence Assessment (Bradford Hill explanation) */}
-      <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">
-          🔬 Evidence Assessment: Bradford Hill Criteria
-        </h2>
-        <p className="text-sm text-black/70 font-medium mb-4">
-          The{" "}
-          <strong className="text-black">
-            Bradford Hill criteria
-          </strong>{" "}
-          are nine principles used to establish evidence of a causal relationship between a
-          policy intervention and its outcomes. Originally developed for epidemiology, they
-          provide a structured framework for evaluating whether an observed association is truly
-          causal. Each criterion is scored from 0 to 1.
-        </p>
-
-        <div className="space-y-3">
-          {bhEntries.map(([key, val]) => (
-            <div
-              key={key}
-              className="border-2 border-black p-3 bg-white"
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-black text-black uppercase">{key}</span>
-                <span
-                  className={`text-xs font-black px-2 py-0.5 border-2 border-black ${
-                    val >= 0.8
-                      ? "bg-emerald-300"
-                      : val >= 0.5
-                        ? "bg-yellow-300"
-                        : "bg-red-300"
-                  }`}
-                >
-                  {(val * 100).toFixed(0)}%
-                </span>
-              </div>
-              <p className="text-xs text-black/60 font-medium">
-                {BRADFORD_HILL_CRITERIA[key]}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 border-2 border-black bg-yellow-50 p-4">
-          <h3 className="text-sm font-black text-black uppercase mb-2">
-            How is the Causal Confidence Score calculated?
-          </h3>
-          <p className="text-sm text-black/70 font-medium">
-            The <strong className="text-black">Causal Confidence Score (CCS)</strong> of{" "}
-            <strong className="text-black">
-              {(policy.causalConfidenceScore * 100).toFixed(0)}%
-            </strong>{" "}
-            is a weighted average of the nine Bradford Hill criteria. Experiment and temporality
-            receive higher weights since they provide the strongest evidence for causation. The
-            CCS is then combined with the estimated effect magnitude to produce the Policy
-            Impact Score (PIS) of{" "}
-            <strong className="text-black">
-              {(policy.policyImpactScore * 100).toFixed(0)}%
-            </strong>
-            .
+      {/* Methodology */}
+      <div className="bg-white border-2 border-black p-6" style={{ boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)" }}>
+        <h2 className="text-lg font-black uppercase text-black mb-3">📐 About Bradford Hill Criteria</h2>
+        <div className="space-y-3 text-sm text-black/80 font-medium">
+          <p>
+            The <strong>Bradford Hill criteria</strong> are nine principles for establishing causal relationships between a
+            policy intervention and an observed outcome. Originally developed for epidemiology (1965), they provide a
+            rigorous framework for evaluating whether a correlation represents true causation.
+          </p>
+          <p>
+            Each criterion is scored 0-1 based on available evidence. A high average score ({">"} 0.7) indicates strong
+            causal evidence. The <strong>Causal Confidence Score</strong> is a weighted combination of all nine criteria,
+            with temporality and experiment weighted higher.
+          </p>
+          <p className="text-xs text-black/50">
+            See the <a href="https://opg.warondisease.org" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:underline">Optimal Policy Generator paper</a> for full methodology.
           </p>
         </div>
-      </section>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/policies"
-          className="inline-block border-2 border-black bg-black text-white px-4 py-2 font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-none transition-shadow"
-        >
-          ← All Policies
-        </Link>
-        <p className="text-xs text-black/40 font-bold">
-          Analysis: {data.analysisDate} · Optomitron OPG
-        </p>
       </div>
-    </div>
-  );
-}
-
-function Detail({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className="text-xs font-bold uppercase text-black/40">{label}</span>
-      <div className="text-sm font-bold text-black capitalize">{value}</div>
     </div>
   );
 }
