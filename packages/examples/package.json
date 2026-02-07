@@ -5,6 +5,7 @@
   "description": "Worked examples — federal budget, causal analysis, alignment scoring",
   "type": "module",
   "scripts": {
+    "demo:health": "tsx src/golden-path/health-optimization-demo.ts",
     "demo:budget": "tsx src/federal-budget-demo.ts",
     "demo:causal": "tsx src/causal-analysis-demo.ts",
     "demo:alignment": "tsx src/alignment-demo.ts",
