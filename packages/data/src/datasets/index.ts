@@ -14,3 +14,5 @@ export * from './us-immigration-tariffs.js';
 export * from './us-minimum-wage.js';
 export * from './us-laffer-curve.js';
 export * from './us-healthcare-spending.js';
+export * from './us-police-spending.js';
+
