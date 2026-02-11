@@ -5,10 +5,10 @@
     {
       "name": "Education",
       "currentSpending": 238000000000,
-      "optimalSpending": 1445946859664.185,
-      "gap": 1207946859664.185,
-      "gapPercent": 507.5406973378929,
-      "marginalReturn": 0.03228411746106344,
+      "optimalSpending": 1170775323989.3784,
+      "gap": 932775323989.3784,
+      "gapPercent": 391.922405037554,
+      "marginalReturn": 20.575629851985255,
       "recommendation": "increase",
       "outcomeMetrics": [
         {
@@ -123,27 +123,64 @@
       ]
     },
     {
-      "name": "Health Research (NIH, CDC)",
-      "currentSpending": 102000000000,
-      "optimalSpending": 148270641791.5879,
-      "gap": 46270641791.58789,
-      "gapPercent": 45.363374305478324,
-      "marginalReturn": 0.0593150182582553,
+      "name": "Justice & Law Enforcement",
+      "currentSpending": 68000000000,
+      "optimalSpending": 206771740919.0071,
+      "gap": 138771740919.0071,
+      "gapPercent": 204.07608958677517,
+      "marginalReturn": 0.22173723670302645,
       "recommendation": "increase",
       "outcomeMetrics": [
         {
-          "name": "NIH-Funded Publications",
-          "value": 85000,
-          "trend": "increasing"
+          "name": "Violent Crime Rate per 100K",
+          "value": 380,
+          "trend": "decreasing"
         },
         {
-          "name": "Drug Approvals (FDA)",
+          "name": "Incarceration Rate per 100K",
+          "value": 531,
+          "trend": "decreasing"
+        }
+      ]
+    },
+    {
+      "name": "International Affairs & Aid",
+      "currentSpending": 68000000000,
+      "optimalSpending": 148378040617.7017,
+      "gap": 80378040617.70169,
+      "gapPercent": 118.20300090838485,
+      "marginalReturn": 0.11548584787930415,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Aid as % of GNI",
+          "value": 0.17,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Global Influence Index",
+          "value": 54.5,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Community & Regional Development",
+      "currentSpending": 41000000000,
+      "optimalSpending": 102809202124.3387,
+      "gap": 61809202124.3387,
+      "gapPercent": 150.7541515227773,
+      "marginalReturn": 0.16565208352368918,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Housing Affordability Index",
+          "value": 52,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Community Development Score",
           "value": 55,
-          "trend": "increasing"
-        },
-        {
-          "name": "Life Expectancy",
-          "value": 77.5,
           "trend": "stable"
         }
       ]
@@ -175,27 +212,6 @@
       ]
     },
     {
-      "name": "Community & Regional Development",
-      "currentSpending": 41000000000,
-      "optimalSpending": 102809202124.3387,
-      "gap": 61809202124.3387,
-      "gapPercent": 150.7541515227773,
-      "marginalReturn": 0.16565208352368918,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Housing Affordability Index",
-          "value": 52,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Community Development Score",
-          "value": 55,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
       "name": "Energy Programs",
       "currentSpending": 54000000000,
       "optimalSpending": 104447885670.81783,
@@ -217,22 +233,27 @@
       ]
     },
     {
-      "name": "International Affairs & Aid",
-      "currentSpending": 68000000000,
-      "optimalSpending": 148378040617.7017,
-      "gap": 80378040617.70169,
-      "gapPercent": 118.20300090838485,
-      "marginalReturn": 0.11548584787930415,
+      "name": "Health Research (NIH, CDC)",
+      "currentSpending": 102000000000,
+      "optimalSpending": 148270641791.5879,
+      "gap": 46270641791.58789,
+      "gapPercent": 45.363374305478324,
+      "marginalReturn": 0.0593150182582553,
       "recommendation": "increase",
       "outcomeMetrics": [
         {
-          "name": "Aid as % of GNI",
-          "value": 0.17,
-          "trend": "decreasing"
+          "name": "NIH-Funded Publications",
+          "value": 85000,
+          "trend": "increasing"
         },
         {
-          "name": "Global Influence Index",
-          "value": 54.5,
+          "name": "Drug Approvals (FDA)",
+          "value": 55,
+          "trend": "increasing"
+        },
+        {
+          "name": "Life Expectancy",
+          "value": 77.5,
           "trend": "stable"
         }
       ]
@@ -281,27 +302,6 @@
           "name": "Clean Water Access %",
           "value": 99.2,
           "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Justice & Law Enforcement",
-      "currentSpending": 68000000000,
-      "optimalSpending": 206771740919.0071,
-      "gap": 138771740919.0071,
-      "gapPercent": 204.07608958677517,
-      "marginalReturn": 0.22173723670302645,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Violent Crime Rate per 100K",
-          "value": 380,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Incarceration Rate per 100K",
-          "value": 531,
-          "trend": "decreasing"
         }
       ]
     },
@@ -443,16 +443,16 @@
     }
   ],
   "topRecommendations": [
-    "Increase Education by $1207.9B (+507.5%)",
+    "Increase Education by $932.8B (+391.9%)",
     "Decrease Military by $443.0B (-50.0%)",
     "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
     "Increase Transportation & Infrastructure by $495.1B (+294.7%)",
     "Increase Income Security (SNAP, Housing) by $304.0B (+100.0%)",
-    "Increase Health Research (NIH, CDC) by $46.3B (+45.4%)",
-    "Decrease Farm Subsidies by $15.0B (-50.0%)",
+    "Increase Justice & Law Enforcement by $138.8B (+204.1%)",
+    "Increase International Affairs & Aid by $80.4B (+118.2%)",
     "Increase Community & Regional Development by $61.8B (+150.8%)",
-    "Increase Energy Programs by $50.4B (+93.4%)",
-    "Increase International Affairs & Aid by $80.4B (+118.2%)"
+    "Decrease Farm Subsidies by $15.0B (-50.0%)",
+    "Increase Energy Programs by $50.4B (+93.4%)"
   ],
-  "generatedAt": "2026-02-11T22:59:49.142Z"
+  "generatedAt": "2026-02-11T23:27:38.445Z"
 }

@@ -546,4 +546,111 @@ describe('generateBudgetReport', () => {
       }
     }
   });
+
+  it('excludes F-grade categories from recommendations and frontier', () => {
+    const fGrade = makeCategoryAnalysis({
+      category: makeCategory({ id: 'justice', name: 'Justice' }),
+      oslEstimate: makeOSL({
+        categoryId: 'justice',
+        oslUsd: 100_000_000_000,
+        evidenceGrade: 'F',
+        welfareEvidenceScore: 0.05,
+      }),
+      gap: makeGap({
+        categoryId: 'justice',
+        categoryName: 'Justice',
+        gapUsd: 50_000_000_000,
+        gapPct: 100,
+        welfareEvidenceScore: 0.05,
+        priorityScore: 2_500_000_000,
+        recommendedAction: 'scale_up',
+      }),
+    });
+    const education = makeCategoryAnalysis();
+    const result = makeFullResult({ categories: [fGrade, education] });
+    const report = generateBudgetReport(result);
+
+    // F-grade should NOT appear in numbered recommendations
+    const lines = report.split('\n');
+    const numberedRecs = lines.filter(l => /^\d+\./.test(l));
+    const justiceRecs = numberedRecs.filter(l => l.includes('Justice'));
+    expect(justiceRecs).toHaveLength(0);
+
+    // F-grade should NOT appear in efficient frontier table
+    const frontierSection = report.split('## Efficient Frontier')[1]?.split('##')[0] ?? '';
+    expect(frontierSection).not.toContain('Justice');
+
+    // F-grade should appear in "Insufficient evidence" list
+    expect(report).toContain('Insufficient evidence (needs more data)');
+    expect(report).toContain('Justice');
+  });
+
+  it('shows "Insufficient evidence" in constrained reallocation for F-grade', () => {
+    const fGrade = makeCategoryAnalysis({
+      category: makeCategory({ id: 'justice', name: 'Justice' }),
+      oslEstimate: makeOSL({
+        categoryId: 'justice',
+        oslUsd: 100_000_000_000,
+        evidenceGrade: 'F',
+        welfareEvidenceScore: 0.05,
+      }),
+      gap: makeGap({
+        categoryId: 'justice',
+        categoryName: 'Justice',
+        gapUsd: 50_000_000_000,
+        gapPct: 100,
+        welfareEvidenceScore: 0.05,
+        priorityScore: 2_500_000_000,
+        recommendedAction: 'scale_up',
+      }),
+    });
+    const education = makeCategoryAnalysis();
+    const result = makeFullResult({ categories: [fGrade, education] });
+    const report = generateBudgetReport(result, { constrainToCurrentBudget: true });
+
+    // Find Justice row in constrained reallocation table — should say "Insufficient evidence"
+    const justiceLine = report.split('\n').find(l => l.includes('Justice') && l.includes('|'));
+    expect(justiceLine).toContain('Insufficient evidence');
+  });
+
+  it('shows "Domestic (N-of-1)" method label', () => {
+    const result = makeFullResult({
+      categories: [
+        makeCategoryAnalysis({
+          wesResult: {
+            score: 0.15,
+            grade: 'F',
+            qualityWeight: 0.50,
+            precisionWeight: 1,
+            recencyWeight: 0.80,
+            estimateCount: 24,
+            methodology: 'domestic',
+          },
+        }),
+      ],
+    });
+    const report = generateBudgetReport(result);
+    expect(report).toContain('Domestic (N-of-1)');
+  });
+
+  it('shows "Estimated" method label for fabricated estimates', () => {
+    const result = makeFullResult({
+      categories: [
+        makeCategoryAnalysis({
+          wesResult: {
+            score: 0.97,
+            grade: 'A',
+            qualityWeight: 0.90,
+            precisionWeight: 500,
+            recencyWeight: 0.95,
+            estimateCount: 4,
+            methodology: 'estimated',
+          },
+        }),
+      ],
+    });
+    const report = generateBudgetReport(result);
+    expect(report).toContain('Estimated');
+    expect(report).not.toContain('Literature');
+  });
 });

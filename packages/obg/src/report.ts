@@ -137,7 +137,8 @@ function actionLabel(action: string): string {
  * This ensures the action matches the actual direction of the constrained move,
  * not the unconstrained recommendation which may differ.
  */
-function constrainedActionLabel(reallocationPct: number, isMaintain: boolean): string {
+function constrainedActionLabel(reallocationPct: number, isMaintain: boolean, evidenceGrade?: string): string {
+  if (evidenceGrade === 'F') return 'Insufficient evidence';
   if (isMaintain) return 'Maintain';
   if (reallocationPct > 50) return 'Major increase';
   if (reallocationPct > 20) return 'Increase';
@@ -233,8 +234,12 @@ export function generateBudgetReport(
     // - Actionable: scaled proportionally to fill remaining budget
     const discretionary = analysis.categories.filter(c => c.category.discretionary !== false);
     const nonDisc = analysis.categories.filter(c => c.category.discretionary === false);
-    const maintainCats = discretionary.filter(c => c.gap.recommendedAction === 'maintain');
-    const actionableCats = discretionary.filter(c => c.gap.recommendedAction !== 'maintain');
+    const maintainCats = discretionary.filter(c =>
+      c.gap.recommendedAction === 'maintain' || c.oslEstimate.evidenceGrade === 'F'
+    );
+    const actionableCats = discretionary.filter(c =>
+      c.gap.recommendedAction !== 'maintain' && c.oslEstimate.evidenceGrade !== 'F'
+    );
 
     // Budget available for actionable categories = total - non-discretionary - maintain (held fixed)
     const nonDiscSpending = nonDisc.reduce((s, c) => s + c.category.currentSpendingUsd, 0);
@@ -256,7 +261,7 @@ export function generateBudgetReport(
         ? (reallocation / cat.category.currentSpendingUsd) * 100
         : 0;
       // Derive action label from the constrained reallocation direction
-      const constrainedAction = constrainedActionLabel(reallocationPct, isMaintain);
+      const constrainedAction = constrainedActionLabel(reallocationPct, isMaintain, cat.oslEstimate.evidenceGrade);
       return { cat, constrainedOptimal, reallocation, reallocationPct, constrainedAction };
     });
 
@@ -394,10 +399,14 @@ export function generateBudgetReport(
     lines.push('No categories to analyze.');
     lines.push('');
   } else {
-    // Sort by priority score (highest first), exclude 'maintain' and non-discretionary
+    // Sort by priority score (highest first), exclude 'maintain', non-discretionary, and F-grade
     const actionable = [...analysis.categories]
-      .filter(c => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false)
+      .filter(c => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false && c.oslEstimate.evidenceGrade !== 'F')
       .sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
+
+    const insufficientEvidence = analysis.categories.filter(
+      c => c.oslEstimate.evidenceGrade === 'F' && c.category.discretionary !== false && c.gap.recommendedAction !== 'maintain',
+    );
 
     const maintained = analysis.categories.filter(
       c => c.gap.recommendedAction === 'maintain' && c.category.discretionary !== false,
@@ -441,6 +450,14 @@ export function generateBudgetReport(
       lines.push('');
     }
 
+    if (insufficientEvidence.length > 0) {
+      lines.push('**Insufficient evidence (needs more data):**');
+      for (const cat of insufficientEvidence) {
+        lines.push(`- ${cat.gap.categoryName}`);
+      }
+      lines.push('');
+    }
+
     if (nonDiscretionary.length > 0) {
       lines.push('**Non-discretionary (excluded from optimization):**');
       for (const cat of nonDiscretionary) {
@@ -459,7 +476,7 @@ export function generateBudgetReport(
     lines.push('');
   } else {
     const frontier = [...analysis.categories]
-      .filter((c) => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false)
+      .filter((c) => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false && c.oslEstimate.evidenceGrade !== 'F')
       .sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
 
     if (frontier.length === 0) {
@@ -505,7 +522,13 @@ export function generateBudgetReport(
       const wes = cat.oslEstimate.welfareEvidenceScore;
       const grade = cat.oslEstimate.evidenceGrade;
       const methodology = cat.wesResult?.methodology;
-      const methodLabel = methodology === 'causal' ? 'Causal (N-of-1)' : 'Literature';
+      let methodLabel: string;
+      switch (methodology) {
+        case 'causal': methodLabel = 'Causal (N-of-1)'; break;
+        case 'domestic': methodLabel = 'Domestic (N-of-1)'; break;
+        case 'estimated': methodLabel = 'Estimated'; break;
+        default: methodLabel = 'Literature'; break;
+      }
       const n = cat.wesResult?.estimateCount;
 
       lines.push(

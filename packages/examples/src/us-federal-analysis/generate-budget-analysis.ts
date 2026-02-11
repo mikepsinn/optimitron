@@ -48,10 +48,16 @@ import type {
   OSLEstimate,
 } from '@optomitron/obg';
 
+import type { EvidenceGrade } from '@optomitron/opg';
+
 import {
   oecdBudgetPanelToSpendingOutcome,
   OECD_BUDGET_PANEL,
   type OECDBudgetPanelDataPoint,
+  US_BUDGET_CATEGORIES,
+  US_OUTCOME_DATA,
+  type USBudgetCategoryDataPoint,
+  type USOutcomeDataPoint,
 } from '@optomitron/data';
 
 // ---------------------------------------------------------------------------
@@ -940,10 +946,164 @@ const OECD_DATA_MAPPINGS: Record<string, {
   social_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
   income_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'giniIndex', negateOutcome: true },
   science_space: { spendingField: 'rdSpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
+  education: { spendingField: 'educationSpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
   // health_research intentionally omitted: NIH/CDC research funding ≠ total health spending.
   // Without a mapping, Health Research uses curve-fitting WES from its effect estimates,
   // avoiding identical results to Medicare (which correctly maps to healthSpendingPerCapitaPpp).
 };
+
+// ---------------------------------------------------------------------------
+// Domestic (US-only) time series for N-of-1 causal analysis
+// ---------------------------------------------------------------------------
+
+/** Maps category IDs to fields in US_BUDGET_CATEGORIES */
+const DOMESTIC_SPENDING_MAPPINGS: Record<string, keyof USBudgetCategoryDataPoint> = {
+  education: 'educationSpendingBillions',
+  military: 'militarySpendingBillions',
+  transportation: 'infrastructureSpendingBillions',
+  health_research: 'rdSpendingBillions',
+  science_space: 'rdSpendingBillions',
+  environment: 'environmentalSpendingBillions',
+  justice: 'criminalJusticeSpendingBillions',
+  foreign_aid: 'foreignAidSpendingBillions',
+  income_security: 'socialBenefitsSpendingBillions',
+  farm_subsidies: 'agricultureSubsidiesBillions',
+};
+
+/** Outcome metrics to try for each domestic analysis */
+const DOMESTIC_OUTCOME_FIELDS: { field: keyof USOutcomeDataPoint; name: string; negate: boolean }[] = [
+  { field: 'lifeExpectancyYears', name: 'Life Expectancy', negate: false },
+  { field: 'realMedianHouseholdIncome', name: 'Median Income', negate: false },
+  { field: 'infantMortalityPer1000', name: 'Infant Mortality', negate: true },
+  { field: 'povertyRatePercent', name: 'Poverty Rate', negate: true },
+  { field: 'homicideRatePer100k', name: 'Homicide Rate', negate: true },
+];
+
+/** Domestic causal evidence result */
+interface DomesticCausalEvidence {
+  wesScore: number;
+  wesGrade: EvidenceGrade;
+  bestOutcomeName: string;
+  bestCorrelation: number;
+  nYears: number;
+  bradfordHill: AggregateAnalysis['meanBradfordHill'];
+}
+
+/**
+ * Build a pair of AnnualTimeSeries from US domestic data for a given
+ * spending field and outcome field.
+ */
+function buildDomesticTimeSeries(
+  spendingField: keyof USBudgetCategoryDataPoint,
+  outcomeField: keyof USOutcomeDataPoint,
+  negate: boolean,
+): { predictor: AnnualTimeSeries; outcome: AnnualTimeSeries } | null {
+  const spendingValues = new Map<number, number>();
+  const outcomeValues = new Map<number, number>();
+
+  for (const budgetRow of US_BUDGET_CATEGORIES) {
+    const spendingVal = budgetRow[spendingField];
+    if (typeof spendingVal !== 'number') continue;
+    spendingValues.set(budgetRow.year, spendingVal);
+  }
+
+  for (const outcomeRow of US_OUTCOME_DATA) {
+    const outcomeVal = outcomeRow[outcomeField];
+    if (typeof outcomeVal !== 'number') continue;
+    outcomeValues.set(outcomeRow.year, negate ? -outcomeVal : outcomeVal);
+  }
+
+  if (spendingValues.size < 5 || outcomeValues.size < 5) return null;
+
+  return {
+    predictor: {
+      jurisdictionId: 'USA',
+      jurisdictionName: 'United States',
+      variableId: String(spendingField),
+      variableName: String(spendingField),
+      unit: 'USD billions',
+      annualValues: spendingValues,
+    },
+    outcome: {
+      jurisdictionId: 'USA',
+      jurisdictionName: 'United States',
+      variableId: String(outcomeField),
+      variableName: String(outcomeField),
+      unit: negate ? 'inverted value' : 'value',
+      annualValues: outcomeValues,
+    },
+  };
+}
+
+/**
+ * Compute domestic causal evidence for a category using US-only time series.
+ *
+ * Tries each outcome metric, picks the one with the strongest positive
+ * forward Pearson correlation (after negation for "lower is better" metrics).
+ */
+function computeDomesticCausalEvidence(seed: CategorySeed): DomesticCausalEvidence | null {
+  const spendingField = DOMESTIC_SPENDING_MAPPINGS[seed.id];
+  if (!spendingField) return null;
+
+  let bestResult: {
+    outcomeName: string;
+    forwardPearson: number;
+    aggregate: AggregateAnalysis;
+    nYears: number;
+  } | null = null;
+
+  for (const outcomeSpec of DOMESTIC_OUTCOME_FIELDS) {
+    const ts = buildDomesticTimeSeries(spendingField, outcomeSpec.field, outcomeSpec.negate);
+    if (!ts) continue;
+
+    const result = runCountryAnalysis({
+      predictors: [ts.predictor],
+      outcomes: [ts.outcome],
+    });
+
+    if (result.aggregate.n < 1) continue;
+
+    const pearson = result.aggregate.meanForwardPearson;
+    // We want positive correlation (after negation), indicating spending helps
+    if (!bestResult || pearson > bestResult.forwardPearson) {
+      // Count overlapping years
+      const spendingYears = new Set(ts.predictor.annualValues.keys());
+      let overlap = 0;
+      for (const y of ts.outcome.annualValues.keys()) {
+        if (spendingYears.has(y)) overlap++;
+      }
+      bestResult = {
+        outcomeName: outcomeSpec.name,
+        forwardPearson: pearson,
+        aggregate: result.aggregate,
+        nYears: overlap,
+      };
+    }
+  }
+
+  if (!bestResult || bestResult.forwardPearson <= 0) return null;
+
+  const { aggregate } = bestResult;
+  const bh = aggregate.meanBradfordHill;
+
+  // WES from Bradford Hill: strength × consistency-from-N=1 (fixed 0.10)
+  // N=1 country means no cross-country consistency, so we rely on
+  // BH strength (correlation magnitude) and temporality
+  const consistencyFromN = 1 - Math.exp(-1 / 10); // ~0.095 for N=1
+  const wesScore = Math.min(1, Math.max(0,
+    bh.strength * consistencyFromN * (1 + bh.temporality),
+  ));
+  const wesGrade = scoreToGrade(wesScore);
+
+  return {
+    wesScore,
+    wesGrade,
+    bestOutcomeName: bestResult.outcomeName,
+    bestCorrelation: bestResult.forwardPearson,
+    nYears: bestResult.nYears,
+    bradfordHill: bh,
+  };
+}
 
 /** Enrich categories with real OECD panel data where available */
 function enrichWithOECDData(categories: CategorySeed[]): CategorySeed[] {
@@ -977,7 +1137,7 @@ function enrichWithOECDData(categories: CategorySeed[]): CategorySeed[] {
  */
 interface CausalEvidence {
   wesScore: number;
-  wesGrade: string;
+  wesGrade: EvidenceGrade;
   forwardPearson: number;
   nCountries: number;
   nSkipped: number;
@@ -1096,6 +1256,43 @@ export function generateBudgetAnalysisArtifacts(
     return analysis;
   });
 
+  // For discretionary categories without OECD causal evidence, try domestic N-of-1
+  const domesticEvidenceMap = new Map<string, DomesticCausalEvidence>();
+  for (let idx = 0; idx < categoryAnalyses.length; idx++) {
+    const analysis = categoryAnalyses[idx]!;
+    const seed = enrichedCategories[idx]!;
+    if (causalEvidenceMap.has(seed.id)) continue; // Already has OECD causal
+    if (seed.discretionary === false) continue;
+
+    const domestic = computeDomesticCausalEvidence(seed);
+    if (!domestic) continue;
+
+    domesticEvidenceMap.set(seed.id, domestic);
+    analysis.oslEstimate.welfareEvidenceScore = domestic.wesScore;
+    analysis.oslEstimate.evidenceGrade = domestic.wesGrade;
+    analysis.gap.welfareEvidenceScore = domestic.wesScore;
+    analysis.gap.priorityScore = calculatePriorityScore(analysis.gap.gapUsd, domestic.wesScore);
+    analysis.wesResult = {
+      score: domestic.wesScore,
+      grade: domestic.wesGrade,
+      qualityWeight: domestic.bradfordHill.strength,
+      precisionWeight: 1, // N=1 country
+      recencyWeight: domestic.bradfordHill.temporality,
+      estimateCount: domestic.nYears,
+      methodology: 'domestic',
+    };
+  }
+
+  // Categories with neither OECD nor domestic causal evidence: flag as 'estimated'
+  for (const analysis of categoryAnalyses) {
+    if (analysis.category.discretionary === false) continue;
+    if (causalEvidenceMap.has(analysis.category.id)) continue;
+    if (domesticEvidenceMap.has(analysis.category.id)) continue;
+    if (analysis.wesResult) {
+      analysis.wesResult.methodology = 'estimated';
+    }
+  }
+
   // Sort by priority score (descending)
   categoryAnalyses.sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
 
@@ -1163,6 +1360,39 @@ export function generateBudgetAnalysisArtifacts(
     causalLines.push('');
 
     report += causalLines.join('\n');
+  }
+
+  // Append Domestic Evidence Detail section
+  if (domesticEvidenceMap.size > 0) {
+    const domesticLines: string[] = [];
+    domesticLines.push('');
+    domesticLines.push('## Domestic Evidence Detail (US Time Series 2000-2023)');
+    domesticLines.push('');
+    domesticLines.push('| Category | Best Outcome | r | N years | BH Strength | WES | Grade |');
+    domesticLines.push('|----------|-------------|---|---------|-------------|-----|-------|');
+
+    const sortedDomestic = [...domesticEvidenceMap.entries()].sort(
+      (a, b) => b[1].wesScore - a[1].wesScore,
+    );
+    for (const [catId, ev] of sortedDomestic) {
+      const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
+      domesticLines.push(
+        `| ${catName} ` +
+        `| ${ev.bestOutcomeName} ` +
+        `| ${ev.bestCorrelation.toFixed(3)} ` +
+        `| ${ev.nYears} ` +
+        `| ${ev.bradfordHill.strength.toFixed(2)} ` +
+        `| ${ev.wesScore.toFixed(2)} ` +
+        `| ${ev.wesGrade} |`,
+      );
+    }
+    domesticLines.push('');
+    domesticLines.push('r = forward Pearson correlation (US domestic spending vs outcome, 2000-2023)');
+    domesticLines.push('N years = overlapping data points between spending and outcome time series');
+    domesticLines.push('BH = Bradford Hill strength score (0-1 saturation scale)');
+    domesticLines.push('');
+
+    report += domesticLines.join('\n');
   }
 
   // Generate website JSON
