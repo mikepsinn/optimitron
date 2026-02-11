@@ -167,7 +167,7 @@ describe('generateBudgetReport', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Summary');
     expect(report).toContain('$1100B budget');
-    expect(report).toContain('3 categories');
+    expect(report).toContain('3 discretionary categories');
     expect(report).toContain('15.3%');
   });
 
@@ -201,7 +201,33 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('-$391B');
   });
 
-  it('contains diminishing returns section', () => {
+  it('contains diminishing returns section with elasticity', () => {
+    const drModel: DiminishingReturnsModel = {
+      type: 'log',
+      alpha: 10,
+      beta: 5,
+      r2: 0.85,
+      n: 25,
+    };
+    const result = makeFullResult({
+      categories: [
+        makeCategoryAnalysis({
+          diminishingReturnsModel: drModel,
+          marginalReturn: 0.0032,
+          elasticity: 0.12,
+        }),
+      ],
+    });
+    const report = generateBudgetReport(result);
+    expect(report).toContain('## Diminishing Returns Analysis');
+    expect(report).toContain('Log-linear');
+    expect(report).toContain('R² = 0.85');
+    expect(report).toContain('Elasticity');
+    expect(report).toContain('0.12');
+    expect(report).toContain('Under-invested');
+  });
+
+  it('falls back to marginal return when elasticity is not available', () => {
     const drModel: DiminishingReturnsModel = {
       type: 'log',
       alpha: 10,
@@ -218,11 +244,8 @@ describe('generateBudgetReport', () => {
       ],
     });
     const report = generateBudgetReport(result);
-    expect(report).toContain('## Diminishing Returns Analysis');
-    expect(report).toContain('Log-linear');
-    expect(report).toContain('R² = 0.85');
+    expect(report).toContain('Marginal Return');
     expect(report).toContain('0.0032');
-    expect(report).toContain('Under-invested');
   });
 
   it('shows "no models available" when no DR models exist', () => {
@@ -236,7 +259,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Increase Education');
     expect(report).toContain('Decrease Military');
     expect(report).toContain('Priority: 100/100');
-    expect(report).toContain('Evidence: C (Possible welfare benefit)');
+    expect(report).toContain('Evidence: C (Moderate evidence)');
   });
 
   it('sorts recommendations by priority score', () => {
@@ -266,7 +289,7 @@ describe('generateBudgetReport', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Welfare Evidence Scores');
     expect(report).toContain('| Category | WES | Grade');
-    expect(report).toContain('Strong evidence of welfare benefit');
+    expect(report).toContain('Strong causal evidence');
   });
 
   it('contains efficient frontier reallocation table', () => {
@@ -287,7 +310,7 @@ describe('generateBudgetReport', () => {
     expect(educationIdx).toBeLessThan(defenseIdx);
   });
 
-  it('shows WES quality and precision weights when available', () => {
+  it('shows WES method and N when available', () => {
     const result = makeFullResult({
       categories: [
         makeCategoryAnalysis({
@@ -298,13 +321,35 @@ describe('generateBudgetReport', () => {
             precisionWeight: 500,
             recencyWeight: 0.95,
             estimateCount: 5,
+            methodology: 'literature',
           },
         }),
       ],
     });
     const report = generateBudgetReport(result);
-    expect(report).toContain('0.9');
-    expect(report).toContain('500');
+    expect(report).toContain('Literature');
+    expect(report).toContain('| 5 |');
+  });
+
+  it('shows causal method label for causal WES', () => {
+    const result = makeFullResult({
+      categories: [
+        makeCategoryAnalysis({
+          wesResult: {
+            score: 0.85,
+            grade: 'A',
+            qualityWeight: 0.90,
+            precisionWeight: 23,
+            recencyWeight: 0.95,
+            estimateCount: 23,
+            methodology: 'causal',
+          },
+        }),
+      ],
+    });
+    const report = generateBudgetReport(result);
+    expect(report).toContain('Causal (N-of-1)');
+    expect(report).toContain('| 23 |');
   });
 
   it('shows dashes when WES details are not available', () => {
@@ -317,7 +362,7 @@ describe('generateBudgetReport', () => {
   it('handles empty categories array', () => {
     const result = makeFullResult({ categories: [] });
     const report = generateBudgetReport(result);
-    expect(report).toContain('0 categories');
+    expect(report).toContain('0 discretionary categories');
     expect(report).toContain('No categories to analyze');
     expect(report).toContain('No categories to score');
   });
@@ -328,7 +373,7 @@ describe('generateBudgetReport', () => {
       totalOptimalUsd: 62_000_000_000,
     });
     const report = generateBudgetReport(result);
-    expect(report).toContain('1 categories');
+    expect(report).toContain('1 discretionary categories');
     expect(report).toContain('Education');
     // Should have table rows
     const tableRows = report.split('\n').filter(l => l.startsWith('| Education'));
@@ -377,6 +422,28 @@ describe('generateBudgetReport', () => {
     expect(report).not.toContain('Eliminate');
   });
 
+  it('shows small-sample warning when n <= 10', () => {
+    const drModel: DiminishingReturnsModel = {
+      type: 'saturation',
+      alpha: 10,
+      beta: 5,
+      gamma: 1000,
+      r2: 1.0,
+      n: 6,
+    };
+    const result = makeFullResult({
+      categories: [
+        makeCategoryAnalysis({
+          diminishingReturnsModel: drModel,
+          marginalReturn: 0.001,
+        }),
+      ],
+    });
+    const report = generateBudgetReport(result);
+    expect(report).toContain('Small sample (n=6)');
+    expect(report).toContain('may overfit');
+  });
+
   it('handles saturation diminishing returns model', () => {
     const drModel: DiminishingReturnsModel = {
       type: 'saturation',
@@ -407,6 +474,31 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Constrained Optimal');
     expect(report).toContain('Reallocation within');
     expect(report).toContain('held fixed');
+  });
+
+  it('counts only discretionary categories in summary', () => {
+    const nonDisc = makeCategoryAnalysis({
+      category: makeCategory({
+        id: 'interest',
+        name: 'Net Interest',
+        discretionary: false,
+        currentSpendingUsd: 881_000_000_000,
+      }),
+      gap: makeGap({
+        categoryId: 'interest',
+        categoryName: 'Net Interest',
+        gapUsd: 0,
+        gapPct: 0,
+        recommendedAction: 'maintain',
+        priorityScore: 0,
+      }),
+    });
+    const education = makeCategoryAnalysis();
+    const result = makeFullResult({ categories: [nonDisc, education] });
+    const report = generateBudgetReport(result);
+    // Should say 1 discretionary, not 2
+    expect(report).toContain('1 discretionary categories');
+    expect(report).not.toContain('2 discretionary');
   });
 
   it('marks non-discretionary categories and excludes from recommendations', () => {

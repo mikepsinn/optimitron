@@ -313,7 +313,7 @@ export function calculatePredictorImpactScore(
   let reverseCorrelation: CorrelationResult | undefined;
   let temporalityFactor = 1.0;
   
-  if (reversePairs && reversePairs.length >= 30) {
+  if (reversePairs && reversePairs.length >= 5) {
     reverseCorrelation = calculateCorrelation(reversePairs);
     temporalityFactor = scoreTemporality(
       forwardCorrelation.pearson,

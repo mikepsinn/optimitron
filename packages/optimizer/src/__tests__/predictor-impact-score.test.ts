@@ -706,9 +706,9 @@ describe('calculatePredictorImpactScore', () => {
     expect(gradeOrder[pis.evidenceGrade]).toBeGreaterThanOrEqual(gradeOrder['C']);
   });
 
-  it('skips reverse temporality when reverse pairs < 30', () => {
+  it('skips reverse temporality when reverse pairs < 5', () => {
     const forwardPairs = linearPairs(60, 0.5, 50, 1);
-    const reversePairs = linearPairs(10, 0.3, 50, 1); // Too few
+    const reversePairs = linearPairs(4, 0.3, 50, 1); // Too few
 
     const pis = calculatePredictorImpactScore(forwardPairs, reversePairs);
 

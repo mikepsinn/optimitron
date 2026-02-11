@@ -26,6 +26,8 @@ export interface WESCalculationResult {
   precisionWeight: number;    // Aggregate precision weight
   recencyWeight: number;      // Aggregate recency weight
   estimateCount: number;
+  /** How the WES was derived: 'causal' (N-of-1 country analysis) or 'literature' (effect estimates) */
+  methodology?: 'causal' | 'literature';
 }
 
 /** Decay rate for recency weighting (per year) */

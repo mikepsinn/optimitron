@@ -165,6 +165,45 @@ describe('Budget Report Markdown', () => {
     expect(budgetMarkdown).toContain('Medicare');
     expect(budgetMarkdown).toContain('Medicaid');
   });
+
+  it('should separate non-discretionary from maintain in Top Recommendations', () => {
+    expect(budgetMarkdown).toContain('Non-discretionary (excluded from optimization)');
+  });
+
+  it('should penalize negatively-correlated categories in WES', () => {
+    // Military (r≈-0.1) should get grade D, not B
+    // Look for Military row in Causal Evidence Detail with grade D
+    const militaryLine = budgetMarkdown.split('\n').find(
+      l => l.includes('Military') && l.includes('| D |'),
+    );
+    expect(militaryLine).toBeDefined();
+  });
+
+  it('should not include non-discretionary categories in Causal Evidence Detail', () => {
+    const causalSection = budgetMarkdown.split('## Causal Evidence Detail')[1] ?? '';
+    expect(causalSection).not.toContain('Social Security');
+    expect(causalSection).not.toContain('Medicare');
+    expect(causalSection).not.toContain('Medicaid');
+  });
+
+  it('should use direction-neutral evidence labels', () => {
+    // Should NOT contain the old direction-assuming labels
+    expect(budgetMarkdown).not.toContain('welfare benefit');
+    // Should contain the new direction-neutral labels
+    expect(budgetMarkdown).toContain('Weak evidence');
+  });
+
+  it('should show Method column in WES table instead of Quality/Precision Weight', () => {
+    expect(budgetMarkdown).toContain('| Method |');
+    expect(budgetMarkdown).not.toContain('Quality Weight');
+    expect(budgetMarkdown).not.toContain('Precision Weight');
+  });
+
+  it('should count only discretionary categories in summary', () => {
+    expect(budgetMarkdown).toContain('discretionary categories');
+    // Should NOT say 19 categories (total count including non-discretionary)
+    expect(budgetMarkdown).not.toMatch(/\b19\b.*categories/);
+  });
 });
 
 // =========================================================================

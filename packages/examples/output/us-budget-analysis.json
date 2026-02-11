@@ -3,58 +3,6 @@
   "totalBudget": 6750000000000,
   "categories": [
     {
-      "name": "Income Security (SNAP, Housing)",
-      "currentSpending": 304000000000,
-      "optimalSpending": 4984298510821.2295,
-      "gap": 4680298510821.2295,
-      "gapPercent": 1539.571878559615,
-      "marginalReturn": 0.0014212525984477462,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Food Insecurity Rate",
-          "value": 12.8,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Poverty Rate",
-          "value": 11.5,
-          "trend": "stable"
-        },
-        {
-          "name": "Homelessness per 10K",
-          "value": 18,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Health Research (NIH, CDC)",
-      "currentSpending": 102000000000,
-      "optimalSpending": 2050635806738.7642,
-      "gap": 1948635806738.7642,
-      "gapPercent": 1910.4272615085922,
-      "marginalReturn": 0.0016999103529453737,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "NIH-Funded Publications",
-          "value": 85000,
-          "trend": "increasing"
-        },
-        {
-          "name": "Drug Approvals (FDA)",
-          "value": 55,
-          "trend": "increasing"
-        },
-        {
-          "name": "Life Expectancy",
-          "value": 77.5,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
       "name": "Education",
       "currentSpending": 238000000000,
       "optimalSpending": 1445946859664.185,
@@ -83,9 +31,9 @@
     {
       "name": "Military",
       "currentSpending": 886000000000,
-      "optimalSpending": 56112000000,
-      "gap": -829888000000,
-      "gapPercent": -93.6668171557562,
+      "optimalSpending": 443000000000,
+      "gap": -443000000000,
+      "gapPercent": -50,
       "marginalReturn": -0.0001028225355234275,
       "recommendation": "decrease",
       "outcomeMetrics": [
@@ -149,11 +97,63 @@
       ]
     },
     {
+      "name": "Income Security (SNAP, Housing)",
+      "currentSpending": 304000000000,
+      "optimalSpending": 608000000000,
+      "gap": 304000000000,
+      "gapPercent": 100,
+      "marginalReturn": 0.0014212525984477462,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Food Insecurity Rate",
+          "value": 12.8,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Poverty Rate",
+          "value": 11.5,
+          "trend": "stable"
+        },
+        {
+          "name": "Homelessness per 10K",
+          "value": 18,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Health Research (NIH, CDC)",
+      "currentSpending": 102000000000,
+      "optimalSpending": 148270641791.5879,
+      "gap": 46270641791.58789,
+      "gapPercent": 45.363374305478324,
+      "marginalReturn": 0.0593150182582553,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "NIH-Funded Publications",
+          "value": 85000,
+          "trend": "increasing"
+        },
+        {
+          "name": "Drug Approvals (FDA)",
+          "value": 55,
+          "trend": "increasing"
+        },
+        {
+          "name": "Life Expectancy",
+          "value": 77.5,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
       "name": "Farm Subsidies",
       "currentSpending": 30000000000,
-      "optimalSpending": 13440000000,
-      "gap": -16560000000,
-      "gapPercent": -55.2,
+      "optimalSpending": 15000000000.000002,
+      "gap": -14999999999.999998,
+      "gapPercent": -49.99999999999999,
       "marginalReturn": -0.045594349442446086,
       "recommendation": "decrease",
       "outcomeMetrics": [
@@ -443,16 +443,16 @@
     }
   ],
   "topRecommendations": [
-    "Increase Income Security (SNAP, Housing) by $4680.3B (+1539.6%)",
-    "Increase Health Research (NIH, CDC) by $1948.6B (+1910.4%)",
     "Increase Education by $1207.9B (+507.5%)",
-    "Decrease Military by $829.9B (-93.7%)",
+    "Decrease Military by $443.0B (-50.0%)",
     "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
     "Increase Transportation & Infrastructure by $495.1B (+294.7%)",
-    "Decrease Farm Subsidies by $16.6B (-55.2%)",
+    "Increase Income Security (SNAP, Housing) by $304.0B (+100.0%)",
+    "Increase Health Research (NIH, CDC) by $46.3B (+45.4%)",
+    "Decrease Farm Subsidies by $15.0B (-50.0%)",
     "Increase Community & Regional Development by $61.8B (+150.8%)",
     "Increase Energy Programs by $50.4B (+93.4%)",
     "Increase International Affairs & Aid by $80.4B (+118.2%)"
   ],
-  "generatedAt": "2026-02-11T08:07:51.042Z"
+  "generatedAt": "2026-02-11T22:59:49.142Z"
 }

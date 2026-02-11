@@ -18,6 +18,7 @@ import {
   fitSaturationModel,
   findOSL,
   marginalReturn,
+  predictOutcome,
   type SpendingOutcomePoint,
   type DiminishingReturnsModel,
 } from '@optomitron/obg';
@@ -695,11 +696,25 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
   const lowerBound = Math.max(minObservedSpending * 0.5, 0);
   oslPerCapita = Math.max(lowerBound, Math.min(oslPerCapita, upperBound));
 
+  // Additional constraint for low-quality models: don't recommend large moves
+  // when the model barely fits the data
+  if (drModel.r2 < 0.3) {
+    const lowFitUpper = currentPerCapita * 2;
+    const lowFitLower = currentPerCapita * 0.5;
+    oslPerCapita = Math.max(lowFitLower, Math.min(oslPerCapita, lowFitUpper));
+  }
+
   const oslUsd = oslPerCapita * US_POPULATION;
   const mr = marginalReturn(currentPerCapita, drModel);
 
+  // Compute elasticity: ε = MR × (spending / predicted_outcome)
+  // Dimensionless: 1% spending increase → ε% outcome increase
+  const predicted = predictOutcome(currentPerCapita, drModel);
+  const elasticity = predicted !== 0 ? mr * (currentPerCapita / predicted) : undefined;
+
   // 4. Calculate WES
   const wesResult = calculateWES(seed.effectEstimates);
+  wesResult.methodology = 'literature';
 
   // 5. Gap analysis
   const gapUsd = oslUsd - currentSpendingUsd;
@@ -771,6 +786,7 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
     gap,
     diminishingReturnsModel: drModel,
     marginalReturn: mr,
+    elasticity,
     wesResult,
   };
 }
@@ -924,7 +940,9 @@ const OECD_DATA_MAPPINGS: Record<string, {
   social_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
   income_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'giniIndex', negateOutcome: true },
   science_space: { spendingField: 'rdSpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
-  health_research: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
+  // health_research intentionally omitted: NIH/CDC research funding ≠ total health spending.
+  // Without a mapping, Health Research uses curve-fitting WES from its effect estimates,
+  // avoiding identical results to Medicare (which correctly maps to healthSpendingPerCapitaPpp).
 };
 
 /** Enrich categories with real OECD panel data where available */
@@ -980,6 +998,8 @@ interface CausalEvidence {
  * Returns null if the category has no OECD mapping or insufficient data.
  */
 function computeCausalWES(seed: CategorySeed): CausalEvidence | null {
+  if (seed.discretionary === false) return null;
+
   const mapping = OECD_DATA_MAPPINGS[seed.id];
   if (!mapping) return null;
 
@@ -998,16 +1018,22 @@ function computeCausalWES(seed: CategorySeed): CausalEvidence | null {
   const { aggregate } = causalResult;
   const { meanBradfordHill: bh } = aggregate;
 
-  // WES from Bradford Hill: strength × cross-country consistency × temporality
-  // This differentiates well:
-  //   Health (r≈0.9): strength≈0.95, consistency≈0.90, temporality≈0.7 → WES≈0.60 (B)
-  //   Military (r≈-0.1): strength≈0.28, consistency≈0.90, temporality≈0.5 → WES≈0.13 (F)
+  // WES from Bradford Hill: strength × directional consistency × sample size saturation
+  // directionalConsistency = fraction of countries with positive correlation
+  // This penalizes categories with negative correlations:
+  //   Health (r≈0.9, 23/23 positive): 0.94 × 1.0 × 0.90 ≈ 0.85 (A)
+  //   Military (r≈-0.1, 10/23 positive): 0.78 × 0.43 × 0.90 ≈ 0.30 (D)
+  const directionalConsistency = aggregate.n > 0
+    ? aggregate.positiveCount / aggregate.n
+    : 0;
   const consistencyFromN = 1 - Math.exp(-aggregate.n / 10);
-  const wesScore = Math.min(1, Math.max(0, bh.strength * consistencyFromN * bh.temporality));
+  const wesScore = Math.min(1, Math.max(0,
+    bh.strength * directionalConsistency * consistencyFromN,
+  ));
   const wesGrade = scoreToGrade(wesScore);
 
   const notes = [
-    `Causal WES: BH strength=${bh.strength.toFixed(2)} × consistency(N=${aggregate.n})=${consistencyFromN.toFixed(2)} × temporality=${bh.temporality.toFixed(2)}`,
+    `Causal WES: BH strength=${bh.strength.toFixed(2)} × dirConsistency(${aggregate.positiveCount}/${aggregate.n})=${directionalConsistency.toFixed(2)} × sampleSat(N=${aggregate.n})=${consistencyFromN.toFixed(2)}`,
     `r=${aggregate.meanForwardPearson.toFixed(3)}, +/${aggregate.positiveCount}/-${aggregate.negativeCount}`,
   ];
   if (aggregate.skipped > 0) {
@@ -1063,6 +1089,7 @@ export function generateBudgetAnalysisArtifacts(
         precisionWeight: causal.nCountries,
         recencyWeight: causal.bradfordHill.temporality,
         estimateCount: causal.nCountries,
+        methodology: 'causal',
       };
     }
 
@@ -1077,13 +1104,15 @@ export function generateBudgetAnalysisArtifacts(
     0,
   );
 
-  // Calculate welfare improvement (weighted average gap × WES)
+  // Welfare improvement: budget-weighted reallocation potential
+  // = Σ(|gapUsd| × WES) / totalBudget × 100
+  // This gives "% of budget that should move, weighted by evidence quality"
   const welfareImprovementPct =
     categoryAnalyses.reduce(
       (sum, ca) =>
-        sum + Math.abs(ca.gap.gapPct) * ca.oslEstimate.welfareEvidenceScore,
+        sum + Math.abs(ca.gap.gapUsd) * ca.oslEstimate.welfareEvidenceScore,
       0,
-    ) / Math.max(categoryAnalyses.length, 1);
+    ) / Math.max(TOTAL_BUDGET_USD, 1) * 100;
 
   const result: BudgetOptimizationResult = {
     jurisdictionName: 'United States of America',

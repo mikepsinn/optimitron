@@ -143,6 +143,24 @@ export function fitSaturationModel(
 }
 
 /**
+ * Predict outcome at a given spending level.
+ * For log model: Outcome = α + β × log(Spending)
+ * For saturation: Outcome = α + β × (Spending / (Spending + γ))
+ */
+export function predictOutcome(
+  spending: number,
+  model: DiminishingReturnsModel,
+): number {
+  if (model.type === 'log') {
+    const safeSpending = Math.max(spending, 0.001);
+    return model.alpha + model.beta * Math.log(safeSpending);
+  } else {
+    const gamma = model.gamma!;
+    return model.alpha + model.beta * (spending / (spending + gamma));
+  }
+}
+
+/**
  * Calculate marginal return at a given spending level
  * For log model: dOutcome/dSpending = β/Spending
  * For saturation: dOutcome/dSpending = β×γ/(S+γ)²

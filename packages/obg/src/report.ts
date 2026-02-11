@@ -20,6 +20,8 @@ export interface CategoryAnalysis {
   gap: SpendingGap;
   diminishingReturnsModel?: DiminishingReturnsModel;
   marginalReturn?: number;
+  /** Spending elasticity: dimensionless measure. 1% spending increase → ε% outcome increase. */
+  elasticity?: number;
   wesResult?: WESCalculationResult;
 }
 
@@ -151,11 +153,11 @@ function constrainedActionLabel(reallocationPct: number, isMaintain: boolean): s
  */
 function describeGrade(grade: string): string {
   switch (grade) {
-    case 'A': return 'Strong evidence of welfare benefit';
-    case 'B': return 'Probable welfare benefit';
-    case 'C': return 'Possible welfare benefit';
-    case 'D': return 'Weak evidence of welfare benefit';
-    case 'F': return 'No demonstrated welfare benefit';
+    case 'A': return 'Strong causal evidence';
+    case 'B': return 'Probable causal link';
+    case 'C': return 'Moderate evidence';
+    case 'D': return 'Weak evidence';
+    case 'F': return 'Insufficient evidence';
     default: return 'Unknown';
   }
 }
@@ -288,16 +290,17 @@ export function generateBudgetReport(
   // --- Summary ---
   lines.push('## Summary');
   lines.push('');
+  const discretionaryCount = analysis.categories.filter(c => c.category.discretionary !== false).length;
   if (constrainToCurrentBudget) {
     lines.push(
       `Reallocation within the ${formatUsd(analysis.totalBudgetUsd)} budget across ` +
-      `${analysis.categories.length} categories could improve welfare by ` +
+      `${discretionaryCount} discretionary categories could improve welfare by ` +
       `${formatNum(analysis.welfareImprovementPct)}%.`
     );
   } else {
     lines.push(
       `Optimizing the ${formatUsd(analysis.totalBudgetUsd)} budget across ` +
-      `${analysis.categories.length} categories could improve welfare by ` +
+      `${discretionaryCount} discretionary categories could improve welfare by ` +
       `${formatNum(analysis.welfareImprovementPct)}%.`
     );
   }
@@ -364,15 +367,15 @@ export function generateBudgetReport(
       lines.push('');
       lines.push(`- **Current Spending:** ${formatUsd(cat.category.currentSpendingUsd)}`);
       lines.push(`- **Optimal Spending Level:** ${formatUsd(cat.oslEstimate.oslUsd)}`);
-      if (cat.marginalReturn !== undefined) {
-        const rawMR = cat.marginalReturn;
-        const displayMR = Math.min(Math.abs(rawMR), 1.0);
-        const mrSign = rawMR < 0 ? '-' : '';
-        const mrNote = Math.abs(rawMR) > 1.0 ? ` (raw: ${formatNum(rawMR, 2)} — likely model overfitting)` : '';
-        lines.push(`- **Marginal Return:** ${mrSign}${displayMR.toFixed(4)}${mrNote}`);
+      if (cat.elasticity !== undefined) {
+        const sign = cat.elasticity < 0 ? '' : '';
+        lines.push(`- **Elasticity:** ${sign}${cat.elasticity.toFixed(2)} (1% spending increase → ${cat.elasticity.toFixed(2)}% outcome increase)`);
+      } else if (cat.marginalReturn !== undefined) {
+        lines.push(`- **Marginal Return:** ${cat.marginalReturn.toFixed(4)}`);
       }
       const modelFitWarning = model.r2 < 0.3 ? ' ⚠️ Low fit — treat with caution' : '';
-      lines.push(`- **Model:** ${describeModelType(model.type)} (R² = ${formatNum(model.r2, 2)})${modelFitWarning}`);
+      const smallSampleWarning = model.n <= 10 ? ` ⚠️ Small sample (n=${model.n}) — may overfit` : '';
+      lines.push(`- **Model:** ${describeModelType(model.type)} (R² = ${formatNum(model.r2, 2)})${modelFitWarning}${smallSampleWarning}`);
       lines.push(`- **Status:** ${status}`);
       lines.push('');
     }
@@ -397,7 +400,10 @@ export function generateBudgetReport(
       .sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
 
     const maintained = analysis.categories.filter(
-      c => c.gap.recommendedAction === 'maintain' || c.category.discretionary === false,
+      c => c.gap.recommendedAction === 'maintain' && c.category.discretionary !== false,
+    );
+    const nonDiscretionary = analysis.categories.filter(
+      c => c.category.discretionary === false,
     );
 
     if (actionable.length === 0) {
@@ -418,12 +424,10 @@ export function generateBudgetReport(
           `WES: ${formatNum(cat.oslEstimate.welfareEvidenceScore, 2)}; ` +
           `Evidence: ${cat.oslEstimate.evidenceGrade} (${describeGrade(cat.oslEstimate.evidenceGrade)})`
         );
-        if (cat.marginalReturn !== undefined) {
-          const rawMR = cat.marginalReturn;
-          const displayMR = Math.min(Math.abs(rawMR), 1.0);
-          const mrSign = rawMR < 0 ? '-' : '';
-          const mrNote = Math.abs(rawMR) > 1.0 ? ` (raw: ${formatNum(rawMR, 2)} — likely model overfitting)` : '';
-          lines.push(`   - Marginal return: ${mrSign}${displayMR.toFixed(4)}${mrNote}`);
+        if (cat.elasticity !== undefined) {
+          lines.push(`   - Elasticity: ${cat.elasticity.toFixed(2)} (1% spending increase → ${cat.elasticity.toFixed(2)}% outcome increase)`);
+        } else if (cat.marginalReturn !== undefined) {
+          lines.push(`   - Marginal return: ${cat.marginalReturn.toFixed(4)}`);
         }
       }
       lines.push('');
@@ -432,6 +436,14 @@ export function generateBudgetReport(
     if (maintained.length > 0) {
       lines.push('**Already near optimal:**');
       for (const cat of maintained) {
+        lines.push(`- ${cat.gap.categoryName}`);
+      }
+      lines.push('');
+    }
+
+    if (nonDiscretionary.length > 0) {
+      lines.push('**Non-discretionary (excluded from optimization):**');
+      for (const cat of nonDiscretionary) {
         lines.push(`- ${cat.gap.categoryName}`);
       }
       lines.push('');
@@ -480,8 +492,8 @@ export function generateBudgetReport(
     lines.push('No categories to score.');
     lines.push('');
   } else {
-    lines.push('| Category | WES | Grade | Quality Weight | Precision Weight | Evidence |');
-    lines.push('|----------|-----|-------|----------------|------------------|----------|');
+    lines.push('| Category | WES | Grade | Method | N | Evidence |');
+    lines.push('|----------|-----|-------|--------|---|----------|');
 
     const sortedByWES = [...analysis.categories]
       .filter(c => c.category.discretionary !== false)
@@ -492,15 +504,16 @@ export function generateBudgetReport(
     for (const cat of sortedByWES) {
       const wes = cat.oslEstimate.welfareEvidenceScore;
       const grade = cat.oslEstimate.evidenceGrade;
-      const qw = cat.wesResult?.qualityWeight;
-      const pw = cat.wesResult?.precisionWeight;
+      const methodology = cat.wesResult?.methodology;
+      const methodLabel = methodology === 'causal' ? 'Causal (N-of-1)' : 'Literature';
+      const n = cat.wesResult?.estimateCount;
 
       lines.push(
         `| ${cat.category.name} ` +
         `| ${formatNum(wes, 2)} ` +
         `| ${grade} ` +
-        `| ${qw !== undefined ? formatNum(qw, 2) : '—'} ` +
-        `| ${pw !== undefined ? formatNum(pw, 2) : '—'} ` +
+        `| ${methodLabel} ` +
+        `| ${n !== undefined ? n : '—'} ` +
         `| ${describeGrade(grade)} |`
       );
     }
