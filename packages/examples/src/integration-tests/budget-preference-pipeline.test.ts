@@ -8,7 +8,7 @@
  *   → Calculate consistency ratio
  *   → Generate preference weights
  *   → Run gap analysis against real budget
- *   → Calculate Budget Impact Scores
+ *   → Calculate Welfare Evidence Scores
  *   → Assert weights sum to 1, CR < 0.1, etc.
  */
 
@@ -24,7 +24,7 @@ import {
   calculatePreferenceGaps,
 } from '@optomitron/wishocracy';
 import {
-  calculateBIS,
+  calculateWES,
   type EffectEstimate,
   calculatePriorityScore,
 } from '@optomitron/obg';
@@ -313,8 +313,8 @@ describe('Budget Preference Pipeline — End-to-End', () => {
     });
   });
 
-  // Step 6: Calculate Budget Impact Scores
-  describe('Step 6: Budget Impact Scores', () => {
+  // Step 6: Calculate Welfare Evidence Scores
+  describe('Step 6: Welfare Evidence Scores', () => {
     const estimates: EffectEstimate[] = [
       { beta: 0.15, standardError: 0.03, method: 'difference_in_differences', year: 2023 },
       { beta: 0.12, standardError: 0.04, method: 'synthetic_control', year: 2022 },
@@ -322,31 +322,31 @@ describe('Budget Preference Pipeline — End-to-End', () => {
       { beta: 0.10, standardError: 0.06, method: 'before_after', year: 2020 },
     ];
 
-    const bis = calculateBIS(estimates, 2025);
+    const wes = calculateWES(estimates, 2025);
 
-    it('should calculate a BIS score between 0 and 1', () => {
-      expect(bis.score).toBeGreaterThanOrEqual(0);
-      expect(bis.score).toBeLessThanOrEqual(1);
+    it('should calculate a WES score between 0 and 1', () => {
+      expect(wes.score).toBeGreaterThanOrEqual(0);
+      expect(wes.score).toBeLessThanOrEqual(1);
     });
 
     it('should assign a valid evidence grade', () => {
-      expect(['A', 'B', 'C', 'D', 'F']).toContain(bis.grade);
+      expect(['A', 'B', 'C', 'D', 'F']).toContain(wes.grade);
     });
 
     it('should have positive quality, precision, and recency weights', () => {
-      expect(bis.qualityWeight).toBeGreaterThan(0);
-      expect(bis.precisionWeight).toBeGreaterThan(0);
-      expect(bis.recencyWeight).toBeGreaterThan(0);
+      expect(wes.qualityWeight).toBeGreaterThan(0);
+      expect(wes.precisionWeight).toBeGreaterThan(0);
+      expect(wes.recencyWeight).toBeGreaterThan(0);
     });
 
     it('should count all estimates', () => {
-      expect(bis.estimateCount).toBe(4);
+      expect(wes.estimateCount).toBe(4);
     });
 
-    it('should calculate priority scores from gaps and BIS', () => {
+    it('should calculate priority scores from gaps and WES', () => {
       for (const gap of gaps.slice(0, 3)) {
         if (gap.gapUsd !== undefined) {
-          const priority = calculatePriorityScore(gap.gapUsd, bis.score);
+          const priority = calculatePriorityScore(gap.gapUsd, wes.score);
           expect(priority).toBeGreaterThanOrEqual(0);
           expect(typeof priority).toBe('number');
           expect(Number.isFinite(priority)).toBe(true);

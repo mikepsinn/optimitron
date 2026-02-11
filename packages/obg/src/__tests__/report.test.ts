@@ -30,7 +30,7 @@ function makeOSL(overrides: Partial<OSLEstimate> = {}): OSLEstimate {
     estimationMethod: 'diminishing_returns',
     oslUsd: 62_000_000_000,
     evidenceGrade: 'B',
-    budgetImpactScore: 0.70,
+    welfareEvidenceScore: 0.70,
     ...overrides,
   };
 }
@@ -43,7 +43,7 @@ function makeGap(overrides: Partial<SpendingGap> = {}): SpendingGap {
     oslUsd: 62_000_000_000,
     gapUsd: 12_000_000_000,
     gapPct: 24,
-    budgetImpactScore: 0.70,
+    welfareEvidenceScore: 0.70,
     priorityScore: 8_400_000_000,
     welfareEffect: { incomeEffect: 0.15, healthEffect: 0.10 },
     recommendedAction: 'increase',
@@ -73,7 +73,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
       categoryId: 'military',
       oslUsd: 459_000_000_000,
       evidenceGrade: 'C',
-      budgetImpactScore: 0.50,
+      welfareEvidenceScore: 0.50,
     }),
     gap: makeGap({
       categoryId: 'military',
@@ -82,7 +82,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
       oslUsd: 459_000_000_000,
       gapUsd: -391_000_000_000,
       gapPct: -46,
-      budgetImpactScore: 0.50,
+      welfareEvidenceScore: 0.50,
       priorityScore: 195_500_000_000,
       welfareEffect: { incomeEffect: -0.10, healthEffect: -0.05 },
       recommendedAction: 'decrease',
@@ -99,7 +99,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
       categoryId: 'healthcare',
       oslUsd: 200_000_000_000,
       evidenceGrade: 'A',
-      budgetImpactScore: 0.90,
+      welfareEvidenceScore: 0.90,
     }),
     gap: makeGap({
       categoryId: 'healthcare',
@@ -108,7 +108,7 @@ function makeFullResult(overrides: Partial<BudgetOptimizationResult> = {}): Budg
       oslUsd: 200_000_000_000,
       gapUsd: 0,
       gapPct: 0,
-      budgetImpactScore: 0.90,
+      welfareEvidenceScore: 0.90,
       priorityScore: 0,
       welfareEffect: { incomeEffect: 0, healthEffect: 0 },
       recommendedAction: 'maintain',
@@ -236,7 +236,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Increase Education');
     expect(report).toContain('Decrease Military');
     expect(report).toContain('Priority: 100/100');
-    expect(report).toContain('Evidence: C (Possible association)');
+    expect(report).toContain('Evidence: C (Possible welfare benefit)');
   });
 
   it('sorts recommendations by priority score', () => {
@@ -262,36 +262,36 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Healthcare');
   });
 
-  it('contains budget impact scores table', () => {
+  it('contains welfare evidence scores table', () => {
     const report = generateBudgetReport(makeFullResult());
-    expect(report).toContain('## Budget Impact Scores');
-    expect(report).toContain('| Category | BIS | Grade');
-    expect(report).toContain('Strong causal evidence');
+    expect(report).toContain('## Welfare Evidence Scores');
+    expect(report).toContain('| Category | WES | Grade');
+    expect(report).toContain('Strong evidence of welfare benefit');
   });
 
   it('contains efficient frontier reallocation table', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Efficient Frontier (Reallocation Priority)');
-    expect(report).toContain('| Rank | Category | Reallocation Move | Priority | Gap ($) | BIS | Evidence |');
+    expect(report).toContain('| Rank | Category | Reallocation Move | Priority | Gap ($) | WES | Evidence |');
     expect(report).toContain('| 1 | Military | Decrease');
   });
 
-  it('sorts BIS table by score descending', () => {
+  it('sorts WES table by score descending', () => {
     const report = generateBudgetReport(makeFullResult());
-    // After the BIS table header, Healthcare (0.90) should appear before Education (0.70) and Military (0.50)
-    const bisSection = report.split('## Budget Impact Scores')[1]!;
-    const healthcareIdx = bisSection.indexOf('Healthcare');
-    const educationIdx = bisSection.indexOf('Education');
-    const defenseIdx = bisSection.indexOf('Military');
+    // After the WES table header, Healthcare (0.90) should appear before Education (0.70) and Military (0.50)
+    const wesSection = report.split('## Welfare Evidence Scores')[1]!;
+    const healthcareIdx = wesSection.indexOf('Healthcare');
+    const educationIdx = wesSection.indexOf('Education');
+    const defenseIdx = wesSection.indexOf('Military');
     expect(healthcareIdx).toBeLessThan(educationIdx);
     expect(educationIdx).toBeLessThan(defenseIdx);
   });
 
-  it('shows BIS quality and precision weights when available', () => {
+  it('shows WES quality and precision weights when available', () => {
     const result = makeFullResult({
       categories: [
         makeCategoryAnalysis({
-          bisResult: {
+          wesResult: {
             score: 0.85,
             grade: 'A',
             qualityWeight: 0.90,
@@ -307,7 +307,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('500');
   });
 
-  it('shows dashes when BIS details are not available', () => {
+  it('shows dashes when WES details are not available', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('—');
   });

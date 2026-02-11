@@ -93,7 +93,7 @@ describe('OSLEstimateSchema', () => {
       estimationMethod: 'diminishing_returns',
       oslUsd: 120000000000,
       evidenceGrade: 'B',
-      budgetImpactScore: 0.75,
+      welfareEvidenceScore: 0.75,
     });
     expect(result.success).toBe(true);
   });
@@ -108,7 +108,7 @@ describe('OSLEstimateSchema', () => {
       ciLow: 100000000000,
       ciHigh: 140000000000,
       evidenceGrade: 'A',
-      budgetImpactScore: 0.85,
+      welfareEvidenceScore: 0.85,
       methodologyNotes: 'Based on OECD cross-country analysis',
     });
     expect(result.success).toBe(true);
@@ -121,45 +121,45 @@ describe('OSLEstimateSchema', () => {
         estimationMethod: method,
         oslUsd: 100,
         evidenceGrade: 'C',
-        budgetImpactScore: 0.5,
+        welfareEvidenceScore: 0.5,
       }).success).toBe(true);
     }
   });
 
-  it('rejects budgetImpactScore > 1', () => {
+  it('rejects welfareEvidenceScore > 1', () => {
     expect(OSLEstimateSchema.safeParse({
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
       evidenceGrade: 'C',
-      budgetImpactScore: 1.5,
+      welfareEvidenceScore: 1.5,
     }).success).toBe(false);
   });
 
-  it('rejects budgetImpactScore < 0', () => {
+  it('rejects welfareEvidenceScore < 0', () => {
     expect(OSLEstimateSchema.safeParse({
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
       evidenceGrade: 'C',
-      budgetImpactScore: -0.1,
+      welfareEvidenceScore: -0.1,
     }).success).toBe(false);
   });
 
-  it('accepts boundary budgetImpactScore values (0 and 1)', () => {
+  it('accepts boundary welfareEvidenceScore values (0 and 1)', () => {
     expect(OSLEstimateSchema.safeParse({
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
       evidenceGrade: 'C',
-      budgetImpactScore: 0,
+      welfareEvidenceScore: 0,
     }).success).toBe(true);
     expect(OSLEstimateSchema.safeParse({
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
       evidenceGrade: 'C',
-      budgetImpactScore: 1,
+      welfareEvidenceScore: 1,
     }).success).toBe(true);
   });
 });
@@ -175,7 +175,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 120000000000,
       gapUsd: 40000000000,
       gapPct: 50,
-      budgetImpactScore: 0.75,
+      welfareEvidenceScore: 0.75,
       priorityScore: 0.80,
       welfareEffect: {
         incomeEffect: 0.05,
@@ -194,7 +194,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 600000000000,
       gapUsd: -200000000000,
       gapPct: -25,
-      budgetImpactScore: 0.60,
+      welfareEvidenceScore: 0.60,
       priorityScore: 0.55,
       welfareEffect: {
         incomeEffect: 0.08,
@@ -213,7 +213,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 100000000000,
       gapUsd: 0,
       gapPct: 0,
-      budgetImpactScore: 0.50,
+      welfareEvidenceScore: 0.50,
       priorityScore: 0,
       welfareEffect: {
         incomeEffect: 0,
@@ -234,7 +234,7 @@ describe('SpendingGapSchema', () => {
         oslUsd: 100,
         gapUsd: 0,
         gapPct: 0,
-        budgetImpactScore: 0.5,
+        welfareEvidenceScore: 0.5,
         priorityScore: 0,
         welfareEffect: { incomeEffect: 0, healthEffect: 0 },
         recommendedAction: action,
@@ -250,7 +250,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 100,
       gapUsd: 0,
       gapPct: 0,
-      budgetImpactScore: 0.5,
+      welfareEvidenceScore: 0.5,
       priorityScore: 0,
       welfareEffect: { incomeEffect: 0, healthEffect: 0 },
       recommendedAction: 'remove',
@@ -265,7 +265,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 100,
       gapUsd: 0,
       gapPct: 0,
-      budgetImpactScore: 0.5,
+      welfareEvidenceScore: 0.5,
       priorityScore: 0,
       recommendedAction: 'maintain',
     }).success).toBe(false);

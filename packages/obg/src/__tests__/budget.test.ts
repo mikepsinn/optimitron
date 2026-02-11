@@ -86,7 +86,7 @@ describe('OSLEstimateSchema', () => {
       ciLow: 800_000_000_000,
       ciHigh: 1_000_000_000_000,
       evidenceGrade: 'B',
-      budgetImpactScore: 0.70,
+      welfareEvidenceScore: 0.70,
       methodologyNotes: 'Cross-country log model, n=25 OECD countries',
     };
     expect(OSLEstimateSchema.safeParse(estimate).success).toBe(true);
@@ -98,7 +98,7 @@ describe('OSLEstimateSchema', () => {
       estimationMethod: 'cost_effectiveness',
       oslUsd: 16_200_000_000,
       evidenceGrade: 'A',
-      budgetImpactScore: 0.95,
+      welfareEvidenceScore: 0.95,
     };
     expect(OSLEstimateSchema.safeParse(estimate).success).toBe(true);
   });
@@ -109,22 +109,22 @@ describe('OSLEstimateSchema', () => {
       estimationMethod: 'benchmark',
       oslUsd: 459_000_000_000,
       evidenceGrade: 'C',
-      budgetImpactScore: 0.50,
+      welfareEvidenceScore: 0.50,
     };
     expect(OSLEstimateSchema.safeParse(estimate).success).toBe(true);
   });
 
-  it('constrains BIS to 0-1 range', () => {
+  it('constrains WES to 0-1 range', () => {
     const base = {
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
       evidenceGrade: 'C',
     };
-    expect(OSLEstimateSchema.safeParse({ ...base, budgetImpactScore: 0 }).success).toBe(true);
-    expect(OSLEstimateSchema.safeParse({ ...base, budgetImpactScore: 1 }).success).toBe(true);
-    expect(OSLEstimateSchema.safeParse({ ...base, budgetImpactScore: -0.1 }).success).toBe(false);
-    expect(OSLEstimateSchema.safeParse({ ...base, budgetImpactScore: 1.1 }).success).toBe(false);
+    expect(OSLEstimateSchema.safeParse({ ...base, welfareEvidenceScore: 0 }).success).toBe(true);
+    expect(OSLEstimateSchema.safeParse({ ...base, welfareEvidenceScore: 1 }).success).toBe(true);
+    expect(OSLEstimateSchema.safeParse({ ...base, welfareEvidenceScore: -0.1 }).success).toBe(false);
+    expect(OSLEstimateSchema.safeParse({ ...base, welfareEvidenceScore: 1.1 }).success).toBe(false);
   });
 
   it('only accepts valid evidence grades', () => {
@@ -132,7 +132,7 @@ describe('OSLEstimateSchema', () => {
       categoryId: 'x',
       estimationMethod: 'benchmark',
       oslUsd: 100,
-      budgetImpactScore: 0.5,
+      welfareEvidenceScore: 0.5,
     };
     for (const grade of ['A', 'B', 'C', 'D', 'F']) {
       expect(OSLEstimateSchema.safeParse({ ...base, evidenceGrade: grade }).success).toBe(true);
@@ -153,7 +153,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 50_000_000_000,
       gapUsd: 49_500_000_000,
       gapPct: 9900,
-      budgetImpactScore: 0.90,
+      welfareEvidenceScore: 0.90,
       priorityScore: 44_550_000_000,
       welfareEffect: {
         incomeEffect: 0.2,
@@ -172,7 +172,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 459_000_000_000,
       gapUsd: -391_000_000_000,
       gapPct: -46,
-      budgetImpactScore: 0.50,
+      welfareEvidenceScore: 0.50,
       priorityScore: 195_500_000_000,
       welfareEffect: {
         incomeEffect: -0.1,
@@ -191,7 +191,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 0,
       gapUsd: -25_000_000_000,
       gapPct: -100,
-      budgetImpactScore: 0.90,
+      welfareEvidenceScore: 0.90,
       priorityScore: 22_500_000_000,
       welfareEffect: {
         incomeEffect: -0.05,
@@ -210,7 +210,7 @@ describe('SpendingGapSchema', () => {
       oslUsd: 100,
       gapUsd: 0,
       gapPct: 0,
-      budgetImpactScore: 0.5,
+      welfareEvidenceScore: 0.5,
       priorityScore: 0,
       welfareEffect: { incomeEffect: 0, healthEffect: 0 },
     };

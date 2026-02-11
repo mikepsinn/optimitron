@@ -37,7 +37,7 @@ export const OSLEstimateSchema = z.object({
   ciLow: z.number().optional(),
   ciHigh: z.number().optional(),
   evidenceGrade: EvidenceGradeSchema,
-  budgetImpactScore: z.number().min(0).max(1),
+  welfareEvidenceScore: z.number().min(0).max(1),
   methodologyNotes: z.string().optional(),
 });
 
@@ -50,7 +50,7 @@ export const SpendingGapSchema = z.object({
   oslUsd: z.number(),
   gapUsd: z.number(),
   gapPct: z.number(),
-  budgetImpactScore: z.number(),
+  welfareEvidenceScore: z.number(),
   priorityScore: z.number(),
   welfareEffect: WelfareEffectSchema,
   recommendedAction: z.enum(['scale_up', 'increase', 'maintain', 'decrease', 'major_decrease']),

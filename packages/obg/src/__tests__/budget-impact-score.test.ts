@@ -3,7 +3,7 @@ import {
   qualityWeight,
   precisionWeight,
   recencyWeight,
-  calculateBIS,
+  calculateWES,
   scoreToGrade,
   calculatePriorityScore,
   type EffectEstimate,
@@ -109,21 +109,21 @@ describe('recencyWeight', () => {
   });
 });
 
-// ============================== calculateBIS ===============================
+// ============================== calculateWES ===============================
 
-describe('calculateBIS', () => {
+describe('calculateWES', () => {
   it('returns zero score and grade F for empty estimates', () => {
-    const result = calculateBIS([]);
+    const result = calculateWES([]);
     expect(result.score).toBe(0);
     expect(result.grade).toBe('F');
     expect(result.estimateCount).toBe(0);
   });
 
-  it('calculates BIS for a single RCT estimate', () => {
+  it('calculates WES for a single RCT estimate', () => {
     const estimates: EffectEstimate[] = [
       { beta: 0.5, standardError: 0.1, method: 'rct', year: 2023 },
     ];
-    const result = calculateBIS(estimates, 2025);
+    const result = calculateWES(estimates, 2025);
 
     expect(result.score).toBeGreaterThan(0);
     expect(result.score).toBeLessThanOrEqual(1);
@@ -141,39 +141,39 @@ describe('calculateBIS', () => {
     const csEstimate: EffectEstimate[] = [
       { beta: 0.5, standardError: 2.0, method: 'cross_sectional', year: 2023 },
     ];
-    const rctResult = calculateBIS(rctEstimate, 2025);
-    const csResult = calculateBIS(csEstimate, 2025);
+    const rctResult = calculateWES(rctEstimate, 2025);
+    const csResult = calculateWES(csEstimate, 2025);
 
     expect(rctResult.score).toBeGreaterThan(csResult.score);
   });
 
-  it('more precise estimates get higher BIS', () => {
+  it('more precise estimates get higher WES', () => {
     const precise: EffectEstimate[] = [
       { beta: 0.5, standardError: 1.0, method: 'cross_sectional', year: 2023 },
     ];
     const imprecise: EffectEstimate[] = [
       { beta: 0.5, standardError: 5.0, method: 'cross_sectional', year: 2023 },
     ];
-    const preciseResult = calculateBIS(precise, 2025);
-    const impreciseResult = calculateBIS(imprecise, 2025);
+    const preciseResult = calculateWES(precise, 2025);
+    const impreciseResult = calculateWES(imprecise, 2025);
 
     expect(preciseResult.score).toBeGreaterThan(impreciseResult.score);
   });
 
-  it('recent studies get higher BIS', () => {
+  it('recent studies get higher WES', () => {
     const recent: EffectEstimate[] = [
       { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2024 },
     ];
     const old: EffectEstimate[] = [
       { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2000 },
     ];
-    const recentResult = calculateBIS(recent, 2025);
-    const oldResult = calculateBIS(old, 2025);
+    const recentResult = calculateWES(recent, 2025);
+    const oldResult = calculateWES(old, 2025);
 
     expect(recentResult.score).toBeGreaterThan(oldResult.score);
   });
 
-  it('multiple estimates increase BIS (more evidence = more confidence)', () => {
+  it('multiple estimates increase WES (more evidence = more confidence)', () => {
     const single: EffectEstimate[] = [
       { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2023 },
     ];
@@ -182,8 +182,8 @@ describe('calculateBIS', () => {
       { beta: 0.6, standardError: 4.0, method: 'cross_sectional', year: 2022 },
       { beta: 0.4, standardError: 5.0, method: 'cross_sectional', year: 2020 },
     ];
-    const singleResult = calculateBIS(single, 2025);
-    const multipleResult = calculateBIS(multiple, 2025);
+    const singleResult = calculateWES(single, 2025);
+    const multipleResult = calculateWES(multiple, 2025);
 
     expect(multipleResult.score).toBeGreaterThan(singleResult.score);
   });
@@ -196,7 +196,7 @@ describe('calculateBIS', () => {
       method: 'rct' as const,
       year: 2024,
     }));
-    const result = calculateBIS(estimates, 2025);
+    const result = calculateWES(estimates, 2025);
     expect(result.score).toBe(1);
   });
 
@@ -205,7 +205,7 @@ describe('calculateBIS', () => {
       { beta: 0.5, standardError: 0.1, method: 'rct', year: 2023 },
       { beta: 0.3, standardError: 0.2, method: 'cross_sectional', year: 2020 },
     ];
-    const result = calculateBIS(estimates, 2025);
+    const result = calculateWES(estimates, 2025);
 
     // Average quality: (1.0 + 0.25) / 2 = 0.625
     expect(result.qualityWeight).toBeCloseTo(0.625, 5);
@@ -218,7 +218,7 @@ describe('calculateBIS', () => {
   });
 
   it('handles paper priority ranking scenario', () => {
-    // From paper: Pragmatic trials BIS = 0.90
+    // From paper: Pragmatic trials WES = 0.90
     // We can't reproduce exactly without knowing K, but can test relative ordering
     const highEvidence: EffectEstimate[] = [
       { beta: 2.0, standardError: 0.1, method: 'rct', year: 2024 },
@@ -228,8 +228,8 @@ describe('calculateBIS', () => {
       { beta: 0.5, standardError: 0.5, method: 'cross_sectional', year: 2015 },
     ];
 
-    const highResult = calculateBIS(highEvidence, 2025);
-    const lowResult = calculateBIS(lowEvidence, 2025);
+    const highResult = calculateWES(highEvidence, 2025);
+    const lowResult = calculateWES(lowEvidence, 2025);
 
     expect(highResult.score).toBeGreaterThan(lowResult.score);
     expect(highResult.grade).not.toBe('F');
@@ -267,68 +267,74 @@ describe('scoreToGrade', () => {
 
   it('matches paper grading table exactly', () => {
     // Paper: A = 0.80-1.00, B = 0.60-0.79, C = 0.40-0.59, D = 0.20-0.39, F = 0.00-0.19
-    expect(scoreToGrade(0.85)).toBe('A'); // "Strong causal evidence"
-    expect(scoreToGrade(0.70)).toBe('B'); // "Good evidence"
-    expect(scoreToGrade(0.50)).toBe('C'); // "Mixed evidence"
-    expect(scoreToGrade(0.30)).toBe('D'); // "Weak evidence"
-    expect(scoreToGrade(0.10)).toBe('F'); // "Insufficient evidence"
+    expect(scoreToGrade(0.85)).toBe('A'); // "Strong evidence of welfare benefit"
+    expect(scoreToGrade(0.70)).toBe('B'); // "Probable welfare benefit"
+    expect(scoreToGrade(0.50)).toBe('C'); // "Possible welfare benefit"
+    expect(scoreToGrade(0.30)).toBe('D'); // "Weak evidence of welfare benefit"
+    expect(scoreToGrade(0.10)).toBe('F'); // "No demonstrated welfare benefit"
   });
 });
 
 // ======================== calculatePriorityScore ============================
 
 describe('calculatePriorityScore', () => {
-  it('computes |Gap| × BIS', () => {
-    // Paper: Pragmatic trials: |$49.5B| × 0.90 = 44.55B
+  it('computes gap × WES for underspend', () => {
+    // Underspend: priority = gap × WES
     expect(calculatePriorityScore(49_500_000_000, 0.90)).toBeCloseTo(
       44_550_000_000,
       -3,
     );
   });
 
-  it('handles negative gaps (overinvestment)', () => {
-    // Paper: Military |−$391B| × 0.50 = 195.5B
-    expect(calculatePriorityScore(-391_000_000_000, 0.50)).toBeCloseTo(
-      195_500_000_000,
-      -3,
-    );
+  it('uses inverted formula for overspend (low WES = high priority)', () => {
+    // Overspend: priority = |gap| × (1 - WES × 0.5)
+    // Military: gap = -719B, WES = 0.036
+    // priority = 719B × (1 - 0.036 × 0.5) = 719B × 0.982 = ~706B
+    const priority = calculatePriorityScore(-719_000_000_000, 0.036);
+    const expected = 719_000_000_000 * (1 - 0.036 * 0.5);
+    expect(priority).toBeCloseTo(expected, -3);
+  });
+
+  it('overspend with high WES gets moderate priority', () => {
+    // Overspend + A grade: priority = |gap| × (1 - 0.90 × 0.5) = |gap| × 0.55
+    const priority = calculatePriorityScore(-100_000_000_000, 0.90);
+    expect(priority).toBeCloseTo(100_000_000_000 * 0.55, -3);
+  });
+
+  it('overspend with F grade gets near-full priority', () => {
+    // Overspend + F grade: priority = |gap| × (1 - 0.05 × 0.5) = |gap| × 0.975
+    const priority = calculatePriorityScore(-100_000_000_000, 0.05);
+    expect(priority).toBeCloseTo(100_000_000_000 * 0.975, -3);
   });
 
   it('returns 0 for zero gap', () => {
     expect(calculatePriorityScore(0, 0.90)).toBe(0);
   });
 
-  it('returns 0 for zero BIS', () => {
+  it('returns 0 for zero WES on underspend', () => {
     expect(calculatePriorityScore(49_500_000_000, 0)).toBe(0);
   });
 
-  it('ranks categories correctly per paper example', () => {
-    // From the paper's priority ranking table:
-    const pragmatic = calculatePriorityScore(49_500_000_000, 0.90);   // 44.55B
-    const research = calculatePriorityScore(45_000_000_000, 0.70);    // 31.5B
-    const vaccines = calculatePriorityScore(27_000_000_000, 0.95);    // 25.65B
-    const earlyChild = calculatePriorityScore(20_000_000_000, 0.85);  // 17.0B
-    const military = calculatePriorityScore(-391_000_000_000, 0.50);  // 195.5B
-    const agSubs = calculatePriorityScore(-25_000_000_000, 0.90);     // 22.5B
+  it('returns full gap for zero WES on overspend', () => {
+    // priority = |gap| × (1 - 0 × 0.5) = |gap|
+    expect(calculatePriorityScore(-100_000_000_000, 0)).toBe(100_000_000_000);
+  });
 
-    // Among positive-gap categories, pragmatic trials have highest priority
-    expect(pragmatic).toBeGreaterThan(research);
-    expect(research).toBeGreaterThan(vaccines);
-    expect(vaccines).toBeGreaterThan(earlyChild);
-
-    // Military has highest absolute priority due to enormous gap
-    expect(military).toBeGreaterThan(pragmatic);
+  it('ranks overspend+low-WES higher than overspend+high-WES', () => {
+    const lowWES = calculatePriorityScore(-391_000_000_000, 0.10);
+    const highWES = calculatePriorityScore(-391_000_000_000, 0.90);
+    expect(lowWES).toBeGreaterThan(highWES);
   });
 });
 
 // ======================== SE=0 edge case ===================================
 
-describe('BIS with standardError=0', () => {
+describe('WES with standardError=0', () => {
   it('produces finite score when SE is exactly 0', () => {
     const estimates: EffectEstimate[] = [
       { beta: 0.5, standardError: 0, method: 'rct', year: 2024 },
     ];
-    const result = calculateBIS(estimates, 2025);
+    const result = calculateWES(estimates, 2025);
     expect(Number.isFinite(result.score)).toBe(true);
     expect(result.score).toBeGreaterThan(0);
     expect(result.score).toBeLessThanOrEqual(1);
@@ -340,7 +346,7 @@ describe('BIS with standardError=0', () => {
       { beta: 0.5, standardError: 0, method: 'rct', year: 2024 },
       { beta: 0.3, standardError: 0.5, method: 'cross_sectional', year: 2020 },
     ];
-    const result = calculateBIS(estimates, 2025);
+    const result = calculateWES(estimates, 2025);
     expect(Number.isFinite(result.score)).toBe(true);
     expect(Number.isFinite(result.precisionWeight)).toBe(true);
     expect(Number.isFinite(result.qualityWeight)).toBe(true);

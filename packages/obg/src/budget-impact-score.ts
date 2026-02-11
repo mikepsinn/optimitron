@@ -1,9 +1,10 @@
 /**
- * Budget Impact Score (BIS) Calculation
- * 
- * Measures confidence in OSL estimates based on the quality
- * and quantity of causal evidence.
- * 
+ * Welfare Evidence Score (WES) Calculation
+ *
+ * Measures how strong the evidence is that a spending category's current
+ * level contributes to general welfare. An F grade means "no demonstrated
+ * welfare benefit" — putting the burden of proof on the program.
+ *
  * @see https://obg.warondisease.org/#budget-impact-score-bis
  */
 
@@ -18,7 +19,7 @@ export interface EffectEstimate {
   year: number;           // Publication year
 }
 
-export interface BISCalculationResult {
+export interface WESCalculationResult {
   score: number;              // 0-1
   grade: EvidenceGrade;       // A-F
   qualityWeight: number;      // Aggregate quality weight
@@ -31,16 +32,16 @@ export interface BISCalculationResult {
 const RECENCY_DECAY = 0.03;
 
 /**
- * Calibration constant for BIS normalization.
+ * Calibration constant for WES normalization.
  *
- * With K=10, a single estimate with SE=0.08 produces wP≈156, yielding
- * wQ*wP*wR/10 ≈ 9.83 → capped at 1.0 for nearly every category.
+ * With K=10, a single estimate with SE=0.08 produces wP~156, yielding
+ * wQ*wP*wR/10 ~ 9.83 -> capped at 1.0 for nearly every category.
  * K=500 creates actual differentiation:
- *   - Single weak (cross_sectional, SE=0.20): ≈0.006 (Grade F)
- *   - Single strong (RDD, SE=0.06): ≈0.49 (Grade C)
- *   - Three strong estimates: ≈1.46 → capped 1.0 (Grade A)
+ *   - Single weak (cross_sectional, SE=0.20): ~0.006 (Grade F)
+ *   - Single strong (RDD, SE=0.06): ~0.49 (Grade C)
+ *   - Three strong estimates: ~1.46 -> capped 1.0 (Grade A)
  */
-const BIS_CALIBRATION_K = 500;
+const WES_CALIBRATION_K = 500;
 
 /**
  * Calculate quality weight for an estimate based on identification method
@@ -70,12 +71,12 @@ export function recencyWeight(
 }
 
 /**
- * Calculate Budget Impact Score from effect estimates
+ * Calculate Welfare Evidence Score from effect estimates
  */
-export function calculateBIS(
+export function calculateWES(
   estimates: EffectEstimate[],
   currentYear: number = new Date().getFullYear()
-): BISCalculationResult {
+): WESCalculationResult {
   if (estimates.length === 0) {
     return {
       score: 0,
@@ -86,29 +87,29 @@ export function calculateBIS(
       estimateCount: 0,
     };
   }
-  
+
   let totalWeightedScore = 0;
   let totalQualityWeight = 0;
   let totalPrecisionWeight = 0;
   let totalRecencyWeight = 0;
-  
+
   for (const est of estimates) {
     const wQ = qualityWeight(est.method);
     const wP = precisionWeight(est.standardError);
     const wR = recencyWeight(est.year, currentYear);
-    
+
     totalWeightedScore += wQ * wP * wR;
     totalQualityWeight += wQ;
     totalPrecisionWeight += wP;
     totalRecencyWeight += wR;
   }
-  
+
   // Normalize to 0-1
-  const score = Math.min(1, totalWeightedScore / BIS_CALIBRATION_K);
-  
+  const score = Math.min(1, totalWeightedScore / WES_CALIBRATION_K);
+
   // Convert score to grade
   const grade = scoreToGrade(score);
-  
+
   return {
     score,
     grade,
@@ -120,7 +121,7 @@ export function calculateBIS(
 }
 
 /**
- * Convert BIS score to evidence grade
+ * Convert WES score to evidence grade
  */
 export function scoreToGrade(score: number): EvidenceGrade {
   if (score >= 0.80) return 'A';
@@ -131,12 +132,20 @@ export function scoreToGrade(score: number): EvidenceGrade {
 }
 
 /**
- * Calculate priority score for reallocation
- * Priority = |Gap| × BIS
+ * Calculate priority score for reallocation.
+ *
+ * Direction-aware: for underspend, high WES increases priority (we know
+ * it works, fund it). For overspend, low WES increases priority (no
+ * evidence this helps, why are we spending this much?).
  */
 export function calculatePriorityScore(
   gapUsd: number,
-  bisScore: number
+  wesScore: number
 ): number {
-  return Math.abs(gapUsd) * bisScore;
+  if (gapUsd >= 0) {
+    // Underspend: scale UP priority with evidence strength
+    return gapUsd * wesScore;
+  }
+  // Overspend: low evidence INCREASES urgency to reduce
+  return Math.abs(gapUsd) * (1 - wesScore * 0.5);
 }

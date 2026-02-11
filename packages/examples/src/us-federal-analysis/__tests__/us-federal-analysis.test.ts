@@ -144,9 +144,9 @@ describe('Budget Report Markdown', () => {
     expect(budgetMarkdown).toContain('## Top Recommendations');
   });
 
-  it('should have a Budget Impact Scores section', () => {
-    expect(budgetMarkdown).toContain('## Budget Impact Scores');
-    expect(budgetMarkdown).toContain('| Category | BIS |');
+  it('should have a Welfare Evidence Scores section', () => {
+    expect(budgetMarkdown).toContain('## Welfare Evidence Scores');
+    expect(budgetMarkdown).toContain('| Category | WES |');
   });
 });
 

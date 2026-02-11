@@ -3,75 +3,23 @@
   "totalBudget": 6750000000000,
   "categories": [
     {
-      "name": "Health Research (NIH, CDC)",
-      "currentSpending": 102000000000,
-      "optimalSpending": 2050635806738.7642,
-      "gap": 1948635806738.7642,
-      "gapPercent": 1910.4272615085922,
-      "marginalReturn": 0.0016999103529453737,
-      "recommendation": "increase",
+      "name": "Military",
+      "currentSpending": 886000000000,
+      "optimalSpending": 210520484848.4848,
+      "gap": -675479515151.5151,
+      "gapPercent": -76.23922292906491,
+      "marginalReturn": -0.09794552501539068,
+      "recommendation": "decrease",
       "outcomeMetrics": [
         {
-          "name": "NIH-Funded Publications",
-          "value": 85000,
-          "trend": "increasing"
-        },
-        {
-          "name": "Drug Approvals (FDA)",
-          "value": 55,
-          "trend": "increasing"
-        },
-        {
-          "name": "Life Expectancy",
-          "value": 77.5,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Social Security",
-      "currentSpending": 1418000000000,
-      "optimalSpending": 4840922383304.283,
-      "gap": 3422922383304.283,
-      "gapPercent": 241.39085918930064,
-      "marginalReturn": 0.00037644534370116686,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Elderly Poverty Rate",
-          "value": 10.2,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Retirement Security Index",
-          "value": 67,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Medicare",
-      "currentSpending": 874000000000,
-      "optimalSpending": 2050635806738.7642,
-      "gap": 1176635806738.7642,
-      "gapPercent": 134.62652251015606,
-      "marginalReturn": 0.0006554061018229563,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Life Expectancy at 65",
-          "value": 19.4,
-          "trend": "stable"
-        },
-        {
-          "name": "Uninsured Rate (65+)",
+          "name": "Global Firepower Index Rank",
           "value": 1,
           "trend": "stable"
         },
         {
-          "name": "Preventable Hospitalizations per 1000",
-          "value": 48,
-          "trend": "decreasing"
+          "name": "Military Readiness Score",
+          "value": 87,
+          "trend": "stable"
         }
       ]
     },
@@ -128,43 +76,27 @@
       ]
     },
     {
-      "name": "Science & Space (NASA, NSF)",
-      "currentSpending": 81000000000,
-      "optimalSpending": 461026689020.17535,
-      "gap": 380026689020.17535,
-      "gapPercent": 469.1687518767597,
-      "marginalReturn": 36.40441349096675,
-      "recommendation": "increase",
-      "outcomeMetrics": [
-        {
-          "name": "Patent Applications",
-          "value": 350000,
-          "trend": "increasing"
-        },
-        {
-          "name": "STEM Graduates per 100K",
-          "value": 28,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Military",
-      "currentSpending": 886000000000,
-      "optimalSpending": 166992000000,
-      "gap": -719008000000,
-      "gapPercent": -81.15214446952595,
-      "marginalReturn": -0.0001028225355234275,
+      "name": "Farm Subsidies",
+      "currentSpending": 30000000000,
+      "optimalSpending": 13440000000,
+      "gap": -16560000000,
+      "gapPercent": -55.2,
+      "marginalReturn": -0.045594349442446086,
       "recommendation": "decrease",
       "outcomeMetrics": [
         {
-          "name": "Global Firepower Index Rank",
-          "value": 1,
+          "name": "Farm Income Index",
+          "value": 74,
           "trend": "stable"
         },
         {
-          "name": "Military Readiness Score",
-          "value": 87,
+          "name": "Food Price Index",
+          "value": 108,
+          "trend": "increasing"
+        },
+        {
+          "name": "Subsidy per Capita",
+          "value": 89,
           "trend": "stable"
         }
       ]
@@ -233,6 +165,27 @@
       ]
     },
     {
+      "name": "Immigration & Customs Enforcement",
+      "currentSpending": 9000000000,
+      "optimalSpending": 1680000000,
+      "gap": -7320000000,
+      "gapPercent": -81.33333333333333,
+      "marginalReturn": -0.13283184845801563,
+      "recommendation": "decrease",
+      "outcomeMetrics": [
+        {
+          "name": "Deportations per Year",
+          "value": 170000,
+          "trend": "increasing"
+        },
+        {
+          "name": "Border Encounters per Year",
+          "value": 2000000,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
       "name": "Environment & EPA",
       "currentSpending": 68000000000,
       "optimalSpending": 97310980109.96185,
@@ -281,11 +234,11 @@
     },
     {
       "name": "Agriculture & Food Safety",
-      "currentSpending": 68000000000,
+      "currentSpending": 38000000000,
       "optimalSpending": 125143969984.08743,
-      "gap": 57143969984.08743,
-      "gapPercent": 84.03524997659918,
-      "marginalReturn": 0.10801757407234912,
+      "gap": 87143969984.08743,
+      "gapPercent": 229.3262368002301,
+      "marginalReturn": 0.19329460623472997,
       "recommendation": "increase",
       "outcomeMetrics": [
         {
@@ -301,13 +254,60 @@
       ]
     },
     {
+      "name": "Social Security",
+      "currentSpending": 1418000000000,
+      "optimalSpending": 2938974974358.9746,
+      "gap": 1520974974358.9746,
+      "gapPercent": 107.26198690824927,
+      "marginalReturn": 0.8917117732521743,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Elderly Poverty Rate",
+          "value": 10.2,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Retirement Security Index",
+          "value": 67,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Health Research (NIH, CDC)",
+      "currentSpending": 102000000000,
+      "optimalSpending": 1296213872504.3074,
+      "gap": 1194213872504.3074,
+      "gapPercent": 1170.7979142199092,
+      "marginalReturn": 0.9018952576838184,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "NIH-Funded Publications",
+          "value": 85000,
+          "trend": "increasing"
+        },
+        {
+          "name": "Drug Approvals (FDA)",
+          "value": 55,
+          "trend": "increasing"
+        },
+        {
+          "name": "Life Expectancy",
+          "value": 77.5,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
       "name": "Medicaid & CHIP",
       "currentSpending": 575000000000,
-      "optimalSpending": 575000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0.000055574575405387387,
-      "recommendation": "maintain",
+      "optimalSpending": 1295245675808.25,
+      "gap": 720245675808.25,
+      "gapPercent": 125.26011753186957,
+      "marginalReturn": 0.932397470223725,
+      "recommendation": "increase",
       "outcomeMetrics": [
         {
           "name": "Uninsured Rate (Low-Income)",
@@ -322,6 +322,79 @@
         {
           "name": "Child Health Coverage Rate",
           "value": 95.2,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Income Security (SNAP, Housing)",
+      "currentSpending": 304000000000,
+      "optimalSpending": 2686049732680.9434,
+      "gap": 2382049732680.9434,
+      "gapPercent": 783.5689910134681,
+      "marginalReturn": -0.04146142804373228,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Food Insecurity Rate",
+          "value": 12.8,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Poverty Rate",
+          "value": 11.5,
+          "trend": "stable"
+        },
+        {
+          "name": "Homelessness per 10K",
+          "value": 18,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Medicare",
+      "currentSpending": 874000000000,
+      "optimalSpending": 1296213872504.3074,
+      "gap": 422213872504.3074,
+      "gapPercent": 48.30822339866217,
+      "marginalReturn": 0.9018952576838184,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Life Expectancy at 65",
+          "value": 19.4,
+          "trend": "stable"
+        },
+        {
+          "name": "Uninsured Rate (65+)",
+          "value": 1,
+          "trend": "stable"
+        },
+        {
+          "name": "Preventable Hospitalizations per 1000",
+          "value": 48,
+          "trend": "decreasing"
+        }
+      ]
+    },
+    {
+      "name": "Science & Space (NASA, NSF)",
+      "currentSpending": 81000000000,
+      "optimalSpending": 318308553508.32733,
+      "gap": 237308553508.32733,
+      "gapPercent": 292.97352284978683,
+      "marginalReturn": 0.77216926667008,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "Patent Applications",
+          "value": 350000,
+          "trend": "increasing"
+        },
+        {
+          "name": "STEM Graduates per 100K",
+          "value": 28,
           "trend": "increasing"
         }
       ]
@@ -348,32 +421,6 @@
       ]
     },
     {
-      "name": "Income Security (SNAP, Housing)",
-      "currentSpending": 304000000000,
-      "optimalSpending": 304000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0.0014212525984477462,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Food Insecurity Rate",
-          "value": 12.8,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Poverty Rate",
-          "value": 11.5,
-          "trend": "stable"
-        },
-        {
-          "name": "Homelessness per 10K",
-          "value": 18,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
       "name": "Veterans Benefits",
       "currentSpending": 270000000000,
       "optimalSpending": 270000000000,
@@ -396,16 +443,16 @@
     }
   ],
   "topRecommendations": [
-    "Increase Health Research (NIH, CDC) by $1948.6B (+1910.4%)",
-    "Increase Social Security by $3422.9B (+241.4%)",
-    "Increase Medicare by $1176.6B (+134.6%)",
+    "Decrease Military by $675.5B (-76.2%)",
     "Increase Education by $1207.9B (+507.5%)",
     "Increase Transportation & Infrastructure by $495.1B (+294.7%)",
-    "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
-    "Decrease Military by $719.0B (-81.2%)",
+    "Decrease Farm Subsidies by $16.6B (-55.2%)",
     "Increase Community & Regional Development by $61.8B (+150.8%)",
     "Increase Energy Programs by $50.4B (+93.4%)",
-    "Increase International Affairs & Aid by $80.4B (+118.2%)"
+    "Increase International Affairs & Aid by $80.4B (+118.2%)",
+    "Decrease Immigration & Customs Enforcement by $7.3B (-81.3%)",
+    "Increase Environment & EPA by $29.3B (+43.1%)",
+    "Increase Justice & Law Enforcement by $138.8B (+204.1%)"
   ],
-  "generatedAt": "2026-02-11T06:47:09.714Z"
+  "generatedAt": "2026-02-11T07:45:43.157Z"
 }

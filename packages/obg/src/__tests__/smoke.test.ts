@@ -32,6 +32,6 @@ describe('@optomitron/obg smoke tests', () => {
   it('exports are importable', async () => {
     const obg = await import('../index.js');
     expect(obg).toHaveProperty('fitLogModel');
-    expect(obg).toHaveProperty('calculateBIS');
+    expect(obg).toHaveProperty('calculateWES');
   });
 });

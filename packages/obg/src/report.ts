@@ -8,7 +8,7 @@
 
 import type { SpendingGap, SpendingCategory, OSLEstimate } from './budget.js';
 import type { DiminishingReturnsModel } from './diminishing-returns.js';
-import type { BISCalculationResult } from './budget-impact-score.js';
+import type { WESCalculationResult } from './budget-impact-score.js';
 
 // ---------------------------------------------------------------------------
 // Result types
@@ -20,7 +20,7 @@ export interface CategoryAnalysis {
   gap: SpendingGap;
   diminishingReturnsModel?: DiminishingReturnsModel;
   marginalReturn?: number;
-  bisResult?: BISCalculationResult;
+  wesResult?: WESCalculationResult;
 }
 
 export interface BudgetOptimizationResult {
@@ -151,11 +151,11 @@ function constrainedActionLabel(reallocationPct: number, isMaintain: boolean): s
  */
 function describeGrade(grade: string): string {
   switch (grade) {
-    case 'A': return 'Strong causal evidence';
-    case 'B': return 'Probable causal relationship';
-    case 'C': return 'Possible association';
-    case 'D': return 'Weak evidence';
-    case 'F': return 'Insufficient evidence';
+    case 'A': return 'Strong evidence of welfare benefit';
+    case 'B': return 'Probable welfare benefit';
+    case 'C': return 'Possible welfare benefit';
+    case 'D': return 'Weak evidence of welfare benefit';
+    case 'F': return 'No demonstrated welfare benefit';
     default: return 'Unknown';
   }
 }
@@ -183,7 +183,7 @@ function describeModelType(type: string): string {
  * - Current vs Optimal Allocation table
  * - Diminishing Returns Analysis
  * - Top Recommendations sorted by priority
- * - Budget Impact Scores ranked by BIS
+ * - Welfare Evidence Scores ranked by WES
  *
  * @param analysis - Complete budget optimization result
  * @returns Markdown-formatted report string
@@ -413,7 +413,7 @@ export function generateBudgetReport(
         lines.push(`${i + 1}. ${desc}`);
         lines.push(
           `   - Priority: ${formatNum(normalizePriority(cat.gap.priorityScore), 1)}/100; ` +
-          `BIS: ${formatNum(cat.oslEstimate.budgetImpactScore, 2)}; ` +
+          `WES: ${formatNum(cat.oslEstimate.welfareEvidenceScore, 2)}; ` +
           `Evidence: ${cat.oslEstimate.evidenceGrade} (${describeGrade(cat.oslEstimate.evidenceGrade)})`
         );
         if (cat.marginalReturn !== undefined) {
@@ -452,7 +452,7 @@ export function generateBudgetReport(
       lines.push('Current allocation is already near the efficient frontier.');
       lines.push('');
     } else {
-      lines.push('| Rank | Category | Reallocation Move | Priority | Gap ($) | BIS | Evidence |');
+      lines.push('| Rank | Category | Reallocation Move | Priority | Gap ($) | WES | Evidence |');
       lines.push('|------|----------|-------------------|----------|---------|-----|----------|');
       for (let i = 0; i < frontier.length; i++) {
         const cat = frontier[i]!;
@@ -462,7 +462,7 @@ export function generateBudgetReport(
           `| ${actionLabel(cat.gap.recommendedAction)} ` +
           `| ${formatNum(normalizePriority(cat.gap.priorityScore), 1)}/100 ` +
           `| ${formatGapUsd(cat.gap.gapUsd)} ` +
-          `| ${formatNum(cat.oslEstimate.budgetImpactScore, 2)} ` +
+          `| ${formatNum(cat.oslEstimate.welfareEvidenceScore, 2)} ` +
           `| ${cat.oslEstimate.evidenceGrade} (${describeGrade(cat.oslEstimate.evidenceGrade)}) |`
         );
       }
@@ -470,30 +470,30 @@ export function generateBudgetReport(
     }
   }
 
-  // --- Budget Impact Scores ---
-  lines.push('## Budget Impact Scores');
+  // --- Welfare Evidence Scores ---
+  lines.push('## Welfare Evidence Scores');
   lines.push('');
 
   if (analysis.categories.length === 0) {
     lines.push('No categories to score.');
     lines.push('');
   } else {
-    lines.push('| Category | BIS | Grade | Quality Weight | Precision Weight | Evidence |');
+    lines.push('| Category | WES | Grade | Quality Weight | Precision Weight | Evidence |');
     lines.push('|----------|-----|-------|----------------|------------------|----------|');
 
-    const sortedByBIS = [...analysis.categories].sort(
-      (a, b) => b.oslEstimate.budgetImpactScore - a.oslEstimate.budgetImpactScore
+    const sortedByWES = [...analysis.categories].sort(
+      (a, b) => b.oslEstimate.welfareEvidenceScore - a.oslEstimate.welfareEvidenceScore
     );
 
-    for (const cat of sortedByBIS) {
-      const bis = cat.oslEstimate.budgetImpactScore;
+    for (const cat of sortedByWES) {
+      const wes = cat.oslEstimate.welfareEvidenceScore;
       const grade = cat.oslEstimate.evidenceGrade;
-      const qw = cat.bisResult?.qualityWeight;
-      const pw = cat.bisResult?.precisionWeight;
+      const qw = cat.wesResult?.qualityWeight;
+      const pw = cat.wesResult?.precisionWeight;
 
       lines.push(
         `| ${cat.category.name} ` +
-        `| ${formatNum(bis, 2)} ` +
+        `| ${formatNum(wes, 2)} ` +
         `| ${grade} ` +
         `| ${qw !== undefined ? formatNum(qw, 2) : '—'} ` +
         `| ${pw !== undefined ? formatNum(pw, 2) : '—'} ` +
