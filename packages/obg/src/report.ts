@@ -350,7 +350,9 @@ export function generateBudgetReport(
   }
 
   // --- Diminishing Returns Analysis ---
-  const catsWithDR = analysis.categories.filter(c => c.diminishingReturnsModel);
+  const catsWithDR = analysis.categories.filter(
+    c => c.diminishingReturnsModel && c.category.discretionary !== false,
+  );
   if (catsWithDR.length > 0) {
     lines.push('## Diminishing Returns Analysis');
     lines.push('');
@@ -481,9 +483,11 @@ export function generateBudgetReport(
     lines.push('| Category | WES | Grade | Quality Weight | Precision Weight | Evidence |');
     lines.push('|----------|-----|-------|----------------|------------------|----------|');
 
-    const sortedByWES = [...analysis.categories].sort(
-      (a, b) => b.oslEstimate.welfareEvidenceScore - a.oslEstimate.welfareEvidenceScore
-    );
+    const sortedByWES = [...analysis.categories]
+      .filter(c => c.category.discretionary !== false)
+      .sort(
+        (a, b) => b.oslEstimate.welfareEvidenceScore - a.oslEstimate.welfareEvidenceScore,
+      );
 
     for (const cat of sortedByWES) {
       const wes = cat.oslEstimate.welfareEvidenceScore;

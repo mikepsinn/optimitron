@@ -148,6 +148,23 @@ describe('Budget Report Markdown', () => {
     expect(budgetMarkdown).toContain('## Welfare Evidence Scores');
     expect(budgetMarkdown).toContain('| Category | WES |');
   });
+
+  it('should have a Causal Evidence Detail section for OECD-mapped categories', () => {
+    expect(budgetMarkdown).toContain('## Causal Evidence Detail (OECD-Mapped Categories)');
+    expect(budgetMarkdown).toContain('BH Strength');
+    expect(budgetMarkdown).toContain('BH Temporality');
+  });
+
+  it('should mark non-discretionary categories in the allocation table', () => {
+    expect(budgetMarkdown).toContain('*(non-discretionary)*');
+  });
+
+  it('should list non-discretionary items in excluded section', () => {
+    expect(budgetMarkdown).toContain('Non-discretionary (excluded from reallocation)');
+    expect(budgetMarkdown).toContain('Social Security');
+    expect(budgetMarkdown).toContain('Medicare');
+    expect(budgetMarkdown).toContain('Medicaid');
+  });
 });
 
 // =========================================================================

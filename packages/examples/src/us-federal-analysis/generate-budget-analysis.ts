@@ -38,6 +38,7 @@ import {
 import {
   runCountryAnalysis,
   type AnnualTimeSeries,
+  type AggregateAnalysis,
 } from '@optomitron/obg';
 
 import type {
@@ -952,11 +953,33 @@ function enrichWithOECDData(categories: CategorySeed[]): CategorySeed[] {
 }
 
 /**
- * Run causal analysis for a category using the N-of-1 country analysis engine.
- * Returns a CategoryAnalysis if the category has an OECD mapping and sufficient data,
- * or null to fall back to curve-fitting.
+ * Causal evidence from N-of-1 country analysis.
+ * Used to compute WES from actual within-country temporal correlations,
+ * replacing the hand-constructed effect estimates.
  */
-function runCausalCategoryAnalysis(seed: CategorySeed): CategoryAnalysis | null {
+interface CausalEvidence {
+  wesScore: number;
+  wesGrade: string;
+  forwardPearson: number;
+  nCountries: number;
+  nSkipped: number;
+  positiveCount: number;
+  negativeCount: number;
+  meanEffectSize: number;
+  meanPercentChange: number;
+  bradfordHill: AggregateAnalysis['meanBradfordHill'];
+  methodologyNotes: string;
+}
+
+/**
+ * Compute causal Welfare Evidence Score for a category using N-of-1 country analysis.
+ *
+ * Uses Bradford Hill strength × cross-country consistency × temporality to produce
+ * a WES that differentiates well: health spending (r≈0.9) → high WES; military (r≈-0.1) → low WES.
+ *
+ * Returns null if the category has no OECD mapping or insufficient data.
+ */
+function computeCausalWES(seed: CategorySeed): CausalEvidence | null {
   const mapping = OECD_DATA_MAPPINGS[seed.id];
   if (!mapping) return null;
 
@@ -972,111 +995,37 @@ function runCausalCategoryAnalysis(seed: CategorySeed): CategoryAnalysis | null 
 
   if (causalResult.aggregate.n < 3) return null;
 
-  const currentSpendingUsd = seed.spendingBillions * 1_000_000_000;
-  const currentPerCapita = currentSpendingUsd / US_POPULATION;
+  const { aggregate } = causalResult;
+  const { meanBradfordHill: bh } = aggregate;
 
-  // OSL: meanOptimalValue is the per-capita spending level predicting best outcomes
-  let oslPerCapita = causalResult.aggregate.meanOptimalValue;
-  // Sanity: if the causal engine returns 0 or negative, keep current
-  if (!isFinite(oslPerCapita) || oslPerCapita <= 0) {
-    oslPerCapita = currentPerCapita;
-  }
-  const oslUsd = oslPerCapita * US_POPULATION;
-
-  // WES from PIS: PIS is 0-100, normalize to 0-1
-  const wesScore = Math.min(1, Math.max(0, causalResult.aggregate.meanPIS / 100));
+  // WES from Bradford Hill: strength × cross-country consistency × temporality
+  // This differentiates well:
+  //   Health (r≈0.9): strength≈0.95, consistency≈0.90, temporality≈0.7 → WES≈0.60 (B)
+  //   Military (r≈-0.1): strength≈0.28, consistency≈0.90, temporality≈0.5 → WES≈0.13 (F)
+  const consistencyFromN = 1 - Math.exp(-aggregate.n / 10);
+  const wesScore = Math.min(1, Math.max(0, bh.strength * consistencyFromN * bh.temporality));
   const wesGrade = scoreToGrade(wesScore);
 
-  // Gap analysis
-  const gapUsd = oslUsd - currentSpendingUsd;
-  const gapPct = currentSpendingUsd > 0 ? (gapUsd / currentSpendingUsd) * 100 : 0;
-
-  let recommendedAction: SpendingGap['recommendedAction'];
-  if (gapPct > 50) {
-    recommendedAction = 'scale_up';
-  } else if (gapPct > 10) {
-    recommendedAction = 'increase';
-  } else if (gapPct > -10) {
-    recommendedAction = 'maintain';
-  } else if (gapPct > -50) {
-    recommendedAction = 'decrease';
-  } else {
-    recommendedAction = 'major_decrease';
-  }
-
-  const priorityScore = calculatePriorityScore(gapUsd, wesScore);
-
-  // Use forward Pearson as marginal return proxy
-  const mr = causalResult.aggregate.meanForwardPearson;
-  const incomeEffect = mr * wesScore * 0.5;
-  const healthEffect = mr * wesScore * 0.3;
-
-  const { aggregate } = causalResult;
   const notes = [
-    `N-of-1 causal analysis, N=${aggregate.n} countries, onset=1yr, duration=3yr`,
-    `PIS=${aggregate.meanPIS.toFixed(1)}, r=${aggregate.meanForwardPearson.toFixed(3)}`,
+    `Causal WES: BH strength=${bh.strength.toFixed(2)} × consistency(N=${aggregate.n})=${consistencyFromN.toFixed(2)} × temporality=${bh.temporality.toFixed(2)}`,
+    `r=${aggregate.meanForwardPearson.toFixed(3)}, +/${aggregate.positiveCount}/-${aggregate.negativeCount}`,
   ];
   if (aggregate.skipped > 0) {
     notes.push(`${aggregate.skipped} countries skipped (insufficient data)`);
   }
 
-  const category: SpendingCategory = {
-    id: seed.id,
-    name: seed.name,
-    spendingType: seed.spendingType,
-    currentSpendingUsd,
-    fiscalYear: FISCAL_YEAR,
-    dataSource: 'OECD/World Bank panel via causal engine',
-    discretionary: seed.discretionary ?? true,
-  };
-
-  const oslEstimate: OSLEstimate = {
-    categoryId: seed.id,
-    estimationMethod: 'diminishing_returns',
-    oslUsd,
-    oslPerCapita: oslUsd / US_POPULATION,
-    oslPctGdp: (oslUsd / US_GDP) * 100,
-    evidenceGrade: wesGrade,
-    welfareEvidenceScore: wesScore,
-    methodologyNotes: notes.join(' — '),
-  };
-
-  const gap: SpendingGap = {
-    categoryId: seed.id,
-    categoryName: seed.name,
-    currentSpendingUsd,
-    oslUsd,
-    gapUsd,
-    gapPct,
-    welfareEvidenceScore: wesScore,
-    priorityScore,
-    welfareEffect: { incomeEffect, healthEffect },
-    recommendedAction,
-  };
-
-  // Synthetic DR model for reporting compatibility
-  const drModel: DiminishingReturnsModel = {
-    type: 'log',
-    alpha: 0,
-    beta: aggregate.meanEffectSize,
-    r2: Math.abs(aggregate.meanForwardPearson),
-    n: aggregate.n,
-  };
-
   return {
-    category,
-    oslEstimate,
-    gap,
-    diminishingReturnsModel: drModel,
-    marginalReturn: mr,
-    wesResult: {
-      score: wesScore,
-      grade: wesGrade,
-      qualityWeight: aggregate.meanBradfordHill.strength,
-      precisionWeight: aggregate.meanBradfordHill.consistency,
-      recencyWeight: aggregate.meanBradfordHill.temporality,
-      estimateCount: aggregate.n,
-    },
+    wesScore,
+    wesGrade,
+    forwardPearson: aggregate.meanForwardPearson,
+    nCountries: aggregate.n,
+    nSkipped: aggregate.skipped,
+    positiveCount: aggregate.positiveCount,
+    negativeCount: aggregate.negativeCount,
+    meanEffectSize: aggregate.meanEffectSize,
+    meanPercentChange: aggregate.meanPercentChange,
+    bradfordHill: bh,
+    methodologyNotes: notes.join(' — '),
   };
 }
 
@@ -1092,11 +1041,32 @@ export function generateBudgetAnalysisArtifacts(
   // Enrich categories with real OECD panel data where available
   const enrichedCategories = enrichWithOECDData(CATEGORIES);
 
-  // Run analysis for every category: try causal engine first, fall back to curve-fitting
+  // Hybrid pipeline: always curve-fit for OSL, overlay causal WES for OECD-mapped categories
+  const causalEvidenceMap = new Map<string, CausalEvidence>();
   const categoryAnalyses = enrichedCategories.map(seed => {
-    const causalResult = runCausalCategoryAnalysis(seed);
-    if (causalResult) return causalResult;
-    return runCategoryAnalysis(seed);
+    // Always run curve-fitting for OSL (or non-discretionary short-circuit)
+    const analysis = runCategoryAnalysis(seed);
+
+    // For OECD-mapped categories, replace WES with causal evidence
+    const causal = computeCausalWES(seed);
+    if (causal) {
+      causalEvidenceMap.set(seed.id, causal);
+      analysis.oslEstimate.welfareEvidenceScore = causal.wesScore;
+      analysis.oslEstimate.evidenceGrade = causal.wesGrade;
+      analysis.oslEstimate.methodologyNotes = causal.methodologyNotes;
+      analysis.gap.welfareEvidenceScore = causal.wesScore;
+      analysis.gap.priorityScore = calculatePriorityScore(analysis.gap.gapUsd, causal.wesScore);
+      analysis.wesResult = {
+        score: causal.wesScore,
+        grade: causal.wesGrade,
+        qualityWeight: causal.bradfordHill.strength,
+        precisionWeight: causal.nCountries,
+        recencyWeight: causal.bradfordHill.temporality,
+        estimateCount: causal.nCountries,
+      };
+    }
+
+    return analysis;
   });
 
   // Sort by priority score (descending)
@@ -1126,7 +1096,45 @@ export function generateBudgetAnalysisArtifacts(
   };
 
   // Generate markdown report with constrained reallocation as primary recommendation
-  const report = generateBudgetReport(result, { constrainToCurrentBudget: true });
+  let report = generateBudgetReport(result, { constrainToCurrentBudget: true });
+
+  // Append Causal Evidence Detail section for OECD-mapped categories
+  if (causalEvidenceMap.size > 0) {
+    const causalLines: string[] = [];
+    causalLines.push('');
+    causalLines.push('## Causal Evidence Detail (OECD-Mapped Categories)');
+    causalLines.push('');
+    causalLines.push('| Category | r | N | +/- | % Change | BH Strength | BH Temporality | BH Gradient | WES | Grade |');
+    causalLines.push('|----------|---|---|-----|----------|-------------|----------------|-------------|-----|-------|');
+
+    // Sort by WES descending
+    const sortedCausal = [...causalEvidenceMap.entries()].sort(
+      (a, b) => b[1].wesScore - a[1].wesScore,
+    );
+    for (const [catId, ev] of sortedCausal) {
+      const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
+      causalLines.push(
+        `| ${catName} ` +
+        `| ${ev.forwardPearson.toFixed(3)} ` +
+        `| ${ev.nCountries} ` +
+        `| ${ev.positiveCount}/${ev.negativeCount} ` +
+        `| ${ev.meanPercentChange >= 0 ? '+' : ''}${ev.meanPercentChange.toFixed(1)}% ` +
+        `| ${ev.bradfordHill.strength.toFixed(2)} ` +
+        `| ${ev.bradfordHill.temporality.toFixed(2)} ` +
+        `| ${ev.bradfordHill.gradient.toFixed(2)} ` +
+        `| ${ev.wesScore.toFixed(2)} ` +
+        `| ${ev.wesGrade} |`,
+      );
+    }
+    causalLines.push('');
+    causalLines.push('r = mean forward Pearson across countries (within-country temporal correlation)');
+    causalLines.push('N = countries analyzed; +/- = countries with positive/negative correlation');
+    causalLines.push('% Change = mean outcome change when spending above country\'s own baseline');
+    causalLines.push('BH = Bradford Hill criteria scores (0-1 saturation scale)');
+    causalLines.push('');
+
+    report += causalLines.join('\n');
+  }
 
   // Generate website JSON
   const websiteData: WebsiteBudgetData = {
