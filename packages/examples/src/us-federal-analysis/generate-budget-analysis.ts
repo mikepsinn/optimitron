@@ -100,6 +100,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Social Security',
     spendingBillions: 1_418,
     spendingType: 'transfer',
+    discretionary: false,
     historicalData: [
       { spending: 2_800, outcome: 62, jurisdiction: 'US', year: 2020 },
       { spending: 3_200, outcome: 65, jurisdiction: 'US', year: 2022 },
@@ -127,6 +128,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Medicare',
     spendingBillions: 874,
     spendingType: 'program',
+    discretionary: false,
     historicalData: [
       { spending: 2_000, outcome: 70, jurisdiction: 'US', year: 2020 },
       { spending: 2_200, outcome: 71, jurisdiction: 'US', year: 2022 },
@@ -154,6 +156,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Medicaid & CHIP',
     spendingBillions: 575,
     spendingType: 'program',
+    discretionary: false,
     historicalData: [
       { spending: 1_200, outcome: 55, jurisdiction: 'US', year: 2020 },
       { spending: 1_400, outcome: 58, jurisdiction: 'US', year: 2022 },
