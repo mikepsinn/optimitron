@@ -135,9 +135,9 @@ function actionLabel(action: string): string {
  */
 function describeGrade(grade: string): string {
   switch (grade) {
-    case 'A': return 'Strong evidence';
-    case 'B': return 'Good evidence';
-    case 'C': return 'Moderate evidence';
+    case 'A': return 'Strong causal evidence';
+    case 'B': return 'Probable causal relationship';
+    case 'C': return 'Possible association';
     case 'D': return 'Weak evidence';
     case 'F': return 'Insufficient evidence';
     default: return 'Unknown';

@@ -63,14 +63,14 @@ analyzed to validate that the engine correctly recovers:
 
 ## Summary
 
-A daily average of **4500 Vitamin D Supplementation** is associated with a **8.5% improvement** in Overall Mood.
+A daily average of **4500 IU Vitamin D Supplementation** is associated with a **8.5% improvement** in Overall Mood.
 
 ## Key Findings
 
-- **Optimal Daily Value:** 4500 (practical recommendation)
+- **Optimal Daily Value:** 4500 IU (practical recommendation)
 - **Outcome Change:** Overall Mood is 8.5% higher on treatment days vs baseline
 - **Correlation:** r = 0.43 (moderate positive)
-- **Evidence Grade:** D (weak evidence)
+- **Evidence Grade:** D (Weak evidence)
 - **Predictor Impact Score:** 5.4/100
 
 ## Causality Assessment
@@ -83,9 +83,9 @@ A daily average of **4500 Vitamin D Supplementation** is associated with a **8.5
 
 ## Optimal Values
 
-- Value predicting high outcome: 4391.39 → Overall Mood: 7.05
-- Value predicting low outcome: 3623.60 → Overall Mood: 6.50
-- Practical recommendation: **Target: 4500 Vitamin D Supplementation daily**
+- Value predicting high outcome: 4391.39 IU → Overall Mood: 7.05 1-10
+- Value predicting low outcome: 3623.60 IU → Overall Mood: 6.50 1-10
+- Practical recommendation: **Target: 4500 IU Vitamin D Supplementation daily**
 
 ## Data Quality
 
@@ -101,14 +101,14 @@ A daily average of **4500 Vitamin D Supplementation** is associated with a **8.5
 
 ## Summary
 
-A daily average of **8 Sleep Duration** is associated with a **7.5% improvement** in Overall Mood.
+A daily average of **8 hours Sleep Duration** is associated with a **7.5% improvement** in Overall Mood.
 
 ## Key Findings
 
-- **Optimal Daily Value:** 8 (practical recommendation)
+- **Optimal Daily Value:** 8 hours (practical recommendation)
 - **Outcome Change:** Overall Mood is 7.5% higher on treatment days vs baseline
 - **Correlation:** r = 0.43 (moderate positive)
-- **Evidence Grade:** F (insufficient evidence)
+- **Evidence Grade:** F (Insufficient evidence)
 - **Predictor Impact Score:** 4.9/100
 
 ## Causality Assessment
@@ -121,9 +121,9 @@ A daily average of **8 Sleep Duration** is associated with a **7.5% improvement*
 
 ## Optimal Values
 
-- Value predicting high outcome: 7.38 → Overall Mood: 7.10
-- Value predicting low outcome: 7.00 → Overall Mood: 6.60
-- Practical recommendation: **Target: 8 Sleep Duration daily**
+- Value predicting high outcome: 7.38 hours → Overall Mood: 7.10 1-10
+- Value predicting low outcome: 7.00 hours → Overall Mood: 6.60 1-10
+- Practical recommendation: **Target: 8 hours Sleep Duration daily**
 
 ## Data Quality
 
@@ -139,14 +139,14 @@ A daily average of **8 Sleep Duration** is associated with a **7.5% improvement*
 
 ## Summary
 
-A daily average of **3 Coffee Intake** is associated with a **2.8% worsening** in Sleep Duration.
+A daily average of **3 cups Coffee Intake** is associated with a **2.8% worsening** in Sleep Duration.
 
 ## Key Findings
 
-- **Optimal Daily Value:** 3 (practical recommendation)
+- **Optimal Daily Value:** 3 cups (practical recommendation)
 - **Outcome Change:** Sleep Duration is 2.8% lower on treatment days vs baseline
 - **Correlation:** r = -0.25 (weak negative)
-- **Evidence Grade:** F (insufficient evidence)
+- **Evidence Grade:** F (Insufficient evidence)
 - **Predictor Impact Score:** 1.7/100
 
 ## Causality Assessment
@@ -159,9 +159,9 @@ A daily average of **3 Coffee Intake** is associated with a **2.8% worsening** i
 
 ## Optimal Values
 
-- Value predicting high outcome: 2.28 → Sleep Duration: 7.08
-- Value predicting low outcome: 2.67 → Sleep Duration: 7.29
-- Practical recommendation: **Target: 3 Coffee Intake daily**
+- Value predicting high outcome: 2.28 cups → Sleep Duration: 7.08 hours
+- Value predicting low outcome: 2.67 cups → Sleep Duration: 7.29 hours
+- Practical recommendation: **Target: 3 cups Coffee Intake daily**
 
 ## Data Quality
 
@@ -177,14 +177,14 @@ A daily average of **3 Coffee Intake** is associated with a **2.8% worsening** i
 
 ## Summary
 
-A daily average of **4500 Vitamin D Supplementation** is associated with a **1.1% improvement** in Sleep Duration.
+A daily average of **4500 IU Vitamin D Supplementation** is associated with a **1.1% improvement** in Sleep Duration.
 
 ## Key Findings
 
-- **Optimal Daily Value:** 4500 (practical recommendation)
+- **Optimal Daily Value:** 4500 IU (practical recommendation)
 - **Outcome Change:** Sleep Duration is 1.1% higher on treatment days vs baseline
 - **Correlation:** r = 0.11 (very weak positive)
-- **Evidence Grade:** F (insufficient evidence)
+- **Evidence Grade:** F (Insufficient evidence)
 - **Predictor Impact Score:** 0.3/100
 
 ## Causality Assessment
@@ -197,9 +197,9 @@ A daily average of **4500 Vitamin D Supplementation** is associated with a **1.1
 
 ## Optimal Values
 
-- Value predicting high outcome: 4283.54 → Sleep Duration: 7.23
-- Value predicting low outcome: 3801.55 → Sleep Duration: 7.15
-- Practical recommendation: **Target: 4500 Vitamin D Supplementation daily**
+- Value predicting high outcome: 4283.54 IU → Sleep Duration: 7.23 hours
+- Value predicting low outcome: 3801.55 IU → Sleep Duration: 7.15 hours
+- Practical recommendation: **Target: 4500 IU Vitamin D Supplementation daily**
 
 ## Data Quality
 

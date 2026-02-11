@@ -31,12 +31,12 @@ function describeCorrelation(r: number): string {
  */
 function describeEvidenceGrade(grade: string): string {
   switch (grade) {
-    case 'A': return 'strong causal relationship';
-    case 'B': return 'probable causal relationship';
-    case 'C': return 'possible association';
-    case 'D': return 'weak evidence';
-    case 'F': return 'insufficient evidence';
-    default: return 'unknown';
+    case 'A': return 'Strong causal evidence';
+    case 'B': return 'Probable causal relationship';
+    case 'C': return 'Possible association';
+    case 'D': return 'Weak evidence';
+    case 'F': return 'Insufficient evidence';
+    default: return 'Unknown';
   }
 }
 
@@ -115,7 +115,12 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
     dataQuality,
     dateRange,
     numberOfPairs,
+    predictorUnit,
+    outcomeUnit,
   } = result;
+
+  const pUnit = predictorUnit ? ` ${predictorUnit}` : '';
+  const oUnit = outcomeUnit ? ` ${outcomeUnit}` : '';
 
   const percentChange = baselineFollowup.outcomeFollowUpPercentChangeFromBaseline;
   const direction = percentChange >= 0 ? 'improvement' : 'worsening';
@@ -135,7 +140,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('## Summary');
   lines.push('');
   lines.push(
-    `A daily average of **${fmt(practicalValue, 0)} ${predictorName}** is associated ` +
+    `A daily average of **${fmt(practicalValue, 0)}${pUnit} ${predictorName}** is associated ` +
     `with a **${fmt(absPercentChange, 1)}% ${direction}** in ${outcomeName}.`,
   );
   lines.push('');
@@ -143,7 +148,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   // --- Key Findings ---
   lines.push('## Key Findings');
   lines.push('');
-  lines.push(`- **Optimal Daily Value:** ${fmt(practicalValue, 0)} (practical recommendation)`);
+  lines.push(`- **Optimal Daily Value:** ${fmt(practicalValue, 0)}${pUnit} (practical recommendation)`);
   lines.push(
     `- **Outcome Change:** ${outcomeName} is ${fmt(absPercentChange, 1)}% ` +
     `${percentChange >= 0 ? 'higher' : 'lower'} on treatment days vs baseline`,
@@ -173,14 +178,14 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('## Optimal Values');
   lines.push('');
   lines.push(
-    `- Value predicting high outcome: ${fmt(optimalValues.valuePredictingHighOutcome)} → ` +
-    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingHighPredictor)}`,
+    `- Value predicting high outcome: ${fmt(optimalValues.valuePredictingHighOutcome)}${pUnit} → ` +
+    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingHighPredictor)}${oUnit}`,
   );
   lines.push(
-    `- Value predicting low outcome: ${fmt(optimalValues.valuePredictingLowOutcome)} → ` +
-    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}`,
+    `- Value predicting low outcome: ${fmt(optimalValues.valuePredictingLowOutcome)}${pUnit} → ` +
+    `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}${oUnit}`,
   );
-  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)} ${predictorName} daily**`);
+  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)}${pUnit} ${predictorName} daily**`);
   lines.push('');
 
   // --- Data Quality ---

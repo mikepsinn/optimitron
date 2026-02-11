@@ -112,6 +112,34 @@ describe('calculateAlignmentScore', () => {
     expect(scoreB.score).toBeGreaterThan(scoreA.score);
   });
 
+  it('politician who doubles spending vs citizen preference scores meaningfully lower', () => {
+    // If citizens want 10% on defense, a politician voting 20% (2x) should
+    // score noticeably lower than one voting 10% (exact match).
+    const prefs: PreferenceWeight[] = [
+      weight('defense', 0.10, 1),
+      weight('health', 0.50, 2),
+      weight('education', 0.40, 3),
+    ];
+
+    const votesMatch = new Map<string, number>([
+      ['defense', 10],
+      ['health', 50],
+      ['education', 40],
+    ]);
+    const votesDouble = new Map<string, number>([
+      ['defense', 20],  // 2x what citizens want
+      ['health', 40],   // 20% under
+      ['education', 40],
+    ]);
+
+    const scoreMatch = calculateAlignmentScore(prefs, votesMatch, 'match');
+    const scoreDouble = calculateAlignmentScore(prefs, votesDouble, 'double');
+
+    expect(scoreMatch.score).toBeCloseTo(100, 0);
+    // Should be meaningfully lower — at least 10 points apart
+    expect(scoreMatch.score - scoreDouble.score).toBeGreaterThan(10);
+  });
+
   // ── Alice scenario ──
   it('Alice scenario: politician who increases NIH funding scores higher', () => {
     // Citizen preferences: Medical 60%, Military 25%, DEA 15%

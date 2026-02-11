@@ -103,10 +103,10 @@ function main() {
         // Compute pre and post statistics
         const preMean = preData.length > 0
           ? preData.reduce((s, d) => s + d.value, 0) / preData.length
-          : sortedData[0].value;
+          : sortedData[0]!.value;
         const postMean = postData.length > 0
           ? postData.reduce((s, d) => s + d.value, 0) / postData.length
-          : sortedData[sortedData.length - 1].value;
+          : sortedData[sortedData.length - 1]!.value;
 
         const preSlope = computeSlope(preData);
         const postSlope = computeSlope(postData);
@@ -190,7 +190,7 @@ function main() {
           metric: outcome.metric,
           unit: outcome.unit,
           direction: outcome.direction,
-          yearRange: `${sortedData[0].year}-${sortedData[sortedData.length - 1].year}`,
+          yearRange: `${sortedData[0]!.year}-${sortedData[sortedData.length - 1]!.year}`,
           totalDataPoints: sortedData.length,
           preDataPoints: preData.length,
           postDataPoints: postData.length,

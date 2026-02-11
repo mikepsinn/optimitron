@@ -240,6 +240,12 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
         lines.push(`| Specificity | ${describeBHScore(bh.specificity)} | ${describeBHAssessment(bh.specificity)} |`);
         lines.push('');
       }
+      lines.push(
+        '> **Note:** Temporality scores 1.0 for all policies because evidence selection requires ' +
+        'temporal precedence. This criterion differentiates against confounded associations ' +
+        '(reverse causality) rather than between well-designed studies.',
+      );
+      lines.push('');
     } else {
       lines.push('## Bradford Hill Assessment');
       lines.push('');

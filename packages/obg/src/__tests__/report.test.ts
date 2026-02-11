@@ -236,7 +236,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Increase Education');
     expect(report).toContain('Decrease Military');
     expect(report).toContain('Priority score: 195500000000');
-    expect(report).toContain('Evidence: C (Moderate evidence)');
+    expect(report).toContain('Evidence: C (Possible association)');
   });
 
   it('sorts recommendations by priority score', () => {
@@ -266,7 +266,7 @@ describe('generateBudgetReport', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Budget Impact Scores');
     expect(report).toContain('| Category | BIS | Grade');
-    expect(report).toContain('Strong evidence');
+    expect(report).toContain('Strong causal evidence');
   });
 
   it('contains efficient frontier reallocation table', () => {

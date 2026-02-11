@@ -46,7 +46,7 @@ function toTimeSeries(
     measurements: data
       .filter(d => d[valueField] != null && !isNaN(d[valueField]))
       .map(d => ({
-        timestamp: yearToMs(d.year),
+        timestamp: yearToMs(d['year']),
         value: d[valueField],
         unit,
       })),
@@ -66,23 +66,23 @@ function computeLaggedYoYCorrelation(
   const sorted = [...data]
     .filter(d => d[predictorField] != null && d[outcomeField] != null &&
                  !isNaN(d[predictorField]) && !isNaN(d[outcomeField]))
-    .sort((a, b) => a.year - b.year);
+    .sort((a, b) => a['year'] - b['year']);
 
   if (sorted.length < 3 + lagYears) return { correlation: 0, n: 0 };
 
   // Build year-indexed map
   const byYear = new Map<number, Record<string, any>>();
-  for (const d of sorted) byYear.set(d.year, d);
+  for (const d of sorted) byYear.set(d['year'], d);
 
   const pairs: Array<{ dx: number; dy: number }> = [];
   for (let i = 1; i < sorted.length; i++) {
-    const year = sorted[i].year;
-    const prevYear = sorted[i - 1].year;
+    const year = sorted[i]!['year'];
+    const prevYear = sorted[i - 1]!['year'];
     const laggedYear = year + lagYears;
     const laggedPrevYear = prevYear + lagYears;
-    
-    const prevX = sorted[i - 1][predictorField];
-    const currX = sorted[i][predictorField];
+
+    const prevX = sorted[i - 1]![predictorField];
+    const currX = sorted[i]![predictorField];
     const laggedPrev = byYear.get(laggedPrevYear);
     const laggedCurr = byYear.get(laggedYear);
     
@@ -128,17 +128,17 @@ function computeYoYCorrelation(
   const sorted = [...data]
     .filter(d => d[predictorField] != null && d[outcomeField] != null &&
                  !isNaN(d[predictorField]) && !isNaN(d[outcomeField]))
-    .sort((a, b) => a.year - b.year);
+    .sort((a, b) => a['year'] - b['year']);
 
   if (sorted.length < 3) return { yoyCorrelation: 0, yoyN: 0 };
 
   // Compute year-over-year % changes
   const changes: Array<{ dx: number; dy: number }> = [];
   for (let i = 1; i < sorted.length; i++) {
-    const prevX = sorted[i - 1][predictorField];
-    const prevY = sorted[i - 1][outcomeField];
-    const currX = sorted[i][predictorField];
-    const currY = sorted[i][outcomeField];
+    const prevX = sorted[i - 1]![predictorField];
+    const prevY = sorted[i - 1]![outcomeField];
+    const currX = sorted[i]![predictorField];
+    const currY = sorted[i]![outcomeField];
     if (prevX !== 0 && prevY !== 0) {
       changes.push({
         dx: (currX - prevX) / Math.abs(prevX),
@@ -506,13 +506,13 @@ function main() {
           zScore: analysis.effectSize.zScore,
           percentChange: analysis.effectSize.percentChange,
         } : null,
-        bradfordHillScores: { ...analysis.bradfordHill },
-        bradfordHillTotal: Object.values(analysis.bradfordHill).reduce((a, b) => a + b, 0) / 
+        bradfordHillScores: { ...analysis.bradfordHill, gradient: analysis.bradfordHill.gradient ?? 0 },
+        bradfordHillTotal: Object.values(analysis.bradfordHill).reduce<number>((a, b) => a + (b ?? 0), 0) /
                           Object.values(analysis.bradfordHill).length,
         predictorImpactScore: analysis.pis.score,
         dataQuality: {
-          sufficient: analysis.dataQuality.sufficient,
-          issues: analysis.dataQuality.issues || [],
+          sufficient: analysis.dataQuality.isValid,
+          issues: analysis.dataQuality.failureReasons ?? [],
         },
         baselineFollowup: analysis.baselineFollowup ? {
           baselineMean: analysis.baselineFollowup.outcomeBaselineAverage,

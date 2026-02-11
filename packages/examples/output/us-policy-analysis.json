@@ -416,6 +416,36 @@
       ]
     },
     {
+      "name": "War on Drugs / Mandatory Minimums",
+      "type": "law",
+      "category": "justice",
+      "description": "Federal mandatory minimum sentences for drug offenses",
+      "recommendationType": "repeal",
+      "evidenceGrade": "D",
+      "causalConfidenceScore": 0.3290602619792983,
+      "policyImpactScore": 0.317436157187579,
+      "welfareScore": -30.000000000000004,
+      "incomeEffect": -0.1,
+      "healthEffect": -0.2,
+      "bradfordHillScores": {
+        "strength": 0.3934693402873666,
+        "consistency": 0.3296799539643607,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.30000000000000004,
+        "plausibility": 0.15,
+        "coherence": 0.7981034820053446,
+        "analogy": 0.3,
+        "specificity": 0.4765053580405044
+      },
+      "rationale": "US incarceration rates rose 500% since 1970 with no decline in drug use. Portugal decriminalization (2001) reduced overdose deaths and HIV with no usage increase.",
+      "currentStatus": "Federal mandatory minimums for drug possession/distribution",
+      "recommendedTarget": "Repeal mandatory minimums; redirect to treatment (Portugal model)",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
       "name": "Defense Spending Efficiency Audit & Reform",
       "type": "regulation",
       "category": "defense",
@@ -445,6 +475,96 @@
         "political",
         "implementation_capacity"
       ]
+    },
+    {
+      "name": "Abstinence-Only Sex Education",
+      "type": "budget_allocation",
+      "category": "education",
+      "description": "Federal funding for abstinence-only-until-marriage sex education programs",
+      "recommendationType": "repeal",
+      "evidenceGrade": "D",
+      "causalConfidenceScore": 0.3176427355606055,
+      "policyImpactScore": 0.2305856413363633,
+      "welfareScore": -10,
+      "incomeEffect": -0.02,
+      "healthEffect": -0.08,
+      "bradfordHillScores": {
+        "strength": 0.28346868942621084,
+        "consistency": 0.2591817793182821,
+        "temporality": 1,
+        "gradient": 0.08256880733944953,
+        "experiment": 0.32000000000000006,
+        "plausibility": 0.15,
+        "coherence": 0.8646647167633873,
+        "analogy": 0.25,
+        "specificity": 0.4765053580405044
+      },
+      "rationale": "Multiple RCTs (Mathematica 2007, Trenholm et al.) show no effect on sexual behavior. States with abstinence-only programs have higher teen pregnancy rates.",
+      "currentStatus": "$85M annual federal abstinence education funding",
+      "recommendedTarget": "Redirect to evidence-based comprehensive sex education",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "Ethanol Fuel Mandate (Renewable Fuel Standard)",
+      "type": "regulation",
+      "category": "energy",
+      "description": "Federal mandate requiring ethanol blending in gasoline under the Renewable Fuel Standard",
+      "recommendationType": "repeal",
+      "evidenceGrade": "D",
+      "causalConfidenceScore": 0.3089951166427727,
+      "policyImpactScore": 0.2133970699856636,
+      "welfareScore": -3.0000000000000004,
+      "incomeEffect": -0.05,
+      "healthEffect": 0.02,
+      "bradfordHillScores": {
+        "strength": 0.15351827510938598,
+        "consistency": 0.18126924692201818,
+        "temporality": 1,
+        "gradient": 0.03846153846153847,
+        "experiment": 0.31200000000000006,
+        "plausibility": 0.4,
+        "coherence": 0.9092820467105875,
+        "analogy": 0.35,
+        "specificity": 0.4765053580405044
+      },
+      "rationale": "Lifecycle analysis shows negligible net emissions reduction. Raises food prices by 5-15% (corn diverted to fuel). Primarily benefits corn lobby, not environment.",
+      "currentStatus": "15B gallons/year corn ethanol mandate",
+      "recommendedTarget": "Phase out corn ethanol mandate; maintain cellulosic RFS only",
+      "blockingFactors": [
+        "political"
+      ]
+    },
+    {
+      "name": "Penny Coin Continuation",
+      "type": "regulation",
+      "category": "general_govt",
+      "description": "Continued minting of the US one-cent coin despite costing more to produce than face value",
+      "recommendationType": "repeal",
+      "evidenceGrade": "D",
+      "causalConfidenceScore": 0.2634326545181991,
+      "policyImpactScore": 0.16205959271091944,
+      "welfareScore": -1,
+      "incomeEffect": -0.01,
+      "healthEffect": 0,
+      "bradfordHillScores": {
+        "strength": 0.06449301496838222,
+        "consistency": 0.18126924692201818,
+        "temporality": 1,
+        "gradient": 0,
+        "experiment": 0.34,
+        "plausibility": 0.15,
+        "coherence": 0.6988057880877979,
+        "analogy": 0.4,
+        "specificity": 0.5906161091496412
+      },
+      "rationale": "Costs 3x face value to mint ($179M net loss in 2023). Canada (2013) and Australia (1992) eliminated lowest denomination coins with no economic disruption.",
+      "currentStatus": "~7B pennies minted annually at 3.07 cents each (2023)",
+      "recommendedTarget": "Eliminate penny; round cash transactions to nearest 5 cents",
+      "blockingFactors": [
+        "political"
+      ]
     }
   ],
   "topRecommendations": [
@@ -459,5 +579,5 @@
     "Enact: National Clean Energy Standard (Grade B, welfare +40)",
     "Enact: Federal Incentives for Zoning Reform (Grade B, welfare +40)"
   ],
-  "generatedAt": "2026-02-11T02:47:42.589Z"
+  "generatedAt": "2026-02-11T05:13:19.837Z"
 }

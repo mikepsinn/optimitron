@@ -136,6 +136,12 @@ export interface FullAnalysisResult {
   /** Full Predictor Impact Score result */
   pis: PredictorImpactScore;
 
+  // -- Units --
+  /** Unit of the predictor variable (e.g. 'IU', 'hours', 'mg') */
+  predictorUnit?: string;
+  /** Unit of the outcome variable (e.g. '/10', 'hours', '%') */
+  outcomeUnit?: string;
+
   // -- Data quality --
   /** Data quality validation result */
   dataQuality: DataQualityResult;
@@ -274,6 +280,10 @@ export function runFullAnalysis(
   // Date range
   const dateRange = computeDateRange(predictor, outcome);
 
+  // Extract units from first measurement of each series
+  const predictorUnit = predictor.measurements[0]?.unit;
+  const outcomeUnit = outcome.measurements[0]?.unit;
+
   return {
     // Input summary
     predictorName: predictor.name,
@@ -304,6 +314,10 @@ export function runFullAnalysis(
     // Scoring
     bradfordHill: pis.bradfordHill,
     pis,
+
+    // Units
+    predictorUnit,
+    outcomeUnit,
 
     // Data quality
     dataQuality,

@@ -162,7 +162,7 @@ describe('Policy Analysis JSON', () => {
   });
 
   it('should have at least 10 policies', () => {
-    expect(policyJson.policies.length).toBeGreaterThanOrEqual(10);
+    expect(policyJson.policies.length).toBeGreaterThanOrEqual(14);
   });
 
   it('each policy should have required fields', () => {
@@ -218,6 +218,22 @@ describe('Policy Analysis JSON', () => {
     const first = policyJson.policies[0];
     const last = policyJson.policies[policyJson.policies.length - 1];
     expect(first.policyImpactScore).toBeGreaterThanOrEqual(last.policyImpactScore);
+  });
+
+  it('should include at least one repeal recommendation', () => {
+    const repealPolicies = policyJson.policies.filter(
+      (p: any) => p.recommendationType === 'repeal',
+    );
+    expect(repealPolicies.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('repeal policies should have low evidence grades (D or F)', () => {
+    const repealPolicies = policyJson.policies.filter(
+      (p: any) => p.recommendationType === 'repeal',
+    );
+    for (const pol of repealPolicies) {
+      expect(['C', 'D', 'F']).toContain(pol.evidenceGrade);
+    }
   });
 });
 

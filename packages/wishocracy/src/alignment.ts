@@ -30,24 +30,28 @@ export function calculateAlignmentScore(
   
   for (const pref of citizenPreferences) {
     const votedPct = politicianVotes.get(pref.itemId);
-    
+
     if (votedPct === undefined) continue;
-    
+
     votesCompared++;
-    
-    // Distance: |citizen preference - politician vote|
-    // Weighted by citizen preference intensity
-    const distance = Math.abs(pref.weight * 100 - votedPct);
-    const weight = pref.weight; // Items citizens care more about weigh more
-    
-    totalWeightedDistance += distance * weight;
-    totalWeight += weight;
-    
-    // Per-item alignment (0-100%)
-    const maxPossibleDistance = Math.max(pref.weight * 100, 100 - pref.weight * 100);
-    const itemAlignment = maxPossibleDistance > 0
-      ? (1 - distance / maxPossibleDistance) * 100
+
+    // Relative distance: |preferredPct - votedPct| / preferredPct, capped at 1.0.
+    // A politician who votes 10% for a 5% category is 100% off (distance = 1.0),
+    // while one who votes 6% for a 5% category is 20% off (distance = 0.2).
+    // This spreads scores meaningfully instead of compressing to ~99%.
+    // Capping at 1.0 prevents small categories from dominating the score
+    // (a 20% category voted at 80% would be 300% off uncapped, but capped = 1.0).
+    const preferredPct = pref.weight * 100;
+    const relativeDistance = preferredPct > 0
+      ? Math.min(1, Math.abs(preferredPct - votedPct) / preferredPct)
       : 0;
+    const weight = pref.weight; // Items citizens care more about weigh more
+
+    totalWeightedDistance += relativeDistance * weight;
+    totalWeight += weight;
+
+    // Per-item alignment (0-100%) using relative distance (already capped at 1)
+    const itemAlignment = (1 - relativeDistance) * 100;
     categoryScores[pref.itemId] = Math.max(0, Math.min(100, itemAlignment));
   }
   
@@ -57,8 +61,9 @@ export function calculateAlignmentScore(
   }
 
   // Overall alignment: 100% = perfect match, 0% = total misalignment
+  // avgWeightedDistance is now relative (0 = perfect, 1 = 100% off, >1 = more than 100% off)
   const avgWeightedDistance = totalWeight > 0 ? totalWeightedDistance / totalWeight : 0;
-  const score = Math.max(0, Math.min(100, 100 - avgWeightedDistance));
+  const score = Math.max(0, Math.min(100, (1 - avgWeightedDistance) * 100));
   
   return {
     politicianId,
