@@ -82,15 +82,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 relative">
           <div className="text-center">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-black">
-              What policies actually produce the{" "}
-              <span className="bg-yellow-300 px-2">longest</span>,{" "}
-              <span className="bg-pink-300 px-2">wealthiest</span> lives?
+              Which interventions actually{" "}
+              <span className="bg-yellow-300 px-2">save lives</span> and{" "}
+              <span className="bg-pink-300 px-2">reduce suffering</span>?
             </h1>
             <p className="mt-8 text-lg sm:text-xl text-black/70 max-w-3xl mx-auto leading-relaxed font-medium">
               Causal inference on thousands of country-years of policy, budget, and
               outcome data to identify what maximizes{" "}
-              <span className="font-bold text-black">median healthy life years</span> and{" "}
-              <span className="font-bold text-black">median real after-tax income</span>.
+              <span className="font-bold text-black">healthy life years</span> and minimizes{" "}
+              <span className="font-bold text-black">preventable death and disease</span>.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -117,8 +117,9 @@ export default function Home() {
             The Two Metrics That Matter
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Every policy, budget, and institutional design is scored against two
-            objective functions.
+            Every policy, budget, and intervention is scored against two
+            measures of human wellbeing — not GDP, not stock prices, not
+            averages that hide suffering.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -129,12 +130,14 @@ export default function Home() {
             </h3>
             <p className="text-black/70 leading-relaxed font-medium">
               Not just life expectancy — <span className="font-bold text-black">healthy</span>{" "}
-              years. A country where people live to 80 but spend the last 15 years
-              disabled scores lower than one where people live to 78 in good health.
+              years free of disability and disease. A country where people live to 80
+              but spend the last 15 years suffering scores lower than one where people
+              live to 78 in good health.
             </p>
             <p className="text-black/50 text-sm mt-4 font-medium">
-              Why median, not mean? Mean life expectancy is dragged down by infant
-              mortality, masking adult health outcomes.
+              Why median? Because mean life expectancy is dragged down by infant
+              mortality, masking how well a society actually prevents suffering
+              across the lifespan.
             </p>
           </div>
           <div className="p-8 border-4 border-black bg-yellow-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -143,13 +146,15 @@ export default function Home() {
               Median Real After-Tax Income
             </h3>
             <p className="text-black/70 leading-relaxed font-medium">
-              Purchasing power, not GDP. What a typical person can actually buy after
-              taxes and inflation. GDP per capita hides inequality — a country with 10
-              billionaires and mass poverty looks great on GDP.
+              Poverty kills. This measures what a typical person can actually
+              afford after taxes and inflation — not GDP, which hides inequality.
+              A country with 10 billionaires and mass poverty looks great on GDP
+              but fails its people.
             </p>
             <p className="text-black/50 text-sm mt-4 font-medium">
-              Why median, not mean? Mean income is skewed by billionaires. The
-              median tells you what life is like for the typical citizen.
+              Why median? Because mean income is skewed by billionaires. The
+              median tells you whether ordinary people can afford healthcare,
+              nutrition, and shelter.
             </p>
           </div>
         </div>
@@ -338,12 +343,13 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center p-12 bg-yellow-300 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-black">
-            Explore the Data
+            Stop Guessing. Start Saving Lives.
           </h2>
           <p className="text-black/70 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-            Every analysis is backed by real outcome data from official sources. Compare
-            countries, browse policy evaluations, or see how budget allocation affects
-            outcomes.
+            Every analysis is backed by real outcome data from official sources.
+            Whether you&apos;re a nonprofit allocating grants, a government
+            setting policy, or a researcher studying what works — the data is
+            open and the methodology is transparent.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -391,6 +397,13 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-black mb-2">Nonprofits & NGOs</h3>
+            <p className="text-sm text-black/60 font-medium">
+              Find which interventions reduce the most suffering per dollar.
+              Compare approaches across countries and decades of outcome data.
+            </p>
+          </div>
+          <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-black text-black mb-2">Governments</h3>
             <p className="text-sm text-black/60 font-medium">
               Optimal policies and budget allocation across jurisdictions. Any
@@ -402,13 +415,6 @@ export default function Home() {
             <p className="text-sm text-black/60 font-medium">
               Import your health data from wearables, supplements, and habits.
               Find what works for you via local causal analysis.
-            </p>
-          </div>
-          <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-black text-black mb-2">Businesses</h3>
-            <p className="text-sm text-black/60 font-medium">
-              Optimize ad spend, pricing, feature releases — any predictor/outcome
-              pair with time-series data.
             </p>
           </div>
         </div>
