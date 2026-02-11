@@ -30,7 +30,7 @@ export default function Footer() {
               ⚡ Optomitron
             </Link>
             <p className="text-sm text-black/70 mt-3 leading-relaxed font-medium">
-              Optimizing health, wealth, and happiness through causal inference and evidence-based decision-making.
+              Minimizing suffering and saving lives using causal inference on real-world policy outcomes.
             </p>
           </div>
 
@@ -89,7 +89,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t-2 border-black/20 text-center text-sm text-black/70 font-medium">
           <p>
-            © {new Date().getFullYear()} Optomitron — Open source world optimization engine by{" "}
+            © {new Date().getFullYear()} Optomitron — Open source evidence-based policy analysis by{" "}
             <a
               href="https://github.com/mikepsinn"
               className="text-black font-bold hover:underline"

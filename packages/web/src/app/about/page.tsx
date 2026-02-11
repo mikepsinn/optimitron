@@ -58,16 +58,17 @@ export default function AboutPage() {
         </h1>
         <div className="max-w-none space-y-4">
           <p className="text-lg text-black/80 leading-relaxed font-medium">
-            <strong className="text-black font-black">Optomitron optimizes everyone&apos;s health, wealth, and happiness</strong> — as well as
-            that of humanity — using time series data and causal inference.
+            <strong className="text-black font-black">Optomitron identifies which policies, budgets, and interventions actually minimize
+            suffering, eradicate preventable disease, and extend healthy lives</strong> — using time series data
+            and causal inference across 20+ countries.
           </p>
           <p className="text-black/60 font-medium">
-            We&apos;re building the operating system for evidence-based decision-making. Whether you&apos;re a person
-            trying to figure out if magnesium helps you sleep, a city deciding where to spend its budget,
-            or a business optimizing ad spend — the math is the same.
+            Governments allocate trillions every year, but rarely know what works. We apply causal analysis
+            to real-world policy outcomes — comparing jurisdictions, tracking natural experiments, and
+            scoring interventions by their actual impact on human welfare.
           </p>
           <p className="text-black/60 font-medium">
-            Optomitron provides a universal causal inference engine that takes any two time series and answers:
+            At its core, Optomitron provides a universal causal inference engine that takes any two time series and answers:
             <em> Does changing X cause Y to change? By how much? What&apos;s the optimal value of X?</em>
           </p>
         </div>
@@ -78,27 +79,27 @@ export default function AboutPage() {
         <h2 className="section-title">The Problem</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="card">
+            <div className="text-3xl mb-3">💀</div>
+            <h3 className="text-black font-black mb-2">Preventable deaths</h3>
+            <p className="text-sm text-black/60 font-medium">
+              Millions die every year from diseases and conditions we know how to prevent or treat.
+              Resources aren&apos;t allocated to what works — they&apos;re allocated to what&apos;s politically convenient.
+            </p>
+          </div>
+          <div className="card">
             <div className="text-3xl mb-3">🏛️</div>
-            <h3 className="text-black font-black mb-2">Governments fly blind</h3>
+            <h3 className="text-black font-black mb-2">Policy by anecdote</h3>
             <p className="text-sm text-black/60 font-medium">
-              The US allocates a $6.75 trillion budget based on political negotiation, not evidence.
-              Nobody knows the optimal amount to spend on education vs. healthcare vs. defense.
+              Governments allocate trillions based on ideology and negotiation, not evidence of what
+              actually improves outcomes. Nobody systematically measures what works.
             </p>
           </div>
           <div className="card">
-            <div className="text-3xl mb-3">🧑‍⚕️</div>
-            <h3 className="text-black font-black mb-2">Individuals fly blind</h3>
+            <div className="text-3xl mb-3">🔇</div>
+            <h3 className="text-black font-black mb-2">No feedback loop</h3>
             <p className="text-sm text-black/60 font-medium">
-              77% of Americans take dietary supplements but almost none know whether they actually work
-              for them. Health decisions are based on anecdote, not data.
-            </p>
-          </div>
-          <div className="card">
-            <div className="text-3xl mb-3">📈</div>
-            <h3 className="text-black font-black mb-2">Businesses guess</h3>
-            <p className="text-sm text-black/60 font-medium">
-              Marketing budgets, pricing strategies, and feature investments are set by intuition and
-              A/B tests that measure correlation, not causation.
+              When a policy works in one jurisdiction, there&apos;s no systematic way to identify it and
+              replicate it elsewhere. Successes go unnoticed; failures get repeated.
             </p>
           </div>
         </div>
@@ -195,9 +196,9 @@ export default function AboutPage() {
           <div className="text-4xl mb-4">🔮</div>
           <h3 className="text-xl font-black text-black mb-2 uppercase">Coming Soon</h3>
           <p className="text-black/60 mb-4 font-medium">
-            Personal health optimization. Your data stays on your device. The causal engine runs
-            locally in your browser. Discover which treatments, supplements, and habits actually
-            improve <em>your</em> outcomes.
+            Decentralized health data collection. Individuals contribute anonymized health outcomes
+            to build the dataset from the ground up — accelerating disease eradication and suffering
+            reduction. Your data stays on your device; the causal engine runs locally in your browser.
           </p>
           <a
             href="https://github.com/mikepsinn/optomitron"

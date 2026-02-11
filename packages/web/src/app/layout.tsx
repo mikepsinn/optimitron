@@ -7,13 +7,13 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Optomitron — Optimize Health, Wealth & Happiness",
+  title: "Optomitron — Evidence-Based Policy to Minimize Suffering and Save Lives",
   description:
-    "Optomitron optimizes everyone's health, wealth, and happiness using time series data and causal inference. The operating system for evidence-based decision-making.",
+    "Causal inference on policy, budget, and outcome data across 20+ countries to identify what actually minimizes suffering and extends healthy lives.",
   openGraph: {
-    title: "Optomitron — Optimize Health, Wealth & Happiness",
+    title: "Optomitron — Evidence-Based Policy to Minimize Suffering and Save Lives",
     description:
-      "The operating system for evidence-based decision-making. Universal causal inference engine for health, governance, and business optimization.",
+      "Which interventions minimize suffering and save the most lives? Causal analysis of natural experiments and policy outcomes across jurisdictions.",
     type: "website",
   },
 };
