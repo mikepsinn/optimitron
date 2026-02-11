@@ -41,13 +41,19 @@ function describeEvidenceGrade(grade: string): string {
 }
 
 /**
- * Describe predictive Pearson direction.
+ * Describe causal direction by comparing absolute correlation magnitudes.
+ *
+ * Uses |forwardR| - |reverseR| to determine which direction is stronger,
+ * avoiding the bug where negative correlations in both directions produce
+ * a misleading raw delta (e.g., Coffee→Sleep: -0.246 forward, -0.114 reverse
+ * has delta -0.132 but forward is actually stronger in magnitude).
  */
-function describePredictiveDirection(predictivePearson: number): string {
-  if (predictivePearson > 0.2) return 'strong forward causation — predictor drives outcome';
-  if (predictivePearson > 0.05) return 'weak forward causation';
-  if (predictivePearson < -0.2) return 'strong reverse causation — outcome drives predictor';
-  if (predictivePearson < -0.05) return 'weak reverse causation — outcome may drive predictor';
+function describePredictiveDirection(forwardR: number, reverseR: number): string {
+  const absDelta = Math.abs(forwardR) - Math.abs(reverseR);
+  if (absDelta > 0.2) return 'strong forward causation — predictor drives outcome';
+  if (absDelta > 0.05) return 'weak forward causation';
+  if (absDelta < -0.2) return 'strong reverse causation — outcome drives predictor';
+  if (absDelta < -0.05) return 'weak reverse causation — outcome may drive predictor';
   return 'no clear directionality';
 }
 
@@ -129,7 +135,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('## Summary');
   lines.push('');
   lines.push(
-    `Taking **${fmt(practicalValue, 0)} ${predictorName}** daily is associated ` +
+    `A daily average of **${fmt(practicalValue, 0)} ${predictorName}** is associated ` +
     `with a **${fmt(absPercentChange, 1)}% ${direction}** in ${outcomeName}.`,
   );
   lines.push('');
@@ -157,7 +163,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push(`- Forward Pearson (predictor → outcome): ${fmt(forwardPearson)}`);
   lines.push(`- Reverse Pearson (outcome → predictor): ${fmt(reversePearson)}`);
   lines.push(
-    `- Causal Direction Score (forward − reverse): ${fmt(predictivePearson)} (${describePredictiveDirection(predictivePearson)})`,
+    `- Causal Direction Score (forward − reverse): ${fmt(predictivePearson)} (${describePredictiveDirection(forwardPearson, reversePearson)})`,
   );
   lines.push(`- Bradford Hill Score: ${fmt(bhTotal, 1)}/9`);
   lines.push(`- p-value: ${pValue < 0.001 ? '< 0.001' : fmt(pValue, 4)}`);
@@ -174,7 +180,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
     `- Value predicting low outcome: ${fmt(optimalValues.valuePredictingLowOutcome)} → ` +
     `${outcomeName}: ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}`,
   );
-  lines.push(`- Practical recommendation: **Take ${fmt(practicalValue, 0)} ${predictorName} daily**`);
+  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)} ${predictorName} daily**`);
   lines.push('');
 
   // --- Data Quality ---

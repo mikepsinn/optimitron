@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-11T02:47:46.168Z",
+  "generatedAt": "2026-02-11T03:39:04.365Z",
   "dataDays": 180,
   "relationships": [
     {
@@ -22,8 +22,8 @@
       "onsetDelayDays": 2,
       "durationOfActionDays": 3,
       "numberOfPairs": 178,
-      "evidenceGrade": "F",
-      "pisScore": 0.0103,
+      "evidenceGrade": "D",
+      "pisScore": 0.054,
       "recommendation": "insufficient_evidence",
       "bradfordHill": {
         "strength": 0.7647,
@@ -64,7 +64,7 @@
       "durationOfActionDays": 1,
       "numberOfPairs": 180,
       "evidenceGrade": "F",
-      "pisScore": 0.0093,
+      "pisScore": 0.0489,
       "recommendation": "insufficient_evidence",
       "bradfordHill": {
         "strength": 0.7605,
@@ -105,7 +105,7 @@
       "durationOfActionDays": 1,
       "numberOfPairs": 180,
       "evidenceGrade": "F",
-      "pisScore": 0.0032,
+      "pisScore": 0.0167,
       "recommendation": "insufficient_evidence",
       "bradfordHill": {
         "strength": 0.5598,
@@ -146,7 +146,7 @@
       "durationOfActionDays": 2,
       "numberOfPairs": 179,
       "evidenceGrade": "F",
-      "pisScore": 0.0005,
+      "pisScore": 0.0027,
       "recommendation": "insufficient_evidence",
       "bradfordHill": {
         "strength": 0.3158,

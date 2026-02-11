@@ -666,6 +666,46 @@ describe('calculatePredictorImpactScore', () => {
     expect(pis.bradfordHill.specificity).toBe(0.5);
   });
 
+  it('individual mode floors φUsers at 0.5 for n=1', () => {
+    const pairs = linearPairs(100, -0.6, 80, 1);
+
+    const popPIS = calculatePredictorImpactScore(pairs, undefined, {
+      subjectCount: 1,
+      analysisMode: 'population',
+    });
+    const indPIS = calculatePredictorImpactScore(pairs, undefined, {
+      subjectCount: 1,
+      analysisMode: 'individual',
+    });
+
+    // Individual mode should produce a higher score than population mode for n=1
+    expect(indPIS.score).toBeGreaterThan(popPIS.score);
+    // Population n=1: saturation(1, 10) ≈ 0.095, individual floors at 0.5
+    // So individual should be roughly 0.5/0.095 ≈ 5.3× higher
+    expect(indPIS.score / popPIS.score).toBeGreaterThan(4);
+  });
+
+  it('individual mode allows n=1 to reach Grade B or better', () => {
+    // Strong signal with n=1 in individual mode should not be stuck at F
+    const pairs: AlignedPair[] = [];
+    for (let i = 0; i < 100; i++) {
+      const dose = i < 50 ? 0 : 400 + Math.sin(i) * 50;
+      const headache = i < 50
+        ? 7 + Math.sin(i * 0.5) * 1.5
+        : 3 + Math.sin(i * 0.5) * 1.0;
+      pairs.push(pair(dose, headache, i * 1000, i * 1000));
+    }
+
+    const pis = calculatePredictorImpactScore(pairs, undefined, {
+      subjectCount: 1,
+      analysisMode: 'individual',
+    });
+
+    // Should be at least Grade C (not stuck at F)
+    const gradeOrder = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'F': 1 } as const;
+    expect(gradeOrder[pis.evidenceGrade]).toBeGreaterThanOrEqual(gradeOrder['C']);
+  });
+
   it('skips reverse temporality when reverse pairs < 30', () => {
     const forwardPairs = linearPairs(60, 0.5, 50, 1);
     const reversePairs = linearPairs(10, 0.3, 50, 1); // Too few

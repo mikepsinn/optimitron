@@ -30,8 +30,17 @@ export interface BISCalculationResult {
 /** Decay rate for recency weighting (per year) */
 const RECENCY_DECAY = 0.03;
 
-/** Calibration constant for BIS normalization */
-const BIS_CALIBRATION_K = 10;
+/**
+ * Calibration constant for BIS normalization.
+ *
+ * With K=10, a single estimate with SE=0.08 produces wP≈156, yielding
+ * wQ*wP*wR/10 ≈ 9.83 → capped at 1.0 for nearly every category.
+ * K=500 creates actual differentiation:
+ *   - Single weak (cross_sectional, SE=0.20): ≈0.006 (Grade F)
+ *   - Single strong (RDD, SE=0.06): ≈0.49 (Grade C)
+ *   - Three strong estimates: ≈1.46 → capped 1.0 (Grade A)
+ */
+const BIS_CALIBRATION_K = 500;
 
 /**
  * Calculate quality weight for an estimate based on identification method

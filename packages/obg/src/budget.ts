@@ -24,6 +24,8 @@ export const SpendingCategorySchema = z.object({
   currentSpendingUsd: z.number(),
   fiscalYear: z.number(),
   dataSource: z.string().optional(),
+  /** Whether this is discretionary spending (can be reallocated). Default true. */
+  discretionary: z.boolean().default(true),
 });
 
 export type SpendingCategory = z.infer<typeof SpendingCategorySchema>;

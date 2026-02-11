@@ -40,6 +40,8 @@ import type {
   OSLEstimate,
 } from '@optomitron/obg';
 
+import { oecdBudgetPanelToSpendingOutcome } from '@optomitron/data';
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -63,6 +65,8 @@ interface CategorySeed {
   name: string;
   spendingBillions: number;
   spendingType: 'program' | 'transfer' | 'investment' | 'regulatory';
+  /** Whether this is discretionary spending (can be reallocated). Default true. */
+  discretionary?: boolean;
   /** Cross-country spending→outcome data points for diminishing-returns */
   historicalData: SpendingOutcomePoint[];
   /** Evidence estimates for BIS calculation */
@@ -191,6 +195,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Net Interest on Debt',
     spendingBillions: 881,
     spendingType: 'transfer',
+    discretionary: false,
     // Net interest is a cost, not an investment. Higher is worse.
     // We model a "target" of the current level minus reduction through
     // fiscal discipline, using inverted outcome scores.
@@ -538,6 +543,7 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
     currentSpendingUsd,
     fiscalYear: FISCAL_YEAR,
     dataSource: 'CBO/OMB FY2025 estimates',
+    discretionary: seed.discretionary ?? true,
   };
 
   // 2. Fit diminishing-returns model (both types, pick best)
@@ -698,6 +704,44 @@ function mapRecommendation(
 // Main
 // ---------------------------------------------------------------------------
 
+/**
+ * OECD panel data mappings for categories that have matching cross-country data.
+ * Each entry maps a category ID to the OECD spending/outcome fields to use.
+ * These replace the hardcoded ~6-10 data points with 300+ real observations.
+ */
+const OECD_DATA_MAPPINGS: Record<string, {
+  spendingField: 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
+  outcomeField: 'lifeExpectancyYears' | 'gdpPerCapitaPpp' | 'infantMortalityPer1000' | 'giniIndex';
+}> = {
+  medicare: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
+  medicaid: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'infantMortalityPer1000' },
+  education: { spendingField: 'educationSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
+  defense: { spendingField: 'militarySpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
+  social_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
+  income_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'giniIndex' },
+  science_space: { spendingField: 'rdSpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
+  health_research: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
+};
+
+/** Enrich categories with real OECD panel data where available */
+function enrichWithOECDData(categories: CategorySeed[]): CategorySeed[] {
+  return categories.map(cat => {
+    const mapping = OECD_DATA_MAPPINGS[cat.id];
+    if (!mapping) return cat;
+
+    const oecdData = oecdBudgetPanelToSpendingOutcome(
+      mapping.spendingField,
+      mapping.outcomeField,
+    );
+
+    // Only replace if we got substantially more data
+    if (oecdData.length > cat.historicalData.length * 2) {
+      return { ...cat, historicalData: oecdData };
+    }
+    return cat;
+  });
+}
+
 export function generateBudgetAnalysisArtifacts(
   options: BudgetAnalysisOptions = {},
 ): BudgetAnalysisArtifacts {
@@ -707,8 +751,11 @@ export function generateBudgetAnalysisArtifacts(
     logSummary = true,
   } = options;
 
+  // Enrich categories with real OECD panel data where available
+  const enrichedCategories = enrichWithOECDData(CATEGORIES);
+
   // Run analysis for every category
-  const categoryAnalyses = CATEGORIES.map(runCategoryAnalysis);
+  const categoryAnalyses = enrichedCategories.map(runCategoryAnalysis);
 
   // Sort by priority score (descending)
   categoryAnalyses.sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
@@ -736,8 +783,8 @@ export function generateBudgetAnalysisArtifacts(
     categories: categoryAnalyses,
   };
 
-  // Generate markdown report
-  const report = generateBudgetReport(result);
+  // Generate markdown report with constrained reallocation as primary recommendation
+  const report = generateBudgetReport(result, { constrainToCurrentBudget: true });
 
   // Generate website JSON
   const websiteData: WebsiteBudgetData = {

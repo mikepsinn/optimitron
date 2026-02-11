@@ -25,6 +25,10 @@ import {
   US_FEDERAL_BUDGET,
   type BudgetCategory,
 } from './us-federal-budget.js';
+import {
+  OECD_BUDGET_PANEL,
+  type OECDBudgetPanelDataPoint,
+} from './oecd-budget-panel.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -260,4 +264,38 @@ export function getCrossCountryVariable(
   }
 
   return results;
+}
+
+// ─── OECD Budget Panel → SpendingOutcomePoint ─────────────────────────────
+
+/** A spending-outcome observation suitable for diminishing-returns fitting */
+export interface SpendingOutcomePoint {
+  spending: number;
+  outcome: number;
+  jurisdiction: string;
+  year: number;
+}
+
+/**
+ * Extract spending→outcome pairs from the OECD Budget Panel dataset.
+ *
+ * Uses per-capita PPP spending fields (not % GDP) to avoid the GDP-denominator
+ * distortion. Filters out rows where either field is null.
+ *
+ * @param spendingField - Per-capita PPP spending field (e.g., 'healthSpendingPerCapitaPpp')
+ * @param outcomeField  - Outcome field (e.g., 'lifeExpectancyYears')
+ * @returns Array of spending→outcome points with jurisdiction and year
+ */
+export function oecdBudgetPanelToSpendingOutcome(
+  spendingField: keyof OECDBudgetPanelDataPoint,
+  outcomeField: keyof OECDBudgetPanelDataPoint,
+): SpendingOutcomePoint[] {
+  return OECD_BUDGET_PANEL
+    .filter(row => row[spendingField] != null && row[outcomeField] != null)
+    .map(row => ({
+      spending: row[spendingField] as number,
+      outcome: row[outcomeField] as number,
+      jurisdiction: row.jurisdictionIso3,
+      year: row.year,
+    }));
 }

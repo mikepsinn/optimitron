@@ -23,8 +23,8 @@ analyzed to validate that the engine correctly recovers:
 
 - **Effect:** 8.5% improvement in Overall Mood
 - **Correlation:** r = 0.434 (p = < 0.001)
-- **Evidence Grade:** F
-- **PIS:** 1.0/100
+- **Evidence Grade:** D
+- **PIS:** 5.4/100
 - **Onset Delay:** 2 day(s)
 - **Optimal Value:** 4391.4 IU
 
@@ -33,7 +33,7 @@ analyzed to validate that the engine correctly recovers:
 - **Effect:** 7.5% improvement in Overall Mood
 - **Correlation:** r = 0.429 (p = < 0.001)
 - **Evidence Grade:** F
-- **PIS:** 0.9/100
+- **PIS:** 4.9/100
 - **Onset Delay:** 0 day(s)
 - **Optimal Value:** 7.4 hours
 
@@ -42,7 +42,7 @@ analyzed to validate that the engine correctly recovers:
 - **Effect:** 2.8% reduction in Sleep Duration
 - **Correlation:** r = -0.246 (p = < 0.001)
 - **Evidence Grade:** F
-- **PIS:** 0.3/100
+- **PIS:** 1.7/100
 - **Onset Delay:** 0 day(s)
 - **Optimal Value:** 2.3 cups
 
@@ -51,7 +51,7 @@ analyzed to validate that the engine correctly recovers:
 - **Effect:** 1.1% improvement in Sleep Duration
 - **Correlation:** r = 0.114 (p = 0.1273)
 - **Evidence Grade:** F
-- **PIS:** 0.1/100
+- **PIS:** 0.3/100
 - **Onset Delay:** 1 day(s)
 - **Optimal Value:** 4283.5 IU
 
@@ -63,15 +63,15 @@ analyzed to validate that the engine correctly recovers:
 
 ## Summary
 
-Taking **4500 Vitamin D Supplementation** daily is associated with a **8.5% improvement** in Overall Mood.
+A daily average of **4500 Vitamin D Supplementation** is associated with a **8.5% improvement** in Overall Mood.
 
 ## Key Findings
 
 - **Optimal Daily Value:** 4500 (practical recommendation)
 - **Outcome Change:** Overall Mood is 8.5% higher on treatment days vs baseline
 - **Correlation:** r = 0.43 (moderate positive)
-- **Evidence Grade:** F (insufficient evidence)
-- **Predictor Impact Score:** 1.0/100
+- **Evidence Grade:** D (weak evidence)
+- **Predictor Impact Score:** 5.4/100
 
 ## Causality Assessment
 
@@ -85,13 +85,13 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **8.5% impr
 
 - Value predicting high outcome: 4391.39 → Overall Mood: 7.05
 - Value predicting low outcome: 3623.60 → Overall Mood: 6.50
-- Practical recommendation: **Take 4500 Vitamin D Supplementation daily**
+- Practical recommendation: **Target: 4500 Vitamin D Supplementation daily**
 
 ## Data Quality
 
 - Pairs analyzed: 178
 - Date range: 2025-06-01 to 2025-11-28
-- Evidence grade: F
+- Evidence grade: D
 - Data quality: PASS
 
 
@@ -101,7 +101,7 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **8.5% impr
 
 ## Summary
 
-Taking **8 Sleep Duration** daily is associated with a **7.5% improvement** in Overall Mood.
+A daily average of **8 Sleep Duration** is associated with a **7.5% improvement** in Overall Mood.
 
 ## Key Findings
 
@@ -109,7 +109,7 @@ Taking **8 Sleep Duration** daily is associated with a **7.5% improvement** in O
 - **Outcome Change:** Overall Mood is 7.5% higher on treatment days vs baseline
 - **Correlation:** r = 0.43 (moderate positive)
 - **Evidence Grade:** F (insufficient evidence)
-- **Predictor Impact Score:** 0.9/100
+- **Predictor Impact Score:** 4.9/100
 
 ## Causality Assessment
 
@@ -123,7 +123,7 @@ Taking **8 Sleep Duration** daily is associated with a **7.5% improvement** in O
 
 - Value predicting high outcome: 7.38 → Overall Mood: 7.10
 - Value predicting low outcome: 7.00 → Overall Mood: 6.60
-- Practical recommendation: **Take 8 Sleep Duration daily**
+- Practical recommendation: **Target: 8 Sleep Duration daily**
 
 ## Data Quality
 
@@ -139,7 +139,7 @@ Taking **8 Sleep Duration** daily is associated with a **7.5% improvement** in O
 
 ## Summary
 
-Taking **3 Coffee Intake** daily is associated with a **2.8% worsening** in Sleep Duration.
+A daily average of **3 Coffee Intake** is associated with a **2.8% worsening** in Sleep Duration.
 
 ## Key Findings
 
@@ -147,13 +147,13 @@ Taking **3 Coffee Intake** daily is associated with a **2.8% worsening** in Slee
 - **Outcome Change:** Sleep Duration is 2.8% lower on treatment days vs baseline
 - **Correlation:** r = -0.25 (weak negative)
 - **Evidence Grade:** F (insufficient evidence)
-- **Predictor Impact Score:** 0.3/100
+- **Predictor Impact Score:** 1.7/100
 
 ## Causality Assessment
 
 - Forward Pearson (predictor → outcome): -0.25
 - Reverse Pearson (outcome → predictor): -0.11
-- Causal Direction Score (forward − reverse): -0.13 (weak reverse causation — outcome may drive predictor)
+- Causal Direction Score (forward − reverse): -0.13 (weak forward causation)
 - Bradford Hill Score: 4.7/9
 - p-value: < 0.001
 
@@ -161,7 +161,7 @@ Taking **3 Coffee Intake** daily is associated with a **2.8% worsening** in Slee
 
 - Value predicting high outcome: 2.28 → Sleep Duration: 7.08
 - Value predicting low outcome: 2.67 → Sleep Duration: 7.29
-- Practical recommendation: **Take 3 Coffee Intake daily**
+- Practical recommendation: **Target: 3 Coffee Intake daily**
 
 ## Data Quality
 
@@ -177,7 +177,7 @@ Taking **3 Coffee Intake** daily is associated with a **2.8% worsening** in Slee
 
 ## Summary
 
-Taking **4500 Vitamin D Supplementation** daily is associated with a **1.1% improvement** in Sleep Duration.
+A daily average of **4500 Vitamin D Supplementation** is associated with a **1.1% improvement** in Sleep Duration.
 
 ## Key Findings
 
@@ -185,13 +185,13 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **1.1% impr
 - **Outcome Change:** Sleep Duration is 1.1% higher on treatment days vs baseline
 - **Correlation:** r = 0.11 (very weak positive)
 - **Evidence Grade:** F (insufficient evidence)
-- **Predictor Impact Score:** 0.1/100
+- **Predictor Impact Score:** 0.3/100
 
 ## Causality Assessment
 
 - Forward Pearson (predictor → outcome): 0.11
 - Reverse Pearson (outcome → predictor): -0.07
-- Causal Direction Score (forward − reverse): 0.19 (weak forward causation)
+- Causal Direction Score (forward − reverse): 0.19 (no clear directionality)
 - Bradford Hill Score: 4.0/9
 - p-value: 0.1273
 
@@ -199,7 +199,7 @@ Taking **4500 Vitamin D Supplementation** daily is associated with a **1.1% impr
 
 - Value predicting high outcome: 4283.54 → Sleep Duration: 7.23
 - Value predicting low outcome: 3801.55 → Sleep Duration: 7.15
-- Practical recommendation: **Take 4500 Vitamin D Supplementation daily**
+- Practical recommendation: **Target: 4500 Vitamin D Supplementation daily**
 
 ## Data Quality
 

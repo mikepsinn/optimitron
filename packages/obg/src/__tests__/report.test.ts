@@ -397,6 +397,50 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('0.92');
   });
 
+  it('constrained mode shows reallocation within current budget', () => {
+    const result = makeFullResult();
+    const report = generateBudgetReport(result, { constrainToCurrentBudget: true });
+
+    expect(report).toContain('Constrained Reallocation');
+    expect(report).toContain('Constrained Optimal');
+    expect(report).toContain('Reallocation within');
+    expect(report).toContain('held fixed');
+  });
+
+  it('marks non-discretionary categories and excludes from recommendations', () => {
+    const nonDisc = makeCategoryAnalysis({
+      category: makeCategory({
+        id: 'interest',
+        name: 'Net Interest',
+        discretionary: false,
+        currentSpendingUsd: 881_000_000_000,
+      }),
+      gap: makeGap({
+        categoryId: 'interest',
+        categoryName: 'Net Interest',
+        gapUsd: -200_000_000_000,
+        gapPct: -22,
+        recommendedAction: 'decrease',
+        priorityScore: 100_000_000_000,
+      }),
+    });
+    const education = makeCategoryAnalysis();
+    const result = makeFullResult({ categories: [nonDisc, education] });
+    const report = generateBudgetReport(result);
+
+    // Should appear in allocation table with annotation
+    expect(report).toContain('*(non-discretionary)*');
+    // Should NOT appear in numbered recommendations
+    const lines = report.split('\n');
+    const numberedRecs = lines.filter(l => /^\d+\./.test(l));
+    const interestRecs = numberedRecs.filter(l => l.includes('Net Interest'));
+    expect(interestRecs).toHaveLength(0);
+    // Should NOT appear in efficient frontier table (between header and next section)
+    const afterFrontier = report.split('## Efficient Frontier')[1] ?? '';
+    const frontierSection = afterFrontier.split('##')[0] ?? '';
+    expect(frontierSection).not.toContain('Net Interest');
+  });
+
   it('produces valid markdown (no broken table rows)', () => {
     const report = generateBudgetReport(makeFullResult());
     const lines = report.split('\n');

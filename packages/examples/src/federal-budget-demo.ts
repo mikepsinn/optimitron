@@ -35,7 +35,7 @@ const categories: BudgetCategory[] = [
   { id: 'medicare',           name: 'Medicare',                      currentAllocationPct: 13.0 },
   { id: 'medicaid',           name: 'Medicaid & CHIP',               currentAllocationPct: 8.5 },
   { id: 'defense',            name: 'Defense',                       currentAllocationPct: 13.0 },
-  { id: 'net_interest',       name: 'Net Interest on Debt',          currentAllocationPct: 13.0 },
+  // Net Interest excluded — non-discretionary (Congress can't reallocate interest payments)
   { id: 'income_security',    name: 'Income Security (SNAP, Housing)', currentAllocationPct: 4.5 },
   { id: 'veterans',           name: 'Veterans Benefits',             currentAllocationPct: 4.0 },
   { id: 'education',          name: 'Education',                     currentAllocationPct: 3.5 },
@@ -71,10 +71,10 @@ const archetypes: VoterArchetype[] = [
     count: 25,
     ideals: {
       social_security: 18, medicare: 14, medicaid: 12, defense: 5,
-      net_interest: 5, income_security: 8, veterans: 3, education: 10,
+      income_security: 8, veterans: 3, education: 10,
       transportation: 3, health_research: 5, science_space: 3,
       environment: 4, agriculture: 1.5, justice: 0.5, foreign_aid: 2.5,
-      energy: 2, housing: 1, diplomacy: 1, general_govt: 0.5, other: 0.5,
+      energy: 2, housing: 1, diplomacy: 1, general_govt: 0.5, other: 5.5,
     },
   },
   {
@@ -82,10 +82,10 @@ const archetypes: VoterArchetype[] = [
     count: 25,
     ideals: {
       social_security: 16, medicare: 12, medicaid: 5, defense: 22,
-      net_interest: 8, income_security: 2, veterans: 7, education: 2,
+      income_security: 2, veterans: 7, education: 2,
       transportation: 3, health_research: 1.5, science_space: 1.5,
       environment: 0.5, agriculture: 2, justice: 3.5, foreign_aid: 0.5,
-      energy: 2, housing: 0.5, diplomacy: 1.5, general_govt: 1, other: 8.5,
+      energy: 2, housing: 0.5, diplomacy: 1.5, general_govt: 1, other: 16.5,
     },
   },
   {
@@ -93,10 +93,10 @@ const archetypes: VoterArchetype[] = [
     count: 35,
     ideals: {
       social_security: 19, medicare: 13, medicaid: 8, defense: 10,
-      net_interest: 8, income_security: 5, veterans: 5, education: 6,
+      income_security: 5, veterans: 5, education: 6,
       transportation: 4, health_research: 3, science_space: 2,
       environment: 2, agriculture: 1.5, justice: 2, foreign_aid: 1.5,
-      energy: 1.5, housing: 1, diplomacy: 1, general_govt: 0.5, other: 5.5,
+      energy: 1.5, housing: 1, diplomacy: 1, general_govt: 0.5, other: 13.5,
     },
   },
   {
@@ -104,10 +104,10 @@ const archetypes: VoterArchetype[] = [
     count: 15,
     ideals: {
       social_security: 10, medicare: 8, medicaid: 3, defense: 8,
-      net_interest: 15, income_security: 1, veterans: 4, education: 1,
+      income_security: 1, veterans: 4, education: 1,
       transportation: 5, health_research: 1, science_space: 2,
       environment: 0.5, agriculture: 0.5, justice: 4, foreign_aid: 0.5,
-      energy: 0.5, housing: 0.5, diplomacy: 0.5, general_govt: 0.5, other: 35,
+      energy: 0.5, housing: 0.5, diplomacy: 0.5, general_govt: 0.5, other: 50,
     },
   },
 ];

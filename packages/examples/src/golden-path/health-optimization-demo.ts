@@ -296,6 +296,7 @@ function runAnalysisPair(pair: AnalysisPair): FullAnalysisResult {
     coherenceScore: 0.6,
     analogyScore: 0.5,
     specificityScore: 0.4,
+    analysisMode: 'individual',
   });
 }
 

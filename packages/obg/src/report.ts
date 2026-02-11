@@ -172,26 +172,100 @@ function describeModelType(type: string): string {
  * @param analysis - Complete budget optimization result
  * @returns Markdown-formatted report string
  */
-export function generateBudgetReport(analysis: BudgetOptimizationResult): string {
+export interface BudgetReportOptions {
+  /**
+   * When true, scale optimal values so they sum to totalBudgetUsd
+   * instead of showing unconstrained optimal values.
+   */
+  constrainToCurrentBudget?: boolean;
+}
+
+export function generateBudgetReport(
+  analysis: BudgetOptimizationResult,
+  options?: BudgetReportOptions,
+): string {
+  const { constrainToCurrentBudget = false } = options ?? {};
   const lines: string[] = [];
 
   // --- Title ---
   lines.push(`# Budget Optimization Report: ${analysis.jurisdictionName}`);
   lines.push('');
 
+  // --- Constrained Reallocation ---
+  if (constrainToCurrentBudget && analysis.totalOptimalUsd > 0) {
+    const scalingFactor = analysis.totalBudgetUsd / analysis.totalOptimalUsd;
+
+    lines.push('## Constrained Reallocation');
+    lines.push('');
+    lines.push(
+      `Reallocation within the current ${formatUsd(analysis.totalBudgetUsd)} budget ` +
+      `could improve welfare by ${formatNum(analysis.welfareImprovementPct)}%.`
+    );
+    lines.push('');
+
+    // Filter to discretionary categories only
+    const discretionary = analysis.categories.filter(c => c.category.discretionary !== false);
+
+    lines.push('| Category | Current | Constrained Optimal | Reallocation | Action |');
+    lines.push('|----------|---------|--------------------:|-------------:|--------|');
+
+    const sortedByGap = [...discretionary].sort(
+      (a, b) => Math.abs(b.gap.gapUsd) - Math.abs(a.gap.gapUsd),
+    );
+
+    for (const cat of sortedByGap) {
+      const constrainedOptimal = cat.oslEstimate.oslUsd * scalingFactor;
+      const reallocation = constrainedOptimal - cat.category.currentSpendingUsd;
+      const reallocationPct = cat.category.currentSpendingUsd > 0
+        ? (reallocation / cat.category.currentSpendingUsd) * 100
+        : 0;
+
+      lines.push(
+        `| ${cat.category.name} ` +
+        `| ${formatUsd(cat.category.currentSpendingUsd)} ` +
+        `| ${formatUsd(constrainedOptimal)} ` +
+        `| ${formatGapUsd(reallocation)} (${formatPct(reallocationPct)}) ` +
+        `| ${actionLabel(cat.gap.recommendedAction)} |`,
+      );
+    }
+    lines.push('');
+
+    // Show non-discretionary items as informational
+    const nonDisc = analysis.categories.filter(c => c.category.discretionary === false);
+    if (nonDisc.length > 0) {
+      lines.push('**Non-discretionary (excluded from reallocation):**');
+      for (const cat of nonDisc) {
+        lines.push(`- ${cat.category.name}: ${formatUsd(cat.category.currentSpendingUsd)}`);
+      }
+      lines.push('');
+    }
+  }
+
   // --- Summary ---
   lines.push('## Summary');
   lines.push('');
-  lines.push(
-    `Optimizing the ${formatUsd(analysis.totalBudgetUsd)} budget across ` +
-    `${analysis.categories.length} categories could improve welfare by ` +
-    `${formatNum(analysis.welfareImprovementPct)}%.`
-  );
+  if (constrainToCurrentBudget) {
+    lines.push(
+      `Reallocation within the ${formatUsd(analysis.totalBudgetUsd)} budget across ` +
+      `${analysis.categories.length} categories could improve welfare by ` +
+      `${formatNum(analysis.welfareImprovementPct)}%.`
+    );
+  } else {
+    lines.push(
+      `Optimizing the ${formatUsd(analysis.totalBudgetUsd)} budget across ` +
+      `${analysis.categories.length} categories could improve welfare by ` +
+      `${formatNum(analysis.welfareImprovementPct)}%.`
+    );
+  }
   lines.push('');
   lines.push(`- **Jurisdiction:** ${analysis.jurisdictionName} (${analysis.jurisdictionId})`);
       lines.push(`- **Fiscal Year:** ${analysis.fiscalYear}`);
       lines.push(`- **Total Current Budget:** ${formatUsd(analysis.totalBudgetUsd)}`);
-      lines.push(`- **Total Optimal Budget:** ${formatUsd(analysis.totalOptimalUsd)}`);
+  if (constrainToCurrentBudget) {
+    lines.push(`- **Constrained Budget:** ${formatUsd(analysis.totalBudgetUsd)} (held fixed)`);
+  } else {
+    lines.push(`- **Total Optimal Budget:** ${formatUsd(analysis.totalOptimalUsd)}`);
+  }
       lines.push(`- **Budget Delta (Optimal - Current):** ${formatGapUsd(analysis.totalOptimalUsd - analysis.totalBudgetUsd)}`);
       lines.push('');
 
@@ -214,8 +288,10 @@ export function generateBudgetReport(analysis: BudgetOptimizationResult): string
         ? (cat.oslEstimate.oslUsd / analysis.totalOptimalUsd * 100)
         : 0;
 
+      const nonDiscNote = cat.category.discretionary === false ? ' *(non-discretionary)*' : '';
+
       lines.push(
-        `| ${cat.category.name} ` +
+        `| ${cat.category.name}${nonDiscNote} ` +
         `| ${formatUsd(cat.category.currentSpendingUsd)} ` +
         `| ${formatNum(currentPct)}% ` +
         `| ${formatUsd(cat.oslEstimate.oslUsd)} ` +
@@ -264,12 +340,14 @@ export function generateBudgetReport(analysis: BudgetOptimizationResult): string
     lines.push('No categories to analyze.');
     lines.push('');
   } else {
-    // Sort by priority score (highest first), exclude 'maintain'
+    // Sort by priority score (highest first), exclude 'maintain' and non-discretionary
     const actionable = [...analysis.categories]
-      .filter(c => c.gap.recommendedAction !== 'maintain')
+      .filter(c => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false)
       .sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
 
-    const maintained = analysis.categories.filter(c => c.gap.recommendedAction === 'maintain');
+    const maintained = analysis.categories.filter(
+      c => c.gap.recommendedAction === 'maintain' || c.category.discretionary === false,
+    );
 
     if (actionable.length === 0) {
       lines.push('All categories are at or near optimal spending levels.');
@@ -314,7 +392,7 @@ export function generateBudgetReport(analysis: BudgetOptimizationResult): string
     lines.push('');
   } else {
     const frontier = [...analysis.categories]
-      .filter((c) => c.gap.recommendedAction !== 'maintain')
+      .filter((c) => c.gap.recommendedAction !== 'maintain' && c.category.discretionary !== false)
       .sort((a, b) => b.gap.priorityScore - a.gap.priorityScore);
 
     if (frontier.length === 0) {

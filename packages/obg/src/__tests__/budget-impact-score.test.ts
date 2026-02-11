@@ -135,7 +135,6 @@ describe('calculateBIS', () => {
   });
 
   it('weights RCT evidence higher than cross-sectional', () => {
-    // Use large SE so that individual scores stay below K=10 cap
     const rctEstimate: EffectEstimate[] = [
       { beta: 0.5, standardError: 2.0, method: 'rct', year: 2023 },
     ];
@@ -149,7 +148,6 @@ describe('calculateBIS', () => {
   });
 
   it('more precise estimates get higher BIS', () => {
-    // Use cross_sectional with larger SEs so values stay under cap
     const precise: EffectEstimate[] = [
       { beta: 0.5, standardError: 1.0, method: 'cross_sectional', year: 2023 },
     ];
@@ -163,7 +161,6 @@ describe('calculateBIS', () => {
   });
 
   it('recent studies get higher BIS', () => {
-    // Use larger SE so individual scores don't hit cap
     const recent: EffectEstimate[] = [
       { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2024 },
     ];
@@ -177,7 +174,6 @@ describe('calculateBIS', () => {
   });
 
   it('multiple estimates increase BIS (more evidence = more confidence)', () => {
-    // Use weaker method + larger SEs to avoid saturation at 1.0
     const single: EffectEstimate[] = [
       { beta: 0.5, standardError: 3.0, method: 'cross_sectional', year: 2023 },
     ];

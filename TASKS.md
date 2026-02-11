@@ -75,3 +75,32 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 34 | Example: Drug→symptom causal analysis | done | `examples/src/causal-analysis-demo.ts` (Vitamin D → mood) + `golden-path/health-optimization-demo.ts`. Full dFDA pipeline. |
 | 35 | README with architecture diagram and examples | done | Root `README.md` with architecture diagram, package table, quick start, domain examples, paper references. |
 | 36 | GitHub Actions CI | done | `.github/workflows/ci.yml` — build, typecheck, lint, test on push/PR to main. Also `deploy-pages.yml`. |
+
+## P6: Report Quality — Critical (would mislead users)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 37 | PIS grading rubric for n=1 personal health analysis | done | Added `analysisMode: 'individual'` option that floors φUsers at 0.5 so n=1 analysis can reach Grade B. Golden-path demo updated to use individual mode. |
+| 38 | Exclude non-discretionary items from preference/budget analysis | done | Added `discretionary` field to SpendingCategorySchema. Net Interest marked non-discretionary, excluded from RAPPA pairwise and OBG recommendations/frontier. Shown as informational with *(non-discretionary)* annotation. |
+| 39 | Budget optimization: constrain to current total spending | done | Added `constrainToCurrentBudget` option to `generateBudgetReport`. When true, scales optimal values to sum to totalBudgetUsd and shows "Constrained Reallocation" section. US federal analysis now uses constrained mode. |
+| 40 | BIS score saturation — all scores are 1.0 | done | Increased BIS_CALIBRATION_K from 10 to 500. Single weak estimate now scores ~0.006 (F), single strong ~0.49 (C), three strong estimates reach 1.0 (A). Actual differentiation between categories. |
+| 41 | Fix causal direction label for negative correlations | done | `describePredictiveDirection` now compares |forwardR| - |reverseR| instead of raw delta. Coffee→Sleep correctly labeled as forward causation. |
+| 42 | Report template: predictor-type-aware language | done | Changed to generic phrasing: "A daily average of X" and "Target: X daily". Works for any predictor type without domain-specific language. |
+
+## P7: Report Quality — Important (reduce credibility)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 43 | Alignment score compression — 91-99% range | todo | All politician alignment scores fall in 91.4–99.4 range with category alignments at 95–100%. A 4.7pp gap in a category still scores 95% alignment. The scoring formula saturates too quickly for meaningful differentiation. Package: `wishocracy`. |
+| 44 | Temporality criterion always 1.0 in OPG policy reports | todo | Temporality = 1.00 for all 15 policies because all have before/after temporal structure. The criterion provides zero differentiation. Should either note this as a known limitation or adjust for policy-vs-epidemiology context. Package: `opg`. |
+| 45 | Add confidence intervals to preference weights and welfare scores | todo | Bootstrap CI module exists in `wishocracy` but isn't used in any report. Welfare scores in OPG report (75.0, 60.0, etc.) are presented as exact numbers with no uncertainty. Add CIs to both RAPPA and OPG/OBG reports. Packages: `wishocracy`, `opg`, `obg`, `examples`. |
+| 46 | Policy report: include negative/repeal examples | todo | All 15 policies in OPG report are recommended for enact/modify. None get repeal or insufficient-evidence. A credible ranking system needs some policies that score poorly. Add 3-5 policies with weak or negative evidence. Package: `data`, `examples`. |
+
+## P8: Report Quality — Polish (before v1)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 47 | Extract shared report formatting utilities | todo | `describeGrade`, `fmt`, `formatUsd`, and similar helpers are reimplemented independently in `optimizer/report.ts`, `opg/report.ts`, and `obg/report.ts`. Extract to a shared reporting utility. Packages: `optimizer`, `opg`, `obg`. |
+| 48 | Consistent emoji styling across reports | todo | Report 1 uses 🟢🟡🟠🔴 for Bradford Hill. Report 5 uses none. Report 2 uses 📈📉≈. Standardize emoji usage (or remove entirely) across all report generators. Packages: `optimizer`, `opg`, `obg`, `examples`. |
+| 49 | Add units to golden path report detail sections | todo | "Optimal Daily Value: 4500" (4500 what?). "Value predicting high outcome: 4391.39" (no unit). Optimal values in executive summary vs detail sections use different rounding without explanation. Package: `optimizer`, `examples`. |
+| 50 | Report metadata and versioning | todo | Reports don't include package versions, algorithm parameters, or data source identifiers needed for reproducibility. Add a metadata footer with version, parameters, and data hash. Packages: all report generators. |

@@ -288,6 +288,12 @@ export function calculatePredictorImpactScore(
     specificityScore?: number;
     /** Interesting factor configuration — penalizes tautological/non-actionable pairs */
     interestingFactorConfig?: InterestingFactorConfig;
+    /**
+     * 'population' (default): full φUsers penalty via saturation(n, N_SIG).
+     * 'individual': floors φUsers at 0.5 so n=1 analysis can reach Grade B
+     * instead of being capped at Grade F by the saturation(1, 10) ≈ 0.095 penalty.
+     */
+    analysisMode?: 'population' | 'individual';
   }
 ): PredictorImpactScore {
   const {
@@ -297,6 +303,7 @@ export function calculatePredictorImpactScore(
     analogyScore = 0.5,
     specificityScore = 0.5,
     interestingFactorConfig,
+    analysisMode = 'population',
   } = options ?? {};
   
   // Calculate forward correlation
@@ -342,7 +349,11 @@ export function calculatePredictorImpactScore(
   const pis = r * S * φZ * temporalityFactor;
   
   // Aggregate modifiers (if multiple subjects)
-  const φUsers = saturation(subjectCount, SATURATION_CONSTANTS.N_SIG);
+  // In individual mode, floor φUsers at 0.5 so n=1 analysis can reach Grade B
+  const rawφUsers = saturation(subjectCount, SATURATION_CONSTANTS.N_SIG);
+  const φUsers = analysisMode === 'individual'
+    ? Math.max(rawφUsers, 0.5)
+    : rawφUsers;
   const φPairs = saturation(forwardPairs.length, SATURATION_CONSTANTS.N_PAIRS_SIG);
   let aggregatePIS = pis * φUsers * φPairs;
 

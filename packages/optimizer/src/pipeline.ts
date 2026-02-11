@@ -70,6 +70,11 @@ export interface AnalysisConfig {
   analogyScore?: number;
   /** Specificity score (0–1, default 0.5) */
   specificityScore?: number;
+  /**
+   * 'population' (default): full φUsers penalty.
+   * 'individual': floors φUsers at 0.5 so n=1 analysis can reach Grade B.
+   */
+  analysisMode?: 'population' | 'individual';
 }
 
 /**
@@ -263,6 +268,7 @@ export function runFullAnalysis(
     coherenceScore: config?.coherenceScore,
     analogyScore: config?.analogyScore,
     specificityScore: config?.specificityScore,
+    analysisMode: config?.analysisMode,
   });
 
   // Date range

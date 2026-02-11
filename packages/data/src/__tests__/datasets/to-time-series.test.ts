@@ -9,6 +9,7 @@ import {
   allDatasetsToTimeSeries,
   getCrossCountryVariable,
   healthCountryToTimeSeries,
+  oecdBudgetPanelToSpendingOutcome,
 } from '../../datasets/to-time-series.js';
 import { HEALTH_SYSTEM_COMPARISON } from '../../datasets/international-comparisons.js';
 
@@ -183,6 +184,51 @@ describe('Dataset → TimeSeries converters', () => {
     });
   });
 });
+
+  describe('oecdBudgetPanelToSpendingOutcome', () => {
+    it('produces spending→outcome pairs from health spending vs life expectancy', () => {
+      const points = oecdBudgetPanelToSpendingOutcome(
+        'healthSpendingPerCapitaPpp',
+        'lifeExpectancyYears',
+      );
+      // 23 countries × ~20 non-null years ≈ 300+ points
+      expect(points.length).toBeGreaterThan(200);
+    });
+
+    it('each point has finite spending, outcome, jurisdiction, and year', () => {
+      const points = oecdBudgetPanelToSpendingOutcome(
+        'educationSpendingPerCapitaPpp',
+        'gdpPerCapitaPpp',
+      );
+      for (const p of points) {
+        expect(Number.isFinite(p.spending)).toBe(true);
+        expect(Number.isFinite(p.outcome)).toBe(true);
+        expect(p.spending).toBeGreaterThan(0);
+        expect(p.outcome).toBeGreaterThan(0);
+        expect(p.jurisdiction.length).toBe(3);
+        expect(p.year).toBeGreaterThanOrEqual(2000);
+        expect(p.year).toBeLessThanOrEqual(2022);
+      }
+    });
+
+    it('education spending has points (may be fewer due to null gaps)', () => {
+      const education = oecdBudgetPanelToSpendingOutcome(
+        'educationSpendingPerCapitaPpp',
+        'lifeExpectancyYears',
+      );
+      // Should have substantial data
+      expect(education.length).toBeGreaterThan(100);
+    });
+
+    it('social spending vs gini has fewest points (sparse gini data)', () => {
+      const points = oecdBudgetPanelToSpendingOutcome(
+        'socialSpendingPerCapitaPpp',
+        'giniIndex',
+      );
+      // Gini is the sparsest field, but should still have some data
+      expect(points.length).toBeGreaterThan(30);
+    });
+  });
 
 // ─── Demo: Country Analysis ──────────────────────────────────────────────────
 
