@@ -131,6 +131,22 @@ function actionLabel(action: string): string {
 }
 
 /**
+ * Derive action label from the constrained reallocation percentage.
+ * This ensures the action matches the actual direction of the constrained move,
+ * not the unconstrained recommendation which may differ.
+ */
+function constrainedActionLabel(reallocationPct: number, isMaintain: boolean): string {
+  if (isMaintain) return 'Maintain';
+  if (reallocationPct > 50) return 'Major increase';
+  if (reallocationPct > 20) return 'Increase';
+  if (reallocationPct > 5) return 'Modest increase';
+  if (reallocationPct >= -5) return 'Maintain';
+  if (reallocationPct >= -20) return 'Modest decrease';
+  if (reallocationPct >= -50) return 'Decrease';
+  return 'Major decrease';
+}
+
+/**
  * Describe the evidence grade.
  */
 function describeGrade(grade: string): string {
@@ -201,8 +217,6 @@ export function generateBudgetReport(
 
   // --- Constrained Reallocation ---
   if (constrainToCurrentBudget && analysis.totalOptimalUsd > 0) {
-    const scalingFactor = analysis.totalBudgetUsd / analysis.totalOptimalUsd;
-
     lines.push('## Constrained Reallocation');
     lines.push('');
     lines.push(
@@ -211,35 +225,57 @@ export function generateBudgetReport(
     );
     lines.push('');
 
-    // Filter to discretionary categories only
+    // Separate categories into groups for constrained reallocation:
+    // - Non-discretionary: excluded entirely
+    // - Maintain: held at current spending (model can't guide reallocation)
+    // - Actionable: scaled proportionally to fill remaining budget
     const discretionary = analysis.categories.filter(c => c.category.discretionary !== false);
+    const nonDisc = analysis.categories.filter(c => c.category.discretionary === false);
+    const maintainCats = discretionary.filter(c => c.gap.recommendedAction === 'maintain');
+    const actionableCats = discretionary.filter(c => c.gap.recommendedAction !== 'maintain');
 
-    lines.push('| Category | Current | Constrained Optimal | Reallocation | Action |');
-    lines.push('|----------|---------|--------------------:|-------------:|--------|');
+    // Budget available for actionable categories = total - non-discretionary - maintain (held fixed)
+    const nonDiscSpending = nonDisc.reduce((s, c) => s + c.category.currentSpendingUsd, 0);
+    const maintainSpending = maintainCats.reduce((s, c) => s + c.category.currentSpendingUsd, 0);
+    const actionableBudget = analysis.totalBudgetUsd - nonDiscSpending - maintainSpending;
+    const actionableOptimalTotal = actionableCats.reduce((s, c) => s + c.oslEstimate.oslUsd, 0);
+    const actionableScalingFactor = actionableOptimalTotal > 0
+      ? actionableBudget / actionableOptimalTotal
+      : 1;
 
-    const sortedByGap = [...discretionary].sort(
-      (a, b) => Math.abs(b.gap.gapUsd) - Math.abs(a.gap.gapUsd),
-    );
-
-    for (const cat of sortedByGap) {
-      const constrainedOptimal = cat.oslEstimate.oslUsd * scalingFactor;
+    // Compute constrained optimal for each discretionary category
+    const constrainedRows = discretionary.map(cat => {
+      const isMaintain = cat.gap.recommendedAction === 'maintain';
+      const constrainedOptimal = isMaintain
+        ? cat.category.currentSpendingUsd
+        : cat.oslEstimate.oslUsd * actionableScalingFactor;
       const reallocation = constrainedOptimal - cat.category.currentSpendingUsd;
       const reallocationPct = cat.category.currentSpendingUsd > 0
         ? (reallocation / cat.category.currentSpendingUsd) * 100
         : 0;
+      // Derive action label from the constrained reallocation direction
+      const constrainedAction = constrainedActionLabel(reallocationPct, isMaintain);
+      return { cat, constrainedOptimal, reallocation, reallocationPct, constrainedAction };
+    });
 
+    // Sort by absolute reallocation size
+    constrainedRows.sort((a, b) => Math.abs(b.reallocation) - Math.abs(a.reallocation));
+
+    lines.push('| Category | Current | Constrained Optimal | Reallocation | Action |');
+    lines.push('|----------|---------|--------------------:|-------------:|--------|');
+
+    for (const row of constrainedRows) {
       lines.push(
-        `| ${cat.category.name} ` +
-        `| ${formatUsd(cat.category.currentSpendingUsd)} ` +
-        `| ${formatUsd(constrainedOptimal)} ` +
-        `| ${formatGapUsd(reallocation)} (${formatPct(reallocationPct)}) ` +
-        `| ${actionLabel(cat.gap.recommendedAction)} |`,
+        `| ${row.cat.category.name} ` +
+        `| ${formatUsd(row.cat.category.currentSpendingUsd)} ` +
+        `| ${formatUsd(row.constrainedOptimal)} ` +
+        `| ${formatGapUsd(row.reallocation)} (${formatPct(row.reallocationPct)}) ` +
+        `| ${row.constrainedAction} |`,
       );
     }
     lines.push('');
 
     // Show non-discretionary items as informational
-    const nonDisc = analysis.categories.filter(c => c.category.discretionary === false);
     if (nonDisc.length > 0) {
       lines.push('**Non-discretionary (excluded from reallocation):**');
       for (const cat of nonDisc) {

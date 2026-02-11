@@ -2,61 +2,61 @@
 
 ## Constrained Reallocation
 
-Reallocation within the current $6750B budget could improve welfare by 135.5%.
+Reallocation within the current $6750B budget could improve welfare by 150.8%.
 
 | Category | Current | Constrained Optimal | Reallocation | Action |
 |----------|---------|--------------------:|-------------:|--------|
-| Social Security | $1418B | $2368.7B | +$950.7B (+67.0%) | Scale up |
-| Health Research (NIH, CDC) | $102B | $1003.4B | +$901.4B (+883.7%) | Scale up |
-| Medicare | $874B | $1003.4B | +$129.4B (+14.8%) | Scale up |
-| Transportation & Infrastructure | $168B | $324.5B | +$156.5B (+93.1%) | Scale up |
-| Science & Space (NASA, NSF) | $81B | $225.6B | +$144.6B (+178.5%) | Scale up |
-| Justice & Law Enforcement | $68B | $101.2B | +$33.2B (+48.8%) | Scale up |
-| International Affairs & Aid | $68B | $72.6B | +$4.6B (+6.8%) | Scale up |
-| Community & Regional Development | $41B | $50.3B | +$9.3B (+22.7%) | Scale up |
-| Agriculture & Food Safety | $68B | $61.2B | -$6.8B (-9.9%) | Scale up |
-| Energy Programs | $54B | $51.1B | -$2.9B (-5.4%) | Scale up |
-| Veterans Benefits | $270B | $115.4B | -$154.6B (-57.3%) | Decrease |
-| Environment & EPA | $68B | $47.6B | -$20.4B (-30.0%) | Increase |
-| Medicaid & CHIP | $575B | $281.4B | -$293.6B (-51.1%) | Maintain |
-| Defense | $886B | $433.5B | -$452.5B (-51.1%) | Maintain |
-| Income Security (SNAP, Housing) | $304B | $148.8B | -$155.2B (-51.1%) | Maintain |
-| Education | $238B | $116.5B | -$121.5B (-51.1%) | Maintain |
+| Defense | $886B | $65.6B | -$820.4B (-92.6%) | Major decrease |
+| Health Research (NIH, CDC) | $102B | $805.7B | +$703.7B (+689.9%) | Major increase |
+| Social Security | $1418B | $1902.1B | +$484.1B (+34.1%) | Increase |
+| Education | $238B | $568.1B | +$330.1B (+138.7%) | Major increase |
+| Veterans Benefits | $270B | $92.6B | -$177.4B (-65.7%) | Major decrease |
+| Science & Space (NASA, NSF) | $81B | $181.1B | +$100.1B (+123.6%) | Major increase |
+| Transportation & Infrastructure | $168B | $260.5B | +$92.5B (+55.1%) | Major increase |
+| Medicare | $874B | $805.7B | -$68.3B (-7.8%) | Modest decrease |
+| Environment & EPA | $68B | $38.2B | -$29.8B (-43.8%) | Decrease |
+| Agriculture & Food Safety | $68B | $49.2B | -$18.8B (-27.7%) | Decrease |
+| Justice & Law Enforcement | $68B | $81.2B | +$13.2B (+19.5%) | Modest increase |
+| Energy Programs | $54B | $41B | -$13B (-24.0%) | Decrease |
+| International Affairs & Aid | $68B | $58.3B | -$9.7B (-14.3%) | Modest decrease |
+| Community & Regional Development | $41B | $40.4B | -$604.5M (-1.5%) | Maintain |
+| Medicaid & CHIP | $575B | $575B | $0 (0.0%) | Maintain |
+| Income Security (SNAP, Housing) | $304B | $304B | $0 (0.0%) | Maintain |
 
 **Non-discretionary (excluded from reallocation):**
 - Net Interest on Debt: $881B
 
 ## Summary
 
-Reallocation within the $6750B budget across 17 categories could improve welfare by 135.5%.
+Reallocation within the $6750B budget across 17 categories could improve welfare by 150.8%.
 
 - **Jurisdiction:** United States of America (US)
 - **Fiscal Year:** 2025
 - **Total Current Budget:** $6750B
 - **Constrained Budget:** $6750B (held fixed)
-- **Budget Delta (Optimal - Current):** +$7044.8B
+- **Budget Delta (Optimal - Current):** +$7709.9B
 
 ## Current vs Optimal Allocation
 
 | Category | Current ($) | Current (%) | Optimal ($) | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |
 |----------|------------|-------------|------------|-------------|---------|---------|--------|----------|
-| Social Security | $1418B | 21% | $4840.9B | 35.1% | +$3422.9B | +241.4% | Scale up | D (Weak evidence) |
-| Health Research (NIH, CDC) | $102B | 1.5% | $2050.6B | 14.9% | +$1948.6B | +1910.4% | Scale up | A (Strong causal evidence) |
-| Medicare | $874B | 12.9% | $2050.6B | 14.9% | +$1176.6B | +134.6% | Scale up | B (Probable causal relationship) |
-| Transportation & Infrastructure | $168B | 2.5% | $663.1B | 4.8% | +$495.1B | +294.7% | Scale up | D (Weak evidence) |
-| Science & Space (NASA, NSF) | $81B | 1.2% | $461B | 3.3% | +$380B | +469.2% | Scale up | D (Weak evidence) |
-| Net Interest on Debt *(non-discretionary)* | $881B | 13.1% | $704.8B | 5.1% | -$176.2B | -20.0% | Decrease | C (Possible association) |
-| Justice & Law Enforcement | $68B | 1% | $206.8B | 1.5% | +$138.8B | +204.1% | Scale up | F (Insufficient evidence) |
-| International Affairs & Aid | $68B | 1% | $148.4B | 1.1% | +$80.4B | +118.2% | Scale up | F (Insufficient evidence) |
+| Social Security | $1418B | 21% | $4840.9B | 33.5% | +$3422.9B | +241.4% | Scale up | D (Weak evidence) |
+| Health Research (NIH, CDC) | $102B | 1.5% | $2050.6B | 14.2% | +$1948.6B | +1910.4% | Scale up | A (Strong causal evidence) |
+| Education | $238B | 3.5% | $1445.9B | 10% | +$1207.9B | +507.5% | Scale up | C (Possible association) |
+| Medicare | $874B | 12.9% | $2050.6B | 14.2% | +$1176.6B | +134.6% | Scale up | B (Probable causal relationship) |
+| Defense | $886B | 13.1% | $167B | 1.2% | -$719B | -81.2% | Major decrease | F (Insufficient evidence) |
+| Transportation & Infrastructure | $168B | 2.5% | $663.1B | 4.6% | +$495.1B | +294.7% | Scale up | D (Weak evidence) |
+| Science & Space (NASA, NSF) | $81B | 1.2% | $461B | 3.2% | +$380B | +469.2% | Scale up | D (Weak evidence) |
+| Justice & Law Enforcement | $68B | 1% | $206.8B | 1.4% | +$138.8B | +204.1% | Scale up | F (Insufficient evidence) |
+| International Affairs & Aid | $68B | 1% | $148.4B | 1% | +$80.4B | +118.2% | Scale up | F (Insufficient evidence) |
 | Community & Regional Development | $41B | 0.6% | $102.8B | 0.7% | +$61.8B | +150.8% | Scale up | D (Weak evidence) |
 | Agriculture & Food Safety | $68B | 1% | $125.1B | 0.9% | +$57.1B | +84.0% | Scale up | F (Insufficient evidence) |
-| Energy Programs | $54B | 0.8% | $104.4B | 0.8% | +$50.4B | +93.4% | Scale up | D (Weak evidence) |
-| Veterans Benefits | $270B | 4% | $235.8B | 1.7% | -$34.2B | -12.7% | Decrease | F (Insufficient evidence) |
+| Energy Programs | $54B | 0.8% | $104.4B | 0.7% | +$50.4B | +93.4% | Scale up | D (Weak evidence) |
+| Veterans Benefits | $270B | 4% | $235.8B | 1.6% | -$34.2B | -12.7% | Decrease | F (Insufficient evidence) |
 | Environment & EPA | $68B | 1% | $97.3B | 0.7% | +$29.3B | +43.1% | Increase | D (Weak evidence) |
-| Medicaid & CHIP | $575B | 8.5% | $575B | 4.2% | $0 | 0.0% | Maintain | C (Possible association) |
-| Defense | $886B | 13.1% | $886B | 6.4% | $0 | 0.0% | Maintain | F (Insufficient evidence) |
-| Income Security (SNAP, Housing) | $304B | 4.5% | $304B | 2.2% | $0 | 0.0% | Maintain | C (Possible association) |
-| Education | $238B | 3.5% | $238B | 1.7% | $0 | 0.0% | Maintain | C (Possible association) |
+| Medicaid & CHIP | $575B | 8.5% | $575B | 4% | $0 | 0.0% | Maintain | C (Possible association) |
+| Net Interest on Debt *(non-discretionary)* | $881B | 13.1% | $881B | 6.1% | $0 | 0.0% | Maintain | C (Possible association) |
+| Income Security (SNAP, Housing) | $304B | 4.5% | $304B | 2.1% | $0 | 0.0% | Maintain | C (Possible association) |
 
 ## Diminishing Returns Analysis
 
@@ -84,6 +84,14 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 - **Model:** Saturation (Michaelis-Menten) (R² = 0.11) ⚠️ Low fit — treat with caution
 - **Status:** Under-invested
 
+### Education
+
+- **Current Spending:** $238B
+- **Optimal Spending Level:** $1445.9B
+- **Marginal Return:** 0.0323
+- **Model:** Saturation (Michaelis-Menten) (R² = 0.99)
+- **Status:** Under-invested
+
 ### Transportation & Infrastructure
 
 - **Current Spending:** $168B
@@ -92,14 +100,6 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 - **Model:** Saturation (Michaelis-Menten) (R² = 0.97)
 - **Status:** Under-invested
 
-### Net Interest on Debt
-
-- **Current Spending:** $881B
-- **Optimal Spending Level:** $704.8B
-- **Marginal Return:** -0.0019
-- **Model:** Saturation (Michaelis-Menten) (R² = 0.98)
-- **Status:** Over-invested
-
 ### Science & Space (NASA, NSF)
 
 - **Current Spending:** $81B
@@ -107,6 +107,14 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 - **Marginal Return:** 1.0000 (raw: 36.4 — likely model overfitting)
 - **Model:** Log-linear (R² = 0.32)
 - **Status:** Under-invested
+
+### Defense
+
+- **Current Spending:** $886B
+- **Optimal Spending Level:** $167B
+- **Marginal Return:** -0.0001
+- **Model:** Log-linear (R² = 0.01) ⚠️ Low fit — treat with caution
+- **Status:** Over-invested
 
 ### Community & Regional Development
 
@@ -168,32 +176,24 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 
 - **Current Spending:** $575B
 - **Optimal Spending Level:** $575B
-- **Marginal Return:** -0.0001
+- **Marginal Return:** 0.0001
 - **Model:** Saturation (Michaelis-Menten) (R² = 0) ⚠️ Low fit — treat with caution
 - **Status:** Near optimal
 
-### Defense
+### Net Interest on Debt
 
-- **Current Spending:** $886B
-- **Optimal Spending Level:** $886B
-- **Marginal Return:** 0.4249
-- **Model:** Saturation (Michaelis-Menten) (R² = 0.02) ⚠️ Low fit — treat with caution
+- **Current Spending:** $881B
+- **Optimal Spending Level:** $881B
+- **Marginal Return:** 0.0000
+- **Model:** Log-linear (R² = 0) ⚠️ Low fit — treat with caution
 - **Status:** Near optimal
 
 ### Income Security (SNAP, Housing)
 
 - **Current Spending:** $304B
 - **Optimal Spending Level:** $304B
-- **Marginal Return:** -0.0014
+- **Marginal Return:** 0.0014
 - **Model:** Saturation (Michaelis-Menten) (R² = 0.08) ⚠️ Low fit — treat with caution
-- **Status:** Near optimal
-
-### Education
-
-- **Current Spending:** $238B
-- **Optimal Spending Level:** $238B
-- **Marginal Return:** 0.0015
-- **Model:** Log-linear (R² = 0.03) ⚠️ Low fit — treat with caution
 - **Status:** Near optimal
 
 ## Top Recommendations
@@ -207,40 +207,44 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 3. Scale up Medicare spending by $1176.6B (+134.6%) — massive underinvestment
    - Priority: 37.8/100; BIS: 0.61; Evidence: B (Probable causal relationship)
    - Marginal return: 0.0007
-4. Scale up Transportation & Infrastructure spending by $495.1B (+294.7%) — massive underinvestment
+4. Scale up Education spending by $1207.9B (+507.5%) — massive underinvestment
+   - Priority: 33.8/100; BIS: 0.53; Evidence: C (Possible association)
+   - Marginal return: 0.0323
+5. Scale up Transportation & Infrastructure spending by $495.1B (+294.7%) — massive underinvestment
    - Priority: 6.3/100; BIS: 0.24; Evidence: D (Weak evidence)
    - Marginal return: 0.0531
-5. Scale up Science & Space (NASA, NSF) spending by $380B (+469.2%) — massive underinvestment
+6. Scale up Science & Space (NASA, NSF) spending by $380B (+469.2%) — massive underinvestment
    - Priority: 4.2/100; BIS: 0.21; Evidence: D (Weak evidence)
    - Marginal return: 1.0000 (raw: 36.4 — likely model overfitting)
-6. Scale up Community & Regional Development spending by $61.8B (+150.8%) — massive underinvestment
+7. Major decrease in Defense spending by $719B (-81.2%) — significant overinvestment
+   - Priority: 1.4/100; BIS: 0.04; Evidence: F (Insufficient evidence)
+   - Marginal return: -0.0001
+8. Scale up Community & Regional Development spending by $61.8B (+150.8%) — massive underinvestment
    - Priority: 0.7/100; BIS: 0.23; Evidence: D (Weak evidence)
    - Marginal return: 0.1657
-7. Scale up Energy Programs spending by $50.4B (+93.4%) — massive underinvestment
+9. Scale up Energy Programs spending by $50.4B (+93.4%) — massive underinvestment
    - Priority: 0.7/100; BIS: 0.25; Evidence: D (Weak evidence)
    - Marginal return: 0.1468
-8. Scale up International Affairs & Aid spending by $80.4B (+118.2%) — massive underinvestment
+10. Scale up International Affairs & Aid spending by $80.4B (+118.2%) — massive underinvestment
    - Priority: 0.5/100; BIS: 0.12; Evidence: F (Insufficient evidence)
    - Marginal return: 0.1155
-9. Increase Environment & EPA spending by $29.3B (+43.1%) — high marginal return
+11. Increase Environment & EPA spending by $29.3B (+43.1%) — high marginal return
    - Priority: 0.3/100; BIS: 0.22; Evidence: D (Weak evidence)
    - Marginal return: 0.1162
-10. Decrease Veterans Benefits spending by $34.2B (-12.7%) — below diminishing returns threshold
+12. Decrease Veterans Benefits spending by $34.2B (-12.7%) — below diminishing returns threshold
    - Priority: 0.3/100; BIS: 0.15; Evidence: F (Insufficient evidence)
    - Marginal return: 0.0175
-11. Scale up Justice & Law Enforcement spending by $138.8B (+204.1%) — massive underinvestment
+13. Scale up Justice & Law Enforcement spending by $138.8B (+204.1%) — massive underinvestment
    - Priority: 0.1/100; BIS: 0.02; Evidence: F (Insufficient evidence)
    - Marginal return: 0.2217
-12. Scale up Agriculture & Food Safety spending by $57.1B (+84.0%) — massive underinvestment
+14. Scale up Agriculture & Food Safety spending by $57.1B (+84.0%) — massive underinvestment
    - Priority: 0.1/100; BIS: 0.03; Evidence: F (Insufficient evidence)
    - Marginal return: 0.1080
 
 **Already near optimal:**
-- Net Interest on Debt
 - Medicaid & CHIP
-- Defense
+- Net Interest on Debt
 - Income Security (SNAP, Housing)
-- Education
 
 ## Efficient Frontier (Reallocation Priority)
 
@@ -249,15 +253,17 @@ Reallocation within the $6750B budget across 17 categories could improve welfare
 | 1 | Health Research (NIH, CDC) | Scale up | 100/100 | +$1948.6B | 0.97 | A (Strong causal evidence) |
 | 2 | Social Security | Scale up | 68.5/100 | +$3422.9B | 0.38 | D (Weak evidence) |
 | 3 | Medicare | Scale up | 37.8/100 | +$1176.6B | 0.61 | B (Probable causal relationship) |
-| 4 | Transportation & Infrastructure | Scale up | 6.3/100 | +$495.1B | 0.24 | D (Weak evidence) |
-| 5 | Science & Space (NASA, NSF) | Scale up | 4.2/100 | +$380B | 0.21 | D (Weak evidence) |
-| 6 | Community & Regional Development | Scale up | 0.7/100 | +$61.8B | 0.23 | D (Weak evidence) |
-| 7 | Energy Programs | Scale up | 0.7/100 | +$50.4B | 0.25 | D (Weak evidence) |
-| 8 | International Affairs & Aid | Scale up | 0.5/100 | +$80.4B | 0.12 | F (Insufficient evidence) |
-| 9 | Environment & EPA | Increase | 0.3/100 | +$29.3B | 0.22 | D (Weak evidence) |
-| 10 | Veterans Benefits | Decrease | 0.3/100 | -$34.2B | 0.15 | F (Insufficient evidence) |
-| 11 | Justice & Law Enforcement | Scale up | 0.1/100 | +$138.8B | 0.02 | F (Insufficient evidence) |
-| 12 | Agriculture & Food Safety | Scale up | 0.1/100 | +$57.1B | 0.03 | F (Insufficient evidence) |
+| 4 | Education | Scale up | 33.8/100 | +$1207.9B | 0.53 | C (Possible association) |
+| 5 | Transportation & Infrastructure | Scale up | 6.3/100 | +$495.1B | 0.24 | D (Weak evidence) |
+| 6 | Science & Space (NASA, NSF) | Scale up | 4.2/100 | +$380B | 0.21 | D (Weak evidence) |
+| 7 | Defense | Major decrease | 1.4/100 | -$719B | 0.04 | F (Insufficient evidence) |
+| 8 | Community & Regional Development | Scale up | 0.7/100 | +$61.8B | 0.23 | D (Weak evidence) |
+| 9 | Energy Programs | Scale up | 0.7/100 | +$50.4B | 0.25 | D (Weak evidence) |
+| 10 | International Affairs & Aid | Scale up | 0.5/100 | +$80.4B | 0.12 | F (Insufficient evidence) |
+| 11 | Environment & EPA | Increase | 0.3/100 | +$29.3B | 0.22 | D (Weak evidence) |
+| 12 | Veterans Benefits | Decrease | 0.3/100 | -$34.2B | 0.15 | F (Insufficient evidence) |
+| 13 | Justice & Law Enforcement | Scale up | 0.1/100 | +$138.8B | 0.02 | F (Insufficient evidence) |
+| 14 | Agriculture & Food Safety | Scale up | 0.1/100 | +$57.1B | 0.03 | F (Insufficient evidence) |
 
 ## Budget Impact Scores
 

@@ -76,6 +76,32 @@
       ]
     },
     {
+      "name": "Education",
+      "currentSpending": 238000000000,
+      "optimalSpending": 1445946859664.185,
+      "gap": 1207946859664.185,
+      "gapPercent": 507.5406973378929,
+      "marginalReturn": 0.03228411746106344,
+      "recommendation": "increase",
+      "outcomeMetrics": [
+        {
+          "name": "PISA Average Score",
+          "value": 489,
+          "trend": "decreasing"
+        },
+        {
+          "name": "College Completion Rate",
+          "value": 62.2,
+          "trend": "increasing"
+        },
+        {
+          "name": "Student Debt per Graduate ($K)",
+          "value": 37.6,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
       "name": "Transportation & Infrastructure",
       "currentSpending": 168000000000,
       "optimalSpending": 663073037958.2012,
@@ -102,27 +128,6 @@
       ]
     },
     {
-      "name": "Net Interest on Debt",
-      "currentSpending": 881000000000,
-      "optimalSpending": 704800000000,
-      "gap": -176200000000,
-      "gapPercent": -20,
-      "marginalReturn": -0.0019199341643564272,
-      "recommendation": "decrease",
-      "outcomeMetrics": [
-        {
-          "name": "Debt-to-GDP Ratio",
-          "value": 124,
-          "trend": "increasing"
-        },
-        {
-          "name": "Sovereign Credit Rating (S&P)",
-          "value": 85,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
       "name": "Science & Space (NASA, NSF)",
       "currentSpending": 81000000000,
       "optimalSpending": 461026689020.17535,
@@ -140,6 +145,27 @@
           "name": "STEM Graduates per 100K",
           "value": 28,
           "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Defense",
+      "currentSpending": 886000000000,
+      "optimalSpending": 166992000000,
+      "gap": -719008000000,
+      "gapPercent": -81.15214446952595,
+      "marginalReturn": -0.0001028225355234275,
+      "recommendation": "decrease",
+      "outcomeMetrics": [
+        {
+          "name": "Global Firepower Index Rank",
+          "value": 1,
+          "trend": "stable"
+        },
+        {
+          "name": "Military Readiness Score",
+          "value": 87,
+          "trend": "stable"
         }
       ]
     },
@@ -301,7 +327,7 @@
       "optimalSpending": 575000000000,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": -0.00005557457540538804,
+      "marginalReturn": 0.000055574575405387387,
       "recommendation": "maintain",
       "outcomeMetrics": [
         {
@@ -322,22 +348,22 @@
       ]
     },
     {
-      "name": "Defense",
-      "currentSpending": 886000000000,
-      "optimalSpending": 886000000000,
+      "name": "Net Interest on Debt",
+      "currentSpending": 881000000000,
+      "optimalSpending": 881000000000,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": 0.42489111237841903,
+      "marginalReturn": 0,
       "recommendation": "maintain",
       "outcomeMetrics": [
         {
-          "name": "Global Firepower Index Rank",
-          "value": 1,
-          "trend": "stable"
+          "name": "Debt-to-GDP Ratio",
+          "value": 124,
+          "trend": "increasing"
         },
         {
-          "name": "Military Readiness Score",
-          "value": 87,
+          "name": "Sovereign Credit Rating (S&P)",
+          "value": 85,
           "trend": "stable"
         }
       ]
@@ -348,7 +374,7 @@
       "optimalSpending": 304000000000,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": -0.0014212525984477462,
+      "marginalReturn": 0.0014212525984477462,
       "recommendation": "maintain",
       "outcomeMetrics": [
         {
@@ -367,45 +393,19 @@
           "trend": "increasing"
         }
       ]
-    },
-    {
-      "name": "Education",
-      "currentSpending": 238000000000,
-      "optimalSpending": 238000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0.0014726369010032451,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "PISA Average Score",
-          "value": 489,
-          "trend": "decreasing"
-        },
-        {
-          "name": "College Completion Rate",
-          "value": 62.2,
-          "trend": "increasing"
-        },
-        {
-          "name": "Student Debt per Graduate ($K)",
-          "value": 37.6,
-          "trend": "increasing"
-        }
-      ]
     }
   ],
   "topRecommendations": [
     "Increase Health Research (NIH, CDC) by $1948.6B (+1910.4%)",
     "Increase Social Security by $3422.9B (+241.4%)",
     "Increase Medicare by $1176.6B (+134.6%)",
+    "Increase Education by $1207.9B (+507.5%)",
     "Increase Transportation & Infrastructure by $495.1B (+294.7%)",
-    "Decrease Net Interest on Debt by $176.2B (-20.0%)",
     "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
+    "Decrease Defense by $719.0B (-81.2%)",
     "Increase Community & Regional Development by $61.8B (+150.8%)",
     "Increase Energy Programs by $50.4B (+93.4%)",
-    "Increase International Affairs & Aid by $80.4B (+118.2%)",
-    "Increase Environment & EPA by $29.3B (+43.1%)"
+    "Increase International Affairs & Aid by $80.4B (+118.2%)"
   ],
-  "generatedAt": "2026-02-11T06:12:45.622Z"
+  "generatedAt": "2026-02-11T06:38:20.130Z"
 }

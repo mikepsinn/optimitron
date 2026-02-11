@@ -77,8 +77,12 @@ interface CategorySeed {
 
 /**
  * Cross-country spending→outcome data for each category.
- * Spending is per-capita USD; outcomes are standardized indices (0-100).
- * Sources: OECD, World Bank, WHO, UNESCO.
+ * Spending is per-capita USD (approximately real from OECD/World Bank).
+ *
+ * WARNING: Outcome scores (0-100 indices) are ESTIMATED — they are not
+ * sourced from any published dataset. They were hand-constructed to
+ * approximate expected relationships. Categories with OECD mappings
+ * (see OECD_DATA_MAPPINGS) replace this data with real observations.
  */
 const CATEGORIES: CategorySeed[] = [
   {
@@ -168,7 +172,7 @@ const CATEGORIES: CategorySeed[] = [
     spendingBillions: 886,
     spendingType: 'program',
     // Per-capita spending. US spends ~$2,637/cap — far above peers.
-    // Steep diminishing returns at high spending levels.
+    // ESTIMATED outcome scores — replaced at runtime by OECD life expectancy data.
     historicalData: [
       { spending: 2_200, outcome: 85, jurisdiction: 'US', year: 2020 },
       { spending: 2_400, outcome: 86, jurisdiction: 'US', year: 2022 },
@@ -196,20 +200,9 @@ const CATEGORIES: CategorySeed[] = [
     spendingBillions: 881,
     spendingType: 'transfer',
     discretionary: false,
-    // Net interest is a cost, not an investment. Higher is worse.
-    // We model a "target" of the current level minus reduction through
-    // fiscal discipline, using inverted outcome scores.
-    historicalData: [
-      { spending: 1_500, outcome: 55, jurisdiction: 'US', year: 2020 },
-      { spending: 2_000, outcome: 53, jurisdiction: 'US', year: 2022 },
-      { spending: 2_400, outcome: 52, jurisdiction: 'US', year: 2024 },
-      { spending: 2_620, outcome: 51, jurisdiction: 'US', year: 2025 },
-      { spending: 500, outcome: 60, jurisdiction: 'DE', year: 2023 },
-      { spending: 1_200, outcome: 56, jurisdiction: 'UK', year: 2023 },
-      { spending: 1_500, outcome: 55, jurisdiction: 'FR', year: 2023 },
-      { spending: 2_800, outcome: 50, jurisdiction: 'JP', year: 2023 },
-      { spending: 200, outcome: 62, jurisdiction: 'NO', year: 2023 },
-    ],
+    // Non-discretionary: analysis is skipped entirely for this category.
+    // No historical data needed — the model doesn't run on debt interest.
+    historicalData: [],
     effectEstimates: [
       { beta: -0.20, standardError: 0.05, method: 'event_study', year: 2023 },
     ],
@@ -250,6 +243,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Veterans Benefits',
     spendingBillions: 270,
     spendingType: 'program',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 500, outcome: 58, jurisdiction: 'US', year: 2020 },
       { spending: 600, outcome: 62, jurisdiction: 'US', year: 2022 },
@@ -274,6 +268,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Education',
     spendingBillions: 238,
     spendingType: 'investment',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 1_800, outcome: 60, jurisdiction: 'US', year: 2020 },
       { spending: 1_900, outcome: 61, jurisdiction: 'US', year: 2022 },
@@ -302,6 +297,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Transportation & Infrastructure',
     spendingBillions: 168,
     spendingType: 'investment',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 800, outcome: 55, jurisdiction: 'US', year: 2020 },
       { spending: 900, outcome: 57, jurisdiction: 'US', year: 2022 },
@@ -328,7 +324,8 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Health Research (NIH, CDC)',
     spendingBillions: 102,
     spendingType: 'investment',
-    // Per-capita spending. US ~$304/cap. Literature suggests massive ROI on biomedical R&D.
+    // Per-capita spending. US ~$304/cap. ESTIMATED outcome scores —
+    // replaced at runtime by OECD life expectancy data.
     historicalData: [
       { spending: 250, outcome: 72, jurisdiction: 'US', year: 2020 },
       { spending: 275, outcome: 74, jurisdiction: 'US', year: 2022 },
@@ -358,7 +355,8 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Science & Space (NASA, NSF)',
     spendingBillions: 81,
     spendingType: 'investment',
-    // Per-capita spending. US ~$241/cap. R&D has strong long-term ROI.
+    // Per-capita spending. US ~$241/cap. ESTIMATED outcome scores —
+    // replaced at runtime by OECD GDP data.
     historicalData: [
       { spending: 200, outcome: 70, jurisdiction: 'US', year: 2020 },
       { spending: 215, outcome: 72, jurisdiction: 'US', year: 2022 },
@@ -385,6 +383,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Environment & EPA',
     spendingBillions: 68,
     spendingType: 'regulatory',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 120, outcome: 60, jurisdiction: 'US', year: 2020 },
       { spending: 130, outcome: 62, jurisdiction: 'US', year: 2022 },
@@ -411,6 +410,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Agriculture & Food Safety',
     spendingBillions: 68,
     spendingType: 'program',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 200, outcome: 72, jurisdiction: 'US', year: 2020 },
       { spending: 210, outcome: 73, jurisdiction: 'US', year: 2022 },
@@ -434,6 +434,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Justice & Law Enforcement',
     spendingBillions: 68,
     spendingType: 'program',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 300, outcome: 55, jurisdiction: 'US', year: 2020 },
       { spending: 320, outcome: 56, jurisdiction: 'US', year: 2022 },
@@ -457,6 +458,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'International Affairs & Aid',
     spendingBillions: 68,
     spendingType: 'program',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 150, outcome: 52, jurisdiction: 'US', year: 2020 },
       { spending: 160, outcome: 53, jurisdiction: 'US', year: 2022 },
@@ -482,6 +484,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Energy Programs',
     spendingBillions: 54,
     spendingType: 'investment',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 80, outcome: 50, jurisdiction: 'US', year: 2020 },
       { spending: 100, outcome: 54, jurisdiction: 'US', year: 2022 },
@@ -506,6 +509,7 @@ const CATEGORIES: CategorySeed[] = [
     name: 'Community & Regional Development',
     spendingBillions: 41,
     spendingType: 'investment',
+    // ESTIMATED outcome scores — no OECD mapping; hand-constructed estimates
     historicalData: [
       { spending: 80, outcome: 48, jurisdiction: 'US', year: 2020 },
       { spending: 90, outcome: 50, jurisdiction: 'US', year: 2022 },
@@ -546,6 +550,43 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
     discretionary: seed.discretionary ?? true,
   };
 
+  // Non-discretionary categories (e.g. Net Interest on Debt) cannot be
+  // reallocated by Congress. Skip the diminishing-returns model entirely —
+  // it produces nonsensical results for obligations that aren't investments.
+  if (seed.discretionary === false) {
+    const bisResult = calculateBIS(seed.effectEstimates);
+    const oslEstimate: OSLEstimate = {
+      categoryId: seed.id,
+      estimationMethod: 'diminishing_returns',
+      oslUsd: currentSpendingUsd,
+      oslPerCapita: currentPerCapita,
+      oslPctGdp: (currentSpendingUsd / US_GDP) * 100,
+      evidenceGrade: bisResult.grade,
+      budgetImpactScore: bisResult.score,
+      methodologyNotes: 'Non-discretionary — excluded from optimization',
+    };
+    const gap: SpendingGap = {
+      categoryId: seed.id,
+      categoryName: seed.name,
+      currentSpendingUsd,
+      oslUsd: currentSpendingUsd,
+      gapUsd: 0,
+      gapPct: 0,
+      budgetImpactScore: bisResult.score,
+      priorityScore: 0,
+      welfareEffect: { incomeEffect: 0, healthEffect: 0 },
+      recommendedAction: 'maintain',
+    };
+    return {
+      category,
+      oslEstimate,
+      gap,
+      diminishingReturnsModel: { type: 'log', alpha: 0, beta: 0, r2: 0, n: 0 },
+      marginalReturn: 0,
+      bisResult,
+    };
+  }
+
   // 2. Fit diminishing-returns model (both types, pick best)
   //    Historical data is per-capita, so OSL result is per-capita too
   const logModel = fitLogModel(seed.historicalData);
@@ -570,8 +611,11 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
   const targetMR = avgMR * 0.5;
   let oslPerCapita: number;
   if (drModel.beta <= 0) {
-    // Negative relationship: spending is harmful — target 20% reduction
-    oslPerCapita = currentPerCapita * 0.80;
+    // Spending has zero or negative marginal benefit.
+    // Recommend moving toward median observed spending level —
+    // that's where most peer countries sit with equal or better outcomes.
+    const sortedSpending = [...seed.historicalData.map(d => d.spending)].sort((a, b) => a - b);
+    oslPerCapita = sortedSpending[Math.floor(sortedSpending.length / 2)]!;
   } else if (targetMR > 0) {
     // For log model: β/S = targetMR → S = β/targetMR
     // For saturation: β×γ/(S+γ)² = targetMR → solve
@@ -604,8 +648,10 @@ function runCategoryAnalysis(seed: CategorySeed): CategoryAnalysis {
     currentSpendingUsd > 0 ? (gapUsd / currentSpendingUsd) * 100 : 0;
 
   // Determine recommended action
-  // When R² < 0.1, the model explains nothing — don't make recommendations
-  const lowModelFit = drModel.r2 < 0.1;
+  // When R² < 0.1 and β > 0, the model explains nothing — don't make
+  // precise OSL recommendations. But when β ≤ 0, the direction is the
+  // signal: more spending doesn't help, regardless of fit quality.
+  const lowModelFit = drModel.r2 < 0.1 && drModel.beta > 0;
   let recommendedAction: SpendingGap['recommendedAction'];
   if (lowModelFit) {
     recommendedAction = 'maintain';
@@ -743,13 +789,14 @@ function mapRecommendation(
 const OECD_DATA_MAPPINGS: Record<string, {
   spendingField: 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
   outcomeField: 'lifeExpectancyYears' | 'gdpPerCapitaPpp' | 'infantMortalityPer1000' | 'giniIndex';
+  /** When true, outcome is inverted (100 - value) so that higher = better */
+  negateOutcome?: boolean;
 }> = {
   medicare: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
-  medicaid: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'infantMortalityPer1000' },
-  education: { spendingField: 'educationSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
-  defense: { spendingField: 'militarySpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
+  medicaid: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'infantMortalityPer1000', negateOutcome: true },
+  defense: { spendingField: 'militarySpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
   social_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
-  income_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'giniIndex' },
+  income_security: { spendingField: 'socialSpendingPerCapitaPpp', outcomeField: 'giniIndex', negateOutcome: true },
   science_space: { spendingField: 'rdSpendingPerCapitaPpp', outcomeField: 'gdpPerCapitaPpp' },
   health_research: { spendingField: 'healthSpendingPerCapitaPpp', outcomeField: 'lifeExpectancyYears' },
 };
@@ -760,10 +807,16 @@ function enrichWithOECDData(categories: CategorySeed[]): CategorySeed[] {
     const mapping = OECD_DATA_MAPPINGS[cat.id];
     if (!mapping) return cat;
 
-    const oecdData = oecdBudgetPanelToSpendingOutcome(
+    let oecdData = oecdBudgetPanelToSpendingOutcome(
       mapping.spendingField,
       mapping.outcomeField,
     );
+
+    // For metrics where lower = better (infant mortality, gini),
+    // invert so that higher outcome = better for the model
+    if (mapping.negateOutcome) {
+      oecdData = oecdData.map(d => ({ ...d, outcome: 100 - d.outcome }));
+    }
 
     // Only replace if we got substantially more data
     if (oecdData.length > cat.historicalData.length * 2) {
@@ -834,7 +887,7 @@ export function generateBudgetAnalysisArtifacts(
       ]?.outcomeMetrics ?? [],
     })),
     topRecommendations: categoryAnalyses
-      .filter(ca => ca.gap.recommendedAction !== 'maintain')
+      .filter(ca => ca.gap.recommendedAction !== 'maintain' && ca.category.discretionary !== false)
       .slice(0, 10)
       .map(
         ca =>
