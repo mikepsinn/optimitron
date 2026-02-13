@@ -12,6 +12,7 @@ Define a hypothesis-driven test format and require each report claim to map to a
 - Policy scoring and evidence grades
 - Output-contract tests for generated analysis artifacts (JSON + markdown)
 - Multiple-comparison controls and uncertainty labeling for large predictor ranking screens
+- UI badge contract tests for uncertainty/significance and quality status in explorer pages
 
 ## Acceptance Criteria
 - Each report claim has a test mapped in code.

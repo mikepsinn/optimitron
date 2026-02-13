@@ -1,7 +1,7 @@
 {
   "id": "testing-strategy-v1",
   "title": "Hypothesis-Driven Tests for Findings",
-  "status": "active",
+  "status": "done",
   "owner": "wishonia",
   "priority": "P1",
   "effort": "M",

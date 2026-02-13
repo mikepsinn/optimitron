@@ -37,6 +37,14 @@ Ship a web-native explorer with:
 - Outcome hub ranking schema and renderer.
   - Schema and ranking implementation now available in `@optomitron/optimizer/src/outcome-mega-study-ranking.ts`.
 - Study-page route and deep-linking conventions.
+  - Implemented routes:
+    - `/outcomes`
+    - `/outcomes/:outcomeId`
+    - `/studies/:outcomeId/:predictorId`
+    - `/studies/:outcomeId/:predictorId/jurisdictions`
+    - `/studies/:outcomeId/:predictorId/jurisdictions/:jurisdictionId`
+  - Shared route helpers: `packages/web/src/lib/analysis-explorer-routes.ts`.
+  - Shared cached adapter: `packages/web/src/lib/analysis-explorer-data.ts`.
 
 ## Acceptance Criteria
 - Any predictor/outcome in the registry can render a study payload without custom code paths.

@@ -1,0 +1,2518 @@
+{
+  "predictor": {
+    "id": "government_expenditure_pct_gdp",
+    "name": "Government Expenditure (% GDP)",
+    "definition": "World Bank WDI GC.XPN.TOTL.GD.ZS",
+    "fields": [
+      "GC.XPN.TOTL.GD.ZS"
+    ],
+    "coverage": {
+      "jurisdictions": 47,
+      "years": 34,
+      "observations": 1402,
+      "yearMin": 1990,
+      "yearMax": 2023
+    }
+  },
+  "outcomes": [
+    {
+      "id": "life_expectancy",
+      "name": "Life Expectancy",
+      "direction": "higher_better",
+      "weight": 0.35,
+      "meanForwardPearson": 0.30537699785514194,
+      "meanPercentChange": 2.12127659574468,
+      "positiveCount": 32,
+      "negativeCount": 15,
+      "jurisdictionsAnalyzed": 47,
+      "jurisdictionsSkipped": 0,
+      "medianOptimalPctGdp": 32.426601187192034,
+      "p25OptimalPctGdp": 21.409624816167884,
+      "p75OptimalPctGdp": 37.86484368927253,
+      "confidenceScore": 0.5045952292493592,
+      "confidenceGrade": "C",
+      "jurisdictions": [
+        {
+          "jurisdictionId": "GRC",
+          "jurisdictionName": "GRC",
+          "optimalPctGdp": 51.094076061744595,
+          "forwardPearson": 0.8113505138875248,
+          "predictivePearson": 0.10493924324674808,
+          "percentChangeFromBaseline": 3.5,
+          "bradfordHillStrength": 0.9330963472345724,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FRA",
+          "jurisdictionName": "FRA",
+          "optimalPctGdp": 47.74820837292949,
+          "forwardPearson": 0.8335636815485661,
+          "predictivePearson": 0.10952965261082404,
+          "percentChangeFromBaseline": 3.3,
+          "bradfordHillStrength": 0.9378711984920054,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUT",
+          "jurisdictionName": "AUT",
+          "optimalPctGdp": 46.4390298943337,
+          "forwardPearson": 0.7291196030804104,
+          "predictivePearson": 0.21584686357572036,
+          "percentChangeFromBaseline": 4.4,
+          "bradfordHillStrength": 0.9119982586766796,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVN",
+          "jurisdictionName": "SVN",
+          "optimalPctGdp": 45.22040577252855,
+          "forwardPearson": 0.900525063687998,
+          "predictivePearson": 0.2670056706981404,
+          "percentChangeFromBaseline": 7.4,
+          "bradfordHillStrength": 0.9502999933607641,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "HUN",
+          "jurisdictionName": "HUN",
+          "optimalPctGdp": 43.21825096868406,
+          "forwardPearson": -0.7045292457494411,
+          "predictivePearson": -0.08492370348152589,
+          "percentChangeFromBaseline": -4,
+          "bradfordHillStrength": 0.904481068846291,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ITA",
+          "jurisdictionName": "ITA",
+          "optimalPctGdp": 42.81542182260199,
+          "forwardPearson": -0.1403528209446616,
+          "predictivePearson": -0.1623068958697111,
+          "percentChangeFromBaseline": -1.7,
+          "bradfordHillStrength": 0.3736479817656835,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BEL",
+          "jurisdictionName": "BEL",
+          "optimalPctGdp": 42.39549568127869,
+          "forwardPearson": -0.6731745033983906,
+          "predictivePearson": -0.24019425166458325,
+          "percentChangeFromBaseline": -2.7,
+          "bradfordHillStrength": 0.8939574670735653,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PRT",
+          "jurisdictionName": "PRT",
+          "optimalPctGdp": 42.28141967276045,
+          "forwardPearson": 0.9151426557969049,
+          "predictivePearson": 0.21289168435666206,
+          "percentChangeFromBaseline": 6.3,
+          "bradfordHillStrength": 0.9526635903390055,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NLD",
+          "jurisdictionName": "NLD",
+          "optimalPctGdp": 40.092895440215216,
+          "forwardPearson": -0.5271631223902482,
+          "predictivePearson": -0.18572947127020079,
+          "percentChangeFromBaseline": -1.4,
+          "bradfordHillStrength": 0.8274745311612992,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "GBR",
+          "jurisdictionName": "GBR",
+          "optimalPctGdp": 39.982668121909256,
+          "forwardPearson": 0.7922234783392151,
+          "predictivePearson": 0.1598479869665952,
+          "percentChangeFromBaseline": 3.5,
+          "bradfordHillStrength": 0.9286918696420727,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVK",
+          "jurisdictionName": "SVK",
+          "optimalPctGdp": 38.98841518071679,
+          "forwardPearson": -0.6990347918654451,
+          "predictivePearson": -0.2081363844972739,
+          "percentChangeFromBaseline": -4.5,
+          "bradfordHillStrength": 0.9027155359246631,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DNK",
+          "jurisdictionName": "DNK",
+          "optimalPctGdp": 38.000616682614044,
+          "forwardPearson": -0.005091494293651714,
+          "predictivePearson": 0.21141970102156094,
+          "percentChangeFromBaseline": -0.2,
+          "bradfordHillStrength": 0.0168284405316681,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FIN",
+          "jurisdictionName": "FIN",
+          "optimalPctGdp": 37.72907069593102,
+          "forwardPearson": 0.3294306147541416,
+          "predictivePearson": 0.15857803106988574,
+          "percentChangeFromBaseline": 2.2,
+          "bradfordHillStrength": 0.6664965434393508,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ISR",
+          "jurisdictionName": "ISR",
+          "optimalPctGdp": 36.94278936944979,
+          "forwardPearson": -0.42648349309452666,
+          "predictivePearson": -0.11262628729689855,
+          "percentChangeFromBaseline": -1.5,
+          "bradfordHillStrength": 0.7586752262181816,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "UKR",
+          "jurisdictionName": "UKR",
+          "optimalPctGdp": 36.48139160562944,
+          "forwardPearson": 0.7552818643778145,
+          "predictivePearson": 0.33161836770725356,
+          "percentChangeFromBaseline": 5.1,
+          "bradfordHillStrength": 0.9193475595087377,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "POL",
+          "jurisdictionName": "POL",
+          "optimalPctGdp": 36.00941002711837,
+          "forwardPearson": -0.37562098530730725,
+          "predictivePearson": 0.2704671976868015,
+          "percentChangeFromBaseline": -1.2,
+          "bradfordHillStrength": 0.7140876406676855,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NOR",
+          "jurisdictionName": "NOR",
+          "optimalPctGdp": 35.74587333359063,
+          "forwardPearson": -0.084599205911855,
+          "predictivePearson": -0.04645175469739571,
+          "percentChangeFromBaseline": -0.5,
+          "bradfordHillStrength": 0.24572431893163216,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EST",
+          "jurisdictionName": "EST",
+          "optimalPctGdp": 35.297506261216284,
+          "forwardPearson": 0.6311540478857012,
+          "predictivePearson": 0.2292734663302488,
+          "percentChangeFromBaseline": 6,
+          "bradfordHillStrength": 0.8780137354552224,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LTU",
+          "jurisdictionName": "LTU",
+          "optimalPctGdp": 34.56578410610177,
+          "forwardPearson": 0.554091605749815,
+          "predictivePearson": 0.5439142560678827,
+          "percentChangeFromBaseline": 3.3,
+          "bradfordHillStrength": 0.842286001004606,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CZE",
+          "jurisdictionName": "CZE",
+          "optimalPctGdp": 33.907163619732565,
+          "forwardPearson": 0.22325627344984034,
+          "predictivePearson": 0.43218730654061177,
+          "percentChangeFromBaseline": 0.4,
+          "bradfordHillStrength": 0.524879858837837,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IRL",
+          "jurisdictionName": "IRL",
+          "optimalPctGdp": 32.79144717808957,
+          "forwardPearson": -0.2790707913038505,
+          "predictivePearson": -0.0073255893815346584,
+          "percentChangeFromBaseline": -2.7,
+          "bradfordHillStrength": 0.6055393818830843,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SWE",
+          "jurisdictionName": "SWE",
+          "optimalPctGdp": 32.70442021967555,
+          "forwardPearson": -0.6959463038233613,
+          "predictivePearson": 0.05193935070773614,
+          "percentChangeFromBaseline": -3.7,
+          "bradfordHillStrength": 0.901708823102005,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NZL",
+          "jurisdictionName": "NZL",
+          "optimalPctGdp": 32.567574204501405,
+          "forwardPearson": 0.3497208210322995,
+          "predictivePearson": 0.09109565679530546,
+          "percentChangeFromBaseline": 3.4,
+          "bradfordHillStrength": 0.6883068504357827,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LVA",
+          "jurisdictionName": "LVA",
+          "optimalPctGdp": 32.426601187192034,
+          "forwardPearson": 0.7607699396217723,
+          "predictivePearson": 0.45007019037492985,
+          "percentChangeFromBaseline": 5.3,
+          "bradfordHillStrength": 0.9208095682533137,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ESP",
+          "jurisdictionName": "ESP",
+          "optimalPctGdp": 32.22664824438444,
+          "forwardPearson": 0.3785866123564364,
+          "predictivePearson": -0.04732318029138599,
+          "percentChangeFromBaseline": 1.6,
+          "bradfordHillStrength": 0.7169000814357336,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "TUR",
+          "jurisdictionName": "TUR",
+          "optimalPctGdp": 30.609386215102607,
+          "forwardPearson": 0.9341931352144257,
+          "predictivePearson": 0.028019969377506948,
+          "percentChangeFromBaseline": 7.4,
+          "bradfordHillStrength": 0.9555760756246251,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ZAF",
+          "jurisdictionName": "ZAF",
+          "optimalPctGdp": 30.41455437028427,
+          "forwardPearson": 0.7721302287180596,
+          "predictivePearson": 0.23300293602270372,
+          "percentChangeFromBaseline": 9.3,
+          "bradfordHillStrength": 0.9237522543410501,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BRA",
+          "jurisdictionName": "BRA",
+          "optimalPctGdp": 29.84494067366337,
+          "forwardPearson": 0.5920438433807682,
+          "predictivePearson": -0.08229806418676278,
+          "percentChangeFromBaseline": 6.2,
+          "bradfordHillStrength": 0.8610275376316041,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EGY",
+          "jurisdictionName": "EGY",
+          "optimalPctGdp": 29.64474476865766,
+          "forwardPearson": 0.5296092790342869,
+          "predictivePearson": 0.3410405116852905,
+          "percentChangeFromBaseline": 3.4,
+          "bradfordHillStrength": 0.8288755592482664,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DEU",
+          "jurisdictionName": "DEU",
+          "optimalPctGdp": 28.944725629143353,
+          "forwardPearson": -0.15637439604492104,
+          "predictivePearson": 0.2389998798060889,
+          "percentChangeFromBaseline": -1.2,
+          "bradfordHillStrength": 0.4062209430540046,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "COL",
+          "jurisdictionName": "COL",
+          "optimalPctGdp": 27.932899100531994,
+          "forwardPearson": 0.8218484306898021,
+          "predictivePearson": 0.0702353531501273,
+          "percentChangeFromBaseline": 7,
+          "bradfordHillStrength": 0.9353970219212557,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "RUS",
+          "jurisdictionName": "RUS",
+          "optimalPctGdp": 27.81165159541777,
+          "forwardPearson": 0.6000292132477713,
+          "predictivePearson": -0.20022967990395402,
+          "percentChangeFromBaseline": 4.3,
+          "bradfordHillStrength": 0.8646778947322961,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUS",
+          "jurisdictionName": "AUS",
+          "optimalPctGdp": 26.350062225989763,
+          "forwardPearson": 0.8178056842411031,
+          "predictivePearson": 0.11721649797377098,
+          "percentChangeFromBaseline": 4,
+          "bradfordHillStrength": 0.9345205514041782,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "USA",
+          "jurisdictionName": "USA",
+          "optimalPctGdp": 23.24706888330381,
+          "forwardPearson": 0.36438459904567017,
+          "predictivePearson": -0.14867805386397454,
+          "percentChangeFromBaseline": 1.8,
+          "bradfordHillStrength": 0.7031758283548878,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ARG",
+          "jurisdictionName": "ARG",
+          "optimalPctGdp": 21.553192322758193,
+          "forwardPearson": 0.9254760224294821,
+          "predictivePearson": -0.03351064245287916,
+          "percentChangeFromBaseline": 3.4,
+          "bradfordHillStrength": 0.9542663109700064,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "KOR",
+          "jurisdictionName": "KOR",
+          "optimalPctGdp": 21.26605730957758,
+          "forwardPearson": 0.9131078637261931,
+          "predictivePearson": -0.019497089183952543,
+          "percentChangeFromBaseline": 8.2,
+          "bradfordHillStrength": 0.9523414331992837,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHL",
+          "jurisdictionName": "CHL",
+          "optimalPctGdp": 20.69288018466066,
+          "forwardPearson": 0.7173059332917268,
+          "predictivePearson": -0.028231471260380947,
+          "percentChangeFromBaseline": 3.9,
+          "bradfordHillStrength": 0.9084637103964004,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "THA",
+          "jurisdictionName": "THA",
+          "optimalPctGdp": 18.858117089574492,
+          "forwardPearson": 0.8979842295221768,
+          "predictivePearson": 0.031219052991834362,
+          "percentChangeFromBaseline": 5.7,
+          "bradfordHillStrength": 0.949877274205798,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MYS",
+          "jurisdictionName": "MYS",
+          "optimalPctGdp": 18.520835134194094,
+          "forwardPearson": 0.0012490733874663685,
+          "predictivePearson": -0.1738002783761884,
+          "percentChangeFromBaseline": -1.2,
+          "bradfordHillStrength": 0.004154922284538398,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CAN",
+          "jurisdictionName": "CAN",
+          "optimalPctGdp": 18.371148080659616,
+          "forwardPearson": -0.783881357914797,
+          "predictivePearson": -0.2733582385255964,
+          "percentChangeFromBaseline": -2.7,
+          "bradfordHillStrength": 0.9266811733822875,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MEX",
+          "jurisdictionName": "MEX",
+          "optimalPctGdp": 18.04696336559042,
+          "forwardPearson": 0.4326693160377793,
+          "predictivePearson": -0.3332632420751727,
+          "percentChangeFromBaseline": 1.5,
+          "bradfordHillStrength": 0.7636002505860114,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHE",
+          "jurisdictionName": "CHE",
+          "optimalPctGdp": 17.230479367511496,
+          "forwardPearson": 0.3330250685888633,
+          "predictivePearson": 0.31157450447898694,
+          "percentChangeFromBaseline": -0.5,
+          "bradfordHillStrength": 0.6704685763679249,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "JPN",
+          "jurisdictionName": "JPN",
+          "optimalPctGdp": 17.20468799295293,
+          "forwardPearson": 0.6823736866626118,
+          "predictivePearson": 0.13319884766295276,
+          "percentChangeFromBaseline": 2.1,
+          "bradfordHillStrength": 0.8971598003830049,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IDN",
+          "jurisdictionName": "IDN",
+          "optimalPctGdp": 16.024571523229977,
+          "forwardPearson": 0.6401726886631363,
+          "predictivePearson": -0.16558223824877805,
+          "percentChangeFromBaseline": 5.4,
+          "bradfordHillStrength": 0.881626329904233,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IND",
+          "jurisdictionName": "IND",
+          "optimalPctGdp": 15.514281517091444,
+          "forwardPearson": 0.16393581492673054,
+          "predictivePearson": -0.06796596621795234,
+          "percentChangeFromBaseline": 2.3,
+          "bradfordHillStrength": 0.4209999507926948,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PHL",
+          "jurisdictionName": "PHL",
+          "optimalPctGdp": 14.78842716867473,
+          "forwardPearson": -0.004707704549593806,
+          "predictivePearson": -0.16199559736541272,
+          "percentChangeFromBaseline": 0.5,
+          "bradfordHillStrength": 0.015569865118846948,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SGP",
+          "jurisdictionName": "SGP",
+          "optimalPctGdp": 14.480363997000381,
+          "forwardPearson": -0.19481177059276594,
+          "predictivePearson": -0.24798956316122645,
+          "percentChangeFromBaseline": -2.7,
+          "bradfordHillStrength": 0.47762657257021834,
+          "numberOfPairs": 34
+        }
+      ]
+    },
+    {
+      "id": "gdp_per_capita",
+      "name": "GDP per Capita (PPP)",
+      "direction": "higher_better",
+      "weight": 0.35,
+      "meanForwardPearson": 0.3008440019766435,
+      "meanPercentChange": 39.391489361702135,
+      "positiveCount": 34,
+      "negativeCount": 13,
+      "jurisdictionsAnalyzed": 47,
+      "jurisdictionsSkipped": 0,
+      "medianOptimalPctGdp": 32.22664824438444,
+      "p25OptimalPctGdp": 21.8539706760956,
+      "p75OptimalPctGdp": 37.9530888835576,
+      "confidenceScore": 0.5347210684060814,
+      "confidenceGrade": "C",
+      "jurisdictions": [
+        {
+          "jurisdictionId": "GRC",
+          "jurisdictionName": "GRC",
+          "optimalPctGdp": 49.6155455750096,
+          "forwardPearson": 0.6175364997455576,
+          "predictivePearson": -0.035575198263607,
+          "percentChangeFromBaseline": 48.5,
+          "bradfordHillStrength": 0.8723489614171485,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FRA",
+          "jurisdictionName": "FRA",
+          "optimalPctGdp": 47.85419771606319,
+          "forwardPearson": 0.7722725519515248,
+          "predictivePearson": 0.10199328527671603,
+          "percentChangeFromBaseline": 56.7,
+          "bradfordHillStrength": 0.9237884185143903,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUT",
+          "jurisdictionName": "AUT",
+          "optimalPctGdp": 46.36696482099056,
+          "forwardPearson": 0.5791753828836246,
+          "predictivePearson": 0.14420380912010977,
+          "percentChangeFromBaseline": 65.1,
+          "bradfordHillStrength": 0.8549366317496853,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVN",
+          "jurisdictionName": "SVN",
+          "optimalPctGdp": 45.29030365491574,
+          "forwardPearson": 0.7120479587140026,
+          "predictivePearson": 0.2285760394635058,
+          "percentChangeFromBaseline": 118.7,
+          "bradfordHillStrength": 0.9068452505124173,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "HUN",
+          "jurisdictionName": "HUN",
+          "optimalPctGdp": 43.35901378723132,
+          "forwardPearson": -0.6561678551034864,
+          "predictivePearson": -0.12913332625162466,
+          "percentChangeFromBaseline": -46.3,
+          "bradfordHillStrength": 0.8877723839334004,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ITA",
+          "jurisdictionName": "ITA",
+          "optimalPctGdp": 43.034640589795366,
+          "forwardPearson": 0.13614233652337276,
+          "predictivePearson": -0.07569409335452415,
+          "percentChangeFromBaseline": -5.2,
+          "bradfordHillStrength": 0.3647951847605111,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BEL",
+          "jurisdictionName": "BEL",
+          "optimalPctGdp": 42.44473352479487,
+          "forwardPearson": -0.6915861152063029,
+          "predictivePearson": -0.22189522786185167,
+          "percentChangeFromBaseline": -35,
+          "bradfordHillStrength": 0.9002698310691363,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PRT",
+          "jurisdictionName": "PRT",
+          "optimalPctGdp": 42.38813160379195,
+          "forwardPearson": 0.7511186694703087,
+          "predictivePearson": 0.13739700227212448,
+          "percentChangeFromBaseline": 93.2,
+          "bradfordHillStrength": 0.9182205180083131,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NLD",
+          "jurisdictionName": "NLD",
+          "optimalPctGdp": 40.19173244369405,
+          "forwardPearson": -0.5188336238330491,
+          "predictivePearson": -0.1444236911797766,
+          "percentChangeFromBaseline": -23.6,
+          "bradfordHillStrength": 0.8226172430930291,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "GBR",
+          "jurisdictionName": "GBR",
+          "optimalPctGdp": 39.982668121909256,
+          "forwardPearson": 0.7081653672651623,
+          "predictivePearson": 0.0645761720860577,
+          "percentChangeFromBaseline": 53.5,
+          "bradfordHillStrength": 0.9056318091752485,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVK",
+          "jurisdictionName": "SVK",
+          "optimalPctGdp": 38.90723853704548,
+          "forwardPearson": -0.7216261586127974,
+          "predictivePearson": -0.2381175937022454,
+          "percentChangeFromBaseline": -64.6,
+          "bradfordHillStrength": 0.9097724556422263,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DNK",
+          "jurisdictionName": "DNK",
+          "optimalPctGdp": 38.000616682614044,
+          "forwardPearson": -0.12383615302163864,
+          "predictivePearson": 0.14931701922536378,
+          "percentChangeFromBaseline": -13,
+          "bradfordHillStrength": 0.33819688506166123,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FIN",
+          "jurisdictionName": "FIN",
+          "optimalPctGdp": 37.905561084501144,
+          "forwardPearson": 0.25588594904423023,
+          "predictivePearson": 0.07196190335105698,
+          "percentChangeFromBaseline": 31.8,
+          "bradfordHillStrength": 0.5738454322726556,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "UKR",
+          "jurisdictionName": "UKR",
+          "optimalPctGdp": 36.966306559018484,
+          "forwardPearson": 0.7568107598041697,
+          "predictivePearson": -0.003124022066026799,
+          "percentChangeFromBaseline": 117.9,
+          "bradfordHillStrength": 0.9197575444059596,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ISR",
+          "jurisdictionName": "ISR",
+          "optimalPctGdp": 36.33032967408731,
+          "forwardPearson": -0.4181703185312676,
+          "predictivePearson": -0.16986282127515626,
+          "percentChangeFromBaseline": -12,
+          "bradfordHillStrength": 0.7518944607301672,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NOR",
+          "jurisdictionName": "NOR",
+          "optimalPctGdp": 35.74587333359063,
+          "forwardPearson": 0.015149812578092819,
+          "predictivePearson": 0.08772970690835356,
+          "percentChangeFromBaseline": 0.4,
+          "bradfordHillStrength": 0.04924547735377227,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "POL",
+          "jurisdictionName": "POL",
+          "optimalPctGdp": 35.51499719084812,
+          "forwardPearson": -0.44591291625873997,
+          "predictivePearson": -0.011629177437158966,
+          "percentChangeFromBaseline": -34.9,
+          "bradfordHillStrength": 0.7738091998711126,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EST",
+          "jurisdictionName": "EST",
+          "optimalPctGdp": 35.234595719524016,
+          "forwardPearson": 0.5737793740107667,
+          "predictivePearson": 0.093579771184018,
+          "percentChangeFromBaseline": 102.2,
+          "bradfordHillStrength": 0.8523038141443885,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LTU",
+          "jurisdictionName": "LTU",
+          "optimalPctGdp": 34.646044520371284,
+          "forwardPearson": 0.3273962911254975,
+          "predictivePearson": 0.23673983231493068,
+          "percentChangeFromBaseline": 57.6,
+          "bradfordHillStrength": 0.6642273451220844,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CZE",
+          "jurisdictionName": "CZE",
+          "optimalPctGdp": 33.838501391730006,
+          "forwardPearson": 0.05458544829385264,
+          "predictivePearson": 0.21999072527572647,
+          "percentChangeFromBaseline": -7.5,
+          "bradfordHillStrength": 0.1663582241977669,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LVA",
+          "jurisdictionName": "LVA",
+          "optimalPctGdp": 33.01640506215135,
+          "forwardPearson": 0.586704359107372,
+          "predictivePearson": 0.15001428756235846,
+          "percentChangeFromBaseline": 124.9,
+          "bradfordHillStrength": 0.8585319237685933,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NZL",
+          "jurisdictionName": "NZL",
+          "optimalPctGdp": 32.88594096759677,
+          "forwardPearson": 0.32064526839451524,
+          "predictivePearson": 0.0982717876425302,
+          "percentChangeFromBaseline": 51.1,
+          "bradfordHillStrength": 0.6565856561558823,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SWE",
+          "jurisdictionName": "SWE",
+          "optimalPctGdp": 32.674492129922356,
+          "forwardPearson": -0.6859480730758704,
+          "predictivePearson": 0.0016376790396636087,
+          "percentChangeFromBaseline": -48.7,
+          "bradfordHillStrength": 0.8983778318230187,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ESP",
+          "jurisdictionName": "ESP",
+          "optimalPctGdp": 32.22664824438444,
+          "forwardPearson": 0.4052991840874008,
+          "predictivePearson": -0.01970022623934159,
+          "percentChangeFromBaseline": 21.2,
+          "bradfordHillStrength": 0.7410181456835847,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "TUR",
+          "jurisdictionName": "TUR",
+          "optimalPctGdp": 31.259304162738548,
+          "forwardPearson": 0.7983586279070458,
+          "predictivePearson": 0.019029897229494885,
+          "percentChangeFromBaseline": 159,
+          "bradfordHillStrength": 0.9301353462435911,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ZAF",
+          "jurisdictionName": "ZAF",
+          "optimalPctGdp": 30.728558184097874,
+          "forwardPearson": 0.7397716668565424,
+          "predictivePearson": -0.0963272797748369,
+          "percentChangeFromBaseline": 55,
+          "bradfordHillStrength": 0.9150681030671179,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EGY",
+          "jurisdictionName": "EGY",
+          "optimalPctGdp": 30.319758234343055,
+          "forwardPearson": 0.5366322034245299,
+          "predictivePearson": 0.20968652767599427,
+          "percentChangeFromBaseline": 88.5,
+          "bradfordHillStrength": 0.8328350135449465,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BRA",
+          "jurisdictionName": "BRA",
+          "optimalPctGdp": 30.054996255091368,
+          "forwardPearson": 0.6874677306226947,
+          "predictivePearson": 0.2099934179483241,
+          "percentChangeFromBaseline": 57.7,
+          "bradfordHillStrength": 0.8988912998817047,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "COL",
+          "jurisdictionName": "COL",
+          "optimalPctGdp": 28.77074119098462,
+          "forwardPearson": 0.9079404120267828,
+          "predictivePearson": 0.06761653753726782,
+          "percentChangeFromBaseline": 107.2,
+          "bradfordHillStrength": 0.9515134112593648,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DEU",
+          "jurisdictionName": "DEU",
+          "optimalPctGdp": 28.75631420246723,
+          "forwardPearson": -0.19962648034625416,
+          "predictivePearson": 0.09563969164989891,
+          "percentChangeFromBaseline": -18.2,
+          "bradfordHillStrength": 0.48594324490721064,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IRL",
+          "jurisdictionName": "IRL",
+          "optimalPctGdp": 28.101088338307694,
+          "forwardPearson": -0.5585407663730105,
+          "predictivePearson": -0.08208730753538351,
+          "percentChangeFromBaseline": -51.5,
+          "bradfordHillStrength": 0.8446077252902413,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "RUS",
+          "jurisdictionName": "RUS",
+          "optimalPctGdp": 27.470042785665207,
+          "forwardPearson": 0.6417772691217372,
+          "predictivePearson": -0.11295114224837333,
+          "percentChangeFromBaseline": 77.3,
+          "bradfordHillStrength": 0.8822577733221102,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUS",
+          "jurisdictionName": "AUS",
+          "optimalPctGdp": 26.494542830522334,
+          "forwardPearson": 0.8906003816658826,
+          "predictivePearson": 0.15921288272245082,
+          "percentChangeFromBaseline": 82.5,
+          "bradfordHillStrength": 0.9486283049872071,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "USA",
+          "jurisdictionName": "USA",
+          "optimalPctGdp": 23.674611728666648,
+          "forwardPearson": 0.6992263210490302,
+          "predictivePearson": 0.03629397466756068,
+          "percentChangeFromBaseline": 62.9,
+          "bradfordHillStrength": 0.9027776254825498,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ARG",
+          "jurisdictionName": "ARG",
+          "optimalPctGdp": 22.178663265278335,
+          "forwardPearson": 0.8946707534474201,
+          "predictivePearson": 0.02354014107798541,
+          "percentChangeFromBaseline": 87.7,
+          "bradfordHillStrength": 0.9493206041676565,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "KOR",
+          "jurisdictionName": "KOR",
+          "optimalPctGdp": 21.529278086912868,
+          "forwardPearson": 0.9763629328856084,
+          "predictivePearson": 0.013304947538846812,
+          "percentChangeFromBaseline": 115.3,
+          "bradfordHillStrength": 0.9614015481032983,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHL",
+          "jurisdictionName": "CHL",
+          "optimalPctGdp": 20.974369665945403,
+          "forwardPearson": 0.8738938738730175,
+          "predictivePearson": 0.026873223832037052,
+          "percentChangeFromBaseline": 117.6,
+          "bradfordHillStrength": 0.9456863433280557,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MEX",
+          "jurisdictionName": "MEX",
+          "optimalPctGdp": 20.04491996291202,
+          "forwardPearson": 0.8425737758860339,
+          "predictivePearson": -0.05738221336084959,
+          "percentChangeFromBaseline": 60.4,
+          "bradfordHillStrength": 0.939709410751155,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "THA",
+          "jurisdictionName": "THA",
+          "optimalPctGdp": 19.081094475081727,
+          "forwardPearson": 0.9139166330094777,
+          "predictivePearson": 0.05566546937735284,
+          "percentChangeFromBaseline": 91.8,
+          "bradfordHillStrength": 0.9524697427832012,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MYS",
+          "jurisdictionName": "MYS",
+          "optimalPctGdp": 18.499780679247994,
+          "forwardPearson": -0.11829257319292759,
+          "predictivePearson": -0.01750179845358392,
+          "percentChangeFromBaseline": -23.2,
+          "bradfordHillStrength": 0.3258540020173757,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CAN",
+          "jurisdictionName": "CAN",
+          "optimalPctGdp": 18.371148080659616,
+          "forwardPearson": -0.4999629881979195,
+          "predictivePearson": -0.08264825197157327,
+          "percentChangeFromBaseline": -22.5,
+          "bradfordHillStrength": 0.8111010936368585,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "JPN",
+          "jurisdictionName": "JPN",
+          "optimalPctGdp": 17.20468799295293,
+          "forwardPearson": 0.7686427917563603,
+          "predictivePearson": 0.20131324523995986,
+          "percentChangeFromBaseline": 27.4,
+          "bradfordHillStrength": 0.9228607184003803,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHE",
+          "jurisdictionName": "CHE",
+          "optimalPctGdp": 17.060947665443884,
+          "forwardPearson": 0.22430444603892888,
+          "predictivePearson": 0.26680878644592954,
+          "percentChangeFromBaseline": -6.8,
+          "bradfordHillStrength": 0.5265369885837404,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IDN",
+          "jurisdictionName": "IDN",
+          "optimalPctGdp": 15.88278836023255,
+          "forwardPearson": 0.5222518224477803,
+          "predictivePearson": -0.2318720368635262,
+          "percentChangeFromBaseline": 122.5,
+          "bradfordHillStrength": 0.8246268708203286,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IND",
+          "jurisdictionName": "IND",
+          "optimalPctGdp": 15.534168524286056,
+          "forwardPearson": -0.008819542751254203,
+          "predictivePearson": -0.0767803089400405,
+          "percentChangeFromBaseline": 20.6,
+          "bradfordHillStrength": 0.02897054441068425,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PHL",
+          "jurisdictionName": "PHL",
+          "optimalPctGdp": 14.510672183910131,
+          "forwardPearson": 0.18801652905911384,
+          "predictivePearson": -0.15875485935496678,
+          "percentChangeFromBaseline": 4.4,
+          "bradfordHillStrength": 0.46565937215986497,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SGP",
+          "jurisdictionName": "SGP",
+          "optimalPctGdp": 14.505664710938483,
+          "forwardPearson": 0.10786827332932926,
+          "predictivePearson": -0.032867441152369795,
+          "percentChangeFromBaseline": -16.2,
+          "bradfordHillStrength": 0.3020172647313224,
+          "numberOfPairs": 34
+        }
+      ]
+    },
+    {
+      "id": "infant_mortality",
+      "name": "Infant Mortality",
+      "direction": "lower_better",
+      "weight": 0.15,
+      "meanForwardPearson": 0.3279177256697778,
+      "meanPercentChange": -13.776595744680854,
+      "positiveCount": 33,
+      "negativeCount": 14,
+      "jurisdictionsAnalyzed": 47,
+      "jurisdictionsSkipped": 0,
+      "medianOptimalPctGdp": 31.957393650072067,
+      "p25OptimalPctGdp": 21.208635680862116,
+      "p75OptimalPctGdp": 37.54548953648701,
+      "confidenceScore": 0.53487331157535,
+      "confidenceGrade": "C",
+      "jurisdictions": [
+        {
+          "jurisdictionId": "GRC",
+          "jurisdictionName": "GRC",
+          "optimalPctGdp": 49.09229188373978,
+          "forwardPearson": 0.6030989884664681,
+          "predictivePearson": -0.03099710176273185,
+          "percentChangeFromBaseline": -41,
+          "bradfordHillStrength": 0.8660555291494456,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FRA",
+          "jurisdictionName": "FRA",
+          "optimalPctGdp": 47.29476541221624,
+          "forwardPearson": 0.8714220587198765,
+          "predictivePearson": 0.1538363079707754,
+          "percentChangeFromBaseline": -26.5,
+          "bradfordHillStrength": 0.9452369835812101,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUT",
+          "jurisdictionName": "AUT",
+          "optimalPctGdp": 46.47242096567039,
+          "forwardPearson": 0.843767204616481,
+          "predictivePearson": 0.1662227156372983,
+          "percentChangeFromBaseline": -40,
+          "bradfordHillStrength": 0.9399487760643679,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVN",
+          "jurisdictionName": "SVN",
+          "optimalPctGdp": 45.13695636304048,
+          "forwardPearson": 0.8988184084961902,
+          "predictivePearson": 0.14515119222466022,
+          "percentChangeFromBaseline": -58.3,
+          "bradfordHillStrength": 0.9500164516978213,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "HUN",
+          "jurisdictionName": "HUN",
+          "optimalPctGdp": 43.12627515095395,
+          "forwardPearson": -0.7845580011959247,
+          "predictivePearson": -0.044651845049318184,
+          "percentChangeFromBaseline": 89.5,
+          "bradfordHillStrength": 0.9268463560007832,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BEL",
+          "jurisdictionName": "BEL",
+          "optimalPctGdp": 42.39232560254443,
+          "forwardPearson": -0.7011990438228473,
+          "predictivePearson": -0.20021994486414418,
+          "percentChangeFromBaseline": 48.8,
+          "bradfordHillStrength": 0.9034148374233818,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ITA",
+          "jurisdictionName": "ITA",
+          "optimalPctGdp": 42.331671453020945,
+          "forwardPearson": -0.1970171673891034,
+          "predictivePearson": -0.08019882437079165,
+          "percentChangeFromBaseline": 40.4,
+          "bradfordHillStrength": 0.4814526276680051,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PRT",
+          "jurisdictionName": "PRT",
+          "optimalPctGdp": 41.572719184117375,
+          "forwardPearson": 0.8834702973833183,
+          "predictivePearson": 0.10255897015743975,
+          "percentChangeFromBaseline": -57.7,
+          "bradfordHillStrength": 0.9473927318631645,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NLD",
+          "jurisdictionName": "NLD",
+          "optimalPctGdp": 40.01801486742309,
+          "forwardPearson": -0.6335412368602611,
+          "predictivePearson": -0.12205937484225493,
+          "percentChangeFromBaseline": 20.1,
+          "bradfordHillStrength": 0.8789805645666133,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "GBR",
+          "jurisdictionName": "GBR",
+          "optimalPctGdp": 39.982668121909256,
+          "forwardPearson": 0.7547203517699763,
+          "predictivePearson": 0.19097794251950972,
+          "percentChangeFromBaseline": -26,
+          "bradfordHillStrength": 0.9191964602720097,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SVK",
+          "jurisdictionName": "SVK",
+          "optimalPctGdp": 39.14602861740685,
+          "forwardPearson": -0.7334278885968561,
+          "predictivePearson": -0.08892110062210346,
+          "percentChangeFromBaseline": 73.1,
+          "bradfordHillStrength": 0.9132530161150302,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "FIN",
+          "jurisdictionName": "FIN",
+          "optimalPctGdp": 37.56478245776542,
+          "forwardPearson": 0.3855616262056815,
+          "predictivePearson": 0.2653625883582276,
+          "percentChangeFromBaseline": -23.6,
+          "bradfordHillStrength": 0.7234062402839856,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ISR",
+          "jurisdictionName": "ISR",
+          "optimalPctGdp": 37.526196615208605,
+          "forwardPearson": -0.3774272864180874,
+          "predictivePearson": -0.16290340812546916,
+          "percentChangeFromBaseline": 19.7,
+          "bradfordHillStrength": 0.7158039479106817,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DNK",
+          "jurisdictionName": "DNK",
+          "optimalPctGdp": 37.44951093216872,
+          "forwardPearson": -0.047564831479964424,
+          "predictivePearson": 0.1359592111186595,
+          "percentChangeFromBaseline": -0.6,
+          "bradfordHillStrength": 0.14661922691810192,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "UKR",
+          "jurisdictionName": "UKR",
+          "optimalPctGdp": 36.51733913399127,
+          "forwardPearson": 0.9125031284418577,
+          "predictivePearson": 0.28563372075721316,
+          "percentChangeFromBaseline": -43.9,
+          "bradfordHillStrength": 0.9522452669167892,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "POL",
+          "jurisdictionName": "POL",
+          "optimalPctGdp": 36.45501084018812,
+          "forwardPearson": -0.23719909487435403,
+          "predictivePearson": 0.39701056853976474,
+          "percentChangeFromBaseline": 6.9,
+          "bradfordHillStrength": 0.5464562987044541,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NOR",
+          "jurisdictionName": "NOR",
+          "optimalPctGdp": 35.79589302569423,
+          "forwardPearson": -0.222239662457806,
+          "predictivePearson": -0.033843641711293615,
+          "percentChangeFromBaseline": 22.1,
+          "bradfordHillStrength": 0.5232670865843583,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EST",
+          "jurisdictionName": "EST",
+          "optimalPctGdp": 34.346476735543256,
+          "forwardPearson": 0.6907184585191292,
+          "predictivePearson": 0.28374269737354,
+          "percentChangeFromBaseline": -47.1,
+          "bradfordHillStrength": 0.8999809750641271,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CZE",
+          "jurisdictionName": "CZE",
+          "optimalPctGdp": 34.30402202491388,
+          "forwardPearson": 0.41105525369451645,
+          "predictivePearson": 0.6010161337535254,
+          "percentChangeFromBaseline": -22.5,
+          "bradfordHillStrength": 0.7459398372986279,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LTU",
+          "jurisdictionName": "LTU",
+          "optimalPctGdp": 34.02152394783387,
+          "forwardPearson": 0.6657797772240083,
+          "predictivePearson": 0.42825496845910327,
+          "percentChangeFromBaseline": -42.2,
+          "bradfordHillStrength": 0.8913111345734451,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SWE",
+          "jurisdictionName": "SWE",
+          "optimalPctGdp": 32.77692000498918,
+          "forwardPearson": -0.5717936552145316,
+          "predictivePearson": 0.21387119327417892,
+          "percentChangeFromBaseline": 69.7,
+          "bradfordHillStrength": 0.8513229612541591,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IRL",
+          "jurisdictionName": "IRL",
+          "optimalPctGdp": 32.62555865997464,
+          "forwardPearson": -0.17431770178187095,
+          "predictivePearson": 0.044376142417377834,
+          "percentChangeFromBaseline": 24.4,
+          "bradfordHillStrength": 0.440694255279934,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "NZL",
+          "jurisdictionName": "NZL",
+          "optimalPctGdp": 32.43272666386695,
+          "forwardPearson": 0.26341715104232966,
+          "predictivePearson": 0.03858459501634018,
+          "percentChangeFromBaseline": -22.3,
+          "bradfordHillStrength": 0.5844104523681635,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "LVA",
+          "jurisdictionName": "LVA",
+          "optimalPctGdp": 31.957393650072067,
+          "forwardPearson": 0.7329537402780537,
+          "predictivePearson": 0.3867144136818113,
+          "percentChangeFromBaseline": -47.1,
+          "bradfordHillStrength": 0.9131158045906691,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ESP",
+          "jurisdictionName": "ESP",
+          "optimalPctGdp": 31.953247314721995,
+          "forwardPearson": 0.324061183349261,
+          "predictivePearson": 0.04790916959533481,
+          "percentChangeFromBaseline": -15.4,
+          "bradfordHillStrength": 0.6604737259319251,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ZAF",
+          "jurisdictionName": "ZAF",
+          "optimalPctGdp": 31.75107321566964,
+          "forwardPearson": 0.9423672677728941,
+          "predictivePearson": 0.027450232126768226,
+          "percentChangeFromBaseline": -39.2,
+          "bradfordHillStrength": 0.9567701575993055,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "TUR",
+          "jurisdictionName": "TUR",
+          "optimalPctGdp": 30.06495487853055,
+          "forwardPearson": 0.9406352211634953,
+          "predictivePearson": 0.02792289719631902,
+          "percentChangeFromBaseline": -68.4,
+          "bradfordHillStrength": 0.9565198487103169,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "EGY",
+          "jurisdictionName": "EGY",
+          "optimalPctGdp": 29.76456448267777,
+          "forwardPearson": 0.5261430699601095,
+          "predictivePearson": 0.3132904240504072,
+          "percentChangeFromBaseline": -33.6,
+          "bradfordHillStrength": 0.8268869159844455,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "BRA",
+          "jurisdictionName": "BRA",
+          "optimalPctGdp": 29.674895679174046,
+          "forwardPearson": 0.523332797122017,
+          "predictivePearson": -0.15831701713454582,
+          "percentChangeFromBaseline": -53,
+          "bradfordHillStrength": 0.8252576467537948,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "DEU",
+          "jurisdictionName": "DEU",
+          "optimalPctGdp": 29.11915325563668,
+          "forwardPearson": 0.059776739690451046,
+          "predictivePearson": 0.3888507455016716,
+          "percentChangeFromBaseline": 3.9,
+          "bradfordHillStrength": 0.18065971987358898,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "COL",
+          "jurisdictionName": "COL",
+          "optimalPctGdp": 28.210011056318784,
+          "forwardPearson": 0.8655572403499502,
+          "predictivePearson": 0.017583778136840422,
+          "percentChangeFromBaseline": -39.1,
+          "bradfordHillStrength": 0.944155866605879,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "RUS",
+          "jurisdictionName": "RUS",
+          "optimalPctGdp": 26.743570121795134,
+          "forwardPearson": 0.5024875516463997,
+          "predictivePearson": -0.23024848940032305,
+          "percentChangeFromBaseline": -22.5,
+          "bradfordHillStrength": 0.8126840480952863,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "AUS",
+          "jurisdictionName": "AUS",
+          "optimalPctGdp": 26.42495286813061,
+          "forwardPearson": 0.830851105939962,
+          "predictivePearson": 0.15026515132963414,
+          "percentChangeFromBaseline": -33,
+          "bradfordHillStrength": 0.9373068875379069,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "USA",
+          "jurisdictionName": "USA",
+          "optimalPctGdp": 23.674611728666648,
+          "forwardPearson": 0.4748480351546935,
+          "predictivePearson": -0.027428291143053396,
+          "percentChangeFromBaseline": -19.8,
+          "bradfordHillStrength": 0.7946063267075716,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ARG",
+          "jurisdictionName": "ARG",
+          "optimalPctGdp": 21.799528223423515,
+          "forwardPearson": 0.9732595504629928,
+          "predictivePearson": 0.04218081119577999,
+          "percentChangeFromBaseline": -43.4,
+          "bradfordHillStrength": 0.9610001898784797,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHL",
+          "jurisdictionName": "CHL",
+          "optimalPctGdp": 20.617743138300714,
+          "forwardPearson": 0.6842429350277074,
+          "predictivePearson": -0.00027823577869756644,
+          "percentChangeFromBaseline": -33.6,
+          "bradfordHillStrength": 0.8977985878124282,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "KOR",
+          "jurisdictionName": "KOR",
+          "optimalPctGdp": 20.465707943988594,
+          "forwardPearson": 0.7830758326575142,
+          "predictivePearson": -0.03353078550358879,
+          "percentChangeFromBaseline": -57.2,
+          "bradfordHillStrength": 0.9264840416207877,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MEX",
+          "jurisdictionName": "MEX",
+          "optimalPctGdp": 19.206222726542943,
+          "forwardPearson": 0.6785365370916886,
+          "predictivePearson": -0.19674751940598378,
+          "percentChangeFromBaseline": -34.6,
+          "bradfordHillStrength": 0.8958359748101021,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "THA",
+          "jurisdictionName": "THA",
+          "optimalPctGdp": 18.479192327254996,
+          "forwardPearson": 0.9101768984153521,
+          "predictivePearson": 0.03748956032412454,
+          "percentChangeFromBaseline": -44.7,
+          "bradfordHillStrength": 0.9518735325666661,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CAN",
+          "jurisdictionName": "CAN",
+          "optimalPctGdp": 18.410093287045523,
+          "forwardPearson": -0.6815069318736159,
+          "predictivePearson": -0.07951949503647482,
+          "percentChangeFromBaseline": 13.7,
+          "bradfordHillStrength": 0.8968622466280197,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "MYS",
+          "jurisdictionName": "MYS",
+          "optimalPctGdp": 18.29155627513622,
+          "forwardPearson": -0.09513150898124177,
+          "predictivePearson": -0.31844441848615673,
+          "percentChangeFromBaseline": 25.7,
+          "bradfordHillStrength": 0.271745737390896,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "CHE",
+          "jurisdictionName": "CHE",
+          "optimalPctGdp": 17.230479367511496,
+          "forwardPearson": 0.5240522712980232,
+          "predictivePearson": 0.35519280184766433,
+          "percentChangeFromBaseline": -2.1,
+          "bradfordHillStrength": 0.8256762200008203,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "JPN",
+          "jurisdictionName": "JPN",
+          "optimalPctGdp": 17.067219710273694,
+          "forwardPearson": 0.70554371993696,
+          "predictivePearson": 0.19282257498219135,
+          "percentChangeFromBaseline": -28.6,
+          "bradfordHillStrength": 0.9048035282946164,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IDN",
+          "jurisdictionName": "IDN",
+          "optimalPctGdp": 15.989978200835672,
+          "forwardPearson": 0.7218353202822927,
+          "predictivePearson": -0.12426339507701734,
+          "percentChangeFromBaseline": -49.8,
+          "bradfordHillStrength": 0.9098353408637568,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "IND",
+          "jurisdictionName": "IND",
+          "optimalPctGdp": 15.514281517091444,
+          "forwardPearson": 0.17416394576016778,
+          "predictivePearson": -0.00785892114295808,
+          "percentChangeFromBaseline": -13.9,
+          "bradfordHillStrength": 0.44040752638830793,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "PHL",
+          "jurisdictionName": "PHL",
+          "optimalPctGdp": 14.855330155151487,
+          "forwardPearson": 0.05939331812393765,
+          "predictivePearson": -0.05337911735873148,
+          "percentChangeFromBaseline": -7.2,
+          "bradfordHillStrength": 0.17961187462640194,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "SGP",
+          "jurisdictionName": "SGP",
+          "optimalPctGdp": 14.790353439078014,
+          "forwardPearson": -0.2525698686377409,
+          "predictivePearson": -0.17317048190016454,
+          "percentChangeFromBaseline": 32.4,
+          "bradfordHillStrength": 0.5691087591451087,
+          "numberOfPairs": 34
+        }
+      ]
+    },
+    {
+      "id": "inequality",
+      "name": "Income Inequality (Gini)",
+      "direction": "lower_better",
+      "weight": 0.15,
+      "meanForwardPearson": 0.0781157947494752,
+      "meanPercentChange": -1.182222222222222,
+      "positiveCount": 21,
+      "negativeCount": 24,
+      "jurisdictionsAnalyzed": 45,
+      "jurisdictionsSkipped": 2,
+      "medianOptimalPctGdp": 30.803947095183002,
+      "p25OptimalPctGdp": 21.076287086493316,
+      "p75OptimalPctGdp": 37.76586912920407,
+      "confidenceScore": 0.296576174848233,
+      "confidenceGrade": "D",
+      "jurisdictions": [
+        {
+          "jurisdictionId": "GRC",
+          "jurisdictionName": "GRC",
+          "optimalPctGdp": 47.61615614124842,
+          "forwardPearson": -0.23051556007969592,
+          "predictivePearson": -0.6216980589448748,
+          "percentChangeFromBaseline": 1.2,
+          "bradfordHillStrength": 0.536238654312609,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "FRA",
+          "jurisdictionName": "FRA",
+          "optimalPctGdp": 47.38131468778776,
+          "forwardPearson": -0.033841855680605694,
+          "predictivePearson": 0.1701627934727574,
+          "percentChangeFromBaseline": 0.5,
+          "bradfordHillStrength": 0.10667621765023894,
+          "numberOfPairs": 29
+        },
+        {
+          "jurisdictionId": "AUT",
+          "jurisdictionName": "AUT",
+          "optimalPctGdp": 45.340085971359315,
+          "forwardPearson": -0.0887862952951279,
+          "predictivePearson": -0.44491258556943497,
+          "percentChangeFromBaseline": 0.2,
+          "bradfordHillStrength": 0.2561785932464168,
+          "numberOfPairs": 28
+        },
+        {
+          "jurisdictionId": "HUN",
+          "jurisdictionName": "HUN",
+          "optimalPctGdp": 44.10821891603891,
+          "forwardPearson": -0.14128215632026128,
+          "predictivePearson": -0.11907478953569456,
+          "percentChangeFromBaseline": 2.9,
+          "bradfordHillStrength": 0.37558528317230566,
+          "numberOfPairs": 23
+        },
+        {
+          "jurisdictionId": "SVN",
+          "jurisdictionName": "SVN",
+          "optimalPctGdp": 43.18697906662235,
+          "forwardPearson": 0.2158666115909621,
+          "predictivePearson": -0.31529326077865183,
+          "percentChangeFromBaseline": -1.6,
+          "bradfordHillStrength": 0.5130312722221486,
+          "numberOfPairs": 26
+        },
+        {
+          "jurisdictionId": "BEL",
+          "jurisdictionName": "BEL",
+          "optimalPctGdp": 42.867375904457155,
+          "forwardPearson": -0.06076751830916423,
+          "predictivePearson": -0.13928030143702508,
+          "percentChangeFromBaseline": 0.4,
+          "bradfordHillStrength": 0.18336120589714722,
+          "numberOfPairs": 25
+        },
+        {
+          "jurisdictionId": "PRT",
+          "jurisdictionName": "PRT",
+          "optimalPctGdp": 42.47219106659375,
+          "forwardPearson": 0.42791410285626497,
+          "predictivePearson": -0.15544919865379925,
+          "percentChangeFromBaseline": -3.2,
+          "bradfordHillStrength": 0.7598232919096471,
+          "numberOfPairs": 21
+        },
+        {
+          "jurisdictionId": "ITA",
+          "jurisdictionName": "ITA",
+          "optimalPctGdp": 41.77618656001987,
+          "forwardPearson": -0.308465326165847,
+          "predictivePearson": -0.5501682566871876,
+          "percentChangeFromBaseline": 1.2,
+          "bradfordHillStrength": 0.6423561978270986,
+          "numberOfPairs": 27
+        },
+        {
+          "jurisdictionId": "NLD",
+          "jurisdictionName": "NLD",
+          "optimalPctGdp": 40.44196016144363,
+          "forwardPearson": -0.3028094100633919,
+          "predictivePearson": 0.24338892506280996,
+          "percentChangeFromBaseline": 0.9,
+          "bradfordHillStrength": 0.635549558671699,
+          "numberOfPairs": 21
+        },
+        {
+          "jurisdictionId": "SVK",
+          "jurisdictionName": "SVK",
+          "optimalPctGdp": 39.98672711998593,
+          "forwardPearson": 0.3021804959162978,
+          "predictivePearson": -0.09103418351960813,
+          "percentChangeFromBaseline": -2,
+          "bradfordHillStrength": 0.6347847304714598,
+          "numberOfPairs": 22
+        },
+        {
+          "jurisdictionId": "GBR",
+          "jurisdictionName": "GBR",
+          "optimalPctGdp": 39.95108450513026,
+          "forwardPearson": 0.6754291433808787,
+          "predictivePearson": 0.1660739371967993,
+          "percentChangeFromBaseline": -5.1,
+          "bradfordHillStrength": 0.8947514389172877,
+          "numberOfPairs": 32
+        },
+        {
+          "jurisdictionId": "FIN",
+          "jurisdictionName": "FIN",
+          "optimalPctGdp": 37.76586912920407,
+          "forwardPearson": -0.16595088999870022,
+          "predictivePearson": -0.34870600427324605,
+          "percentChangeFromBaseline": -1,
+          "bradfordHillStrength": 0.4248760138423946,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "UKR",
+          "jurisdictionName": "UKR",
+          "optimalPctGdp": 36.69271231234186,
+          "forwardPearson": 0.7741601857337723,
+          "predictivePearson": 0.2975922244495292,
+          "percentChangeFromBaseline": -17.2,
+          "bradfordHillStrength": 0.9242664448920792,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "ISR",
+          "jurisdictionName": "ISR",
+          "optimalPctGdp": 36.58303424011951,
+          "forwardPearson": -0.49865793885709503,
+          "predictivePearson": -0.6579252524725652,
+          "percentChangeFromBaseline": 2.9,
+          "bradfordHillStrength": 0.8102775623765758,
+          "numberOfPairs": 23
+        },
+        {
+          "jurisdictionId": "DNK",
+          "jurisdictionName": "DNK",
+          "optimalPctGdp": 36.006830565996,
+          "forwardPearson": -0.2764230918245361,
+          "predictivePearson": -0.3823484617330939,
+          "percentChangeFromBaseline": 1.8,
+          "bradfordHillStrength": 0.602042596609218,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "POL",
+          "jurisdictionName": "POL",
+          "optimalPctGdp": 35.45001956222234,
+          "forwardPearson": -0.45173834251222095,
+          "predictivePearson": -0.6662251170129003,
+          "percentChangeFromBaseline": 6.3,
+          "bradfordHillStrength": 0.7781590233175506,
+          "numberOfPairs": 30
+        },
+        {
+          "jurisdictionId": "NOR",
+          "jurisdictionName": "NOR",
+          "optimalPctGdp": 35.29926784655192,
+          "forwardPearson": -0.2559272953532725,
+          "predictivePearson": -0.6560622546749648,
+          "percentChangeFromBaseline": 2.3,
+          "bradfordHillStrength": 0.5739041612870395,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "LTU",
+          "jurisdictionName": "LTU",
+          "optimalPctGdp": 34.526043998071636,
+          "forwardPearson": 0.22885602984639317,
+          "predictivePearson": 0.20465165080501369,
+          "percentChangeFromBaseline": -4.3,
+          "bradfordHillStrength": 0.5336661256434616,
+          "numberOfPairs": 28
+        },
+        {
+          "jurisdictionId": "EST",
+          "jurisdictionName": "EST",
+          "optimalPctGdp": 34.50960215823267,
+          "forwardPearson": 0.28638156035321816,
+          "predictivePearson": -0.24749082651322596,
+          "percentChangeFromBaseline": -1.8,
+          "bradfordHillStrength": 0.6150359020718943,
+          "numberOfPairs": 27
+        },
+        {
+          "jurisdictionId": "SWE",
+          "jurisdictionName": "SWE",
+          "optimalPctGdp": 34.490144919420416,
+          "forwardPearson": 0.5392128355928854,
+          "predictivePearson": -0.14912971009204867,
+          "percentChangeFromBaseline": -9,
+          "bradfordHillStrength": 0.8342668175882207,
+          "numberOfPairs": 26
+        },
+        {
+          "jurisdictionId": "CZE",
+          "jurisdictionName": "CZE",
+          "optimalPctGdp": 33.503253208466596,
+          "forwardPearson": -0.4882243427727579,
+          "predictivePearson": -0.48833522036355304,
+          "percentChangeFromBaseline": 3.1,
+          "bradfordHillStrength": 0.8035631897860926,
+          "numberOfPairs": 24
+        },
+        {
+          "jurisdictionId": "ESP",
+          "jurisdictionName": "ESP",
+          "optimalPctGdp": 31.405535947565564,
+          "forwardPearson": -0.3114642188934522,
+          "predictivePearson": 0.17628242233691893,
+          "percentChangeFromBaseline": 2.6,
+          "bradfordHillStrength": 0.645913506219044,
+          "numberOfPairs": 30
+        },
+        {
+          "jurisdictionId": "DEU",
+          "jurisdictionName": "DEU",
+          "optimalPctGdp": 30.803947095183002,
+          "forwardPearson": 0.6272334475830464,
+          "predictivePearson": 0.20674097512304235,
+          "percentChangeFromBaseline": -4.1,
+          "bradfordHillStrength": 0.8764090749537721,
+          "numberOfPairs": 30
+        },
+        {
+          "jurisdictionId": "EGY",
+          "jurisdictionName": "EGY",
+          "optimalPctGdp": 30.49811962053084,
+          "forwardPearson": 0.24736390421085386,
+          "predictivePearson": 0.12588639928198828,
+          "percentChangeFromBaseline": -3.5,
+          "bradfordHillStrength": 0.5615661559765917,
+          "numberOfPairs": 11
+        },
+        {
+          "jurisdictionId": "BRA",
+          "jurisdictionName": "BRA",
+          "optimalPctGdp": 30.054996255091368,
+          "forwardPearson": 0.5508877970541843,
+          "predictivePearson": 0.14783139396025807,
+          "percentChangeFromBaseline": -6.9,
+          "bradfordHillStrength": 0.8405926904212767,
+          "numberOfPairs": 30
+        },
+        {
+          "jurisdictionId": "LVA",
+          "jurisdictionName": "LVA",
+          "optimalPctGdp": 29.004501898142404,
+          "forwardPearson": -0.4972637671820887,
+          "predictivePearson": -0.18491007154918765,
+          "percentChangeFromBaseline": 0.9,
+          "bradfordHillStrength": 0.8093938250022175,
+          "numberOfPairs": 27
+        },
+        {
+          "jurisdictionId": "IRL",
+          "jurisdictionName": "IRL",
+          "optimalPctGdp": 28.906744613827694,
+          "forwardPearson": -0.5757170447312424,
+          "predictivePearson": -0.3036542835937442,
+          "percentChangeFromBaseline": 7.3,
+          "bradfordHillStrength": 0.8532546952640526,
+          "numberOfPairs": 26
+        },
+        {
+          "jurisdictionId": "TUR",
+          "jurisdictionName": "TUR",
+          "optimalPctGdp": 28.203227876391093,
+          "forwardPearson": -0.16439773689507703,
+          "predictivePearson": -0.1390939130541967,
+          "percentChangeFromBaseline": 2.7,
+          "bradfordHillStrength": 0.42189077427314714,
+          "numberOfPairs": 22
+        },
+        {
+          "jurisdictionId": "RUS",
+          "jurisdictionName": "RUS",
+          "optimalPctGdp": 25.897219080298417,
+          "forwardPearson": 0.53448050611825,
+          "predictivePearson": 0.011111396690802855,
+          "percentChangeFromBaseline": -6.3,
+          "bradfordHillStrength": 0.8316317420730165,
+          "numberOfPairs": 29
+        },
+        {
+          "jurisdictionId": "ZAF",
+          "jurisdictionName": "ZAF",
+          "optimalPctGdp": 25.8420820063958,
+          "forwardPearson": -0.16927420360960405,
+          "predictivePearson": 0.4813560587719296,
+          "percentChangeFromBaseline": 3.2,
+          "bradfordHillStrength": 0.4312119133185687,
+          "numberOfPairs": 6
+        },
+        {
+          "jurisdictionId": "COL",
+          "jurisdictionName": "COL",
+          "optimalPctGdp": 25.51692381850664,
+          "forwardPearson": 0.3451518467576988,
+          "predictivePearson": -0.38915785269736364,
+          "percentChangeFromBaseline": -3.3,
+          "bradfordHillStrength": 0.6835234576236027,
+          "numberOfPairs": 26
+        },
+        {
+          "jurisdictionId": "AUS",
+          "jurisdictionName": "AUS",
+          "optimalPctGdp": 25.33120371858301,
+          "forwardPearson": -0.08326714236112738,
+          "predictivePearson": 0.4721530904745987,
+          "percentChangeFromBaseline": -0.7,
+          "bradfordHillStrength": 0.24236772865391876,
+          "numberOfPairs": 10
+        },
+        {
+          "jurisdictionId": "CAN",
+          "jurisdictionName": "CAN",
+          "optimalPctGdp": 21.65182621400749,
+          "forwardPearson": 0.5389117167621165,
+          "predictivePearson": -0.12633040021697228,
+          "percentChangeFromBaseline": -3.2,
+          "bradfordHillStrength": 0.8341003828007548,
+          "numberOfPairs": 32
+        },
+        {
+          "jurisdictionId": "USA",
+          "jurisdictionName": "USA",
+          "optimalPctGdp": 21.076287086493316,
+          "forwardPearson": -0.3020496695301945,
+          "predictivePearson": 0.07201349413479657,
+          "percentChangeFromBaseline": 1.7,
+          "bradfordHillStrength": 0.6346254297598831,
+          "numberOfPairs": 34
+        },
+        {
+          "jurisdictionId": "ARG",
+          "jurisdictionName": "ARG",
+          "optimalPctGdp": 21.027490635816683,
+          "forwardPearson": 0.6407427347540606,
+          "predictivePearson": 0.043161822529267035,
+          "percentChangeFromBaseline": -11.6,
+          "bradfordHillStrength": 0.8818510445001803,
+          "numberOfPairs": 32
+        },
+        {
+          "jurisdictionId": "CHL",
+          "jurisdictionName": "CHL",
+          "optimalPctGdp": 20.772582544218416,
+          "forwardPearson": 0.7972252109687609,
+          "predictivePearson": 0.08695891907068132,
+          "percentChangeFromBaseline": -12.7,
+          "bradfordHillStrength": 0.9298708943946254,
+          "numberOfPairs": 15
+        },
+        {
+          "jurisdictionId": "MEX",
+          "jurisdictionName": "MEX",
+          "optimalPctGdp": 20.55871662847498,
+          "forwardPearson": 0.8177497549348922,
+          "predictivePearson": -0.0246573286443299,
+          "percentChangeFromBaseline": -8.7,
+          "bradfordHillStrength": 0.9345083428657517,
+          "numberOfPairs": 17
+        },
+        {
+          "jurisdictionId": "THA",
+          "jurisdictionName": "THA",
+          "optimalPctGdp": 19.69909319681697,
+          "forwardPearson": 0.8989300516513856,
+          "predictivePearson": 0.01590368388615826,
+          "percentChangeFromBaseline": -13.5,
+          "bradfordHillStrength": 0.9500350493072481,
+          "numberOfPairs": 27
+        },
+        {
+          "jurisdictionId": "KOR",
+          "jurisdictionName": "KOR",
+          "optimalPctGdp": 19.171695294359886,
+          "forwardPearson": -0.5332121895557721,
+          "predictivePearson": 0.09891197243509398,
+          "percentChangeFromBaseline": 4.7,
+          "bradfordHillStrength": 0.830918421107079,
+          "numberOfPairs": 11
+        },
+        {
+          "jurisdictionId": "MYS",
+          "jurisdictionName": "MYS",
+          "optimalPctGdp": 18.821008859457145,
+          "forwardPearson": 0.03949490881565202,
+          "predictivePearson": 0.143971805864781,
+          "percentChangeFromBaseline": 3.5,
+          "bradfordHillStrength": 0.12335196543497595,
+          "numberOfPairs": 11
+        },
+        {
+          "jurisdictionId": "JPN",
+          "jurisdictionName": "JPN",
+          "optimalPctGdp": 17.272480228552165,
+          "forwardPearson": 0.7121186507034888,
+          "predictivePearson": 0.3082525637504466,
+          "percentChangeFromBaseline": -3.3,
+          "bradfordHillStrength": 0.9068671989082606,
+          "numberOfPairs": 13
+        },
+        {
+          "jurisdictionId": "CHE",
+          "jurisdictionName": "CHE",
+          "optimalPctGdp": 16.980966405548486,
+          "forwardPearson": -0.024768457709584784,
+          "predictivePearson": -0.05395488540634497,
+          "percentChangeFromBaseline": 1,
+          "bradfordHillStrength": 0.0792452139674138,
+          "numberOfPairs": 21
+        },
+        {
+          "jurisdictionId": "PHL",
+          "jurisdictionName": "PHL",
+          "optimalPctGdp": 15.513945864485283,
+          "forwardPearson": 0.4225161163962211,
+          "predictivePearson": -0.04099861176988112,
+          "percentChangeFromBaseline": -0.7,
+          "bradfordHillStrength": 0.7554626093227548,
+          "numberOfPairs": 12
+        },
+        {
+          "jurisdictionId": "IND",
+          "jurisdictionName": "IND",
+          "optimalPctGdp": 15.050877122306542,
+          "forwardPearson": -0.9556763495177218,
+          "predictivePearson": -0.44686866049971485,
+          "percentChangeFromBaseline": 8.9,
+          "bradfordHillStrength": 0.958646070497021,
+          "numberOfPairs": 5
+        },
+        {
+          "jurisdictionId": "IDN",
+          "jurisdictionName": "IDN",
+          "optimalPctGdp": 15.040418008714889,
+          "forwardPearson": -0.18711604503635695,
+          "predictivePearson": -0.2981095466774587,
+          "percentChangeFromBaseline": 10.3,
+          "bradfordHillStrength": 0.4640530786361915,
+          "numberOfPairs": 29
+        }
+      ]
+    }
+  ],
+  "sensitivity": {
+    "startYearScenarios": [
+      {
+        "startYear": 1990,
+        "endYear": 2023,
+        "observations": 1402,
+        "jurisdictions": 47,
+        "optimalPctGdp": 32.0972841464994,
+        "optimalBandLowPctGdp": 21.505834605264745,
+        "optimalBandHighPctGdp": 37.8357626639882,
+        "usModeledSpendingPctGdp": 24.8982825568771,
+        "usStatus": "within_optimal_band",
+        "isPrimaryScenario": true
+      },
+      {
+        "startYear": 1995,
+        "endYear": 2023,
+        "observations": 1233,
+        "jurisdictions": 47,
+        "optimalPctGdp": 32.62731413505525,
+        "optimalBandLowPctGdp": 22.235704215938608,
+        "optimalBandHighPctGdp": 38.565638986778666,
+        "usModeledSpendingPctGdp": 24.8982825568771,
+        "usStatus": "within_optimal_band",
+        "isPrimaryScenario": false
+      },
+      {
+        "startYear": 2000,
+        "endYear": 2023,
+        "observations": 1036,
+        "jurisdictions": 47,
+        "optimalPctGdp": 32.73064928740876,
+        "optimalBandLowPctGdp": 23.059781372116152,
+        "optimalBandHighPctGdp": 38.74193585063162,
+        "usModeledSpendingPctGdp": 24.8982825568771,
+        "usStatus": "within_optimal_band",
+        "isPrimaryScenario": false
+      }
+    ],
+    "note": "All scenarios use the same methodology and countries where data is available; only the start year changes."
+  },
+  "spendingLevelTable": {
+    "healthyLifeYearsMetric": {
+      "isDirectMetric": false,
+      "metricUsed": "Life expectancy at birth (proxy)",
+      "note": "Complete country-year HALE coverage is not available in this in-repo panel."
+    },
+    "incomeGrowthMetric": {
+      "isDirectMetric": false,
+      "metricUsed": "Real GDP per capita YoY growth (proxy)",
+      "note": "Complete country-year real after-tax median income coverage is not available in this in-repo panel."
+    },
+    "binning": {
+      "method": "adaptive quantile bins with anchor constraints",
+      "targetBinCount": 12,
+      "minBinSize": 30,
+      "anchors": [
+        20
+      ],
+      "roundTo": 1,
+      "binsGenerated": 13
+    },
+    "tiers": [
+      {
+        "tier": "9.7-15%",
+        "minPctGdp": 9.71102986684022,
+        "maxPctGdp": 15,
+        "observations": 101,
+        "jurisdictions": 11,
+        "typicalHealthyLifeYears": 71.205,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.3012195121951464,
+        "typicalRealAfterTaxMedianIncomeLevel": 8932.73040130287,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.601577102759471,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "15-17%",
+        "minPctGdp": 15,
+        "maxPctGdp": 17,
+        "observations": 108,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 74.26050000000001,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.27329268292690756,
+        "typicalRealAfterTaxMedianIncomeLevel": 11433.6670504652,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.207211221318321,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "17-20%",
+        "minPctGdp": 17,
+        "maxPctGdp": 20,
+        "observations": 121,
+        "jurisdictions": 20,
+        "typicalHealthyLifeYears": 77.884,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25585365853659425,
+        "typicalRealAfterTaxMedianIncomeLevel": 27841.3533496575,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.100115051022166,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "20-21%",
+        "minPctGdp": 20,
+        "maxPctGdp": 21,
+        "observations": 35,
+        "jurisdictions": 10,
+        "typicalHealthyLifeYears": 76.412,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.1629999999999967,
+        "typicalRealAfterTaxMedianIncomeLevel": 22553.6161787372,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.450324312620068,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "21-25%",
+        "minPctGdp": 21,
+        "maxPctGdp": 25,
+        "observations": 92,
+        "jurisdictions": 19,
+        "typicalHealthyLifeYears": 77.38652439024389,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.22699999999998965,
+        "typicalRealAfterTaxMedianIncomeLevel": 23971.758313685248,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.5483145343216655,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "25-30%",
+        "minPctGdp": 25,
+        "maxPctGdp": 30,
+        "observations": 135,
+        "jurisdictions": 23,
+        "typicalHealthyLifeYears": 76.5365853658537,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.19000000000001194,
+        "typicalRealAfterTaxMedianIncomeLevel": 22200.5486407425,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.9260361137038275,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "30-32%",
+        "minPctGdp": 30,
+        "maxPctGdp": 32,
+        "observations": 95,
+        "jurisdictions": 22,
+        "typicalHealthyLifeYears": 76.1804878048781,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2048780487804862,
+        "typicalRealAfterTaxMedianIncomeLevel": 25093.995962126,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.825625890416632,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "32-34%",
+        "minPctGdp": 32,
+        "maxPctGdp": 34,
+        "observations": 106,
+        "jurisdictions": 25,
+        "typicalHealthyLifeYears": 77.0950731707317,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.22500000000000853,
+        "typicalRealAfterTaxMedianIncomeLevel": 27373.325105353302,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.914725891935664,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "34-37%",
+        "minPctGdp": 34,
+        "maxPctGdp": 37,
+        "observations": 149,
+        "jurisdictions": 24,
+        "typicalHealthyLifeYears": 77.4024390243903,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20243902439030137,
+        "typicalRealAfterTaxMedianIncomeLevel": 28610.0662473737,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.579856889133563,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "37-39%",
+        "minPctGdp": 37,
+        "maxPctGdp": 39,
+        "observations": 103,
+        "jurisdictions": 21,
+        "typicalHealthyLifeYears": 77.7365853658537,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20243902439030137,
+        "typicalRealAfterTaxMedianIncomeLevel": 28086.837763597,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.7725706542235615,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "39-42%",
+        "minPctGdp": 39,
+        "maxPctGdp": 42,
+        "observations": 126,
+        "jurisdictions": 22,
+        "typicalHealthyLifeYears": 78.59634146341465,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.24878048780490758,
+        "typicalRealAfterTaxMedianIncomeLevel": 29178.62615803435,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.3283540034793635,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "42-45%",
+        "minPctGdp": 42,
+        "maxPctGdp": 45,
+        "observations": 109,
+        "jurisdictions": 17,
+        "typicalHealthyLifeYears": 78.8243902439024,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 28076.1241416392,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.4088273704891865,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "45-65.6%",
+        "minPctGdp": 45,
+        "maxPctGdp": 65.5600221546264,
+        "observations": 122,
+        "jurisdictions": 19,
+        "typicalHealthyLifeYears": 80.14390243902434,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2036585365854009,
+        "typicalRealAfterTaxMedianIncomeLevel": 28775.6180236364,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.729535297774657,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      }
+    ]
+  },
+  "spendingPerCapitaLevelTable": {
+    "definition": "Government expenditure per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.",
+    "binning": {
+      "method": "adaptive quantile bins with anchor constraints",
+      "targetBinCount": 12,
+      "minBinSize": 30,
+      "anchors": [
+        5000,
+        10000,
+        20000
+      ],
+      "roundTo": 500,
+      "binsGenerated": 13
+    },
+    "tiers": [
+      {
+        "tier": "$188-$1,500",
+        "minSpendingPerCapitaPpp": 187.66600527417086,
+        "maxSpendingPerCapitaPpp": 1500,
+        "observations": 133,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 68.423,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.3299999999999912,
+        "typicalRealAfterTaxMedianIncomeLevel": 5191.59149903249,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.270732802598284,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$1,500-$2,500",
+        "minSpendingPerCapitaPpp": 1500,
+        "maxSpendingPerCapitaPpp": 2500,
+        "observations": 94,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 69.965,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2600000000000051,
+        "typicalRealAfterTaxMedianIncomeLevel": 9253.75681656376,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.361093894236642,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$2,500-$4,000",
+        "minSpendingPerCapitaPpp": 2500,
+        "maxSpendingPerCapitaPpp": 4000,
+        "observations": 106,
+        "jurisdictions": 22,
+        "typicalHealthyLifeYears": 72.98512195121955,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2950000000000017,
+        "typicalRealAfterTaxMedianIncomeLevel": 12251.493518003499,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.286423681615193,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$4,000-$5,000",
+        "minSpendingPerCapitaPpp": 4000,
+        "maxSpendingPerCapitaPpp": 5000,
+        "observations": 112,
+        "jurisdictions": 29,
+        "typicalHealthyLifeYears": 74.716,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25,
+        "typicalRealAfterTaxMedianIncomeLevel": 15493.05028255185,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.581677464753297,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$5,000-$6,500",
+        "minSpendingPerCapitaPpp": 5000,
+        "maxSpendingPerCapitaPpp": 6500,
+        "observations": 133,
+        "jurisdictions": 30,
+        "typicalHealthyLifeYears": 75.809,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.21121951219510038,
+        "typicalRealAfterTaxMedianIncomeLevel": 22200.5486407425,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.955262542672856,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$6,500-$8,000",
+        "minSpendingPerCapitaPpp": 6500,
+        "maxSpendingPerCapitaPpp": 8000,
+        "observations": 131,
+        "jurisdictions": 33,
+        "typicalHealthyLifeYears": 76.8365853658537,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25121951219510663,
+        "typicalRealAfterTaxMedianIncomeLevel": 22637.382448244,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.8025432880913375,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$8,000-$9,500",
+        "minSpendingPerCapitaPpp": 8000,
+        "maxSpendingPerCapitaPpp": 9500,
+        "observations": 107,
+        "jurisdictions": 34,
+        "typicalHealthyLifeYears": 77.4756097560976,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25121951219510663,
+        "typicalRealAfterTaxMedianIncomeLevel": 26267.6071527112,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.899512047832283,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$9,500-$10,000",
+        "minSpendingPerCapitaPpp": 9500,
+        "maxSpendingPerCapitaPpp": 10000,
+        "observations": 41,
+        "jurisdictions": 24,
+        "typicalHealthyLifeYears": 78.119512195122,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878050042,
+        "typicalRealAfterTaxMedianIncomeLevel": 28359.6927346266,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.310989513267456,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$10,000-$11,000",
+        "minSpendingPerCapitaPpp": 10000,
+        "maxSpendingPerCapitaPpp": 11000,
+        "observations": 78,
+        "jurisdictions": 30,
+        "typicalHealthyLifeYears": 78.5426829268293,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878040095,
+        "typicalRealAfterTaxMedianIncomeLevel": 28143.56746439085,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.8479112568062392,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$11,000-$13,000",
+        "minSpendingPerCapitaPpp": 11000,
+        "maxSpendingPerCapitaPpp": 13000,
+        "observations": 128,
+        "jurisdictions": 34,
+        "typicalHealthyLifeYears": 79.0268292682927,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.15121951219511232,
+        "typicalRealAfterTaxMedianIncomeLevel": 33782.906334975196,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.970567531516999,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$13,000-$15,500",
+        "minSpendingPerCapitaPpp": 13000,
+        "maxSpendingPerCapitaPpp": 15500,
+        "observations": 107,
+        "jurisdictions": 33,
+        "typicalHealthyLifeYears": 80.6341463414634,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 37120.9879761677,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.119756815758965,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$15,500-$19,000",
+        "minSpendingPerCapitaPpp": 15500,
+        "maxSpendingPerCapitaPpp": 19000,
+        "observations": 110,
+        "jurisdictions": 27,
+        "typicalHealthyLifeYears": 81.16829268292685,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 44186.2472773724,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.107590292696832,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$19,000-$37,200",
+        "minSpendingPerCapitaPpp": 19000,
+        "maxSpendingPerCapitaPpp": 37199.57741707997,
+        "observations": 122,
+        "jurisdictions": 18,
+        "typicalHealthyLifeYears": 81.6085365853659,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.1512195121952047,
+        "typicalRealAfterTaxMedianIncomeLevel": 57138.2840349695,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.080564850940624,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      }
+    ]
+  },
+  "overall": {
+    "optimalPctGdp": 32.0972841464994,
+    "optimalBandLowPctGdp": 21.505834605264745,
+    "optimalBandHighPctGdp": 37.8357626639882,
+    "weightingMethod": "outcome-weighted average with evidence modulation (0.2 + 0.8*confidence)"
+  },
+  "usSnapshot": {
+    "latestYear": 2023,
+    "modeledSpendingPctGdp": 24.8982825568771,
+    "gapToOptimalPctPoints": -7.1990015896222985,
+    "status": "within_optimal_band"
+  },
+  "generatedAt": "2026-02-13T06:14:26.372Z"
+}

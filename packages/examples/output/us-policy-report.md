@@ -3,7 +3,7 @@
 ## Summary
 
 Analysis of 19 policies for **United States of America** (country).
-Analysis date: 2026-02-11.
+Analysis date: 2026-02-13.
 Population: 336,000,000.
 Overall welfare score: **0.3**.
 Actions: 8 enact, 7 modify, 4 repeal, 0 maintain.

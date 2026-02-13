@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navLinks = [
+  { href: "/outcomes", label: "Outcome Hubs" },
   { href: "/budget", label: "Optimal Budget" },
   { href: "/policies", label: "Optimal Policies" },
   { href: "/misconceptions", label: "Myth vs Data" },

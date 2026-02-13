@@ -4,11 +4,16 @@
 2. [x] Add tests for partial correlation confounds (GDP example).
 3. [x] Add tests for minimum effective spending logic.
 4. [x] Add tests for policy scoring and evidence grades.
-5. [ ] Add a report-to-tests mapping table in `reports/`.
+5. [x] Add a report-to-tests mapping table in `reports/`.
+   - Added `reports/report-test-mapping.md` linking core claims/contracts to test files.
 6. [x] Add tests for adaptive binning and report output contracts.
    - `@optomitron/optimizer`: adaptive binning unit tests.
    - `@optomitron/examples`: assertions for low-spending `% GDP` tiers and per-capita PPP tier output.
 7. [x] Add tests for ranking stability under multiple-testing correction (FDR/Bonferroni as configured).
    - Added in `@optomitron/optimizer/src/__tests__/outcome-mega-study-ranking.test.ts`.
    - Covers BH and Bonferroni adjustment behavior plus deterministic ranking ties.
-8. [ ] Add UI-contract tests for uncertainty/quality badges on outcome hub and pair study pages.
+8. [x] Add UI-contract tests for uncertainty/quality badges on outcome hub and pair study pages.
+   - Added badge contract helper + tests:
+     - `packages/web/src/lib/analysis-explorer-badges.ts`
+     - `packages/web/src/lib/__tests__/analysis-explorer-badges.test.ts`
+   - Pair and outcome pages now render these badges directly.

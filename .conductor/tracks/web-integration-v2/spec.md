@@ -24,8 +24,11 @@ Create durable web integration contracts and routes for analysis explorer featur
   - pair study
   - jurisdiction drilldown
 - Caching and invalidation hooks for generated payloads.
+  - Implemented via cached adapter in `packages/web/src/lib/analysis-explorer-data.ts`.
+  - URL contracts documented in `.conductor/tracks/web-integration-v2/routes.md`.
 
 ## Acceptance Criteria
 - Web pages render solely from schema-conformant payloads.
 - Deep links are stable and round-trip between pages.
 - Each page shows freshness/provenance metadata.
+  - Shared component: `packages/web/src/components/analysis/provenance-block.tsx`.

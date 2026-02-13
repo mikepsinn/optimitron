@@ -15,5 +15,9 @@
 9. [x] Define and publish `VariableRegistry` seed dataset for all predictor/outcome IDs.
    - Implemented in `packages/data/src/variable-registry.ts` with exported schema + helper APIs.
    - Includes units, directionality, coverage windows/status, transforms, and lag defaults.
-10. [ ] Add precompute index metadata for heavy pair analyses.
-   - Hash inputs and store freshness/provenance for explorer cache invalidation.
+10. [x] Add precompute index metadata for heavy pair analyses.
+   - Implemented explorer precompute index in `packages/web/src/lib/analysis-explorer-data.ts`.
+   - Added source fingerprints + cache key hash + counts:
+     - outcomes, predictors, pairs, subjects
+   - Added cache invalidation check using source hash snapshots.
+   - Surfaced metadata in `ProvenanceBlock` on outcomes/outcome-hub/pair-study pages.

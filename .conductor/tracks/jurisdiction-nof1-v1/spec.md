@@ -22,8 +22,11 @@ Expose full N-of-1 jurisdiction analysis for each predictor/outcome pair with co
 - Jurisdiction-level summary table contract.
 - Jurisdiction drilldown page contract.
 - UI components for ranking, filtering, and comparison to global aggregate.
+- Interpretation guidance for weak/confounded jurisdiction evidence.
+  - Added in `.conductor/tracks/jurisdiction-nof1-v1/interpretation.md`.
 
 ## Acceptance Criteria
 - Every pair study page includes a jurisdiction summary table.
 - Users can click a jurisdiction to open a drilldown detail view.
 - Drilldown provides enough diagnostics to debug model behavior and data adequacy.
+- Jurisdiction ordering is deterministic and quality-gated.

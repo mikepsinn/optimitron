@@ -1,6 +1,6 @@
 {
   "jurisdiction": "United States of America",
-  "analysisDate": "2026-02-11",
+  "analysisDate": "2026-02-13",
   "policies": [
     {
       "name": "Double NIH Research Funding",
@@ -579,5 +579,5 @@
     "Enact: National Clean Energy Standard (Grade B, welfare +40)",
     "Enact: Federal Incentives for Zoning Reform (Grade B, welfare +40)"
   ],
-  "generatedAt": "2026-02-11T06:47:28.912Z"
+  "generatedAt": "2026-02-13T19:58:39.041Z"
 }

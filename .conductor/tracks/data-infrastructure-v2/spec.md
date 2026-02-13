@@ -27,12 +27,14 @@ The current data backbone mixes real OECD panel series with synthetic direct out
 - JSDoc documentation of all sources
 - Dual-scale downstream outputs where applicable (`% GDP` and per-capita PPP views)
 - Variable registry coverage metadata (predictor/outcome availability by jurisdiction and period)
+- Explorer precompute-index metadata for cache invalidation (source fingerprints + cache key)
 
 ## Acceptance Criteria
 - All sources have documented provenance and versioning metadata.
 - Direct outcomes are sourced or clearly labeled as simulated.
 - OECD panel includes direct outcomes fields.
 - FRED fetcher is reliable with key + rate-limit handling.
+- Heavy pair-analysis explorer payloads expose hash-based precompute metadata.
 
 ## Risks
 - Gaps in education or climate outcome series.
