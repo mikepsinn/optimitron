@@ -11,6 +11,9 @@
 import type { DataPoint, FetchOptions } from '../types.js';
 
 const GHO_API_BASE = 'https://ghoapi.azureedge.net/api';
+const WHO_MAX_FETCH_ATTEMPTS = 3;
+const WHO_RETRY_DELAY_MS = 250;
+const RETRYABLE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
 
 /**
  * Commonly used GHO indicator codes.
@@ -89,7 +92,8 @@ function buildGHOFilter(
   }
 
   if (options.period) {
-    parts.push(`TimeDim ge '${options.period.startYear}' and TimeDim le '${options.period.endYear}'`);
+    // WHO OData exposes TimeDim as numeric for most annual indicators.
+    parts.push(`TimeDim ge ${options.period.startYear} and TimeDim le ${options.period.endYear}`);
   }
 
   if (sexFilter) {
@@ -97,6 +101,75 @@ function buildGHOFilter(
   }
 
   return parts.join(' and ');
+}
+
+function buildIndicatorUrl(indicatorCode: string, filter: string): string {
+  if (!filter) return `${GHO_API_BASE}/${indicatorCode}`;
+  return `${GHO_API_BASE}/${indicatorCode}?$filter=${encodeURI(filter)}`;
+}
+
+interface GHOFetchAttemptResult {
+  ok: boolean;
+  records: GHORecord[];
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(url: string, indicatorCode: string): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= WHO_MAX_FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return response;
+
+      const shouldRetry =
+        RETRYABLE_STATUS_CODES.has(response.status) && attempt < WHO_MAX_FETCH_ATTEMPTS;
+      if (!shouldRetry) return response;
+
+      console.warn(
+        `WHO GHO transient HTTP ${response.status}; retrying ${indicatorCode} (attempt ${attempt}/${WHO_MAX_FETCH_ATTEMPTS})`,
+      );
+    } catch (error) {
+      lastError = error;
+      if (attempt >= WHO_MAX_FETCH_ATTEMPTS) break;
+      console.warn(
+        `WHO GHO transient fetch failure; retrying ${indicatorCode} (attempt ${attempt}/${WHO_MAX_FETCH_ATTEMPTS})`,
+      );
+    }
+
+    await wait(WHO_RETRY_DELAY_MS * attempt);
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(`WHO GHO fetch failed (${indicatorCode})`);
+}
+
+async function fetchIndicatorRecords(url: string, indicatorCode: string): Promise<GHOFetchAttemptResult> {
+  const allRecords: GHORecord[] = [];
+  let nextUrl = url;
+
+  while (nextUrl) {
+    let response: Response;
+    try {
+      response = await fetchWithRetry(nextUrl, indicatorCode);
+    } catch (error) {
+      console.error(`WHO GHO fetch error (${indicatorCode}):`, error);
+      return { ok: false, records: allRecords };
+    }
+
+    if (!response.ok) {
+      console.warn(`WHO GHO API ${response.status}: ${response.statusText}`);
+      return { ok: false, records: allRecords };
+    }
+
+    const json = (await response.json()) as GHOResponse;
+    allRecords.push(...json.value);
+    nextUrl = json['@odata.nextLink'] ?? '';
+  }
+
+  return { ok: true, records: allRecords };
 }
 
 /**
@@ -121,30 +194,36 @@ export async function fetchGHOIndicator(
   indicatorCode: string,
   options: FetchOptions = {},
 ): Promise<DataPoint[]> {
-  const filter = buildGHOFilter(options, 'BTSX');
-  let url = `${GHO_API_BASE}/${indicatorCode}?$filter=${encodeURI(filter)}`;
-  const allRecords: GHORecord[] = [];
+  const sexAttempts: Array<string | undefined> = ['BTSX', undefined];
+  let selectedRecords: GHORecord[] = [];
 
-  try {
-    while (url) {
-      const response = await fetch(url);
+  for (const sexFilter of sexAttempts) {
+    const filter = buildGHOFilter(options, sexFilter);
+    const attemptUrl = buildIndicatorUrl(indicatorCode, filter);
+    const attempt = await fetchIndicatorRecords(attemptUrl, indicatorCode);
+    const hasRecords = attempt.records.length > 0;
 
-      if (!response.ok) {
-        console.warn(`WHO GHO API ${response.status}: ${response.statusText}`);
-        break;
-      }
-
-      const json = (await response.json()) as GHOResponse;
-      allRecords.push(...json.value);
-
-      // Follow next-link for pagination
-      url = json['@odata.nextLink'] ?? '';
+    // Prefer both-sex rows when available, but fall back when Dim1 isn't present.
+    if (attempt.ok && hasRecords) {
+      selectedRecords = attempt.records;
+      break;
     }
-  } catch (error) {
-    console.error(`WHO GHO fetch error (${indicatorCode}):`, error);
+
+    if (!attempt.ok && hasRecords) {
+      selectedRecords = attempt.records;
+      break;
+    }
+
+    if (sexFilter && !hasRecords) {
+      continue;
+    }
+
+    if (!attempt.ok) {
+      break;
+    }
   }
 
-  return parseGHORecords(allRecords, indicatorCode);
+  return parseGHORecords(selectedRecords, indicatorCode);
 }
 
 // ─── Convenience helpers ────────────────────────────────────────────

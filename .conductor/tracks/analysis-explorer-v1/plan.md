@@ -82,4 +82,24 @@
    - Linked `NOf1VariableRelationship.subjectId` to `Subject` as an explicit FK relation.
    - Added optional `NOf1Variable.subjectId` relation for forward-compatible ownership migration.
    - Added validator coverage for `SubjectType` and `Subject` model defaults/invalid values.
+18. [x] Add bulk markdown artifact generation for registry-wide mega studies.
+   - Added generator: `packages/examples/src/analysis-explorer/mega-study-generator.ts`.
+   - Added CLI entry: `packages/examples/src/analysis-explorer/generate-mega-studies.ts`.
+   - Added npm script: `pnpm --filter @optomitron/examples generate:mega-studies`.
+   - Generates:
+     - per-outcome mega-study markdown reports (ranked predictors + optimal values)
+     - per predictor/outcome pair-study markdown reports
+     - consolidated JSON + index markdown artifacts under `packages/examples/output/mega-studies`.
+19. [x] Improve mega-study report readability and diagnostics.
+   - Clarified directional metric language:
+     - "Predictive Pearson" -> "Directional score (forward - reverse)".
+   - Added explicit uncertainty-note text so adjusted p-values are not interpreted as classical NHST p-values.
+   - Added evidence grade + direction columns to outcome ranking tables.
+   - Added pair-level quality warnings (coverage/significance/directional-range checks).
+   - Added observed predictor range in pair reports + extrapolation warning when optimal values fall outside observed support.
+20. [x] Add richer study storytelling and exploratory distribution diagnostics.
+   - Pair-study markdown now includes plain-language summary bullets.
+   - Added predictor-bin pattern tables with outcome means/medians by bin.
+   - Added text-based distribution charts (fixed-width histograms) for predictor and outcome values.
+   - Outcome mega-study markdown now includes a plain-language top-predictor summary section.
 

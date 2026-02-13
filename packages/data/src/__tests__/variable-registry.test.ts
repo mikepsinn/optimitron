@@ -5,6 +5,7 @@ import {
   VariableRegistrySchema,
   getVariableById,
   getVariableRegistry,
+  listPredictorsByDiscretionary,
   listVariablesByKind,
   listVariablesByScope,
 } from '../variable-registry.js';
@@ -59,5 +60,25 @@ describe('variable registry', () => {
       expect(unique.size).toBe(entry.suggestedLagYears.length);
     }
   });
-});
 
+  it('requires predictors to declare discretionary status', () => {
+    const predictors = listVariablesByKind('predictor');
+    expect(predictors.length).toBeGreaterThan(0);
+    for (const predictor of predictors) {
+      expect(typeof predictor.isDiscretionary).toBe('boolean');
+    }
+  });
+
+  it('can list discretionary and non-discretionary predictors', () => {
+    const discretionary = listPredictorsByDiscretionary(true);
+    const nonDiscretionary = listPredictorsByDiscretionary(false);
+    expect(discretionary.length).toBeGreaterThan(0);
+    expect(nonDiscretionary.length).toBeGreaterThan(0);
+    expect(
+      nonDiscretionary.some((entry) => entry.id === 'predictor.derived.gov_expenditure_per_capita_ppp'),
+    ).toBe(true);
+    expect(
+      nonDiscretionary.some((entry) => entry.id === 'predictor.wb.gov_debt_pct_gdp'),
+    ).toBe(true);
+  });
+});

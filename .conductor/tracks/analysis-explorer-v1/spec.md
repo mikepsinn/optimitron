@@ -45,6 +45,13 @@ Ship a web-native explorer with:
     - `/studies/:outcomeId/:predictorId/jurisdictions/:jurisdictionId`
   - Shared route helpers: `packages/web/src/lib/analysis-explorer-routes.ts`.
   - Shared cached adapter: `packages/web/src/lib/analysis-explorer-data.ts`.
+- Offline/report artifact generator for registry-wide studies.
+  - Outcome mega-study markdown files with predictor rankings and pair-study links.
+  - Pair-study markdown files for predictor/outcome combinations with:
+    - plain-language interpretation summaries
+    - binned predictor/outcome pattern tables
+    - lightweight distribution charts for exploratory QA
+  - Machine-readable JSON summary for downstream QA and visualization.
 
 ## Acceptance Criteria
 - Any predictor/outcome in the registry can render a study payload without custom code paths.

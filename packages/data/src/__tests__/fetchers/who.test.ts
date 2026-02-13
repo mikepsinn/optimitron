@@ -149,6 +149,21 @@ describe('WHO GHO Fetcher', () => {
       expect(result).toEqual([]);
     });
 
+    it('retries transient network failures before succeeding', async () => {
+      const fetchMock = vi.fn()
+        .mockRejectedValueOnce(new Error('Transient network failure'))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockPage2Response),
+        });
+
+      globalThis.fetch = fetchMock;
+
+      const result = await fetchGHOIndicator('WHOSIS_000001');
+      expect(result).toHaveLength(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
     it('builds filter with jurisdictions', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -171,8 +186,8 @@ describe('WHO GHO Fetcher', () => {
         period: { startYear: 2015, endYear: 2020 },
       });
       const callUrl2 = decodeURIComponent((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string);
-      expect(callUrl2).toContain("TimeDim ge '2015'");
-      expect(callUrl2).toContain("TimeDim le '2020'");
+      expect(callUrl2).toContain('TimeDim ge 2015');
+      expect(callUrl2).toContain('TimeDim le 2020');
     });
 
     it('includes sex filter (BTSX)', async () => {
@@ -184,6 +199,51 @@ describe('WHO GHO Fetcher', () => {
       await fetchGHOIndicator('WHOSIS_000001');
       const callUrl3 = decodeURIComponent((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string);
       expect(callUrl3).toContain("Dim1 eq 'BTSX'");
+    });
+
+    it('falls back without sex filter when Dim1 query returns empty rows', async () => {
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ value: [] } as GHOResponse),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockPage2Response),
+        });
+
+      globalThis.fetch = fetchMock;
+
+      const result = await fetchGHOIndicator('WHOSIS_000001');
+      expect(result).toHaveLength(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      const firstUrl = decodeURIComponent(fetchMock.mock.calls[0]?.[0] as string);
+      const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
+      expect(firstUrl).toContain("Dim1 eq 'BTSX'");
+      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
+    });
+
+    it('falls back without sex filter when Dim1 query fails', async () => {
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          statusText: 'Bad Request',
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockPage2Response),
+        });
+
+      globalThis.fetch = fetchMock;
+
+      const result = await fetchGHOIndicator('WHOSIS_000001');
+      expect(result).toHaveLength(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
+      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
     });
   });
 

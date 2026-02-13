@@ -102,6 +102,7 @@ export const VariableRegistryEntrySchema = z
     source: VariableSourceSchema,
     coverage: VariableCoverageSchema,
     isDerived: z.boolean(),
+    isDiscretionary: z.boolean().optional(),
     tags: z.array(z.string()),
     caveats: z.array(z.string()),
   })
@@ -120,6 +121,14 @@ export const VariableRegistryEntrySchema = z
         code: z.ZodIssueCode.custom,
         message: 'suggestedLagYears must be unique.',
         path: ['suggestedLagYears'],
+      });
+    }
+
+    if (entry.kind === 'predictor' && typeof entry.isDiscretionary !== 'boolean') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Predictor variables must declare isDiscretionary.',
+        path: ['isDiscretionary'],
       });
     }
   });
@@ -168,6 +177,7 @@ const REGISTRY_SEED: VariableRegistry = [
       notes: 'Broad global coverage. Exact counts depend on selected year window.',
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['government-size', 'fiscal-policy'],
     caveats: ['Can move due to GDP denominator changes, not only spending changes.'],
   },
@@ -190,6 +200,7 @@ const REGISTRY_SEED: VariableRegistry = [
       notes: 'Coverage is the intersection of expenditure and GDP per-capita series.',
     },
     isDerived: true,
+    isDiscretionary: false,
     tags: ['government-size', 'ppp', 'derived'],
     caveats: ['Combines two indicators with different missingness patterns by country-year.'],
   },
@@ -215,6 +226,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: false,
     tags: ['fiscal-policy', 'public-finance'],
     caveats: ['Debt is stock-like and responds more slowly than annual flow variables.'],
   },
@@ -240,6 +252,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['tax-policy'],
     caveats: ['Does not include all non-tax government revenues.'],
   },
@@ -265,6 +278,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['health-system', 'public-health'],
     caveats: ['Composition of health spending is not represented.'],
   },
@@ -290,6 +304,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['education-policy', 'human-capital'],
     caveats: ['Education quality and institutional effectiveness are not directly captured.'],
   },
@@ -315,6 +330,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['innovation-policy'],
     caveats: ['Effects are often lagged and non-linear.'],
   },
@@ -340,6 +356,7 @@ const REGISTRY_SEED: VariableRegistry = [
       yearMax: 2023,
     },
     isDerived: false,
+    isDiscretionary: true,
     tags: ['defense-policy'],
     caveats: ['May co-move with conflict risk and geopolitical shocks.'],
   },
@@ -566,3 +583,8 @@ export function listVariablesByScope(scope: VariableAnalysisScope): VariableRegi
   return VARIABLE_REGISTRY.filter((entry) => entry.analysisScopes.includes(scope));
 }
 
+export function listPredictorsByDiscretionary(isDiscretionary: boolean): VariableRegistryEntry[] {
+  return VARIABLE_REGISTRY.filter(
+    (entry) => entry.kind === 'predictor' && entry.isDiscretionary === isDiscretionary,
+  );
+}

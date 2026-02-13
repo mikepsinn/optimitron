@@ -21,3 +21,15 @@
      - outcomes, predictors, pairs, subjects
    - Added cache invalidation check using source hash snapshots.
    - Surfaced metadata in `ProvenanceBlock` on outcomes/outcome-hub/pair-study pages.
+11. [x] Fix WHO HALE coverage interoperability in registry-wide pair generation.
+   - Fixed WHO OData period filtering in `packages/data/src/fetchers/who.ts`:
+     - `TimeDim` filters now use numeric years (unquoted) to avoid type-mismatch `400 Bad Request`.
+   - Added robust sex-dimension fallback:
+     - initial query attempts `Dim1 eq 'BTSX'`
+     - automatically retries without `Dim1` when indicator rows are empty or request fails.
+   - Added transient retry/backoff for WHO request instability (`UND_ERR_CONNECT_TIMEOUT`, retryable HTTP statuses).
+   - Added regression coverage in `packages/data/src/__tests__/fetchers/who.test.ts` for:
+     - no-`Dim1` fallback behavior
+     - transient network retry behavior
+   - Validation:
+     - `pnpm --filter @optomitron/examples generate:mega-studies` now produces 64/64 pair studies with HALE included (zero skipped pairs).
