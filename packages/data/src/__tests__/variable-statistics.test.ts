@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
-  calculateUserVariableStatistics,
+  calculateUnitVariableStatistics,
   aggregateGlobalStatistics,
-  type UserVariableStatistics,
+  type UnitVariableStatistics,
   type GlobalVariableStatistics,
 } from '../variable-statistics.js';
 
@@ -11,13 +11,13 @@ import {
 /** Round to N decimal places for floating-point comparison */
 const round = (v: number, dp = 6) => Math.round(v * 10 ** dp) / 10 ** dp;
 
-// ─── calculateUserVariableStatistics ─────────────────────────────────────────
+// ─── calculateUnitVariableStatistics ─────────────────────────────────────────
 
-describe('calculateUserVariableStatistics', () => {
+describe('calculateUnitVariableStatistics', () => {
   // ── Empty array ──────────────────────────────────────────────────────────
 
   it('returns zeros and nulls for an empty array', () => {
-    const stats = calculateUserVariableStatistics([]);
+    const stats = calculateUnitVariableStatistics([]);
     expect(stats.mean).toBe(0);
     expect(stats.median).toBe(0);
     expect(stats.standardDeviation).toBe(0);
@@ -38,7 +38,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── Single value ─────────────────────────────────────────────────────────
 
   it('handles a single value', () => {
-    const stats = calculateUserVariableStatistics([42]);
+    const stats = calculateUnitVariableStatistics([42]);
     expect(stats.mean).toBe(42);
     expect(stats.median).toBe(42);
     expect(stats.standardDeviation).toBe(0);
@@ -56,7 +56,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── Two values ───────────────────────────────────────────────────────────
 
   it('handles two values (skewness=0 because n<3)', () => {
-    const stats = calculateUserVariableStatistics([10, 20]);
+    const stats = calculateUnitVariableStatistics([10, 20]);
     expect(stats.mean).toBe(15);
     expect(stats.median).toBe(15);
     expect(round(stats.variance)).toBe(50); // sample variance: 50
@@ -71,7 +71,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── All same values ──────────────────────────────────────────────────────
 
   it('handles all identical values (zero variance)', () => {
-    const stats = calculateUserVariableStatistics([5, 5, 5, 5, 5]);
+    const stats = calculateUnitVariableStatistics([5, 5, 5, 5, 5]);
     expect(stats.mean).toBe(5);
     expect(stats.median).toBe(5);
     expect(stats.standardDeviation).toBe(0);
@@ -86,22 +86,22 @@ describe('calculateUserVariableStatistics', () => {
   // ── Known data set ───────────────────────────────────────────────────────
 
   it('calculates correct mean for known data [1,2,3,4,5]', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4, 5]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4, 5]);
     expect(stats.mean).toBe(3);
   });
 
   it('calculates correct median for odd-length sorted data', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4, 5]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4, 5]);
     expect(stats.median).toBe(3);
   });
 
   it('calculates correct median for even-length data', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4]);
     expect(stats.median).toBe(2.5);
   });
 
   it('calculates correct sample variance for [2, 4, 4, 4, 5, 5, 7, 9]', () => {
-    const stats = calculateUserVariableStatistics([2, 4, 4, 4, 5, 5, 7, 9]);
+    const stats = calculateUnitVariableStatistics([2, 4, 4, 4, 5, 5, 7, 9]);
     // mean = 5, sample variance = Σ(xi-5)² / 7 = 32/7 ≈ 4.571429
     expect(round(stats.variance)).toBe(round(32 / 7));
     expect(round(stats.standardDeviation, 4)).toBe(
@@ -110,18 +110,18 @@ describe('calculateUserVariableStatistics', () => {
   });
 
   it('calculates min and max correctly', () => {
-    const stats = calculateUserVariableStatistics([9, 1, 5, 3, 7]);
+    const stats = calculateUnitVariableStatistics([9, 1, 5, 3, 7]);
     expect(stats.minimumRecordedValue).toBe(1);
     expect(stats.maximumRecordedValue).toBe(9);
   });
 
   it('reports correct numberOfMeasurements', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4, 5, 6, 7]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4, 5, 6, 7]);
     expect(stats.numberOfMeasurements).toBe(7);
   });
 
   it('reports correct numberOfUniqueValues', () => {
-    const stats = calculateUserVariableStatistics([1, 1, 2, 2, 3, 3, 3]);
+    const stats = calculateUnitVariableStatistics([1, 1, 2, 2, 3, 3, 3]);
     expect(stats.numberOfUniqueValues).toBe(3);
   });
 
@@ -129,26 +129,26 @@ describe('calculateUserVariableStatistics', () => {
 
   it('returns approximately zero skewness for symmetric data', () => {
     // Symmetric about 5: [1,2,3,4,5,6,7,8,9]
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     expect(Math.abs(stats.skewness)).toBeLessThan(0.01);
   });
 
   it('returns positive skewness for right-skewed data', () => {
     // Right-skewed: most values small, few large
-    const stats = calculateUserVariableStatistics([1, 1, 1, 1, 2, 2, 3, 10, 20]);
+    const stats = calculateUnitVariableStatistics([1, 1, 1, 1, 2, 2, 3, 10, 20]);
     expect(stats.skewness).toBeGreaterThan(0);
   });
 
   it('returns negative skewness for left-skewed data', () => {
     // Left-skewed: most values large, few small
-    const stats = calculateUserVariableStatistics([
+    const stats = calculateUnitVariableStatistics([
       1, 10, 18, 19, 19, 20, 20, 20, 20,
     ]);
     expect(stats.skewness).toBeLessThan(0);
   });
 
   it('returns zero skewness when stddev is zero (all same values, n>=3)', () => {
-    const stats = calculateUserVariableStatistics([7, 7, 7, 7, 7]);
+    const stats = calculateUnitVariableStatistics([7, 7, 7, 7, 7]);
     expect(stats.skewness).toBe(0);
   });
 
@@ -161,7 +161,7 @@ describe('calculateUserVariableStatistics', () => {
     const normal = [
       -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3,
     ];
-    const stats = calculateUserVariableStatistics(normal);
+    const stats = calculateUnitVariableStatistics(normal);
     // Uniform-ish data has negative excess kurtosis (platykurtic)
     expect(stats.kurtosis).toBeLessThan(1);
     expect(stats.kurtosis).toBeGreaterThan(-3);
@@ -170,48 +170,48 @@ describe('calculateUserVariableStatistics', () => {
   it('returns positive excess kurtosis for leptokurtic data (heavy tails)', () => {
     // Data with extreme outliers → heavy tails → positive excess kurtosis
     const data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, -100];
-    const stats = calculateUserVariableStatistics(data);
+    const stats = calculateUnitVariableStatistics(data);
     expect(stats.kurtosis).toBeGreaterThan(0);
   });
 
   it('returns negative excess kurtosis for platykurtic data (light tails)', () => {
     // Uniform distribution: excess kurtosis ≈ -1.2
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    const stats = calculateUserVariableStatistics(data);
+    const stats = calculateUnitVariableStatistics(data);
     expect(stats.kurtosis).toBeLessThan(0);
   });
 
   it('returns zero kurtosis when stddev is zero', () => {
-    const stats = calculateUserVariableStatistics([3, 3, 3, 3, 3, 3]);
+    const stats = calculateUnitVariableStatistics([3, 3, 3, 3, 3, 3]);
     expect(stats.kurtosis).toBe(0);
   });
 
   it('returns zero kurtosis when n < 4', () => {
-    const stats = calculateUserVariableStatistics([1, 5, 9]);
+    const stats = calculateUnitVariableStatistics([1, 5, 9]);
     expect(stats.kurtosis).toBe(0);
   });
 
   // ── Most Common Value ────────────────────────────────────────────────────
 
   it('identifies the most common value', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 2, 3, 3, 3, 4]);
+    const stats = calculateUnitVariableStatistics([1, 2, 2, 3, 3, 3, 4]);
     expect(stats.mostCommonValue).toBe(3);
   });
 
   it('identifies the second most common value', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 2, 3, 3, 3, 4]);
+    const stats = calculateUnitVariableStatistics([1, 2, 2, 3, 3, 3, 4]);
     expect(stats.secondMostCommonValue).toBe(2);
   });
 
   it('returns null secondMostCommonValue when only one unique value', () => {
-    const stats = calculateUserVariableStatistics([5, 5, 5]);
+    const stats = calculateUnitVariableStatistics([5, 5, 5]);
     expect(stats.mostCommonValue).toBe(5);
     expect(stats.secondMostCommonValue).toBeNull();
   });
 
   it('breaks ties in most-common by smaller value', () => {
     // 2 and 3 both appear twice — smaller should be mostCommon
-    const stats = calculateUserVariableStatistics([2, 3, 2, 3]);
+    const stats = calculateUnitVariableStatistics([2, 3, 2, 3]);
     expect(stats.mostCommonValue).toBe(2);
     expect(stats.secondMostCommonValue).toBe(3);
   });
@@ -224,7 +224,7 @@ describe('calculateUserVariableStatistics', () => {
       new Date('2024-01-01T00:00:00Z'),
       new Date('2024-06-20T14:30:00Z'),
     ];
-    const stats = calculateUserVariableStatistics([1, 2, 3], ts);
+    const stats = calculateUnitVariableStatistics([1, 2, 3], ts);
     expect(stats.firstMeasurementAt!.getTime()).toBe(
       new Date('2024-01-01T00:00:00Z').getTime(),
     );
@@ -240,7 +240,7 @@ describe('calculateUserVariableStatistics', () => {
       new Date('2024-01-01T00:01:00Z'),
       new Date('2024-01-01T00:02:00Z'),
     ];
-    const stats = calculateUserVariableStatistics([1, 2, 3], ts);
+    const stats = calculateUnitVariableStatistics([1, 2, 3], ts);
     expect(stats.medianSecondsBetweenMeasurements).toBe(60);
   });
 
@@ -253,18 +253,18 @@ describe('calculateUserVariableStatistics', () => {
       new Date('2024-01-01T00:04:00Z'),
       new Date('2024-01-01T00:09:00Z'),
     ];
-    const stats = calculateUserVariableStatistics([1, 2, 3, 4, 5], ts);
+    const stats = calculateUnitVariableStatistics([1, 2, 3, 4, 5], ts);
     expect(stats.medianSecondsBetweenMeasurements).toBe(90);
   });
 
   it('returns null medianSecondsBetweenMeasurements for a single timestamp', () => {
     const ts = [new Date('2024-01-01T00:00:00Z')];
-    const stats = calculateUserVariableStatistics([1], ts);
+    const stats = calculateUnitVariableStatistics([1], ts);
     expect(stats.medianSecondsBetweenMeasurements).toBeNull();
   });
 
   it('returns null timestamps when no timestamps provided', () => {
-    const stats = calculateUserVariableStatistics([1, 2, 3]);
+    const stats = calculateUnitVariableStatistics([1, 2, 3]);
     expect(stats.firstMeasurementAt).toBeNull();
     expect(stats.lastMeasurementAt).toBeNull();
     expect(stats.medianSecondsBetweenMeasurements).toBeNull();
@@ -273,7 +273,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── Negative values ──────────────────────────────────────────────────────
 
   it('handles negative values correctly', () => {
-    const stats = calculateUserVariableStatistics([-5, -3, -1, 0, 2, 4]);
+    const stats = calculateUnitVariableStatistics([-5, -3, -1, 0, 2, 4]);
     expect(round(stats.mean, 4)).toBe(round(-0.5, 4));
     expect(stats.minimumRecordedValue).toBe(-5);
     expect(stats.maximumRecordedValue).toBe(4);
@@ -283,7 +283,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── Floating point values ────────────────────────────────────────────────
 
   it('handles floating point values', () => {
-    const stats = calculateUserVariableStatistics([1.5, 2.7, 3.14, 4.2, 5.9]);
+    const stats = calculateUnitVariableStatistics([1.5, 2.7, 3.14, 4.2, 5.9]);
     expect(round(stats.mean, 2)).toBe(round(17.44 / 5, 2));
     expect(stats.median).toBe(3.14);
   });
@@ -292,7 +292,7 @@ describe('calculateUserVariableStatistics', () => {
 
   it('handles a large dataset without errors', () => {
     const values = Array.from({ length: 10000 }, (_, i) => i);
-    const stats = calculateUserVariableStatistics(values);
+    const stats = calculateUnitVariableStatistics(values);
     expect(stats.numberOfMeasurements).toBe(10000);
     expect(stats.mean).toBe(4999.5);
     expect(stats.minimumRecordedValue).toBe(0);
@@ -303,7 +303,7 @@ describe('calculateUserVariableStatistics', () => {
   // ── Unordered input ──────────────────────────────────────────────────────
 
   it('produces correct median regardless of input order', () => {
-    const stats = calculateUserVariableStatistics([5, 1, 3, 2, 4]);
+    const stats = calculateUnitVariableStatistics([5, 1, 3, 2, 4]);
     expect(stats.median).toBe(3);
   });
 });
@@ -311,10 +311,10 @@ describe('calculateUserVariableStatistics', () => {
 // ─── aggregateGlobalStatistics ───────────────────────────────────────────────
 
 describe('aggregateGlobalStatistics', () => {
-  // Helper to build a minimal UserVariableStatistics
-  function makeUserStats(
-    overrides: Partial<UserVariableStatistics> = {},
-  ): UserVariableStatistics {
+  // Helper to build a minimal UnitVariableStatistics
+  function makeUnitStats(
+    overrides: Partial<UnitVariableStatistics> = {},
+  ): UnitVariableStatistics {
     return {
       mean: 0,
       median: 0,
@@ -337,15 +337,15 @@ describe('aggregateGlobalStatistics', () => {
 
   it('returns zeros for an empty array', () => {
     const global = aggregateGlobalStatistics([]);
-    expect(global.numberOfUserVariables).toBe(0);
+    expect(global.numberOfUnitVariables).toBe(0);
     expect(global.globalMean).toBe(0);
     expect(global.globalStandardDeviation).toBe(0);
     expect(global.totalMeasurements).toBe(0);
   });
 
-  it('returns correct stats for a single user', () => {
+  it('returns correct stats for a single unit', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({
+      makeUnitStats({
         mean: 10,
         variance: 4,
         standardDeviation: 2,
@@ -354,7 +354,7 @@ describe('aggregateGlobalStatistics', () => {
         maximumRecordedValue: 15,
       }),
     ]);
-    expect(global.numberOfUserVariables).toBe(1);
+    expect(global.numberOfUnitVariables).toBe(1);
     expect(global.globalMean).toBe(10);
     expect(round(global.globalStandardDeviation)).toBe(2);
     expect(global.globalMinimumRecordedValue).toBe(5);
@@ -362,37 +362,37 @@ describe('aggregateGlobalStatistics', () => {
     expect(global.totalMeasurements).toBe(100);
   });
 
-  it('calculates weighted mean across two users', () => {
+  it('calculates weighted mean across two units', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 10, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
-      makeUserStats({ mean: 20, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
+      makeUnitStats({ mean: 10, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
+      makeUnitStats({ mean: 20, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
     ]);
     expect(global.globalMean).toBe(15); // (10×100 + 20×100) / 200
   });
 
   it('weights mean by numberOfMeasurements', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 10, variance: 0, numberOfMeasurements: 900, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
-      makeUserStats({ mean: 20, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
+      makeUnitStats({ mean: 10, variance: 0, numberOfMeasurements: 900, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
+      makeUnitStats({ mean: 20, variance: 0, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
     ]);
     // Weighted: (10×900 + 20×100) / 1000 = 11
     expect(global.globalMean).toBe(11);
   });
 
-  it('takes global min and max across users', () => {
+  it('takes global min and max across units', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 5, numberOfMeasurements: 10, minimumRecordedValue: 1, maximumRecordedValue: 10 }),
-      makeUserStats({ mean: 15, numberOfMeasurements: 10, minimumRecordedValue: 8, maximumRecordedValue: 20 }),
+      makeUnitStats({ mean: 5, numberOfMeasurements: 10, minimumRecordedValue: 1, maximumRecordedValue: 10 }),
+      makeUnitStats({ mean: 15, numberOfMeasurements: 10, minimumRecordedValue: 8, maximumRecordedValue: 20 }),
     ]);
     expect(global.globalMinimumRecordedValue).toBe(1);
     expect(global.globalMaximumRecordedValue).toBe(20);
   });
 
-  it('sums totalMeasurements across users', () => {
+  it('sums totalMeasurements across units', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 5, numberOfMeasurements: 50, minimumRecordedValue: 0, maximumRecordedValue: 10 }),
-      makeUserStats({ mean: 10, numberOfMeasurements: 150, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
-      makeUserStats({ mean: 15, numberOfMeasurements: 300, minimumRecordedValue: 10, maximumRecordedValue: 20 }),
+      makeUnitStats({ mean: 5, numberOfMeasurements: 50, minimumRecordedValue: 0, maximumRecordedValue: 10 }),
+      makeUnitStats({ mean: 10, numberOfMeasurements: 150, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
+      makeUnitStats({ mean: 15, numberOfMeasurements: 300, minimumRecordedValue: 10, maximumRecordedValue: 20 }),
     ]);
     expect(global.totalMeasurements).toBe(500);
   });
@@ -406,37 +406,37 @@ describe('aggregateGlobalStatistics', () => {
     //              = (2900 + 3400) / 200 = 31.5
     // Combined sd  = sqrt(31.5) ≈ 5.612486
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 10, variance: 4, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
-      makeUserStats({ mean: 20, variance: 9, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
+      makeUnitStats({ mean: 10, variance: 4, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
+      makeUnitStats({ mean: 20, variance: 9, numberOfMeasurements: 100, minimumRecordedValue: 10, maximumRecordedValue: 25 }),
     ]);
     expect(round(global.globalStandardDeviation, 4)).toBe(
       round(Math.sqrt(31.5), 4),
     );
   });
 
-  it('skips users with zero measurements', () => {
+  it('skips units with zero measurements', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ mean: 10, variance: 4, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
-      makeUserStats({ mean: 999, variance: 999, numberOfMeasurements: 0 }),
+      makeUnitStats({ mean: 10, variance: 4, numberOfMeasurements: 100, minimumRecordedValue: 5, maximumRecordedValue: 15 }),
+      makeUnitStats({ mean: 999, variance: 999, numberOfMeasurements: 0 }),
     ]);
-    expect(global.numberOfUserVariables).toBe(2); // still counted
-    expect(global.globalMean).toBe(10); // only user A matters
+    expect(global.numberOfUnitVariables).toBe(2); // still counted
+    expect(global.globalMean).toBe(10); // only unit A matters
     expect(global.totalMeasurements).toBe(100);
   });
 
-  it('handles all users having zero measurements', () => {
+  it('handles all units having zero measurements', () => {
     const global = aggregateGlobalStatistics([
-      makeUserStats({ numberOfMeasurements: 0 }),
-      makeUserStats({ numberOfMeasurements: 0 }),
+      makeUnitStats({ numberOfMeasurements: 0 }),
+      makeUnitStats({ numberOfMeasurements: 0 }),
     ]);
-    expect(global.numberOfUserVariables).toBe(2);
+    expect(global.numberOfUnitVariables).toBe(2);
     expect(global.globalMean).toBe(0);
     expect(global.totalMeasurements).toBe(0);
   });
 
-  it('handles many users with varying measurement counts', () => {
-    const users = Array.from({ length: 50 }, (_, i) =>
-      makeUserStats({
+  it('handles many units with varying measurement counts', () => {
+    const units = Array.from({ length: 50 }, (_, i) =>
+      makeUnitStats({
         mean: i * 2,
         variance: 1,
         numberOfMeasurements: 10 + i,
@@ -444,10 +444,10 @@ describe('aggregateGlobalStatistics', () => {
         maximumRecordedValue: i * 2 + 5,
       }),
     );
-    const global = aggregateGlobalStatistics(users);
-    expect(global.numberOfUserVariables).toBe(50);
+    const global = aggregateGlobalStatistics(units);
+    expect(global.numberOfUnitVariables).toBe(50);
     expect(global.totalMeasurements).toBe(
-      users.reduce((s, u) => s + u.numberOfMeasurements, 0),
+      units.reduce((s, u) => s + u.numberOfMeasurements, 0),
     );
     expect(global.globalMinimumRecordedValue).toBe(-5);
     expect(global.globalMaximumRecordedValue).toBe(103);
@@ -460,12 +460,12 @@ describe('aggregateGlobalStatistics', () => {
 // ─── Integration: calculate then aggregate ───────────────────────────────────
 
 describe('end-to-end: calculate then aggregate', () => {
-  it('calculates user stats and aggregates into global stats', () => {
-    const userA = calculateUserVariableStatistics([5, 10, 15, 20, 25]);
-    const userB = calculateUserVariableStatistics([100, 200, 300]);
-    const global = aggregateGlobalStatistics([userA, userB]);
+  it('calculates unit stats and aggregates into global stats', () => {
+    const unitA = calculateUnitVariableStatistics([5, 10, 15, 20, 25]);
+    const unitB = calculateUnitVariableStatistics([100, 200, 300]);
+    const global = aggregateGlobalStatistics([unitA, unitB]);
 
-    expect(global.numberOfUserVariables).toBe(2);
+    expect(global.numberOfUnitVariables).toBe(2);
     expect(global.totalMeasurements).toBe(8);
     // Weighted mean: (15×5 + 200×3) / 8 = (75+600)/8 = 84.375
     expect(round(global.globalMean, 3)).toBe(84.375);
@@ -473,12 +473,12 @@ describe('end-to-end: calculate then aggregate', () => {
     expect(global.globalMaximumRecordedValue).toBe(300);
   });
 
-  it('correctly propagates zero-measurement user in aggregation', () => {
-    const userA = calculateUserVariableStatistics([10, 20, 30]);
-    const userEmpty = calculateUserVariableStatistics([]);
-    const global = aggregateGlobalStatistics([userA, userEmpty]);
+  it('correctly propagates zero-measurement unit in aggregation', () => {
+    const unitA = calculateUnitVariableStatistics([10, 20, 30]);
+    const unitEmpty = calculateUnitVariableStatistics([]);
+    const global = aggregateGlobalStatistics([unitA, unitEmpty]);
 
-    expect(global.numberOfUserVariables).toBe(2);
+    expect(global.numberOfUnitVariables).toBe(2);
     expect(global.totalMeasurements).toBe(3);
     expect(global.globalMean).toBe(20);
   });

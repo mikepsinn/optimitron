@@ -704,22 +704,22 @@ This maps directly onto clinical trial methodology:
 ```
 Jurisdiction: Singapore
   → System User: "Singapore (aggregate)"
-    → UserVariable: "Life Expectancy"
+    → UnitVariable: "Life Expectancy"
       → Measurements: [82.3, 83.1, ..., 84.1] (yearly)
-    → UserVariable: "Healthcare Spending % GDP"
+    → UnitVariable: "Healthcare Spending % GDP"
       → Measurements: [4.0, 4.0, ..., 4.1] (yearly)
 
 Jurisdiction: Singapore
   → Real User: "Alice (citizen)"
-    → UserVariable: "Overall Mood"
+    → UnitVariable: "Overall Mood"
       → Measurements: [7, 8, 6, 7, ...] (daily)
     → linked to Jurisdiction → whose policy variables are the "treatment"
 ```
 
 ### Aggregation Pipeline
 
-`UserVariableRelationship` = one user's predictor→outcome analysis
-`GlobalVariableRelationship` = aggregated across all users (weighted by significance)
+`UnitVariableRelationship` = one unit's predictor→outcome analysis
+`AggregateVariableRelationship` = aggregated across all units (weighted by significance)
 
 The aggregate correlation pipeline (`aggregateCorrelationPipeline()`) combines individual analyses into population-level findings. This is the same function whether aggregating across:
 - People tracking their own health (personal optimization)
@@ -731,10 +731,11 @@ The aggregate correlation pipeline (`aggregateCorrelationPipeline()`) combines i
 | Model | Meaning |
 |-------|---------|
 | `GlobalVariable` | Universal variable definition (e.g., "Life Expectancy") |
-| `UserVariable` | One entity's instance of a variable (e.g., Singapore's life expectancy) |
+| `UnitVariable` | One entity's instance of a variable (e.g., Singapore's life expectancy) |
 | `Measurement` | A single data point (e.g., 84.1 years in 2023) |
-| `UserVariableRelationship` | One entity's predictor→outcome analysis |
-| `GlobalVariableRelationship` | Aggregated relationship across all entities |
+| `UnitVariableRelationship` | One entity's predictor→outcome analysis |
+| `AggregateVariableRelationship` | Aggregated relationship across all entities |
 | `Jurisdiction` | Hierarchy metadata (type, parent, population) |
 
-"Global" consistently means "the universal/aggregated version" (not "worldwide"). It mirrors the `GlobalVariable`/`UserVariable` pattern.
+"Global" consistently means "the universal/aggregated version" (not "worldwide"). It mirrors the `GlobalVariable`/`UnitVariable` pattern.
+

@@ -172,9 +172,9 @@ Last updated: 2026-02-06.
 - [ ] **Variable tagging / common tags** — hierarchical variable relationships (MEDIUM)
   - "Advil 200mg" → "Ibuprofen" → "NSAIDs"
   - Legacy: `CommonTag` model
-- [ ] **User variable statistics** — running stats: mean, median, stddev, variance, kurtosis (MEDIUM)
+- [ ] **Unit variable statistics** — running stats: mean, median, stddev, variance, kurtosis (MEDIUM)
   - Legacy: `QMUserVariable::calculateAttributes()`
-- [ ] **Global variable statistics** — aggregate stats across all users (MEDIUM)
+- [ ] **Global variable statistics** — aggregate stats across all units (MEDIUM)
   - Legacy: `QMCommonVariable`
 - [x] **Importer normalization** — wire `resolveVariableName` into all importers (HIGH)
   - Standard names exist but importers don't call the resolver
@@ -197,7 +197,7 @@ Last updated: 2026-02-06.
 
 ### ✅ Implemented
 - [x] 24 models, 12 enums, ~300+ documented fields
-- [x] Layer 1: Universal measurement (Unit, VariableCategory, GlobalVariable, UserVariable, Measurement, TrackingReminder, TrackingReminderNotification, UserVariableRelationship, GlobalVariableRelationship, IntegrationProvider, IntegrationConnection, IntegrationSyncLog)
+- [x] Layer 1: Universal measurement (Unit, VariableCategory, GlobalVariable, UnitVariable, Measurement, TrackingReminder, TrackingReminderNotification, UnitVariableRelationship, AggregateVariableRelationship, IntegrationProvider, IntegrationConnection, IntegrationSyncLog)
 - [x] Layer 2: Governance (Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight, AggregationRun, Politician, PoliticianVote, AlignmentScore)
 - [x] JSDoc on every field
 - [x] deletedAt on all models (soft deletes)
@@ -299,3 +299,4 @@ Last updated: 2026-02-06.
 28. Analysis queue / scheduling (@optomitron/db)
 29. CorrelationVote models (@optomitron/db)
 30. Study model (@optomitron/db)
+

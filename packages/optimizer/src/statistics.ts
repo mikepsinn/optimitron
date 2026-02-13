@@ -9,7 +9,14 @@
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationForwardPearsonCorrelationCoefficientProperty.php
  */
 
-import type { AlignedPair, CorrelationResult, EffectSize, UserCorrelationSummary, AggregateCorrelation, DiminishingReturnsResult } from './types.js';
+import type {
+  AlignedPair,
+  CorrelationResult,
+  EffectSize,
+  UnitVariableRelationship,
+  AggregateVariableRelationship,
+  DiminishingReturnsResult,
+} from './types.js';
 
 /**
  * Calculate mean of an array
@@ -404,25 +411,27 @@ export function calculatePredictivePearson(forwardR: number, reverseR: number): 
 }
 
 /**
- * Aggregate user-level correlations into a population-level summary.
+ * Aggregate unit-level variable relationships into a population summary.
  *
- * Follows the legacy API approach: weight each user's metrics by their
- * statistical significance, normalized by the average significance across users.
+ * Follows the legacy API approach: weight each unit's metrics by their
+ * statistical significance, normalized by the average significance across units.
  *
  * weight_i = statisticalSignificance_i / mean(statisticalSignificance)
  * aggregateMetric = mean(metric_i × weight_i)
  *
- * This means users with higher statistical significance (more data, stronger signal)
+ * This means units with higher statistical significance (more data, stronger signal)
  * contribute more to the population estimate.
  *
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/HasMany/HasManyCorrelations.php#L57
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
  */
-export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]): AggregateCorrelation {
-  // Edge case: no users
-  if (userCorrelations.length === 0) {
+export function aggregateUnitVariableRelationships(
+  unitVariableRelationships: UnitVariableRelationship[],
+): AggregateVariableRelationship {
+  // Edge case: no units
+  if (unitVariableRelationships.length === 0) {
     return {
-      numberOfUsers: 0,
+      numberOfUnits: 0,
       aggregateForwardPearson: 0,
       aggregateReversePearson: 0,
       aggregatePredictivePearson: 0,
@@ -437,10 +446,11 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
     };
   }
 
-  const n = userCorrelations.length;
+  const n = unitVariableRelationships.length;
 
   // Calculate average statistical significance for normalization
-  const avgSignificance = userCorrelations.reduce((sum, u) => sum + u.statisticalSignificance, 0) / n;
+  const avgSignificance =
+    unitVariableRelationships.reduce((sum, u) => sum + u.statisticalSignificance, 0) / n;
 
   /**
    * Weighted average following the legacy PHP pattern:
@@ -456,7 +466,7 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
     let count = 0;
     for (let i = 0; i < values.length; i++) {
       const val = values[i]!;
-      const sig = userCorrelations[i]!.statisticalSignificance;
+      const sig = unitVariableRelationships[i]!.statisticalSignificance;
       const weight = avgSignificance > 0 ? sig / avgSignificance : 1;
       sum += val * weight;
       count++;
@@ -466,12 +476,14 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
 
   /**
    * Weighted average for optional numeric fields.
-   * Only includes users that have a defined value for the field.
-   * Returns null if no users have the field defined.
+   * Only includes units that have a defined value for the field.
+   * Returns null if no units have the field defined.
    */
-  function weightedAvgOptional(extractor: (u: UserCorrelationSummary) => number | undefined): number | null {
+  function weightedAvgOptional(
+    extractor: (u: UnitVariableRelationship) => number | undefined,
+  ): number | null {
     const validEntries: { value: number; significance: number }[] = [];
-    for (const u of userCorrelations) {
+    for (const u of unitVariableRelationships) {
       const val = extractor(u);
       if (val !== undefined && val !== null) {
         validEntries.push({ value: val, significance: u.statisticalSignificance });
@@ -488,20 +500,22 @@ export function aggregateCorrelations(userCorrelations: UserCorrelationSummary[]
     return sum / validEntries.length;
   }
 
-  const totalPairs = userCorrelations.reduce((sum, u) => sum + u.numberOfPairs, 0);
+  const totalPairs = unitVariableRelationships.reduce((sum, u) => sum + u.numberOfPairs, 0);
 
   return {
-    numberOfUsers: n,
-    aggregateForwardPearson: weightedAvg(userCorrelations.map(u => u.forwardPearson)),
-    aggregateReversePearson: weightedAvg(userCorrelations.map(u => u.reversePearson)),
-    aggregatePredictivePearson: weightedAvg(userCorrelations.map(u => u.predictivePearson)),
-    aggregateEffectSize: weightedAvg(userCorrelations.map(u => u.effectSize)),
-    aggregateStatisticalSignificance: weightedAvg(userCorrelations.map(u => u.statisticalSignificance)),
+    numberOfUnits: n,
+    aggregateForwardPearson: weightedAvg(unitVariableRelationships.map(u => u.forwardPearson)),
+    aggregateReversePearson: weightedAvg(unitVariableRelationships.map(u => u.reversePearson)),
+    aggregatePredictivePearson: weightedAvg(unitVariableRelationships.map(u => u.predictivePearson)),
+    aggregateEffectSize: weightedAvg(unitVariableRelationships.map(u => u.effectSize)),
+    aggregateStatisticalSignificance: weightedAvg(
+      unitVariableRelationships.map(u => u.statisticalSignificance),
+    ),
     aggregateValuePredictingHighOutcome: weightedAvgOptional(u => u.valuePredictingHighOutcome),
     aggregateValuePredictingLowOutcome: weightedAvgOptional(u => u.valuePredictingLowOutcome),
     aggregateOptimalDailyValue: weightedAvgOptional(u => u.optimalDailyValue),
     aggregateOutcomeFollowUpPercentChangeFromBaseline: weightedAvgOptional(u => u.outcomeFollowUpPercentChangeFromBaseline),
-    weightedAveragePIS: weightedAvg(userCorrelations.map(u => {
+    weightedAveragePIS: weightedAvg(unitVariableRelationships.map(u => {
       // PIS approximation: |forwardPearson| × statisticalSignificance
       // This mirrors the legacy qm_score weighting
       return Math.abs(u.forwardPearson) * u.statisticalSignificance;
@@ -609,3 +623,4 @@ export function diminishingReturnsDetection(x: number[], y: number[]): Diminishi
     slopeRatio: ratio,
   };
 }
+

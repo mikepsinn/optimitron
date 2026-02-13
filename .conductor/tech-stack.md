@@ -43,7 +43,7 @@
 
 ## Key Conventions
 - **predictor/outcome** terminology (not cause/effect)
-- **GlobalVariable** not "variables", **UserVariableRelationship** not "correlations"
+- **GlobalVariable** not "variables"; use **UnitVariableRelationship** / **AggregateVariableRelationship** across optimizer and db (not "correlations")
 - **FK names match target model**: `globalVariableId`, `predictorGlobalVariableId`
 - **deletedAt on all models** (soft deletes)
 - **No domain words in optimizer**: no "drugs", "policies", "budgets", "politicians"

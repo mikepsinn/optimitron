@@ -59,7 +59,7 @@ export * from './daily-aggregation.js';
 // Measurement validation
 export * from './measurement-validation.js';
 
-// Variable statistics (user-level & global aggregation)
+// Variable statistics (unit-level & global aggregation)
 export * from './variable-statistics.js';
 
 // Canonical predictor/outcome registry for explorer workflows

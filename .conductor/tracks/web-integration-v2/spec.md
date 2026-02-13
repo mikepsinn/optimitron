@@ -11,6 +11,9 @@ Create durable web integration contracts and routes for analysis explorer featur
   - outcome hub rankings
   - predictor/outcome pair studies
   - jurisdiction N-of-1 summaries
+- Canonical relationship naming in payload contracts:
+  - unit-level: `UnitVariableRelationship`
+  - aggregate-level: `AggregateVariableRelationship`
 - Route and URL conventions for deep-linkable study pages.
 - Data freshness metadata and provenance rendering.
 

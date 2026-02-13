@@ -8,7 +8,7 @@
  * 
  * legacy API implements these criteria implicitly across multiple files:
  * - Strength: |correlation coefficient| — https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationForwardPearsonCorrelationCoefficientProperty.php
- * - Consistency: number_of_users in AggregateCorrelation — https://github.com/mikepsinn/curedao-api/blob/main/app/Models/AggregateCorrelation.php
+ * - Consistency: number_of_units in AggregateVariableRelationship — https://github.com/mikepsinn/curedao-api/blob/main/app/Models/AggregateCorrelation.php
  * - Temporality: forward vs reverse Pearson — https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationPredictivePearsonCorrelationCoefficientProperty.php
  * - Gradient: optimal value spread (value_predicting_high vs low) — https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationValuePredictingHighOutcomeProperty.php
  * - Experiment: statistical significance composite — https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationStatisticalSignificanceProperty.php
@@ -235,3 +235,4 @@ export function calculateCCS(
   
   return weightedSum / totalWeight;
 }
+

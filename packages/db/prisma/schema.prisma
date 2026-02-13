@@ -5,9 +5,9 @@
 // Two-layer architecture:
 //
 // LAYER 1 — Universal Measurement System (domain-agnostic)
-//   GlobalVariable, VariableCategory, Unit, UserVariable, Measurement,
+//   GlobalVariable, VariableCategory, Unit, UnitVariable, Measurement,
 //   TrackingReminder, TrackingReminderNotification,
-//   UserVariableRelationship, GlobalVariableRelationship,
+//   UnitVariableRelationship, AggregateVariableRelationship,
 //   IntegrationProvider
 //   These models form a general-purpose quantified-self / data collection
 //   platform. Any variable (health, economic, environmental, policy outcome)
@@ -22,8 +22,8 @@
 //   alignment scoring. They are scoped to jurisdictions (multi-tenant).
 //
 // The two layers can interoperate: governance Items can reference
-// GlobalVariables as outcome metrics, and UserVariableRelationship /
-// GlobalVariableRelationship can link policy variables to health/economic outcomes.
+// GlobalVariables as outcome metrics, and UnitVariableRelationship /
+// AggregateVariableRelationship can link policy variables to health/economic outcomes.
 // ============================================================================
 
 generator client {
@@ -205,7 +205,7 @@ model Unit {
   // -- Relations --
   globalVariables      GlobalVariable[]   @relation("GlobalVariableDefaultUnit")
   variableCategories   VariableCategory[] @relation("VariableCategoryDefaultUnit")
-  userVariables        UserVariable[]     @relation("UserVariableDefaultUnit")
+  unitVariables        UnitVariable[]     @relation("UnitVariableDefaultUnit")
   measurements         Measurement[]      @relation("MeasurementUnit")
   measurementsOriginal Measurement[]      @relation("MeasurementOriginalUnit")
 
@@ -363,7 +363,7 @@ model GlobalVariable {
   maximumRecordedValue Float?
 
   /// Number of users who track this variable
-  numberOfUserVariables Int @default(0)
+  numberOfUnitVariables Int @default(0)
 
   /// Processing status for statistical analysis
   status AnalysisStatus @default(WAITING)
@@ -399,28 +399,28 @@ model GlobalVariable {
   deletedAt DateTime?
 
   // -- Relations --
-  userVariables                  UserVariable[]
-  measurements                   Measurement[]
-  trackingReminders              TrackingReminder[]
-  userRelationshipsAsPredictor   UserVariableRelationship[]   @relation("UserRelPredictorGlobal")
-  userRelationshipsAsOutcome     UserVariableRelationship[]   @relation("UserRelOutcomeGlobal")
-  globalRelationshipsAsPredictor GlobalVariableRelationship[] @relation("GlobalRelPredictorGlobal")
-  globalRelationshipsAsOutcome   GlobalVariableRelationship[] @relation("GlobalRelOutcomeGlobal")
+  unitVariables                     UnitVariable[]
+  measurements                      Measurement[]
+  trackingReminders                 TrackingReminder[]
+  unitRelationshipsAsPredictor      UnitVariableRelationship[]      @relation("UnitRelPredictorGlobal")
+  unitRelationshipsAsOutcome        UnitVariableRelationship[]      @relation("UnitRelOutcomeGlobal")
+  aggregateRelationshipsAsPredictor AggregateVariableRelationship[] @relation("AggregateRelPredictorGlobal")
+  aggregateRelationshipsAsOutcome   AggregateVariableRelationship[] @relation("AggregateRelOutcomeGlobal")
 
   @@index([variableCategoryId])
   @@index([defaultUnitId])
   @@index([name])
 }
 
-/// Per-user instance of a GlobalVariable with personal overrides and running stats.
+/// Per-unit instance of a GlobalVariable with personal overrides and running stats.
 /// Created automatically when a user first tracks a variable.
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/UserVariable.php
 /// legacy API analysis: https://github.com/mikepsinn/curedao-api/blob/main/app/Variables/QMUserVariable.php
 /// legacy API daily aggregation: QMUserVariable::getDailyMeasurementsWithTagsAndFillingInTimeRange()
 /// TODO: Port from legacy — running statistics calculation (mean, median, stddev, kurtosis, skewness)
 /// TODO: Port from legacy — daily value aggregation pipeline
-model UserVariable {
-  /// Unique identifier for this user-variable instance
+model UnitVariable {
+  /// Unique identifier for this unit-variable instance
   id String @id @default(cuid())
 
   /// ID of the user who owns this variable instance
@@ -436,7 +436,7 @@ model UserVariable {
   defaultUnitId String?
 
   /// Relation to the user's preferred Unit
-  defaultUnit Unit? @relation("UserVariableDefaultUnit", fields: [defaultUnitId], references: [id])
+  defaultUnit Unit? @relation("UnitVariableDefaultUnit", fields: [defaultUnitId], references: [id])
 
   /// Personal override for onset delay (seconds)
   onsetDelay Int?
@@ -458,25 +458,25 @@ model UserVariable {
 
   // -- Running statistics (updated on each new measurement) --
 
-  /// Total number of measurements this user has recorded for this variable
+  /// Total number of measurements this unit has recorded for this variable
   numberOfMeasurements Int @default(0)
 
-  /// Timestamp of this user's most recent measurement for this variable
+  /// Timestamp of this unit's most recent measurement for this variable
   latestMeasurementStartAt DateTime?
 
-  /// Timestamp of this user's earliest measurement for this variable
+  /// Timestamp of this unit's earliest measurement for this variable
   earliestMeasurementStartAt DateTime?
 
-  /// Arithmetic mean of this user's measurements
+  /// Arithmetic mean of this unit's measurements
   mean Float?
 
-  /// Median of this user's measurements
+  /// Median of this unit's measurements
   median Float?
 
-  /// Standard deviation of this user's measurements
+  /// Standard deviation of this unit's measurements
   standardDeviation Float?
 
-  /// Variance of this user's measurements
+  /// Variance of this unit's measurements
   variance Float?
 
   /// Kurtosis of this user's measurement distribution
@@ -485,19 +485,19 @@ model UserVariable {
   /// Skewness of this user's measurement distribution
   skewness Float?
 
-  /// Lowest value this user has ever recorded
+  /// Lowest value this unit has ever recorded
   minimumRecordedValue Float?
 
-  /// Highest value this user has ever recorded
+  /// Highest value this unit has ever recorded
   maximumRecordedValue Float?
 
   /// Processing status: "WAITING" | "ANALYZING" | "DONE" | "ERROR"
   status AnalysisStatus @default(WAITING)
 
-  /// When the last statistical analysis began for this user-variable
+  /// When the last statistical analysis began for this unit-variable
   analysisStartedAt DateTime?
 
-  /// When the last statistical analysis completed for this user-variable
+  /// When the last statistical analysis completed for this unit-variable
   analysisEndedAt DateTime?
 
   /// When this record was created
@@ -530,11 +530,11 @@ model Measurement {
   /// ID of the user who recorded this measurement
   userId String
 
-  /// Link to the user's personal variable instance
-  userVariableId String
+  /// Link to the unit's personal variable instance
+  unitVariableId String
 
-  /// Relation to the UserVariable
-  userVariable UserVariable @relation(fields: [userVariableId], references: [id])
+  /// Relation to the UnitVariable
+  unitVariable UnitVariable @relation(fields: [unitVariableId], references: [id])
 
   /// Link to the canonical GlobalVariable being measured
   globalVariableId String
@@ -596,7 +596,7 @@ model Measurement {
   @@unique([userId, globalVariableId, startTime])
   @@index([userId])
   @@index([globalVariableId])
-  @@index([userVariableId])
+  @@index([unitVariableId])
   @@index([startTime])
   @@index([userId, globalVariableId, startTime])
 }
@@ -611,11 +611,11 @@ model TrackingReminder {
   /// ID of the user who owns this reminder
   userId String
 
-  /// Link to the user's personal variable instance
-  userVariableId String
+  /// Link to the unit's personal variable instance
+  unitVariableId String
 
-  /// Relation to the UserVariable
-  userVariable UserVariable @relation(fields: [userVariableId], references: [id])
+  /// Relation to the UnitVariable
+  unitVariable UnitVariable @relation(fields: [unitVariableId], references: [id])
 
   /// Link to the canonical GlobalVariable being tracked
   globalVariableId String
@@ -713,29 +713,29 @@ model TrackingReminderNotification {
   @@index([notifyAt])
 }
 
-/// Personal n-of-1 causal inference analysis between two variables for a single user.
-/// Each row answers: "For THIS user, how does variable A predict variable B?"
+/// Unit-level n-of-1 causal inference analysis between two variables.
+/// Each row answers: "For THIS unit, how does variable A predict variable B?"
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Correlation.php
 /// legacy API analysis pipeline: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMUserCorrelation.php
 /// legacy API calculation properties: https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/
-model UserVariableRelationship {
-  /// Unique identifier for this user-level relationship
+model UnitVariableRelationship {
+  /// Unique identifier for this unit-level relationship
   id String @id @default(cuid())
 
-  /// The user who owns this analysis
-  userId String
+  /// The analysis unit (user, jurisdiction, cohort, etc.)
+  unitId String
 
   /// The predictor (input/cause) variable in this relationship
   predictorGlobalVariableId String
 
   /// Relation to the predictor GlobalVariable
-  predictorGlobalVariable GlobalVariable @relation("UserRelPredictorGlobal", fields: [predictorGlobalVariableId], references: [id])
+  predictorGlobalVariable GlobalVariable @relation("UnitRelPredictorGlobal", fields: [predictorGlobalVariableId], references: [id])
 
   /// The outcome (effect/result) variable in this relationship
   outcomeGlobalVariableId String
 
   /// Relation to the outcome GlobalVariable
-  outcomeGlobalVariable GlobalVariable @relation("UserRelOutcomeGlobal", fields: [outcomeGlobalVariableId], references: [id])
+  outcomeGlobalVariable GlobalVariable @relation("UnitRelOutcomeGlobal", fields: [outcomeGlobalVariableId], references: [id])
 
   // -- Statistical fields --
 
@@ -892,34 +892,34 @@ model UserVariableRelationship {
   /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
-  @@unique([userId, predictorGlobalVariableId, outcomeGlobalVariableId])
-  @@index([userId])
+  @@unique([unitId, predictorGlobalVariableId, outcomeGlobalVariableId])
+  @@index([unitId])
   @@index([predictorGlobalVariableId])
   @@index([outcomeGlobalVariableId])
   @@index([analyzedAt])
 }
 
-/// Population-level causal inference analysis aggregated across all users.
-/// Each row answers: "Across ALL users, how does variable A predict variable B?"
+/// Population-level causal inference analysis aggregated across all units.
+/// Each row answers: "Across ALL units, how does variable A predict variable B?"
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/AggregateCorrelation.php
 /// legacy API analysis pipeline: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
-/// legacy API aggregates UserCorrelations via weighted averaging by statistical significance.
-/// TODO: Port from legacy — weighted aggregation pipeline across users
-model GlobalVariableRelationship {
-  /// Unique identifier for this global-level relationship
+/// legacy API aggregates unit-level correlations via weighted averaging by statistical significance.
+/// TODO: Port from legacy — weighted aggregation pipeline across units
+model AggregateVariableRelationship {
+  /// Unique identifier for this aggregate-level relationship
   id String @id @default(cuid())
 
   /// The predictor (input/cause) variable in this relationship
   predictorGlobalVariableId String
 
   /// Relation to the predictor GlobalVariable
-  predictorGlobalVariable GlobalVariable @relation("GlobalRelPredictorGlobal", fields: [predictorGlobalVariableId], references: [id])
+  predictorGlobalVariable GlobalVariable @relation("AggregateRelPredictorGlobal", fields: [predictorGlobalVariableId], references: [id])
 
   /// The outcome (effect/result) variable in this relationship
   outcomeGlobalVariableId String
 
   /// Relation to the outcome GlobalVariable
-  outcomeGlobalVariable GlobalVariable @relation("GlobalRelOutcomeGlobal", fields: [outcomeGlobalVariableId], references: [id])
+  outcomeGlobalVariable GlobalVariable @relation("AggregateRelOutcomeGlobal", fields: [outcomeGlobalVariableId], references: [id])
 
   // -- Statistical fields --
 
@@ -1066,16 +1066,16 @@ model GlobalVariableRelationship {
 
   // -- Aggregate-specific fields --
 
-  /// Number of users whose data contributed to this analysis
-  numberOfUsers Int
+  /// Number of units whose data contributed to this analysis
+  numberOfUnits Int
 
-  /// Overall quality/importance score aggregated across users (QM score)
+  /// Overall quality/importance score aggregated across units (QM score)
   aggregateQmScore Float?
 
-  /// Community votes: how many users found this relationship useful
+  /// Community votes: how many units found this relationship useful
   numberOfUpVotes Int?
 
-  /// Community votes: how many users found this relationship not useful
+  /// Community votes: how many units found this relationship not useful
   numberOfDownVotes Int?
 
   /// When this analysis was last computed
@@ -1094,7 +1094,7 @@ model GlobalVariableRelationship {
   @@index([predictorGlobalVariableId])
   @@index([outcomeGlobalVariableId])
   @@index([analyzedAt])
-  @@index([numberOfUsers])
+  @@index([numberOfUnits])
 }
 
 /// Metadata about an external data source / integration (e.g. Fitbit, Apple Health, Oura).

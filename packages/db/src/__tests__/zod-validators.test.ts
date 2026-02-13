@@ -16,12 +16,12 @@ import {
   UnitSchema,
   VariableCategorySchema,
   GlobalVariableSchema,
-  UserVariableSchema,
+  UnitVariableSchema,
   MeasurementSchema,
   TrackingReminderSchema,
   TrackingReminderNotificationSchema,
-  UserVariableRelationshipSchema,
-  GlobalVariableRelationshipSchema,
+  UnitVariableRelationshipSchema,
+  AggregateVariableRelationshipSchema,
   JurisdictionSchema,
   PoliticianSchema,
   PoliticianVoteSchema,
@@ -45,7 +45,7 @@ const now = new Date();
 const validMeasurement = {
   id: 'clx1234567890',
   userId: 'user_abc',
-  userVariableId: 'uvar_abc',
+  unitVariableId: 'uvar_abc',
   globalVariableId: 'gvar_abc',
   startTime: now,
   value: 200,
@@ -93,9 +93,9 @@ const validJurisdiction = {
   deletedAt: null,
 };
 
-const validUserVariableRelationship = {
+const validUnitVariableRelationship = {
   id: 'uvr_1',
-  userId: 'user_1',
+  unitId: 'unit_1',
   predictorGlobalVariableId: 'gv_pred',
   outcomeGlobalVariableId: 'gv_out',
   forwardPearsonCorrelation: 0.65,
@@ -247,7 +247,7 @@ describe('MeasurementSchema', () => {
     const minimal = {
       id: 'meas_1',
       userId: 'user_1',
-      userVariableId: 'uv_1',
+      unitVariableId: 'uv_1',
       globalVariableId: 'gv_1',
       startTime: now,
       value: 5,
@@ -327,26 +327,32 @@ describe('JurisdictionSchema', () => {
 });
 
 // ============================================================================
-// MODEL TESTS — UserVariableRelationship
+// MODEL TESTS — UnitVariableRelationship
 // ============================================================================
 
-describe('UserVariableRelationshipSchema', () => {
-  it('29. validates a correct UserVariableRelationship', () => {
-    const result = UserVariableRelationshipSchema.safeParse(
-      validUserVariableRelationship,
+describe('UnitVariableRelationshipSchema', () => {
+  it('29. validates a correct UnitVariableRelationship', () => {
+    const result = UnitVariableRelationshipSchema.safeParse(
+      validUnitVariableRelationship,
     );
     expect(result.success).toBe(true);
   });
 
-  it('30. fails when forwardPearsonCorrelation is missing', () => {
-    const { forwardPearsonCorrelation, ...noCorr } = validUserVariableRelationship;
-    const result = UserVariableRelationshipSchema.safeParse(noCorr);
+  it('30. fails when unitId is missing', () => {
+    const { unitId, ...noUnitId } = validUnitVariableRelationship;
+    const result = UnitVariableRelationshipSchema.safeParse(noUnitId);
     expect(result.success).toBe(false);
   });
 
-  it('31. accepts nullable enum fields', () => {
-    const result = UserVariableRelationshipSchema.safeParse({
-      ...validUserVariableRelationship,
+  it('31. fails when forwardPearsonCorrelation is missing', () => {
+    const { forwardPearsonCorrelation, ...noCorr } = validUnitVariableRelationship;
+    const result = UnitVariableRelationshipSchema.safeParse(noCorr);
+    expect(result.success).toBe(false);
+  });
+
+  it('32. accepts nullable enum fields', () => {
+    const result = UnitVariableRelationshipSchema.safeParse({
+      ...validUnitVariableRelationship,
       strengthLevel: 'STRONG',
       confidenceLevel: 'HIGH',
       relationship: 'POSITIVE',
@@ -355,9 +361,9 @@ describe('UserVariableRelationshipSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('32. fails with invalid enum value for strengthLevel', () => {
-    const result = UserVariableRelationshipSchema.safeParse({
-      ...validUserVariableRelationship,
+  it('33. fails with invalid enum value for strengthLevel', () => {
+    const result = UnitVariableRelationshipSchema.safeParse({
+      ...validUnitVariableRelationship,
       strengthLevel: 'SUPER_STRONG',
     });
     expect(result.success).toBe(false);
@@ -365,11 +371,11 @@ describe('UserVariableRelationshipSchema', () => {
 });
 
 // ============================================================================
-// MODEL TESTS — GlobalVariableRelationship
+// MODEL TESTS — AggregateVariableRelationship
 // ============================================================================
 
-describe('GlobalVariableRelationshipSchema', () => {
-  it('33. validates a correct GlobalVariableRelationship', () => {
+describe('AggregateVariableRelationshipSchema', () => {
+  it('34. validates a correct AggregateVariableRelationship', () => {
     const data = {
       id: 'gvr_1',
       predictorGlobalVariableId: 'gv_1',
@@ -379,15 +385,15 @@ describe('GlobalVariableRelationshipSchema', () => {
       numberOfPairs: 500,
       onsetDelay: 7200,
       durationOfAction: 172800,
-      numberOfUsers: 25,
+      numberOfUnits: 25,
       analyzedAt: now,
       createdAt: now,
       updatedAt: now,
     };
-    expect(GlobalVariableRelationshipSchema.safeParse(data).success).toBe(true);
+    expect(AggregateVariableRelationshipSchema.safeParse(data).success).toBe(true);
   });
 
-  it('34. fails when numberOfUsers is missing', () => {
+  it('35. fails when numberOfUnits is missing', () => {
     const data = {
       id: 'gvr_1',
       predictorGlobalVariableId: 'gv_1',
@@ -401,7 +407,7 @@ describe('GlobalVariableRelationshipSchema', () => {
       createdAt: now,
       updatedAt: now,
     };
-    expect(GlobalVariableRelationshipSchema.safeParse(data).success).toBe(false);
+    expect(AggregateVariableRelationshipSchema.safeParse(data).success).toBe(false);
   });
 });
 
@@ -554,7 +560,7 @@ describe('Additional models', () => {
     expect(result.success).toBe(true);
   });
 
-  it('45. validates a UserVariable', () => {
+  it('45. validates a UnitVariable', () => {
     const data = {
       id: 'uv_1',
       userId: 'user_1',
@@ -562,14 +568,14 @@ describe('Additional models', () => {
       createdAt: now,
       updatedAt: now,
     };
-    expect(UserVariableSchema.safeParse(data).success).toBe(true);
+    expect(UnitVariableSchema.safeParse(data).success).toBe(true);
   });
 
   it('46. validates a TrackingReminder', () => {
     const data = {
       id: 'tr_1',
       userId: 'user_1',
-      userVariableId: 'uv_1',
+      unitVariableId: 'uv_1',
       globalVariableId: 'gv_1',
       reminderStartTime: '08:00',
       reminderFrequency: 86400,

@@ -70,7 +70,7 @@ The fdai chat architecture is directly relevant to Optomitron's health tracking 
 
 **Modifications needed:**
 - Replace Supabase client calls with Prisma/Optomitron DB calls
-- Replace `user_goals`/`user_conditions` Supabase tables with Optomitron's `UserVariable`/`Measurement` model
+- Replace `user_goals`/`user_conditions` Supabase tables with Optomitron's `UnitVariable`/`Measurement` model
 - Swap AI provider config to match Optomitron's setup
 - The chat UI currently uses shadcn/ui — compatible with Optomitron's existing setup
 
@@ -160,7 +160,7 @@ Uses **NextAuth** with:
 ### Optomitron Schema (packages/db/prisma/schema.prisma)
 
 - **PostgreSQL/Prisma**, clean two-layer architecture
-- Layer 1: Universal Measurement System (GlobalVariable, VariableCategory, Unit, UserVariable, Measurement, TrackingReminder, UserVariableRelationship, GlobalVariableRelationship)
+- Layer 1: Universal Measurement System (GlobalVariable, VariableCategory, Unit, UnitVariable, Measurement, TrackingReminder, UnitVariableRelationship, AggregateVariableRelationship)
 - Layer 2: Governance (Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight, AggregationRun, Politician, PoliticianVote, AlignmentScore)
 - Uses cuid() string IDs
 
@@ -177,11 +177,11 @@ Uses **NextAuth** with:
 | **Data sharing agreements** / consent management | ✅ `core.data_sharing_agreements`, `core.user_consents` | ❌ Missing | MEDIUM — needed for compliance |
 | **User groups** | ✅ `core.user_groups`, `core.user_group_members` | ❌ Missing | LOW |
 | **Tracking reminder notifications** | ✅ `tracking_reminder_notifications` | ❌ Missing (has TrackingReminder but no notification queue) | **HIGH** — needed for engagement |
-| **Variable statistics fields** | ✅ Extensive stats on `variables` (kurtosis, skewness, median, percentiles, chart JSON) | ⚠️ Has basic stats on UserVariable (mean, median, stddev, min, max) | MEDIUM — add more stats fields |
+| **Variable statistics fields** | ✅ Extensive stats on `variables` (kurtosis, skewness, median, percentiles, chart JSON) | ⚠️ Has basic stats on UnitVariable (mean, median, stddev, min, max) | MEDIUM — add more stats fields |
 | **Charts JSON on variables** | ✅ `charts` JSONB field on variables | ❌ Missing | MEDIUM — useful for pre-computed charts |
 | **Source platform tracking** | ✅ `source_platforms`, `variable_user_sources` | ❌ Missing | **HIGH** — needed for data provenance |
 | **Measurement imports** | ✅ `measurement_imports`, `measurement_exports` | ❌ Missing | **HIGH** |
-| **Votes / community ratings** | ✅ `votes`, `correlation_causality_votes`, `correlation_usefulness_votes` | ⚠️ Has `numberOfUpVotes`/`numberOfDownVotes` on GlobalVariableRelationship | LOW |
+| **Votes / community ratings** | ✅ `votes`, `correlation_causality_votes`, `correlation_usefulness_votes` | ⚠️ Has `numberOfUpVotes`/`numberOfDownVotes` on AggregateVariableRelationship | LOW |
 
 ### Recommended Schema Additions for Optomitron
 
@@ -403,7 +403,7 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 4. **Model metadata** — The `ModelMetadata` type (interventionType, assumptions, limitations, references) is good governance documentation.
 
 **Modifications needed:**
-- Integrate with Optomitron's `GlobalVariableRelationship` / `UserVariableRelationship` for real data-driven modeling
+- Integrate with Optomitron's `AggregateVariableRelationship` / `UnitVariableRelationship` for real data-driven modeling
 - Add causal inference algorithms (the package is currently just a framework, no actual statistical methods)
 - Consider merging with or extending Optomitron's existing `packages/optimizer` package
 
@@ -528,7 +528,7 @@ Well-organized multi-schema PostgreSQL:
 
 1. **Supabase config** — Useful reference if Optomitron adopts Supabase. The auth rate limits and session config are well-tuned.
 
-2. **Multi-schema SQL migration** — The `core`/`reference`/`personal`/`cohort` schema organization is excellent. Optomitron's Prisma schema already covers `reference` (GlobalVariable, VariableCategory, Unit) and `personal` (UserVariable, Measurement) equivalents.
+2. **Multi-schema SQL migration** — The `core`/`reference`/`personal`/`cohort` schema organization is excellent. Optomitron's Prisma schema already covers `reference` (GlobalVariable, VariableCategory, Unit) and `personal` (UnitVariable, Measurement) equivalents.
 
 3. **Missing from Optomitron that the Supabase schema has:**
    - `core.integration_providers` / `core.integration_connections` / `core.integration_sync_logs` → **HIGH PRIORITY** to add
@@ -594,3 +594,4 @@ Well-organized multi-schema PostgreSQL:
 4. **The DFDA API dependency is a risk** — Much of the web app delegates to `safe.dfda.earth`. Optomitron should build its own backend and only reference DFDA for the data/schema patterns.
 
 5. **190 Prisma models is too many** — The legacy schema has massive WordPress/Laravel cruft. Optomitron's clean 20-model schema is the right approach. Add the missing models (integrations, notifications) surgically.
+

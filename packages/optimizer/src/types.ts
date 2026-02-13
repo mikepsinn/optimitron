@@ -3,9 +3,8 @@ import { z } from 'zod';
 /**
  * Core types for time series causal inference
  * 
- * These are agnostic to the specific domain (dFDA, policy, budget).
- * The predictor can be a drug, policy, or spending level.
- * The outcome can be a symptom, welfare metric, or any measurable value.
+ * These are agnostic to the specific domain.
+ * Predictor and outcome can represent any measurable variables.
  * 
  * @see https://dfda-spec.warondisease.org — dFDA Specification (the paper this package implements)
  * 
@@ -55,7 +54,7 @@ export type TimeSeries = z.infer<typeof TimeSeriesSchema>;
  * Filling strategy for missing values
  */
 export const FillingTypeSchema = z.enum([
-  'zero',          // Missing = 0 (treatments: assume not taken)
+  'zero',          // Missing = 0 (event-like predictors: assume absent)
   'value',         // Missing = specific constant
   'none',          // No imputation
   'interpolation', // Linear interpolation
@@ -269,13 +268,13 @@ export const DataQualitySchema = z.object({
 export type DataQuality = z.infer<typeof DataQualitySchema>;
 
 /**
- * Summary of a single user's correlation analysis.
+ * Summary of a single unit's variable relationship analysis.
  * Used as input for population-level aggregation.
  *
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Models/Correlation.php
  */
-export const UserCorrelationSummarySchema = z.object({
-  userId: z.string(),
+export const UnitVariableRelationshipSchema = z.object({
+  unitId: z.string(),
   /** Forward Pearson r (predictor → outcome) */
   forwardPearson: z.number(),
   /** Reverse Pearson r (outcome → predictor) */
@@ -298,18 +297,18 @@ export const UserCorrelationSummarySchema = z.object({
   outcomeFollowUpPercentChangeFromBaseline: z.number().optional(),
 });
 
-export type UserCorrelationSummary = z.infer<typeof UserCorrelationSummarySchema>;
+export type UnitVariableRelationship = z.infer<typeof UnitVariableRelationshipSchema>;
 
 /**
- * Population-level aggregate correlation across multiple users.
+ * Population-level aggregate variable relationship across multiple units.
  * All numeric fields are weighted averages (by statistical significance).
  *
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/HasMany/HasManyCorrelations.php
  */
-export const AggregateCorrelationSchema = z.object({
-  /** Number of users contributing to this aggregate */
-  numberOfUsers: z.number(),
+export const AggregateVariableRelationshipSchema = z.object({
+  /** Number of units contributing to this aggregate */
+  numberOfUnits: z.number(),
   /** Weighted average forward Pearson correlation */
   aggregateForwardPearson: z.number(),
   /** Weighted average reverse Pearson correlation */
@@ -330,8 +329,9 @@ export const AggregateCorrelationSchema = z.object({
   aggregateOutcomeFollowUpPercentChangeFromBaseline: z.number().nullable(),
   /** Weighted average Predictor Impact Score (PIS) */
   weightedAveragePIS: z.number(),
-  /** Total number of aligned pairs across all users */
+  /** Total number of aligned pairs across all units */
   totalPairs: z.number(),
 });
 
-export type AggregateCorrelation = z.infer<typeof AggregateCorrelationSchema>;
+export type AggregateVariableRelationship = z.infer<typeof AggregateVariableRelationshipSchema>;
+

@@ -1,12 +1,12 @@
 /**
- * User Variable Statistics & Global Variable Statistics
+ * Unit Variable Statistics & Global Variable Statistics
  *
- * Calculates running statistics from measurement values for individual user
- * variables, and aggregates them across users for global variable statistics.
+ * Calculates running statistics from measurement values for individual unit
+ * variables, and aggregates them across units for global variable statistics.
  *
  * Ported from legacy CureDAO API:
- * - QMUserVariable::calculateAttributes()
- * - UserVariable property calculators (Mean, Median, Skewness, Kurtosis, etc.)
+ * - QMUserVariable::calculateAttributes() (legacy API naming)
+ * - UnitVariable-equivalent property calculators (Mean, Median, Skewness, Kurtosis, etc.)
  * - QMCommonVariable aggregation
  *
  * @see https://dfda-spec.warondisease.org
@@ -14,13 +14,13 @@
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Variables/QMCommonVariable.php
  */
 
-// ─── User Variable Statistics ────────────────────────────────────────────────
+// ─── Unit Variable Statistics ────────────────────────────────────────────────
 
 /**
- * Statistics calculated from a single user's measurements for one variable.
- * Mirrors the statistical fields on the Prisma `UserVariable` model.
+ * Statistics calculated from a single unit's measurements for one variable.
+ * Mirrors the statistical fields on the Prisma `UnitVariable` model.
  */
-export interface UserVariableStatistics {
+export interface UnitVariableStatistics {
   /** Arithmetic mean of measurement values */
   mean: number;
   /** Median of measurement values */
@@ -56,21 +56,21 @@ export interface UserVariableStatistics {
 // ─── Global Variable Statistics ──────────────────────────────────────────────
 
 /**
- * Aggregated statistics across multiple users for a single global variable.
+ * Aggregated statistics across multiple units for a single global variable.
  * Mirrors the statistical fields on the Prisma `GlobalVariable` model.
  */
 export interface GlobalVariableStatistics {
-  /** Number of users who track this variable */
-  numberOfUserVariables: number;
-  /** Weighted mean across all users (weighted by numberOfMeasurements) */
+  /** Number of units that track this variable */
+  numberOfUnitVariables: number;
+  /** Weighted mean across all units (weighted by numberOfMeasurements) */
   globalMean: number;
-  /** Weighted standard deviation across all users */
+  /** Weighted standard deviation across all units */
   globalStandardDeviation: number;
-  /** Minimum recorded value across all users */
+  /** Minimum recorded value across all units */
   globalMinimumRecordedValue: number;
-  /** Maximum recorded value across all users */
+  /** Maximum recorded value across all units */
   globalMaximumRecordedValue: number;
-  /** Sum of measurements across all users */
+  /** Sum of measurements across all units */
   totalMeasurements: number;
 }
 
@@ -129,10 +129,10 @@ function topNMostCommon(values: number[], n: number): (number | null)[] {
  * Kurtosis uses excess kurtosis (Fisher definition, normal distribution = 0):
  *   G₂ = ((n(n+1)) / ((n-1)(n-2)(n-3))) × Σ((xi-mean)/stddev)⁴ − (3(n-1)²)/((n-2)(n-3))
  */
-export function calculateUserVariableStatistics(
+export function calculateUnitVariableStatistics(
   values: number[],
   timestamps?: Date[],
-): UserVariableStatistics {
+): UnitVariableStatistics {
   const n = values.length;
 
   // ── Empty array ────────────────────────────────────────────────────────
@@ -255,23 +255,23 @@ export function calculateUserVariableStatistics(
 // ─── Global Aggregation ──────────────────────────────────────────────────────
 
 /**
- * Aggregate user-level statistics into global variable statistics.
+ * Aggregate unit-level statistics into global variable statistics.
  *
- * Uses measurement-count weighting so users with more data have proportionally
+ * Uses measurement-count weighting so units with more data have proportionally
  * more influence on the global mean and standard deviation.
  *
  * Weighted mean:  μ = Σ(wᵢ × meanᵢ) / Σ(wᵢ)
  * Weighted stddev (combined variance approach):
  *   σ² = Σ(wᵢ × (varianceᵢ + (meanᵢ − μ)²)) / Σ(wᵢ)
  *
- * @param userStats Array of per-user statistics for the same global variable
+ * @param unitStats Array of per-unit statistics for the same global variable
  */
 export function aggregateGlobalStatistics(
-  userStats: UserVariableStatistics[],
+  unitStats: UnitVariableStatistics[],
 ): GlobalVariableStatistics {
-  if (userStats.length === 0) {
+  if (unitStats.length === 0) {
     return {
-      numberOfUserVariables: 0,
+      numberOfUnitVariables: 0,
       globalMean: 0,
       globalStandardDeviation: 0,
       globalMinimumRecordedValue: 0,
@@ -285,7 +285,7 @@ export function aggregateGlobalStatistics(
   let globalMin = Infinity;
   let globalMax = -Infinity;
 
-  for (const us of userStats) {
+  for (const us of unitStats) {
     if (us.numberOfMeasurements === 0) continue;
     totalMeasurements += us.numberOfMeasurements;
     weightedMeanSum += us.numberOfMeasurements * us.mean;
@@ -293,10 +293,10 @@ export function aggregateGlobalStatistics(
     if (us.maximumRecordedValue > globalMax) globalMax = us.maximumRecordedValue;
   }
 
-  // If all users had 0 measurements
+  // If all units had 0 measurements
   if (totalMeasurements === 0) {
     return {
-      numberOfUserVariables: userStats.length,
+      numberOfUnitVariables: unitStats.length,
       globalMean: 0,
       globalStandardDeviation: 0,
       globalMinimumRecordedValue: 0,
@@ -309,7 +309,7 @@ export function aggregateGlobalStatistics(
 
   // Combined variance: Σ wᵢ × (σᵢ² + (μᵢ − μ_global)²) / Σ wᵢ
   let weightedVarSum = 0;
-  for (const us of userStats) {
+  for (const us of unitStats) {
     if (us.numberOfMeasurements === 0) continue;
     const diff = us.mean - globalMean;
     weightedVarSum +=
@@ -319,7 +319,7 @@ export function aggregateGlobalStatistics(
   const globalStandardDeviation = Math.sqrt(globalVariance);
 
   return {
-    numberOfUserVariables: userStats.length,
+    numberOfUnitVariables: unitStats.length,
     globalMean,
     globalStandardDeviation,
     globalMinimumRecordedValue: globalMin === Infinity ? 0 : globalMin,

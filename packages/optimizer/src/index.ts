@@ -10,11 +10,6 @@
  * - Effect size estimation
  * - Optimal value analysis
  * 
- * Used by:
- * - dFDA: predictor=drug/supplement, outcome=symptom/biomarker
- * - OPG: predictor=policy, outcome=welfare metrics
- * - OBG: predictor=spending, outcome=welfare metrics
- * 
  * legacy API equivalent: QMUserCorrelation analysis pipeline
  * Reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMUserCorrelation.php
  * Reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMCorrelation.php
@@ -52,6 +47,9 @@
 
 // Types
 export * from './types.js';
+export * from './pair-study.js';
+export * from './variable-relationship-runner.js';
+export * from './outcome-mega-study-ranking.js';
 
 // Temporal alignment
 export {
@@ -78,7 +76,7 @@ export {
   calculateReversePearson,
   calculatePredictivePearson,
   partialCorrelation,
-  aggregateCorrelations,
+  aggregateUnitVariableRelationships,
 } from './statistics.js';
 
 // Adaptive binning
@@ -160,3 +158,4 @@ export type {
 
 // Version
 export const VERSION = '0.1.0';
+
