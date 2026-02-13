@@ -81,6 +81,15 @@ export {
   aggregateCorrelations,
 } from './statistics.js';
 
+// Adaptive binning
+export {
+  buildAdaptiveNumericBins,
+} from './adaptive-binning.js';
+export type {
+  NumericBin,
+  AdaptiveBinningOptions,
+} from './adaptive-binning.js';
+
 // Predictor Impact Score
 export {
   calculatePredictorImpactScore,

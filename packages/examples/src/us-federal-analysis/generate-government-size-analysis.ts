@@ -18,6 +18,10 @@ import {
   scoreToGrade,
   type AnnualTimeSeries,
 } from '@optomitron/obg';
+import {
+  buildAdaptiveNumericBins,
+  type NumericBin,
+} from '@optomitron/optimizer';
 
 import {
   fetchers,
@@ -91,6 +95,38 @@ interface SensitivityScenario {
   isPrimaryScenario: boolean;
 }
 
+interface AdaptiveBinningMetadata {
+  method: string;
+  targetBinCount: number;
+  minBinSize: number;
+  anchors: number[];
+  roundTo: number;
+  binsGenerated: number;
+}
+
+interface TierOutcomeSummary {
+  observations: number;
+  jurisdictions: number;
+  typicalHealthyLifeYears: number | null;
+  typicalHealthyLifeYearsGrowthPerYear: number | null;
+  typicalRealAfterTaxMedianIncomeLevel: number | null;
+  typicalRealAfterTaxMedianIncomeGrowthPct: number | null;
+  lowSampleWarning: string | null;
+  proxyNotes: string[];
+}
+
+interface SpendingPctGdpTier extends TierOutcomeSummary {
+  tier: string;
+  minPctGdp: number | null;
+  maxPctGdp: number | null;
+}
+
+interface SpendingPerCapitaTier extends TierOutcomeSummary {
+  tier: string;
+  minSpendingPerCapitaPpp: number | null;
+  maxSpendingPerCapitaPpp: number | null;
+}
+
 interface GovernmentSizeAnalysisData {
   predictor: {
     id: string;
@@ -121,19 +157,13 @@ interface GovernmentSizeAnalysisData {
       metricUsed: string;
       note: string;
     };
-    tiers: Array<{
-      tier: string;
-      minPctGdp: number | null;
-      maxPctGdp: number | null;
-      observations: number;
-      jurisdictions: number;
-      typicalHealthyLifeYears: number | null;
-      typicalHealthyLifeYearsGrowthPerYear: number | null;
-      typicalRealAfterTaxMedianIncomeLevel: number | null;
-      typicalRealAfterTaxMedianIncomeGrowthPct: number | null;
-      lowSampleWarning: string | null;
-      proxyNotes: string[];
-    }>;
+    binning: AdaptiveBinningMetadata;
+    tiers: SpendingPctGdpTier[];
+  };
+  spendingPerCapitaLevelTable: {
+    definition: string;
+    binning: AdaptiveBinningMetadata;
+    tiers: SpendingPerCapitaTier[];
   };
   overall: {
     optimalPctGdp: number;
@@ -215,16 +245,11 @@ interface PanelRow {
   giniIndex: number | null;
 }
 
-interface SpendingTier {
-  label: string;
-  min: number;
-  max: number;
-}
-
 interface SpendingObservation {
   jurisdictionIso3: string;
   year: number;
   spendingPctGdp: number;
+  spendingPerCapitaPpp: number | null;
   lifeExpectancyYears: number | null;
   lifeExpectancyGrowthYears: number | null;
   gdpPerCapitaPpp: number | null;
@@ -265,17 +290,18 @@ const OUTCOMES: OutcomeSpec[] = [
     unit: 'index',
   },
 ];
-
-const SPENDING_TIERS: SpendingTier[] = [
-  { label: '<20%', min: -Infinity, max: 20 },
-  { label: '20-25%', min: 20, max: 25 },
-  { label: '25-30%', min: 25, max: 30 },
-  { label: '30-35%', min: 30, max: 35 },
-  { label: '35-40%', min: 35, max: 40 },
-  { label: '40-45%', min: 40, max: 45 },
-  { label: '45-50%', min: 45, max: 50 },
-  { label: '>=50%', min: 50, max: Infinity },
-];
+const ADAPTIVE_BIN_CONFIG = Object.freeze({
+  targetBinCount: 12,
+  minBinSize: 30,
+  anchors: [20],
+  roundTo: 1,
+});
+const ADAPTIVE_PER_CAPITA_BIN_CONFIG = Object.freeze({
+  targetBinCount: 12,
+  minBinSize: 30,
+  anchors: [5_000, 10_000, 20_000],
+  roundTo: 500,
+});
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
@@ -632,6 +658,8 @@ function buildSpendingObservations(rows: PanelRow[]): SpendingObservation[] {
         jurisdictionIso3: iso3,
         year: row.year,
         spendingPctGdp: row.predictorPctGdp,
+        spendingPerCapitaPpp:
+          row.gdpPerCapitaPpp == null ? null : (row.predictorPctGdp / 100) * row.gdpPerCapitaPpp,
         lifeExpectancyYears: row.lifeExpectancyYears,
         lifeExpectancyGrowthYears: lifeGrowth,
         gdpPerCapitaPpp: row.gdpPerCapitaPpp,
@@ -650,51 +678,106 @@ function buildSpendingObservations(rows: PanelRow[]): SpendingObservation[] {
   return observations;
 }
 
-function summarizeSpendingTiers(
+function formatPct(value: number): string {
+  return Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1);
+}
+
+function formatUsd(value: number): string {
+  return `$${Math.round(value).toLocaleString('en-US')}`;
+}
+
+function formatPctBinLabel(bin: NumericBin): string {
+  return `${formatPct(bin.lowerBound)}-${formatPct(bin.upperBound)}%`;
+}
+
+function formatUsdBinLabel(bin: NumericBin): string {
+  return `${formatUsd(bin.lowerBound)}-${formatUsd(bin.upperBound)}`;
+}
+
+function summarizeTierOutcomes(
+  matches: SpendingObservation[],
+  minBinSize: number,
+): TierOutcomeSummary {
+  const lifeValues = matches
+    .map(observation => observation.lifeExpectancyYears)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  const lifeGrowthValues = matches
+    .map(observation => observation.lifeExpectancyGrowthYears)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  const incomeLevelValues = matches
+    .map(observation => observation.gdpPerCapitaPpp)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  const incomeGrowthValues = matches
+    .map(observation => observation.gdpPerCapitaGrowthPct)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  return {
+    observations: matches.length,
+    jurisdictions: new Set(matches.map(observation => observation.jurisdictionIso3)).size,
+    typicalHealthyLifeYears: lifeValues.length > 0 ? quantile(lifeValues, 0.5) : null,
+    typicalHealthyLifeYearsGrowthPerYear:
+      lifeGrowthValues.length > 0 ? quantile(lifeGrowthValues, 0.5) : null,
+    typicalRealAfterTaxMedianIncomeLevel:
+      incomeLevelValues.length > 0 ? quantile(incomeLevelValues, 0.5) : null,
+    typicalRealAfterTaxMedianIncomeGrowthPct:
+      incomeGrowthValues.length > 0 ? quantile(incomeGrowthValues, 0.5) : null,
+    lowSampleWarning: matches.length < minBinSize ? 'Small sample: interpret cautiously' : null,
+    proxyNotes: [
+      'Healthy life years proxy: life expectancy at birth',
+      'Healthy life years growth proxy: life expectancy YoY change',
+      'Real after-tax median income level proxy: GDP per capita PPP level',
+      'Real after-tax median income growth proxy: real GDP per capita YoY growth',
+    ],
+  };
+}
+
+function summarizeSpendingPctGdpTiers(
   observations: SpendingObservation[],
+  bins: NumericBin[],
 ): GovernmentSizeAnalysisData['spendingLevelTable']['tiers'] {
-  return SPENDING_TIERS.map(tier => {
+  return bins.map((bin, idx) => {
+    const isLast = idx === bins.length - 1;
     const matches = observations.filter(
       observation =>
-        observation.spendingPctGdp >= tier.min && observation.spendingPctGdp < tier.max,
+        observation.spendingPctGdp >= bin.lowerBound &&
+        (isLast
+          ? observation.spendingPctGdp <= bin.upperBound
+          : observation.spendingPctGdp < bin.upperBound),
     );
 
-    const lifeValues = matches
-      .map(observation => observation.lifeExpectancyYears)
-      .filter((value): value is number => isFiniteNumber(value));
+    return {
+      tier: formatPctBinLabel(bin),
+      minPctGdp: bin.lowerBound,
+      maxPctGdp: bin.upperBound,
+      ...summarizeTierOutcomes(matches, ADAPTIVE_BIN_CONFIG.minBinSize),
+    };
+  });
+}
 
-    const lifeGrowthValues = matches
-      .map(observation => observation.lifeExpectancyGrowthYears)
-      .filter((value): value is number => isFiniteNumber(value));
-
-    const incomeLevelValues = matches
-      .map(observation => observation.gdpPerCapitaPpp)
-      .filter((value): value is number => isFiniteNumber(value));
-
-    const incomeGrowthValues = matches
-      .map(observation => observation.gdpPerCapitaGrowthPct)
-      .filter((value): value is number => isFiniteNumber(value));
+function summarizeSpendingPerCapitaTiers(
+  observations: SpendingObservation[],
+  bins: NumericBin[],
+): GovernmentSizeAnalysisData['spendingPerCapitaLevelTable']['tiers'] {
+  return bins.map((bin, idx) => {
+    const isLast = idx === bins.length - 1;
+    const matches = observations.filter(observation => {
+      if (!isFiniteNumber(observation.spendingPerCapitaPpp)) return false;
+      return (
+        observation.spendingPerCapitaPpp >= bin.lowerBound &&
+        (isLast
+          ? observation.spendingPerCapitaPpp <= bin.upperBound
+          : observation.spendingPerCapitaPpp < bin.upperBound)
+      );
+    });
 
     return {
-      tier: tier.label,
-      minPctGdp: Number.isFinite(tier.min) ? tier.min : null,
-      maxPctGdp: Number.isFinite(tier.max) ? tier.max : null,
-      observations: matches.length,
-      jurisdictions: new Set(matches.map(observation => observation.jurisdictionIso3)).size,
-      typicalHealthyLifeYears: lifeValues.length > 0 ? quantile(lifeValues, 0.5) : null,
-      typicalHealthyLifeYearsGrowthPerYear:
-        lifeGrowthValues.length > 0 ? quantile(lifeGrowthValues, 0.5) : null,
-      typicalRealAfterTaxMedianIncomeLevel:
-        incomeLevelValues.length > 0 ? quantile(incomeLevelValues, 0.5) : null,
-      typicalRealAfterTaxMedianIncomeGrowthPct:
-        incomeGrowthValues.length > 0 ? quantile(incomeGrowthValues, 0.5) : null,
-      lowSampleWarning: matches.length < 30 ? 'Small sample: interpret cautiously' : null,
-      proxyNotes: [
-        'Healthy life years proxy: life expectancy at birth',
-        'Healthy life years growth proxy: life expectancy YoY change',
-        'Real after-tax median income level proxy: GDP per capita PPP level',
-        'Real after-tax median income growth proxy: real GDP per capita YoY growth',
-      ],
+      tier: formatUsdBinLabel(bin),
+      minSpendingPerCapitaPpp: bin.lowerBound,
+      maxSpendingPerCapitaPpp: bin.upperBound,
+      ...summarizeTierOutcomes(matches, ADAPTIVE_PER_CAPITA_BIN_CONFIG.minBinSize),
     };
   });
 }
@@ -804,9 +887,61 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('- Real after-tax median income level proxy: GDP per capita PPP level');
   lines.push('- Real after-tax median income growth proxy: Real GDP per capita YoY growth');
   lines.push('');
+
+  lines.push('### Spending Share (% GDP) Bins');
+  lines.push('');
+  lines.push(
+    `- Adaptive bins: target ${data.spendingLevelTable.binning.targetBinCount}, ` +
+      `minimum ${data.spendingLevelTable.binning.minBinSize} observations/bin, ` +
+      `anchors at ${data.spendingLevelTable.binning.anchors.map(anchor => `${anchor}%`).join(', ')}, ` +
+      `rounded to ${data.spendingLevelTable.binning.roundTo}%`,
+  );
+  lines.push('');
   lines.push('| Spending Level (% GDP) | Country-Years | Jurisdictions | Typical Healthy Life Years (proxy level) | Typical Healthy Life Years Growth (proxy) | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
   lines.push('|------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
   for (const tier of data.spendingLevelTable.tiers) {
+    const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
+    const lifeGrowth =
+      tier.typicalHealthyLifeYearsGrowthPerYear == null
+        ? 'N/A'
+        : `${tier.typicalHealthyLifeYearsGrowthPerYear >= 0 ? '+' : ''}${tier.typicalHealthyLifeYearsGrowthPerYear.toFixed(3)}`;
+    const incomeLevel =
+      tier.typicalRealAfterTaxMedianIncomeLevel == null
+        ? 'N/A'
+        : `$${Math.round(tier.typicalRealAfterTaxMedianIncomeLevel).toLocaleString('en-US')}`;
+    const incomeGrowth =
+      tier.typicalRealAfterTaxMedianIncomeGrowthPct == null
+        ? 'N/A'
+        : `${tier.typicalRealAfterTaxMedianIncomeGrowthPct >= 0 ? '+' : ''}${tier.typicalRealAfterTaxMedianIncomeGrowthPct.toFixed(2)}%`;
+
+    lines.push(
+      `| ${tier.tier} ` +
+        `| ${tier.observations} ` +
+        `| ${tier.jurisdictions} ` +
+        `| ${life} ` +
+        `| ${lifeGrowth} ` +
+        `| ${incomeLevel} ` +
+        `| ${incomeGrowth} ` +
+        `| ${tier.lowSampleWarning ?? '—'} |`,
+    );
+  }
+  lines.push('');
+
+  lines.push('### Spending Per-Capita (PPP) Bins');
+  lines.push('');
+  lines.push(
+    'Per-capita PPP spending is derived as: government expenditure % GDP × GDP per capita PPP.',
+  );
+  lines.push(
+    `- Adaptive bins: target ${data.spendingPerCapitaLevelTable.binning.targetBinCount}, ` +
+      `minimum ${data.spendingPerCapitaLevelTable.binning.minBinSize} observations/bin, ` +
+      `anchors at ${data.spendingPerCapitaLevelTable.binning.anchors.map(anchor => formatUsd(anchor)).join(', ')}, ` +
+      `rounded to ${formatUsd(data.spendingPerCapitaLevelTable.binning.roundTo)}`,
+  );
+  lines.push('');
+  lines.push('| Spending Per-Capita PPP Level | Country-Years | Jurisdictions | Typical Healthy Life Years (proxy level) | Typical Healthy Life Years Growth (proxy) | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
+  lines.push('|-------------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
+  for (const tier of data.spendingPerCapitaLevelTable.tiers) {
     const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
     const lifeGrowth =
       tier.typicalHealthyLifeYearsGrowthPerYear == null
@@ -901,7 +1036,23 @@ export async function generateGovernmentSizeAnalysisArtifacts(
 
   const panelRows = buildPanelRows(dataset, primaryWindow);
   const spendingObservations = buildSpendingObservations(panelRows);
-  const spendingLevelTable = summarizeSpendingTiers(spendingObservations);
+  const adaptiveBins = buildAdaptiveNumericBins(
+    spendingObservations.map(observation => observation.spendingPctGdp),
+    ADAPTIVE_BIN_CONFIG,
+  );
+  const spendingLevelTable = summarizeSpendingPctGdpTiers(spendingObservations, adaptiveBins);
+
+  const spendingPerCapitaValues = spendingObservations
+    .map(observation => observation.spendingPerCapitaPpp)
+    .filter((value): value is number => isFiniteNumber(value));
+  const adaptivePerCapitaBins = buildAdaptiveNumericBins(
+    spendingPerCapitaValues,
+    ADAPTIVE_PER_CAPITA_BIN_CONFIG,
+  );
+  const spendingPerCapitaLevelTable = summarizeSpendingPerCapitaTiers(
+    spendingObservations,
+    adaptivePerCapitaBins,
+  );
 
   const sensitivity = buildSensitivityScenarios(
     dataset,
@@ -934,7 +1085,27 @@ export async function generateGovernmentSizeAnalysisArtifacts(
         metricUsed: 'Real GDP per capita YoY growth (proxy)',
         note: 'Complete country-year real after-tax median income coverage is not available in this in-repo panel.',
       },
+      binning: {
+        method: 'adaptive quantile bins with anchor constraints',
+        targetBinCount: ADAPTIVE_BIN_CONFIG.targetBinCount,
+        minBinSize: ADAPTIVE_BIN_CONFIG.minBinSize,
+        anchors: [...ADAPTIVE_BIN_CONFIG.anchors],
+        roundTo: ADAPTIVE_BIN_CONFIG.roundTo,
+        binsGenerated: adaptiveBins.length,
+      },
       tiers: spendingLevelTable,
+    },
+    spendingPerCapitaLevelTable: {
+      definition: 'Government expenditure per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.',
+      binning: {
+        method: 'adaptive quantile bins with anchor constraints',
+        targetBinCount: ADAPTIVE_PER_CAPITA_BIN_CONFIG.targetBinCount,
+        minBinSize: ADAPTIVE_PER_CAPITA_BIN_CONFIG.minBinSize,
+        anchors: [...ADAPTIVE_PER_CAPITA_BIN_CONFIG.anchors],
+        roundTo: ADAPTIVE_PER_CAPITA_BIN_CONFIG.roundTo,
+        binsGenerated: adaptivePerCapitaBins.length,
+      },
+      tiers: spendingPerCapitaLevelTable,
     },
     overall: primaryScenario.overall,
     usSnapshot: primaryScenario.usSnapshot,

@@ -261,6 +261,7 @@ describe('Government Size Analysis JSON', () => {
     expect(governmentSizeJson.spendingLevelTable).toBeDefined();
     expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.isDirectMetric).toBe(false);
     expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.isDirectMetric).toBe(false);
+    expect(governmentSizeJson.spendingLevelTable.binning).toBeDefined();
     expect(Array.isArray(governmentSizeJson.spendingLevelTable.tiers)).toBe(true);
     expect(governmentSizeJson.spendingLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
     const firstTier = governmentSizeJson.spendingLevelTable.tiers[0];
@@ -268,6 +269,19 @@ describe('Government Size Analysis JSON', () => {
     expect(firstTier).toHaveProperty('typicalHealthyLifeYearsGrowthPerYear');
     expect(firstTier).toHaveProperty('typicalRealAfterTaxMedianIncomeLevel');
     expect(firstTier).toHaveProperty('typicalRealAfterTaxMedianIncomeGrowthPct');
+    const lowSpendingTiers = governmentSizeJson.spendingLevelTable.tiers.filter(
+      (tier: any) => (tier.maxPctGdp ?? Infinity) <= 20,
+    );
+    expect(lowSpendingTiers.length).toBeGreaterThanOrEqual(2);
+
+    expect(governmentSizeJson.spendingPerCapitaLevelTable).toBeDefined();
+    expect(governmentSizeJson.spendingPerCapitaLevelTable.binning).toBeDefined();
+    expect(Array.isArray(governmentSizeJson.spendingPerCapitaLevelTable.tiers)).toBe(true);
+    expect(governmentSizeJson.spendingPerCapitaLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
+    const firstPerCapitaTier = governmentSizeJson.spendingPerCapitaLevelTable.tiers[0];
+    expect(firstPerCapitaTier).toHaveProperty('minSpendingPerCapitaPpp');
+    expect(firstPerCapitaTier).toHaveProperty('maxSpendingPerCapitaPpp');
+    expect(firstPerCapitaTier).toHaveProperty('typicalHealthyLifeYears');
   });
 
   it('should include US snapshot with status', () => {
@@ -299,6 +313,9 @@ describe('Government Size Report Markdown', () => {
     expect(governmentSizeMarkdown).toContain('| Outcome | Direction | Weight |');
     expect(governmentSizeMarkdown).toContain('## Temporal Sensitivity (Start Year)');
     expect(governmentSizeMarkdown).toContain('## Spending Levels vs Typical Outcomes');
+    expect(governmentSizeMarkdown).toContain('### Spending Share (% GDP) Bins');
+    expect(governmentSizeMarkdown).toContain('### Spending Per-Capita (PPP) Bins');
+    expect(governmentSizeMarkdown).toContain('Per-capita PPP spending is derived as');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (proxy level)');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth (proxy)');
     expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income (proxy level)');

@@ -2004,17 +2004,27 @@
       "metricUsed": "Real GDP per capita YoY growth (proxy)",
       "note": "Complete country-year real after-tax median income coverage is not available in this in-repo panel."
     },
+    "binning": {
+      "method": "adaptive quantile bins with anchor constraints",
+      "targetBinCount": 12,
+      "minBinSize": 30,
+      "anchors": [
+        20
+      ],
+      "roundTo": 1,
+      "binsGenerated": 13
+    },
     "tiers": [
       {
-        "tier": "<20%",
-        "minPctGdp": null,
-        "maxPctGdp": 20,
-        "observations": 330,
-        "jurisdictions": 20,
-        "typicalHealthyLifeYears": 75.29656097560975,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.2710000000000008,
-        "typicalRealAfterTaxMedianIncomeLevel": 15457.9769720634,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.216506948795145,
+        "tier": "9.7-15%",
+        "minPctGdp": 9.71102986684022,
+        "maxPctGdp": 15,
+        "observations": 101,
+        "jurisdictions": 11,
+        "typicalHealthyLifeYears": 71.205,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.3012195121951464,
+        "typicalRealAfterTaxMedianIncomeLevel": 8932.73040130287,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.601577102759471,
         "lowSampleWarning": null,
         "proxyNotes": [
           "Healthy life years proxy: life expectancy at birth",
@@ -2024,15 +2034,69 @@
         ]
       },
       {
-        "tier": "20-25%",
-        "minPctGdp": 20,
-        "maxPctGdp": 25,
-        "observations": 127,
+        "tier": "15-17%",
+        "minPctGdp": 15,
+        "maxPctGdp": 17,
+        "observations": 108,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 74.26050000000001,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.27329268292690756,
+        "typicalRealAfterTaxMedianIncomeLevel": 11433.6670504652,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.207211221318321,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "17-20%",
+        "minPctGdp": 17,
+        "maxPctGdp": 20,
+        "observations": 121,
         "jurisdictions": 20,
-        "typicalHealthyLifeYears": 77.128,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.19999999999999574,
-        "typicalRealAfterTaxMedianIncomeLevel": 23474.2003753947,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.507339391305177,
+        "typicalHealthyLifeYears": 77.884,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25585365853659425,
+        "typicalRealAfterTaxMedianIncomeLevel": 27841.3533496575,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.100115051022166,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "20-21%",
+        "minPctGdp": 20,
+        "maxPctGdp": 21,
+        "observations": 35,
+        "jurisdictions": 10,
+        "typicalHealthyLifeYears": 76.412,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.1629999999999967,
+        "typicalRealAfterTaxMedianIncomeLevel": 22553.6161787372,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.450324312620068,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "21-25%",
+        "minPctGdp": 21,
+        "maxPctGdp": 25,
+        "observations": 92,
+        "jurisdictions": 19,
+        "typicalHealthyLifeYears": 77.38652439024389,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.22699999999998965,
+        "typicalRealAfterTaxMedianIncomeLevel": 23971.758313685248,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.5483145343216655,
         "lowSampleWarning": null,
         "proxyNotes": [
           "Healthy life years proxy: life expectancy at birth",
@@ -2060,51 +2124,15 @@
         ]
       },
       {
-        "tier": "30-35%",
+        "tier": "30-32%",
         "minPctGdp": 30,
-        "maxPctGdp": 35,
-        "observations": 259,
-        "jurisdictions": 29,
-        "typicalHealthyLifeYears": 77.0341463414634,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.22943902439025265,
-        "typicalRealAfterTaxMedianIncomeLevel": 26948.5919371645,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.736076446263096,
-        "lowSampleWarning": null,
-        "proxyNotes": [
-          "Healthy life years proxy: life expectancy at birth",
-          "Healthy life years growth proxy: life expectancy YoY change",
-          "Real after-tax median income level proxy: GDP per capita PPP level",
-          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
-        ]
-      },
-      {
-        "tier": "35-40%",
-        "minPctGdp": 35,
-        "maxPctGdp": 40,
-        "observations": 248,
-        "jurisdictions": 29,
-        "typicalHealthyLifeYears": 77.62195121951225,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.2024390243902019,
-        "typicalRealAfterTaxMedianIncomeLevel": 28110.4475246992,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.97963019376171,
-        "lowSampleWarning": null,
-        "proxyNotes": [
-          "Healthy life years proxy: life expectancy at birth",
-          "Healthy life years growth proxy: life expectancy YoY change",
-          "Real after-tax median income level proxy: GDP per capita PPP level",
-          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
-        ]
-      },
-      {
-        "tier": "40-45%",
-        "minPctGdp": 40,
-        "maxPctGdp": 45,
-        "observations": 181,
+        "maxPctGdp": 32,
+        "observations": 95,
         "jurisdictions": 22,
-        "typicalHealthyLifeYears": 78.8780487804878,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878050042,
-        "typicalRealAfterTaxMedianIncomeLevel": 29108.072180194,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.273449748582525,
+        "typicalHealthyLifeYears": 76.1804878048781,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2048780487804862,
+        "typicalRealAfterTaxMedianIncomeLevel": 25093.995962126,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.825625890416632,
         "lowSampleWarning": null,
         "proxyNotes": [
           "Healthy life years proxy: life expectancy at birth",
@@ -2114,15 +2142,87 @@
         ]
       },
       {
-        "tier": "45-50%",
-        "minPctGdp": 45,
-        "maxPctGdp": 50,
-        "observations": 99,
+        "tier": "32-34%",
+        "minPctGdp": 32,
+        "maxPctGdp": 34,
+        "observations": 106,
+        "jurisdictions": 25,
+        "typicalHealthyLifeYears": 77.0950731707317,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.22500000000000853,
+        "typicalRealAfterTaxMedianIncomeLevel": 27373.325105353302,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.914725891935664,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "34-37%",
+        "minPctGdp": 34,
+        "maxPctGdp": 37,
+        "observations": 149,
+        "jurisdictions": 24,
+        "typicalHealthyLifeYears": 77.4024390243903,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20243902439030137,
+        "typicalRealAfterTaxMedianIncomeLevel": 28610.0662473737,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.579856889133563,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "37-39%",
+        "minPctGdp": 37,
+        "maxPctGdp": 39,
+        "observations": 103,
+        "jurisdictions": 21,
+        "typicalHealthyLifeYears": 77.7365853658537,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20243902439030137,
+        "typicalRealAfterTaxMedianIncomeLevel": 28086.837763597,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.7725706542235615,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "39-42%",
+        "minPctGdp": 39,
+        "maxPctGdp": 42,
+        "observations": 126,
+        "jurisdictions": 22,
+        "typicalHealthyLifeYears": 78.59634146341465,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.24878048780490758,
+        "typicalRealAfterTaxMedianIncomeLevel": 29178.62615803435,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.3283540034793635,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "42-45%",
+        "minPctGdp": 42,
+        "maxPctGdp": 45,
+        "observations": 109,
         "jurisdictions": 17,
-        "typicalHealthyLifeYears": 79.9390243902439,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878050042,
-        "typicalRealAfterTaxMedianIncomeLevel": 28921.2608031323,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.871382823887866,
+        "typicalHealthyLifeYears": 78.8243902439024,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 28076.1241416392,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.4088273704891865,
         "lowSampleWarning": null,
         "proxyNotes": [
           "Healthy life years proxy: life expectancy at birth",
@@ -2132,16 +2232,267 @@
         ]
       },
       {
-        "tier": ">=50%",
-        "minPctGdp": 50,
-        "maxPctGdp": null,
-        "observations": 23,
-        "jurisdictions": 9,
-        "typicalHealthyLifeYears": 80.3878048780488,
-        "typicalHealthyLifeYearsGrowthPerYear": 0.1975609756098038,
-        "typicalRealAfterTaxMedianIncomeLevel": 26607.7256796976,
-        "typicalRealAfterTaxMedianIncomeGrowthPct": 1.8966892107143776,
-        "lowSampleWarning": "Small sample: interpret cautiously",
+        "tier": "45-65.6%",
+        "minPctGdp": 45,
+        "maxPctGdp": 65.5600221546264,
+        "observations": 122,
+        "jurisdictions": 19,
+        "typicalHealthyLifeYears": 80.14390243902434,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2036585365854009,
+        "typicalRealAfterTaxMedianIncomeLevel": 28775.6180236364,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.729535297774657,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      }
+    ]
+  },
+  "spendingPerCapitaLevelTable": {
+    "definition": "Government expenditure per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.",
+    "binning": {
+      "method": "adaptive quantile bins with anchor constraints",
+      "targetBinCount": 12,
+      "minBinSize": 30,
+      "anchors": [
+        5000,
+        10000,
+        20000
+      ],
+      "roundTo": 500,
+      "binsGenerated": 13
+    },
+    "tiers": [
+      {
+        "tier": "$188-$1,500",
+        "minSpendingPerCapitaPpp": 187.66600527417086,
+        "maxSpendingPerCapitaPpp": 1500,
+        "observations": 133,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 68.423,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.3299999999999912,
+        "typicalRealAfterTaxMedianIncomeLevel": 5191.59149903249,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.270732802598284,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$1,500-$2,500",
+        "minSpendingPerCapitaPpp": 1500,
+        "maxSpendingPerCapitaPpp": 2500,
+        "observations": 94,
+        "jurisdictions": 15,
+        "typicalHealthyLifeYears": 69.965,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2600000000000051,
+        "typicalRealAfterTaxMedianIncomeLevel": 9253.75681656376,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.361093894236642,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$2,500-$4,000",
+        "minSpendingPerCapitaPpp": 2500,
+        "maxSpendingPerCapitaPpp": 4000,
+        "observations": 106,
+        "jurisdictions": 22,
+        "typicalHealthyLifeYears": 72.98512195121955,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.2950000000000017,
+        "typicalRealAfterTaxMedianIncomeLevel": 12251.493518003499,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 6.286423681615193,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$4,000-$5,000",
+        "minSpendingPerCapitaPpp": 4000,
+        "maxSpendingPerCapitaPpp": 5000,
+        "observations": 112,
+        "jurisdictions": 29,
+        "typicalHealthyLifeYears": 74.716,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25,
+        "typicalRealAfterTaxMedianIncomeLevel": 15493.05028255185,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.581677464753297,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$5,000-$6,500",
+        "minSpendingPerCapitaPpp": 5000,
+        "maxSpendingPerCapitaPpp": 6500,
+        "observations": 133,
+        "jurisdictions": 30,
+        "typicalHealthyLifeYears": 75.809,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.21121951219510038,
+        "typicalRealAfterTaxMedianIncomeLevel": 22200.5486407425,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.955262542672856,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$6,500-$8,000",
+        "minSpendingPerCapitaPpp": 6500,
+        "maxSpendingPerCapitaPpp": 8000,
+        "observations": 131,
+        "jurisdictions": 33,
+        "typicalHealthyLifeYears": 76.8365853658537,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25121951219510663,
+        "typicalRealAfterTaxMedianIncomeLevel": 22637.382448244,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.8025432880913375,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$8,000-$9,500",
+        "minSpendingPerCapitaPpp": 8000,
+        "maxSpendingPerCapitaPpp": 9500,
+        "observations": 107,
+        "jurisdictions": 34,
+        "typicalHealthyLifeYears": 77.4756097560976,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.25121951219510663,
+        "typicalRealAfterTaxMedianIncomeLevel": 26267.6071527112,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.899512047832283,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$9,500-$10,000",
+        "minSpendingPerCapitaPpp": 9500,
+        "maxSpendingPerCapitaPpp": 10000,
+        "observations": 41,
+        "jurisdictions": 24,
+        "typicalHealthyLifeYears": 78.119512195122,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878050042,
+        "typicalRealAfterTaxMedianIncomeLevel": 28359.6927346266,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.310989513267456,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$10,000-$11,000",
+        "minSpendingPerCapitaPpp": 10000,
+        "maxSpendingPerCapitaPpp": 11000,
+        "observations": 78,
+        "jurisdictions": 30,
+        "typicalHealthyLifeYears": 78.5426829268293,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20487804878040095,
+        "typicalRealAfterTaxMedianIncomeLevel": 28143.56746439085,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.8479112568062392,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$11,000-$13,000",
+        "minSpendingPerCapitaPpp": 11000,
+        "maxSpendingPerCapitaPpp": 13000,
+        "observations": 128,
+        "jurisdictions": 34,
+        "typicalHealthyLifeYears": 79.0268292682927,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.15121951219511232,
+        "typicalRealAfterTaxMedianIncomeLevel": 33782.906334975196,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 3.970567531516999,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$13,000-$15,500",
+        "minSpendingPerCapitaPpp": 13000,
+        "maxSpendingPerCapitaPpp": 15500,
+        "observations": 107,
+        "jurisdictions": 33,
+        "typicalHealthyLifeYears": 80.6341463414634,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 37120.9879761677,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.119756815758965,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$15,500-$19,000",
+        "minSpendingPerCapitaPpp": 15500,
+        "maxSpendingPerCapitaPpp": 19000,
+        "observations": 110,
+        "jurisdictions": 27,
+        "typicalHealthyLifeYears": 81.16829268292685,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.20000000000000284,
+        "typicalRealAfterTaxMedianIncomeLevel": 44186.2472773724,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 4.107590292696832,
+        "lowSampleWarning": null,
+        "proxyNotes": [
+          "Healthy life years proxy: life expectancy at birth",
+          "Healthy life years growth proxy: life expectancy YoY change",
+          "Real after-tax median income level proxy: GDP per capita PPP level",
+          "Real after-tax median income growth proxy: real GDP per capita YoY growth"
+        ]
+      },
+      {
+        "tier": "$19,000-$37,200",
+        "minSpendingPerCapitaPpp": 19000,
+        "maxSpendingPerCapitaPpp": 37199.57741707997,
+        "observations": 122,
+        "jurisdictions": 18,
+        "typicalHealthyLifeYears": 81.6085365853659,
+        "typicalHealthyLifeYearsGrowthPerYear": 0.1512195121952047,
+        "typicalRealAfterTaxMedianIncomeLevel": 57138.2840349695,
+        "typicalRealAfterTaxMedianIncomeGrowthPct": 5.080564850940624,
+        "lowSampleWarning": null,
         "proxyNotes": [
           "Healthy life years proxy: life expectancy at birth",
           "Healthy life years growth proxy: life expectancy YoY change",
@@ -2163,5 +2514,5 @@
     "gapToOptimalPctPoints": -7.1990015896222985,
     "status": "within_optimal_band"
   },
-  "generatedAt": "2026-02-13T05:54:53.521Z"
+  "generatedAt": "2026-02-13T06:14:26.372Z"
 }
