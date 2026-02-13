@@ -19,21 +19,27 @@ const OUTPUT_DIR = path.resolve(__dirname, '../../../output');
 
 let budgetJson: any;
 let policyJson: any;
+let governmentSizeJson: any;
 let budgetMarkdown: string;
 let budgetConstrainedMarkdown: string;
+let governmentSizeMarkdown: string;
 let policyMarkdown: string;
 
 beforeAll(() => {
   const budgetJsonPath = path.join(OUTPUT_DIR, 'us-budget-analysis.json');
   const policyJsonPath = path.join(OUTPUT_DIR, 'us-policy-analysis.json');
+  const governmentSizeJsonPath = path.join(OUTPUT_DIR, 'us-government-size-analysis.json');
   const budgetMdPath = path.join(OUTPUT_DIR, 'us-budget-report.md');
   const budgetConstrainedMdPath = path.join(OUTPUT_DIR, 'us-budget-report-constrained.md');
+  const governmentSizeMdPath = path.join(OUTPUT_DIR, 'us-government-size-report.md');
   const policyMdPath = path.join(OUTPUT_DIR, 'us-policy-report.md');
 
   budgetJson = JSON.parse(fs.readFileSync(budgetJsonPath, 'utf-8'));
   policyJson = JSON.parse(fs.readFileSync(policyJsonPath, 'utf-8'));
+  governmentSizeJson = JSON.parse(fs.readFileSync(governmentSizeJsonPath, 'utf-8'));
   budgetMarkdown = fs.readFileSync(budgetMdPath, 'utf-8');
   budgetConstrainedMarkdown = fs.readFileSync(budgetConstrainedMdPath, 'utf-8');
+  governmentSizeMarkdown = fs.readFileSync(governmentSizeMdPath, 'utf-8');
   policyMarkdown = fs.readFileSync(policyMdPath, 'utf-8');
 });
 
@@ -216,6 +222,77 @@ describe('Budget Report Markdown', () => {
     expect(budgetMarkdown).toContain('discretionary categories');
     // Should NOT say 19 categories (total count including non-discretionary)
     expect(budgetMarkdown).not.toMatch(/\b19\b.*categories/);
+  });
+});
+
+// =========================================================================
+// Government Size Analysis — Structure Validation
+// =========================================================================
+
+describe('Government Size Analysis JSON', () => {
+  it('should include predictor metadata and coverage', () => {
+    expect(governmentSizeJson.predictor).toBeDefined();
+    expect(governmentSizeJson.predictor.name).toContain('% GDP');
+    expect(governmentSizeJson.predictor.coverage.jurisdictions).toBeGreaterThanOrEqual(20);
+    expect(governmentSizeJson.predictor.coverage.observations).toBeGreaterThan(400);
+  });
+
+  it('should include four outcome analyses', () => {
+    expect(Array.isArray(governmentSizeJson.outcomes)).toBe(true);
+    expect(governmentSizeJson.outcomes.length).toBe(4);
+    for (const outcome of governmentSizeJson.outcomes) {
+      expect(typeof outcome.name).toBe('string');
+      expect(typeof outcome.meanForwardPearson).toBe('number');
+      expect(typeof outcome.medianOptimalPctGdp).toBe('number');
+      expect(outcome.jurisdictionsAnalyzed).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('should include overall optimal estimate and uncertainty band', () => {
+    const overall = governmentSizeJson.overall;
+    expect(overall.optimalPctGdp).toBeGreaterThan(0);
+    expect(overall.optimalPctGdp).toBeLessThan(100);
+    expect(overall.optimalBandLowPctGdp).toBeLessThanOrEqual(overall.optimalPctGdp);
+    expect(overall.optimalBandHighPctGdp).toBeGreaterThanOrEqual(overall.optimalPctGdp);
+  });
+
+  it('should include spending-level table with proxy notes', () => {
+    expect(governmentSizeJson.spendingLevelTable).toBeDefined();
+    expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.isDirectMetric).toBe(false);
+    expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.isDirectMetric).toBe(false);
+    expect(Array.isArray(governmentSizeJson.spendingLevelTable.tiers)).toBe(true);
+    expect(governmentSizeJson.spendingLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
+    const firstTier = governmentSizeJson.spendingLevelTable.tiers[0];
+    expect(firstTier).toHaveProperty('typicalHealthyLifeYears');
+    expect(firstTier).toHaveProperty('typicalHealthyLifeYearsGrowthPerYear');
+    expect(firstTier).toHaveProperty('typicalRealAfterTaxMedianIncomeLevel');
+    expect(firstTier).toHaveProperty('typicalRealAfterTaxMedianIncomeGrowthPct');
+  });
+
+  it('should include US snapshot with status', () => {
+    const us = governmentSizeJson.usSnapshot;
+    expect(us.latestYear).toBeGreaterThanOrEqual(2018);
+    expect(us.modeledSpendingPctGdp).toBeGreaterThan(0);
+    expect(['above_optimal_band', 'below_optimal_band', 'within_optimal_band']).toContain(us.status);
+  });
+});
+
+describe('Government Size Report Markdown', () => {
+  it('should contain headline sections', () => {
+    expect(governmentSizeMarkdown).toContain('Government Size Analysis');
+    expect(governmentSizeMarkdown).toContain('## Summary');
+    expect(governmentSizeMarkdown).toContain('## Predictor Definition');
+    expect(governmentSizeMarkdown).toContain('## Outcome-Level Results');
+  });
+
+  it('should include an outcome table and limitations', () => {
+    expect(governmentSizeMarkdown).toContain('| Outcome | Direction | Weight |');
+    expect(governmentSizeMarkdown).toContain('## Spending Levels vs Typical Outcomes');
+    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (proxy level)');
+    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth (proxy)');
+    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income (proxy level)');
+    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income Growth (proxy)');
+    expect(governmentSizeMarkdown).toContain('## Limitations');
   });
 });
 
