@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import {
@@ -7,6 +8,7 @@ import {
   getVariableRegistry,
   type DataPoint,
   type FetchOptions,
+  type VariableTemporalFillingType,
   type VariableRegistryEntry,
 } from "@optomitron/data";
 import {
@@ -22,6 +24,40 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, "../../output/mega-studies");
+const DEFAULT_CACHE_DIR = path.resolve(__dirname, "../../output/.cache/mega-study-data");
+const SECONDS_PER_YEAR = 365 * 24 * 60 * 60;
+export const DEFAULT_REPORT_OUTCOME_IDS = [
+  "outcome.derived.after_tax_median_income_ppp",
+  "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+  "outcome.who.healthy_life_expectancy_years",
+  "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+] as const;
+
+type TemporalProfileSource = "pair_override" | "predictor_default" | "global_fallback";
+type PairActionabilityStatus = "actionable" | "exploratory";
+
+const PAIR_TEMPORAL_OVERRIDES: Readonly<Record<string, Omit<ResolvedTemporalProfile, "source">>> = {
+  "predictor.wb.gov_health_expenditure_pct_gdp::outcome.who.healthy_life_expectancy_years": {
+    lagYears: 2,
+    durationYears: 5,
+    fillingType: "interpolation",
+  },
+  "predictor.wb.gov_health_expenditure_pct_gdp::outcome.derived.healthy_life_expectancy_growth_yoy_pct": {
+    lagYears: 2,
+    durationYears: 3,
+    fillingType: "interpolation",
+  },
+  "predictor.wb.education_expenditure_pct_gdp::outcome.derived.after_tax_median_income_ppp": {
+    lagYears: 3,
+    durationYears: 5,
+    fillingType: "interpolation",
+  },
+  "predictor.wb.education_expenditure_pct_gdp::outcome.derived.after_tax_median_income_ppp_growth_yoy_pct": {
+    lagYears: 2,
+    durationYears: 3,
+    fillingType: "interpolation",
+  },
+};
 
 export interface MegaStudyGenerationOptions {
   outputDir?: string;
@@ -32,6 +68,10 @@ export interface MegaStudyGenerationOptions {
   minimumPairs?: number;
   minimumMeasurementsPerSeries?: number;
   topSubjectsPerPair?: number;
+  outcomeIds?: string[];
+  useDataCache?: boolean;
+  cacheDir?: string;
+  maxCacheAgeHours?: number;
 }
 
 interface PairSubjectSummary {
@@ -46,6 +86,17 @@ export interface PairAlignedPoint {
   subjectId: string;
   predictorValue: number;
   outcomeValue: number;
+  predictorTimestamp?: number;
+  outcomeTimestamp?: number;
+}
+
+export interface PppPerCapitaSummary {
+  samplePairs: number;
+  medianGdpPerCapitaPpp: number | null;
+  estimatedBestPerCapitaPpp: number | null;
+  bestObservedPerCapitaPppRange: string | null;
+  bestObservedPerCapitaPppMean: number | null;
+  bestObservedPerCapitaPppMedian: number | null;
 }
 
 export interface DistributionBucket {
@@ -67,6 +118,18 @@ export interface PairBinSummaryRow {
   predictorMedian: number | null;
   outcomeMean: number | null;
   outcomeMedian: number | null;
+}
+
+export interface PairTemporalSensitivityRow {
+  lagYears: number;
+  durationYears: number;
+  source: TemporalProfileSource;
+  fillingType: VariableTemporalFillingType;
+  fillingValue: number | null;
+  score: number;
+  scoreDeltaFromBest: number;
+  includedSubjects: number;
+  totalPairs: number;
 }
 
 export interface PairQualitySignalInput {
@@ -91,6 +154,17 @@ export interface PairStudyArtifact {
   outcomeLabel: string;
   outcomeUnit: string;
   lagYears: number;
+  durationYears: number;
+  temporalProfileSource: TemporalProfileSource;
+  fillingType: VariableTemporalFillingType;
+  fillingValue: number | null;
+  temporalCandidatesEvaluated: number;
+  temporalCandidatesWithResults: number;
+  temporalScore: number;
+  temporalRunnerUps: PairTemporalSensitivityRow[];
+  temporalStabilityWarning: string | null;
+  actionabilityStatus: PairActionabilityStatus;
+  actionabilityReasons: string[];
   includedSubjects: number;
   skippedSubjects: number;
   totalPairs: number;
@@ -109,6 +183,7 @@ export interface PairStudyArtifact {
   predictorBinRows: PairBinSummaryRow[];
   predictorDistribution: DistributionBucket[];
   outcomeDistribution: DistributionBucket[];
+  pppPerCapitaSummary: PppPerCapitaSummary | null;
   pValue: number;
   evidenceGrade: "A" | "B" | "C" | "D" | "F";
   direction: "positive" | "negative" | "neutral";
@@ -128,8 +203,43 @@ export interface MegaStudyArtifacts {
   skippedPairs: Array<{ predictorId: string; outcomeId: string; reason: string }>;
 }
 
+interface VariableCacheEnvelope {
+  variableId: string;
+  fetchedAt: string;
+  period: { startYear: number; endYear: number };
+  jurisdictions: string[];
+  points: DataPoint[];
+}
+
+interface ActionableOutcomeRow {
+  row: OutcomeMegaStudyRanking["rows"][number];
+  pair: PairStudyArtifact;
+}
+
+export interface ResolvedTemporalProfile {
+  lagYears: number;
+  durationYears: number;
+  source: TemporalProfileSource;
+  fillingType: VariableTemporalFillingType;
+  fillingValue?: number;
+}
+
+interface TemporalProfileCandidateEvaluation {
+  profile: ResolvedTemporalProfile;
+  score: number;
+  includedSubjects: number;
+  totalPairs: number;
+}
+
 export function isReportEligiblePredictor(variable: VariableRegistryEntry): boolean {
   return variable.kind === "predictor" && variable.isDiscretionary === true;
+}
+
+export function isReportEligibleOutcome(
+  variable: VariableRegistryEntry,
+  selectedOutcomeIds: readonly string[] = DEFAULT_REPORT_OUTCOME_IDS,
+): boolean {
+  return variable.kind === "outcome" && selectedOutcomeIds.includes(variable.id);
 }
 
 export function slugifyId(value: string): string {
@@ -139,6 +249,71 @@ export function slugifyId(value: string): string {
     .replace(/[^a-z0-9_.-]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^[-_.]+|[-_.]+$/g, "");
+}
+
+function sortedUnique(values: readonly string[] | undefined): string[] {
+  if (!values || values.length === 0) return [];
+  return [...new Set(values)].sort();
+}
+
+export function buildFetchCacheKey(variableId: string, fetchOptions: FetchOptions): string {
+  const jurisdictionKey = sortedUnique(fetchOptions.jurisdictions).join(",");
+  const payload = JSON.stringify({
+    variableId,
+    period: fetchOptions.period,
+    jurisdictions: jurisdictionKey,
+  });
+  const hash = createHash("sha1").update(payload).digest("hex").slice(0, 12);
+  return `${slugifyId(variableId)}__${hash}`;
+}
+
+function resolveVariableCachePath(cacheDir: string, cacheKey: string): string {
+  return path.join(cacheDir, `${cacheKey}.json`);
+}
+
+function readVariableCache(
+  cachePath: string,
+  variableId: string,
+  fetchOptions: FetchOptions,
+  maxCacheAgeHours: number,
+): DataPoint[] | null {
+  if (!fs.existsSync(cachePath)) return null;
+  try {
+    const raw = fs.readFileSync(cachePath, "utf-8");
+    const envelope = JSON.parse(raw) as VariableCacheEnvelope;
+    if (envelope.variableId !== variableId) return null;
+    if (envelope.period.startYear !== fetchOptions.period.startYear) return null;
+    if (envelope.period.endYear !== fetchOptions.period.endYear) return null;
+    const expectedJurisdictions = sortedUnique(fetchOptions.jurisdictions);
+    const cachedJurisdictions = sortedUnique(envelope.jurisdictions);
+    if (expectedJurisdictions.join(",") !== cachedJurisdictions.join(",")) return null;
+
+    const fetchedAtMs = new Date(envelope.fetchedAt).getTime();
+    const ageMs = Date.now() - fetchedAtMs;
+    const maxAgeMs = Math.max(0, maxCacheAgeHours) * 60 * 60 * 1000;
+    if (!Number.isFinite(fetchedAtMs) || ageMs > maxAgeMs) return null;
+
+    return envelope.points;
+  } catch {
+    return null;
+  }
+}
+
+function writeVariableCache(
+  cachePath: string,
+  variableId: string,
+  fetchOptions: FetchOptions,
+  points: DataPoint[],
+): void {
+  const envelope: VariableCacheEnvelope = {
+    variableId,
+    fetchedAt: new Date().toISOString(),
+    period: fetchOptions.period,
+    jurisdictions: sortedUnique(fetchOptions.jurisdictions),
+    points,
+  };
+  fs.mkdirSync(path.dirname(cachePath), { recursive: true });
+  fs.writeFileSync(cachePath, JSON.stringify(envelope), "utf-8");
 }
 
 export function selectLagYears(
@@ -154,6 +329,178 @@ export function selectLagYears(
   const outcomeMin = outcomeLags.length > 0 ? Math.min(...outcomeLags) : Number.POSITIVE_INFINITY;
   const resolved = Math.min(predictorMin, outcomeMin);
   return Number.isFinite(resolved) ? resolved : 1;
+}
+
+export function resolvePairTemporalProfile(
+  predictor: VariableRegistryEntry,
+  outcome: VariableRegistryEntry,
+): ResolvedTemporalProfile {
+  const overrideKey = `${predictor.id}::${outcome.id}`;
+  const pairOverride = PAIR_TEMPORAL_OVERRIDES[overrideKey];
+  if (pairOverride) {
+    return {
+      ...pairOverride,
+      source: "pair_override",
+    };
+  }
+
+  const predictorProfile = predictor.temporalProfile;
+  if (predictorProfile) {
+    const lagYears = selectLagYears(
+      predictorProfile.onsetDelayYears,
+      outcome.suggestedLagYears,
+    );
+    const durationYears = [...predictorProfile.durationYears]
+      .sort((a, b) => a - b)[0] ?? 1;
+    return {
+      lagYears,
+      durationYears,
+      source: "predictor_default",
+      fillingType: predictorProfile.preferredFillingType,
+      fillingValue: predictorProfile.preferredFillingValue,
+    };
+  }
+
+  const lagYears = selectLagYears(
+    predictor.suggestedLagYears,
+    outcome.suggestedLagYears,
+  );
+  return {
+    lagYears,
+    durationYears: 1,
+    source: "global_fallback",
+    fillingType: "interpolation",
+  };
+}
+
+export function buildPairTemporalProfileCandidates(
+  predictor: VariableRegistryEntry,
+  outcome: VariableRegistryEntry,
+): ResolvedTemporalProfile[] {
+  const overrideKey = `${predictor.id}::${outcome.id}`;
+  const pairOverride = PAIR_TEMPORAL_OVERRIDES[overrideKey];
+  if (pairOverride) {
+    return [{ ...pairOverride, source: "pair_override" }];
+  }
+
+  const predictorProfile = predictor.temporalProfile;
+  if (!predictorProfile) {
+    return [resolvePairTemporalProfile(predictor, outcome)];
+  }
+
+  const outcomeLagSet = new Set(outcome.suggestedLagYears);
+  const onsetCandidates = [...new Set(predictorProfile.onsetDelayYears)].sort((a, b) => a - b);
+  const durationCandidates = [...new Set(predictorProfile.durationYears)].sort((a, b) => a - b);
+  const intersectedOnsets = onsetCandidates.filter((lag) => outcomeLagSet.has(lag));
+  const selectedOnsets = intersectedOnsets.length > 0 ? intersectedOnsets : onsetCandidates;
+  const candidates: ResolvedTemporalProfile[] = [];
+
+  for (const lagYears of selectedOnsets) {
+    for (const durationYears of durationCandidates) {
+      candidates.push({
+        lagYears,
+        durationYears,
+        source: "predictor_default",
+        fillingType: predictorProfile.preferredFillingType,
+        fillingValue: predictorProfile.preferredFillingValue,
+      });
+    }
+  }
+
+  return candidates.length > 0 ? candidates : [resolvePairTemporalProfile(predictor, outcome)];
+}
+
+export interface TemporalProfileScoreInput {
+  includedSubjects: number;
+  totalPairs: number;
+  aggregateStatisticalSignificance: number;
+  aggregatePredictivePearson: number;
+}
+
+export function scoreTemporalProfileCandidate(input: TemporalProfileScoreInput): number {
+  const directionalSignal = Math.min(1, Math.abs(input.aggregatePredictivePearson) / 0.4);
+  const significance = Math.max(0, Math.min(1, input.aggregateStatisticalSignificance));
+  const subjectSupport = Math.min(1, Math.max(0, input.includedSubjects) / 120);
+  const pairSupport = Math.min(1, Math.max(0, input.totalPairs) / 4000);
+  const penalty = input.includedSubjects < 10 || input.totalPairs < 300 ? 0.2 : 0;
+
+  return Math.max(
+    0,
+    directionalSignal * 0.4 +
+      significance * 0.35 +
+      subjectSupport * 0.15 +
+      pairSupport * 0.1 -
+      penalty,
+  );
+}
+
+function toTemporalAnalysisConfig(profile: ResolvedTemporalProfile): {
+  onsetDelaySeconds: number;
+  durationOfActionSeconds: number;
+  fillingType: VariableTemporalFillingType;
+  fillingValue?: number;
+} {
+  return {
+    onsetDelaySeconds: profile.lagYears * SECONDS_PER_YEAR,
+    durationOfActionSeconds: profile.durationYears * SECONDS_PER_YEAR,
+    fillingType: profile.fillingType,
+    ...(profile.fillingType === "value" ? { fillingValue: profile.fillingValue ?? 0 } : {}),
+  };
+}
+
+function isTemporalCandidateBetter(
+  next: TemporalProfileCandidateEvaluation,
+  current: TemporalProfileCandidateEvaluation | null,
+): boolean {
+  if (!current) return true;
+  if (Math.abs(next.score - current.score) > 1e-9) return next.score > current.score;
+  if (next.includedSubjects !== current.includedSubjects) return next.includedSubjects > current.includedSubjects;
+  if (next.totalPairs !== current.totalPairs) return next.totalPairs > current.totalPairs;
+  if (next.profile.lagYears !== current.profile.lagYears) return next.profile.lagYears < current.profile.lagYears;
+  if (next.profile.durationYears !== current.profile.durationYears) {
+    return next.profile.durationYears < current.profile.durationYears;
+  }
+  if (next.profile.source !== current.profile.source) {
+    const precedence: Record<TemporalProfileSource, number> = {
+      pair_override: 0,
+      predictor_default: 1,
+      global_fallback: 2,
+    };
+    return precedence[next.profile.source] < precedence[current.profile.source];
+  }
+  return next.profile.fillingType.localeCompare(current.profile.fillingType) < 0;
+}
+
+function toTemporalProfileKey(profile: ResolvedTemporalProfile): string {
+  const fillingValuePart =
+    profile.fillingType === "value" ? `${profile.fillingValue ?? 0}` : "";
+  return [
+    profile.source,
+    profile.lagYears,
+    profile.durationYears,
+    profile.fillingType,
+    fillingValuePart,
+  ].join("|");
+}
+
+function sortTemporalCandidateEvaluations(
+  evaluations: TemporalProfileCandidateEvaluation[],
+): TemporalProfileCandidateEvaluation[] {
+  return [...evaluations].sort((left, right) => {
+    if (isTemporalCandidateBetter(left, right)) return -1;
+    if (isTemporalCandidateBetter(right, left)) return 1;
+    return 0;
+  });
+}
+
+function buildTemporalStabilityWarning(
+  bestScore: number,
+  runnerUp: PairTemporalSensitivityRow | undefined,
+): string | null {
+  if (!runnerUp) return null;
+  const delta = bestScore - runnerUp.score;
+  if (delta >= 0.03) return null;
+  return `Top temporal profiles are close (score delta ${delta.toFixed(4)}); temporal assumptions are not yet robust.`;
 }
 
 function evidenceGradeFromSignificance(score: number): "A" | "B" | "C" | "D" | "F" {
@@ -220,6 +567,41 @@ export function derivePairQualityWarnings(input: PairQualitySignalInput): string
   return warnings;
 }
 
+interface PairActionabilityInput {
+  includedSubjects: number;
+  totalPairs: number;
+  aggregateStatisticalSignificance: number;
+  aggregatePredictivePearson: number;
+  temporalStabilityWarning: string | null;
+}
+
+function derivePairActionability(input: PairActionabilityInput): {
+  status: PairActionabilityStatus;
+  reasons: string[];
+} {
+  const reasons: string[] = [];
+  if (input.includedSubjects < 60) {
+    reasons.push("insufficient subject coverage (<60)");
+  }
+  if (input.totalPairs < 2500) {
+    reasons.push("insufficient aligned-pair support (<2500)");
+  }
+  if (input.aggregateStatisticalSignificance < 0.8) {
+    reasons.push("aggregate significance below actionable threshold (<0.80)");
+  }
+  if (Math.abs(input.aggregatePredictivePearson) < 0.03) {
+    reasons.push("directional signal too weak (|predictive| < 0.03)");
+  }
+  if (input.temporalStabilityWarning) {
+    reasons.push("temporal-profile selection is unstable");
+  }
+
+  if (reasons.length === 0) {
+    return { status: "actionable", reasons: [] };
+  }
+  return { status: "exploratory", reasons };
+}
+
 function computeObservedRange(
   predictorSeries: Map<string, TimeSeries>,
   subjectIds: string[],
@@ -258,6 +640,21 @@ function safeMedian(values: number[]): number | null {
   return sorted[mid] ?? null;
 }
 
+function safeQuantile(values: number[], quantile: number): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const clamped = Math.max(0, Math.min(1, quantile));
+  const index = (sorted.length - 1) * clamped;
+  const lowerIndex = Math.floor(index);
+  const upperIndex = Math.ceil(index);
+  const lower = sorted[lowerIndex];
+  const upper = sorted[upperIndex];
+  if (lower == null || upper == null) return null;
+  if (lowerIndex === upperIndex) return lower;
+  const fraction = index - lowerIndex;
+  return lower + (upper - lower) * fraction;
+}
+
 function formatCompactNumber(value: number): string {
   const abs = Math.abs(value);
   if (abs > 0 && abs < 0.001) return value.toExponential(2);
@@ -277,6 +674,11 @@ function formatBinLabel(
   return `[${formatCompactNumber(lowerBound)}, ${formatCompactNumber(upperBound)}${close}`;
 }
 
+export function isPercentGdpUnit(unit: string): boolean {
+  const normalized = unit.trim().toLowerCase();
+  return normalized === "% gdp" || normalized === "% of gdp";
+}
+
 function inBin(value: number, bucket: DistributionBucket): boolean {
   if (bucket.isUpperInclusive) {
     return value >= bucket.lowerBound && value <= bucket.upperBound;
@@ -284,18 +686,140 @@ function inBin(value: number, bucket: DistributionBucket): boolean {
   return value >= bucket.lowerBound && value < bucket.upperBound;
 }
 
+function sampleTimeSeriesValueAtTimestamp(series: TimeSeries, timestampMs: number): number | null {
+  const points = series.measurements
+    .map((measurement) => ({
+      timestamp: new Date(measurement.timestamp).getTime(),
+      value: measurement.value,
+    }))
+    .filter((point) => Number.isFinite(point.timestamp) && Number.isFinite(point.value))
+    .sort((a, b) => a.timestamp - b.timestamp);
+
+  if (points.length === 0) return null;
+  const first = points[0];
+  const last = points[points.length - 1];
+  if (!first || !last) return null;
+  if (timestampMs <= first.timestamp) return first.value;
+  if (timestampMs >= last.timestamp) return last.value;
+
+  for (let index = 1; index < points.length; index++) {
+    const right = points[index];
+    const left = points[index - 1];
+    if (!left || !right) continue;
+    if (timestampMs > right.timestamp) continue;
+    if (right.timestamp === left.timestamp) return right.value;
+    const ratio = (timestampMs - left.timestamp) / (right.timestamp - left.timestamp);
+    return left.value + (right.value - left.value) * ratio;
+  }
+
+  return null;
+}
+
+function bestObservedBinFromRows(rows: PairBinSummaryRow[]): PairBinSummaryRow | null {
+  const row = [...rows]
+    .filter((entry) => entry.outcomeMean != null)
+    .sort(
+      (a, b) =>
+        (b.outcomeMean ?? Number.NEGATIVE_INFINITY) - (a.outcomeMean ?? Number.NEGATIVE_INFINITY),
+    )[0];
+  return row ?? null;
+}
+
+function convertPercentGdpToPerCapitaPpp(percentGdp: number, gdpPerCapitaPpp: number): number {
+  return (percentGdp / 100) * gdpPerCapitaPpp;
+}
+
+function resolveActionableOptimalValueFromAggregate(
+  aggregateOptimalDailyValue: number | null,
+  aggregateValuePredictingHighOutcome: number | null,
+): number | null {
+  if (aggregateOptimalDailyValue != null) return aggregateOptimalDailyValue;
+  if (aggregateValuePredictingHighOutcome != null) return aggregateValuePredictingHighOutcome;
+  return null;
+}
+
+export function buildPppPerCapitaSummary(
+  alignedPoints: PairAlignedPoint[],
+  predictorBinRows: PairBinSummaryRow[],
+  predictorUnit: string,
+  gdpPerCapitaSeriesBySubject: Map<string, TimeSeries>,
+  aggregateOptimalDailyValue: number | null,
+  aggregateValuePredictingHighOutcome: number | null,
+): PppPerCapitaSummary | null {
+  if (!isPercentGdpUnit(predictorUnit)) return null;
+
+  const convertedPoints = alignedPoints
+    .map((point) => {
+      if (typeof point.predictorTimestamp !== "number" || !Number.isFinite(point.predictorTimestamp)) return null;
+      const gdpSeries = gdpPerCapitaSeriesBySubject.get(point.subjectId);
+      if (!gdpSeries) return null;
+      const gdpPerCapitaPpp = sampleTimeSeriesValueAtTimestamp(gdpSeries, point.predictorTimestamp);
+      if (gdpPerCapitaPpp == null || !Number.isFinite(gdpPerCapitaPpp)) return null;
+      return {
+        predictorValue: point.predictorValue,
+        predictorPerCapitaPpp: convertPercentGdpToPerCapitaPpp(point.predictorValue, gdpPerCapitaPpp),
+        gdpPerCapitaPpp,
+      };
+    })
+    .filter((point): point is { predictorValue: number; predictorPerCapitaPpp: number; gdpPerCapitaPpp: number } => point != null);
+
+  if (convertedPoints.length === 0) return null;
+
+  const bestObservedBin = bestObservedBinFromRows(predictorBinRows);
+  const bestBinPppValues = bestObservedBin
+    ? convertedPoints
+        .filter((point) =>
+          inBin(point.predictorValue, {
+            lowerBound: bestObservedBin.lowerBound,
+            upperBound: bestObservedBin.upperBound,
+            isUpperInclusive: bestObservedBin.isUpperInclusive,
+            count: 0,
+          })
+        )
+        .map((point) => point.predictorPerCapitaPpp)
+    : [];
+  const minBestBinPpp = bestBinPppValues.length >= 5
+    ? safeQuantile(bestBinPppValues, 0.1)
+    : bestBinPppValues.length > 0
+      ? Math.min(...bestBinPppValues)
+      : null;
+  const maxBestBinPpp = bestBinPppValues.length >= 5
+    ? safeQuantile(bestBinPppValues, 0.9)
+    : bestBinPppValues.length > 0
+      ? Math.max(...bestBinPppValues)
+      : null;
+  const bestObservedPerCapitaPppRange =
+    minBestBinPpp != null && maxBestBinPpp != null
+      ? formatBinLabel(minBestBinPpp, maxBestBinPpp, true)
+      : null;
+  const medianGdpPerCapitaPpp = safeMedian(convertedPoints.map((point) => point.gdpPerCapitaPpp));
+  const estimatedOptimalPercentGdp = resolveActionableOptimalValueFromAggregate(
+    aggregateOptimalDailyValue,
+    aggregateValuePredictingHighOutcome,
+  );
+  const estimatedBestPerCapitaPpp =
+    medianGdpPerCapitaPpp == null || estimatedOptimalPercentGdp == null
+      ? null
+      : convertPercentGdpToPerCapitaPpp(estimatedOptimalPercentGdp, medianGdpPerCapitaPpp);
+
+  return {
+    samplePairs: convertedPoints.length,
+    medianGdpPerCapitaPpp,
+    estimatedBestPerCapitaPpp,
+    bestObservedPerCapitaPppRange,
+    bestObservedPerCapitaPppMean: safeMean(bestBinPppValues),
+    bestObservedPerCapitaPppMedian: safeMedian(bestBinPppValues),
+  };
+}
+
 function collectAlignedPairs(
   subjectIds: string[],
   predictorSeries: Map<string, TimeSeries>,
   outcomeSeries: Map<string, TimeSeries>,
-  lagYears: number,
+  temporalProfile: ResolvedTemporalProfile,
 ): PairAlignedPoint[] {
   const alignedPoints: PairAlignedPoint[] = [];
-  const config = {
-    onsetDelaySeconds: lagYears * 365 * 24 * 60 * 60,
-    durationOfActionSeconds: 365 * 24 * 60 * 60,
-    fillingType: "interpolation" as const,
-  };
+  const config = toTemporalAnalysisConfig(temporalProfile);
 
   for (const subjectId of subjectIds) {
     const predictor = predictorSeries.get(subjectId);
@@ -308,6 +832,8 @@ function collectAlignedPairs(
         subjectId,
         predictorValue: pair.predictorValue,
         outcomeValue: pair.outcomeValue,
+        predictorTimestamp: pair.predictorTimestamp,
+        outcomeTimestamp: pair.outcomeTimestamp,
       });
     }
   }
@@ -429,9 +955,7 @@ function buildPairNarrativeSummary(pair: PairStudyArtifact): string[] {
   lines.push(
     `The estimate uses ${pair.includedSubjects} subjects and ${pair.totalPairs} aligned predictor-outcome observations.`,
   );
-  const strongestBin = [...pair.predictorBinRows]
-    .filter((row) => row.outcomeMean != null)
-    .sort((a, b) => (b.outcomeMean ?? Number.NEGATIVE_INFINITY) - (a.outcomeMean ?? Number.NEGATIVE_INFINITY))[0];
+  const strongestBin = bestObservedBinFromRows(pair.predictorBinRows);
   if (strongestBin?.outcomeMean != null) {
     lines.push(
       `Best observed mean outcome appears in predictor bin ${strongestBin.label} (mean outcome ${formatCompactNumber(strongestBin.outcomeMean)}).`,
@@ -441,6 +965,101 @@ function buildPairNarrativeSummary(pair: PairStudyArtifact): string[] {
     "Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).",
   );
   return lines;
+}
+
+function bestObservedBinRow(pair: PairStudyArtifact): PairBinSummaryRow | null {
+  return bestObservedBinFromRows(pair.predictorBinRows);
+}
+
+function formatValueWithUnit(value: number | null, unit: string): string {
+  if (value == null || !Number.isFinite(value)) return "N/A";
+  return `${formatCompactNumber(value)} ${unit}`;
+}
+
+function resolveActionableOptimalValue(pair: PairStudyArtifact): number | null {
+  return resolveActionableOptimalValueFromAggregate(
+    pair.aggregateOptimalDailyValue,
+    pair.aggregateValuePredictingHighOutcome,
+  );
+}
+
+function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
+  const lines: string[] = [];
+  const optimalValue = resolveActionableOptimalValue(pair);
+  const bestBin = bestObservedBinRow(pair);
+  const pppSummary = pair.pppPerCapitaSummary;
+  const isActionable = pair.actionabilityStatus === "actionable";
+
+  lines.push(
+    `${isActionable ? "Estimated best" : "Exploratory estimate of best"} ${pair.predictorLabel} level for higher ${pair.outcomeLabel}: ${formatValueWithUnit(optimalValue, pair.predictorUnit)}.`,
+  );
+  if (pppSummary?.estimatedBestPerCapitaPpp != null) {
+    lines.push(
+      `${isActionable ? "Approximate per-capita PPP equivalent of that best level" : "Exploratory per-capita PPP equivalent"}: ${formatCompactNumber(pppSummary.estimatedBestPerCapitaPpp)} international $/person (using median GDP per-capita PPP in-sample).`,
+    );
+  }
+  if (bestBin?.outcomeMean != null) {
+    lines.push(
+      `Highest observed mean ${pair.outcomeLabel} appears when ${pair.predictorLabel} is in ${bestBin.label} (mean outcome ${formatCompactNumber(bestBin.outcomeMean)}).`,
+    );
+  }
+  if (pppSummary?.bestObservedPerCapitaPppRange != null) {
+    lines.push(
+      `PPP per-capita equivalent in that best observed bin (p10-p90): ${pppSummary.bestObservedPerCapitaPppRange}.`,
+    );
+  }
+  if (pair.direction === "negative") {
+    lines.push("Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.");
+  } else if (pair.direction === "positive") {
+    lines.push("Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.");
+  } else {
+    lines.push("Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.");
+  }
+  if (!isActionable) {
+    lines.push(
+      `Actionability gate: exploratory only (${pair.actionabilityReasons.join("; ")}).`,
+    );
+  }
+  return lines;
+}
+
+function buildEvidenceInterpretation(pair: PairStudyArtifact): string {
+  if (pair.aggregateStatisticalSignificance >= 0.9 && pair.includedSubjects >= 120) {
+    return "Stronger evidence for directional signal relative to other predictors in this report.";
+  }
+  if (pair.aggregateStatisticalSignificance >= 0.8 && pair.includedSubjects >= 60) {
+    return "Moderate evidence; plausible signal but still sensitive to model assumptions.";
+  }
+  return "Exploratory evidence only; use primarily for hypothesis generation.";
+}
+
+function selectActionableOutcomeRows(
+  ranking: OutcomeMegaStudyRanking,
+  pairByKey: Map<string, PairStudyArtifact>,
+): ActionableOutcomeRow[] {
+  const rowsWithPairs: ActionableOutcomeRow[] = ranking.rows
+    .map((row) => ({
+      row,
+      pair: pairByKey.get(`${row.predictorId}::${row.outcomeId}`),
+    }))
+    .filter((entry): entry is ActionableOutcomeRow => entry.pair != null);
+
+  const highClarity = rowsWithPairs.filter(({ pair }) => pair.actionabilityStatus === "actionable");
+
+  const topRow = rowsWithPairs[0];
+  if (!topRow) return [];
+
+  const dedup = new Map<string, ActionableOutcomeRow>();
+  dedup.set(`${topRow.row.predictorId}::${topRow.row.outcomeId}`, topRow);
+
+  const prioritizedPool = highClarity.length >= 3 ? highClarity : rowsWithPairs;
+  for (const candidate of prioritizedPool) {
+    const key = `${candidate.row.predictorId}::${candidate.row.outcomeId}`;
+    if (!dedup.has(key)) dedup.set(key, candidate);
+    if (dedup.size >= 5) break;
+  }
+
+  return [...dedup.values()].slice(0, 5);
 }
 
 function toTimeSeriesMap(
@@ -502,6 +1121,51 @@ function buildDerivedGovExpPerCapitaPpp(raw: Map<string, DataPoint[]>): DataPoin
   return rows;
 }
 
+function buildDerivedAfterTaxMedianIncomePpp(raw: Map<string, DataPoint[]>): DataPoint[] {
+  const gniPerCapitaPpp = raw.get("outcome.wb.gni_per_capita_ppp") ?? [];
+  return gniPerCapitaPpp
+    .filter((row) => Number.isFinite(row.value))
+    .map((row) => ({
+      jurisdictionIso3: row.jurisdictionIso3,
+      year: row.year,
+      value: row.value,
+      unit: "international $",
+      source: "Derived proxy (mapped from World Bank GNI per-capita PPP)",
+      sourceUrl: row.sourceUrl,
+    }));
+}
+
+function buildDerivedYoYPercent(points: DataPoint[], sourceLabel: string): DataPoint[] {
+  const byJurisdiction = new Map<string, DataPoint[]>();
+  for (const point of points) {
+    const rows = byJurisdiction.get(point.jurisdictionIso3) ?? [];
+    rows.push(point);
+    byJurisdiction.set(point.jurisdictionIso3, rows);
+  }
+
+  const output: DataPoint[] = [];
+  for (const [jurisdictionIso3, rows] of byJurisdiction) {
+    const sorted = [...rows].sort((a, b) => a.year - b.year);
+    for (let index = 1; index < sorted.length; index++) {
+      const previous = sorted[index - 1];
+      const current = sorted[index];
+      if (!previous || !current) continue;
+      if (current.year - previous.year !== 1) continue;
+      if (!Number.isFinite(previous.value) || !Number.isFinite(current.value)) continue;
+      if (previous.value === 0) continue;
+      output.push({
+        jurisdictionIso3,
+        year: current.year,
+        value: ((current.value - previous.value) / Math.abs(previous.value)) * 100,
+        unit: "% YoY",
+        source: sourceLabel,
+      });
+    }
+  }
+
+  return output;
+}
+
 async function fetchRegistryVariable(
   variable: VariableRegistryEntry,
   fetchOptions: FetchOptions,
@@ -527,12 +1191,50 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push("");
   lines.push(`- Pair ID: \`${pair.pairId}\``);
   lines.push(`- Lag years: ${pair.lagYears}`);
+  lines.push(`- Duration years: ${pair.durationYears}`);
+  lines.push(`- Temporal profile source: ${pair.temporalProfileSource}`);
+  lines.push(
+    `- Filling strategy: ${pair.fillingType}${pair.fillingType === "value" && pair.fillingValue != null ? ` (${pair.fillingValue})` : ""}`,
+  );
+  lines.push(`- Temporal candidates evaluated: ${pair.temporalCandidatesEvaluated}`);
+  lines.push(`- Temporal candidates with valid results: ${pair.temporalCandidatesWithResults}`);
+  lines.push(`- Temporal profile score: ${pair.temporalScore.toFixed(4)}`);
   lines.push(`- Included subjects: ${pair.includedSubjects}`);
   lines.push(`- Skipped subjects: ${pair.skippedSubjects}`);
   lines.push(`- Total aligned pairs: ${pair.totalPairs}`);
   lines.push(`- Evidence grade: ${pair.evidenceGrade}`);
   lines.push(`- Direction: ${pair.direction}`);
   lines.push(`- Derived uncertainty score: ${pair.pValue.toFixed(4)} (1 - aggregate significance, not NHST p-value)`);
+  lines.push("");
+  lines.push("## Actionable Takeaway");
+  lines.push("");
+  for (const sentence of buildPairActionableTakeaway(pair)) {
+    lines.push(`- ${sentence}`);
+  }
+  lines.push("");
+  lines.push("## Decision Summary");
+  lines.push("");
+  lines.push(`- Interpretation: ${buildEvidenceInterpretation(pair)}`);
+  if (pair.actionabilityStatus === "actionable") {
+    lines.push(
+      pair.direction === "positive"
+        ? `- Practical direction: increase ${pair.predictorLabel} toward the estimated best level, then monitor ${pair.outcomeLabel}.`
+        : pair.direction === "negative"
+          ? `- Practical direction: decrease ${pair.predictorLabel} toward the estimated best level, then monitor ${pair.outcomeLabel}.`
+          : `- Practical direction: no strong directional guidance; prioritize additional data and robustness checks.`,
+    );
+  } else {
+    lines.push("- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.");
+  }
+  lines.push(
+    pair.aggregateStatisticalSignificance >= 0.85
+      ? "- Signal strength: relatively stronger within this report set."
+      : "- Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.",
+  );
+  lines.push(`- Actionability status: ${pair.actionabilityStatus}.`);
+  if (pair.actionabilityReasons.length > 0) {
+    lines.push(`- Actionability gate reasons: ${pair.actionabilityReasons.join("; ")}.`);
+  }
   lines.push("");
   lines.push("## Plain-Language Summary");
   lines.push("");
@@ -548,6 +1250,10 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
     }
   }
   lines.push("");
+  lines.push("## Appendix: Technical Diagnostics");
+  lines.push("");
+  lines.push("### Core Metrics");
+  lines.push("");
   lines.push("| Metric | Value |");
   lines.push("|--------|------:|");
   lines.push(`| Aggregate forward Pearson | ${pair.aggregateForwardPearson.toFixed(4)} |`);
@@ -560,8 +1266,40 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(`| Aggregate value predicting low outcome | ${pair.aggregateValuePredictingLowOutcome == null ? "N/A" : pair.aggregateValuePredictingLowOutcome.toFixed(4)} |`);
   lines.push(`| Aggregate optimal daily value | ${pair.aggregateOptimalDailyValue == null ? "N/A" : pair.aggregateOptimalDailyValue.toFixed(4)} |`);
   lines.push(`| Observed predictor range | ${pair.predictorObservedMin == null || pair.predictorObservedMax == null ? "N/A" : `[${pair.predictorObservedMin.toFixed(4)}, ${pair.predictorObservedMax.toFixed(4)}]`} |`);
+  lines.push(`| Actionability status | ${pair.actionabilityStatus} |`);
+  lines.push(`| Actionability reasons | ${pair.actionabilityReasons.length > 0 ? pair.actionabilityReasons.join("; ") : "N/A"} |`);
+  if (pair.pppPerCapitaSummary != null) {
+    lines.push(
+      `| Estimated best level (PPP per-capita equivalent) | ${pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp == null ? "N/A" : `${formatCompactNumber(pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} international $/person`} |`,
+    );
+    lines.push(
+      `| Best observed PPP per-capita range (p10-p90) | ${pair.pppPerCapitaSummary.bestObservedPerCapitaPppRange ?? "N/A"} |`,
+    );
+    lines.push(
+      `| Median GDP per-capita PPP (context) | ${pair.pppPerCapitaSummary.medianGdpPerCapitaPpp == null ? "N/A" : `${formatCompactNumber(pair.pppPerCapitaSummary.medianGdpPerCapitaPpp)} international $`} |`,
+    );
+    lines.push(
+      `| Pairs with PPP conversion | ${pair.pppPerCapitaSummary.samplePairs} |`,
+    );
+  }
   lines.push("");
-  lines.push("## Binned Pattern Table");
+  lines.push("### Temporal Sensitivity");
+  lines.push("");
+  lines.push("| Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |");
+  lines.push("|---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|");
+  lines.push(
+    `| Selected | ${pair.temporalProfileSource} | ${pair.lagYears} | ${pair.durationYears} | ${pair.fillingType}${pair.fillingType === "value" && pair.fillingValue != null ? ` (${pair.fillingValue})` : ""} | ${pair.temporalScore.toFixed(4)} | 0.0000 | ${pair.includedSubjects} | ${pair.totalPairs} |`,
+  );
+  for (const runnerUp of pair.temporalRunnerUps) {
+    lines.push(
+      `| Runner-up | ${runnerUp.source} | ${runnerUp.lagYears} | ${runnerUp.durationYears} | ${runnerUp.fillingType}${runnerUp.fillingType === "value" && runnerUp.fillingValue != null ? ` (${runnerUp.fillingValue})` : ""} | ${runnerUp.score.toFixed(4)} | ${runnerUp.scoreDeltaFromBest.toFixed(4)} | ${runnerUp.includedSubjects} | ${runnerUp.totalPairs} |`,
+    );
+  }
+  if (pair.temporalRunnerUps.length === 0) {
+    lines.push("| Runner-up | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |");
+  }
+  lines.push("");
+  lines.push("### Binned Pattern Table");
   lines.push("");
   lines.push("| Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |");
   lines.push("|----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|");
@@ -571,7 +1309,7 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
     );
   }
   lines.push("");
-  lines.push("## Distribution Charts");
+  lines.push("### Distribution Charts");
   lines.push("");
   lines.push("```text");
   lines.push(buildAsciiDistributionChart(`Predictor Distribution (${pair.predictorLabel})`, pair.predictorDistribution));
@@ -581,7 +1319,7 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(buildAsciiDistributionChart(`Outcome Distribution (${pair.outcomeLabel}, welfare-aligned)`, pair.outcomeDistribution));
   lines.push("```");
   lines.push("");
-  lines.push("## Top Subjects");
+  lines.push("### Top Subjects");
   lines.push("");
   lines.push("| Subject | Forward r | Directional Score | Effect % | Pairs |");
   lines.push("|---------|----------:|------------------:|---------:|------:|");
@@ -606,12 +1344,76 @@ function buildOutcomeMarkdown(
   pairByKey: Map<string, PairStudyArtifact>,
 ): string {
   const lines: string[] = [];
+  const samplePair = ranking.rows.length > 0
+    ? pairByKey.get(`${ranking.rows[0]!.predictorId}::${ranking.rows[0]!.outcomeId}`)
+    : undefined;
+  const outcomeLabel = samplePair?.outcomeLabel ?? outcomeId;
   lines.push(`# Outcome Mega Study: ${outcomeId}`);
   lines.push("");
+  lines.push(`- Outcome label: ${outcomeLabel}`);
   lines.push(`- Multiple testing: ${ranking.multipleTesting.method}`);
   lines.push(`- Alpha: ${ranking.multipleTesting.alpha}`);
   lines.push(`- Tests: ${ranking.multipleTesting.tests}`);
   lines.push("- Note: `Adj p` is derived from an internal uncertainty proxy, not a classical hypothesis-test p-value.");
+  if (
+    outcomeId === "outcome.derived.after_tax_median_income_ppp" ||
+    outcomeId === "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct"
+  ) {
+    lines.push("- Note: After-tax median income is currently proxied by World Bank GNI per-capita PPP in this report set.");
+  }
+  const significantCount = ranking.rows.filter((row) => row.significant).length;
+  const actionableRows = selectActionableOutcomeRows(ranking, pairByKey);
+  if (ranking.rows.length > 0) {
+    const lead = actionableRows[0]?.row ?? ranking.rows[0]!;
+    const topPair = pairByKey.get(`${lead.predictorId}::${lead.outcomeId}`);
+    const topBestLevel = topPair
+      ? formatValueWithUnit(resolveActionableOptimalValue(topPair), topPair.predictorUnit)
+      : "N/A";
+    const topBestPpp = topPair?.pppPerCapitaSummary?.estimatedBestPerCapitaPpp == null
+      ? "N/A"
+      : `${formatCompactNumber(topPair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} international $/person`;
+    lines.push("");
+    lines.push("## Lead Takeaway");
+    lines.push("");
+    lines.push(`- Lead predictor for ${outcomeLabel}: ${lead.predictorLabel ?? lead.predictorId}.`);
+    lines.push(
+      topPair?.actionabilityStatus === "actionable"
+        ? "- Recommendation status: actionable."
+        : "- Recommendation status: exploratory only (lead signal did not pass actionability gate).",
+    );
+    lines.push(`- Estimated best level: ${topBestLevel}.`);
+    if (topBestPpp !== "N/A") {
+      lines.push(`- Approximate PPP per-capita equivalent of that level: ${topBestPpp}.`);
+    }
+    lines.push(
+      significantCount > 0
+        ? `- Statistical status: ${significantCount} predictors pass adjusted-alpha threshold.`
+        : "- Statistical status: no predictors pass adjusted-alpha threshold; treat these as exploratory signals.",
+    );
+  }
+  lines.push("");
+  lines.push("## Actionable Takeaways (Top Predictors)");
+  lines.push("");
+  lines.push("- Rows are filtered for clarity (coverage + directional signal) when possible; fallback is top-ranked predictors.");
+  lines.push("");
+  lines.push("| Model Rank | Predictor | Estimated Best Level | Estimated Best PPP/Capita | Best Observed Range | Best Observed PPP/Capita (p10-p90) | Best Observed Outcome Mean | Direction | Status | Pair Report |");
+  lines.push("|-----------:|-----------|---------------------:|--------------------------:|--------------------:|-----------------------------------:|---------------------------:|----------:|--------|------------|");
+  for (const { row, pair } of actionableRows) {
+    const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
+    const bestBin = bestObservedBinRow(pair);
+    const bestLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
+    const bestLevelPpp = pair.pppPerCapitaSummary?.estimatedBestPerCapitaPpp == null
+      ? "N/A"
+      : `${formatCompactNumber(pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} intl $/person`;
+    const bestRange = bestBin?.label ?? "N/A";
+    const bestRangePpp = pair?.pppPerCapitaSummary?.bestObservedPerCapitaPppRange ?? "N/A";
+    const bestOutcomeMean = bestBin?.outcomeMean == null ? "N/A" : formatCompactNumber(bestBin.outcomeMean);
+    const direction = pair.direction;
+    const status = pair.actionabilityStatus;
+    lines.push(
+      `| ${row.rank} | ${row.predictorLabel ?? row.predictorId} | ${bestLevel} | ${bestLevelPpp} | ${bestRange} | ${bestRangePpp} | ${bestOutcomeMean} | ${direction} | ${status} | ${reportFile} |`,
+    );
+  }
   if (ranking.rows.length > 0) {
     const top = ranking.rows[0]!;
     const pair = pairByKey.get(`${top.predictorId}::${top.outcomeId}`);
@@ -623,12 +1425,14 @@ function buildOutcomeMarkdown(
       `- Top-ranked predictor is ${top.predictorLabel ?? top.predictorId} with score ${top.score.toFixed(3)} and direction ${direction}.`,
     );
     lines.push(
-      `- This outcome page includes ${ranking.rows.length} predictor studies and ${ranking.rows.filter((row) => row.significant).length} pass the configured adjusted-alpha threshold.`,
+      `- This outcome page includes ${ranking.rows.length} predictor studies and ${significantCount} pass the configured adjusted-alpha threshold.`,
     );
     lines.push(
       "- Ranking combines effect size, directional score, confidence, and multiple-testing-adjusted uncertainty.",
     );
   }
+  lines.push("");
+  lines.push("## Appendix: Technical Ranking Details");
   lines.push("");
   lines.push("| Rank | Predictor | Score | Confidence | Adj p | Evidence | Direction | Dir Score | Units | Pairs | Optimal High | Optimal Low | Optimal Daily | Pair Report |");
   lines.push("|-----:|-----------|------:|-----------:|------:|---------:|----------:|----------:|------:|------:|-------------:|------------:|--------------:|------------|");
@@ -653,10 +1457,14 @@ export async function generateMegaStudyArtifacts(
   const writeFiles = options.writeFiles ?? true;
   const logProgress = options.logProgress ?? true;
   const outputDir = options.outputDir ?? DEFAULT_OUTPUT_DIR;
+  const useDataCache = options.useDataCache ?? true;
+  const cacheDir = options.cacheDir ?? DEFAULT_CACHE_DIR;
+  const maxCacheAgeHours = options.maxCacheAgeHours ?? 24 * 7;
   const period = options.period ?? { startYear: 1990, endYear: 2023 };
   const minimumPairs = options.minimumPairs ?? 6;
   const minimumMeasurementsPerSeries = options.minimumMeasurementsPerSeries ?? 8;
-  const topSubjectsPerPair = options.topSubjectsPerPair ?? 12;
+  const topSubjectsPerPair = options.topSubjectsPerPair ?? 8;
+  const selectedOutcomeIds = options.outcomeIds ?? [...DEFAULT_REPORT_OUTCOME_IDS];
 
   const registry = getVariableRegistry().filter((entry) => entry.analysisScopes.includes("global_panel"));
   const predictorCandidates = registry.filter((entry) => entry.kind === "predictor");
@@ -664,18 +1472,57 @@ export async function generateMegaStudyArtifacts(
   const excludedNonDiscretionaryPredictors = predictorCandidates.filter(
     (entry) => !isReportEligiblePredictor(entry),
   );
-  const outcomes = registry.filter((entry) => entry.kind === "outcome");
+  const outcomes = registry.filter((entry) => isReportEligibleOutcome(entry, selectedOutcomeIds));
   const fetchOptions: FetchOptions = { period, jurisdictions: options.jurisdictions };
 
   const rawByVariable = new Map<string, DataPoint[]>();
   for (const variable of registry.filter((entry) => entry.source.fetcher)) {
+    const cacheKey = buildFetchCacheKey(variable.id, fetchOptions);
+    const cachePath = resolveVariableCachePath(cacheDir, cacheKey);
+    if (useDataCache) {
+      const cached = readVariableCache(cachePath, variable.id, fetchOptions, maxCacheAgeHours);
+      if (cached != null) {
+        if (logProgress) console.log(`Cache hit for ${variable.id} (${cached.length} rows).`);
+        rawByVariable.set(variable.id, cached);
+        continue;
+      }
+    }
+
     if (logProgress) console.log(`Fetching ${variable.id}...`);
-    rawByVariable.set(variable.id, await fetchRegistryVariable(variable, fetchOptions));
+    const fetched = await fetchRegistryVariable(variable, fetchOptions);
+    rawByVariable.set(variable.id, fetched);
+    if (useDataCache) {
+      writeVariableCache(cachePath, variable.id, fetchOptions, fetched);
+    }
   }
   if (predictors.some((entry) => entry.id === "predictor.derived.gov_expenditure_per_capita_ppp")) {
     rawByVariable.set(
       "predictor.derived.gov_expenditure_per_capita_ppp",
       buildDerivedGovExpPerCapitaPpp(rawByVariable),
+    );
+  }
+  if (registry.some((entry) => entry.id === "outcome.derived.after_tax_median_income_ppp")) {
+    rawByVariable.set(
+      "outcome.derived.after_tax_median_income_ppp",
+      buildDerivedAfterTaxMedianIncomePpp(rawByVariable),
+    );
+  }
+  if (registry.some((entry) => entry.id === "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct")) {
+    rawByVariable.set(
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      buildDerivedYoYPercent(
+        rawByVariable.get("outcome.derived.after_tax_median_income_ppp") ?? [],
+        "Derived YoY growth (after-tax median-income PPP proxy)",
+      ),
+    );
+  }
+  if (registry.some((entry) => entry.id === "outcome.derived.healthy_life_expectancy_growth_yoy_pct")) {
+    rawByVariable.set(
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      buildDerivedYoYPercent(
+        rawByVariable.get("outcome.who.healthy_life_expectancy_years") ?? [],
+        "Derived YoY growth (WHO HALE)",
+      ),
     );
   }
 
@@ -686,6 +1533,7 @@ export async function generateMegaStudyArtifacts(
       toTimeSeriesMap(variable, rawByVariable.get(variable.id) ?? [], minimumMeasurementsPerSeries),
     );
   }
+  const gdpPerCapitaSeriesBySubject = seriesByVariable.get("outcome.wb.gdp_per_capita_ppp") ?? new Map();
 
   const candidates: OutcomeRankingCandidate[] = [];
   const pairStudies: PairStudyArtifact[] = [];
@@ -701,27 +1549,87 @@ export async function generateMegaStudyArtifacts(
         continue;
       }
 
-      const lagYears = selectLagYears(predictor.suggestedLagYears, outcome.suggestedLagYears);
-      const runner = runVariableRelationshipAnalysis({
-        subjects: commonSubjects.map((subjectId) => ({
-          subjectId,
-          predictor: predictorSeries.get(subjectId)!,
-          outcome: outcomeSeries.get(subjectId)!,
-        })),
-        minimumPairs,
-        analysisConfig: {
-          onsetDelaySeconds: lagYears * 365 * 24 * 60 * 60,
-          durationOfActionSeconds: 365 * 24 * 60 * 60,
-          fillingType: "interpolation",
-          analysisMode: "individual",
-        },
-        onSubjectError: "skip",
-      });
+      const subjectsForAnalysis = commonSubjects.map((subjectId) => ({
+        subjectId,
+        predictor: predictorSeries.get(subjectId)!,
+        outcome: outcomeSeries.get(subjectId)!,
+      }));
+      const temporalCandidates = buildPairTemporalProfileCandidates(predictor, outcome);
+      let selectedTemporal: TemporalProfileCandidateEvaluation | null = null;
+      let selectedRunner: ReturnType<typeof runVariableRelationshipAnalysis> | null = null;
+      let temporalCandidatesWithResults = 0;
+      const temporalEvaluations: TemporalProfileCandidateEvaluation[] = [];
 
-      if (runner.subjectResults.length === 0) {
-        skippedPairs.push({ predictorId: predictor.id, outcomeId: outcome.id, reason: "No valid subject analyses." });
+      for (const candidate of temporalCandidates) {
+        const candidateRunner = runVariableRelationshipAnalysis({
+          subjects: subjectsForAnalysis,
+          minimumPairs,
+          analysisConfig: {
+            ...toTemporalAnalysisConfig(candidate),
+            analysisMode: "individual",
+          },
+          onSubjectError: "skip",
+        });
+
+        if (candidateRunner.subjectResults.length === 0) continue;
+        temporalCandidatesWithResults += 1;
+        const aggregateCandidate = candidateRunner.aggregateVariableRelationship;
+        const candidateEvaluation: TemporalProfileCandidateEvaluation = {
+          profile: candidate,
+          score: scoreTemporalProfileCandidate({
+            includedSubjects: candidateRunner.subjectResults.length,
+            totalPairs: nonNegativeInt(aggregateCandidate.totalPairs),
+            aggregateStatisticalSignificance: finiteOrZero(
+              aggregateCandidate.aggregateStatisticalSignificance,
+            ),
+            aggregatePredictivePearson: finiteOrZero(aggregateCandidate.aggregatePredictivePearson),
+          }),
+          includedSubjects: candidateRunner.subjectResults.length,
+          totalPairs: nonNegativeInt(aggregateCandidate.totalPairs),
+        };
+        temporalEvaluations.push(candidateEvaluation);
+
+        if (isTemporalCandidateBetter(candidateEvaluation, selectedTemporal)) {
+          selectedTemporal = candidateEvaluation;
+          selectedRunner = candidateRunner;
+        }
+      }
+
+      if (!selectedTemporal || !selectedRunner) {
+        skippedPairs.push({
+          predictorId: predictor.id,
+          outcomeId: outcome.id,
+          reason: `No valid subject analyses across ${temporalCandidates.length} temporal candidate(s).`,
+        });
         continue;
       }
+
+      const temporalProfile = selectedTemporal.profile;
+      const lagYears = temporalProfile.lagYears;
+      const runner = selectedRunner;
+      const sortedTemporalEvaluations = sortTemporalCandidateEvaluations(temporalEvaluations);
+      const selectedTemporalProfileKey = toTemporalProfileKey(temporalProfile);
+      const temporalRunnerUps: PairTemporalSensitivityRow[] = sortedTemporalEvaluations
+        .filter((evaluation) => toTemporalProfileKey(evaluation.profile) !== selectedTemporalProfileKey)
+        .slice(0, 3)
+        .map((evaluation) => ({
+          lagYears: evaluation.profile.lagYears,
+          durationYears: evaluation.profile.durationYears,
+          source: evaluation.profile.source,
+          fillingType: evaluation.profile.fillingType,
+          fillingValue:
+            evaluation.profile.fillingType === "value"
+              ? (evaluation.profile.fillingValue ?? 0)
+              : null,
+          score: evaluation.score,
+          scoreDeltaFromBest: selectedTemporal.score - evaluation.score,
+          includedSubjects: evaluation.includedSubjects,
+          totalPairs: evaluation.totalPairs,
+        }));
+      const temporalStabilityWarning = buildTemporalStabilityWarning(
+        selectedTemporal.score,
+        temporalRunnerUps[0],
+      );
 
       const aggregate = runner.aggregateVariableRelationship;
       const aggregateForwardPearson = finiteOrZero(aggregate.aggregateForwardPearson);
@@ -748,9 +1656,17 @@ export async function generateMegaStudyArtifacts(
         commonSubjects,
         predictorSeries,
         outcomeSeries,
-        lagYears,
+        temporalProfile,
       );
       const predictorBinRows = buildPairBinSummaryRows(alignedPoints, 10);
+      const pppPerCapitaSummary = buildPppPerCapitaSummary(
+        alignedPoints,
+        predictorBinRows,
+        predictor.unit,
+        gdpPerCapitaSeriesBySubject,
+        aggregateOptimalDailyValue,
+        aggregateValuePredictingHighOutcome,
+      );
       const predictorDistribution = buildDistributionBuckets(
         alignedPoints.map((point) => point.predictorValue),
         12,
@@ -782,6 +1698,16 @@ export async function generateMegaStudyArtifacts(
         aggregateValuePredictingLowOutcome,
         aggregateOptimalDailyValue,
       });
+      if (temporalStabilityWarning) {
+        qualityWarnings.push(temporalStabilityWarning);
+      }
+      const actionability = derivePairActionability({
+        includedSubjects: nonNegativeInt(runner.subjectResults.length),
+        totalPairs: nonNegativeInt(aggregate.totalPairs),
+        aggregateStatisticalSignificance,
+        aggregatePredictivePearson,
+        temporalStabilityWarning,
+      });
       const pair: PairStudyArtifact = {
         pairId: `${predictor.id}__${outcome.id}`,
         predictorId: predictor.id,
@@ -791,6 +1717,19 @@ export async function generateMegaStudyArtifacts(
         outcomeLabel: outcome.label,
         outcomeUnit: outcome.unit,
         lagYears,
+        durationYears: temporalProfile.durationYears,
+        temporalProfileSource: temporalProfile.source,
+        fillingType: temporalProfile.fillingType,
+        fillingValue: temporalProfile.fillingType === "value"
+          ? (temporalProfile.fillingValue ?? 0)
+          : null,
+        temporalCandidatesEvaluated: temporalCandidates.length,
+        temporalCandidatesWithResults,
+        temporalScore: selectedTemporal.score,
+        temporalRunnerUps,
+        temporalStabilityWarning,
+        actionabilityStatus: actionability.status,
+        actionabilityReasons: actionability.reasons,
         includedSubjects: nonNegativeInt(runner.subjectResults.length),
         skippedSubjects: nonNegativeInt(runner.skippedSubjects.length),
         totalPairs: nonNegativeInt(aggregate.totalPairs),
@@ -809,6 +1748,7 @@ export async function generateMegaStudyArtifacts(
         predictorBinRows,
         predictorDistribution: predictorHistogram.length > 0 ? predictorHistogram : predictorDistribution,
         outcomeDistribution: outcomeHistogram.length > 0 ? outcomeHistogram : outcomeDistribution,
+        pppPerCapitaSummary,
         pValue,
         evidenceGrade,
         direction,
@@ -871,6 +1811,9 @@ export async function generateMegaStudyArtifacts(
       `- Predictors considered: ${predictors.length}`,
       `- Predictors excluded (non-discretionary): ${excludedNonDiscretionaryPredictors.length}`,
       `- Outcomes considered: ${outcomes.length}`,
+      `- Outcome scope: ${selectedOutcomeIds.join(", ")}`,
+      `- Data cache: ${useDataCache ? `enabled (${maxCacheAgeHours}h max age)` : "disabled"}`,
+      `- Cache directory: ${useDataCache ? cacheDir : "N/A"}`,
       `- Pair studies generated: ${pairStudies.length}`,
       `- Pair studies skipped: ${skippedPairs.length}`,
       ...(excludedNonDiscretionaryPredictors.length > 0

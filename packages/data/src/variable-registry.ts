@@ -87,6 +87,50 @@ export const VariableCoverageSchema = z.object({
 });
 export type VariableCoverage = z.infer<typeof VariableCoverageSchema>;
 
+export const VariableTemporalFillingTypeSchema = z.enum([
+  'zero',
+  'value',
+  'none',
+  'interpolation',
+]);
+export type VariableTemporalFillingType = z.infer<typeof VariableTemporalFillingTypeSchema>;
+
+export const VariableTemporalProfileSchema = z
+  .object({
+    onsetDelayYears: z.array(z.number().int().min(0).max(50)).nonempty(),
+    durationYears: z.array(z.number().int().min(1).max(50)).nonempty(),
+    preferredFillingType: VariableTemporalFillingTypeSchema,
+    preferredFillingValue: z.number().optional(),
+  })
+  .superRefine((profile, ctx) => {
+    const uniqueOnsets = [...new Set(profile.onsetDelayYears)];
+    if (uniqueOnsets.length !== profile.onsetDelayYears.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'temporalProfile.onsetDelayYears must be unique.',
+        path: ['onsetDelayYears'],
+      });
+    }
+
+    const uniqueDurations = [...new Set(profile.durationYears)];
+    if (uniqueDurations.length !== profile.durationYears.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'temporalProfile.durationYears must be unique.',
+        path: ['durationYears'],
+      });
+    }
+
+    if (profile.preferredFillingType === 'value' && !Number.isFinite(profile.preferredFillingValue)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'temporalProfile.preferredFillingValue is required when preferredFillingType is "value".',
+        path: ['preferredFillingValue'],
+      });
+    }
+  });
+export type VariableTemporalProfile = z.infer<typeof VariableTemporalProfileSchema>;
+
 export const VariableRegistryEntrySchema = z
   .object({
     id: z.string().regex(/^[a-z0-9_.-]+$/),
@@ -99,6 +143,7 @@ export const VariableRegistryEntrySchema = z
     analysisScopes: z.array(VariableAnalysisScopeSchema).nonempty(),
     defaultTransforms: z.array(VariableTransformSchema).nonempty(),
     suggestedLagYears: z.array(z.number().int().min(0).max(50)),
+    temporalProfile: VariableTemporalProfileSchema.optional(),
     source: VariableSourceSchema,
     coverage: VariableCoverageSchema,
     isDerived: z.boolean(),
@@ -178,6 +223,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3],
+      durationYears: [1, 2, 3],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['government-size', 'fiscal-policy'],
     caveats: ['Can move due to GDP denominator changes, not only spending changes.'],
   },
@@ -201,6 +251,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: true,
     isDiscretionary: false,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3],
+      durationYears: [1, 2, 3],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['government-size', 'ppp', 'derived'],
     caveats: ['Combines two indicators with different missingness patterns by country-year.'],
   },
@@ -227,6 +282,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: false,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 5],
+      durationYears: [2, 3, 5],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['fiscal-policy', 'public-finance'],
     caveats: ['Debt is stock-like and responds more slowly than annual flow variables.'],
   },
@@ -253,6 +313,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3],
+      durationYears: [1, 2, 3],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['tax-policy'],
     caveats: ['Does not include all non-tax government revenues.'],
   },
@@ -279,6 +344,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3, 5],
+      durationYears: [2, 3, 5],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['health-system', 'public-health'],
     caveats: ['Composition of health spending is not represented.'],
   },
@@ -305,6 +375,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3, 5],
+      durationYears: [2, 3, 5],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['education-policy', 'human-capital'],
     caveats: ['Education quality and institutional effectiveness are not directly captured.'],
   },
@@ -331,6 +406,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [1, 2, 3, 5],
+      durationYears: [2, 3, 5, 8],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['innovation-policy'],
     caveats: ['Effects are often lagged and non-linear.'],
   },
@@ -357,6 +437,11 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     isDerived: false,
     isDiscretionary: true,
+    temporalProfile: {
+      onsetDelayYears: [0, 1, 2, 3],
+      durationYears: [1, 2, 3],
+      preferredFillingType: 'interpolation',
+    },
     tags: ['defense-policy'],
     caveats: ['May co-move with conflict risk and geopolitical shocks.'],
   },
@@ -436,6 +521,103 @@ const REGISTRY_SEED: VariableRegistry = [
     isDerived: false,
     tags: ['welfare-core', 'income-proxy'],
     caveats: ['Not a direct measure of after-tax median household income.'],
+  },
+  {
+    id: 'outcome.wb.gni_per_capita_ppp',
+    label: 'GNI Per Capita (PPP)',
+    description: 'Gross national income per capita at purchasing power parity (current international dollars).',
+    kind: 'outcome',
+    category: 'economic',
+    unit: 'international $',
+    welfareDirection: 'higher_better',
+    analysisScopes: ['global_panel', 'jurisdiction_n_of_1'],
+    defaultTransforms: ['level', 'yoy_percent', 'log'],
+    suggestedLagYears: [0, 1, 2, 3],
+    source: {
+      provider: 'world_bank',
+      code: 'NY.GNP.PCAP.PP.CD',
+      fetcher: 'fetchGniPerCapitaPpp',
+      url: 'https://data.worldbank.org/indicator/NY.GNP.PCAP.PP.CD',
+    },
+    coverage: {
+      profileStatus: 'estimated',
+      yearMin: 1990,
+      yearMax: 2023,
+    },
+    isDerived: false,
+    tags: ['income-proxy'],
+    caveats: ['Per-capita mean income is still not a direct after-tax median household income measure.'],
+  },
+  {
+    id: 'outcome.derived.after_tax_median_income_ppp',
+    label: 'After-Tax Median Income (PPP)',
+    description:
+      'Proxy series for after-tax median income, currently mapped to GNI per-capita PPP until direct global median disposable-income coverage is integrated.',
+    kind: 'outcome',
+    category: 'economic',
+    unit: 'international $',
+    welfareDirection: 'higher_better',
+    analysisScopes: ['global_panel', 'jurisdiction_n_of_1'],
+    defaultTransforms: ['level', 'yoy_percent', 'log'],
+    suggestedLagYears: [0, 1, 2, 3],
+    source: {
+      provider: 'derived',
+      code: 'proxy(outcome.wb.gni_per_capita_ppp)',
+    },
+    coverage: {
+      profileStatus: 'unprofiled',
+      notes: 'Coverage mirrors outcome.wb.gni_per_capita_ppp in the current implementation.',
+    },
+    isDerived: true,
+    tags: ['welfare-core', 'income', 'proxy'],
+    caveats: ['This is a proxy, not a direct after-tax median income measurement.'],
+  },
+  {
+    id: 'outcome.derived.after_tax_median_income_ppp_growth_yoy_pct',
+    label: 'After-Tax Median Income Growth (YoY %)',
+    description:
+      'Year-over-year percent growth in the after-tax median-income PPP proxy series.',
+    kind: 'outcome',
+    category: 'economic',
+    unit: '% YoY',
+    welfareDirection: 'higher_better',
+    analysisScopes: ['global_panel', 'jurisdiction_n_of_1'],
+    defaultTransforms: ['level', 'rolling_mean'],
+    suggestedLagYears: [0, 1, 2, 3],
+    source: {
+      provider: 'derived',
+      code: 'yoy_percent(outcome.derived.after_tax_median_income_ppp)',
+    },
+    coverage: {
+      profileStatus: 'unprofiled',
+      notes: 'Coverage is one year shorter than the underlying level proxy due to YoY derivation.',
+    },
+    isDerived: true,
+    tags: ['welfare-core', 'income', 'growth', 'proxy'],
+    caveats: ['Growth is derived from a proxy level series and may amplify data noise in low-coverage regions.'],
+  },
+  {
+    id: 'outcome.derived.healthy_life_expectancy_growth_yoy_pct',
+    label: 'Healthy Life Expectancy Growth (YoY %)',
+    description: 'Year-over-year percent growth in healthy life expectancy (HALE).',
+    kind: 'outcome',
+    category: 'health',
+    unit: '% YoY',
+    welfareDirection: 'higher_better',
+    analysisScopes: ['global_panel', 'jurisdiction_n_of_1'],
+    defaultTransforms: ['level', 'rolling_mean'],
+    suggestedLagYears: [0, 1, 2, 3, 5],
+    source: {
+      provider: 'derived',
+      code: 'yoy_percent(outcome.who.healthy_life_expectancy_years)',
+    },
+    coverage: {
+      profileStatus: 'unprofiled',
+      notes: 'Coverage is one year shorter than HALE due to YoY derivation.',
+    },
+    isDerived: true,
+    tags: ['welfare-core', 'healthspan', 'growth'],
+    caveats: ['YoY HALE growth can be noisy in sparse annual panels.'],
   },
   {
     id: 'outcome.wb.gini_index',

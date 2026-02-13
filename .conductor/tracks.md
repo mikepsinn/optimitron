@@ -2,7 +2,8 @@
 
 | ID | Title | Status | Priority | Owner | Updated |
 | --- | --- | --- | --- | --- | --- |
-| analysis-explorer-v1 | Universal Predictor-Outcome Explorer + Outcome Hubs | **active** | **P0** | wishonia | 2026-02-13 |
+| analysis-explorer-v2 | Temporal Calibration + Report Reliability | **active** | **P0** | wishonia | 2026-02-13 |
+| analysis-explorer-v1 | Universal Predictor-Outcome Explorer + Outcome Hubs | **done** | **P0** | wishonia | 2026-02-13 |
 | policy-evaluation-v1 | 3-Layer Policy Evaluation Pipeline | **active** | **P0** | wishonia | 2026-02-13 |
 | optimal-budget-v2 | OBG Minimum Effective Spending + Efficient Frontier | **done** | - | wishonia | 2026-02-13 |
 | opg-core-v1 | OPG Evidence + Policy Scoring Expansion | **done** | - | wishonia | 2026-02-07 |

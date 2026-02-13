@@ -53,3 +53,6 @@ packages/db/prisma/dev.db
 *.tfstate
 *.tfstate.backup
 *.timestamp-*
+.cache
+.cache/
+**/.cache/

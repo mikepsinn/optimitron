@@ -102,4 +102,45 @@
    - Added predictor-bin pattern tables with outcome means/medians by bin.
    - Added text-based distribution charts (fixed-width histograms) for predictor and outcome values.
    - Outcome mega-study markdown now includes a plain-language top-predictor summary section.
+21. [x] Exclude non-discretionary predictors from generated mega/pair reports.
+   - Added explicit `isDiscretionary` metadata on predictor registry entries.
+   - Marked non-discretionary predictors currently excluded from report generation:
+     - `predictor.derived.gov_expenditure_per_capita_ppp`
+     - `predictor.wb.gov_debt_pct_gdp`
+   - Mega-study generator now filters to discretionary predictors only.
+   - Index report now lists excluded predictors for transparency.
+22. [x] Lead outcome reports with actionable levels and limit current generation scope to two target outcomes.
+   - Outcome report scope now defaults to:
+     - `outcome.who.healthy_life_expectancy_years` (HALE)
+     - `outcome.wb.gdp_per_capita_ppp` (income proxy until direct real after-tax median metric is added)
+   - Outcome markdown now starts with a `Lead Takeaway` section naming the top-ranked predictor and estimated best level.
+   - Actionable tables now include PPP-per-capita equivalents for `% GDP` predictors.
+   - Pair markdown now includes PPP-per-capita equivalent takeaways and robust best-bin PPP ranges (p10-p90) to reduce outlier distortion.
+23. [x] Improve report comprehensibility + add local fetch caching for iterative workflows.
+   - Added outcome and pair report “reader-first” structure:
+     - lead takeaway and decision summary first
+     - technical ranking and diagnostics moved into explicit appendix sections
+   - Actionable outcome tables now prefer clearer rows (coverage + directional signal), while always including model rank #1.
+   - Added local input data cache for fetched variable time-series:
+     - keyed by variable + period + jurisdiction set hash
+     - configurable max cache age (default 168 hours)
+     - cache metadata surfaced in `mega-study-index.md`.
+24. [x] Replace default GDP-per-capita report outcome with target welfare outcome set (income + HALE, levels + growth).
+   - Default report scope now includes:
+     - `outcome.derived.after_tax_median_income_ppp`
+     - `outcome.derived.after_tax_median_income_ppp_growth_yoy_pct`
+     - `outcome.who.healthy_life_expectancy_years`
+     - `outcome.derived.healthy_life_expectancy_growth_yoy_pct`
+   - Added `outcome.wb.gni_per_capita_ppp` fetch support as income proxy input.
+   - Added derived outcome builders for:
+     - after-tax median-income PPP proxy level
+     - after-tax median-income PPP proxy YoY growth
+     - HALE YoY growth
+   - GDP per-capita PPP remains available as a supporting series but is no longer in default report outcomes.
+25. [x] Hand off post-v1 methodological/report-quality work to v2 track.
+   - Added `.conductor/tracks/analysis-explorer-v2` for:
+     - onset-delay and duration-of-action calibration
+     - temporal sensitivity reporting
+     - recommendation reliability gates
+     - direct after-tax median-income source integration
 

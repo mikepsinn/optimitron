@@ -69,6 +69,18 @@ describe('variable registry', () => {
     }
   });
 
+  it('defines temporal profiles for predictors used in panel analysis', () => {
+    const predictors = listVariablesByKind('predictor');
+    expect(predictors.length).toBeGreaterThan(0);
+
+    for (const predictor of predictors) {
+      expect(predictor.temporalProfile).toBeDefined();
+      expect(predictor.temporalProfile?.onsetDelayYears.length).toBeGreaterThan(0);
+      expect(predictor.temporalProfile?.durationYears.length).toBeGreaterThan(0);
+      expect(typeof predictor.temporalProfile?.preferredFillingType).toBe('string');
+    }
+  });
+
   it('can list discretionary and non-discretionary predictors', () => {
     const discretionary = listPredictorsByDiscretionary(true);
     const nonDiscretionary = listPredictorsByDiscretionary(false);

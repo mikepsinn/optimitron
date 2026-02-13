@@ -1,0 +1,17 @@
+{
+  "id": "analysis-explorer-v2",
+  "title": "Temporal Calibration + Report Reliability",
+  "status": "active",
+  "owner": "wishonia",
+  "priority": "P0",
+  "effort": "L",
+  "agentTier": "Codex",
+  "dependencies": [
+    "data-infrastructure-v2",
+    "optimizer-core-v2",
+    "testing-strategy-v1",
+    "web-integration-v2"
+  ],
+  "createdAt": "2026-02-13",
+  "updatedAt": "2026-02-13"
+}

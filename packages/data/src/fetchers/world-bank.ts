@@ -62,6 +62,8 @@ export const WB_INDICATOR_CODES = {
   GOV_DEBT_PCT_GDP: 'GC.DOD.TOTL.GD.ZS',
   /** GNI per capita, Atlas method (current US$) — proxy for disposable income */
   GNI_PER_CAPITA: 'NY.GNP.PCAP.CD',
+  /** GNI per capita, PPP (current international $) */
+  GNI_PER_CAPITA_PPP: 'NY.GNP.PCAP.PP.CD',
   /** Poverty headcount ratio at $2.15/day (% of population) */
   POVERTY_RATE: 'SI.POV.DDAY',
   /** Labor force participation rate (% of total population 15+) */
@@ -315,6 +317,13 @@ export async function fetchGovExpenditure(options: FetchOptions = {}): Promise<D
  */
 export async function fetchGniPerCapita(options: FetchOptions = {}): Promise<DataPoint[]> {
   return fetchWorldBankIndicator(WB_INDICATOR_CODES.GNI_PER_CAPITA, options);
+}
+
+/**
+ * Fetch GNI per capita, PPP (current international $).
+ */
+export async function fetchGniPerCapitaPpp(options: FetchOptions = {}): Promise<DataPoint[]> {
+  return fetchWorldBankIndicator(WB_INDICATOR_CODES.GNI_PER_CAPITA_PPP, options);
 }
 
 /**

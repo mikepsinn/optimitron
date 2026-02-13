@@ -11,6 +11,7 @@ Ship a web-native explorer with:
 
 ## Scope
 - Variable registry for predictors and outcomes (IDs, units, directionality, valid transforms, lag windows, coverage).
+  - Includes predictor-level discretion metadata so report-generation can exclude non-discretionary predictors when requested.
 - Generic pair-analysis runner using canonical relationship semantics:
   - subject-level: `NOf1VariableRelationship` summaries
   - aggregate-level: `AggregateVariableRelationship` summaries
@@ -46,11 +47,17 @@ Ship a web-native explorer with:
   - Shared route helpers: `packages/web/src/lib/analysis-explorer-routes.ts`.
   - Shared cached adapter: `packages/web/src/lib/analysis-explorer-data.ts`.
 - Offline/report artifact generator for registry-wide studies.
+  - Default outcome scope for current welfare reports:
+    - after-tax median income PPP (level + YoY growth)
+    - healthy life expectancy (level + YoY growth)
   - Outcome mega-study markdown files with predictor rankings and pair-study links.
   - Pair-study markdown files for predictor/outcome combinations with:
     - plain-language interpretation summaries
     - binned predictor/outcome pattern tables
     - lightweight distribution charts for exploratory QA
+    - lead actionable takeaway bullets with estimated best predictor levels
+    - `% GDP` predictor PPP-per-capita equivalent summaries for budgeting interpretation
+    - default-reader-first layout with technical metrics grouped under appendix sections
   - Machine-readable JSON summary for downstream QA and visualization.
 
 ## Acceptance Criteria

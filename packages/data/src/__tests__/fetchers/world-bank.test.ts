@@ -5,6 +5,7 @@ import {
   parseWorldBankRecords,
   fetchLifeExpectancy,
   fetchGdpPerCapita,
+  fetchGniPerCapitaPpp,
   fetchHealthExpenditure,
   fetchCO2Emissions,
   WB_INDICATOR_CODES,
@@ -285,6 +286,12 @@ describe('World Bank Fetcher', () => {
       await fetchGdpPerCapita();
       const callUrl = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
       expect(callUrl).toContain(WB_INDICATOR_CODES.GDP_PER_CAPITA_PPP);
+    });
+
+    it('fetchGniPerCapitaPpp uses correct indicator', async () => {
+      await fetchGniPerCapitaPpp();
+      const callUrl = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
+      expect(callUrl).toContain(WB_INDICATOR_CODES.GNI_PER_CAPITA_PPP);
     });
 
     it('fetchHealthExpenditure uses correct indicator', async () => {
