@@ -823,6 +823,7 @@ export interface BudgetAnalysisArtifacts {
   websiteData: WebsiteBudgetData;
   reportMarkdown: string;
   outputPaths: {
+    markdownConstrained: string;
     markdown: string;
     json: string;
   };
@@ -1321,79 +1322,89 @@ export function generateBudgetAnalysisArtifacts(
     categories: categoryAnalyses,
   };
 
-  // Generate markdown report with constrained reallocation as primary recommendation
-  let report = generateBudgetReport(result, { constrainToCurrentBudget: true });
+  const appendEvidenceDetailSections = (baseReport: string): string => {
+    let reportWithEvidence = baseReport;
 
-  // Append Causal Evidence Detail section for OECD-mapped categories
-  if (causalEvidenceMap.size > 0) {
-    const causalLines: string[] = [];
-    causalLines.push('');
-    causalLines.push('## Causal Evidence Detail (OECD-Mapped Categories)');
-    causalLines.push('');
-    causalLines.push('| Category | r | N | +/- | % Change | BH Strength | BH Temporality | BH Gradient | WES | Grade |');
-    causalLines.push('|----------|---|---|-----|----------|-------------|----------------|-------------|-----|-------|');
+    // Append Causal Evidence Detail section for OECD-mapped categories
+    if (causalEvidenceMap.size > 0) {
+      const causalLines: string[] = [];
+      causalLines.push('');
+      causalLines.push('## Causal Evidence Detail (OECD-Mapped Categories)');
+      causalLines.push('');
+      causalLines.push('| Category | r | N | +/- | % Change | BH Strength | BH Temporality | BH Gradient | WES | Grade |');
+      causalLines.push('|----------|---|---|-----|----------|-------------|----------------|-------------|-----|-------|');
 
-    // Sort by WES descending
-    const sortedCausal = [...causalEvidenceMap.entries()].sort(
-      (a, b) => b[1].wesScore - a[1].wesScore,
-    );
-    for (const [catId, ev] of sortedCausal) {
-      const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
-      causalLines.push(
-        `| ${catName} ` +
-        `| ${ev.forwardPearson.toFixed(3)} ` +
-        `| ${ev.nCountries} ` +
-        `| ${ev.positiveCount}/${ev.negativeCount} ` +
-        `| ${ev.meanPercentChange >= 0 ? '+' : ''}${ev.meanPercentChange.toFixed(1)}% ` +
-        `| ${ev.bradfordHill.strength.toFixed(2)} ` +
-        `| ${ev.bradfordHill.temporality.toFixed(2)} ` +
-        `| ${ev.bradfordHill.gradient.toFixed(2)} ` +
-        `| ${ev.wesScore.toFixed(2)} ` +
-        `| ${ev.wesGrade} |`,
+      // Sort by WES descending
+      const sortedCausal = [...causalEvidenceMap.entries()].sort(
+        (a, b) => b[1].wesScore - a[1].wesScore,
       );
+      for (const [catId, ev] of sortedCausal) {
+        const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
+        causalLines.push(
+          `| ${catName} ` +
+          `| ${ev.forwardPearson.toFixed(3)} ` +
+          `| ${ev.nCountries} ` +
+          `| ${ev.positiveCount}/${ev.negativeCount} ` +
+          `| ${ev.meanPercentChange >= 0 ? '+' : ''}${ev.meanPercentChange.toFixed(1)}% ` +
+          `| ${ev.bradfordHill.strength.toFixed(2)} ` +
+          `| ${ev.bradfordHill.temporality.toFixed(2)} ` +
+          `| ${ev.bradfordHill.gradient.toFixed(2)} ` +
+          `| ${ev.wesScore.toFixed(2)} ` +
+          `| ${ev.wesGrade} |`,
+        );
+      }
+      causalLines.push('');
+      causalLines.push('r = mean forward Pearson across countries (within-country temporal correlation)');
+      causalLines.push('N = countries analyzed; +/- = countries with positive/negative correlation');
+      causalLines.push('% Change = mean outcome change when spending above country\'s own baseline');
+      causalLines.push('BH = Bradford Hill criteria scores (0-1 saturation scale)');
+      causalLines.push('');
+
+      reportWithEvidence += causalLines.join('\n');
     }
-    causalLines.push('');
-    causalLines.push('r = mean forward Pearson across countries (within-country temporal correlation)');
-    causalLines.push('N = countries analyzed; +/- = countries with positive/negative correlation');
-    causalLines.push('% Change = mean outcome change when spending above country\'s own baseline');
-    causalLines.push('BH = Bradford Hill criteria scores (0-1 saturation scale)');
-    causalLines.push('');
 
-    report += causalLines.join('\n');
-  }
+    // Append Domestic Evidence Detail section
+    if (domesticEvidenceMap.size > 0) {
+      const domesticLines: string[] = [];
+      domesticLines.push('');
+      domesticLines.push('## Domestic Evidence Detail (US Time Series 2000-2023)');
+      domesticLines.push('');
+      domesticLines.push('| Category | Best Outcome | r | N years | BH Strength | WES | Grade |');
+      domesticLines.push('|----------|-------------|---|---------|-------------|-----|-------|');
 
-  // Append Domestic Evidence Detail section
-  if (domesticEvidenceMap.size > 0) {
-    const domesticLines: string[] = [];
-    domesticLines.push('');
-    domesticLines.push('## Domestic Evidence Detail (US Time Series 2000-2023)');
-    domesticLines.push('');
-    domesticLines.push('| Category | Best Outcome | r | N years | BH Strength | WES | Grade |');
-    domesticLines.push('|----------|-------------|---|---------|-------------|-----|-------|');
-
-    const sortedDomestic = [...domesticEvidenceMap.entries()].sort(
-      (a, b) => b[1].wesScore - a[1].wesScore,
-    );
-    for (const [catId, ev] of sortedDomestic) {
-      const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
-      domesticLines.push(
-        `| ${catName} ` +
-        `| ${ev.bestOutcomeName} ` +
-        `| ${ev.bestCorrelation.toFixed(3)} ` +
-        `| ${ev.nYears} ` +
-        `| ${ev.bradfordHill.strength.toFixed(2)} ` +
-        `| ${ev.wesScore.toFixed(2)} ` +
-        `| ${ev.wesGrade} |`,
+      const sortedDomestic = [...domesticEvidenceMap.entries()].sort(
+        (a, b) => b[1].wesScore - a[1].wesScore,
       );
-    }
-    domesticLines.push('');
-    domesticLines.push('r = forward Pearson correlation (US domestic spending vs outcome, 2000-2023)');
-    domesticLines.push('N years = overlapping data points between spending and outcome time series');
-    domesticLines.push('BH = Bradford Hill strength score (0-1 saturation scale)');
-    domesticLines.push('');
+      for (const [catId, ev] of sortedDomestic) {
+        const catName = CATEGORIES.find(c => c.id === catId)?.name ?? catId;
+        domesticLines.push(
+          `| ${catName} ` +
+          `| ${ev.bestOutcomeName} ` +
+          `| ${ev.bestCorrelation.toFixed(3)} ` +
+          `| ${ev.nYears} ` +
+          `| ${ev.bradfordHill.strength.toFixed(2)} ` +
+          `| ${ev.wesScore.toFixed(2)} ` +
+          `| ${ev.wesGrade} |`,
+        );
+      }
+      domesticLines.push('');
+      domesticLines.push('r = forward Pearson correlation (US domestic spending vs outcome, 2000-2023)');
+      domesticLines.push('N years = overlapping data points between spending and outcome time series');
+      domesticLines.push('BH = Bradford Hill strength score (0-1 saturation scale)');
+      domesticLines.push('');
 
-    report += domesticLines.join('\n');
-  }
+      reportWithEvidence += domesticLines.join('\n');
+    }
+
+    return reportWithEvidence;
+  };
+
+  // Primary report: unconstrained OSL benchmark
+  const report = appendEvidenceDetailSections(generateBudgetReport(result));
+  // Secondary report: constrained reallocation for fixed-budget scenarios
+  const constrainedReport = appendEvidenceDetailSections(
+    generateBudgetReport(result, { constrainToCurrentBudget: true }),
+  );
 
   // Generate website JSON
   const websiteData: WebsiteBudgetData = {
@@ -1412,7 +1423,12 @@ export function generateBudgetAnalysisArtifacts(
       ]?.outcomeMetrics ?? [],
     })),
     topRecommendations: categoryAnalyses
-      .filter(ca => ca.gap.recommendedAction !== 'maintain' && ca.category.discretionary !== false)
+      .filter(
+        ca =>
+          ca.gap.recommendedAction !== 'maintain' &&
+          ca.category.discretionary !== false &&
+          ca.oslEstimate.evidenceGrade !== 'F',
+      )
       .slice(0, 10)
       .map(
         ca =>
@@ -1422,6 +1438,7 @@ export function generateBudgetAnalysisArtifacts(
   };
 
   const outputPaths = {
+    markdownConstrained: path.join(outputDir, 'us-budget-report-constrained.md'),
     markdown: path.join(outputDir, 'us-budget-report.md'),
     json: path.join(outputDir, 'us-budget-analysis.json'),
   };
@@ -1431,6 +1448,9 @@ export function generateBudgetAnalysisArtifacts(
 
     fs.writeFileSync(outputPaths.markdown, report, 'utf-8');
     console.log(`✅ Markdown report written to ${outputPaths.markdown}`);
+
+    fs.writeFileSync(outputPaths.markdownConstrained, constrainedReport, 'utf-8');
+    console.log(`✅ Constrained markdown report written to ${outputPaths.markdownConstrained}`);
 
     fs.writeFileSync(
       outputPaths.json,

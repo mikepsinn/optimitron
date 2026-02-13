@@ -252,8 +252,10 @@ export function generateBudgetReport(
 
     // Compute constrained optimal for each discretionary category
     const constrainedRows = discretionary.map(cat => {
-      const isMaintain = cat.gap.recommendedAction === 'maintain';
-      const constrainedOptimal = isMaintain
+      // F-grade categories are frozen at current levels in constrained mode.
+      // We still display them in the table but do not reallocate through them.
+      const isFixed = cat.gap.recommendedAction === 'maintain' || cat.oslEstimate.evidenceGrade === 'F';
+      const constrainedOptimal = isFixed
         ? cat.category.currentSpendingUsd
         : cat.oslEstimate.oslUsd * actionableScalingFactor;
       const reallocation = constrainedOptimal - cat.category.currentSpendingUsd;
@@ -261,7 +263,7 @@ export function generateBudgetReport(
         ? (reallocation / cat.category.currentSpendingUsd) * 100
         : 0;
       // Derive action label from the constrained reallocation direction
-      const constrainedAction = constrainedActionLabel(reallocationPct, isMaintain, cat.oslEstimate.evidenceGrade);
+      const constrainedAction = constrainedActionLabel(reallocationPct, isFixed, cat.oslEstimate.evidenceGrade);
       return { cat, constrainedOptimal, reallocation, reallocationPct, constrainedAction };
     });
 
@@ -311,15 +313,19 @@ export function generateBudgetReport(
   }
   lines.push('');
   lines.push(`- **Jurisdiction:** ${analysis.jurisdictionName} (${analysis.jurisdictionId})`);
-      lines.push(`- **Fiscal Year:** ${analysis.fiscalYear}`);
-      lines.push(`- **Total Current Budget:** ${formatUsd(analysis.totalBudgetUsd)}`);
+  lines.push(`- **Fiscal Year:** ${analysis.fiscalYear}`);
+  lines.push(`- **Total Current Budget:** ${formatUsd(analysis.totalBudgetUsd)}`);
   if (constrainToCurrentBudget) {
+    lines.push('- **Scenario:** Fixed-budget reallocation (scaled from unconstrained OSL recommendations)');
     lines.push(`- **Constrained Budget:** ${formatUsd(analysis.totalBudgetUsd)} (held fixed)`);
+    lines.push('- **Budget Delta (Constrained - Current):** $0 (held fixed)');
+    lines.push(`- **Unconstrained Delta (OSL - Current):** ${formatGapUsd(analysis.totalOptimalUsd - analysis.totalBudgetUsd)}`);
   } else {
+    lines.push('- **Scenario:** Unconstrained OSL benchmark (category optima may not sum to current budget)');
     lines.push(`- **Total Optimal Budget:** ${formatUsd(analysis.totalOptimalUsd)}`);
+    lines.push(`- **Budget Delta (Optimal - Current):** ${formatGapUsd(analysis.totalOptimalUsd - analysis.totalBudgetUsd)}`);
   }
-      lines.push(`- **Budget Delta (Optimal - Current):** ${formatGapUsd(analysis.totalOptimalUsd - analysis.totalBudgetUsd)}`);
-      lines.push('');
+  lines.push('');
 
   // --- Current vs Optimal Allocation ---
   if (analysis.categories.length > 0) {

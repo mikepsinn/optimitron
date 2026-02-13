@@ -474,6 +474,8 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Constrained Optimal');
     expect(report).toContain('Reallocation within');
     expect(report).toContain('held fixed');
+    expect(report).toContain('Budget Delta (Constrained - Current):** $0 (held fixed)');
+    expect(report).toContain('Unconstrained Delta (OSL - Current):');
   });
 
   it('counts only discretionary categories in summary', () => {
@@ -611,6 +613,8 @@ describe('generateBudgetReport', () => {
     // Find Justice row in constrained reallocation table — should say "Insufficient evidence"
     const justiceLine = report.split('\n').find(l => l.includes('Justice') && l.includes('|'));
     expect(justiceLine).toContain('Insufficient evidence');
+    // F-grade category should be frozen at current spending in constrained mode
+    expect(justiceLine).toContain('| $50B | $50B | $0 (0.0%) |');
   });
 
   it('shows "Domestic (N-of-1)" method label', () => {

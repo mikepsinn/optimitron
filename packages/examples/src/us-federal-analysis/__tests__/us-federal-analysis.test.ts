@@ -20,17 +20,20 @@ const OUTPUT_DIR = path.resolve(__dirname, '../../../output');
 let budgetJson: any;
 let policyJson: any;
 let budgetMarkdown: string;
+let budgetConstrainedMarkdown: string;
 let policyMarkdown: string;
 
 beforeAll(() => {
   const budgetJsonPath = path.join(OUTPUT_DIR, 'us-budget-analysis.json');
   const policyJsonPath = path.join(OUTPUT_DIR, 'us-policy-analysis.json');
   const budgetMdPath = path.join(OUTPUT_DIR, 'us-budget-report.md');
+  const budgetConstrainedMdPath = path.join(OUTPUT_DIR, 'us-budget-report-constrained.md');
   const policyMdPath = path.join(OUTPUT_DIR, 'us-policy-report.md');
 
   budgetJson = JSON.parse(fs.readFileSync(budgetJsonPath, 'utf-8'));
   policyJson = JSON.parse(fs.readFileSync(policyJsonPath, 'utf-8'));
   budgetMarkdown = fs.readFileSync(budgetMdPath, 'utf-8');
+  budgetConstrainedMarkdown = fs.readFileSync(budgetConstrainedMdPath, 'utf-8');
   policyMarkdown = fs.readFileSync(policyMdPath, 'utf-8');
 });
 
@@ -131,6 +134,16 @@ describe('Budget Report Markdown', () => {
     expect(budgetMarkdown).toContain('## Summary');
   });
 
+  it('should make unconstrained OSL report the primary artifact', () => {
+    expect(budgetMarkdown).not.toContain('## Constrained Reallocation');
+    expect(budgetMarkdown).toContain('Scenario:** Unconstrained OSL benchmark');
+  });
+
+  it('should still publish constrained report as a secondary artifact', () => {
+    expect(budgetConstrainedMarkdown).toContain('## Constrained Reallocation');
+    expect(budgetConstrainedMarkdown).toContain('Scenario:** Fixed-budget reallocation');
+  });
+
   it('should have a Current vs Optimal Allocation table', () => {
     expect(budgetMarkdown).toContain('## Current vs Optimal Allocation');
     expect(budgetMarkdown).toContain('| Category |');
@@ -160,10 +173,10 @@ describe('Budget Report Markdown', () => {
   });
 
   it('should list non-discretionary items in excluded section', () => {
-    expect(budgetMarkdown).toContain('Non-discretionary (excluded from reallocation)');
-    expect(budgetMarkdown).toContain('Social Security');
-    expect(budgetMarkdown).toContain('Medicare');
-    expect(budgetMarkdown).toContain('Medicaid');
+    expect(budgetConstrainedMarkdown).toContain('Non-discretionary (excluded from reallocation)');
+    expect(budgetConstrainedMarkdown).toContain('Social Security');
+    expect(budgetConstrainedMarkdown).toContain('Medicare');
+    expect(budgetConstrainedMarkdown).toContain('Medicaid');
   });
 
   it('should separate non-discretionary from maintain in Top Recommendations', () => {

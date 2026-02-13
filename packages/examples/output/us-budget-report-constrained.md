@@ -1,15 +1,44 @@
 # Budget Optimization Report: United States of America
 
+## Constrained Reallocation
+
+Reallocation within the current $6750B budget could improve welfare by 21.7%.
+
+| Category | Current | Constrained Optimal | Reallocation | Action |
+|----------|---------|--------------------:|-------------:|--------|
+| Education | $238B | $883.5B | +$645.5B (+271.2%) | Major increase |
+| Military | $886B | $334.3B | -$551.7B (-62.3%) | Major decrease |
+| Science & Space (NASA, NSF) | $81B | $347.9B | +$266.9B (+329.5%) | Major increase |
+| Income Security (SNAP, Housing) | $304B | $458.8B | +$154.8B (+50.9%) | Major increase |
+| Community & Regional Development | $41B | $77.6B | +$36.6B (+89.2%) | Major increase |
+| Energy Programs | $54B | $78.8B | +$24.8B (+46.0%) | Increase |
+| Transportation & Infrastructure | $168B | $168B | $0 (0.0%) | Insufficient evidence |
+| Justice & Law Enforcement | $68B | $68B | $0 (0.0%) | Insufficient evidence |
+| International Affairs & Aid | $68B | $68B | $0 (0.0%) | Insufficient evidence |
+| Farm Subsidies | $30B | $30B | $0 (0.0%) | Insufficient evidence |
+| Health Research (NIH, CDC) | $102B | $102B | $0 (0.0%) | Insufficient evidence |
+| Immigration & Customs Enforcement | $9B | $9B | $0 (0.0%) | Insufficient evidence |
+| Environment & EPA | $68B | $68B | $0 (0.0%) | Insufficient evidence |
+| Agriculture & Food Safety | $38B | $38B | $0 (0.0%) | Insufficient evidence |
+
+**Non-discretionary (excluded from reallocation):**
+- Social Security: $1418B
+- Medicare: $874B
+- Medicaid & CHIP: $575B
+- Net Interest on Debt: $881B
+- Veterans Benefits: $270B
+
 ## Summary
 
-Optimizing the $6750B budget across 14 discretionary categories could improve welfare by 21.7%.
+Reallocation within the $6750B budget across 14 discretionary categories could improve welfare by 21.7%.
 
 - **Jurisdiction:** United States of America (US)
 - **Fiscal Year:** 2025
 - **Total Current Budget:** $6750B
-- **Scenario:** Unconstrained OSL benchmark (category optima may not sum to current budget)
-- **Total Optimal Budget:** $8313.7B
-- **Budget Delta (Optimal - Current):** +$1563.7B
+- **Scenario:** Fixed-budget reallocation (scaled from unconstrained OSL recommendations)
+- **Constrained Budget:** $6750B (held fixed)
+- **Budget Delta (Constrained - Current):** $0 (held fixed)
+- **Unconstrained Delta (OSL - Current):** +$1563.7B
 
 ## Current vs Optimal Allocation
 
