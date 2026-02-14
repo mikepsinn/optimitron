@@ -1,0 +1,169 @@
+{
+  "generatedAt": "2026-02-14T02:38:07.857Z",
+  "window": {
+    "startYear": 1990,
+    "endYear": 2023
+  },
+  "analysisJurisdictions": 50,
+  "worldBankMetrics": [
+    {
+      "id": "wb.gc_xpn_totl_gd_zs",
+      "label": "General Government Expense (% GDP)",
+      "scope": "international_comparable",
+      "source": "World Bank WDI GC.XPN.TOTL.GD.ZS",
+      "definition": "Consolidated general government expense as a share of GDP.",
+      "indicatorCode": "GC.XPN.TOTL.GD.ZS",
+      "panelCoverage": {
+        "observations": 1402,
+        "jurisdictions": 47,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 32
+      },
+      "globalCoverage": {
+        "observations": 4241,
+        "jurisdictions": 186,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 23
+      },
+      "usLatest": {
+        "year": 2023,
+        "value": 24.8982825568771,
+        "unit": "% GDP"
+      }
+    },
+    {
+      "id": "wb.ne_con_govt_zs",
+      "label": "General Government Final Consumption (% GDP)",
+      "scope": "international_comparable",
+      "source": "World Bank WDI NE.CON.GOVT.ZS",
+      "definition": "Government final consumption only (narrower than total expense).",
+      "indicatorCode": "NE.CON.GOVT.ZS",
+      "panelCoverage": {
+        "observations": 1639,
+        "jurisdictions": 49,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 34
+      },
+      "globalCoverage": {
+        "observations": 6798,
+        "jurisdictions": 223,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 34
+      },
+      "usLatest": {
+        "year": 2022,
+        "value": 13.9429723365358,
+        "unit": "% GDP"
+      }
+    },
+    {
+      "id": "derived.gov_expenditure_per_capita_ppp",
+      "label": "Government Expense Per Capita (PPP)",
+      "scope": "international_comparable",
+      "source": "Derived from GC.XPN.TOTL.GD.ZS and NY.GDP.PCAP.PP.CD",
+      "definition": "Absolute spending scale per person at PPP prices.",
+      "indicatorCode": "(GC.XPN.TOTL.GD.ZS/100)*NY.GDP.PCAP.PP.CD",
+      "panelCoverage": {
+        "observations": 1402,
+        "jurisdictions": 47,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 32
+      },
+      "globalCoverage": {
+        "observations": 4241,
+        "jurisdictions": 186,
+        "yearMin": 1990,
+        "yearMax": 2023,
+        "medianYearsPerJurisdiction": 23
+      },
+      "usLatest": {
+        "year": 2023,
+        "value": 20492.436951351006,
+        "unit": "international $/person"
+      }
+    }
+  ],
+  "usContextMetrics": [
+    {
+      "id": "fred.fyongda188s",
+      "label": "Federal Net Outlays (% GDP)",
+      "scope": "us_context_only",
+      "source": "FRED FYONGDA188S",
+      "definition": "Federal-only net outlays share of GDP (excludes state and local).",
+      "latest": {
+        "date": "2024-01-01",
+        "value": 22.98755,
+        "unit": "% GDP"
+      },
+      "latestCalendarYearAverage": {
+        "year": 2024,
+        "value": 22.98755,
+        "unit": "% GDP"
+      },
+      "notes": [
+        "US-only federal scope; not an international general-government metric."
+      ]
+    },
+    {
+      "id": "derived.fred.current_exp_fed_plus_state_local_pct_gdp",
+      "label": "Federal + State/Local Current Expenditures (% GDP, derived)",
+      "scope": "us_context_only",
+      "source": "FRED FGEXPND + SLEXPND over GDP",
+      "definition": "Non-consolidated current expenditure flow ratio for US fiscal context.",
+      "latest": {
+        "date": "2025-07-01",
+        "value": 37.91751483140715,
+        "unit": "% GDP"
+      },
+      "latestCalendarYearAverage": {
+        "year": 2025,
+        "value": 37.94752480493594,
+        "unit": "% GDP"
+      },
+      "notes": [
+        "US-only and not cross-country harmonized; useful as domestic context only."
+      ]
+    },
+    {
+      "id": "derived.fred.gce_pct_gdp",
+      "label": "Government Consumption + Investment (% GDP, derived)",
+      "scope": "us_context_only",
+      "source": "FRED GCE over GDP",
+      "definition": "Government purchases/investment share (excludes transfers).",
+      "latest": {
+        "date": "2025-07-01",
+        "value": 17.121349852837934,
+        "unit": "% GDP"
+      },
+      "latestCalendarYearAverage": {
+        "year": 2025,
+        "value": 17.197964737369393,
+        "unit": "% GDP"
+      },
+      "notes": [
+        "International analog exists, but it measures a narrower concept than total government expense."
+      ]
+    }
+  ],
+  "recommendation": {
+    "primaryInternationalMetricId": "wb.gc_xpn_totl_gd_zs",
+    "companionMetrics": [
+      "derived.gov_expenditure_per_capita_ppp"
+    ],
+    "rationale": [
+      "GC.XPN.TOTL.GD.ZS is the broadest internationally harmonized spending-size series in the current pipeline.",
+      "It is already available for the full analysis panel and aligns with the current cross-country optimizer input.",
+      "Per-capita PPP companion metrics help separate real spending scale from GDP-ratio denominator effects."
+    ],
+    "caveats": [
+      "Different accounting frameworks can still reduce comparability across countries.",
+      "Expense % GDP reflects both numerator policy changes and denominator (GDP) fluctuations.",
+      "US-only flow measures (federal outlays, federal+state/local current expenditures) are useful context but not panel-compatible defaults."
+    ]
+  }
+}

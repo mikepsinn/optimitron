@@ -27,9 +27,21 @@
    - Added robust sex-dimension fallback:
      - initial query attempts `Dim1 eq 'BTSX'`
      - automatically retries without `Dim1` when indicator rows are empty or request fails.
-   - Added transient retry/backoff for WHO request instability (`UND_ERR_CONNECT_TIMEOUT`, retryable HTTP statuses).
-   - Added regression coverage in `packages/data/src/__tests__/fetchers/who.test.ts` for:
+- Added transient retry/backoff for WHO request instability (`UND_ERR_CONNECT_TIMEOUT`, retryable HTTP statuses).
+- Added regression coverage in `packages/data/src/__tests__/fetchers/who.test.ts` for:
      - no-`Dim1` fallback behavior
      - transient network retry behavior
-   - Validation:
-     - `pnpm --filter @optomitron/examples generate:mega-studies` now produces 64/64 pair studies with HALE included (zero skipped pairs).
+- Validation:
+  - `pnpm --filter @optomitron/examples generate:mega-studies` now produces 64/64 pair studies with HALE included (zero skipped pairs).
+- Added a dedicated government-spending metric comparison artifact for source transparency:
+  - documents competing definitions, US context estimates, and cross-country default recommendation.
+12. [x] Publish government spending metric taxonomy + source-comparison artifact.
+   - Added generator: `packages/examples/src/us-federal-analysis/generate-government-spending-metric-comparison.ts`.
+   - Added npm script: `pnpm --filter @optomitron/examples generate:government-spending-metrics`.
+   - Publishes:
+     - `packages/examples/output/government-spending-metric-comparison.md`
+     - `packages/examples/output/government-spending-metric-comparison.json`
+   - Includes:
+     - internationally comparable metric definitions and coverage snapshots
+     - US-only context estimates (not panel defaults)
+     - explicit primary-metric recommendation for cross-country analysis.

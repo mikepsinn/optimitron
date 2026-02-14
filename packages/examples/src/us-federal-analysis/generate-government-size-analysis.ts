@@ -2,7 +2,8 @@
  * Government Size Analysis (World Bank Panel, configurable window)
  *
  * Estimates an evidence-weighted optimal government spending share (% GDP)
- * using multi-jurisdiction N-of-1 causal analysis across four outcomes.
+ * using multi-jurisdiction N-of-1 causal analysis across four core outcomes:
+ * HALE level/growth and after-tax median income proxy level/growth.
  *
  * Predictor:
  *   General government expenditure (% GDP)
@@ -36,14 +37,16 @@ const DEFAULT_START_YEAR = 1990;
 const DEFAULT_END_YEAR = 2023;
 const DEFAULT_SENSITIVITY_START_YEARS = [1990, 1995, 2000] as const;
 const DEFAULT_JURISDICTIONS = [...TOP_COUNTRIES];
+const CAUSAL_ONSET_DAYS = 365;
+const CAUSAL_DURATION_DAYS = 1095;
 
 type OutcomeDirection = 'higher_better' | 'lower_better';
 
 type OutcomeSourceKey =
-  | 'lifeExpectancy'
-  | 'gdpPerCapita'
-  | 'infantMortality'
-  | 'gini';
+  | 'healthyLifeExpectancy'
+  | 'healthyLifeExpectancyGrowthPct'
+  | 'afterTaxMedianIncomePpp'
+  | 'afterTaxMedianIncomeGrowthPct';
 
 interface OutcomeSpec {
   id: string;
@@ -147,6 +150,12 @@ interface GovernmentSizeAnalysisData {
     note: string;
   };
   spendingLevelTable: {
+    alignment: {
+      type: 'lag_aligned_follow_up';
+      onsetYears: number;
+      durationYears: number;
+      description: string;
+    };
     healthyLifeYearsMetric: {
       isDirectMetric: boolean;
       metricUsed: string;
@@ -162,6 +171,12 @@ interface GovernmentSizeAnalysisData {
   };
   spendingPerCapitaLevelTable: {
     definition: string;
+    alignment: {
+      type: 'lag_aligned_follow_up';
+      onsetYears: number;
+      durationYears: number;
+      description: string;
+    };
     binning: AdaptiveBinningMetadata;
     tiers: SpendingPerCapitaTier[];
   };
@@ -206,10 +221,11 @@ interface YearWindow {
 
 interface IndicatorDataset {
   predictor: DataPoint[];
-  lifeExpectancy: DataPoint[];
   gdpPerCapita: DataPoint[];
-  infantMortality: DataPoint[];
-  gini: DataPoint[];
+  healthyLifeExpectancy: DataPoint[];
+  healthyLifeExpectancyGrowthPct: DataPoint[];
+  afterTaxMedianIncomePpp: DataPoint[];
+  afterTaxMedianIncomeGrowthPct: DataPoint[];
 }
 
 interface ScenarioAnalysis {
@@ -239,10 +255,11 @@ interface PanelRow {
   jurisdictionIso3: string;
   year: number;
   predictorPctGdp: number;
-  lifeExpectancyYears: number | null;
+  healthyLifeExpectancyYears: number | null;
+  healthyLifeExpectancyGrowthPct: number | null;
+  afterTaxMedianIncomePpp: number | null;
+  afterTaxMedianIncomeGrowthPct: number | null;
   gdpPerCapitaPpp: number | null;
-  infantMortalityPer1000: number | null;
-  giniIndex: number | null;
 }
 
 interface SpendingObservation {
@@ -250,44 +267,44 @@ interface SpendingObservation {
   year: number;
   spendingPctGdp: number;
   spendingPerCapitaPpp: number | null;
-  lifeExpectancyYears: number | null;
-  lifeExpectancyGrowthYears: number | null;
-  gdpPerCapitaPpp: number | null;
-  gdpPerCapitaGrowthPct: number | null;
+  healthyLifeExpectancyYears: number | null;
+  healthyLifeExpectancyGrowthPct: number | null;
+  afterTaxMedianIncomePpp: number | null;
+  afterTaxMedianIncomeGrowthPct: number | null;
 }
 
 const OUTCOMES: OutcomeSpec[] = [
   {
-    id: 'life_expectancy',
-    name: 'Life Expectancy',
-    sourceKey: 'lifeExpectancy',
+    id: 'healthy_life_expectancy_years',
+    name: 'Healthy Life Expectancy (HALE)',
+    sourceKey: 'healthyLifeExpectancy',
     direction: 'higher_better',
-    weight: 0.35,
+    weight: 0.25,
     unit: 'years',
   },
   {
-    id: 'gdp_per_capita',
-    name: 'GDP per Capita (PPP)',
-    sourceKey: 'gdpPerCapita',
+    id: 'healthy_life_expectancy_growth_yoy_pct',
+    name: 'Healthy Life Expectancy Growth (Annualized %)',
+    sourceKey: 'healthyLifeExpectancyGrowthPct',
     direction: 'higher_better',
-    weight: 0.35,
-    unit: 'current international $',
+    weight: 0.25,
+    unit: '% YoY',
   },
   {
-    id: 'infant_mortality',
-    name: 'Infant Mortality',
-    sourceKey: 'infantMortality',
-    direction: 'lower_better',
-    weight: 0.15,
-    unit: 'per 1,000 live births',
+    id: 'after_tax_median_income_ppp',
+    name: 'After-Tax Median Income (PPP, proxy)',
+    sourceKey: 'afterTaxMedianIncomePpp',
+    direction: 'higher_better',
+    weight: 0.25,
+    unit: 'international $',
   },
   {
-    id: 'inequality',
-    name: 'Income Inequality (Gini)',
-    sourceKey: 'gini',
-    direction: 'lower_better',
-    weight: 0.15,
-    unit: 'index',
+    id: 'after_tax_median_income_growth_yoy_pct',
+    name: 'After-Tax Median Income Growth (Annualized %, proxy)',
+    sourceKey: 'afterTaxMedianIncomeGrowthPct',
+    direction: 'higher_better',
+    weight: 0.25,
+    unit: '% YoY',
   },
 ];
 const ADAPTIVE_BIN_CONFIG = Object.freeze({
@@ -328,6 +345,15 @@ function quantile(values: number[], q: number): number {
   return loVal + (hiVal - loVal) * (idx - lo);
 }
 
+function quantileOrNull(values: number[], q: number): number | null {
+  if (values.length === 0) return null;
+  return quantile(values, q);
+}
+
+function daysToWholeYears(days: number): number {
+  return Math.max(0, Math.ceil(days / 365));
+}
+
 function weightedMean(values: Array<{ value: number; weight: number }>): number {
   const sumWeights = values.reduce((sum, item) => sum + item.weight, 0);
   if (sumWeights <= 0) return avg(values.map(v => v.value));
@@ -356,16 +382,70 @@ function byCountryYear(points: DataPoint[]): Map<string, number> {
   return map;
 }
 
+function deriveAnnualizedGrowthPercent(
+  points: DataPoint[],
+  sourceLabel: string,
+): DataPoint[] {
+  const byJurisdiction = new Map<string, DataPoint[]>();
+  for (const point of points) {
+    if (!isFiniteNumber(point.value)) continue;
+    const existing = byJurisdiction.get(point.jurisdictionIso3);
+    if (existing) {
+      existing.push(point);
+    } else {
+      byJurisdiction.set(point.jurisdictionIso3, [point]);
+    }
+  }
+
+  const derived: DataPoint[] = [];
+  for (const [jurisdictionIso3, jurisdictionPoints] of byJurisdiction) {
+    const sorted = [...jurisdictionPoints].sort((a, b) => a.year - b.year);
+    let previous: DataPoint | null = null;
+
+    for (const current of sorted) {
+      if (!previous || previous.value <= 0) {
+        previous = current;
+        continue;
+      }
+
+      const yearsElapsed = current.year - previous.year;
+      if (yearsElapsed <= 0) {
+        previous = current;
+        continue;
+      }
+
+      const annualizedGrowthPct =
+        (Math.pow(current.value / previous.value, 1 / yearsElapsed) - 1) * 100;
+      if (!Number.isFinite(annualizedGrowthPct)) {
+        previous = current;
+        continue;
+      }
+
+      derived.push({
+        jurisdictionIso3,
+        year: current.year,
+        value: annualizedGrowthPct,
+        unit: '% YoY',
+        source: sourceLabel,
+      });
+
+      previous = current;
+    }
+  }
+
+  return derived;
+}
+
 function getOutcomePoints(dataset: IndicatorDataset, sourceKey: OutcomeSourceKey): DataPoint[] {
   switch (sourceKey) {
-    case 'lifeExpectancy':
-      return dataset.lifeExpectancy;
-    case 'gdpPerCapita':
-      return dataset.gdpPerCapita;
-    case 'infantMortality':
-      return dataset.infantMortality;
-    case 'gini':
-      return dataset.gini;
+    case 'healthyLifeExpectancy':
+      return dataset.healthyLifeExpectancy;
+    case 'healthyLifeExpectancyGrowthPct':
+      return dataset.healthyLifeExpectancyGrowthPct;
+    case 'afterTaxMedianIncomePpp':
+      return dataset.afterTaxMedianIncomePpp;
+    case 'afterTaxMedianIncomeGrowthPct':
+      return dataset.afterTaxMedianIncomeGrowthPct;
   }
 }
 
@@ -377,27 +457,43 @@ async function fetchIndicatorDataset(
     jurisdictions,
     period: window,
   };
+  const whoOptions = {
+    period: window,
+  };
 
   const [
     predictor,
-    lifeExpectancy,
     gdpPerCapita,
-    infantMortality,
-    gini,
+    healthyLifeExpectancyRaw,
+    afterTaxMedianIncomePpp,
   ] = await Promise.all([
     fetchers.fetchGovExpenditure(options),
-    fetchers.fetchLifeExpectancy(options),
     fetchers.fetchGdpPerCapita(options),
-    fetchers.fetchInfantMortality(options),
-    fetchers.fetchGiniIndex(options),
+    fetchers.fetchWHOHealthyLifeExpectancy(whoOptions),
+    fetchers.fetchGniPerCapitaPpp(options),
   ]);
+
+  const jurisdictionSet = new Set(jurisdictions);
+  const healthyLifeExpectancy = healthyLifeExpectancyRaw.filter(
+    point => jurisdictionSet.has(point.jurisdictionIso3),
+  );
+
+  const healthyLifeExpectancyGrowthPct = deriveAnnualizedGrowthPercent(
+    healthyLifeExpectancy,
+    'derived:annualized_growth(outcome.who.healthy_life_expectancy_years)',
+  );
+  const afterTaxMedianIncomeGrowthPct = deriveAnnualizedGrowthPercent(
+    afterTaxMedianIncomePpp,
+    'derived:annualized_growth(outcome.derived.after_tax_median_income_ppp)',
+  );
 
   return {
     predictor,
-    lifeExpectancy,
     gdpPerCapita,
-    infantMortality,
-    gini,
+    healthyLifeExpectancy,
+    healthyLifeExpectancyGrowthPct,
+    afterTaxMedianIncomePpp,
+    afterTaxMedianIncomeGrowthPct,
   };
 }
 
@@ -455,8 +551,8 @@ function analyzeOutcome(
     predictors,
     outcomes,
     config: {
-      onsetDelayDays: 365,
-      durationOfActionDays: 1095,
+      onsetDelayDays: CAUSAL_ONSET_DAYS,
+      durationOfActionDays: CAUSAL_DURATION_DAYS,
       fillingType: 'interpolation',
       minimumDataPoints: 5,
       plausibilityScore: 0.7,
@@ -599,10 +695,13 @@ function buildPanelRows(
 ): PanelRow[] {
   const predictors = filterDataPoints(dataset.predictor, window);
 
-  const life = byCountryYear(filterDataPoints(dataset.lifeExpectancy, window));
+  const hale = byCountryYear(filterDataPoints(dataset.healthyLifeExpectancy, window));
+  const haleGrowth = byCountryYear(filterDataPoints(dataset.healthyLifeExpectancyGrowthPct, window));
+  const afterTaxIncome = byCountryYear(filterDataPoints(dataset.afterTaxMedianIncomePpp, window));
+  const afterTaxIncomeGrowth = byCountryYear(
+    filterDataPoints(dataset.afterTaxMedianIncomeGrowthPct, window),
+  );
   const gdp = byCountryYear(filterDataPoints(dataset.gdpPerCapita, window));
-  const infant = byCountryYear(filterDataPoints(dataset.infantMortality, window));
-  const gini = byCountryYear(filterDataPoints(dataset.gini, window));
 
   return predictors
     .map(point => {
@@ -611,10 +710,11 @@ function buildPanelRows(
         jurisdictionIso3: point.jurisdictionIso3,
         year: point.year,
         predictorPctGdp: point.value,
-        lifeExpectancyYears: life.get(key) ?? null,
+        healthyLifeExpectancyYears: hale.get(key) ?? null,
+        healthyLifeExpectancyGrowthPct: haleGrowth.get(key) ?? null,
+        afterTaxMedianIncomePpp: afterTaxIncome.get(key) ?? null,
+        afterTaxMedianIncomeGrowthPct: afterTaxIncomeGrowth.get(key) ?? null,
         gdpPerCapitaPpp: gdp.get(key) ?? null,
-        infantMortalityPer1000: infant.get(key) ?? null,
-        giniIndex: gini.get(key) ?? null,
       } satisfies PanelRow;
     })
     .sort((a, b) => {
@@ -625,7 +725,11 @@ function buildPanelRows(
     });
 }
 
-function buildSpendingObservations(rows: PanelRow[]): SpendingObservation[] {
+function buildLagAlignedSpendingObservations(
+  rows: PanelRow[],
+  onsetYears: number,
+  durationYears: number,
+): SpendingObservation[] {
   const byCountry = new Map<string, PanelRow[]>();
   for (const row of rows) {
     const existing = byCountry.get(row.jurisdictionIso3);
@@ -637,41 +741,57 @@ function buildSpendingObservations(rows: PanelRow[]): SpendingObservation[] {
   }
 
   const observations: SpendingObservation[] = [];
-  for (const [iso3, countryRows] of byCountry) {
+  for (const [jurisdictionIso3, countryRows] of byCountry) {
     const sorted = [...countryRows].sort((a, b) => a.year - b.year);
 
-    let prevLife: number | null = null;
-    let prevGdp: number | null = null;
-
     for (const row of sorted) {
-      let lifeGrowth: number | null = null;
-      if (prevLife != null && row.lifeExpectancyYears != null) {
-        lifeGrowth = row.lifeExpectancyYears - prevLife;
-      }
+      const followUpStartYear = row.year + onsetYears;
+      const followUpEndYear = row.year + durationYears;
+      const followUpRows = sorted.filter(
+        candidate =>
+          candidate.year >= followUpStartYear &&
+          candidate.year <= followUpEndYear,
+      );
+      if (followUpRows.length === 0) continue;
 
-      let gdpGrowth: number | null = null;
-      if (prevGdp != null && row.gdpPerCapitaPpp != null && prevGdp !== 0) {
-        gdpGrowth = ((row.gdpPerCapitaPpp - prevGdp) / prevGdp) * 100;
+      const haleFollowUp = followUpRows
+        .map(candidate => candidate.healthyLifeExpectancyYears)
+        .filter((value): value is number => isFiniteNumber(value));
+      const haleGrowthFollowUp = followUpRows
+        .map(candidate => candidate.healthyLifeExpectancyGrowthPct)
+        .filter((value): value is number => isFiniteNumber(value));
+      const incomeFollowUp = followUpRows
+        .map(candidate => candidate.afterTaxMedianIncomePpp)
+        .filter((value): value is number => isFiniteNumber(value));
+      const incomeGrowthFollowUp = followUpRows
+        .map(candidate => candidate.afterTaxMedianIncomeGrowthPct)
+        .filter((value): value is number => isFiniteNumber(value));
+
+      const healthyLifeExpectancyYears = quantileOrNull(haleFollowUp, 0.5);
+      const healthyLifeExpectancyGrowthPct = quantileOrNull(haleGrowthFollowUp, 0.5);
+      const afterTaxMedianIncomePpp = quantileOrNull(incomeFollowUp, 0.5);
+      const afterTaxMedianIncomeGrowthPct = quantileOrNull(incomeGrowthFollowUp, 0.5);
+
+      if (
+        healthyLifeExpectancyYears == null &&
+        healthyLifeExpectancyGrowthPct == null &&
+        afterTaxMedianIncomePpp == null &&
+        afterTaxMedianIncomeGrowthPct == null
+      ) {
+        continue;
       }
 
       observations.push({
-        jurisdictionIso3: iso3,
+        jurisdictionIso3,
         year: row.year,
         spendingPctGdp: row.predictorPctGdp,
         spendingPerCapitaPpp:
           row.gdpPerCapitaPpp == null ? null : (row.predictorPctGdp / 100) * row.gdpPerCapitaPpp,
-        lifeExpectancyYears: row.lifeExpectancyYears,
-        lifeExpectancyGrowthYears: lifeGrowth,
-        gdpPerCapitaPpp: row.gdpPerCapitaPpp,
-        gdpPerCapitaGrowthPct: gdpGrowth,
+        healthyLifeExpectancyYears,
+        healthyLifeExpectancyGrowthPct,
+        afterTaxMedianIncomePpp,
+        afterTaxMedianIncomeGrowthPct,
       });
-
-      if (row.lifeExpectancyYears != null) {
-        prevLife = row.lifeExpectancyYears;
-      }
-      if (row.gdpPerCapitaPpp != null) {
-        prevGdp = row.gdpPerCapitaPpp;
-      }
     }
   }
 
@@ -698,38 +818,38 @@ function summarizeTierOutcomes(
   matches: SpendingObservation[],
   minBinSize: number,
 ): TierOutcomeSummary {
-  const lifeValues = matches
-    .map(observation => observation.lifeExpectancyYears)
+  const haleValues = matches
+    .map(observation => observation.healthyLifeExpectancyYears)
     .filter((value): value is number => isFiniteNumber(value));
 
-  const lifeGrowthValues = matches
-    .map(observation => observation.lifeExpectancyGrowthYears)
+  const haleGrowthValues = matches
+    .map(observation => observation.healthyLifeExpectancyGrowthPct)
     .filter((value): value is number => isFiniteNumber(value));
 
   const incomeLevelValues = matches
-    .map(observation => observation.gdpPerCapitaPpp)
+    .map(observation => observation.afterTaxMedianIncomePpp)
     .filter((value): value is number => isFiniteNumber(value));
 
   const incomeGrowthValues = matches
-    .map(observation => observation.gdpPerCapitaGrowthPct)
+    .map(observation => observation.afterTaxMedianIncomeGrowthPct)
     .filter((value): value is number => isFiniteNumber(value));
 
   return {
     observations: matches.length,
     jurisdictions: new Set(matches.map(observation => observation.jurisdictionIso3)).size,
-    typicalHealthyLifeYears: lifeValues.length > 0 ? quantile(lifeValues, 0.5) : null,
+    typicalHealthyLifeYears: haleValues.length > 0 ? quantile(haleValues, 0.5) : null,
     typicalHealthyLifeYearsGrowthPerYear:
-      lifeGrowthValues.length > 0 ? quantile(lifeGrowthValues, 0.5) : null,
+      haleGrowthValues.length > 0 ? quantile(haleGrowthValues, 0.5) : null,
     typicalRealAfterTaxMedianIncomeLevel:
       incomeLevelValues.length > 0 ? quantile(incomeLevelValues, 0.5) : null,
     typicalRealAfterTaxMedianIncomeGrowthPct:
       incomeGrowthValues.length > 0 ? quantile(incomeGrowthValues, 0.5) : null,
     lowSampleWarning: matches.length < minBinSize ? 'Small sample: interpret cautiously' : null,
     proxyNotes: [
-      'Healthy life years proxy: life expectancy at birth',
-      'Healthy life years growth proxy: life expectancy YoY change',
-      'Real after-tax median income level proxy: GDP per capita PPP level',
-      'Real after-tax median income growth proxy: real GDP per capita YoY growth',
+      'Healthy life years level: WHO Healthy Life Expectancy (HALE).',
+      'Healthy life years growth: annualized percent growth of HALE.',
+      'Real after-tax median income level proxy: GNI per-capita PPP level.',
+      'Real after-tax median income growth proxy: annualized percent growth of GNI per-capita PPP.',
     ],
   };
 }
@@ -845,6 +965,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push(
     '- Includes total general government spending share relative to GDP (not category-level decomposition).',
   );
+  lines.push('- Source taxonomy and alternative definitions: `government-spending-metric-comparison.md`.');
   lines.push('');
 
   lines.push('## Data Coverage');
@@ -881,11 +1002,14 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('## Spending Levels vs Typical Outcomes');
   lines.push('');
   lines.push('Primary welfare outcomes are median healthy life years and real after-tax median income growth.');
-  lines.push('Cross-country panel proxies are used here because direct country-year series for those metrics are incomplete in-repo:');
-  lines.push('- Healthy life years level proxy: Life expectancy at birth');
-  lines.push('- Healthy life years growth proxy: Life expectancy YoY change');
-  lines.push('- Real after-tax median income level proxy: GDP per capita PPP level');
-  lines.push('- Real after-tax median income growth proxy: Real GDP per capita YoY growth');
+  lines.push(
+    `Rows are lag-aligned for causal interpretation: predictor at year t, outcomes summarized over t+${data.spendingLevelTable.alignment.onsetYears} to t+${data.spendingLevelTable.alignment.durationYears}.`,
+  );
+  lines.push('Coverage notes for metric construction:');
+  lines.push('- Healthy life years level: WHO Healthy Life Expectancy (HALE) (direct).');
+  lines.push('- Healthy life years growth: annualized percent growth of HALE.');
+  lines.push('- Real after-tax median income level: proxy via GNI per-capita PPP.');
+  lines.push('- Real after-tax median income growth: annualized percent growth of the GNI proxy.');
   lines.push('');
 
   lines.push('### Spending Share (% GDP) Bins');
@@ -897,7 +1021,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
       `rounded to ${data.spendingLevelTable.binning.roundTo}%`,
   );
   lines.push('');
-  lines.push('| Spending Level (% GDP) | Country-Years | Jurisdictions | Typical Healthy Life Years (proxy level) | Typical Healthy Life Years Growth (proxy) | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
+  lines.push('| Spending Level (% GDP) | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
   lines.push('|------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
   for (const tier of data.spendingLevelTable.tiers) {
     const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
@@ -939,7 +1063,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
       `rounded to ${formatUsd(data.spendingPerCapitaLevelTable.binning.roundTo)}`,
   );
   lines.push('');
-  lines.push('| Spending Per-Capita PPP Level | Country-Years | Jurisdictions | Typical Healthy Life Years (proxy level) | Typical Healthy Life Years Growth (proxy) | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
+  lines.push('| Spending Per-Capita PPP Level | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
   lines.push('|-------------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
   for (const tier of data.spendingPerCapitaLevelTable.tiers) {
     const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
@@ -996,6 +1120,9 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('- Run N-of-1 longitudinal causal analysis within each jurisdiction.');
   lines.push('- Estimate per-jurisdiction optimal predictor value from high-outcome periods.');
   lines.push('- Aggregate outcome-level medians and uncertainty bands (IQR).');
+  lines.push(
+    `- Build lag-aligned bin tables from predictor year t to outcome follow-up window t+${data.spendingLevelTable.alignment.onsetYears}..t+${data.spendingLevelTable.alignment.durationYears}.`,
+  );
   lines.push(`- Combine outcomes via ${data.overall.weightingMethod}.`);
   lines.push('- Report start-year sensitivity to show temporal robustness of the estimate.');
   lines.push('');
@@ -1004,7 +1131,8 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('');
   lines.push('- This is cross-country observational panel analysis; confounding remains possible.');
   lines.push('- Government spending % GDP captures scale, not composition quality.');
-  lines.push('- Healthy life years and after-tax median income are represented by in-repo proxies in the level table.');
+  lines.push('- Real after-tax median income is currently proxied by GNI per-capita PPP (not direct median disposable income).');
+  lines.push('- HALE growth and income-growth series are annualized derivatives and can be noisy in sparse panels.');
   lines.push('- Indicator revisions in source databases can shift historical estimates over time.');
   lines.push('');
 
@@ -1033,9 +1161,15 @@ export async function generateGovernmentSizeAnalysisArtifacts(
   const dataset = await fetchIndicatorDataset(fetchWindow, jurisdictions);
   const primaryWindow: YearWindow = { startYear, endYear };
   const primaryScenario = computeScenario(dataset, primaryWindow);
+  const onsetYears = daysToWholeYears(CAUSAL_ONSET_DAYS);
+  const durationYears = daysToWholeYears(CAUSAL_DURATION_DAYS);
 
   const panelRows = buildPanelRows(dataset, primaryWindow);
-  const spendingObservations = buildSpendingObservations(panelRows);
+  const spendingObservations = buildLagAlignedSpendingObservations(
+    panelRows,
+    onsetYears,
+    durationYears,
+  );
   const adaptiveBins = buildAdaptiveNumericBins(
     spendingObservations.map(observation => observation.spendingPctGdp),
     ADAPTIVE_BIN_CONFIG,
@@ -1075,15 +1209,22 @@ export async function generateGovernmentSizeAnalysisArtifacts(
       note: 'All scenarios use the same methodology and countries where data is available; only the start year changes.',
     },
     spendingLevelTable: {
+      alignment: {
+        type: 'lag_aligned_follow_up',
+        onsetYears,
+        durationYears,
+        description:
+          'Predictor is measured at year t; outcome summaries are medians over years t+onset through t+duration.',
+      },
       healthyLifeYearsMetric: {
-        isDirectMetric: false,
-        metricUsed: 'Life expectancy at birth (proxy)',
-        note: 'Complete country-year HALE coverage is not available in this in-repo panel.',
+        isDirectMetric: true,
+        metricUsed: 'WHO Healthy Life Expectancy (HALE)',
+        note: 'Growth is derived as annualized percent change in HALE.',
       },
       incomeGrowthMetric: {
         isDirectMetric: false,
-        metricUsed: 'Real GDP per capita YoY growth (proxy)',
-        note: 'Complete country-year real after-tax median income coverage is not available in this in-repo panel.',
+        metricUsed: 'Annualized growth of after-tax median income proxy (GNI per-capita PPP)',
+        note: 'Direct global after-tax median income time series is not yet integrated in this panel.',
       },
       binning: {
         method: 'adaptive quantile bins with anchor constraints',
@@ -1097,6 +1238,13 @@ export async function generateGovernmentSizeAnalysisArtifacts(
     },
     spendingPerCapitaLevelTable: {
       definition: 'Government expenditure per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.',
+      alignment: {
+        type: 'lag_aligned_follow_up',
+        onsetYears,
+        durationYears,
+        description:
+          'Predictor is measured at year t; outcome summaries are medians over years t+onset through t+duration.',
+      },
       binning: {
         method: 'adaptive quantile bins with anchor constraints',
         targetBinCount: ADAPTIVE_PER_CAPITA_BIN_CONFIG.targetBinCount,

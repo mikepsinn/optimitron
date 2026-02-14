@@ -12,6 +12,7 @@
     "demo:alignment": "pnpm run build:deps && tsx src/alignment-demo.ts",
     "generate:budget": "pnpm run build:deps && tsx src/us-federal-analysis/generate-budget-analysis.ts",
     "generate:government-size": "pnpm run build:deps && tsx src/us-federal-analysis/generate-government-size-analysis.ts",
+    "generate:government-spending-metrics": "pnpm run build:deps && tsx src/us-federal-analysis/generate-government-spending-metric-comparison.ts",
     "generate:policy": "pnpm run build:deps && tsx src/us-federal-analysis/generate-policy-analysis.ts",
     "generate:mega-studies": "pnpm run build:deps && tsx src/analysis-explorer/generate-mega-studies.ts",
     "generate:health": "pnpm run build:deps && tsx src/international-analysis/generate-health-comparison.ts",

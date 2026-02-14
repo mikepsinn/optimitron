@@ -241,6 +241,11 @@ describe('Government Size Analysis JSON', () => {
   it('should include four outcome analyses', () => {
     expect(Array.isArray(governmentSizeJson.outcomes)).toBe(true);
     expect(governmentSizeJson.outcomes.length).toBe(4);
+    const outcomeNames = governmentSizeJson.outcomes.map((outcome: any) => outcome.name);
+    expect(outcomeNames.some((name: string) => name.includes('HALE'))).toBe(true);
+    expect(outcomeNames.some((name: string) => name.includes('After-Tax Median Income'))).toBe(true);
+    expect(outcomeNames.some((name: string) => name.includes('Infant Mortality'))).toBe(false);
+    expect(outcomeNames.some((name: string) => name.includes('Gini'))).toBe(false);
     for (const outcome of governmentSizeJson.outcomes) {
       expect(typeof outcome.name).toBe('string');
       expect(typeof outcome.meanForwardPearson).toBe('number');
@@ -259,8 +264,14 @@ describe('Government Size Analysis JSON', () => {
 
   it('should include spending-level table with proxy notes', () => {
     expect(governmentSizeJson.spendingLevelTable).toBeDefined();
-    expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.isDirectMetric).toBe(false);
+    expect(governmentSizeJson.spendingLevelTable.alignment).toBeDefined();
+    expect(governmentSizeJson.spendingLevelTable.alignment.type).toBe('lag_aligned_follow_up');
+    expect(governmentSizeJson.spendingLevelTable.alignment.onsetYears).toBe(1);
+    expect(governmentSizeJson.spendingLevelTable.alignment.durationYears).toBe(3);
+    expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.isDirectMetric).toBe(true);
+    expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.metricUsed).toContain('HALE');
     expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.isDirectMetric).toBe(false);
+    expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.metricUsed).toContain('proxy');
     expect(governmentSizeJson.spendingLevelTable.binning).toBeDefined();
     expect(Array.isArray(governmentSizeJson.spendingLevelTable.tiers)).toBe(true);
     expect(governmentSizeJson.spendingLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
@@ -275,6 +286,8 @@ describe('Government Size Analysis JSON', () => {
     expect(lowSpendingTiers.length).toBeGreaterThanOrEqual(2);
 
     expect(governmentSizeJson.spendingPerCapitaLevelTable).toBeDefined();
+    expect(governmentSizeJson.spendingPerCapitaLevelTable.alignment).toBeDefined();
+    expect(governmentSizeJson.spendingPerCapitaLevelTable.alignment.type).toBe('lag_aligned_follow_up');
     expect(governmentSizeJson.spendingPerCapitaLevelTable.binning).toBeDefined();
     expect(Array.isArray(governmentSizeJson.spendingPerCapitaLevelTable.tiers)).toBe(true);
     expect(governmentSizeJson.spendingPerCapitaLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
@@ -316,8 +329,9 @@ describe('Government Size Report Markdown', () => {
     expect(governmentSizeMarkdown).toContain('### Spending Share (% GDP) Bins');
     expect(governmentSizeMarkdown).toContain('### Spending Per-Capita (PPP) Bins');
     expect(governmentSizeMarkdown).toContain('Per-capita PPP spending is derived as');
-    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (proxy level)');
-    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth (proxy)');
+    expect(governmentSizeMarkdown).toContain('Rows are lag-aligned for causal interpretation');
+    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (HALE)');
+    expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth');
     expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income (proxy level)');
     expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income Growth (proxy)');
     expect(governmentSizeMarkdown).toContain('## Limitations');
