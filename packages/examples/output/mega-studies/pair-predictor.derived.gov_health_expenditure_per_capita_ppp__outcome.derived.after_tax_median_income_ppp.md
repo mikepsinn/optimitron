@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 685.68 international $/person.
+- Decision-target Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 2501.0 international $/person (support constrained).
 - Observed-support target from binned response curve: 2501.0 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2304.3 international $/person; model-optimal minus observed-anchor difference is -1618.6 (-70.2%).
@@ -67,6 +67,8 @@
 | Aggregate value predicting high outcome | 685.6825 |
 | Aggregate value predicting low outcome | 391.3345 |
 | Aggregate optimal daily value | 685.6825 |
+| Decision target value (reader-facing) | 2501.0 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 685.68 international $/person |
 | Support-constrained optimal value | 2501.0 international $/person |
 | Support-constrained optimal range | [1831.4, 5977.9] |
 | Response-curve robust optimal value | 1403.7 international $/person |

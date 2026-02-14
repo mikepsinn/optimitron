@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 372.10 international $/person.
+- Decision-target Military Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 8.665 international $/person (support constrained).
 - Observed-support target from binned response curve: 8.665 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 9.671 international $/person; model-optimal minus observed-anchor difference is 362.43 (+3747.5%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 372.0985 |
 | Aggregate value predicting low outcome | 393.8712 |
 | Aggregate optimal daily value | 372.0985 |
+| Decision target value (reader-facing) | 8.665 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 372.10 international $/person |
 | Support-constrained optimal value | 8.665 international $/person |
 | Support-constrained optimal range | [0.91749, 14.784) |
 | Response-curve robust optimal value | 364.94 international $/person |

@@ -14,10 +14,10 @@ import {
 import {
   alignTimeSeries,
   buildAdaptiveNumericBins,
-  buildOutcomeMegaStudies,
   deriveSupportConstrainedTargets,
   estimateDiminishingReturns,
   estimateMinimumEffectiveDose,
+  rankPredictorsForOutcome,
   estimateSaturationRange,
   runVariableRelationshipAnalysis,
   type AlignedPair,
@@ -46,6 +46,7 @@ type PairActionabilityStatus = "actionable" | "exploratory";
 type PairQualityTier = "strong" | "moderate" | "exploratory" | "insufficient";
 type DataSufficiencyStatus = "sufficient" | "insufficient_data";
 type ReliabilityBand = "high" | "moderate" | "low";
+type DecisionTargetSource = "support_constrained" | "robust_fallback" | "unavailable";
 
 const PAIR_TEMPORAL_OVERRIDES: Readonly<Record<string, Omit<ResolvedTemporalProfile, "source">>> = {
   "predictor.wb.gov_health_expenditure_pct_gdp::outcome.who.healthy_life_expectancy_years": {
@@ -286,6 +287,8 @@ export interface MegaStudyApiPair {
     unit: string;
   };
   targets: {
+    decisionBest: number | null;
+    decisionTargetSource: DecisionTargetSource;
     modelBest: number | null;
     observedSupportBest: number | null;
     robustBest: number | null;
@@ -1330,7 +1333,7 @@ function buildPairNarrativeSummary(pair: PairStudyArtifact): string[] {
     );
   }
   lines.push(
-    `Reliability score is ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band}); data sufficiency is ${pair.dataSufficiency.status}.`,
+    `Confidence score is ${pair.reliability.overallScore.toFixed(3)} (${toSimpleReliabilityBandLabel(pair.reliability.band)}); data status is ${toSimpleDataStatusLabel(pair.dataSufficiency.status)}.`,
   );
   lines.push(
     "Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).",
@@ -1377,54 +1380,143 @@ export function resolveActionableOptimalValue(pair: PairStudyArtifact): number |
   );
 }
 
+function isRecommendationEligible(pair: PairStudyArtifact): boolean {
+  return pair.dataSufficiency?.status !== "insufficient_data";
+}
+
+function toSimpleDecisionTargetSourceLabel(source: DecisionTargetSource): string {
+  if (source === "support_constrained") return "data-backed level";
+  if (source === "robust_fallback") return "backup level";
+  return "not enough data";
+}
+
+function toSimpleDataStatusLabel(status: DataSufficiencyStatus): string {
+  return status === "sufficient" ? "enough data" : "not enough data";
+}
+
+function toSimpleReliabilityBandLabel(band: ReliabilityBand): string {
+  if (band === "high") return "higher confidence";
+  if (band === "moderate") return "medium confidence";
+  return "lower confidence";
+}
+
+function toSimpleQualityTierLabel(tier: PairQualityTier): string {
+  if (tier === "strong") return "strong signal";
+  if (tier === "moderate") return "moderate signal";
+  if (tier === "exploratory") return "early signal";
+  return "not enough data";
+}
+
+function toSimpleEvidenceGradeLabel(grade: "A" | "B" | "C" | "D" | "F"): string {
+  const detail =
+    grade === "A"
+      ? "very strong"
+      : grade === "B"
+        ? "strong"
+        : grade === "C"
+          ? "moderate"
+          : grade === "D"
+            ? "weak"
+            : "very weak";
+  return `${grade} (${detail})`;
+}
+
+export function resolveDecisionTargetSource(pair: PairStudyArtifact): DecisionTargetSource {
+  if (!isRecommendationEligible(pair)) return "unavailable";
+  const support = pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue;
+  if (support != null && Number.isFinite(support)) return "support_constrained";
+  const robust = pair.responseCurve.supportConstrainedTargets.robustOptimalValue;
+  if (robust != null && Number.isFinite(robust)) return "robust_fallback";
+  return "unavailable";
+}
+
+export function resolveDecisionOptimalValue(pair: PairStudyArtifact): number | null {
+  const source = resolveDecisionTargetSource(pair);
+  if (source === "support_constrained") {
+    return pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue;
+  }
+  if (source === "robust_fallback") {
+    return pair.responseCurve.supportConstrainedTargets.robustOptimalValue;
+  }
+  return null;
+}
+
+function resolveDecisionBestPerCapitaPpp(pair: PairStudyArtifact): number | null {
+  if (!isPercentGdpUnit(pair.predictorUnit)) return null;
+  const decisionTarget = resolveDecisionOptimalValue(pair);
+  const medianGdpPerCapitaPpp = pair.pppPerCapitaSummary?.medianGdpPerCapitaPpp;
+  if (decisionTarget == null || medianGdpPerCapitaPpp == null) return null;
+  return convertPercentGdpToPerCapitaPpp(decisionTarget, medianGdpPerCapitaPpp);
+}
+
 function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
   const lines: string[] = [];
-  const optimalValue = resolveActionableOptimalValue(pair);
+  if (pair.dataSufficiency.status === "insufficient_data") {
+    lines.push(
+      `No recommended level is shown for ${pair.predictorLabel} -> ${pair.outcomeLabel} because there is not enough data.`,
+    );
+    if (pair.dataSufficiency.reasons.length > 0) {
+      lines.push(`Why: ${pair.dataSufficiency.reasons.join("; ")}.`);
+    }
+    lines.push(
+      `Observed support in this run: ${pair.includedSubjects} subjects, ${pair.totalPairs} aligned pairs, ${pair.predictorBinRows.length} predictor bins, ${pair.temporalCandidatesWithResults} temporal candidates with valid results.`,
+    );
+    lines.push("Use this pair for background learning only until we have enough data.");
+    return lines;
+  }
+  const modelOptimalValue = resolveActionableOptimalValue(pair);
+  const decisionTargetValue = resolveDecisionOptimalValue(pair);
+  const decisionTargetSource = resolveDecisionTargetSource(pair);
   const bestBin = bestObservedBinRow(pair);
-  const pppSummary = pair.pppPerCapitaSummary;
+  const decisionTargetPpp = resolveDecisionBestPerCapitaPpp(pair);
   const supportTargets = pair.responseCurve.supportConstrainedTargets;
   const med = pair.responseCurve.minimumEffectiveDose;
   const diminishing = pair.responseCurve.diminishingReturns;
   const saturation = pair.responseCurve.saturationRange;
 
   lines.push(
-    `Estimated best ${pair.predictorLabel} level for higher ${pair.outcomeLabel}: ${formatValueWithUnit(optimalValue, pair.predictorUnit)}.`,
+    `Recommended ${pair.predictorLabel} level for higher ${pair.outcomeLabel}: ${formatValueWithUnit(decisionTargetValue, pair.predictorUnit)} (${toSimpleDecisionTargetSourceLabel(decisionTargetSource)}).`,
   );
   if (supportTargets.detected) {
     lines.push(
-      `Observed-support target from binned response curve: ${formatValueWithUnit(supportTargets.supportConstrainedOptimalValue, pair.predictorUnit)}.`,
+      `Best level directly seen in the grouped data: ${formatValueWithUnit(supportTargets.supportConstrainedOptimalValue, pair.predictorUnit)}.`,
     );
   }
-  if (isOutsideObservedRange(optimalValue, pair.predictorObservedMin, pair.predictorObservedMax)) {
+  if (decisionTargetValue == null && modelOptimalValue != null) {
+    lines.push(
+      "No data-backed level was found, so this pair has no recommendation.",
+    );
+  }
+  if (isOutsideObservedRange(modelOptimalValue, pair.predictorObservedMin, pair.predictorObservedMax)) {
     const bestObservedValue = bestBin?.predictorMedian ?? bestBin?.predictorMean ?? null;
     const deltaText =
-      optimalValue != null && bestObservedValue != null
+      modelOptimalValue != null && bestObservedValue != null
         ? (() => {
-            const pct = percentDelta(bestObservedValue, optimalValue);
-            if (pct == null) return `${formatCompactNumber(optimalValue - bestObservedValue)}`;
-            return `${formatCompactNumber(optimalValue - bestObservedValue)} (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)`;
+            const pct = percentDelta(bestObservedValue, modelOptimalValue);
+            if (pct == null) return `${formatCompactNumber(modelOptimalValue - bestObservedValue)}`;
+            return `${formatCompactNumber(modelOptimalValue - bestObservedValue)} (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)`;
           })()
         : "N/A";
     lines.push(
-      `Model-derived optimum ${formatValueWithUnit(optimalValue, pair.predictorUnit)} is outside observed range [${formatCompactNumber(pair.predictorObservedMin)}, ${formatCompactNumber(pair.predictorObservedMax)}], so this target is extrapolative.`,
+      `Math-only guess ${formatValueWithUnit(modelOptimalValue, pair.predictorUnit)} is outside the seen data range [${formatCompactNumber(pair.predictorObservedMin)}, ${formatCompactNumber(pair.predictorObservedMax)}], so it is not used as the recommendation.`,
     );
     if (bestObservedValue != null) {
       lines.push(
         `Nearest observed-support anchor (best observed bin median/mean) is ${formatValueWithUnit(bestObservedValue, pair.predictorUnit)}; model-optimal minus observed-anchor difference is ${deltaText}.`,
       );
     }
-  } else if (isOutsideBestObservedBin(pair, optimalValue)) {
+  } else if (isOutsideBestObservedBin(pair, modelOptimalValue)) {
     const bestObservedValue = bestBin?.predictorMedian ?? bestBin?.predictorMean ?? null;
     const deltaText =
-      optimalValue != null && bestObservedValue != null
+      modelOptimalValue != null && bestObservedValue != null
         ? (() => {
-            const pct = percentDelta(bestObservedValue, optimalValue);
-            if (pct == null) return `${formatCompactNumber(optimalValue - bestObservedValue)}`;
-            return `${formatCompactNumber(optimalValue - bestObservedValue)} (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)`;
+            const pct = percentDelta(bestObservedValue, modelOptimalValue);
+            if (pct == null) return `${formatCompactNumber(modelOptimalValue - bestObservedValue)}`;
+            return `${formatCompactNumber(modelOptimalValue - bestObservedValue)} (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)`;
           })()
         : "N/A";
     lines.push(
-      "Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.",
+      "Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.",
     );
     if (bestObservedValue != null) {
       lines.push(
@@ -1434,7 +1526,7 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
   }
   if (pair.robustness.robustOptimalValue != null) {
     lines.push(
-      `Robust sensitivity (trimmed ${Math.round(pair.robustness.trimLowerQuantile * 100)}-${Math.round(pair.robustness.trimUpperQuantile * 100)}% predictor range) suggests ${formatValueWithUnit(pair.robustness.robustOptimalValue, pair.predictorUnit)}.`,
+      `Backup level check (middle ${Math.round(pair.robustness.trimLowerQuantile * 100)}-${Math.round(pair.robustness.trimUpperQuantile * 100)}% of data) suggests ${formatValueWithUnit(pair.robustness.robustOptimalValue, pair.predictorUnit)}.`,
     );
   }
   if (
@@ -1442,7 +1534,7 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
     Math.abs(pair.robustness.optimalDeltaPercent) >= 25
   ) {
     lines.push(
-      `Raw vs robust optimal differs by ${Math.abs(pair.robustness.optimalDeltaPercent).toFixed(1)}%, indicating strong tail influence.`,
+      `The math-only guess and backup level differ by ${Math.abs(pair.robustness.optimalDeltaPercent).toFixed(1)}%, which means extreme values may matter a lot.`,
     );
   }
   if (med.detected) {
@@ -1451,7 +1543,7 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
     );
   } else {
     lines.push(
-      `Minimum effective level not reliably identified (${med.reason ?? "unknown"}).`,
+      `Could not find a clear minimum useful level (${med.reason ?? "unknown"}).`,
     );
   }
   if (diminishing.detected) {
@@ -1460,7 +1552,7 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
     );
   } else {
     lines.push(
-      `No reliable diminishing-returns knee detected (${diminishing.reason ?? "unknown"}).`,
+      `Could not find a clear point where gains start slowing down (${diminishing.reason ?? "unknown"}).`,
     );
   }
   if (saturation.detected) {
@@ -1469,12 +1561,12 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
     );
   } else {
     lines.push(
-      `No stable plateau zone detected (${saturation.reason ?? "unknown"}).`,
+      `Could not find a stable flat zone (${saturation.reason ?? "unknown"}).`,
     );
   }
-  if (pppSummary?.estimatedBestPerCapitaPpp != null) {
+  if (decisionTargetPpp != null) {
     lines.push(
-      `Approximate per-capita PPP equivalent of that best level: ${formatCompactNumber(pppSummary.estimatedBestPerCapitaPpp)} international $/person (using median GDP per-capita PPP in-sample).`,
+      `Approximate per-person PPP amount for the recommended level: ${formatCompactNumber(decisionTargetPpp)} international $/person.`,
     );
   }
   if (bestBin?.outcomeMean != null) {
@@ -1482,9 +1574,9 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
       `Highest observed mean ${pair.outcomeLabel} appears when ${pair.predictorLabel} is in ${bestBin.label} (mean outcome ${formatCompactNumber(bestBin.outcomeMean)}).`,
     );
   }
-  if (pppSummary?.bestObservedPerCapitaPppRange != null) {
+  if (pair.pppPerCapitaSummary?.bestObservedPerCapitaPppRange != null) {
     lines.push(
-      `PPP per-capita equivalent in that best observed bin (p10-p90): ${pppSummary.bestObservedPerCapitaPppRange}.`,
+      `PPP per-capita equivalent in that best observed bin (p10-p90): ${pair.pppPerCapitaSummary.bestObservedPerCapitaPppRange}.`,
     );
   }
   if (pair.direction === "negative") {
@@ -1499,12 +1591,12 @@ function buildPairActionableTakeaway(pair: PairStudyArtifact): string[] {
 
 function buildEvidenceInterpretation(pair: PairStudyArtifact): string {
   if (pair.aggregateStatisticalSignificance >= 0.9 && pair.includedSubjects >= 120) {
-    return "Stronger evidence for directional signal relative to other predictors in this report.";
+    return "Stronger signal compared with most other predictors in this report.";
   }
   if (pair.aggregateStatisticalSignificance >= 0.8 && pair.includedSubjects >= 60) {
-    return "Moderate evidence; plausible signal but still sensitive to model assumptions.";
+    return "Medium signal; still sensitive to model choices.";
   }
-  return "Exploratory evidence only; use primarily for hypothesis generation.";
+  return "Early signal only; use this mainly to guide more testing.";
 }
 
 function selectOutcomeDisplayRows(
@@ -1516,7 +1608,8 @@ function selectOutcomeDisplayRows(
       row,
       pair: pairByKey.get(`${row.predictorId}::${row.outcomeId}`),
     }))
-    .filter((entry): entry is ActionableOutcomeRow => entry.pair != null);
+    .filter((entry): entry is ActionableOutcomeRow => entry.pair != null)
+    .filter((entry) => isRecommendationEligible(entry.pair));
 
   return rowsWithPairs.sort((left, right) => {
     const leftLabel = left.pair.predictorLabel || left.row.predictorLabel || left.row.predictorId;
@@ -1730,49 +1823,54 @@ export function buildMegaStudyApiPayload(
   rankings: OutcomeMegaStudyRanking[],
 ): MegaStudyApiPayload {
   const pairByKey = new Map(pairStudies.map((pair) => [`${pair.predictorId}::${pair.outcomeId}`, pair]));
-  const pairs: MegaStudyApiPair[] = pairStudies.map((pair) => ({
-    pairId: pair.pairId,
-    predictor: {
-      id: pair.predictorId,
-      label: pair.predictorLabel,
-      unit: pair.predictorUnit,
-    },
-    outcome: {
-      id: pair.outcomeId,
-      label: pair.outcomeLabel,
-      unit: pair.outcomeUnit,
-    },
-    targets: {
-      modelBest: resolveActionableOptimalValue(pair),
-      observedSupportBest: pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue,
-      robustBest: pair.robustness.robustOptimalValue,
-      minimumEffectiveDose: pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
-      diminishingReturnsKnee: pair.responseCurve.diminishingReturns.kneePredictorValue,
-      saturationStart: pair.responseCurve.saturationRange.plateauStartPredictorValue,
-      saturationEnd: pair.responseCurve.saturationRange.plateauEndPredictorValue,
-    },
-    diagnostics: {
-      qualityTier: pair.qualityTier,
-      evidenceGrade: pair.evidenceGrade,
-      significance: pair.aggregateStatisticalSignificance,
-      directionalScore: pair.aggregatePredictivePearson,
-      direction: pair.direction,
-      includedSubjects: pair.includedSubjects,
-      totalPairs: pair.totalPairs,
-      extrapolative: isOutsideObservedRange(
-        resolveActionableOptimalValue(pair),
-        pair.predictorObservedMin,
-        pair.predictorObservedMax,
-      ),
-      outsideBestObservedBin: isOutsideBestObservedBin(pair, resolveActionableOptimalValue(pair)),
-      dataSufficiencyStatus: pair.dataSufficiency.status,
-      reliabilityScore: pair.reliability.overallScore,
-      reliabilityBand: pair.reliability.band,
-    },
-    links: {
-      markdownFile: toPairFileName(pair),
-    },
-  }));
+  const pairs: MegaStudyApiPair[] = pairStudies.map((pair) => {
+    const modelBest = resolveActionableOptimalValue(pair);
+    return {
+      pairId: pair.pairId,
+      predictor: {
+        id: pair.predictorId,
+        label: pair.predictorLabel,
+        unit: pair.predictorUnit,
+      },
+      outcome: {
+        id: pair.outcomeId,
+        label: pair.outcomeLabel,
+        unit: pair.outcomeUnit,
+      },
+      targets: {
+        decisionBest: resolveDecisionOptimalValue(pair),
+        decisionTargetSource: resolveDecisionTargetSource(pair),
+        modelBest,
+        observedSupportBest: pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue,
+        robustBest: pair.robustness.robustOptimalValue,
+        minimumEffectiveDose: pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
+        diminishingReturnsKnee: pair.responseCurve.diminishingReturns.kneePredictorValue,
+        saturationStart: pair.responseCurve.saturationRange.plateauStartPredictorValue,
+        saturationEnd: pair.responseCurve.saturationRange.plateauEndPredictorValue,
+      },
+      diagnostics: {
+        qualityTier: pair.qualityTier,
+        evidenceGrade: pair.evidenceGrade,
+        significance: pair.aggregateStatisticalSignificance,
+        directionalScore: pair.aggregatePredictivePearson,
+        direction: pair.direction,
+        includedSubjects: pair.includedSubjects,
+        totalPairs: pair.totalPairs,
+        extrapolative: isOutsideObservedRange(
+          modelBest,
+          pair.predictorObservedMin,
+          pair.predictorObservedMax,
+        ),
+        outsideBestObservedBin: isOutsideBestObservedBin(pair, modelBest),
+        dataSufficiencyStatus: pair.dataSufficiency.status,
+        reliabilityScore: pair.reliability.overallScore,
+        reliabilityBand: pair.reliability.band,
+      },
+      links: {
+        markdownFile: toPairFileName(pair),
+      },
+    };
+  });
 
   const outcomes: MegaStudyApiOutcome[] = rankings.map((ranking) => {
     const firstPair = ranking.rows
@@ -1815,6 +1913,10 @@ export function buildMegaStudyApiPayload(
 
 function buildPairMarkdown(pair: PairStudyArtifact): string {
   const lines: string[] = [];
+  const modelOptimalValue = resolveActionableOptimalValue(pair);
+  const decisionTargetValue = resolveDecisionOptimalValue(pair);
+  const decisionTargetSource = resolveDecisionTargetSource(pair);
+  const decisionTargetPpp = resolveDecisionBestPerCapitaPpp(pair);
   lines.push(`# Pair Study: ${pair.predictorLabel} -> ${pair.outcomeLabel}`);
   lines.push("");
   lines.push(`- Pair ID: \`${pair.pairId}\``);
@@ -1830,12 +1932,20 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(`- Included subjects: ${pair.includedSubjects}`);
   lines.push(`- Skipped subjects: ${pair.skippedSubjects}`);
   lines.push(`- Total aligned pairs: ${pair.totalPairs}`);
-  lines.push(`- Evidence grade: ${pair.evidenceGrade}`);
-  lines.push(`- Data sufficiency: ${pair.dataSufficiency.status}`);
-  lines.push(`- Reliability score: ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band})`);
-  lines.push(`- Quality tier: ${pair.qualityTier}`);
+  lines.push(`- Signal grade: ${toSimpleEvidenceGradeLabel(pair.evidenceGrade)}`);
+  lines.push(`- Data status: ${toSimpleDataStatusLabel(pair.dataSufficiency.status)}`);
+  lines.push(`- Confidence score: ${pair.reliability.overallScore.toFixed(3)} (${toSimpleReliabilityBandLabel(pair.reliability.band)})`);
+  lines.push(`- Signal tag: ${toSimpleQualityTierLabel(pair.qualityTier)}`);
   lines.push(`- Direction: ${pair.direction}`);
-  lines.push(`- Derived uncertainty score: ${pair.pValue.toFixed(4)} (1 - aggregate significance, not NHST p-value)`);
+  lines.push(`- Uncertainty score: ${pair.pValue.toFixed(4)} (lower is better)`);
+  lines.push("");
+  lines.push("## Quick Meanings");
+  lines.push("");
+  lines.push("- `Recommended level`: main value to try first.");
+  lines.push("- `Data-backed level`: level directly supported by seen data.");
+  lines.push("- `Backup level`: safer fallback from the middle of the data.");
+  lines.push("- `Math-only guess`: unconstrained model output for technical comparison.");
+  lines.push("- `Not enough data`: we cannot safely recommend a level yet.");
   lines.push("");
   lines.push("## Key Numeric Takeaways");
   lines.push("");
@@ -1845,19 +1955,31 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push("");
   lines.push("## Decision Summary");
   lines.push("");
-  lines.push(`- Interpretation: ${buildEvidenceInterpretation(pair)}`);
-  lines.push(
-    pair.direction === "positive"
-      ? `- Directional hint: higher ${pair.predictorLabel} is associated with better ${pair.outcomeLabel}.`
-      : pair.direction === "negative"
-        ? `- Directional hint: lower ${pair.predictorLabel} is associated with better ${pair.outcomeLabel}.`
-        : `- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.`,
-  );
-  lines.push(
-    pair.aggregateStatisticalSignificance >= 0.85
-      ? "- Signal strength: relatively stronger within this report set."
-      : "- Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.",
-  );
+  if (pair.dataSufficiency.status === "insufficient_data") {
+    lines.push(
+      "- Interpretation: not enough data for a safe recommendation.",
+    );
+    lines.push(
+      "- Recommendation status: no recommended level until data improves.",
+    );
+    if (pair.dataSufficiency.reasons.length > 0) {
+      lines.push(`- Why: ${pair.dataSufficiency.reasons.join("; ")}.`);
+    }
+  } else {
+    lines.push(`- Interpretation: ${buildEvidenceInterpretation(pair)}`);
+    lines.push(
+      pair.direction === "positive"
+        ? `- Pattern hint: higher ${pair.predictorLabel} tends to go with better ${pair.outcomeLabel}.`
+        : pair.direction === "negative"
+          ? `- Pattern hint: lower ${pair.predictorLabel} tends to go with better ${pair.outcomeLabel}.`
+          : `- Pattern hint: no clear up/down pattern; use data-backed levels only.`,
+    );
+    lines.push(
+      pair.aggregateStatisticalSignificance >= 0.85
+        ? "- Signal strength: stronger in this report set."
+        : "- Signal strength: weak to moderate; avoid strong conclusions from this pair alone.",
+    );
+  }
   lines.push("");
   lines.push("## Plain-Language Summary");
   lines.push("");
@@ -1888,6 +2010,8 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(`| Aggregate value predicting high outcome | ${pair.aggregateValuePredictingHighOutcome == null ? "N/A" : pair.aggregateValuePredictingHighOutcome.toFixed(4)} |`);
   lines.push(`| Aggregate value predicting low outcome | ${pair.aggregateValuePredictingLowOutcome == null ? "N/A" : pair.aggregateValuePredictingLowOutcome.toFixed(4)} |`);
   lines.push(`| Aggregate optimal daily value | ${pair.aggregateOptimalDailyValue == null ? "N/A" : pair.aggregateOptimalDailyValue.toFixed(4)} |`);
+  lines.push(`| Decision target value (reader-facing) | ${formatValueWithUnit(decisionTargetValue, pair.predictorUnit)} (${decisionTargetSource.replace("_", " ")}) |`);
+  lines.push(`| Model-derived optimum (diagnostics) | ${formatValueWithUnit(modelOptimalValue, pair.predictorUnit)} |`);
   lines.push(`| Support-constrained optimal value | ${pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue == null ? "N/A" : formatCompactNumber(pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue)} ${pair.predictorUnit} |`);
   lines.push(`| Support-constrained optimal range | ${pair.responseCurve.supportConstrainedTargets.supportConstrainedRange == null ? "N/A" : formatBinLabel(pair.responseCurve.supportConstrainedTargets.supportConstrainedRange.lowerBound, pair.responseCurve.supportConstrainedTargets.supportConstrainedRange.upperBound, pair.responseCurve.supportConstrainedTargets.supportConstrainedRange.isUpperInclusive)} |`);
   lines.push(`| Response-curve robust optimal value | ${pair.responseCurve.supportConstrainedTargets.robustOptimalValue == null ? "N/A" : formatCompactNumber(pair.responseCurve.supportConstrainedTargets.robustOptimalValue)} ${pair.predictorUnit} |`);
@@ -1896,18 +2020,14 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(`| Observed predictor range | ${pair.predictorObservedMin == null || pair.predictorObservedMax == null ? "N/A" : `[${pair.predictorObservedMin.toFixed(4)}, ${pair.predictorObservedMax.toFixed(4)}]`} |`);
   lines.push(
     `| Model-derived optimal extrapolative? | ${
-      isOutsideObservedRange(
-        resolveActionableOptimalValue(pair),
-        pair.predictorObservedMin,
-        pair.predictorObservedMax,
-      )
+      isOutsideObservedRange(modelOptimalValue, pair.predictorObservedMin, pair.predictorObservedMax)
         ? "yes (outside observed range)"
         : "no (within observed range)"
     } |`,
   );
   lines.push(
     `| Model-derived optimal outside best observed bin? | ${
-      isOutsideBestObservedBin(pair, resolveActionableOptimalValue(pair))
+      isOutsideBestObservedBin(pair, modelOptimalValue)
         ? "yes"
         : "no"
     } |`,
@@ -1930,7 +2050,10 @@ function buildPairMarkdown(pair: PairStudyArtifact): string {
   lines.push(`| Quality tier | ${pair.qualityTier} |`);
   if (pair.pppPerCapitaSummary != null) {
     lines.push(
-      `| Estimated best level (PPP per-capita equivalent) | ${pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp == null ? "N/A" : `${formatCompactNumber(pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} international $/person`} |`,
+      `| Decision target level (PPP per-capita equivalent) | ${decisionTargetPpp == null ? "N/A" : `${formatCompactNumber(decisionTargetPpp)} international $/person`} |`,
+    );
+    lines.push(
+      `| Model-derived best level (PPP per-capita equivalent) | ${pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp == null ? "N/A" : `${formatCompactNumber(pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} international $/person`} |`,
     );
     lines.push(
       `| Best observed PPP per-capita range (p10-p90) | ${pair.pppPerCapitaSummary.bestObservedPerCapitaPppRange ?? "N/A"} |`,
@@ -2058,18 +2181,27 @@ function buildOutcomeMarkdown(
   ) {
     lines.push("- Note: After-tax median income is currently proxied by World Bank GNI per-capita PPP in this report set.");
   }
+  const outcomePairs = [...pairByKey.values()].filter((pair) => pair.outcomeId === outcomeId);
+  const insufficientOutcomePairs = outcomePairs.filter(
+    (pair) => pair.dataSufficiency.status === "insufficient_data",
+  );
+  const sufficientOutcomePairs = outcomePairs.filter(
+    (pair) => pair.dataSufficiency.status === "sufficient",
+  );
   const significantCount = ranking.rows.filter((row) => row.significant).length;
   const displayRows = selectOutcomeDisplayRows(ranking, pairByKey);
-  const extrapolativeRows = displayRows.filter(({ pair }) =>
-    isOutsideObservedRange(
-      resolveActionableOptimalValue(pair),
+  const extrapolativeRows = displayRows.filter(({ pair }) => {
+    const modelBest = resolveActionableOptimalValue(pair);
+    return isOutsideObservedRange(
+      modelBest,
       pair.predictorObservedMin,
       pair.predictorObservedMax,
-    )
-  );
-  const outsideBestObservedBinRows = displayRows.filter(({ pair }) =>
-    isOutsideBestObservedBin(pair, resolveActionableOptimalValue(pair))
-  );
+    );
+  });
+  const outsideBestObservedBinRows = displayRows.filter(({ pair }) => {
+    const modelBest = resolveActionableOptimalValue(pair);
+    return isOutsideBestObservedBin(pair, modelBest);
+  });
   const allocationMixRows = displayRows.filter(
     ({ pair }) => pair.predictorUnit === "% of government expenditure",
   );
@@ -2094,23 +2226,29 @@ function buildOutcomeMarkdown(
       row,
       pair: pairByKey.get(`${row.predictorId}::${row.outcomeId}`),
     }))
-    .filter((entry): entry is ActionableOutcomeRow => entry.pair != null);
+    .filter((entry): entry is ActionableOutcomeRow => entry.pair != null)
+    .filter((entry) => isRecommendationEligible(entry.pair));
   if (displayRows.length > 0) {
     const lead = rankedRows[0]?.row ?? displayRows[0]!.row;
     const topPair = pairByKey.get(`${lead.predictorId}::${lead.outcomeId}`);
+    const topDecisionLevel = topPair
+      ? formatValueWithUnit(resolveDecisionOptimalValue(topPair), topPair.predictorUnit)
+      : "N/A";
+    const topDecisionSource = topPair ? resolveDecisionTargetSource(topPair) : "unavailable";
     const topBestLevel = topPair
       ? formatValueWithUnit(resolveActionableOptimalValue(topPair), topPair.predictorUnit)
       : "N/A";
-    const topBestPpp = topPair?.pppPerCapitaSummary?.estimatedBestPerCapitaPpp == null
+    const topBestPppValue = topPair ? resolveDecisionBestPerCapitaPpp(topPair) : null;
+    const topBestPpp = topBestPppValue == null
       ? "N/A"
-      : `${formatCompactNumber(topPair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} international $/person`;
+      : `${formatCompactNumber(topBestPppValue)} international $/person`;
     lines.push("");
     lines.push("## Lead Takeaway");
     lines.push("");
     lines.push(`- Lead predictor for ${outcomeLabel}: ${lead.predictorLabel ?? lead.predictorId}.`);
-    lines.push(`- Estimated best level: ${topBestLevel}.`);
+    lines.push(`- Decision target level: ${topDecisionLevel} (${topDecisionSource.replace("_", " ")}).`);
     if (topBestPpp !== "N/A") {
-      lines.push(`- Approximate PPP per-capita equivalent of that level: ${topBestPpp}.`);
+      lines.push(`- Approximate PPP per-capita equivalent of that decision target: ${topBestPpp}.`);
     }
     lines.push(
       significantCount > 0
@@ -2124,8 +2262,11 @@ function buildOutcomeMarkdown(
     }
     if (outsideBestObservedBinRows.length > 0) {
       lines.push(
-        `- Bin-alignment note: ${outsideBestObservedBinRows.length}/${displayRows.length} model-derived optimal levels sit outside the top observed outcome bin range.`,
+        `- Bin-alignment note: ${outsideBestObservedBinRows.length}/${displayRows.length} model-derived optima sit outside the top observed outcome bin range.`,
       );
+    }
+    if (topBestLevel !== "N/A") {
+      lines.push(`- Model-derived optimum (diagnostics only): ${topBestLevel}.`);
     }
     lines.push(
       `- Quality tiers: strong ${qualityTierCounts.strong}, moderate ${qualityTierCounts.moderate}, exploratory ${qualityTierCounts.exploratory}, insufficient ${qualityTierCounts.insufficient}.`,
@@ -2136,6 +2277,52 @@ function buildOutcomeMarkdown(
     lines.push(
       `- Mean reliability score across predictors: ${meanReliabilityScore.toFixed(3)}.`,
     );
+  }
+  if (sufficientOutcomePairs.length === 0 && insufficientOutcomePairs.length > 0) {
+    lines.push("");
+    lines.push("## Insufficient-Data Status");
+    lines.push("");
+    lines.push(
+      "- No predictor/outcome pairs passed hard data-sufficiency gates for this outcome, so no recommendation-grade targets are emitted.",
+    );
+    lines.push(
+      `- Pairs evaluated: ${outcomePairs.length}; gated as insufficient: ${insufficientOutcomePairs.length}.`,
+    );
+    lines.push("");
+    lines.push("| Predictor | Included Subjects | Aligned Pairs | Blocking Reasons | Pair Report |");
+    lines.push("|-----------|------------------:|--------------:|------------------|------------|");
+    for (const pair of [...insufficientOutcomePairs].sort((left, right) =>
+      left.predictorLabel.localeCompare(right.predictorLabel)
+    )) {
+      const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
+      const reasons = pair.dataSufficiency.reasons.length > 0
+        ? pair.dataSufficiency.reasons.join("; ")
+        : "thresholds not met";
+      lines.push(
+        `| ${pair.predictorLabel} | ${pair.includedSubjects} | ${pair.totalPairs} | ${reasons} | ${reportFile} |`,
+      );
+    }
+  }
+  if (sufficientOutcomePairs.length > 0 && insufficientOutcomePairs.length > 0) {
+    lines.push("");
+    lines.push("## Sufficiency-Gated Pairs");
+    lines.push("");
+    lines.push(
+      `- ${insufficientOutcomePairs.length} predictor/outcome pairs were excluded from ranking/recommendation tables by hard sufficiency gates.`,
+    );
+    lines.push("| Predictor | Included Subjects | Aligned Pairs | Blocking Reasons | Pair Report |");
+    lines.push("|-----------|------------------:|--------------:|------------------|------------|");
+    for (const pair of [...insufficientOutcomePairs].sort((left, right) =>
+      left.predictorLabel.localeCompare(right.predictorLabel)
+    )) {
+      const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
+      const reasons = pair.dataSufficiency.reasons.length > 0
+        ? pair.dataSufficiency.reasons.join("; ")
+        : "thresholds not met";
+      lines.push(
+        `| ${pair.predictorLabel} | ${pair.includedSubjects} | ${pair.totalPairs} | ${reasons} | ${reportFile} |`,
+      );
+    }
   }
   lines.push("");
   lines.push("## Top Numeric Targets");
@@ -2149,7 +2336,12 @@ function buildOutcomeMarkdown(
   let recommendationRank = 1;
   for (const recommendation of topRecommendations) {
     const predictorName = recommendation.row.predictorLabel ?? recommendation.row.predictorId;
-    const bestLevel = formatValueWithUnit(
+    const decisionLevel = formatValueWithUnit(
+      resolveDecisionOptimalValue(recommendation.pair),
+      recommendation.pair.predictorUnit,
+    );
+    const decisionSource = resolveDecisionTargetSource(recommendation.pair);
+    const modelBest = formatValueWithUnit(
       resolveActionableOptimalValue(recommendation.pair),
       recommendation.pair.predictorUnit,
     );
@@ -2162,12 +2354,16 @@ function buildOutcomeMarkdown(
       recommendation.pair.predictorUnit,
     );
     lines.push(
-      `${recommendationRank}. ${predictorName}: best estimate ${bestLevel}; observed-support target ${supportLevel}; MED ${medLevel}; evidence ${recommendation.pair.evidenceGrade}; directional score ${recommendation.pair.aggregatePredictivePearson.toFixed(3)}.`,
+      `${recommendationRank}. ${predictorName}: decision target ${decisionLevel} (${decisionSource.replace("_", " ")}); observed-support target ${supportLevel}; MED ${medLevel}; model optimum ${modelBest}; evidence ${recommendation.pair.evidenceGrade}; directional score ${recommendation.pair.aggregatePredictivePearson.toFixed(3)}.`,
     );
     recommendationRank += 1;
   }
   if (topRecommendations.length === 0) {
-    lines.push("1. No recommendations available because no pair studies were generated.");
+    lines.push(
+      sufficientOutcomePairs.length === 0 && insufficientOutcomePairs.length > 0
+        ? "1. No recommendations available because all pairs were gated as insufficient data."
+        : "1. No recommendations available because no pair studies were generated.",
+    );
   }
   lines.push("");
   lines.push("## Evidence Snapshot");
@@ -2191,6 +2387,9 @@ function buildOutcomeMarkdown(
       `| ${entry.row.predictorLabel ?? entry.row.predictorId} | ${entry.pair.dataSufficiency.status} | ${entry.pair.reliability.overallScore.toFixed(3)} (${entry.pair.reliability.band}) | ${entry.pair.qualityTier} | ${entry.pair.evidenceGrade} | ${entry.pair.aggregateStatisticalSignificance.toFixed(3)} | ${entry.pair.aggregatePredictivePearson.toFixed(3)} | ${supportTarget} | ${medLevel} | ${kneeLevel} | ${entry.pair.includedSubjects} | ${entry.pair.totalPairs} |`,
     );
   }
+  if (rankedRows.length === 0) {
+    lines.push("| (none) | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |");
+  }
   if (allocationMixRows.length > 0) {
     lines.push("");
     lines.push("## Budget Allocation Signals");
@@ -2198,10 +2397,11 @@ function buildOutcomeMarkdown(
     lines.push("- These rows isolate budget-composition predictors (share of total government spending).");
     lines.push("- Use this section to compare suggested allocation mix targets across sectors.");
     lines.push("");
-    lines.push("| Allocation Share Predictor | Estimated Best Share | Robust Best Share (Trimmed) | Raw-Robust Delta | Direction | Quality Tier | Pair Report |");
-    lines.push("|----------------------------|---------------------:|----------------------------:|-----------------:|----------:|--------------|------------|");
+    lines.push("| Allocation Share Predictor | Decision Target Share | Robust Best Share (Trimmed) | Model Best (Diagnostics) | Raw-Robust Delta | Direction | Quality Tier | Pair Report |");
+    lines.push("|----------------------------|----------------------:|----------------------------:|-------------------------:|-----------------:|----------:|--------------|------------|");
     for (const { row, pair } of allocationMixRows) {
-      const bestLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
+      const bestLevel = formatValueWithUnit(resolveDecisionOptimalValue(pair), pair.predictorUnit);
+      const modelLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
       const robustBestLevel = formatValueWithUnit(pair.robustness.robustOptimalValue, pair.predictorUnit);
       const rawRobustDelta =
         pair.robustness.optimalDeltaAbsolute == null || pair.robustness.optimalDeltaPercent == null
@@ -2209,7 +2409,7 @@ function buildOutcomeMarkdown(
           : `${formatCompactNumber(pair.robustness.optimalDeltaAbsolute)} (${pair.robustness.optimalDeltaPercent >= 0 ? "+" : ""}${pair.robustness.optimalDeltaPercent.toFixed(1)}%)`;
       const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
       lines.push(
-        `| ${row.predictorLabel ?? row.predictorId} | ${bestLevel} | ${robustBestLevel} | ${rawRobustDelta} | ${pair.direction} | ${pair.qualityTier} | ${reportFile} |`,
+        `| ${row.predictorLabel ?? row.predictorId} | ${bestLevel} | ${robustBestLevel} | ${modelLevel} | ${rawRobustDelta} | ${pair.direction} | ${pair.qualityTier} | ${reportFile} |`,
       );
     }
   }
@@ -2217,20 +2417,20 @@ function buildOutcomeMarkdown(
   lines.push("## Optimal Levels By Predictor");
   lines.push("");
   lines.push("- This table is predictor-centric: each row shows key numeric target estimates.");
-  lines.push("- `Estimated Best Level` is the raw model-derived optimum and can be extrapolative when outside observed support.");
-  lines.push("- `Outside Best Observed Bin?` means the model target differs from the highest-outcome bin interval from binned summaries.");
-  lines.push("- Compare `Estimated Best Level` with `Best Observed Range` and `Robust Best Level (Trimmed)` before interpreting as a practical target.");
+  lines.push("- `Decision Target Level` is support-constrained (or robust fallback) and is the primary recommendation.");
+  lines.push("- `Model Best (Diagnostics)` is retained for technical comparison and can be extrapolative.");
+  lines.push("- `Model Outside Best Observed Bin?` means the unconstrained model target differs from the highest-outcome bin interval from binned summaries.");
   lines.push("");
-  lines.push("| Predictor | Estimated Best Level | Observed-Support Target | MED | Knee | Extrapolative? | Outside Best Observed Bin? | Robust Best Level (Trimmed) | Raw-Robust Delta | Estimated Best PPP/Capita | Best Observed Range | Robust Best Range (Trimmed) | Best Observed PPP/Capita (p10-p90) | Best Observed Outcome Mean | Direction | Data Sufficiency | Reliability | Quality Tier | Pair Report |");
-  lines.push("|-----------|---------------------:|------------------------:|----:|-----:|---------------|----------------------------|----------------------------:|-----------------:|--------------------------:|--------------------:|---------------------------:|-----------------------------------:|---------------------------:|----------:|-----------------|------------:|--------------|------------|");
+  lines.push("| Predictor | Decision Target Level | Decision Target Source | MED | Knee | Robust Best Level (Trimmed) | Model Best (Diagnostics) | Model Extrapolative? | Model Outside Best Observed Bin? | Model-Robust Delta | Decision Target PPP/Capita | Best Observed Range | Robust Best Range (Trimmed) | Best Observed PPP/Capita (p10-p90) | Best Observed Outcome Mean | Direction | Data Sufficiency | Reliability | Quality Tier | Pair Report |");
+  lines.push("|-----------|----------------------:|------------------------|----:|-----:|----------------------------:|-------------------------:|---------------------|-------------------------------|-------------------:|---------------------------:|--------------------:|---------------------------:|-----------------------------------:|---------------------------:|----------:|-----------------|------------:|--------------|------------|");
   for (const { row, pair } of displayRows) {
     const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
     const bestBin = bestObservedBinRow(pair);
-    const bestLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
-    const supportTarget = formatValueWithUnit(
-      pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue,
-      pair.predictorUnit,
-    );
+    const modelBestValue = resolveActionableOptimalValue(pair);
+    const decisionBestValue = resolveDecisionOptimalValue(pair);
+    const bestLevel = formatValueWithUnit(decisionBestValue, pair.predictorUnit);
+    const modelBestLevel = formatValueWithUnit(modelBestValue, pair.predictorUnit);
+    const decisionSource = resolveDecisionTargetSource(pair).replace("_", " ");
     const medLevel = formatValueWithUnit(
       pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
       pair.predictorUnit,
@@ -2240,30 +2440,34 @@ function buildOutcomeMarkdown(
       pair.predictorUnit,
     );
     const extrapolative = isOutsideObservedRange(
-      resolveActionableOptimalValue(pair),
+      modelBestValue,
       pair.predictorObservedMin,
       pair.predictorObservedMax,
     );
     const outsideBestObservedBin = isOutsideBestObservedBin(
       pair,
-      resolveActionableOptimalValue(pair),
+      modelBestValue,
     );
     const robustBestLevel = formatValueWithUnit(pair.robustness.robustOptimalValue, pair.predictorUnit);
     const rawRobustDelta =
       pair.robustness.optimalDeltaAbsolute == null || pair.robustness.optimalDeltaPercent == null
         ? "N/A"
         : `${formatCompactNumber(pair.robustness.optimalDeltaAbsolute)} (${pair.robustness.optimalDeltaPercent >= 0 ? "+" : ""}${pair.robustness.optimalDeltaPercent.toFixed(1)}%)`;
-    const bestLevelPpp = pair.pppPerCapitaSummary?.estimatedBestPerCapitaPpp == null
+    const decisionBestPerCapitaPpp = resolveDecisionBestPerCapitaPpp(pair);
+    const bestLevelPpp = decisionBestPerCapitaPpp == null
       ? "N/A"
-      : `${formatCompactNumber(pair.pppPerCapitaSummary.estimatedBestPerCapitaPpp)} intl $/person`;
+      : `${formatCompactNumber(decisionBestPerCapitaPpp)} intl $/person`;
     const bestRange = bestBin?.label ?? "N/A";
     const robustBestRange = pair.robustness.robustBestObservedRange ?? "N/A";
     const bestRangePpp = pair?.pppPerCapitaSummary?.bestObservedPerCapitaPppRange ?? "N/A";
     const bestOutcomeMean = bestBin?.outcomeMean == null ? "N/A" : formatCompactNumber(bestBin.outcomeMean);
     const direction = pair.direction;
     lines.push(
-      `| ${row.predictorLabel ?? row.predictorId} | ${bestLevel} | ${supportTarget} | ${medLevel} | ${kneeLevel} | ${extrapolative ? "yes" : "no"} | ${outsideBestObservedBin ? "yes" : "no"} | ${robustBestLevel} | ${rawRobustDelta} | ${bestLevelPpp} | ${bestRange} | ${robustBestRange} | ${bestRangePpp} | ${bestOutcomeMean} | ${direction} | ${pair.dataSufficiency.status} | ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band}) | ${pair.qualityTier} | ${reportFile} |`,
+      `| ${row.predictorLabel ?? row.predictorId} | ${bestLevel} | ${decisionSource} | ${medLevel} | ${kneeLevel} | ${robustBestLevel} | ${modelBestLevel} | ${extrapolative ? "yes" : "no"} | ${outsideBestObservedBin ? "yes" : "no"} | ${rawRobustDelta} | ${bestLevelPpp} | ${bestRange} | ${robustBestRange} | ${bestRangePpp} | ${bestOutcomeMean} | ${direction} | ${pair.dataSufficiency.status} | ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band}) | ${pair.qualityTier} | ${reportFile} |`,
     );
+  }
+  if (displayRows.length === 0) {
+    lines.push("| (none) | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |");
   }
   if (displayRows.length > 0) {
     lines.push("");
@@ -2271,11 +2475,9 @@ function buildOutcomeMarkdown(
     lines.push("");
     for (const { row, pair } of displayRows) {
       const predictorName = row.predictorLabel ?? row.predictorId;
-      const bestLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
-      const supportLevel = formatValueWithUnit(
-        pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue,
-        pair.predictorUnit,
-      );
+      const decisionLevel = formatValueWithUnit(resolveDecisionOptimalValue(pair), pair.predictorUnit);
+      const decisionSource = resolveDecisionTargetSource(pair);
+      const modelBestLevel = formatValueWithUnit(resolveActionableOptimalValue(pair), pair.predictorUnit);
       const robustBestLevel = formatValueWithUnit(pair.robustness.robustOptimalValue, pair.predictorUnit);
       const medLevel = formatValueWithUnit(
         pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
@@ -2295,7 +2497,7 @@ function buildOutcomeMarkdown(
         resolveActionableOptimalValue(pair),
       );
       lines.push(
-        `- ${predictorName}: estimated best ${bestLevel}${extrapolative ? " (extrapolative outside observed support)" : outsideBestObservedBin ? " (outside best observed bin range)" : ""}; observed-support target ${supportLevel}; MED ${medLevel}; diminishing-returns knee ${kneeLevel}; robust sensitivity target ${robustBestLevel}; sufficiency ${pair.dataSufficiency.status}; reliability ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band}); quality tier ${pair.qualityTier}.`,
+        `- ${predictorName}: decision target ${decisionLevel} (${decisionSource.replace("_", " ")}); MED ${medLevel}; diminishing-returns knee ${kneeLevel}; robust sensitivity target ${robustBestLevel}; model optimum ${modelBestLevel}${extrapolative ? " (extrapolative outside observed support)" : outsideBestObservedBin ? " (outside best observed bin range)" : ""}; sufficiency ${pair.dataSufficiency.status}; reliability ${pair.reliability.overallScore.toFixed(3)} (${pair.reliability.band}); quality tier ${pair.qualityTier}.`,
       );
     }
   }
@@ -2319,7 +2521,7 @@ function buildOutcomeMarkdown(
       `- Quality tiers in this outcome: strong ${qualityTierCounts.strong}, moderate ${qualityTierCounts.moderate}, exploratory ${qualityTierCounts.exploratory}, insufficient ${qualityTierCounts.insufficient}.`,
     );
     lines.push(
-      "- Estimated best levels come from aggregate causal-direction scoring with temporal-profile search and confidence gating.",
+      "- Decision targets come from support-constrained response-curve diagnostics; model optima are kept for technical comparison only.",
     );
   }
   lines.push("");
@@ -2521,6 +2723,7 @@ export async function generateMegaStudyArtifacts(
   const candidates: OutcomeRankingCandidate[] = [];
   const pairStudies: PairStudyArtifact[] = [];
   const skippedPairs: Array<{ predictorId: string; outcomeId: string; reason: string }> = [];
+  let pairsExcludedBySufficiencyGate = 0;
 
   for (const predictor of predictors) {
     for (const outcome of outcomes) {
@@ -2861,34 +3064,47 @@ export async function generateMegaStudyArtifacts(
       pair.narrativeSummary = buildPairNarrativeSummary(pair);
       pairStudies.push(pair);
 
-      candidates.push({
-        outcomeId: outcome.id,
-        predictorId: predictor.id,
-        predictorLabel: predictor.label,
-        aggregateVariableRelationship: {
-          numberOfUnits: nonNegativeInt(aggregate.numberOfUnits),
-          aggregateForwardPearson,
-          aggregateReversePearson,
-          aggregatePredictivePearson,
-          aggregateEffectSize,
-          aggregateStatisticalSignificance,
-          aggregateValuePredictingHighOutcome: finiteOrNull(aggregate.aggregateValuePredictingHighOutcome),
-          aggregateValuePredictingLowOutcome: finiteOrNull(aggregate.aggregateValuePredictingLowOutcome),
-          aggregateOptimalDailyValue: finiteOrNull(aggregate.aggregateOptimalDailyValue),
-          aggregateOutcomeFollowUpPercentChangeFromBaseline: finiteOrNull(
-            aggregate.aggregateOutcomeFollowUpPercentChangeFromBaseline,
-          ),
-          weightedAveragePIS,
-          totalPairs: nonNegativeInt(aggregate.totalPairs),
-        },
-        pValue,
-        evidenceGrade,
-        qualityPenalty: pair.includedSubjects < 20 ? 0.2 : 0,
-      });
+      if (isRecommendationEligible(pair)) {
+        candidates.push({
+          outcomeId: outcome.id,
+          predictorId: predictor.id,
+          predictorLabel: predictor.label,
+          aggregateVariableRelationship: {
+            numberOfUnits: nonNegativeInt(aggregate.numberOfUnits),
+            aggregateForwardPearson,
+            aggregateReversePearson,
+            aggregatePredictivePearson,
+            aggregateEffectSize,
+            aggregateStatisticalSignificance,
+            aggregateValuePredictingHighOutcome: finiteOrNull(aggregate.aggregateValuePredictingHighOutcome),
+            aggregateValuePredictingLowOutcome: finiteOrNull(aggregate.aggregateValuePredictingLowOutcome),
+            aggregateOptimalDailyValue: finiteOrNull(aggregate.aggregateOptimalDailyValue),
+            aggregateOutcomeFollowUpPercentChangeFromBaseline: finiteOrNull(
+              aggregate.aggregateOutcomeFollowUpPercentChangeFromBaseline,
+            ),
+            weightedAveragePIS,
+            totalPairs: nonNegativeInt(aggregate.totalPairs),
+          },
+          pValue,
+          evidenceGrade,
+          qualityPenalty: pair.includedSubjects < 20 ? 0.2 : 0,
+        });
+      } else {
+        pairsExcludedBySufficiencyGate += 1;
+      }
     }
   }
 
-  const rankings = buildOutcomeMegaStudies({ candidates, multipleTestingMethod: "benjamini_hochberg", alpha: 0.05 });
+  const rankings = outcomes
+    .map((outcome) =>
+      rankPredictorsForOutcome({
+        outcomeId: outcome.id,
+        candidates,
+        multipleTestingMethod: "benjamini_hochberg",
+        alpha: 0.05,
+      })
+    )
+    .sort((left, right) => left.outcomeId.localeCompare(right.outcomeId));
   const pairByKey = new Map(pairStudies.map((pair) => [`${pair.predictorId}::${pair.outcomeId}`, pair]));
 
   if (writeFiles) {
@@ -2909,6 +3125,7 @@ export async function generateMegaStudyArtifacts(
       `- Cache directory: ${useDataCache ? cacheDir : "N/A"}`,
       `- Pair studies generated: ${pairStudies.length}`,
       `- Pair studies skipped: ${skippedPairs.length}`,
+      `- Pairs excluded from ranking by hard sufficiency gate: ${pairsExcludedBySufficiencyGate}`,
       `- API payload: mega-study-api.json`,
       ...(excludedNonDiscretionaryPredictors.length > 0
         ? [

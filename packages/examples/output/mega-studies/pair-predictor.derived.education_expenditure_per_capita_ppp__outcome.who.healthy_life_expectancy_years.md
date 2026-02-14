@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 842.63 international $/person.
+- Decision-target Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 2912.6 international $/person (support constrained).
 - Observed-support target from binned response curve: 2912.6 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2705.0 international $/person; model-optimal minus observed-anchor difference is -1862.4 (-68.8%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 842.6295 |
 | Aggregate value predicting low outcome | 658.0594 |
 | Aggregate optimal daily value | 842.6295 |
+| Decision target value (reader-facing) | 2912.6 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 842.63 international $/person |
 | Support-constrained optimal value | 2912.6 international $/person |
 | Support-constrained optimal range | [2182.5, 6496.0] |
 | Response-curve robust optimal value | 1712.9 international $/person |

@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 3.711 % of government expenditure.
+- Decision-target R&D Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 1.498 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 1.498 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 1.786 % of government expenditure; model-optimal minus observed-anchor difference is 1.924 (+107.7%).
@@ -67,6 +67,8 @@
 | Aggregate value predicting high outcome | 3.7105 |
 | Aggregate value predicting low outcome | 3.6662 |
 | Aggregate optimal daily value | 3.7105 |
+| Decision target value (reader-facing) | 1.498 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 3.711 % of government expenditure |
 | Support-constrained optimal value | 1.498 % of government expenditure |
 | Support-constrained optimal range | [1.349, 1.724) |
 | Response-curve robust optimal value | 2.042 % of government expenditure |

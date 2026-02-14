@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 387.90 international $/person.
+- Decision-target Military Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 546.11 international $/person (support constrained).
 - Observed-support target from binned response curve: 546.11 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 487.80 international $/person; model-optimal minus observed-anchor difference is -99.893 (-20.5%).
@@ -69,6 +69,8 @@
 | Aggregate value predicting high outcome | 387.9048 |
 | Aggregate value predicting low outcome | 369.1217 |
 | Aggregate optimal daily value | 387.9048 |
+| Decision target value (reader-facing) | 546.11 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 387.90 international $/person |
 | Support-constrained optimal value | 546.11 international $/person |
 | Support-constrained optimal range | [451.65, 771.61) |
 | Response-curve robust optimal value | 526.49 international $/person |

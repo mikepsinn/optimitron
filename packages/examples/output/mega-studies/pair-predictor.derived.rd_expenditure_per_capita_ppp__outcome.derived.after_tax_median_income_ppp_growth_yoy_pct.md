@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 282.81 international $/person.
+- Decision-target R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 15.455 international $/person (support constrained).
 - Observed-support target from binned response curve: 15.455 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 3.140 international $/person; model-optimal minus observed-anchor difference is 279.67 (+8906.3%).
@@ -67,6 +67,8 @@
 | Aggregate value predicting high outcome | 282.8121 |
 | Aggregate value predicting low outcome | 271.9464 |
 | Aggregate optimal daily value | 282.8121 |
+| Decision target value (reader-facing) | 15.455 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 282.81 international $/person |
 | Support-constrained optimal value | 15.455 international $/person |
 | Support-constrained optimal range | [10.830, 22.540) |
 | Response-curve robust optimal value | 14.138 international $/person |

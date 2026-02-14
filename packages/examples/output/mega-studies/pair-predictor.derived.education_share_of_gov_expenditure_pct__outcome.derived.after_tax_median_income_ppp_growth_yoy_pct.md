@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 19.036 % of government expenditure.
+- Decision-target Education Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 13.129 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 13.129 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13.796 % of government expenditure; model-optimal minus observed-anchor difference is 5.240 (+38.0%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 19.0358 |
 | Aggregate value predicting low outcome | 18.8879 |
 | Aggregate optimal daily value | 19.0358 |
+| Decision target value (reader-facing) | 13.129 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 19.036 % of government expenditure |
 | Support-constrained optimal value | 13.129 % of government expenditure |
 | Support-constrained optimal range | [12.370, 13.797) |
 | Response-curve robust optimal value | 12.935 % of government expenditure |

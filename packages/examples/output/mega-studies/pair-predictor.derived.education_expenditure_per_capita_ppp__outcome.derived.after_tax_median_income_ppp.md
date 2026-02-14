@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 822.42 international $/person.
+- Decision-target Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 2563.5 international $/person (support constrained).
 - Observed-support target from binned response curve: 2563.5 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2367.1 international $/person; model-optimal minus observed-anchor difference is -1544.7 (-65.3%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 822.4183 |
 | Aggregate value predicting low outcome | 440.6380 |
 | Aggregate optimal daily value | 822.4183 |
+| Decision target value (reader-facing) | 2563.5 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 822.42 international $/person |
 | Support-constrained optimal value | 2563.5 international $/person |
 | Support-constrained optimal range | [1881.7, 6496.0] |
 | Response-curve robust optimal value | 1402.6 international $/person |

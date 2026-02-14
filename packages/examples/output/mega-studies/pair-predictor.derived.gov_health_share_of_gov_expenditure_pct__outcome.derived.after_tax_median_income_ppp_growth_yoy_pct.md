@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Health Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 13.149 % of government expenditure.
+- Decision-target Government Health Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 12.642 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 12.642 % of government expenditure.
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 12.600 % of government expenditure.
 - Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
@@ -64,6 +64,8 @@
 | Aggregate value predicting high outcome | 13.1490 |
 | Aggregate value predicting low outcome | 13.1200 |
 | Aggregate optimal daily value | 13.1490 |
+| Decision target value (reader-facing) | 12.642 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 13.149 % of government expenditure |
 | Support-constrained optimal value | 12.642 % of government expenditure |
 | Support-constrained optimal range | [12.186, 12.999) |
 | Response-curve robust optimal value | 12.584 % of government expenditure |

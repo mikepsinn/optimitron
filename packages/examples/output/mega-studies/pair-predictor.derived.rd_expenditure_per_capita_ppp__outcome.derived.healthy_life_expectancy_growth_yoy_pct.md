@@ -20,23 +20,16 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 228.03 international $/person.
-- Observed-support target from binned response curve: 1.894 international $/person.
-- Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
-- Best observed bin anchor (median/mean) is 2.254 international $/person; model-optimal minus observed-anchor difference is 225.77 (+10014.4%).
-- Robust sensitivity (trimmed 10-90% predictor range) suggests 492.19 international $/person.
-- Raw vs robust optimal differs by 115.8%, indicating strong tail influence.
-- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
-- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
-- Saturation/plateau zone starts around 142.65 international $/person and extends through 1340.2 international $/person.
-- Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when R&D Expenditure Per Capita (PPP) is in [0.19723, 4.621) (mean outcome 0.64005).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
+- No decision target is emitted for R&D Expenditure Per Capita (PPP) -> Healthy Life Expectancy Growth (YoY %) because minimum data-sufficiency thresholds were not met.
+- Blocking reasons: aligned-pair support below minimum (1995 < 2000).
+- Observed support in this run: 95 subjects, 1995 aligned pairs, 10 predictor bins, 16 temporal candidates with valid results.
+- Use this pair for diagnostics only until sufficiency thresholds are satisfied.
 
 ## Decision Summary
 
-- Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Directional hint: lower R&D Expenditure Per Capita (PPP) is associated with better Healthy Life Expectancy Growth (YoY %).
-- Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
+- Interpretation: insufficient data for recommendation-grade inference under current hard sufficiency gates.
+- Recommendation status: no primary target is emitted from this pair until support thresholds are met.
+- Blocking reasons: aligned-pair support below minimum (1995 < 2000).
 
 ## Plain-Language Summary
 
@@ -69,6 +62,8 @@
 | Aggregate value predicting high outcome | 228.0252 |
 | Aggregate value predicting low outcome | 264.2399 |
 | Aggregate optimal daily value | 228.0252 |
+| Decision target value (reader-facing) | N/A (unavailable) |
+| Model-derived optimum (diagnostics) | 228.03 international $/person |
 | Support-constrained optimal value | 1.894 international $/person |
 | Support-constrained optimal range | [0.19723, 3.816) |
 | Response-curve robust optimal value | 119.44 international $/person |

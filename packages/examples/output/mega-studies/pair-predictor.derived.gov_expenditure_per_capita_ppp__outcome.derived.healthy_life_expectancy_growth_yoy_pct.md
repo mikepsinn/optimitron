@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 4531.5 international $/person.
+- Decision-target Government Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 138.29 international $/person (support constrained).
 - Observed-support target from binned response curve: 138.29 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 162.53 international $/person; model-optimal minus observed-anchor difference is 4369.0 (+2688.1%).
@@ -69,6 +69,8 @@
 | Aggregate value predicting high outcome | 4531.5144 |
 | Aggregate value predicting low outcome | 4726.0129 |
 | Aggregate optimal daily value | 4531.5144 |
+| Decision target value (reader-facing) | 138.29 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 4531.5 international $/person |
 | Support-constrained optimal value | 138.29 international $/person |
 | Support-constrained optimal range | [20.664, 230.93) |
 | Response-curve robust optimal value | 4477.5 international $/person |

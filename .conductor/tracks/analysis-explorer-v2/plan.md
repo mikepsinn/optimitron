@@ -43,7 +43,7 @@
    - Keep level outcomes as primary decision targets.
    - Add parallel growth horizons (`1y YoY`, `3y CAGR`, `5y CAGR` / long-difference variants).
    - Choose default decision horizon per outcome by reliability score (support + stability + significance).
-15. [ ] Add hard data-sufficiency gates before pair scoring.
+15. [x] Add hard data-sufficiency gates before pair scoring.
    - Require minimum continuity/coverage thresholds before generating recommendations.
    - Emit explicit "insufficient-data" outcome/pair pages instead of low-confidence pseudo-recommendations.
 16. [ ] Split report targets into model-optimal vs decision-optimal.
@@ -64,6 +64,23 @@
 20. [x] Integrate optimizer MED/diminishing-returns outputs into pair reports.
    - Show minimum effective dose (MED), diminishing-returns knee, and plateau-zone diagnostics when identifiable.
    - Fall back to "no reliable MED/knee detected" when support is insufficient.
+21. [x] Enforce no-extrapolation decision targets in reader-facing recommendations.
+   - For any predictor, default recommendation must stay within observed-support and robust-support windows.
+   - Keep unconstrained model optimum only in diagnostics; never as the primary recommendation when outside support.
+22. [ ] Add education-specific predictor decomposition for budget guidance.
+   - Split broad education spending into at least:
+     - instruction-facing K-12 spend
+     - administrative/overhead spend
+     - early-childhood spend
+     - tertiary/higher-education public spend
+   - Run pair studies on each component so recommendations are composition-sensitive, not only total-volume-sensitive.
+23. [ ] Add direct student-performance outcomes and align lags.
+   - Integrate internationally comparable student-performance outcomes (for example PISA-based proficiency/score panels) where coverage allows.
+   - Add US-specific companion outcomes (for example NAEP trend series) in US-only analysis tracks.
+   - Calibrate education predictor/outcome temporal profiles to longer lag candidates than default fiscal outcomes.
+24. [ ] Add education recommendation reliability gate and fallback language.
+   - Require direct-learning-outcome support before issuing large education spending scale-up/down guidance.
+   - When direct outcome support is insufficient, label education recommendations as composition-exploratory and suppress large absolute budget deltas.
 
 ## Progress Notes (2026-02-13)
 - Switched report-facing predictor set to discretionary PPP per-capita spending predictors.
@@ -117,6 +134,16 @@
   - removed primary `actionable/exploratory` language from lead sections and target tables
   - replaced recommendation wording with numeric target summaries (best estimate, observed-support target, MED, knee, robust target)
   - kept gating/actionability internals in artifact JSON for downstream API/debug use
+- Enforced no-extrapolation decision-target policy in report generation:
+  - reader-facing lead takeaways, top-target text, allocation-share table, and optimal-level tables now use support-constrained/robust decision targets by default
+  - raw model optima are now labeled diagnostics-only in outcome and pair markdown templates
+  - API payload now includes both `targets.decisionBest` + `targets.decisionTargetSource` and `targets.modelBest` for explicit separation
+- Implemented hard sufficiency gating in outcome scoring + recommendations:
+  - pairs with `dataSufficiency.status = insufficient_data` are still generated as pair pages but are excluded from outcome ranking/scoring candidates
+  - decision-target resolver now returns `unavailable` for insufficiency-gated pairs, preventing recommendation emission
+  - pair pages now emit explicit insufficient-data decision summaries (blocking reasons + support stats)
+  - outcome pages now show `Sufficiency-Gated Pairs`/`Insufficient-Data Status` sections when rows are excluded
+  - index now reports `Pairs excluded from ranking by hard sufficiency gate` (current run: 2)
 - Added explicit backend reliability + sufficiency contracts for each pair:
   - `dataSufficiency` (`sufficient` / `insufficient_data`) with thresholded reasons
   - numeric `reliability` object with component scores (support/significance/directional/temporal/robustness), overall score, and band
@@ -134,6 +161,6 @@
   - `outcome.derived.after_tax_median_income_ppp_growth_yoy_pct`: mostly `B/C`, exploratory.
   - `outcome.derived.healthy_life_expectancy_growth_yoy_pct`: all `F` / insufficient under current reliability gates; treat as non-decision-grade until multi-horizon/gating upgrades land.
 - Next highest-priority implementation order:
-  1) Implement item 14 (multi-horizon outcomes) and item 15 (hard sufficiency gates).
-  2) Tighten item 16 by explicitly selecting decision targets from support-constrained + robustness diagnostics.
+  1) Implement items 22-24 for education-specific reliability before shipping further education budget recommendations.
+  2) Implement item 14 (multi-horizon outcomes).
   3) Implement item 8 (direct after-tax median income integration).

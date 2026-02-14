@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Share of Government Spending level for higher After-Tax Median Income (PPP): 4.043 % of government expenditure.
+- Decision-target R&D Share of Government Spending level for higher After-Tax Median Income (PPP): 12.690 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 12.690 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 12.055 % of government expenditure; model-optimal minus observed-anchor difference is -8.013 (-66.5%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 4.0427 |
 | Aggregate value predicting low outcome | 3.6182 |
 | Aggregate optimal daily value | 4.0427 |
+| Decision target value (reader-facing) | 12.690 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 4.043 % of government expenditure |
 | Support-constrained optimal value | 12.690 % of government expenditure |
 | Support-constrained optimal range | [9.823, 26.042] |
 | Response-curve robust optimal value | 5.028 % of government expenditure |

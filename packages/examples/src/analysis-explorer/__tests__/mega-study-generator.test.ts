@@ -22,6 +22,8 @@ import {
   isReportEligibleOutcome,
   isReportEligiblePredictor,
   resolveActionableOptimalValue,
+  resolveDecisionOptimalValue,
+  resolveDecisionTargetSource,
   resolvePairTemporalProfile,
   scoreTemporalProfileCandidate,
   selectLagYears,
@@ -624,6 +626,67 @@ describe("mega-study-generator helpers", () => {
     } as Parameters<typeof resolveActionableOptimalValue>[0];
 
     expect(resolveActionableOptimalValue(pair)).toBe(20);
+  });
+
+  it("resolveDecisionOptimalValue prefers support-constrained targets", () => {
+    const pair = {
+      responseCurve: {
+        supportConstrainedTargets: {
+          supportConstrainedOptimalValue: 14,
+          robustOptimalValue: 12,
+        },
+      },
+    } as Parameters<typeof resolveDecisionOptimalValue>[0];
+
+    expect(resolveDecisionTargetSource(pair)).toBe("support_constrained");
+    expect(resolveDecisionOptimalValue(pair)).toBe(14);
+  });
+
+  it("resolveDecisionOptimalValue falls back to robust target when support target is unavailable", () => {
+    const pair = {
+      responseCurve: {
+        supportConstrainedTargets: {
+          supportConstrainedOptimalValue: null,
+          robustOptimalValue: 11,
+        },
+      },
+    } as Parameters<typeof resolveDecisionOptimalValue>[0];
+
+    expect(resolveDecisionTargetSource(pair)).toBe("robust_fallback");
+    expect(resolveDecisionOptimalValue(pair)).toBe(11);
+  });
+
+  it("resolveDecisionOptimalValue returns null when no supported target exists", () => {
+    const pair = {
+      aggregateOptimalDailyValue: 20,
+      aggregateValuePredictingHighOutcome: 15,
+      responseCurve: {
+        supportConstrainedTargets: {
+          supportConstrainedOptimalValue: null,
+          robustOptimalValue: null,
+        },
+      },
+    } as Parameters<typeof resolveDecisionOptimalValue>[0];
+
+    expect(resolveDecisionTargetSource(pair)).toBe("unavailable");
+    expect(resolveDecisionOptimalValue(pair)).toBeNull();
+  });
+
+  it("resolveDecisionOptimalValue suppresses targets when pair is insufficiency-gated", () => {
+    const pair = {
+      responseCurve: {
+        supportConstrainedTargets: {
+          supportConstrainedOptimalValue: 14,
+          robustOptimalValue: 12,
+        },
+      },
+      dataSufficiency: {
+        status: "insufficient_data",
+      },
+    } as Parameters<typeof resolveDecisionOptimalValue>[0];
+
+    expect(resolveDecisionTargetSource(pair)).toBe("unavailable");
+    expect(resolveDecisionOptimalValue(pair)).toBeNull();
   });
 
   it("buildPppPerCapitaSummary estimates PPP-equivalent levels for % GDP predictors", () => {

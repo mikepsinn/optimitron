@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Share of Government Spending level for higher After-Tax Median Income (PPP): 19.337 % of government expenditure.
+- Decision-target Education Share of Government Spending level for higher After-Tax Median Income (PPP): 13.062 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 13.062 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13.743 % of government expenditure; model-optimal minus observed-anchor difference is 5.594 (+40.7%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 19.3370 |
 | Aggregate value predicting low outcome | 19.1834 |
 | Aggregate optimal daily value | 19.3370 |
+| Decision target value (reader-facing) | 13.062 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 19.337 % of government expenditure |
 | Support-constrained optimal value | 13.062 % of government expenditure |
 | Support-constrained optimal range | [12.325, 13.756) |
 | Response-curve robust optimal value | 13.934 % of government expenditure |

@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Share of Government Spending level for higher After-Tax Median Income (PPP): 8.164 % of government expenditure.
+- Decision-target Military Share of Government Spending level for higher After-Tax Median Income (PPP): 3.389 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 3.389 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 3.627 % of government expenditure; model-optimal minus observed-anchor difference is 4.537 (+125.1%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 8.1639 |
 | Aggregate value predicting low outcome | 11.5591 |
 | Aggregate optimal daily value | 8.1639 |
+| Decision target value (reader-facing) | 3.389 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 8.164 % of government expenditure |
 | Support-constrained optimal value | 3.389 % of government expenditure |
 | Support-constrained optimal range | [2.746, 3.798) |
 | Response-curve robust optimal value | 4.156 % of government expenditure |

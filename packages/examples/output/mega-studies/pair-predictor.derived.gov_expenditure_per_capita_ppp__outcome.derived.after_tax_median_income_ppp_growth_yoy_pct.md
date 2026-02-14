@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 4144.5 international $/person.
+- Decision-target Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 931.16 international $/person (support constrained).
 - Observed-support target from binned response curve: 931.16 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 752.26 international $/person; model-optimal minus observed-anchor difference is 3392.3 (+450.9%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 4144.5190 |
 | Aggregate value predicting low outcome | 3894.9646 |
 | Aggregate optimal daily value | 4144.5190 |
+| Decision target value (reader-facing) | 931.16 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 4144.5 international $/person |
 | Support-constrained optimal value | 931.16 international $/person |
 | Support-constrained optimal range | [755.20, 1122.2) |
 | Response-curve robust optimal value | 850.26 international $/person |

@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 5074.0 international $/person.
+- Decision-target Government Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 16474.4 international $/person (support constrained).
 - Observed-support target from binned response curve: 16474.4 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 15541.4 international $/person; model-optimal minus observed-anchor difference is -10467.3 (-67.4%).
@@ -69,6 +69,8 @@
 | Aggregate value predicting high outcome | 5074.0132 |
 | Aggregate value predicting low outcome | 3906.7314 |
 | Aggregate optimal daily value | 5074.0132 |
+| Decision target value (reader-facing) | 16474.4 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 5074.0 international $/person |
 | Support-constrained optimal value | 16474.4 international $/person |
 | Support-constrained optimal range | [13037.0, 43487.5] |
 | Response-curve robust optimal value | 10653.8 international $/person |

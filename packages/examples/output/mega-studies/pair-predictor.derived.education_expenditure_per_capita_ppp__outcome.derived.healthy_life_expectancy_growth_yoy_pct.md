@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 744.31 international $/person.
+- Decision-target Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 30.522 international $/person (support constrained).
 - Observed-support target from binned response curve: 30.522 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 33.103 international $/person; model-optimal minus observed-anchor difference is 711.21 (+2148.5%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 744.3105 |
 | Aggregate value predicting low outcome | 783.1643 |
 | Aggregate optimal daily value | 744.3105 |
+| Decision target value (reader-facing) | 30.522 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 744.31 international $/person |
 | Support-constrained optimal value | 30.522 international $/person |
 | Support-constrained optimal range | [9.238, 42.945) |
 | Response-curve robust optimal value | 60.488 international $/person |

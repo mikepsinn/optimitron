@@ -5,6 +5,10 @@
 2. [x] Add WHO HALE fetcher and wire dataset usage.
 3. Expand OECD panel to include direct outcomes fields (education, healthcare, crime, climate).
    - Currently missing: Education outcomes (PISA?), Crime (Homicide is there, maybe Safety?), Climate (CO2 emissions?), Healthcare outcomes (beyond LE/HALE/Infant Mortality - maybe Cancer survival?)
+   - Add explicit education-outcome ingestion tasks:
+     - international student-performance panel fields suitable for longitudinal pair analysis
+     - coverage diagnostics by jurisdiction/year for education outcomes
+     - transform-ready annual alignment metadata so optimizer lag windows are not inferred from sparse raw periodicity
 4. Add GDP deflator option for US spending conversion.
 5. Add caching and versioning metadata for static datasets.
 6. Improve FRED fetcher reliability (keys, rate-limit handling).

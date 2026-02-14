@@ -20,23 +20,16 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 3.481 % of government expenditure.
-- Observed-support target from binned response curve: 13.243 % of government expenditure.
-- Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
-- Best observed bin anchor (median/mean) is 12.605 % of government expenditure; model-optimal minus observed-anchor difference is -9.124 (-72.4%).
-- Robust sensitivity (trimmed 10-90% predictor range) suggests 4.613 % of government expenditure.
-- Raw vs robust optimal differs by 32.5%, indicating strong tail influence.
-- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
-- Diminishing returns likely begin near 1.027 % of government expenditure.
-- Saturation/plateau zone starts around 8.165 % of government expenditure and extends through 13.243 % of government expenditure.
-- Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when R&D Share of Government Spending is in [9.525, 20.356] (mean outcome 0.44588).
-- Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
+- No decision target is emitted for R&D Share of Government Spending -> Healthy Life Expectancy Growth (YoY %) because minimum data-sufficiency thresholds were not met.
+- Blocking reasons: aligned-pair support below minimum (1722 < 2000).
+- Observed support in this run: 82 subjects, 1722 aligned pairs, 10 predictor bins, 16 temporal candidates with valid results.
+- Use this pair for diagnostics only until sufficiency thresholds are satisfied.
 
 ## Decision Summary
 
-- Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
-- Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
+- Interpretation: insufficient data for recommendation-grade inference under current hard sufficiency gates.
+- Recommendation status: no primary target is emitted from this pair until support thresholds are met.
+- Blocking reasons: aligned-pair support below minimum (1722 < 2000).
 
 ## Plain-Language Summary
 
@@ -68,6 +61,8 @@
 | Aggregate value predicting high outcome | 3.4806 |
 | Aggregate value predicting low outcome | 3.5086 |
 | Aggregate optimal daily value | 3.4806 |
+| Decision target value (reader-facing) | N/A (unavailable) |
+| Model-derived optimum (diagnostics) | 3.481 % of government expenditure |
 | Support-constrained optimal value | 13.243 % of government expenditure |
 | Support-constrained optimal range | [10.327, 20.356] |
 | Response-curve robust optimal value | 0.99475 % of government expenditure |

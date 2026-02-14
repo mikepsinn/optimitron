@@ -52304,7 +52304,7 @@
       "multipleTesting": {
         "method": "benjamini_hochberg",
         "alpha": 0.05,
-        "tests": 10
+        "tests": 8
       },
       "rows": [
         {
@@ -52312,7 +52312,7 @@
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
           "predictorLabel": "Military Share of Government Spending",
-          "score": 0.6259502177667821,
+          "score": 0.6581712381705721,
           "confidence": 0.49482562332087243,
           "rawPValue": 0.8070483356030885,
           "adjustedPValue": 0.8151369056751466,
@@ -52330,7 +52330,7 @@
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
           "predictorLabel": "Education Share of Government Spending",
-          "score": 0.6040533640610217,
+          "score": 0.6399044133387636,
           "confidence": 0.4962042198200357,
           "rawPValue": 0.8063835441729235,
           "adjustedPValue": 0.8151369056751466,
@@ -52346,27 +52346,9 @@
         {
           "rank": 3,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
-          "predictorLabel": "R&D Share of Government Spending",
-          "score": 0.5660178942773761,
-          "confidence": 0.5052806990671963,
-          "rawPValue": 0.8058865872833669,
-          "adjustedPValue": 0.8151369056751466,
-          "significant": false,
-          "evidenceGrade": "F",
-          "qualityPenalty": 0,
-          "aggregateEffectSize": 283.7271795372705,
-          "aggregatePredictivePearson": 0.14591434720083393,
-          "aggregateForwardPearson": 0.0009369870300016065,
-          "numberOfUnits": 82,
-          "totalPairs": 1722
-        },
-        {
-          "rank": 4,
-          "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
           "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.5457630632736497,
+          "score": 0.5855949906791209,
           "confidence": 0.49581622904319006,
           "rawPValue": 0.8092531788022634,
           "adjustedPValue": 0.8151369056751466,
@@ -52380,11 +52362,11 @@
           "totalPairs": 2646
         },
         {
-          "rank": 5,
+          "rank": 4,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
           "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.4951155983063068,
+          "score": 0.5317322629942225,
           "confidence": 0.4925924131590162,
           "rawPValue": 0.8151369056751466,
           "adjustedPValue": 0.8151369056751466,
@@ -52398,29 +52380,11 @@
           "totalPairs": 3087
         },
         {
-          "rank": 6,
-          "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
-          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
-          "score": 0.47439358150417754,
-          "confidence": 0.5543144960067447,
-          "rawPValue": 0.7093611561435379,
-          "adjustedPValue": 0.8151369056751466,
-          "significant": false,
-          "evidenceGrade": "F",
-          "qualityPenalty": 0,
-          "aggregateEffectSize": 90.97761867249316,
-          "aggregatePredictivePearson": -0.1701077315536924,
-          "aggregateForwardPearson": -0.1692874878002489,
-          "numberOfUnits": 95,
-          "totalPairs": 1995
-        },
-        {
-          "rank": 7,
+          "rank": 5,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
           "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.346190455434476,
+          "score": 0.4165636428689864,
           "confidence": 0.5204174599701856,
           "rawPValue": 0.7727383632437146,
           "adjustedPValue": 0.8151369056751466,
@@ -52434,11 +52398,11 @@
           "totalPairs": 2961
         },
         {
-          "rank": 8,
+          "rank": 6,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
           "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.3242712394579318,
+          "score": 0.3676527467763118,
           "confidence": 0.4944757231574747,
           "rawPValue": 0.8150484460622303,
           "adjustedPValue": 0.8151369056751466,
@@ -52452,11 +52416,11 @@
           "totalPairs": 3465
         },
         {
-          "rank": 9,
+          "rank": 7,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
           "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.22348364610908183,
+          "score": 0.2524592220182354,
           "confidence": 0.5065908305608201,
           "rawPValue": 0.7798470756144305,
           "adjustedPValue": 0.8151369056751466,
@@ -52470,11 +52434,11 @@
           "totalPairs": 3759
         },
         {
-          "rank": 10,
+          "rank": 8,
           "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
           "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
           "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.22130177089591258,
+          "score": 0.25155715826295943,
           "confidence": 0.496300865530966,
           "rawPValue": 0.8033505984467639,
           "adjustedPValue": 0.8151369056751466,

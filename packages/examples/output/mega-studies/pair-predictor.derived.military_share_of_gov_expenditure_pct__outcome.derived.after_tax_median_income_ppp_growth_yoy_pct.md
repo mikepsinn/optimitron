@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 9.785 % of government expenditure.
+- Decision-target Military Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 4.734 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 4.734 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 5.208 % of government expenditure; model-optimal minus observed-anchor difference is 4.577 (+87.9%).
@@ -67,6 +67,8 @@
 | Aggregate value predicting high outcome | 9.7847 |
 | Aggregate value predicting low outcome | 10.2187 |
 | Aggregate optimal daily value | 9.7847 |
+| Decision target value (reader-facing) | 4.734 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 9.785 % of government expenditure |
 | Support-constrained optimal value | 4.734 % of government expenditure |
 | Support-constrained optimal range | [4.395, 5.018) |
 | Response-curve robust optimal value | 4.508 % of government expenditure |

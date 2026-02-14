@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 387.15 international $/person.
+- Decision-target Military Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 175.38 international $/person (support constrained).
 - Observed-support target from binned response curve: 175.38 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 179.67 international $/person; model-optimal minus observed-anchor difference is 207.48 (+115.5%).
@@ -69,6 +69,8 @@
 | Aggregate value predicting high outcome | 387.1499 |
 | Aggregate value predicting low outcome | 388.4027 |
 | Aggregate optimal daily value | 387.1499 |
+| Decision target value (reader-facing) | 175.38 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 387.15 international $/person |
 | Support-constrained optimal value | 175.38 international $/person |
 | Support-constrained optimal range | [151.11, 201.77) |
 | Response-curve robust optimal value | 170.64 international $/person |

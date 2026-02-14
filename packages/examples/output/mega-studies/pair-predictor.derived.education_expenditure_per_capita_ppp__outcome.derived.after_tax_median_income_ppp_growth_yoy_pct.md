@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 685.87 international $/person.
+- Decision-target Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 413.14 international $/person (support constrained).
 - Observed-support target from binned response curve: 413.14 international $/person.
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 544.13 international $/person.
 - Minimum effective level (first consistently positive zone): 55.100 international $/person.
@@ -65,6 +65,8 @@
 | Aggregate value predicting high outcome | 685.8691 |
 | Aggregate value predicting low outcome | 659.3175 |
 | Aggregate optimal daily value | 685.8691 |
+| Decision target value (reader-facing) | 413.14 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 685.87 international $/person |
 | Support-constrained optimal value | 413.14 international $/person |
 | Support-constrained optimal range | [352.67, 486.04) |
 | Response-curve robust optimal value | 395.61 international $/person |

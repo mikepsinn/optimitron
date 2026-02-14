@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Education Share of Government Spending level for higher Healthy Life Expectancy (HALE): 19.742 % of government expenditure.
+- Decision-target Education Share of Government Spending level for higher Healthy Life Expectancy (HALE): 14.666 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 14.666 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13.815 % of government expenditure; model-optimal minus observed-anchor difference is 5.928 (+42.9%).
@@ -68,6 +68,8 @@
 | Aggregate value predicting high outcome | 19.7423 |
 | Aggregate value predicting low outcome | 19.6611 |
 | Aggregate optimal daily value | 19.7423 |
+| Decision target value (reader-facing) | 14.666 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 19.742 % of government expenditure |
 | Support-constrained optimal value | 14.666 % of government expenditure |
 | Support-constrained optimal range | [13.860, 15.650) |
 | Response-curve robust optimal value | 14.120 % of government expenditure |

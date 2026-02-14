@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Military Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 9.048 % of government expenditure.
+- Decision-target Military Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 9.950 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 9.950 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 20.806 % of government expenditure; model-optimal minus observed-anchor difference is -11.758 (-56.5%).
@@ -66,6 +66,8 @@
 | Aggregate value predicting high outcome | 9.0483 |
 | Aggregate value predicting low outcome | 8.7013 |
 | Aggregate optimal daily value | 9.0483 |
+| Decision target value (reader-facing) | 9.950 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 9.048 % of government expenditure |
 | Support-constrained optimal value | 9.950 % of government expenditure |
 | Support-constrained optimal range | [9.169, 11.285) |
 | Response-curve robust optimal value | 10.572 % of government expenditure |

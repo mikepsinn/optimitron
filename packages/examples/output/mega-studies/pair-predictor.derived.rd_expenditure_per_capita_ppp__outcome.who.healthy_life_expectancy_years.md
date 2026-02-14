@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 349.10 international $/person.
+- Decision-target R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 1356.1 international $/person (support constrained).
 - Observed-support target from binned response curve: 1356.1 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 1302.4 international $/person; model-optimal minus observed-anchor difference is -953.35 (-73.2%).
@@ -69,6 +69,8 @@
 | Aggregate value predicting high outcome | 349.0992 |
 | Aggregate value predicting low outcome | 240.1539 |
 | Aggregate optimal daily value | 349.0992 |
+| Decision target value (reader-facing) | 1356.1 international $/person (support constrained) |
+| Model-derived optimum (diagnostics) | 349.10 international $/person |
 | Support-constrained optimal value | 1356.1 international $/person |
 | Support-constrained optimal range | [1081.6, 2227.7] |
 | Response-curve robust optimal value | 832.82 international $/person |

@@ -20,7 +20,7 @@
 
 ## Key Numeric Takeaways
 
-- Estimated best Government Health Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 13.024 % of government expenditure.
+- Decision-target Government Health Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 15.035 % of government expenditure (support constrained).
 - Observed-support target from binned response curve: 15.035 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 4.793 % of government expenditure; model-optimal minus observed-anchor difference is 8.231 (+171.7%).
@@ -66,6 +66,8 @@
 | Aggregate value predicting high outcome | 13.0235 |
 | Aggregate value predicting low outcome | 13.1650 |
 | Aggregate optimal daily value | 13.0235 |
+| Decision target value (reader-facing) | 15.035 % of government expenditure (support constrained) |
+| Model-derived optimum (diagnostics) | 13.024 % of government expenditure |
 | Support-constrained optimal value | 15.035 % of government expenditure |
 | Support-constrained optimal range | [14.399, 15.673) |
 | Response-curve robust optimal value | 12.659 % of government expenditure |
