@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 3759
 - Evidence grade: F
+- Data sufficiency: sufficient
+- Reliability score: 0.351 (low)
 - Quality tier: insufficient
 - Direction: negative
 - Derived uncertainty score: 0.7798 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 506.82 international $/person.
+- Estimated best Government Health Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 506.82 international $/person.
+- Observed-support target from binned response curve: 6.995 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 8.075 international $/person; model-optimal minus observed-anchor difference is 498.75 (+6176.3%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 17.662 international $/person.
 - Raw vs robust optimal differs by 96.5%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- Saturation/plateau zone starts around 527.95 international $/person and extends through 2719.9 international $/person.
 - Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when Government Health Expenditure Per Capita (PPP) is in [0.25914, 13.927) (mean outcome 1.064).
 - Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower Government Health Expenditure Per Capita (PPP) is associated with better Healthy Life Expectancy Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Government Health Expenditure Per Capita (PPP) tends to align with worse Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 179 subjects and 3759 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [0.25914, 13.927) (mean outcome 1.064).
+- Reliability score is 0.351 (low); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -64,6 +68,11 @@
 | Aggregate value predicting high outcome | 506.8239 |
 | Aggregate value predicting low outcome | 543.5973 |
 | Aggregate optimal daily value | 506.8239 |
+| Support-constrained optimal value | 6.995 international $/person |
+| Support-constrained optimal range | [0.25914, 11.041) |
+| Response-curve robust optimal value | 16.995 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.2591, 8503.2455] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -74,9 +83,25 @@
 | Robust optimal value (bin median) | 17.662 international $/person |
 | Raw vs robust optimal delta | -489.16 (-96.5%) |
 | Robustness retained fraction | 80.0% (3007/3759) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.3505 (low) |
+| Reliability support component | 0.8133 |
+| Reliability significance component | 0.2202 |
+| Reliability directional component | 0.3355 |
+| Reliability temporal-stability component | 0.1286 |
+| Reliability robustness component | 0.0387 |
 | Quality tier | insufficient |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | [413.50, 5270.6] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 499.83 (+7145.8%) |
 
 ### Temporal Sensitivity
 

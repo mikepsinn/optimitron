@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 4134
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.502 (low)
 - Quality tier: exploratory
 - Direction: positive
 - Derived uncertainty score: 0.1025 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 338.55 international $/person.
+- Estimated best R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 338.55 international $/person.
+- Observed-support target from binned response curve: 1186.3 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 1078.4 international $/person; model-optimal minus observed-anchor difference is -739.87 (-68.6%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 597.32 international $/person.
 - Raw vs robust optimal differs by 76.4%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 6.556 international $/person.
+- Diminishing returns likely begin near 13.986 international $/person.
+- Saturation/plateau zone starts around 231.03 international $/person and extends through 1186.3 international $/person.
 - Highest observed mean After-Tax Median Income (PPP) appears when R&D Expenditure Per Capita (PPP) is in [774.74, 2285.7] (mean outcome 53568.3).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher R&D Expenditure Per Capita (PPP) is associated with better After-Tax Median Income (PPP).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher R&D Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income (PPP).
 - The estimate uses 123 subjects and 4134 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [774.74, 2285.7] (mean outcome 53568.3).
+- A minimum effective predictor level appears near 6.556 international $/person in the binned response curve.
+- Reliability score is 0.502 (low); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -62,6 +67,11 @@
 | Aggregate value predicting high outcome | 338.5466 |
 | Aggregate value predicting low outcome | 161.6559 |
 | Aggregate optimal daily value | 338.5466 |
+| Support-constrained optimal value | 1186.3 international $/person |
+| Support-constrained optimal range | [861.87, 2285.7] |
+| Response-curve robust optimal value | 638.11 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.1972, 3227.4604] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -72,9 +82,25 @@
 | Robust optimal value (bin median) | 597.32 international $/person |
 | Raw vs robust optimal delta | 258.77 (+76.4%) |
 | Robustness retained fraction | 80.0% (3306/4134) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.5020 (low) |
+| Reliability support component | 0.7545 |
+| Reliability significance component | 0.8975 |
+| Reliability directional component | 0.2163 |
+| Reliability temporal-stability component | 0.0427 |
+| Reliability robustness component | 0.2618 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 6.556 international $/person (z=9.72) |
+| Diminishing-returns knee | 13.986 international $/person (ratio=0.285) |
+| Saturation / plateau range | [168.00, 2285.7] |
+| Support-constrained target reason | identified |
+| Raw to support delta | -847.76 (-71.5%) |
 
 ### Temporal Sensitivity
 

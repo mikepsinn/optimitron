@@ -12,36 +12,42 @@
 - Skipped subjects: 0
 - Total aligned pairs: 6924
 - Evidence grade: C
+- Data sufficiency: sufficient
+- Reliability score: 0.720 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: positive
 - Derived uncertainty score: 0.3147 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 685.87 international $/person.
+- Estimated best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 685.87 international $/person.
+- Observed-support target from binned response curve: 413.14 international $/person.
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 544.13 international $/person.
+- Minimum effective level (first consistently positive zone): 55.100 international $/person.
+- Diminishing returns likely begin near 100.74 international $/person.
+- Saturation/plateau zone starts around 229.25 international $/person and extends through 2736.7 international $/person.
 - Highest observed mean After-Tax Median Income Growth (YoY %) appears when Education Expenditure Per Capita (PPP) is in [510.99, 751.14) (mean outcome 5.154).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
+- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Education Expenditure Per Capita (PPP) is associated with better After-Tax Median Income Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Education Expenditure Per Capita (PPP) tends to align with worse After-Tax Median Income Growth (YoY %).
+- Higher Education Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 216 subjects and 6924 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [510.99, 751.14) (mean outcome 5.154).
+- A minimum effective predictor level appears near 55.100 international $/person in the binned response curve.
+- Reliability score is 0.720 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak aggregate significance (<0.70).
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Top temporal profiles are close (score delta 0.0153); temporal assumptions are not yet robust.
 
 ## Appendix: Technical Diagnostics
@@ -59,6 +65,11 @@
 | Aggregate value predicting high outcome | 685.8691 |
 | Aggregate value predicting low outcome | 659.3175 |
 | Aggregate optimal daily value | 685.8691 |
+| Support-constrained optimal value | 413.14 international $/person |
+| Support-constrained optimal range | [352.67, 486.04) |
+| Response-curve robust optimal value | 395.61 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0000, 7006.1701] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | no |
@@ -69,9 +80,25 @@
 | Robust optimal value (bin median) | 544.13 international $/person |
 | Raw vs robust optimal delta | -141.74 (-20.7%) |
 | Robustness retained fraction | 80.0% (5539/6924) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7202 (moderate) |
+| Reliability support component | 1.0000 |
+| Reliability significance component | 0.6853 |
+| Reliability directional component | 0.4510 |
+| Reliability temporal-stability component | 0.5097 |
+| Reliability robustness component | 0.8815 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 55.100 international $/person (z=1.87) |
+| Diminishing-returns knee | 100.74 international $/person (ratio=0.054) |
+| Saturation / plateau range | [192.60, 6745.6] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 272.73 (+66.0%) |
 
 ### Temporal Sensitivity
 

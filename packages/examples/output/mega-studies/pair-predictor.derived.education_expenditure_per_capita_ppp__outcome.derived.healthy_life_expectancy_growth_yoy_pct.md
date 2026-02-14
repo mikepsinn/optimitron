@@ -12,39 +12,44 @@
 - Skipped subjects: 0
 - Total aligned pairs: 3465
 - Evidence grade: F
+- Data sufficiency: sufficient
+- Reliability score: 0.413 (low)
 - Quality tier: insufficient
-- Direction: positive
+- Direction: negative
 - Derived uncertainty score: 0.8150 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 744.31 international $/person.
+- Estimated best Education Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 744.31 international $/person.
+- Observed-support target from binned response curve: 30.522 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 33.103 international $/person; model-optimal minus observed-anchor difference is 711.21 (+2148.5%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 62.367 international $/person.
 - Raw vs robust optimal differs by 91.6%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- Saturation/plateau zone starts around 1899.3 international $/person and extends through 2949.8 international $/person.
 - Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when Education Expenditure Per Capita (PPP) is in [9.238, 48.180) (mean outcome 1.097).
-- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
+- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower Education Expenditure Per Capita (PPP) is associated with better Healthy Life Expectancy Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Education Expenditure Per Capita (PPP) tends to align with better Healthy Life Expectancy Growth (YoY %).
+- Higher Education Expenditure Per Capita (PPP) tends to align with worse Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 165 subjects and 3465 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [9.238, 48.180) (mean outcome 1.097).
+- Reliability score is 0.413 (low); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak aggregate significance (<0.70).
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Top temporal profiles are close (score delta 0.0111); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 91.6% from raw optimal; tail observations materially influence target.
 
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 744.3105 |
 | Aggregate value predicting low outcome | 783.1643 |
 | Aggregate optimal daily value | 744.3105 |
+| Support-constrained optimal value | 30.522 international $/person |
+| Support-constrained optimal range | [9.238, 42.945) |
+| Response-curve robust optimal value | 60.488 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0000, 7006.1701] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 62.367 international $/person |
 | Raw vs robust optimal delta | -681.94 (-91.6%) |
 | Robustness retained fraction | 80.0% (2771/3465) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.4135 (low) |
+| Reliability support component | 0.7888 |
+| Reliability significance component | 0.1850 |
+| Reliability directional component | 0.5023 |
+| Reliability temporal-stability component | 0.3707 |
+| Reliability robustness component | 0.0931 |
 | Quality tier | insufficient |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | [1489.8, 6748.5] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 713.79 (+2338.6%) |
 
 ### Temporal Sensitivity
 

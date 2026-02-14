@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 7356
 - Evidence grade: C
+- Data sufficiency: sufficient
+- Reliability score: 0.633 (moderate)
 - Quality tier: exploratory
 - Direction: positive
 - Derived uncertainty score: 0.3180 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 584.90 international $/person.
+- Estimated best Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 584.90 international $/person.
+- Observed-support target from binned response curve: 361.49 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 46.636 international $/person; model-optimal minus observed-anchor difference is 538.26 (+1154.2%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 37.036 international $/person.
 - Raw vs robust optimal differs by 93.7%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 35.834 international $/person.
+- Diminishing returns likely begin near 35.834 international $/person.
+- Saturation/plateau zone starts around 903.60 international $/person and extends through 2793.6 international $/person.
 - Highest observed mean After-Tax Median Income Growth (YoY %) appears when Government Health Expenditure Per Capita (PPP) is in [34.371, 71.973) (mean outcome 5.158).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Government Health Expenditure Per Capita (PPP) is associated with better After-Tax Median Income Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Government Health Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 229 subjects and 7356 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [34.371, 71.973) (mean outcome 5.158).
+- A minimum effective predictor level appears near 35.834 international $/person in the binned response curve.
+- Reliability score is 0.633 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 584.8956 |
 | Aggregate value predicting low outcome | 558.2327 |
 | Aggregate optimal daily value | 584.8956 |
+| Support-constrained optimal value | 361.49 international $/person |
+| Support-constrained optimal range | [290.77, 429.10) |
+| Response-curve robust optimal value | 88.305 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.2591, 8503.2455] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 37.036 international $/person |
 | Raw vs robust optimal delta | -547.86 (-93.7%) |
 | Robustness retained fraction | 80.1% (5895/7356) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.6329 (moderate) |
+| Reliability support component | 1.0000 |
+| Reliability significance component | 0.6820 |
+| Reliability directional component | 0.8697 |
+| Reliability temporal-stability component | 0.1857 |
+| Reliability robustness component | 0.0704 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 35.834 international $/person (z=2.36) |
+| Diminishing-returns knee | 35.834 international $/person (ratio=-0.028) |
+| Saturation / plateau range | [660.26, 7046.4] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 223.41 (+61.8%) |
 
 ### Temporal Sensitivity
 

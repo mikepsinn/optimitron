@@ -13,6 +13,9 @@ import {
   buildPairTemporalProfileCandidates,
   buildPairBinSummaryRows,
   buildPppPerCapitaSummary,
+  derivePairDataSufficiency,
+  derivePairReliability,
+  directionFromSignal,
   derivePairQualityTier,
   derivePairQualityWarnings,
   isPercentGdpUnit,
@@ -307,6 +310,7 @@ describe("mega-study-generator helpers", () => {
         includedSubjects: 80,
         totalPairs: 5000,
         aggregateStatisticalSignificance: 0.9,
+        aggregateForwardPearson: 0.2,
         aggregatePredictivePearson: 0.2,
         maxSubjectDirectionalScore: 0.9,
         predictorObservedMin: 10,
@@ -316,6 +320,78 @@ describe("mega-study-generator helpers", () => {
         aggregateOptimalDailyValue: 21,
       }),
     ).toEqual([]);
+  });
+
+  it("derivePairQualityWarnings flags forward-vs-directional sign conflict", () => {
+    const warnings = derivePairQualityWarnings({
+      includedSubjects: 90,
+      totalPairs: 4500,
+      aggregateStatisticalSignificance: 0.88,
+      aggregateForwardPearson: 0.21,
+      aggregatePredictivePearson: -0.12,
+      maxSubjectDirectionalScore: 0.8,
+    });
+
+    expect(warnings.join(" ")).toContain("Forward association sign conflicts");
+  });
+
+  it("directionFromSignal uses forward sign when directional evidence is sufficient", () => {
+    expect(directionFromSignal(0.22, 0.08)).toBe("positive");
+    expect(directionFromSignal(-0.31, -0.07)).toBe("negative");
+  });
+
+  it("directionFromSignal returns neutral when forward effect or causal direction signal is weak", () => {
+    expect(directionFromSignal(0.03, 0.2)).toBe("neutral");
+    expect(directionFromSignal(0.2, 0.01)).toBe("neutral");
+  });
+
+  it("derivePairDataSufficiency marks high-coverage pairs as sufficient", () => {
+    const sufficiency = derivePairDataSufficiency({
+      includedSubjects: 120,
+      totalPairs: 6000,
+      temporalCandidatesWithResults: 8,
+      predictorBinCount: 10,
+    });
+
+    expect(sufficiency.status).toBe("sufficient");
+    expect(sufficiency.reasons).toHaveLength(0);
+  });
+
+  it("derivePairDataSufficiency marks low-coverage pairs as insufficient_data", () => {
+    const sufficiency = derivePairDataSufficiency({
+      includedSubjects: 15,
+      totalPairs: 800,
+      temporalCandidatesWithResults: 1,
+      predictorBinCount: 3,
+    });
+
+    expect(sufficiency.status).toBe("insufficient_data");
+    expect(sufficiency.reasons.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("derivePairReliability scores stronger, stable signals higher", () => {
+    const strong = derivePairReliability({
+      includedSubjects: 140,
+      totalPairs: 6500,
+      aggregateStatisticalSignificance: 0.92,
+      aggregatePredictivePearson: 0.12,
+      topTemporalScoreDelta: 0.04,
+      robustnessDeltaPercent: 8,
+      dataSufficiencyStatus: "sufficient",
+    });
+    const weak = derivePairReliability({
+      includedSubjects: 30,
+      totalPairs: 1200,
+      aggregateStatisticalSignificance: 0.62,
+      aggregatePredictivePearson: 0.01,
+      topTemporalScoreDelta: 0.002,
+      robustnessDeltaPercent: 65,
+      dataSufficiencyStatus: "insufficient_data",
+    });
+
+    expect(strong.overallScore).toBeGreaterThan(weak.overallScore);
+    expect(strong.band).toMatch(/high|moderate/);
+    expect(weak.band).toBe("low");
   });
 
   it("derivePairQualityTier classifies insufficient and exploratory tiers", () => {

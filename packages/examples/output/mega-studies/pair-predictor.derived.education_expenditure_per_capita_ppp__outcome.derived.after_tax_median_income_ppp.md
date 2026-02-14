@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 7140
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.552 (moderate)
 - Quality tier: exploratory
 - Direction: neutral
 - Derived uncertainty score: 0.1070 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 822.42 international $/person.
+- Estimated best Education Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 822.42 international $/person.
+- Observed-support target from binned response curve: 2563.5 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2367.1 international $/person; model-optimal minus observed-anchor difference is -1544.7 (-65.3%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 1376.5 international $/person.
 - Raw vs robust optimal differs by 67.4%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 49.628 international $/person.
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Education Expenditure Per Capita (PPP) is in [1682.9, 6496.0] (mean outcome 54699.5).
 - Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
-- Actionability gate: exploratory only (directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - No strong directional pattern is detected between Education Expenditure Per Capita (PPP) and After-Tax Median Income (PPP).
 - The estimate uses 216 subjects and 7140 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [1682.9, 6496.0] (mean outcome 54699.5).
+- A minimum effective predictor level appears near 49.628 international $/person in the binned response curve.
+- Reliability score is 0.552 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 822.4183 |
 | Aggregate value predicting low outcome | 440.6380 |
 | Aggregate optimal daily value | 822.4183 |
+| Support-constrained optimal value | 2563.5 international $/person |
+| Support-constrained optimal range | [1881.7, 6496.0] |
+| Response-curve robust optimal value | 1402.6 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0000, 7006.1701] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 1376.5 international $/person |
 | Raw vs robust optimal delta | 554.06 (+67.4%) |
 | Robustness retained fraction | 80.0% (5712/7140) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.5522 (moderate) |
+| Reliability support component | 1.0000 |
+| Reliability significance component | 0.8930 |
+| Reliability directional component | 0.1200 |
+| Reliability temporal-stability component | 0.0037 |
+| Reliability robustness component | 0.3626 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 49.628 international $/person (z=13.26) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -1741.0 (-67.9%) |
 
 ### Temporal Sensitivity
 

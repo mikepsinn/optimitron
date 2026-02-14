@@ -61,7 +61,7 @@
 19. [ ] Add universal report contract for any predictor/outcome pair.
    - Define required pair and outcome markdown sections and link behavior.
    - Ensure report generation scales to arbitrary predictor/outcome selections with the same schema.
-20. [ ] Integrate optimizer MED/diminishing-returns outputs into pair reports.
+20. [x] Integrate optimizer MED/diminishing-returns outputs into pair reports.
    - Show minimum effective dose (MED), diminishing-returns knee, and plateau-zone diagnostics when identifiable.
    - Fall back to "no reliable MED/knee detected" when support is insufficient.
 
@@ -107,6 +107,23 @@
   - `predictor.derived.rd_share_of_gov_expenditure_pct`
   - `predictor.derived.military_share_of_gov_expenditure_pct`
 - Added `Budget Allocation Signals` section in outcome reports to mirror allocation-focused decision support from the US budget report.
+- Integrated optimizer response-curve diagnostics into pair/outcome report templates:
+  - pair pages now show MED, diminishing-returns knee, plateau zone, and support-constrained target diagnostics
+  - outcome recommendation/evidence tables now expose observed-support targets plus MED/knee columns
+- Refined direction labeling semantics in reports:
+  - action-direction label now derives from forward association sign with predictive-strength gating (weak predictive signal -> neutral)
+  - added warning pathway for forward-sign vs directional-score-sign conflicts to reduce misinterpretation risk
+- Shifted reader-facing reports to number-first presentation:
+  - removed primary `actionable/exploratory` language from lead sections and target tables
+  - replaced recommendation wording with numeric target summaries (best estimate, observed-support target, MED, knee, robust target)
+  - kept gating/actionability internals in artifact JSON for downstream API/debug use
+- Added explicit backend reliability + sufficiency contracts for each pair:
+  - `dataSufficiency` (`sufficient` / `insufficient_data`) with thresholded reasons
+  - numeric `reliability` object with component scores (support/significance/directional/temporal/robustness), overall score, and band
+  - surfaced in pair and outcome markdown tables for web/API readiness
+- Added web-ready API payload artifact:
+  - `packages/examples/output/mega-studies/mega-study-api.json`
+  - schema-versioned (`2026-02-14`) compact contract with pair numeric targets + outcome-index rows
 - Kept model-optimal targets raw (no clamping) and added explicit diagnostics for interpretability:
   - pair reports now state when model-optimal is outside the highest-outcome observed bin despite being within global observed support
   - outcome reports now include `Outside Best Observed Bin?` and bin-alignment counts in lead takeaway
@@ -117,7 +134,6 @@
   - `outcome.derived.after_tax_median_income_ppp_growth_yoy_pct`: mostly `B/C`, exploratory.
   - `outcome.derived.healthy_life_expectancy_growth_yoy_pct`: all `F` / insufficient under current reliability gates; treat as non-decision-grade until multi-horizon/gating upgrades land.
 - Next highest-priority implementation order:
-  1) Implement optimizer-core-v2 foundational APIs first (MED, diminishing-returns knee, saturation/plateau, support-constrained targets).
-  2) Then implement item 14 (multi-horizon outcomes) and item 15 (hard sufficiency gates) in analysis-explorer.
-  3) Then implement item 16 (model vs decision optimum split) by consuming optimizer-core support-constrained outputs.
-  4) Then item 8 (direct after-tax median income integration).
+  1) Implement item 14 (multi-horizon outcomes) and item 15 (hard sufficiency gates).
+  2) Tighten item 16 by explicitly selecting decision targets from support-constrained + robustness diagnostics.
+  3) Implement item 8 (direct after-tax median income integration).

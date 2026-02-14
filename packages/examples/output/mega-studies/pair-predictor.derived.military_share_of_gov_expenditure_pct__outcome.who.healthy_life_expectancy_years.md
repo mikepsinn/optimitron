@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 8316
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.642 (moderate)
 - Quality tier: exploratory
 - Direction: negative
 - Derived uncertainty score: 0.0792 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Military Share of Government Spending level for higher Healthy Life Expectancy (HALE): 8.235 % of government expenditure.
+- Estimated best Military Share of Government Spending level for higher Healthy Life Expectancy (HALE): 8.235 % of government expenditure.
+- Observed-support target from binned response curve: 3.773 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 3.317 % of government expenditure; model-optimal minus observed-anchor difference is 4.918 (+148.3%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 3.213 % of government expenditure.
 - Raw vs robust optimal differs by 61.0%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 3.773 % of government expenditure.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean Healthy Life Expectancy (HALE) appears when Military Share of Government Spending is in [2.653, 3.717) (mean outcome 65.359).
 - Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Stronger evidence for directional signal relative to other predictors in this report.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower Military Share of Government Spending is associated with better Healthy Life Expectancy (HALE).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Military Share of Government Spending tends to align with worse Healthy Life Expectancy (HALE).
 - The estimate uses 126 subjects and 8316 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [2.653, 3.717) (mean outcome 65.359).
+- Reliability score is 0.642 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +67,11 @@
 | Aggregate value predicting high outcome | 8.2351 |
 | Aggregate value predicting low outcome | 10.0299 |
 | Aggregate optimal daily value | 8.2351 |
+| Support-constrained optimal value | 3.773 % of government expenditure |
+| Support-constrained optimal range | [3.483, 4.135) |
+| Response-curve robust optimal value | 3.717 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.4821, 100.9768] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +82,25 @@
 | Robust optimal value (bin median) | 3.213 % of government expenditure |
 | Raw vs robust optimal delta | -5.022 (-61.0%) |
 | Robustness retained fraction | 80.0% (6654/8316) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.6420 (moderate) |
+| Reliability support component | 0.9200 |
+| Reliability significance component | 0.9208 |
+| Reliability directional component | 0.2112 |
+| Reliability temporal-stability component | 0.4972 |
+| Reliability robustness component | 0.4335 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 3.773 % of government expenditure (ratio=-1.493) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | 4.462 (+118.2%) |
 
 ### Temporal Sensitivity
 

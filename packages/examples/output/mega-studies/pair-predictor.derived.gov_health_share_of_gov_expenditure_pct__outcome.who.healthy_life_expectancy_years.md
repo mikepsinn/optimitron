@@ -12,38 +12,44 @@
 - Skipped subjects: 0
 - Total aligned pairs: 9306
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.736 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: positive
 - Derived uncertainty score: 0.0830 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Share of Government Spending level for higher Healthy Life Expectancy (HALE): 13.614 % of government expenditure.
+- Estimated best Government Health Share of Government Spending level for higher Healthy Life Expectancy (HALE): 13.614 % of government expenditure.
+- Observed-support target from binned response curve: 27.789 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 25.736 % of government expenditure; model-optimal minus observed-anchor difference is -12.122 (-47.1%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 19.044 % of government expenditure.
 - Raw vs robust optimal differs by 39.9%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 6.559 % of government expenditure.
+- Diminishing returns likely begin near 10.748 % of government expenditure.
+- Saturation/plateau zone starts around 11.833 % of government expenditure and extends through 13.752 % of government expenditure.
 - Highest observed mean Healthy Life Expectancy (HALE) appears when Government Health Share of Government Spending is in [20.671, 66.811] (mean outcome 67.739).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
+- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Stronger evidence for directional signal relative to other predictors in this report.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Government Health Share of Government Spending is associated with better Healthy Life Expectancy (HALE).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Government Health Share of Government Spending tends to align with worse Healthy Life Expectancy (HALE).
+- Higher Government Health Share of Government Spending tends to align with better Healthy Life Expectancy (HALE).
 - The estimate uses 141 subjects and 9306 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [20.671, 66.811] (mean outcome 67.739).
+- A minimum effective predictor level appears near 6.559 % of government expenditure in the binned response curve.
+- Reliability score is 0.736 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Top temporal profiles are close (score delta 0.0029); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 39.9% from raw optimal; tail observations materially influence target.
@@ -63,6 +69,11 @@
 | Aggregate value predicting high outcome | 13.6139 |
 | Aggregate value predicting low outcome | 13.2356 |
 | Aggregate optimal daily value | 13.6139 |
+| Support-constrained optimal value | 27.789 % of government expenditure |
+| Support-constrained optimal range | [21.427, 66.811] |
+| Response-curve robust optimal value | 19.278 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.8069, 88.0822] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +84,25 @@
 | Robust optimal value (bin median) | 19.044 % of government expenditure |
 | Raw vs robust optimal delta | 5.430 (+39.9%) |
 | Robustness retained fraction | 80.0% (7446/9306) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7361 (moderate) |
+| Reliability support component | 0.9700 |
+| Reliability significance component | 0.9170 |
+| Reliability directional component | 0.7484 |
+| Reliability temporal-stability component | 0.0966 |
+| Reliability robustness component | 0.6679 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 6.559 % of government expenditure (z=5.29) |
+| Diminishing-returns knee | 10.748 % of government expenditure (ratio=0.282) |
+| Saturation / plateau range | [11.339, 14.418) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -14.175 (-51.0%) |
 
 ### Temporal Sensitivity
 

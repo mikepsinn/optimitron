@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5371
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.826 (high)
 - Quality tier: exploratory
-- Direction: positive
+- Direction: neutral
 - Derived uncertainty score: 0.1343 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Education Share of Government Spending level for higher After-Tax Median Income (PPP): 19.337 % of government expenditure.
+- Estimated best Education Share of Government Spending level for higher After-Tax Median Income (PPP): 19.337 % of government expenditure.
+- Observed-support target from binned response curve: 13.062 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13.743 % of government expenditure; model-optimal minus observed-anchor difference is 5.594 (+40.7%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 13.284 % of government expenditure.
 - Raw vs robust optimal differs by 31.3%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 11.702 % of government expenditure.
+- Diminishing returns likely begin near 13.062 % of government expenditure.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Education Share of Government Spending is in [12.888, 14.666) (mean outcome 23743.9).
-- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
+- Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Education Share of Government Spending tends to align with better After-Tax Median Income (PPP).
+- No strong directional pattern is detected between Education Share of Government Spending and After-Tax Median Income (PPP).
 - The estimate uses 159 subjects and 5371 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [12.888, 14.666) (mean outcome 23743.9).
+- A minimum effective predictor level appears near 11.702 % of government expenditure in the binned response curve.
+- Reliability score is 0.826 (high); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 19.3370 |
 | Aggregate value predicting low outcome | 19.1834 |
 | Aggregate optimal daily value | 19.3370 |
+| Support-constrained optimal value | 13.062 % of government expenditure |
+| Support-constrained optimal range | [12.325, 13.756) |
+| Response-curve robust optimal value | 13.934 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0000, 70.8565] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 13.284 % of government expenditure |
 | Raw vs robust optimal delta | -6.053 (-31.3%) |
 | Robustness retained fraction | 80.1% (4304/5371) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.8258 (high) |
+| Reliability support component | 0.9476 |
+| Reliability significance component | 0.8657 |
+| Reliability directional component | 0.7587 |
+| Reliability temporal-stability component | 0.7086 |
+| Reliability robustness component | 0.7633 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 11.702 % of government expenditure (z=1.46) |
+| Diminishing-returns knee | 13.062 % of government expenditure (ratio=-0.765) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | 6.275 (+48.0%) |
 
 ### Temporal Sensitivity
 

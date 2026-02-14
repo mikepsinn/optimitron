@@ -88,6 +88,27 @@ export type {
   AdaptiveBinningOptions,
 } from './adaptive-binning.js';
 
+// Response curve diagnostics (diminishing returns + MED)
+export {
+  estimateDiminishingReturns,
+  estimateMinimumEffectiveDose,
+  estimateSaturationRange,
+  deriveSupportConstrainedTargets,
+} from './response-curve.js';
+export type {
+  ResponseCurveBin,
+  ResponseCurveRange,
+  DiminishingReturnsOptions,
+  DiminishingReturnsEstimate,
+  MinimumEffectiveDoseOptions,
+  MinimumEffectiveDoseEstimate,
+  SaturationRangeOptions,
+  SaturationRangeEstimate,
+  ResponseCurveObjective,
+  SupportConstrainedTargetOptions,
+  SupportConstrainedTargetsEstimate,
+} from './response-curve.js';
+
 // Predictor Impact Score
 export {
   calculatePredictorImpactScore,

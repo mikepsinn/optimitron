@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5001
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.547 (low)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: neutral
 - Derived uncertainty score: 0.0998 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Civilian Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 5213.4 international $/person.
+- Estimated best Civilian Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 5213.4 international $/person.
+- Observed-support target from binned response curve: 14637.5 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13696.7 international $/person; model-optimal minus observed-anchor difference is -8483.4 (-61.9%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 8929.0 international $/person.
 - Raw vs robust optimal differs by 71.3%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 246.50 international $/person.
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Civilian Government Expenditure Per Capita (PPP) is in [10279.3, 47874.3] (mean outcome 50214.8).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable).
+- Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
 
 ## Decision Summary
 
 - Interpretation: Stronger evidence for directional signal relative to other predictors in this report.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Civilian Government Expenditure Per Capita (PPP) tends to align with worse After-Tax Median Income (PPP).
+- No strong directional pattern is detected between Civilian Government Expenditure Per Capita (PPP) and After-Tax Median Income (PPP).
 - The estimate uses 148 subjects and 5001 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [10279.3, 47874.3] (mean outcome 50214.8).
+- A minimum effective predictor level appears near 246.50 international $/person in the binned response curve.
+- Reliability score is 0.547 (low); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 5213.3706 |
 | Aggregate value predicting low outcome | 2660.3716 |
 | Aggregate optimal daily value | 5213.3706 |
+| Support-constrained optimal value | 14637.5 international $/person |
+| Support-constrained optimal range | [11104.4, 47874.3] |
+| Response-curve robust optimal value | 9175.3 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [7.6041, 62399.1940] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 8929.0 international $/person |
 | Raw vs robust optimal delta | 3715.7 (+71.3%) |
 | Robustness retained fraction | 80.4% (4019/5001) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.5470 (low) |
+| Reliability support component | 0.9101 |
+| Reliability significance component | 0.9002 |
+| Reliability directional component | 0.1538 |
+| Reliability temporal-stability component | 0.1051 |
+| Reliability robustness component | 0.3192 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | directional signal too weak (|predictive| < 0.03); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 246.50 international $/person (z=11.39) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -9424.1 (-64.4%) |
 
 ### Temporal Sensitivity
 

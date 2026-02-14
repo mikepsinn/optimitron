@@ -31,3 +31,6 @@
    - Adapter enforces `PairStudyResultSchema` at build/runtime via `validatePairStudyResult(...)`.
 9. [x] Add end-to-end smoke test for explorer navigation flow.
    - Added route-level smoke tests in `packages/web/src/lib/__tests__/analysis-explorer-routes.test.ts`.
+10. [x] Add compact API-ready explorer payload from generator outputs.
+   - Added `mega-study-api.json` (schema version `2026-02-14`) in `packages/examples/output/mega-studies/`.
+   - Includes pair numeric targets + diagnostics and outcome-index rows for stable web consumption.

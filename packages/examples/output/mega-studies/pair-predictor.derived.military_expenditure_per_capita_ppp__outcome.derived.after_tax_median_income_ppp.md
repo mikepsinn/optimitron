@@ -12,38 +12,44 @@
 - Skipped subjects: 0
 - Total aligned pairs: 6630
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.732 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: positive
 - Derived uncertainty score: 0.1185 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Military Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 399.58 international $/person.
+- Estimated best Military Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 399.58 international $/person.
+- Observed-support target from binned response curve: 1943.0 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 1452.7 international $/person; model-optimal minus observed-anchor difference is -1053.2 (-72.5%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 501.20 international $/person.
 - Raw vs robust optimal differs by 25.4%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 20.902 international $/person.
+- Diminishing returns likely begin near 377.10 international $/person.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Military Expenditure Per Capita (PPP) is in [625.06, 21187.0] (mean outcome 49136.2).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
+- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Military Expenditure Per Capita (PPP) is associated with better After-Tax Median Income (PPP).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Military Expenditure Per Capita (PPP) tends to align with worse After-Tax Median Income (PPP).
+- Higher Military Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income (PPP).
 - The estimate uses 201 subjects and 6630 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [625.06, 21187.0] (mean outcome 49136.2).
+- A minimum effective predictor level appears near 20.902 international $/person in the binned response curve.
+- Reliability score is 0.732 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Top temporal profiles are close (score delta 0.0055); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 25.4% from raw optimal; tail observations materially influence target.
@@ -63,6 +69,11 @@
 | Aggregate value predicting high outcome | 399.5848 |
 | Aggregate value predicting low outcome | 343.8655 |
 | Aggregate optimal daily value | 399.5848 |
+| Support-constrained optimal value | 1943.0 international $/person |
+| Support-constrained optimal range | [729.37, 21187.0] |
+| Response-curve robust optimal value | 514.61 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0063, 27448.6207] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +84,25 @@
 | Robust optimal value (bin median) | 501.20 international $/person |
 | Raw vs robust optimal delta | 101.61 (+25.4%) |
 | Robustness retained fraction | 80.0% (5304/6630) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7321 (moderate) |
+| Reliability support component | 1.0000 |
+| Reliability significance component | 0.8815 |
+| Reliability directional component | 0.5488 |
+| Reliability temporal-stability component | 0.1845 |
+| Reliability robustness component | 0.8286 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 20.902 international $/person (z=8.20) |
+| Diminishing-returns knee | 377.10 international $/person (ratio=0.336) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -1543.4 (-79.4%) |
 
 ### Temporal Sensitivity
 

@@ -12,31 +12,35 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5509
 - Evidence grade: C
+- Data sufficiency: sufficient
+- Reliability score: 0.882 (high)
 - Quality tier: exploratory
 - Direction: positive
 - Derived uncertainty score: 0.3021 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 13.149 % of government expenditure.
+- Estimated best Government Health Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 13.149 % of government expenditure.
+- Observed-support target from binned response curve: 12.642 % of government expenditure.
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 12.600 % of government expenditure.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 12.642 % of government expenditure.
+- Saturation/plateau zone starts around 14.970 % of government expenditure and extends through 27.065 % of government expenditure.
 - Highest observed mean After-Tax Median Income Growth (YoY %) appears when Government Health Share of Government Spending is in [12.186, 13.363) (mean outcome 5.778).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Government Health Share of Government Spending is associated with better After-Tax Median Income Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Government Health Share of Government Spending tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 168 subjects and 5509 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [12.186, 13.363) (mean outcome 5.778).
+- Reliability score is 0.882 (high); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -60,6 +64,11 @@
 | Aggregate value predicting high outcome | 13.1490 |
 | Aggregate value predicting low outcome | 13.1200 |
 | Aggregate optimal daily value | 13.1490 |
+| Support-constrained optimal value | 12.642 % of government expenditure |
+| Support-constrained optimal range | [12.186, 12.999) |
+| Response-curve robust optimal value | 12.584 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.8069, 88.0822] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | no |
@@ -70,9 +79,25 @@
 | Robust optimal value (bin median) | 12.600 % of government expenditure |
 | Raw vs robust optimal delta | -0.54889 (-4.2%) |
 | Robustness retained fraction | 80.1% (4415/5509) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.8824 (high) |
+| Reliability support component | 0.9591 |
+| Reliability significance component | 0.6979 |
+| Reliability directional component | 0.8450 |
+| Reliability temporal-stability component | 0.9941 |
+| Reliability robustness component | 1.0000 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 12.642 % of government expenditure (ratio=-1.148) |
+| Saturation / plateau range | [14.444, 65.863] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 0.50649 (+4.0%) |
 
 ### Temporal Sensitivity
 

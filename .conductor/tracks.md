@@ -12,7 +12,7 @@
 | jurisdiction-nof1-v1 | Jurisdiction N-of-1 Drilldown Pages and APIs | **active** | P1 | wishonia | 2026-02-13 |
 | data-infrastructure-v2 | OECD + Direct Outcomes + FRED Improvements | **active** | P1 | wishonia | 2026-02-13 |
 | testing-strategy-v1 | Hypothesis-Driven Tests for Findings | **active** | P1 | wishonia | 2026-02-13 |
-| optimizer-core-v2 | Diminishing Returns + Minimum Effective Dose | **active** | **P0** | wishonia | 2026-02-13 |
+| optimizer-core-v2 | Diminishing Returns + Minimum Effective Dose | **done** | - | wishonia | 2026-02-13 |
 | funding-readiness-v1 | Funding readiness pack | archived | - | team | 2026-02-07 |
 | misconception-analyses-v1 | Policy misconception analyses | archived | - | wishonia | 2026-02-07 |
 | optimal-budget-v1 | Original optimal budget analysis | archived | - | wishonia | 2026-02-07 |

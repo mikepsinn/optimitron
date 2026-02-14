@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 3280
 - Evidence grade: B
+- Data sufficiency: sufficient
+- Reliability score: 0.578 (moderate)
 - Quality tier: exploratory
 - Direction: positive
 - Derived uncertainty score: 0.2977 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best R&D Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 3.711 % of government expenditure.
+- Estimated best R&D Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 3.711 % of government expenditure.
+- Observed-support target from binned response curve: 1.498 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 1.786 % of government expenditure; model-optimal minus observed-anchor difference is 1.924 (+107.7%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 1.513 % of government expenditure.
 - Raw vs robust optimal differs by 59.2%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 1.498 % of government expenditure.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income Growth (YoY %) appears when R&D Share of Government Spending is in [1.523, 2.042) (mean outcome 5.853).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher R&D Share of Government Spending is associated with better After-Tax Median Income Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher R&D Share of Government Spending tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 100 subjects and 3280 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [1.523, 2.042) (mean outcome 5.853).
+- Reliability score is 0.578 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +67,11 @@
 | Aggregate value predicting high outcome | 3.7105 |
 | Aggregate value predicting low outcome | 3.6662 |
 | Aggregate optimal daily value | 3.7105 |
+| Support-constrained optimal value | 1.498 % of government expenditure |
+| Support-constrained optimal range | [1.349, 1.724) |
+| Response-curve robust optimal value | 2.042 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0487, 35.0684] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +82,25 @@
 | Robust optimal value (bin median) | 1.513 % of government expenditure |
 | Raw vs robust optimal delta | -2.197 (-59.2%) |
 | Robustness retained fraction | 80.0% (2624/3280) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.5781 (moderate) |
+| Reliability support component | 0.6067 |
+| Reliability significance component | 0.7023 |
+| Reliability directional component | 0.6791 |
+| Reliability temporal-stability component | 0.3139 |
+| Reliability robustness component | 0.4531 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 1.498 % of government expenditure (ratio=-0.371) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | 2.213 (+147.7%) |
 
 ### Temporal Sensitivity
 

@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5212
 - Evidence grade: C
+- Data sufficiency: sufficient
+- Reliability score: 0.730 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: neutral
 - Derived uncertainty score: 0.3192 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Education Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 19.036 % of government expenditure.
+- Estimated best Education Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 19.036 % of government expenditure.
+- Observed-support target from binned response curve: 13.129 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 13.796 % of government expenditure; model-optimal minus observed-anchor difference is 5.240 (+38.0%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 13.288 % of government expenditure.
 - Raw vs robust optimal differs by 30.2%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 13.129 % of government expenditure.
+- Saturation/plateau zone starts around 16.371 % of government expenditure and extends through 17.804 % of government expenditure.
 - Highest observed mean After-Tax Median Income Growth (YoY %) appears when Education Share of Government Spending is in [12.937, 14.674) (mean outcome 5.598).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
+- Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Education Share of Government Spending tends to align with worse After-Tax Median Income Growth (YoY %).
+- No strong directional pattern is detected between Education Share of Government Spending and After-Tax Median Income Growth (YoY %).
 - The estimate uses 159 subjects and 5212 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [12.937, 14.674) (mean outcome 5.598).
+- Reliability score is 0.730 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -64,6 +68,11 @@
 | Aggregate value predicting high outcome | 19.0358 |
 | Aggregate value predicting low outcome | 18.8879 |
 | Aggregate optimal daily value | 19.0358 |
+| Support-constrained optimal value | 13.129 % of government expenditure |
+| Support-constrained optimal range | [12.370, 13.797) |
+| Response-curve robust optimal value | 12.935 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0000, 70.8565] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -74,9 +83,25 @@
 | Robust optimal value (bin median) | 13.288 % of government expenditure |
 | Raw vs robust optimal delta | -5.748 (-30.2%) |
 | Robustness retained fraction | 80.1% (4174/5212) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7304 (moderate) |
+| Reliability support component | 0.9343 |
+| Reliability significance component | 0.6808 |
+| Reliability directional component | 0.8907 |
+| Reliability temporal-stability component | 0.2143 |
+| Reliability robustness component | 0.7756 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 13.129 % of government expenditure (ratio=-0.258) |
+| Saturation / plateau range | [15.392, 18.510) |
+| Support-constrained target reason | identified |
+| Raw to support delta | 5.907 (+45.0%) |
 
 ### Temporal Sensitivity
 

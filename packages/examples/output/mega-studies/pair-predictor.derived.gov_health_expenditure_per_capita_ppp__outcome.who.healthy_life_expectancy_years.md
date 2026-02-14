@@ -12,38 +12,44 @@
 - Skipped subjects: 0
 - Total aligned pairs: 11814
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.692 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: positive
 - Derived uncertainty score: 0.0743 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 679.74 international $/person.
+- Estimated best Government Health Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 679.74 international $/person.
+- Observed-support target from binned response curve: 2778.5 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2555.3 international $/person; model-optimal minus observed-anchor difference is -1875.6 (-73.4%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 1454.7 international $/person.
 - Raw vs robust optimal differs by 114.0%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 16.917 international $/person.
+- Diminishing returns likely begin near 28.924 international $/person.
+- Saturation/plateau zone starts around 352.56 international $/person and extends through 2778.5 international $/person.
 - Highest observed mean Healthy Life Expectancy (HALE) appears when Government Health Expenditure Per Capita (PPP) is in [1819.1, 5486.7] (mean outcome 69.427).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
+- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Stronger evidence for directional signal relative to other predictors in this report.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Government Health Expenditure Per Capita (PPP) is associated with better Healthy Life Expectancy (HALE).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Government Health Expenditure Per Capita (PPP) tends to align with worse Healthy Life Expectancy (HALE).
+- Higher Government Health Expenditure Per Capita (PPP) tends to align with better Healthy Life Expectancy (HALE).
 - The estimate uses 179 subjects and 11814 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [1819.1, 5486.7] (mean outcome 69.427).
+- A minimum effective predictor level appears near 16.917 international $/person in the binned response curve.
+- Reliability score is 0.692 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Top temporal profiles are close (score delta 0.0021); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 114.0% from raw optimal; tail observations materially influence target.
@@ -63,6 +69,11 @@
 | Aggregate value predicting high outcome | 679.7403 |
 | Aggregate value predicting low outcome | 502.8319 |
 | Aggregate optimal daily value | 679.7403 |
+| Support-constrained optimal value | 2778.5 international $/person |
+| Support-constrained optimal range | [2025.7, 5486.7] |
+| Response-curve robust optimal value | 1493.8 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.2591, 8503.2455] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +84,25 @@
 | Robust optimal value (bin median) | 1454.7 international $/person |
 | Raw vs robust optimal delta | 774.95 (+114.0%) |
 | Robustness retained fraction | 80.0% (9453/11814) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.6920 (moderate) |
+| Reliability support component | 1.0000 |
+| Reliability significance component | 0.9257 |
+| Reliability directional component | 1.0000 |
+| Reliability temporal-stability component | 0.0708 |
+| Reliability robustness component | 0.0000 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 16.917 international $/person (z=15.63) |
+| Diminishing-returns knee | 28.924 international $/person (ratio=0.074) |
+| Saturation / plateau range | [282.90, 5486.7] |
+| Support-constrained target reason | identified |
+| Raw to support delta | -2098.8 (-75.5%) |
 
 ### Temporal Sensitivity
 

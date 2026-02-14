@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 1995
 - Evidence grade: F
+- Data sufficiency: insufficient_data
+- Reliability score: 0.399 (low)
 - Quality tier: insufficient
 - Direction: negative
 - Derived uncertainty score: 0.7094 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 228.03 international $/person.
+- Estimated best R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy Growth (YoY %): 228.03 international $/person.
+- Observed-support target from binned response curve: 1.894 international $/person.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 2.254 international $/person; model-optimal minus observed-anchor difference is 225.77 (+10014.4%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 492.19 international $/person.
 - Raw vs robust optimal differs by 115.8%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- Saturation/plateau zone starts around 142.65 international $/person and extends through 1340.2 international $/person.
 - Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when R&D Expenditure Per Capita (PPP) is in [0.19723, 4.621) (mean outcome 0.64005).
 - Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower R&D Expenditure Per Capita (PPP) is associated with better Healthy Life Expectancy Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher R&D Expenditure Per Capita (PPP) tends to align with worse Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 95 subjects and 1995 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [0.19723, 4.621) (mean outcome 0.64005).
+- Reliability score is 0.399 (low); data sufficiency is insufficient_data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -48,6 +52,7 @@
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Top temporal profiles are close (score delta 0.0010); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 115.8% from raw optimal; tail observations materially influence target.
+- Data sufficiency warning: aligned-pair support below minimum (1995 < 2000)
 
 ## Appendix: Technical Diagnostics
 
@@ -64,6 +69,11 @@
 | Aggregate value predicting high outcome | 228.0252 |
 | Aggregate value predicting low outcome | 264.2399 |
 | Aggregate optimal daily value | 228.0252 |
+| Support-constrained optimal value | 1.894 international $/person |
+| Support-constrained optimal range | [0.19723, 3.816) |
+| Response-curve robust optimal value | 119.44 international $/person |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.1972, 3227.4604] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -74,9 +84,25 @@
 | Robust optimal value (bin median) | 492.19 international $/person |
 | Raw vs robust optimal delta | 264.16 (+115.8%) |
 | Robustness retained fraction | 80.0% (1596/1995) |
+| Data sufficiency status | insufficient_data |
+| Data sufficiency reasons | aligned-pair support below minimum (1995 < 2000) |
+| Reliability score | 0.3986 (low) |
+| Reliability support component | 0.4829 |
+| Reliability significance component | 0.2906 |
+| Reliability directional component | 1.0000 |
+| Reliability temporal-stability component | 0.0345 |
+| Reliability robustness component | 0.0000 |
 | Quality tier | insufficient |
-| Actionability status | exploratory |
-| Actionability reasons | insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | [107.26, 2098.3] |
+| Support-constrained target reason | identified |
+| Raw to support delta | 226.13 (+11941.0%) |
 
 ### Temporal Sensitivity
 

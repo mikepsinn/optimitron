@@ -12,32 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5412
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.749 (moderate)
 - Quality tier: exploratory
 - Direction: positive
 - Derived uncertainty score: 0.0816 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
 - Estimated best R&D Share of Government Spending level for higher Healthy Life Expectancy (HALE): 3.820 % of government expenditure.
+- Observed-support target from binned response curve: 13.185 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 12.605 % of government expenditure; model-optimal minus observed-anchor difference is -8.785 (-69.7%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 7.223 % of government expenditure.
 - Raw vs robust optimal differs by 89.1%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 4.042 % of government expenditure.
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean Healthy Life Expectancy (HALE) appears when R&D Share of Government Spending is in [9.390, 20.356] (mean outcome 69.965).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: increase R&D Share of Government Spending toward the estimated best level, then monitor Healthy Life Expectancy (HALE).
+- Directional hint: higher R&D Share of Government Spending is associated with better Healthy Life Expectancy (HALE).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: actionable.
 
 ## Plain-Language Summary
 
 - Higher R&D Share of Government Spending tends to align with better Healthy Life Expectancy (HALE).
 - The estimate uses 82 subjects and 5412 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [9.390, 20.356] (mean outcome 69.965).
+- A minimum effective predictor level appears near 4.042 % of government expenditure in the binned response curve.
+- Reliability score is 0.749 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -60,6 +67,11 @@
 | Aggregate value predicting high outcome | 3.8196 |
 | Aggregate value predicting low outcome | 3.5621 |
 | Aggregate optimal daily value | 3.8196 |
+| Support-constrained optimal value | 13.185 % of government expenditure |
+| Support-constrained optimal range | [10.299, 20.356] |
+| Response-curve robust optimal value | 7.449 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0487, 35.0684] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -70,9 +82,25 @@
 | Robust optimal value (bin median) | 7.223 % of government expenditure |
 | Raw vs robust optimal delta | 3.403 (+89.1%) |
 | Robustness retained fraction | 80.0% (4332/5412) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7492 (moderate) |
+| Reliability support component | 0.7243 |
+| Reliability significance component | 0.9184 |
+| Reliability directional component | 0.8516 |
+| Reliability temporal-stability component | 1.0000 |
+| Reliability robustness component | 0.1211 |
 | Quality tier | exploratory |
-| Actionability status | actionable |
-| Actionability reasons | N/A |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 4.042 % of government expenditure (z=9.53) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -9.365 (-71.0%) |
 
 ### Temporal Sensitivity
 

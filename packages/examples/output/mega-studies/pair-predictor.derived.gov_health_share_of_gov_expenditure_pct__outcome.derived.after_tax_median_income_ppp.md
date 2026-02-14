@@ -12,38 +12,44 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5677
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.662 (moderate)
 - Quality tier: exploratory
-- Direction: negative
+- Direction: positive
 - Derived uncertainty score: 0.1187 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Share of Government Spending level for higher After-Tax Median Income (PPP): 13.790 % of government expenditure.
+- Estimated best Government Health Share of Government Spending level for higher After-Tax Median Income (PPP): 13.790 % of government expenditure.
+- Observed-support target from binned response curve: 27.006 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 26.086 % of government expenditure; model-optimal minus observed-anchor difference is -12.296 (-47.1%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 18.907 % of government expenditure.
 - Raw vs robust optimal differs by 37.1%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 6.606 % of government expenditure.
+- No reliable diminishing-returns knee detected (drop_below_detection_threshold).
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Government Health Share of Government Spending is in [20.836, 65.863] (mean outcome 35031.9).
-- Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
+- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: higher Government Health Share of Government Spending is associated with better After-Tax Median Income (PPP).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
-- Higher Government Health Share of Government Spending tends to align with worse After-Tax Median Income (PPP).
+- Higher Government Health Share of Government Spending tends to align with better After-Tax Median Income (PPP).
 - The estimate uses 168 subjects and 5677 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [20.836, 65.863] (mean outcome 35031.9).
+- A minimum effective predictor level appears near 6.606 % of government expenditure in the binned response curve.
+- Reliability score is 0.662 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
+- Forward association sign conflicts with directional score sign; reverse-direction signal may dominate.
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Top temporal profiles are close (score delta 0.0077); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 37.1% from raw optimal; tail observations materially influence target.
@@ -63,6 +69,11 @@
 | Aggregate value predicting high outcome | 13.7900 |
 | Aggregate value predicting low outcome | 13.0360 |
 | Aggregate optimal daily value | 13.7900 |
+| Support-constrained optimal value | 27.006 % of government expenditure |
+| Support-constrained optimal range | [22.108, 65.863] |
+| Response-curve robust optimal value | 19.235 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.8069, 88.0822] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +84,25 @@
 | Robust optimal value (bin median) | 18.907 % of government expenditure |
 | Raw vs robust optimal delta | 5.117 (+37.1%) |
 | Robustness retained fraction | 80.1% (4547/5677) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.6616 (moderate) |
+| Reliability support component | 0.9731 |
+| Reliability significance component | 0.8813 |
+| Reliability directional component | 0.2730 |
+| Reliability temporal-stability component | 0.2572 |
+| Reliability robustness component | 0.6988 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 6.606 % of government expenditure (z=8.58) |
+| Diminishing-returns knee | Not identified (drop_below_detection_threshold) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -13.216 (-48.9%) |
 
 ### Temporal Sensitivity
 

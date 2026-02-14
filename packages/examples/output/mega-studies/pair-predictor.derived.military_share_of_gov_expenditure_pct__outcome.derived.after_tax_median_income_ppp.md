@@ -12,34 +12,39 @@
 - Skipped subjects: 0
 - Total aligned pairs: 5001
 - Evidence grade: A
+- Data sufficiency: sufficient
+- Reliability score: 0.751 (high)
 - Quality tier: exploratory
 - Direction: negative
 - Derived uncertainty score: 0.1130 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Military Share of Government Spending level for higher After-Tax Median Income (PPP): 8.164 % of government expenditure.
+- Estimated best Military Share of Government Spending level for higher After-Tax Median Income (PPP): 8.164 % of government expenditure.
+- Observed-support target from binned response curve: 3.389 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 3.627 % of government expenditure; model-optimal minus observed-anchor difference is 4.537 (+125.1%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 3.573 % of government expenditure.
 - Raw vs robust optimal differs by 56.2%, indicating strong tail influence.
+- Minimum effective level (first consistently positive zone): 3.389 % of government expenditure.
+- Diminishing returns likely begin near 4.227 % of government expenditure.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean After-Tax Median Income (PPP) appears when Military Share of Government Spending is in [3.111, 4.156) (mean outcome 27010.6).
 - Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Moderate evidence; plausible signal but still sensitive to model assumptions.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower Military Share of Government Spending is associated with better After-Tax Median Income (PPP).
 - Signal strength: relatively stronger within this report set.
-- Actionability status: exploratory.
-- Actionability gate reasons: temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Military Share of Government Spending tends to align with worse After-Tax Median Income (PPP).
 - The estimate uses 148 subjects and 5001 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [3.111, 4.156) (mean outcome 27010.6).
+- A minimum effective predictor level appears near 3.389 % of government expenditure in the binned response curve.
+- Reliability score is 0.751 (high); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 8.1639 |
 | Aggregate value predicting low outcome | 11.5591 |
 | Aggregate optimal daily value | 8.1639 |
+| Support-constrained optimal value | 3.389 % of government expenditure |
+| Support-constrained optimal range | [2.746, 3.798) |
+| Response-curve robust optimal value | 4.156 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.4821, 100.9768] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 3.573 % of government expenditure |
 | Raw vs robust optimal delta | -4.591 (-56.2%) |
 | Robustness retained fraction | 80.0% (4002/5001) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.7514 (high) |
+| Reliability support component | 0.9101 |
+| Reliability significance component | 0.8870 |
+| Reliability directional component | 0.8127 |
+| Reliability temporal-stability component | 0.4446 |
+| Reliability robustness component | 0.4863 |
 | Quality tier | exploratory |
-| Actionability status | exploratory |
-| Actionability reasons | temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | 3.389 % of government expenditure (z=1.74) |
+| Diminishing-returns knee | 4.227 % of government expenditure (ratio=-2.700) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | 4.774 (+140.9%) |
 
 ### Temporal Sensitivity
 

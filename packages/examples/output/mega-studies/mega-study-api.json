@@ -1,0 +1,2156 @@
+{
+  "schemaVersion": "2026-02-14",
+  "generatedAt": "2026-02-14T01:25:25.130Z",
+  "outcomes": [
+    {
+      "outcomeId": "outcome.derived.after_tax_median_income_ppp",
+      "outcomeLabel": "After-Tax Median Income (PPP)",
+      "outcomeMarkdownFile": "outcome-outcome.derived.after_tax_median_income_ppp.md",
+      "rows": [
+        {
+          "rank": 1,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.7666006496986186,
+          "confidence": 0.8083320855146248,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5019530883688801,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 2,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.7585910463815483,
+          "confidence": 0.809030941620175,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7320887242301921,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 3,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.7230683652165267,
+          "confidence": 0.8084224924519022,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5469743938473239,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 4,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.718423092221301,
+          "confidence": 0.8089262046501915,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5664918876751854,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 5,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.7136845340021641,
+          "confidence": 0.8118242742342265,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6377132139573233,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 6,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.6983803172891467,
+          "confidence": 0.8045383192774548,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5521813344541234,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 7,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.6832109418142335,
+          "confidence": 0.8031045639252538,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.4945728939872721,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 8,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.645093700136664,
+          "confidence": 0.8173081489683246,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7514421514093435,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 9,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.5882933829691132,
+          "confidence": 0.8065616914948236,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.825840501718849,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+        },
+        {
+          "rank": 10,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.5447825589615435,
+          "confidence": 0.8026813316731611,
+          "adjustedPValue": 0.13430553866840766,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6616052048648164,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+        }
+      ]
+    },
+    {
+      "outcomeId": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcomeLabel": "After-Tax Median Income Growth (YoY %)",
+      "outcomeMarkdownFile": "outcome-outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+      "rows": [
+        {
+          "rank": 1,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.8432945257698841,
+          "confidence": 0.7264782271674507,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.632861023350668,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 2,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.7527474791523441,
+          "confidence": 0.7185272129222002,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7201981070221783,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 3,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.6792807577621156,
+          "confidence": 0.733025994201735,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.8823529390202156,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 4,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.6458624766922758,
+          "confidence": 0.7310176303287317,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5704276883615661,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 5,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.5818997758749618,
+          "confidence": 0.727411266450424,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5903277510519777,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 6,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.5564025957142178,
+          "confidence": 0.724141003091961,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6643435935589027,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 7,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.5480203390531353,
+          "confidence": 0.7256253456094299,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7596173874489534,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 8,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.4932176026276717,
+          "confidence": 0.726313440094665,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7304094548620595,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 9,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.46528080840018343,
+          "confidence": 0.7299595379849982,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5781164054847849,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        },
+        {
+          "rank": 10,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.44515546822617463,
+          "confidence": 0.7272072757753718,
+          "adjustedPValue": 0.3285752107676947,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6753149398656637,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+        }
+      ]
+    },
+    {
+      "outcomeId": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "outcomeLabel": "Healthy Life Expectancy Growth (YoY %)",
+      "outcomeMarkdownFile": "outcome-outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+      "rows": [
+        {
+          "rank": 1,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.6259502177667821,
+          "confidence": 0.49482562332087243,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.4737363780687287,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 2,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.6040533640610217,
+          "confidence": 0.4962042198200357,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.5077069707239692,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 3,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.5660178942773761,
+          "confidence": 0.5052806990671963,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "insufficient_data",
+          "reliabilityScore": 0.49,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 4,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.5457630632736497,
+          "confidence": 0.49581622904319006,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.36714158102597266,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 5,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.4951155983063068,
+          "confidence": 0.4925924131590162,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.40724588142833446,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 6,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.47439358150417754,
+          "confidence": 0.5543144960067447,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "insufficient_data",
+          "reliabilityScore": 0.39856545263492993,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 7,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.346190455434476,
+          "confidence": 0.5204174599701856,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6626507286466543,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 8,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.3242712394579318,
+          "confidence": 0.4944757231574747,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.4134605985574229,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 9,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.22348364610908183,
+          "confidence": 0.5065908305608201,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.35054292200246073,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        },
+        {
+          "rank": 10,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.22130177089591258,
+          "confidence": 0.496300865530966,
+          "adjustedPValue": 0.8151369056751466,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.32402899976258476,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+        }
+      ]
+    },
+    {
+      "outcomeId": "outcome.who.healthy_life_expectancy_years",
+      "outcomeLabel": "Healthy Life Expectancy (HALE)",
+      "outcomeMarkdownFile": "outcome-outcome.who.healthy_life_expectancy_years.md",
+      "rows": [
+        {
+          "rank": 1,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.9352619538972053,
+          "confidence": 0.8490674651046217,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7000896172958521,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 2,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.9248478452110046,
+          "confidence": 0.8455700100993769,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6920337141225221,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 3,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.896145734721007,
+          "confidence": 0.8449422526877527,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6901841707211263,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 4,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.8490463414891922,
+          "confidence": 0.8403209267570078,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6942746496492821,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 5,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.8041449703235718,
+          "confidence": 0.8491798442168014,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6576694222787411,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 6,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.7582459987877018,
+          "confidence": 0.8411457674968151,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7990652562908692,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 7,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.5620393494293371,
+          "confidence": 0.8187275370455948,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.642035218422833,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 8,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.5133118434546872,
+          "confidence": 0.8291058268375361,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7491719570750919,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 9,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.495605644210953,
+          "confidence": 0.8293136447693448,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7361046771008214,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+        },
+        {
+          "rank": 10,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.4460868296270555,
+          "confidence": 0.8257426011244794,
+          "adjustedPValue": 0.08933105584774392,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.8131067431462319,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+        }
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 5074.0132330414835,
+        "observedSupportBest": 16474.401950757296,
+        "robustBest": 10258.334968532403,
+        "minimumEffectiveDose": 302.7637741318975,
+        "diminishingReturnsKnee": 596.0418374503303,
+        "saturationStart": 4795.997675937109,
+        "saturationEnd": 16474.401950757296
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.932532389394651,
+        "directionalScore": -0.1695413062148848,
+        "direction": "positive",
+        "includedSubjects": 147,
+        "totalPairs": 9702,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6901841707211263,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 5310.506447119201,
+        "observedSupportBest": 15206.725896604927,
+        "robustBest": 8890.067720832798,
+        "minimumEffectiveDose": 314.41801231709104,
+        "diminishingReturnsKnee": 6357.640001762503,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8998053996023001,
+        "directionalScore": -0.026969784276235913,
+        "direction": "neutral",
+        "includedSubjects": 175,
+        "totalPairs": 5915,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5664918876751854,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 4144.518950951735,
+        "observedSupportBest": 931.160712878179,
+        "robustBest": 974.4380441091262,
+        "minimumEffectiveDose": 1837.8309497302985,
+        "diminishingReturnsKnee": 931.160712878179,
+        "saturationStart": 4886.207823788924,
+        "saturationEnd": 16263.185865748103
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6950399493610454,
+        "directionalScore": 0.09783321655773534,
+        "direction": "positive",
+        "includedSubjects": 175,
+        "totalPairs": 5740,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5903277510519777,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 4531.514449642186,
+        "observedSupportBest": 138.2908691635944,
+        "robustBest": 716.18738242096,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 8422.467354368748,
+        "saturationStart": 8422.467354368748,
+        "saturationEnd": 17825.649291861948
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.1848630943248534,
+        "directionalScore": 0.06359555605057121,
+        "direction": "negative",
+        "includedSubjects": 147,
+        "totalPairs": 3087,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.40724588142833446,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 679.7403274328908,
+        "observedSupportBest": 2778.5300611919433,
+        "robustBest": 1454.6913408800192,
+        "minimumEffectiveDose": 16.91749627217534,
+        "diminishingReturnsKnee": 28.924066255880167,
+        "saturationStart": 352.5638266054168,
+        "saturationEnd": 2778.5300611919433
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9256527440297928,
+        "directionalScore": -0.1936814847865294,
+        "direction": "positive",
+        "includedSubjects": 179,
+        "totalPairs": 11814,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6920337141225221,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 685.6824968247726,
+        "observedSupportBest": 2500.9923299726115,
+        "robustBest": 1369.4087656870583,
+        "minimumEffectiveDose": 17.752671928483295,
+        "diminishingReturnsKnee": 33.100225984971175,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8904800844358548,
+        "directionalScore": -0.015937705507547927,
+        "direction": "neutral",
+        "includedSubjects": 229,
+        "totalPairs": 7585,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.4945728939872721,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 584.8956119857105,
+        "observedSupportBest": 361.4905688498849,
+        "robustBest": 37.036312606292086,
+        "minimumEffectiveDose": 35.833740180203165,
+        "diminishingReturnsKnee": 35.833740180203165,
+        "saturationStart": 903.599346592656,
+        "saturationEnd": 2793.6143150618664
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6820250664649419,
+        "directionalScore": 0.1304605143842432,
+        "direction": "positive",
+        "includedSubjects": 229,
+        "totalPairs": 7356,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.632861023350668,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 506.8239210074603,
+        "observedSupportBest": 6.994714249998632,
+        "robustBest": 17.661783144062955,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 869.5308771472996,
+        "saturationStart": 527.9538325783763,
+        "saturationEnd": 2719.8656162477546
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.22015292438556958,
+        "directionalScore": -0.05032456881405396,
+        "direction": "negative",
+        "includedSubjects": 179,
+        "totalPairs": 3759,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.35054292200246073,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 842.6295320755622,
+        "observedSupportBest": 2912.5765092317843,
+        "robustBest": 1635.6693338719087,
+        "minimumEffectiveDose": 52.78977056492365,
+        "diminishingReturnsKnee": 92.58143123998713,
+        "saturationStart": 857.1416510452982,
+        "saturationEnd": 2912.5765092317843
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9354319624085063,
+        "directionalScore": -0.12952530256426853,
+        "direction": "positive",
+        "includedSubjects": 165,
+        "totalPairs": 10890,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6942746496492821,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 822.4183364987309,
+        "observedSupportBest": 2563.460420376317,
+        "robustBest": 1376.482941637984,
+        "minimumEffectiveDose": 49.62762917031354,
+        "diminishingReturnsKnee": 88.36097087346053,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8929833079774739,
+        "directionalScore": 0.01799940398330435,
+        "direction": "neutral",
+        "includedSubjects": 216,
+        "totalPairs": 7140,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5521813344541234,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 685.8690632968735,
+        "observedSupportBest": 413.1369045670073,
+        "robustBest": 544.1294590843905,
+        "minimumEffectiveDose": 55.09990411509136,
+        "diminishingReturnsKnee": 100.73983058199534,
+        "saturationStart": 229.24609090302735,
+        "saturationEnd": 2736.7183330264097
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6852977259833971,
+        "directionalScore": -0.06764877432866326,
+        "direction": "positive",
+        "includedSubjects": 216,
+        "totalPairs": 6924,
+        "extrapolative": false,
+        "outsideBestObservedBin": false,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7201981070221783,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 744.310481579491,
+        "observedSupportBest": 30.522107217156698,
+        "robustBest": 62.366798031364944,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 1237.3857791517803,
+        "saturationStart": 1899.3320723575155,
+        "saturationEnd": 2949.8259759877424
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.18495155393776969,
+        "directionalScore": 0.0753446853703961,
+        "direction": "negative",
+        "includedSubjects": 165,
+        "totalPairs": 3465,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.4134605985574229,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 349.09923591137033,
+        "observedSupportBest": 1356.1209677066443,
+        "robustBest": 805.1995455080635,
+        "minimumEffectiveDose": 5.1676568200334945,
+        "diminishingReturnsKnee": 12.003039449787941,
+        "saturationStart": 290.73854595183064,
+        "saturationEnd": 1356.1209677066443
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9333492664782161,
+        "directionalScore": -0.20602009006552474,
+        "direction": "positive",
+        "includedSubjects": 95,
+        "totalPairs": 6270,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6576694222787411,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 338.54661820129905,
+        "observedSupportBest": 1186.3039688501674,
+        "robustBest": 597.3167065414776,
+        "minimumEffectiveDose": 6.555741066355172,
+        "diminishingReturnsKnee": 13.98629509643993,
+        "saturationStart": 231.0328087005506,
+        "saturationEnd": 1186.3039688501674
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8975386174104556,
+        "directionalScore": 0.03244407509096476,
+        "direction": "positive",
+        "includedSubjects": 123,
+        "totalPairs": 4134,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5019530883688801,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 282.81214898989316,
+        "observedSupportBest": 15.454950918081924,
+        "robustBest": 18.124177839854102,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 15.454950918081924,
+        "saturationStart": 93.63435336868629,
+        "saturationEnd": 1333.373600965229
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6714247892323053,
+        "directionalScore": 0.14951237699236822,
+        "direction": "positive",
+        "includedSubjects": 123,
+        "totalPairs": 4011,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6643435935589027,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 228.02517682363407,
+        "observedSupportBest": 1.8937414997758761,
+        "robustBest": 492.1892061214338,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 548.6296937489087,
+        "saturationStart": 142.6486991115019,
+        "saturationEnd": 1340.2470154685866
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.2906388438564621,
+        "directionalScore": -0.1701077315536924,
+        "direction": "negative",
+        "includedSubjects": 95,
+        "totalPairs": 1995,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.39856545263492993,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 387.9048317380418,
+        "observedSupportBest": 546.1122983725878,
+        "robustBest": 509.0955422279973,
+        "minimumEffectiveDose": 18.84913153001937,
+        "diminishingReturnsKnee": 28.25031035007437,
+        "saturationStart": 546.1122983725878,
+        "saturationEnd": 2197.3555495429887
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9330004859199567,
+        "directionalScore": -0.14244054177173654,
+        "direction": "positive",
+        "includedSubjects": 159,
+        "totalPairs": 10494,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7990652562908692,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 399.58483835325984,
+        "observedSupportBest": 1943.0165728845302,
+        "robustBest": 501.19634199487626,
+        "minimumEffectiveDose": 20.901769141744616,
+        "diminishingReturnsKnee": 377.0954486923083,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8815390973468232,
+        "directionalScore": -0.08231323342931282,
+        "direction": "positive",
+        "includedSubjects": 201,
+        "totalPairs": 6630,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7320887242301921,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 387.1498787908141,
+        "observedSupportBest": 175.3770293662316,
+        "robustBest": 174.76557912052962,
+        "minimumEffectiveDose": 54.45738385929219,
+        "diminishingReturnsKnee": 54.45738385929219,
+        "saturationStart": 598.809029475092,
+        "saturationEnd": 2012.4393147454775
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6927355146493713,
+        "directionalScore": -0.10323287621078174,
+        "direction": "positive",
+        "includedSubjects": 201,
+        "totalPairs": 6429,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6753149398656637,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 372.098545115494,
+        "observedSupportBest": 8.664962689912299,
+        "robustBest": 21.7298852259368,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 340.4490880538375,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.19664940155323607,
+        "directionalScore": 0.052547336015772377,
+        "direction": "negative",
+        "includedSubjects": 159,
+        "totalPairs": 3339,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.32402899976258476,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 5094.057773930271,
+        "observedSupportBest": 16280.704996275439,
+        "robustBest": 9966.369098348569,
+        "minimumEffectiveDose": 237.91899814654292,
+        "diminishingReturnsKnee": 516.7231287269475,
+        "saturationStart": 1778.8241808915038,
+        "saturationEnd": 2493.763324228396
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9374885449748788,
+        "directionalScore": -0.18376587214343318,
+        "direction": "positive",
+        "includedSubjects": 126,
+        "totalPairs": 8316,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7000896172958521,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 5213.37056274371,
+        "observedSupportBest": 14637.465289427493,
+        "robustBest": 8929.031552835178,
+        "minimumEffectiveDose": 246.4984899546465,
+        "diminishingReturnsKnee": 461.43054204427153,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9001856859101133,
+        "directionalScore": -0.02307463907746633,
+        "direction": "neutral",
+        "includedSubjects": 148,
+        "totalPairs": 5001,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5469743938473239,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 3873.518057223374,
+        "observedSupportBest": 484.31030033975657,
+        "robustBest": 511.7165229925074,
+        "minimumEffectiveDose": 251.59359096617158,
+        "diminishingReturnsKnee": 484.31030033975657,
+        "saturationStart": 3488.0106945368652,
+        "saturationEnd": 15502.083340320261
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "B",
+        "significance": 0.7000288220623666,
+        "directionalScore": 0.10751286543411935,
+        "direction": "positive",
+        "includedSubjects": 148,
+        "totalPairs": 4853,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5704276883615661,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 4471.558297710671,
+        "observedSupportBest": 112.66237265926183,
+        "robustBest": 305.2118181822812,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 5781.148651686146,
+        "saturationStart": 11484.789528603873,
+        "saturationEnd": 18150.602802320525
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.19074682119773656,
+        "directionalScore": 0.06917980087773852,
+        "direction": "negative",
+        "includedSubjects": 126,
+        "totalPairs": 2646,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.36714158102597266,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 13.613927149342823,
+        "observedSupportBest": 27.789416911668933,
+        "robustBest": 19.044085409087828,
+        "minimumEffectiveDose": 6.5590580742990685,
+        "diminishingReturnsKnee": 10.74782632910641,
+        "saturationStart": 11.83252963679623,
+        "saturationEnd": 13.751654471260082
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9169957123801561,
+        "directionalScore": -0.11226037326495085,
+        "direction": "positive",
+        "includedSubjects": 141,
+        "totalPairs": 9306,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7361046771008214,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 13.790009207005399,
+        "observedSupportBest": 27.00644457832464,
+        "robustBest": 18.906946991254465,
+        "minimumEffectiveDose": 6.6056529359197365,
+        "diminishingReturnsKnee": 16.401125383386926,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8812963892349139,
+        "directionalScore": -0.040952874614222375,
+        "direction": "positive",
+        "includedSubjects": 168,
+        "totalPairs": 5677,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6616052048648164,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 13.148982646947573,
+        "observedSupportBest": 12.642487822547482,
+        "robustBest": 12.600095648302819,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 12.642487822547482,
+        "saturationStart": 14.969697372650396,
+        "saturationEnd": 27.065220820908195
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6979094692872188,
+        "directionalScore": 0.12674472403579712,
+        "direction": "positive",
+        "includedSubjects": 168,
+        "totalPairs": 5509,
+        "extrapolative": false,
+        "outsideBestObservedBin": false,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.8823529390202156,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 13.023525189724076,
+        "observedSupportBest": 15.0348177013589,
+        "robustBest": 14.85180201849996,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 15.0348177013589,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.22726163675628544,
+        "directionalScore": -0.12222363844694295,
+        "direction": "negative",
+        "includedSubjects": 141,
+        "totalPairs": 2961,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6626507286466543,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 19.74232519218012,
+        "observedSupportBest": 14.665783604718108,
+        "robustBest": 14.702761962579036,
+        "minimumEffectiveDose": 12.94025898099926,
+        "diminishingReturnsKnee": 12.94025898099926,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9106689441522561,
+        "directionalScore": 0.10791839091020218,
+        "direction": "neutral",
+        "includedSubjects": 134,
+        "totalPairs": 8844,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.8131067431462319,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 19.337041054413074,
+        "observedSupportBest": 13.061632962341255,
+        "robustBest": 13.284107104972302,
+        "minimumEffectiveDose": 11.70248975394442,
+        "diminishingReturnsKnee": 13.061632962341255,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8656944613315923,
+        "directionalScore": 0.11379813122450899,
+        "direction": "neutral",
+        "includedSubjects": 159,
+        "totalPairs": 5371,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.825840501718849,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 19.035751199235083,
+        "observedSupportBest": 13.128855075882726,
+        "robustBest": 13.288013063138902,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 13.128855075882726,
+        "saturationStart": 16.371097449417054,
+        "saturationEnd": 17.80431218486314
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6807626196096711,
+        "directionalScore": -0.13360532935600358,
+        "direction": "neutral",
+        "includedSubjects": 159,
+        "totalPairs": 5212,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7304094548620595,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 19.440057204301304,
+        "observedSupportBest": 33.37800081724307,
+        "robustBest": 20.910945991928408,
+        "minimumEffectiveDose": 19.591745962315805,
+        "diminishingReturnsKnee": 21.063100938786825,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.19361645582707657,
+        "directionalScore": 0.062265840792617676,
+        "direction": "positive",
+        "includedSubjects": 134,
+        "totalPairs": 2814,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5077069707239692,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 3.8196381637507693,
+        "observedSupportBest": 13.184834410424859,
+        "robustBest": 7.222822705604741,
+        "minimumEffectiveDose": 4.04241828191268,
+        "diminishingReturnsKnee": 4.04241828191268,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9183518807163819,
+        "directionalScore": 0.12774679014718093,
+        "direction": "positive",
+        "includedSubjects": 82,
+        "totalPairs": 5412,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7491719570750919,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 4.0427107936176725,
+        "observedSupportBest": 12.69047438558201,
+        "robustBest": 7.494834359336486,
+        "minimumEffectiveDose": 3.601715508306941,
+        "diminishingReturnsKnee": 4.917325005087413,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8762594259588379,
+        "directionalScore": 0.12571786942502272,
+        "direction": "positive",
+        "includedSubjects": 100,
+        "totalPairs": 3380,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6377132139573233,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 3.7105226807204974,
+        "observedSupportBest": 1.4978461029665882,
+        "robustBest": 1.5132697420862067,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 1.4978461029665882,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "B",
+        "significance": 0.702291687232587,
+        "directionalScore": 0.1018629250024844,
+        "direction": "positive",
+        "includedSubjects": 100,
+        "totalPairs": 3280,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.5781164054847849,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 3.480600552840314,
+        "observedSupportBest": 13.242864932904789,
+        "robustBest": 4.613237946403116,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 1.0270493818945239,
+        "saturationStart": 8.165376528704202,
+        "saturationEnd": 13.242864932904789
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.1941134127166331,
+        "directionalScore": 0.14591434720083393,
+        "direction": "neutral",
+        "includedSubjects": 82,
+        "totalPairs": 1722,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.who.healthy_life_expectancy_years",
+        "label": "Healthy Life Expectancy (HALE)",
+        "unit": "years"
+      },
+      "targets": {
+        "modelBest": 8.23507661011582,
+        "observedSupportBest": 3.7732953682956043,
+        "robustBest": 3.213137697829256,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 3.7732953682956043,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.9207627687712071,
+        "directionalScore": -0.03167701369426816,
+        "direction": "negative",
+        "includedSubjects": 126,
+        "totalPairs": 8316,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.642035218422833,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp",
+        "label": "After-Tax Median Income (PPP)",
+        "unit": "international $"
+      },
+      "targets": {
+        "modelBest": 8.16385598435682,
+        "observedSupportBest": 3.3893905497790886,
+        "robustBest": 3.57284170273295,
+        "minimumEffectiveDose": 3.3893905497790886,
+        "diminishingReturnsKnee": 4.226947616303485,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "A",
+        "significance": 0.8869872891369602,
+        "directionalScore": -0.12190753950640838,
+        "direction": "negative",
+        "includedSubjects": 148,
+        "totalPairs": 5001,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7514421514093435,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+        "label": "After-Tax Median Income Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 9.784660268281876,
+        "observedSupportBest": 4.734361563591145,
+        "robustBest": 4.759394153844331,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 4.734361563591145,
+        "saturationStart": 10.949654487162402,
+        "saturationEnd": 13.996285898073376
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6808457435359486,
+        "directionalScore": -0.12911353621802785,
+        "direction": "negative",
+        "includedSubjects": 148,
+        "totalPairs": 4853,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7596173874489534,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+        "label": "Healthy Life Expectancy Growth (YoY %)",
+        "unit": "% YoY"
+      },
+      "targets": {
+        "modelBest": 9.048287514659966,
+        "observedSupportBest": 9.949893295416649,
+        "robustBest": 9.882527089733205,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 9.949893295416649,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "F",
+        "significance": 0.19295166439691144,
+        "directionalScore": 0.05596123313142948,
+        "direction": "positive",
+        "includedSubjects": 126,
+        "totalPairs": 2646,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.4737363780687287,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    }
+  ]
+}

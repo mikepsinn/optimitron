@@ -12,34 +12,38 @@
 - Skipped subjects: 0
 - Total aligned pairs: 1722
 - Evidence grade: F
+- Data sufficiency: insufficient_data
+- Reliability score: 0.490 (low)
 - Quality tier: insufficient
-- Direction: positive
+- Direction: neutral
 - Derived uncertainty score: 0.8059 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best R&D Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 3.481 % of government expenditure.
+- Estimated best R&D Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 3.481 % of government expenditure.
+- Observed-support target from binned response curve: 13.243 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 12.605 % of government expenditure; model-optimal minus observed-anchor difference is -9.124 (-72.4%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 4.613 % of government expenditure.
 - Raw vs robust optimal differs by 32.5%, indicating strong tail influence.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 1.027 % of government expenditure.
+- Saturation/plateau zone starts around 8.165 % of government expenditure and extends through 13.243 % of government expenditure.
 - Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when R&D Share of Government Spending is in [9.525, 20.356] (mean outcome 0.44588).
-- Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80)).
+- Directional signal is neutral; use caution when treating the estimated optimal value as prescriptive.
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: no stable increase/decrease signal; prioritize observed-support targets.
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80).
 
 ## Plain-Language Summary
 
-- Higher R&D Share of Government Spending tends to align with better Healthy Life Expectancy Growth (YoY %).
+- No strong directional pattern is detected between R&D Share of Government Spending and Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 82 subjects and 1722 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [9.525, 20.356] (mean outcome 0.44588).
+- Reliability score is 0.490 (low); data sufficiency is insufficient_data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -47,6 +51,7 @@
 - Weak aggregate significance (<0.70).
 - Some subject-level directional scores exceed |1|; this is valid because the score is a difference of two correlations.
 - Robustness check: trimmed-range optimal differs by 32.5% from raw optimal; tail observations materially influence target.
+- Data sufficiency warning: aligned-pair support below minimum (1722 < 2000)
 
 ## Appendix: Technical Diagnostics
 
@@ -63,6 +68,11 @@
 | Aggregate value predicting high outcome | 3.4806 |
 | Aggregate value predicting low outcome | 3.5086 |
 | Aggregate optimal daily value | 3.4806 |
+| Support-constrained optimal value | 13.243 % of government expenditure |
+| Support-constrained optimal range | [10.327, 20.356] |
+| Response-curve robust optimal value | 0.99475 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.0487, 35.0684] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -73,9 +83,25 @@
 | Robust optimal value (bin median) | 4.613 % of government expenditure |
 | Raw vs robust optimal delta | 1.133 (+32.5%) |
 | Robustness retained fraction | 79.9% (1376/1722) |
+| Data sufficiency status | insufficient_data |
+| Data sufficiency reasons | aligned-pair support below minimum (1722 < 2000) |
+| Reliability score | 0.4900 (low) |
+| Reliability support component | 0.4168 |
+| Reliability significance component | 0.1941 |
+| Reliability directional component | 0.9728 |
+| Reliability temporal-stability component | 1.0000 |
+| Reliability robustness component | 0.7495 |
 | Quality tier | insufficient |
-| Actionability status | exploratory |
-| Actionability reasons | insufficient aligned-pair support (<2500); aggregate significance below actionable threshold (<0.80) |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 1.027 % of government expenditure (ratio=0.069) |
+| Saturation / plateau range | [5.920, 20.356] |
+| Support-constrained target reason | identified |
+| Raw to support delta | -9.762 (-73.7%) |
 
 ### Temporal Sensitivity
 

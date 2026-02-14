@@ -12,33 +12,37 @@
 - Skipped subjects: 0
 - Total aligned pairs: 2961
 - Evidence grade: F
+- Data sufficiency: sufficient
+- Reliability score: 0.663 (moderate)
 - Quality tier: insufficient
 - Direction: negative
 - Derived uncertainty score: 0.7727 (1 - aggregate significance, not NHST p-value)
 
-## Actionable Takeaway
+## Key Numeric Takeaways
 
-- Exploratory estimate of best Government Health Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 13.024 % of government expenditure.
+- Estimated best Government Health Share of Government Spending level for higher Healthy Life Expectancy Growth (YoY %): 13.024 % of government expenditure.
+- Observed-support target from binned response curve: 15.035 % of government expenditure.
 - Model-derived optimum is within observed support but outside the highest-outcome bin; this reflects smooth objective optimization vs coarse bin averages.
 - Best observed bin anchor (median/mean) is 4.793 % of government expenditure; model-optimal minus observed-anchor difference is 8.231 (+171.7%).
 - Robust sensitivity (trimmed 10-90% predictor range) suggests 14.852 % of government expenditure.
+- Minimum effective level not reliably identified (no_consistent_effective_dose_detected).
+- Diminishing returns likely begin near 15.035 % of government expenditure.
+- No stable plateau zone detected (no_plateau_zone_detected).
 - Highest observed mean Healthy Life Expectancy Growth (YoY %) appears when Government Health Share of Government Spending is in [0.93053, 5.930) (mean outcome 0.57112).
 - Direction is negative in this analysis, so lowering this predictor is associated with better outcomes.
-- Actionability gate: exploratory only (aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable).
 
 ## Decision Summary
 
 - Interpretation: Exploratory evidence only; use primarily for hypothesis generation.
-- Practical direction: exploratory signal only; do not treat this as a prescriptive target yet.
+- Directional hint: lower Government Health Share of Government Spending is associated with better Healthy Life Expectancy Growth (YoY %).
 - Signal strength: moderate-to-weak; avoid hard policy conclusions from this pair alone.
-- Actionability status: exploratory.
-- Actionability gate reasons: aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable.
 
 ## Plain-Language Summary
 
 - Higher Government Health Share of Government Spending tends to align with worse Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 141 subjects and 2961 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [0.93053, 5.930) (mean outcome 0.57112).
+- Reliability score is 0.663 (moderate); data sufficiency is sufficient.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -62,6 +66,11 @@
 | Aggregate value predicting high outcome | 13.0235 |
 | Aggregate value predicting low outcome | 13.1650 |
 | Aggregate optimal daily value | 13.0235 |
+| Support-constrained optimal value | 15.035 % of government expenditure |
+| Support-constrained optimal range | [14.399, 15.673) |
+| Response-curve robust optimal value | 12.659 % of government expenditure |
+| Raw model optimal within observed range | yes |
+| Raw model optimal within support-constrained range | no |
 | Observed predictor range | [0.8069, 88.0822] |
 | Model-derived optimal extrapolative? | no (within observed range) |
 | Model-derived optimal outside best observed bin? | yes |
@@ -72,9 +81,25 @@
 | Robust optimal value (bin median) | 14.852 % of government expenditure |
 | Raw vs robust optimal delta | 1.828 (+14.0%) |
 | Robustness retained fraction | 80.0% (2369/2961) |
+| Data sufficiency status | sufficient |
+| Data sufficiency reasons | none |
+| Reliability score | 0.6627 (moderate) |
+| Reliability support component | 0.7167 |
+| Reliability significance component | 0.2273 |
+| Reliability directional component | 0.8148 |
+| Reliability temporal-stability component | 0.8028 |
+| Reliability robustness component | 0.9551 |
 | Quality tier | insufficient |
-| Actionability status | exploratory |
-| Actionability reasons | aggregate significance below actionable threshold (<0.80); temporal-profile selection is unstable |
+
+### Response-Curve Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Minimum effective level (MED) | Not identified (no_consistent_effective_dose_detected) |
+| Diminishing-returns knee | 15.035 % of government expenditure (ratio=-5.978) |
+| Saturation / plateau range | Not identified (no_plateau_zone_detected) |
+| Support-constrained target reason | identified |
+| Raw to support delta | -2.011 (-13.4%) |
 
 ### Temporal Sensitivity
 

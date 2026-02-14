@@ -1,6 +1,6 @@
 # Aggregate N-of-1 Mega Studies
 
-- Generated: 2026-02-13T22:38:49.598Z
+- Generated: 2026-02-14T01:25:25.130Z
 - Predictors considered: 10
 - Predictors excluded (non-discretionary): 7
 - Outcomes considered: 4
@@ -9,6 +9,7 @@
 - Cache directory: E:\code\optomitron\packages\examples\output\.cache\mega-study-data
 - Pair studies generated: 40
 - Pair studies skipped: 0
+- API payload: mega-study-api.json
 
 ## Excluded Predictors
 
