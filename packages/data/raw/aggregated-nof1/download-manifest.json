@@ -1,0 +1,38 @@
+[
+  {
+    "file": "oecd-public-order-safety-spending-gf03-xdc.csv",
+    "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1/A..S13._Z.D.OTE._Z.GF03.XDC.S.V.N.T1100?startPeriod=1995&endPeriod=2023&format=csvfile",
+    "bytes": 122053,
+    "downloadedAt": "2026-02-14T14:44:40.5324793-06:00"
+  },
+  {
+    "file": "oecd-accidental-poisoning-death-rate-cicdposn.csv",
+    "url": "https://sdmx.oecd.org/public/rest/data/OECD.ELS.HD,DSD_HEALTH_STAT@DF_COM,1.1/.A.CSEM.DT_10P5HB._T._T._Z.CICDPOSN.STANDARD._Z._Z._Z._Z?startPeriod=1995&endPeriod=2023&format=csvfile",
+    "bytes": 145229,
+    "downloadedAt": "2026-02-14T14:44:40.8440669-06:00"
+  },
+  {
+    "file": "wb-gdp-current-lcu-ny-gdp-mktp-cn.json",
+    "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.CN?format=json&date=1995:2023&per_page=20000",
+    "bytes": 1596674,
+    "downloadedAt": "2026-02-14T14:44:41.9709840-06:00"
+  },
+  {
+    "file": "wb-gdp-per-capita-ppp-current-ny-gdp-pcap-pp-cd.json",
+    "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.CD?format=json&date=1995:2023&per_page=20000",
+    "bytes": 1870963,
+    "downloadedAt": "2026-02-14T14:45:19.9985701-06:00"
+  },
+  {
+    "file": "wb-population-total-sp-pop-totl.json",
+    "url": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json&date=1995:2023&per_page=20000",
+    "bytes": 1551027,
+    "downloadedAt": "2026-02-14T14:45:21.0438952-06:00"
+  },
+  {
+    "file": "wb-poisoning-mortality-sh-sta-pois-p5.json",
+    "url": "https://api.worldbank.org/v2/country/all/indicator/SH.STA.POIS.P5?format=json&date=1995:2023&per_page=20000",
+    "bytes": 2023316,
+    "downloadedAt": "2026-02-14T14:46:24.1763177-06:00"
+  }
+]

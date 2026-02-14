@@ -56,3 +56,6 @@ packages/db/prisma/dev.db
 .cache
 .cache/
 **/.cache/
+
+# Local scratch files
+tmp-*

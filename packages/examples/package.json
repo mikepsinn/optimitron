@@ -11,6 +11,7 @@
     "demo:causal": "pnpm run build:deps && tsx src/causal-analysis-demo.ts",
     "demo:alignment": "pnpm run build:deps && tsx src/alignment-demo.ts",
     "generate:budget": "pnpm run build:deps && tsx src/us-federal-analysis/generate-budget-analysis.ts",
+    "generate:drug-war-overdose": "pnpm run build:deps && tsx src/us-federal-analysis/generate-drug-war-overdose-analysis.ts",
     "generate:government-size": "pnpm run build:deps && tsx src/us-federal-analysis/generate-government-size-analysis.ts",
     "generate:government-spending-metrics": "pnpm run build:deps && tsx src/us-federal-analysis/generate-government-spending-metric-comparison.ts",
     "generate:policy": "pnpm run build:deps && tsx src/us-federal-analysis/generate-policy-analysis.ts",

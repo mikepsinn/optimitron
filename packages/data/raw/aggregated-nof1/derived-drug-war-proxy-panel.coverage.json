@@ -1,0 +1,9 @@
+{
+  "rows": 996,
+  "countries": 36,
+  "years": 29,
+  "withPctGdp": 996,
+  "withPerCapitaPpp": 996,
+  "withOecdPoison": 947,
+  "withWbPoison": 766
+}

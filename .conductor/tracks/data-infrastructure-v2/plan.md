@@ -49,3 +49,14 @@
      - internationally comparable metric definitions and coverage snapshots
      - US-only context estimates (not panel defaults)
      - explicit primary-metric recommendation for cross-country analysis.
+13. [x] Download reproducible aggregated N-of-1 drug-war proxy panel inputs.
+   - Added raw source bundle under `packages/data/raw/aggregated-nof1/`:
+     - OECD COFOG public-order spending (`GF03`, `S13`, `OTE`, annual)
+     - OECD accidental-poisoning mortality (`CICDPOSN`, deaths per 100k)
+     - World Bank GDP current LCU, GDP per capita PPP (current), population, and poisoning mortality
+   - Added derived merged panel:
+     - `derived-drug-war-proxy-panel.csv`
+     - computed `% GDP` and `per-capita PPP` spending proxy columns for direct modeling.
+   - Added local provenance metadata:
+     - `download-manifest.json`
+     - `derived-drug-war-proxy-panel.coverage.json`

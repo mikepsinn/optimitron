@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2026-02-14",
-  "generatedAt": "2026-02-14T18:33:51.689Z",
+  "generatedAt": "2026-02-14T19:50:43.204Z",
   "outcomes": [
     {
       "outcomeId": "outcome.derived.after_tax_median_income_ppp",
@@ -416,6 +416,159 @@
       ]
     },
     {
+      "outcomeId": "outcome.wb.battle_related_deaths",
+      "outcomeLabel": "outcome.wb.battle_related_deaths",
+      "outcomeMarkdownFile": "outcome-outcome.wb.battle_related_deaths.md",
+      "rows": []
+    },
+    {
+      "outcomeId": "outcome.wb.primary_completion_rate_pct",
+      "outcomeLabel": "Primary School Completion Rate",
+      "outcomeMarkdownFile": "outcome-outcome.wb.primary_completion_rate_pct.md",
+      "rows": [
+        {
+          "rank": 1,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.7610328324903206,
+          "confidence": 0.7304785624396312,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7353314915170104,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 2,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.6263562707980517,
+          "confidence": 0.7152968253823316,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7572948348062005,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 3,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.5704794203638066,
+          "confidence": 0.7218855180144067,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6550713804799951,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 4,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.4781790807947602,
+          "confidence": 0.6864165005238058,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6162806268752412,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 5,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.4281578439835709,
+          "confidence": 0.6878832008327281,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7504363559133496,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 6,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.37641979450458873,
+          "confidence": 0.668673214947367,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "insufficient",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6509985433080118,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 7,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.35767440925771027,
+          "confidence": 0.7198124022354591,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.6012114505233596,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 8,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.3347574971926262,
+          "confidence": 0.7195640582955448,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.4636157060965462,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 9,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.32885090227075636,
+          "confidence": 0.7233705773969855,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.7033829201894226,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+        },
+        {
+          "rank": 10,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.27194025406440964,
+          "confidence": 0.6839322054277177,
+          "adjustedPValue": 0.4540878601207279,
+          "qualityTier": "exploratory",
+          "dataSufficiencyStatus": "sufficient",
+          "reliabilityScore": 0.49279436342883387,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+        }
+      ]
+    },
+    {
       "outcomeId": "outcome.who.healthy_life_expectancy_years",
       "outcomeLabel": "Healthy Life Expectancy (HALE)",
       "outcomeMarkdownFile": "outcome-outcome.who.healthy_life_expectancy_years.md",
@@ -729,6 +882,88 @@
       }
     },
     {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 10199.168427194507,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 3790.8578757334963,
+        "observedSupportBest": 10199.168427194507,
+        "robustBest": 9450.744873634054,
+        "minimumEffectiveDose": 315.8545420652955,
+        "diminishingReturnsKnee": 547.9203415959931,
+        "saturationStart": 1747.7626240374334,
+        "saturationEnd": 15616.128443435038
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6750603344830445,
+        "directionalScore": -0.10738073940174267,
+        "direction": "positive",
+        "includedSubjects": 159,
+        "totalPairs": 3577,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6012114505233596,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.gov_expenditure_per_capita_ppp",
+        "label": "Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 1891.6317906483005,
+        "observedSupportBest": 109.24737218631269,
+        "robustBest": 118.04882980279831,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 235.6645237556259,
+        "saturationStart": 1331.9972731326516,
+        "saturationEnd": 11523.085203914285
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6829129182823631,
+        "directionalScore": -0.09220603528754841,
+        "direction": "neutral",
+        "includedSubjects": 40,
+        "totalPairs": 839,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.39149818506743234,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
+      }
+    },
+    {
       "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
       "predictor": {
         "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
@@ -890,6 +1125,88 @@
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 1214.46490523825,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 421.5027623472932,
+        "observedSupportBest": 1214.46490523825,
+        "robustBest": 571.1250398392178,
+        "minimumEffectiveDose": 17.845098184101097,
+        "diminishingReturnsKnee": 29.5741145244522,
+        "saturationStart": 279.22702671625575,
+        "saturationEnd": 2353.1751687279852
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.698408645653624,
+        "directionalScore": -0.1080118479787497,
+        "direction": "positive",
+        "includedSubjects": 205,
+        "totalPairs": 4678,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7353314915170104,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+        "label": "Government Health Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 164.43439443898228,
+        "observedSupportBest": 36.19356785408666,
+        "robustBest": 36.19356785408666,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 14.26275860807738,
+        "saturationStart": 158.03345497942314,
+        "saturationEnd": 1000.6465953981257
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6408586575237772,
+        "directionalScore": -0.07980819068811773,
+        "direction": "neutral",
+        "includedSubjects": 55,
+        "totalPairs": 1140,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.41663288053234093,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
       }
     },
     {
@@ -1057,6 +1374,88 @@
       }
     },
     {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 2362.1090957786246,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 467.88108162899977,
+        "observedSupportBest": 2362.1090957786246,
+        "robustBest": 785.617024424033,
+        "minimumEffectiveDose": 43.781995211241984,
+        "diminishingReturnsKnee": 69.66770434512964,
+        "saturationStart": 308.73932584519196,
+        "saturationEnd": 2362.1090957786246
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.691864474405446,
+        "directionalScore": -0.08027766522072055,
+        "direction": "positive",
+        "includedSubjects": 198,
+        "totalPairs": 4555,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7033829201894226,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.education_expenditure_per_capita_ppp",
+        "label": "Education Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 257.00831457784517,
+        "observedSupportBest": 44.502469549466376,
+        "robustBest": 46.66917679197872,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 44.502469549466376,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6287738505544733,
+        "directionalScore": -0.16691937890806557,
+        "direction": "negative",
+        "includedSubjects": 49,
+        "totalPairs": 983,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.47737397555225947,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
+      }
+    },
+    {
       "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
       "predictor": {
         "id": "predictor.derived.rd_expenditure_per_capita_ppp",
@@ -1218,6 +1617,88 @@
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 553.3885819180231,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 167.43479468716922,
+        "observedSupportBest": 553.3885819180231,
+        "robustBest": 492.1663345368419,
+        "minimumEffectiveDose": 5.778843923778463,
+        "diminishingReturnsKnee": 12.370576164215008,
+        "saturationStart": 44.489189775340634,
+        "saturationEnd": 62.67288170682346
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.641118855253314,
+        "directionalScore": -0.22804014963094735,
+        "direction": "positive",
+        "includedSubjects": 111,
+        "totalPairs": 2510,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6550713804799951,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.rd_expenditure_per_capita_ppp",
+        "label": "R&D Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 49.00745154182133,
+        "observedSupportBest": 3.732508128824369,
+        "robustBest": 3.732508128824369,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 36.08854447640409,
+        "saturationStart": 76.20224507334676,
+        "saturationEnd": 539.3004359820198
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6956016308711398,
+        "directionalScore": -0.21077030472622404,
+        "direction": "positive",
+        "includedSubjects": 24,
+        "totalPairs": 583,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
       }
     },
     {
@@ -1385,6 +1866,88 @@
       }
     },
     {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 1567.018253387452,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 223.7289330420067,
+        "observedSupportBest": 1567.018253387452,
+        "robustBest": 248.66850472410022,
+        "minimumEffectiveDose": 22.67399689123974,
+        "diminishingReturnsKnee": 34.81217506096577,
+        "saturationStart": 138.22892680974863,
+        "saturationEnd": 1567.018253387452
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6600977353449935,
+        "directionalScore": -0.12186868680511523,
+        "direction": "positive",
+        "includedSubjects": 178,
+        "totalPairs": 4175,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7572948348062005,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.military_expenditure_per_capita_ppp",
+        "label": "Military Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 178.75609579796142,
+        "observedSupportBest": 7.152596327426481,
+        "robustBest": 355.2134947388531,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 134.71912625604398,
+        "saturationStart": 32.709989576861446,
+        "saturationEnd": 48.51430592657039
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6315342534028675,
+        "directionalScore": -0.14928970939237238,
+        "direction": "negative",
+        "includedSubjects": 56,
+        "totalPairs": 1151,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.4717494593718358,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
+      }
+    },
+    {
       "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
       "predictor": {
         "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
@@ -1546,6 +2109,88 @@
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 9843.964619432536,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 3769.9363759417174,
+        "observedSupportBest": 9843.964619432536,
+        "robustBest": 9335.49702017412,
+        "minimumEffectiveDose": 268.780269224449,
+        "diminishingReturnsKnee": 418.03787184014686,
+        "saturationStart": 3336.5817091046847,
+        "saturationEnd": 15216.714474952107
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6818904668303775,
+        "directionalScore": -0.08653346756535654,
+        "direction": "positive",
+        "includedSubjects": 133,
+        "totalPairs": 3043,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.4636157060965462,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+        "label": "Civilian Government Expenditure Per Capita (PPP)",
+        "unit": "international $/person"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 1438.017832497844,
+        "observedSupportBest": 3108.2384404536906,
+        "robustBest": 2922.217789295621,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 154.19597647279713,
+        "saturationStart": 3108.2384404536906,
+        "saturationEnd": 8561.797410285286
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6535434702013109,
+        "directionalScore": -0.12630195502245972,
+        "direction": "neutral",
+        "includedSubjects": 39,
+        "totalPairs": 806,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.4432848122600762,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
       }
     },
     {
@@ -1713,6 +2358,88 @@
       }
     },
     {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 16.249627370152552,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 12.861144571330364,
+        "observedSupportBest": 16.249627370152552,
+        "robustBest": 15.99085373737498,
+        "minimumEffectiveDose": 9.583863653168072,
+        "diminishingReturnsKnee": 9.583863653168072,
+        "saturationStart": 19.237953471335857,
+        "saturationEnd": 24.700192890714483
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.5803163989254475,
+        "directionalScore": -0.17895409127277156,
+        "direction": "neutral",
+        "includedSubjects": 152,
+        "totalPairs": 3425,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.7504363559133496,
+        "reliabilityBand": "high"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+        "label": "Government Health Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 8.679773945584751,
+        "observedSupportBest": 6.923718482386226,
+        "robustBest": 6.969512891499742,
+        "minimumEffectiveDose": 4.556007869607127,
+        "diminishingReturnsKnee": 12.58165817657701,
+        "saturationStart": 9.203298838784184,
+        "saturationEnd": 10.339917924685281
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6064683147102609,
+        "directionalScore": -0.14404744143291995,
+        "direction": "positive",
+        "includedSubjects": 37,
+        "totalPairs": 773,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
+      }
+    },
+    {
       "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
       "predictor": {
         "id": "predictor.derived.education_share_of_gov_expenditure_pct",
@@ -1874,6 +2601,88 @@
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 13.672422301393569,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 20.899039619165247,
+        "observedSupportBest": 13.672422301393569,
+        "robustBest": 13.856384731818505,
+        "minimumEffectiveDose": 12.033617023773601,
+        "diminishingReturnsKnee": 13.672422301393569,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "D",
+        "significance": 0.5459121398792721,
+        "directionalScore": 0.15438454111975164,
+        "direction": "positive",
+        "includedSubjects": 145,
+        "totalPairs": 3343,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6509985433080118,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.education_share_of_gov_expenditure_pct",
+        "label": "Education Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 17.55004036036045,
+        "observedSupportBest": 25.73009442499797,
+        "robustBest": 20.413354526058292,
+        "minimumEffectiveDose": 11.353143268712508,
+        "diminishingReturnsKnee": 21.731067186073567,
+        "saturationStart": 13.116968208661076,
+        "saturationEnd": 14.991470905662853
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "D",
+        "significance": 0.5332332299148621,
+        "directionalScore": -0.18667148366491615,
+        "direction": "neutral",
+        "includedSubjects": 37,
+        "totalPairs": 759,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
       }
     },
     {
@@ -2041,6 +2850,88 @@
       }
     },
     {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 12.048593266264387,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 3.2427700687786083,
+        "observedSupportBest": 12.048593266264387,
+        "robustBest": 1.0503025744077616,
+        "minimumEffectiveDose": 0.7423079631667471,
+        "diminishingReturnsKnee": 1.0394631394608511,
+        "saturationStart": 1.4470574147548467,
+        "saturationEnd": 2.755238160410891
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.5851309592285373,
+        "directionalScore": -0.1704927653457299,
+        "direction": "negative",
+        "includedSubjects": 90,
+        "totalPairs": 2012,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.6162806268752412,
+        "reliabilityBand": "moderate"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.rd_share_of_gov_expenditure_pct",
+        "label": "R&D Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 3.1430671659578913,
+        "observedSupportBest": 0.6167541524801532,
+        "robustBest": 1.5776736328620116,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 0.8166963319999835,
+        "saturationStart": 4.962567114321347,
+        "saturationEnd": 6.250794516687157
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6074874156303989,
+        "directionalScore": 0.3308565007858416,
+        "direction": "positive",
+        "includedSubjects": 18,
+        "totalPairs": 430,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
+      }
+    },
+    {
       "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
       "predictor": {
         "id": "predictor.derived.military_share_of_gov_expenditure_pct",
@@ -2202,6 +3093,88 @@
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.primary_completion_rate_pct",
+        "label": "Primary School Completion Rate",
+        "unit": "% of relevant age group"
+      },
+      "targets": {
+        "decisionBest": 3.398822372458786,
+        "decisionTargetSource": "support_constrained",
+        "modelBest": 8.5486247060125,
+        "observedSupportBest": 3.398822372458786,
+        "robustBest": 3.5325458718550276,
+        "minimumEffectiveDose": null,
+        "diminishingReturnsKnee": 5.1847208507635045,
+        "saturationStart": null,
+        "saturationEnd": null
+      },
+      "diagnostics": {
+        "qualityTier": "exploratory",
+        "evidenceGrade": "C",
+        "significance": 0.6190998785784866,
+        "directionalScore": 0.03735954653551533,
+        "direction": "negative",
+        "includedSubjects": 133,
+        "totalPairs": 3043,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "sufficient",
+        "reliabilityScore": 0.49279436342883387,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+      }
+    },
+    {
+      "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths",
+      "predictor": {
+        "id": "predictor.derived.military_share_of_gov_expenditure_pct",
+        "label": "Military Share of Government Spending",
+        "unit": "% of government expenditure"
+      },
+      "outcome": {
+        "id": "outcome.wb.battle_related_deaths",
+        "label": "Battle-Related Deaths",
+        "unit": "deaths (count)"
+      },
+      "targets": {
+        "decisionBest": null,
+        "decisionTargetSource": "unavailable",
+        "modelBest": 17.723147725222773,
+        "observedSupportBest": 15.51991460133722,
+        "robustBest": 7.1364037649267535,
+        "minimumEffectiveDose": 6.971818506215185,
+        "diminishingReturnsKnee": 8.746258236769204,
+        "saturationStart": 26.300432669211876,
+        "saturationEnd": 60.874876239993554
+      },
+      "diagnostics": {
+        "qualityTier": "insufficient",
+        "evidenceGrade": "C",
+        "significance": 0.6450957965567995,
+        "directionalScore": -0.19136235361786563,
+        "direction": "negative",
+        "includedSubjects": 39,
+        "totalPairs": 806,
+        "extrapolative": false,
+        "outsideBestObservedBin": true,
+        "dataSufficiencyStatus": "insufficient_data",
+        "reliabilityScore": 0.49,
+        "reliabilityBand": "low"
+      },
+      "links": {
+        "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
       }
     }
   ]

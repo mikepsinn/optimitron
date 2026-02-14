@@ -13,6 +13,7 @@ import {
   buildPairTemporalProfileCandidates,
   buildPairBinSummaryRows,
   buildPppPerCapitaSummary,
+  computePairMarginalTradeoffDiagnostics,
   derivePairDataSufficiency,
   derivePairReliability,
   directionFromSignal,
@@ -689,6 +690,127 @@ describe("mega-study-generator helpers", () => {
     expect(resolveDecisionOptimalValue(pair)).toBeNull();
   });
 
+  it("computePairMarginalTradeoffDiagnostics marks near-zero tail gains as no clear marginal gain", () => {
+    const pair = {
+      dataSufficiency: {
+        status: "sufficient",
+      },
+      predictorBinRows: [
+        {
+          predictorMedian: 1,
+          predictorMean: 1,
+          outcomeMean: 10,
+        },
+        {
+          predictorMedian: 2,
+          predictorMean: 2,
+          outcomeMean: 12,
+        },
+        {
+          predictorMedian: 3,
+          predictorMean: 3,
+          outcomeMean: 12.02,
+        },
+        {
+          predictorMedian: 4,
+          predictorMean: 4,
+          outcomeMean: 12.03,
+        },
+      ],
+      responseCurve: {
+        diminishingReturns: {
+          kneePredictorValue: 2.5,
+        },
+      },
+    } as Parameters<typeof computePairMarginalTradeoffDiagnostics>[0];
+
+    const diagnostics = computePairMarginalTradeoffDiagnostics(pair);
+    expect(diagnostics.tailSignal).toBe("near_zero");
+    expect(diagnostics.taxpayerReturnBenchmark).toBe("no_clear_marginal_gain");
+  });
+
+  it("computePairMarginalTradeoffDiagnostics marks negative tail gains as possible harm", () => {
+    const pair = {
+      dataSufficiency: {
+        status: "sufficient",
+      },
+      predictorBinRows: [
+        {
+          predictorMedian: 1,
+          predictorMean: 1,
+          outcomeMean: 10,
+        },
+        {
+          predictorMedian: 2,
+          predictorMean: 2,
+          outcomeMean: 12,
+        },
+        {
+          predictorMedian: 3,
+          predictorMean: 3,
+          outcomeMean: 13,
+        },
+        {
+          predictorMedian: 4,
+          predictorMean: 4,
+          outcomeMean: 11,
+        },
+      ],
+      responseCurve: {
+        diminishingReturns: {
+          kneePredictorValue: 2.5,
+        },
+      },
+    } as Parameters<typeof computePairMarginalTradeoffDiagnostics>[0];
+
+    const diagnostics = computePairMarginalTradeoffDiagnostics(pair);
+    expect(diagnostics.tailSignal).toBe("negative");
+    expect(diagnostics.taxpayerReturnBenchmark).toBe("possible_harm");
+  });
+
+  it("computePairMarginalTradeoffDiagnostics marks low-confidence rows as insufficient benchmark", () => {
+    const pair = {
+      dataSufficiency: {
+        status: "sufficient",
+      },
+      aggregateStatisticalSignificance: 0.6,
+      reliability: {
+        overallScore: 0.4,
+      },
+      predictorBinRows: [
+        {
+          predictorMedian: 1,
+          predictorMean: 1,
+          outcomeMean: 10,
+        },
+        {
+          predictorMedian: 2,
+          predictorMean: 2,
+          outcomeMean: 12,
+        },
+        {
+          predictorMedian: 3,
+          predictorMean: 3,
+          outcomeMean: 13,
+        },
+        {
+          predictorMedian: 4,
+          predictorMean: 4,
+          outcomeMean: 11,
+        },
+      ],
+      responseCurve: {
+        diminishingReturns: {
+          kneePredictorValue: 2.5,
+        },
+      },
+    } as Parameters<typeof computePairMarginalTradeoffDiagnostics>[0];
+
+    const diagnostics = computePairMarginalTradeoffDiagnostics(pair);
+    expect(diagnostics.tailSignal).toBe("negative");
+    expect(diagnostics.taxpayerReturnBenchmark).toBe("insufficient");
+  });
+
   it("buildPppPerCapitaSummary estimates PPP-equivalent levels for % GDP predictors", () => {
     const alignedPoints = [
       {
@@ -813,7 +935,7 @@ describe("mega-study-generator helpers", () => {
     expect(isReportEligiblePredictor(nonDiscretionary)).toBe(false);
   });
 
-  it("isReportEligibleOutcome defaults to HALE/income levels + growth outcomes", () => {
+  it("isReportEligibleOutcome includes core welfare outcomes and direct KPI outcomes", () => {
     const haleOutcome: VariableRegistryEntry = {
       id: "outcome.who.healthy_life_expectancy_years",
       label: "HALE",
@@ -850,14 +972,33 @@ describe("mega-study-generator helpers", () => {
       label: "Gini",
       welfareDirection: "lower_better",
     };
+    const educationKpiOutcome: VariableRegistryEntry = {
+      ...haleOutcome,
+      id: "outcome.wb.primary_completion_rate_pct",
+      label: "Primary Completion Rate",
+      category: "education",
+      unit: "% of relevant age group",
+    };
+    const securityKpiOutcome: VariableRegistryEntry = {
+      ...haleOutcome,
+      id: "outcome.wb.battle_related_deaths",
+      label: "Battle-Related Deaths",
+      category: "safety",
+      unit: "deaths (count)",
+      welfareDirection: "lower_better",
+    };
 
     expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.who.healthy_life_expectancy_years");
     expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.derived.healthy_life_expectancy_growth_yoy_pct");
     expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.derived.after_tax_median_income_ppp");
     expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.derived.after_tax_median_income_ppp_growth_yoy_pct");
+    expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.wb.primary_completion_rate_pct");
+    expect(DEFAULT_REPORT_OUTCOME_IDS).toContain("outcome.wb.battle_related_deaths");
     expect(isReportEligibleOutcome(haleOutcome)).toBe(true);
     expect(isReportEligibleOutcome(incomeOutcome)).toBe(true);
     expect(isReportEligibleOutcome(haleGrowthOutcome)).toBe(true);
+    expect(isReportEligibleOutcome(educationKpiOutcome)).toBe(true);
+    expect(isReportEligibleOutcome(securityKpiOutcome)).toBe(true);
     expect(isReportEligibleOutcome(giniOutcome)).toBe(false);
   });
 });

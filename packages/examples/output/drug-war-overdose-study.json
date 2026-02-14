@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2026-02-14T20:25:57.018Z",
+  "yearRange": {
+    "startYear": 1999,
+    "endYear": 2023
+  },
+  "predictorLabel": "Federal Drug Control Spending Per Capita",
+  "predictorUnit": "USD/person",
+  "outcomeLabel": "Drug Overdose Deaths",
+  "outcomeUnit": "deaths",
+  "bestTemporalProfile": {
+    "lagYears": 5,
+    "durationYears": 2,
+    "score": 0.47295332412047664,
+    "totalPairs": 25,
+    "forwardPearson": 0.9339251322751837,
+    "predictivePearson": -0.037172272045593924,
+    "statisticalSignificance": 0.869620537421942
+  },
+  "temporalProfiles": [
+    {
+      "lagYears": 5,
+      "durationYears": 2,
+      "score": 0.47295332412047664,
+      "totalPairs": 25,
+      "forwardPearson": 0.9339251322751837,
+      "predictivePearson": -0.037172272045593924,
+      "statisticalSignificance": 0.869620537421942
+    },
+    {
+      "lagYears": 5,
+      "durationYears": 1,
+      "score": 0.47172809546174643,
+      "totalPairs": 25,
+      "forwardPearson": 0.9372934451305308,
+      "predictivePearson": -0.03472181471938285,
+      "statisticalSignificance": 0.869620537434443
+    },
+    {
+      "lagYears": 5,
+      "durationYears": 3,
+      "score": 0.47143760848052263,
+      "totalPairs": 25,
+      "forwardPearson": 0.9323553070168158,
+      "predictivePearson": -0.03414084077194568,
+      "statisticalSignificance": 0.8696205374129994
+    },
+    {
+      "lagYears": 4,
+      "durationYears": 3,
+      "score": 0.4688295190154531,
+      "totalPairs": 25,
+      "forwardPearson": 0.9460043625876738,
+      "predictivePearson": -0.028924661818850783,
+      "statisticalSignificance": 0.8696205374457936
+    },
+    {
+      "lagYears": 4,
+      "durationYears": 2,
+      "score": 0.46721634542728796,
+      "totalPairs": 25,
+      "forwardPearson": 0.9484154404304879,
+      "predictivePearson": -0.025698314641891207,
+      "statisticalSignificance": 0.8696205374466925
+    },
+    {
+      "lagYears": 1,
+      "durationYears": 2,
+      "score": 0.46489442463578146,
+      "totalPairs": 25,
+      "forwardPearson": 0.9716809986574269,
+      "predictivePearson": -0.021054473058050083,
+      "statisticalSignificance": 0.8696205374478756
+    },
+    {
+      "lagYears": 3,
+      "durationYears": 3,
+      "score": 0.4646447594925479,
+      "totalPairs": 25,
+      "forwardPearson": 0.9602398734836157,
+      "predictivePearson": -0.02055514277161652,
+      "statisticalSignificance": 0.8696205374478276
+    },
+    {
+      "lagYears": 0,
+      "durationYears": 3,
+      "score": 0.463473230834761,
+      "totalPairs": 25,
+      "forwardPearson": 0.9759390201376905,
+      "predictivePearson": -0.01821208545600861,
+      "statisticalSignificance": 0.8696205374478764
+    },
+    {
+      "lagYears": 1,
+      "durationYears": 3,
+      "score": 0.46330666109730845,
+      "totalPairs": 25,
+      "forwardPearson": 0.9746733306001023,
+      "predictivePearson": -0.01787894598110351,
+      "statisticalSignificance": 0.8696205374478763
+    },
+    {
+      "lagYears": 4,
+      "durationYears": 1,
+      "score": 0.46318956736391825,
+      "totalPairs": 25,
+      "forwardPearson": 0.9531334993246646,
+      "predictivePearson": -0.017644758514577696,
+      "statisticalSignificance": 0.8696205374475128
+    },
+    {
+      "lagYears": 2,
+      "durationYears": 3,
+      "score": 0.46290022619812543,
+      "totalPairs": 25,
+      "forwardPearson": 0.9704771010873348,
+      "predictivePearson": -0.017066076182738255,
+      "statisticalSignificance": 0.8696205374478752
+    },
+    {
+      "lagYears": 2,
+      "durationYears": 1,
+      "score": 0.46204984596937826,
+      "totalPairs": 25,
+      "forwardPearson": 0.9712880001697974,
+      "predictivePearson": -0.015365315725243578,
+      "statisticalSignificance": 0.8696205374478756
+    },
+    {
+      "lagYears": 3,
+      "durationYears": 2,
+      "score": 0.46192028803071017,
+      "totalPairs": 25,
+      "forwardPearson": 0.9640515186250312,
+      "predictivePearson": -0.015106199847916946,
+      "statisticalSignificance": 0.869620537447862
+    },
+    {
+      "lagYears": 1,
+      "durationYears": 1,
+      "score": 0.4614511576995387,
+      "totalPairs": 25,
+      "forwardPearson": 0.976835556110984,
+      "predictivePearson": -0.014167939185563916,
+      "statisticalSignificance": 0.8696205374478764
+    },
+    {
+      "lagYears": 2,
+      "durationYears": 2,
+      "score": 0.4606442805368527,
+      "totalPairs": 25,
+      "forwardPearson": 0.9732739080771234,
+      "predictivePearson": -0.012554184860192219,
+      "statisticalSignificance": 0.8696205374478762
+    },
+    {
+      "lagYears": 0,
+      "durationYears": 2,
+      "score": 0.45909028395628126,
+      "totalPairs": 25,
+      "forwardPearson": 0.9807913980884116,
+      "predictivePearson": -0.009446191699049034,
+      "statisticalSignificance": 0.8696205374478765
+    },
+    {
+      "lagYears": 3,
+      "durationYears": 1,
+      "score": 0.4582768153258503,
+      "totalPairs": 25,
+      "forwardPearson": 0.9693594462873405,
+      "predictivePearson": -0.00781925443818865,
+      "statisticalSignificance": 0.8696205374478744
+    },
+    {
+      "lagYears": 0,
+      "durationYears": 1,
+      "score": 0.45506012998527334,
+      "totalPairs": 25,
+      "forwardPearson": 0.9828377407506864,
+      "predictivePearson": -0.0013858837570331906,
+      "statisticalSignificance": 0.8696205374478765
+    }
+  ],
+  "pairCount": 25,
+  "forwardPearson": 0.9339251322751837,
+  "predictivePearson": -0.037172272045593924,
+  "statisticalSignificance": 0.869620537421942,
+  "suggestedSpendingPerCapitaUsd": 61.28149980184932,
+  "minimumEffectiveDosePerCapitaUsd": 0,
+  "firstDetectedChangeDosePerCapitaUsd": 64.79546740783404,
+  "diminishingReturnsKneePerCapitaUsd": 78.63075801680452,
+  "bestObservedBin": {
+    "label": "[61.3, 63)",
+    "lowerBound": 61.28149980184932,
+    "upperBound": 62.97654113105015,
+    "isUpperInclusive": false,
+    "observations": 6,
+    "predictorMean": 61.28149980184933,
+    "predictorMedian": 61.28149980184932,
+    "outcomeMean": 21730.833333333332,
+    "outcomeMedian": 21456
+  },
+  "binRows": [
+    {
+      "label": "[61.3, 63)",
+      "lowerBound": 61.28149980184932,
+      "upperBound": 62.97654113105015,
+      "isUpperInclusive": false,
+      "observations": 6,
+      "predictorMean": 61.28149980184933,
+      "predictorMedian": 61.28149980184932,
+      "outcomeMean": 21730.833333333332,
+      "outcomeMedian": 21456
+    },
+    {
+      "label": "[63, 66.8)",
+      "lowerBound": 62.97654113105015,
+      "upperBound": 66.81260192461218,
+      "isUpperInclusive": false,
+      "observations": 3,
+      "predictorMean": 64.53615167306194,
+      "predictorMedian": 64.79546740783404,
+      "outcomeMean": 33416,
+      "outcomeMedian": 34425
+    },
+    {
+      "label": "[66.8, 71.1)",
+      "lowerBound": 66.81260192461218,
+      "upperBound": 71.05130788685048,
+      "isUpperInclusive": false,
+      "observations": 3,
+      "predictorMean": 68.31423913534302,
+      "predictorMedian": 68.27126687428698,
+      "outcomeMean": 37261,
+      "outcomeMedian": 37004
+    },
+    {
+      "label": "[71.1, 76.9)",
+      "lowerBound": 71.05130788685048,
+      "upperBound": 76.93575222109267,
+      "isUpperInclusive": false,
+      "observations": 3,
+      "predictorMean": 73.03013262080604,
+      "predictorMedian": 73.04265177126746,
+      "outcomeMean": 42274.666666666664,
+      "outcomeMedian": 41502
+    },
+    {
+      "label": "[76.9, 80.1)",
+      "lowerBound": 76.93575222109267,
+      "upperBound": 80.11419271824477,
+      "isUpperInclusive": false,
+      "observations": 3,
+      "predictorMean": 78.47098468661459,
+      "predictorMedian": 78.63075801680452,
+      "outcomeMean": 56696.333333333336,
+      "outcomeMedian": 52404
+    },
+    {
+      "label": "[80.1, 80.9)",
+      "lowerBound": 80.11419271824477,
+      "upperBound": 80.89444123826567,
+      "isUpperInclusive": false,
+      "observations": 3,
+      "predictorMean": 80.44330804063628,
+      "predictorMedian": 80.58530217603237,
+      "outcomeMean": 74266,
+      "outcomeMedian": 67367
+    },
+    {
+      "label": "[80.9, 95.4]",
+      "lowerBound": 80.89444123826567,
+      "upperBound": 95.41300509832263,
+      "isUpperInclusive": true,
+      "observations": 4,
+      "predictorMean": 87.05660388889208,
+      "predictorMedian": 85.95948460949,
+      "outcomeMean": 99709.25,
+      "outcomeMedian": 108850
+    }
+  ],
+  "overdoseRateSensitivity": {
+    "totalPairs": 25,
+    "forwardPearson": 0.9293674979215353,
+    "predictivePearson": -0.03682014240157916,
+    "statisticalSignificance": 0.8696205373875998
+  },
+  "notes": [
+    "No beneficial spending threshold was detected above the lowest observed spending bin; MED is set to $0.",
+    "Predictive direction is weak, suggesting reverse-causation/trend effects may dominate.",
+    "This is single-jurisdiction time-series evidence (US only), so confounding risk remains.",
+    "Suggested level is support-constrained to observed data, not unconstrained extrapolation."
+  ]
+}

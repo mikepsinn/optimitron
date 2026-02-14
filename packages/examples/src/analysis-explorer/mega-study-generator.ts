@@ -39,6 +39,8 @@ export const DEFAULT_REPORT_OUTCOME_IDS = [
   "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
   "outcome.who.healthy_life_expectancy_years",
   "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+  "outcome.wb.primary_completion_rate_pct",
+  "outcome.wb.battle_related_deaths",
 ] as const;
 
 type TemporalProfileSource = "pair_override" | "predictor_default" | "global_fallback";
@@ -47,6 +49,145 @@ type PairQualityTier = "strong" | "moderate" | "exploratory" | "insufficient";
 type DataSufficiencyStatus = "sufficient" | "insufficient_data";
 type ReliabilityBand = "high" | "moderate" | "low";
 type DecisionTargetSource = "support_constrained" | "robust_fallback" | "unavailable";
+type OutcomeRole = "direct_kpi" | "guardrail_kpi" | "context_kpi";
+type TailMarginalSignal = "positive" | "near_zero" | "negative" | "insufficient";
+type TaxpayerReturnBenchmark =
+  | "extra_spending_has_signal"
+  | "no_clear_marginal_gain"
+  | "possible_harm"
+  | "insufficient";
+
+interface PredictorObjectiveProfile {
+  directOutcomeIds: readonly string[];
+  guardrailOutcomeIds: readonly string[];
+  notes?: readonly string[];
+}
+
+interface PairMarginalTradeoffDiagnostics {
+  segmentCount: number;
+  normalizedPreKneeSlope: number | null;
+  normalizedPostKneeSlope: number | null;
+  normalizedTailSlope: number | null;
+  tailSignal: TailMarginalSignal;
+  taxpayerReturnBenchmark: TaxpayerReturnBenchmark;
+}
+
+const PREDICTOR_OBJECTIVE_PROFILES: Readonly<Record<string, PredictorObjectiveProfile>> = {
+  "predictor.derived.gov_health_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.who.healthy_life_expectancy_years",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.education_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.wb.primary_completion_rate_pct",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+    notes: [
+      "Direct KPI currently uses primary completion rates; add learning-score KPIs when available.",
+    ],
+  },
+  "predictor.derived.rd_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.military_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.wb.battle_related_deaths",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+    notes: [
+      "Direct KPI currently uses battle-related deaths; add foreign-attack/security KPIs when available.",
+    ],
+  },
+  "predictor.derived.gov_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.who.healthy_life_expectancy_years",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.gov_non_military_expenditure_per_capita_ppp": {
+    directOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.who.healthy_life_expectancy_years",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.gov_health_share_of_gov_expenditure_pct": {
+    directOutcomeIds: [
+      "outcome.who.healthy_life_expectancy_years",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.education_share_of_gov_expenditure_pct": {
+    directOutcomeIds: [
+      "outcome.wb.primary_completion_rate_pct",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+    notes: [
+      "Direct KPI currently uses primary completion rates; add learning-score KPIs when available.",
+    ],
+  },
+  "predictor.derived.rd_share_of_gov_expenditure_pct": {
+    directOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+  },
+  "predictor.derived.military_share_of_gov_expenditure_pct": {
+    directOutcomeIds: [
+      "outcome.wb.battle_related_deaths",
+    ],
+    guardrailOutcomeIds: [
+      "outcome.derived.after_tax_median_income_ppp",
+      "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+      "outcome.who.healthy_life_expectancy_years",
+      "outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+    ],
+    notes: [
+      "Direct KPI currently uses battle-related deaths; add foreign-attack/security KPIs when available.",
+    ],
+  },
+};
 
 const PAIR_TEMPORAL_OVERRIDES: Readonly<Record<string, Omit<ResolvedTemporalProfile, "source">>> = {
   "predictor.wb.gov_health_expenditure_pct_gdp::outcome.who.healthy_life_expectancy_years": {
@@ -1384,6 +1525,207 @@ function isRecommendationEligible(pair: PairStudyArtifact): boolean {
   return pair.dataSufficiency?.status !== "insufficient_data";
 }
 
+function resolvePredictorObjectiveProfile(predictorId: string): PredictorObjectiveProfile {
+  return (
+    PREDICTOR_OBJECTIVE_PROFILES[predictorId] ?? {
+      directOutcomeIds: [],
+      guardrailOutcomeIds: [],
+      notes: [],
+    }
+  );
+}
+
+function classifyOutcomeRole(profile: PredictorObjectiveProfile, outcomeId: string): OutcomeRole {
+  if (profile.directOutcomeIds.includes(outcomeId)) return "direct_kpi";
+  if (profile.guardrailOutcomeIds.includes(outcomeId)) return "guardrail_kpi";
+  return "context_kpi";
+}
+
+function toSimpleOutcomeRoleLabel(role: OutcomeRole): string {
+  if (role === "direct_kpi") return "mission KPI";
+  if (role === "guardrail_kpi") return "welfare fallback";
+  return "context KPI";
+}
+
+function meanOrNull(values: number[]): number | null {
+  if (values.length === 0) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function normalizedSlope(
+  slope: number | null,
+  predictorRange: number,
+  outcomeRange: number,
+): number | null {
+  if (slope == null) return null;
+  if (!Number.isFinite(slope) || predictorRange <= 0 || outcomeRange <= 0) return null;
+  return (slope * predictorRange) / outcomeRange;
+}
+
+function formatMinMax(values: number[], unit: string): string {
+  if (values.length === 0) return "N/A";
+  const sorted = [...values].sort((a, b) => a - b);
+  return `${formatCompactNumber(sorted[0]!)} to ${formatCompactNumber(sorted[sorted.length - 1]!)} ${unit}`;
+}
+
+function isGrowthOutcomeId(outcomeId: string): boolean {
+  return outcomeId.includes("_growth_");
+}
+
+function hasDataBackedDecisionLevel(pair: PairStudyArtifact): boolean {
+  return resolveDecisionTargetSource(pair) !== "unavailable";
+}
+
+function comparePairsForDecisionSummary(left: PairStudyArtifact, right: PairStudyArtifact): number {
+  const leftSufficient = left.dataSufficiency.status === "sufficient" ? 1 : 0;
+  const rightSufficient = right.dataSufficiency.status === "sufficient" ? 1 : 0;
+  if (leftSufficient !== rightSufficient) return rightSufficient - leftSufficient;
+
+  const leftHasDecision = hasDataBackedDecisionLevel(left) ? 1 : 0;
+  const rightHasDecision = hasDataBackedDecisionLevel(right) ? 1 : 0;
+  if (leftHasDecision !== rightHasDecision) return rightHasDecision - leftHasDecision;
+
+  const leftLevelOutcome = isGrowthOutcomeId(left.outcomeId) ? 0 : 1;
+  const rightLevelOutcome = isGrowthOutcomeId(right.outcomeId) ? 0 : 1;
+  if (leftLevelOutcome !== rightLevelOutcome) return rightLevelOutcome - leftLevelOutcome;
+
+  const confidenceDelta = right.reliability.overallScore - left.reliability.overallScore;
+  if (Math.abs(confidenceDelta) > 1e-6) return confidenceDelta;
+
+  return right.totalPairs - left.totalPairs;
+}
+
+export function computePairMarginalTradeoffDiagnostics(
+  pair: PairStudyArtifact,
+): PairMarginalTradeoffDiagnostics {
+  if (pair.dataSufficiency.status === "insufficient_data") {
+    return {
+      segmentCount: 0,
+      normalizedPreKneeSlope: null,
+      normalizedPostKneeSlope: null,
+      normalizedTailSlope: null,
+      tailSignal: "insufficient",
+      taxpayerReturnBenchmark: "insufficient",
+    };
+  }
+
+  const points = pair.predictorBinRows
+    .map((row) => ({
+      x: row.predictorMedian ?? row.predictorMean,
+      y: row.outcomeMean,
+    }))
+    .filter(
+      (row): row is { x: number; y: number } =>
+        row.x != null &&
+        row.y != null &&
+        Number.isFinite(row.x) &&
+        Number.isFinite(row.y),
+    )
+    .sort((left, right) => left.x - right.x);
+
+  if (points.length < 3) {
+    return {
+      segmentCount: 0,
+      normalizedPreKneeSlope: null,
+      normalizedPostKneeSlope: null,
+      normalizedTailSlope: null,
+      tailSignal: "insufficient",
+      taxpayerReturnBenchmark: "insufficient",
+    };
+  }
+
+  const segments: Array<{ midpoint: number; slope: number }> = [];
+  for (let idx = 1; idx < points.length; idx += 1) {
+    const left = points[idx - 1]!;
+    const right = points[idx]!;
+    const dx = right.x - left.x;
+    if (dx <= 0 || !Number.isFinite(dx)) continue;
+    const dy = right.y - left.y;
+    segments.push({
+      midpoint: (left.x + right.x) / 2,
+      slope: dy / dx,
+    });
+  }
+
+  if (segments.length < 2) {
+    return {
+      segmentCount: segments.length,
+      normalizedPreKneeSlope: null,
+      normalizedPostKneeSlope: null,
+      normalizedTailSlope: null,
+      tailSignal: "insufficient",
+      taxpayerReturnBenchmark: "insufficient",
+    };
+  }
+
+  const predictorMin = points[0]!.x;
+  const predictorMax = points[points.length - 1]!.x;
+  const outcomeValues = points.map((row) => row.y);
+  const outcomeMin = Math.min(...outcomeValues);
+  const outcomeMax = Math.max(...outcomeValues);
+  const predictorRange = predictorMax - predictorMin;
+  const outcomeRange = outcomeMax - outcomeMin;
+
+  const knee = pair.responseCurve.diminishingReturns.kneePredictorValue;
+  const splitIndex = Math.max(1, Math.floor(segments.length / 2));
+  const preSegments =
+    knee != null && Number.isFinite(knee)
+      ? segments.filter((segment) => segment.midpoint <= knee)
+      : segments.slice(0, splitIndex);
+  const postSegments =
+    knee != null && Number.isFinite(knee)
+      ? segments.filter((segment) => segment.midpoint > knee)
+      : segments.slice(splitIndex);
+  const tailSegments = segments.slice(Math.max(segments.length - 2, 0));
+
+  const preSlope = meanOrNull(preSegments.map((segment) => segment.slope));
+  const postSlope = meanOrNull(postSegments.map((segment) => segment.slope));
+  const tailSlope = meanOrNull(tailSegments.map((segment) => segment.slope));
+
+  const normalizedPre = normalizedSlope(preSlope, predictorRange, outcomeRange);
+  const normalizedPost = normalizedSlope(postSlope, predictorRange, outcomeRange);
+  const normalizedTail = normalizedSlope(tailSlope, predictorRange, outcomeRange);
+
+  const tailSignal: TailMarginalSignal =
+    normalizedTail == null
+      ? "insufficient"
+      : normalizedTail > 0.05
+        ? "positive"
+        : normalizedTail < -0.05
+          ? "negative"
+          : "near_zero";
+
+  const reliabilityScore = pair.reliability?.overallScore;
+  const significanceScore = pair.aggregateStatisticalSignificance;
+  const lowConfidenceForTradeoff =
+    (typeof reliabilityScore === "number" &&
+      Number.isFinite(reliabilityScore) &&
+      reliabilityScore < 0.55) ||
+    (typeof significanceScore === "number" &&
+      Number.isFinite(significanceScore) &&
+      significanceScore < 0.75);
+
+  const taxpayerReturnBenchmark: TaxpayerReturnBenchmark =
+    lowConfidenceForTradeoff
+      ? "insufficient"
+      : tailSignal === "positive"
+        ? "extra_spending_has_signal"
+        : tailSignal === "negative"
+          ? "possible_harm"
+          : tailSignal === "near_zero"
+            ? "no_clear_marginal_gain"
+            : "insufficient";
+
+  return {
+    segmentCount: segments.length,
+    normalizedPreKneeSlope: normalizedPre,
+    normalizedPostKneeSlope: normalizedPost,
+    normalizedTailSlope: normalizedTail,
+    tailSignal,
+    taxpayerReturnBenchmark,
+  };
+}
+
 function toSimpleDecisionTargetSourceLabel(source: DecisionTargetSource): string {
   if (source === "support_constrained") return "data-backed level";
   if (source === "robust_fallback") return "backup level";
@@ -1439,6 +1781,13 @@ export function resolveDecisionOptimalValue(pair: PairStudyArtifact): number | n
     return pair.responseCurve.supportConstrainedTargets.robustOptimalValue;
   }
   return null;
+}
+
+function formatDecisionLevelWithSource(pair: PairStudyArtifact): string {
+  const decisionLevel = resolveDecisionOptimalValue(pair);
+  if (decisionLevel == null || !Number.isFinite(decisionLevel)) return "N/A";
+  const source = toSimpleDecisionTargetSourceLabel(resolveDecisionTargetSource(pair));
+  return `${formatValueWithUnit(decisionLevel, pair.predictorUnit)} (${source})`;
 }
 
 function resolveDecisionBestPerCapitaPpp(pair: PairStudyArtifact): number | null {
@@ -2554,6 +2903,159 @@ function buildOutcomeMarkdown(
   return lines.join("\n");
 }
 
+function buildSpendingKpiTradeoffReport(pairStudies: PairStudyArtifact[]): string {
+  interface SpendingPredictorReportGroup {
+    predictorId: string;
+    predictorLabel: string;
+    predictorUnit: string;
+    profile: PredictorObjectiveProfile;
+    primaryPairs: PairStudyArtifact[];
+    leadPair: PairStudyArtifact;
+    leadRole: OutcomeRole;
+    hasDirectMissionRows: boolean;
+    secondaryPairCount: number;
+  }
+
+  const lines: string[] = [];
+  lines.push("# Spending KPI Levels");
+  lines.push("");
+  lines.push("- Objective: estimate useful spending levels for each discretionary spending predictor.");
+  lines.push("- `Suggested Level` uses support-constrained targets, so it stays in data-backed ranges.");
+  lines.push("- `MED` is the minimum useful level where gains first become consistent.");
+  lines.push("- `Slowdown Knee` is where extra spending starts showing weaker gains.");
+  lines.push("");
+
+  const pairGroups = new Map<string, PairStudyArtifact[]>();
+  for (const pair of pairStudies) {
+    const group = pairGroups.get(pair.predictorId) ?? [];
+    group.push(pair);
+    pairGroups.set(pair.predictorId, group);
+  }
+
+  const sortedPredictorIds = [...pairGroups.keys()].sort((left, right) => {
+    const leftLabel = pairGroups.get(left)?.[0]?.predictorLabel ?? left;
+    const rightLabel = pairGroups.get(right)?.[0]?.predictorLabel ?? right;
+    return leftLabel.localeCompare(rightLabel);
+  });
+
+  const reportGroups: SpendingPredictorReportGroup[] = [];
+
+  for (const predictorId of sortedPredictorIds) {
+    const pairs = [...(pairGroups.get(predictorId) ?? [])];
+    if (pairs.length === 0) continue;
+    const profile = resolvePredictorObjectiveProfile(predictorId);
+
+    const directPairs = pairs.filter(
+      (pair) => classifyOutcomeRole(profile, pair.outcomeId) === "direct_kpi",
+    );
+    const guardrailPairs = pairs.filter(
+      (pair) => classifyOutcomeRole(profile, pair.outcomeId) === "guardrail_kpi",
+    );
+    const primaryPairs =
+      directPairs.length > 0
+        ? directPairs
+        : guardrailPairs.length > 0
+          ? guardrailPairs
+          : pairs;
+    const sortedPrimaryPairs = [...primaryPairs].sort(comparePairsForDecisionSummary);
+    const leadPair = sortedPrimaryPairs[0];
+    if (!leadPair) continue;
+
+    reportGroups.push({
+      predictorId,
+      predictorLabel: leadPair.predictorLabel,
+      predictorUnit: leadPair.predictorUnit,
+      profile,
+      primaryPairs: sortedPrimaryPairs,
+      leadPair,
+      leadRole: classifyOutcomeRole(profile, leadPair.outcomeId),
+      hasDirectMissionRows: directPairs.length > 0,
+      secondaryPairCount: Math.max(0, pairs.length - sortedPrimaryPairs.length),
+    });
+  }
+
+  lines.push("## Quick Optimal Levels");
+  lines.push("");
+  lines.push("| Spending Type | Lead KPI | KPI Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |");
+  lines.push("|---------------|----------|----------|----------------:|----:|--------------:|-----------:|-------------|------------|");
+  for (const group of reportGroups) {
+    const pair = group.leadPair;
+    const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
+    const med = formatValueWithUnit(
+      pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
+      pair.predictorUnit,
+    );
+    const knee = formatValueWithUnit(
+      pair.responseCurve.diminishingReturns.kneePredictorValue,
+      pair.predictorUnit,
+    );
+    lines.push(
+      `| ${group.predictorLabel} | ${pair.outcomeLabel} | ${toSimpleOutcomeRoleLabel(group.leadRole)} | ${formatDecisionLevelWithSource(pair)} | ${med} | ${knee} | ${pair.reliability.overallScore.toFixed(3)} (${toSimpleReliabilityBandLabel(pair.reliability.band)}) | ${toSimpleDataStatusLabel(pair.dataSufficiency.status)} | ${reportFile} |`,
+    );
+  }
+  lines.push("");
+
+  for (const group of reportGroups) {
+    const medValues = group.primaryPairs
+      .map((pair) => pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose)
+      .filter((value): value is number => value != null && Number.isFinite(value));
+    const kneeValues = group.primaryPairs
+      .map((pair) => pair.responseCurve.diminishingReturns.kneePredictorValue)
+      .filter((value): value is number => value != null && Number.isFinite(value));
+    const decisionValues = group.primaryPairs
+      .map((pair) => resolveDecisionOptimalValue(pair))
+      .filter((value): value is number => value != null && Number.isFinite(value));
+
+    lines.push(`## ${group.predictorLabel}`);
+    lines.push("");
+    lines.push(`- Predictor: \`${group.predictorId}\``);
+    lines.push(`- Unit: ${group.predictorUnit}`);
+    lines.push(`- Mission KPIs configured: ${group.profile.directOutcomeIds.length}`);
+    if (!group.hasDirectMissionRows) {
+      lines.push("- Mission KPI gap: no mission KPI row available in this run, so this section uses welfare fallback outcomes.");
+    }
+    for (const note of group.profile.notes ?? []) {
+      lines.push(`- Note: ${note}`);
+    }
+    lines.push(
+      `- Ranges in this section: MED ${formatMinMax(medValues, group.predictorUnit)}; slowdown knee ${formatMinMax(kneeValues, group.predictorUnit)}; suggested level ${formatMinMax(decisionValues, group.predictorUnit)}.`,
+    );
+    if (group.secondaryPairCount > 0) {
+      lines.push(`- Additional non-primary outcome studies available: ${group.secondaryPairCount} (see linked pair pages).`);
+    }
+    lines.push("");
+    lines.push("### Primary KPI Rows");
+    lines.push("");
+    lines.push("| KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |");
+    lines.push("|-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|");
+    const displayRows = group.primaryPairs.slice(0, 4);
+    for (const pair of displayRows) {
+      const role = classifyOutcomeRole(group.profile, pair.outcomeId);
+      const med = formatValueWithUnit(
+        pair.responseCurve.minimumEffectiveDose.minimumEffectiveDose,
+        pair.predictorUnit,
+      );
+      const knee = formatValueWithUnit(
+        pair.responseCurve.diminishingReturns.kneePredictorValue,
+        pair.predictorUnit,
+      );
+      const reportFile = `[${toPairFileName(pair)}](${toPairFileName(pair)})`;
+      lines.push(
+        `| ${pair.outcomeLabel} | ${toSimpleOutcomeRoleLabel(role)} | ${formatDecisionLevelWithSource(pair)} | ${med} | ${knee} | ${pair.reliability.overallScore.toFixed(3)} (${toSimpleReliabilityBandLabel(pair.reliability.band)}) | ${toSimpleDataStatusLabel(pair.dataSufficiency.status)} | ${reportFile} |`,
+      );
+    }
+    if (group.primaryPairs.length > displayRows.length) {
+      lines.push("");
+      lines.push(
+        `- ${group.primaryPairs.length - displayRows.length} additional primary KPI row(s) hidden for brevity; open the pair links for full details.`,
+      );
+    }
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
 export async function generateMegaStudyArtifacts(
   options: MegaStudyGenerationOptions = {},
 ): Promise<MegaStudyArtifacts> {
@@ -3121,6 +3623,12 @@ export async function generateMegaStudyArtifacts(
     fs.mkdirSync(outputDir, { recursive: true });
     for (const pair of pairStudies) fs.writeFileSync(path.join(outputDir, toPairFileName(pair)), buildPairMarkdown(pair), "utf-8");
     for (const ranking of rankings) fs.writeFileSync(path.join(outputDir, toOutcomeFileName(ranking.outcomeId)), buildOutcomeMarkdown(ranking.outcomeId, ranking, pairByKey), "utf-8");
+    const spendingTradeoffReportFile = "spending-kpi-tradeoff-report.md";
+    fs.writeFileSync(
+      path.join(outputDir, spendingTradeoffReportFile),
+      buildSpendingKpiTradeoffReport(pairStudies),
+      "utf-8",
+    );
 
     const indexLines = [
       "# Aggregate N-of-1 Mega Studies",
@@ -3136,6 +3644,7 @@ export async function generateMegaStudyArtifacts(
       `- Pair studies skipped: ${skippedPairs.length}`,
       `- Pairs excluded from ranking by hard sufficiency gate: ${pairsExcludedBySufficiencyGate}`,
       `- API payload: mega-study-api.json`,
+      `- Spending KPI tradeoff report: [${spendingTradeoffReportFile}](${spendingTradeoffReportFile})`,
       ...(excludedNonDiscretionaryPredictors.length > 0
         ? [
             "",
