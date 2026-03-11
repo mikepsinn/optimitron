@@ -12,7 +12,7 @@
 import { z } from 'zod';
 
 // ============================================================================
-// ENUMS (14)
+// ENUMS (16)
 // ============================================================================
 
 export const CombinationOperationSchema = z.enum(['SUM', 'MEAN']);
@@ -69,11 +69,18 @@ export type SubjectType = z.infer<typeof SubjectTypeSchema>;
 export const VoteAnswerSchema = z.enum(['YES', 'NO']);
 export type VoteAnswer = z.infer<typeof VoteAnswerSchema>;
 
-// 14 enums in the schema:
+export const PersonhoodProviderSchema = z.enum(['WORLD_ID', 'HUMAN_PASSPORT']);
+export type PersonhoodProvider = z.infer<typeof PersonhoodProviderSchema>;
+
+export const PersonhoodVerificationStatusSchema = z.enum(['VERIFIED', 'REVOKED']);
+export type PersonhoodVerificationStatus = z.infer<typeof PersonhoodVerificationStatusSchema>;
+
+// 16 enums in the schema:
 // 1. CombinationOperation  2. FillingType  3. Valence  4. MeasurementScale
 // 5. UnitCodeSystem  6. AnalysisStatus  7. StrengthLevel  8. ConfidenceLevel
 // 9. RelationshipDirection  10. EvidenceGrade  11. NotificationStatus
 // 12. JurisdictionType  13. SubjectType  14. VoteAnswer
+// 15. PersonhoodProvider  16. PersonhoodVerificationStatus
 
 // ============================================================================
 // HELPER: coerce string dates to Date objects
@@ -148,6 +155,26 @@ export const VerificationTokenSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type VerificationTokenType = z.infer<typeof VerificationTokenSchema>;
+
+/** Zod schema for the PersonhoodVerification model */
+export const PersonhoodVerificationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  provider: PersonhoodProviderSchema,
+  status: PersonhoodVerificationStatusSchema.default('VERIFIED'),
+  externalId: z.string(),
+  action: z.string().nullable().optional(),
+  verificationLevel: z.string().nullable().optional(),
+  signalHash: z.string().nullable().optional(),
+  verifiedAt: dateSchema,
+  lastVerifiedAt: dateSchema,
+  expiresAt: nullableDateSchema,
+  metadataJson: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type PersonhoodVerificationType = z.infer<typeof PersonhoodVerificationSchema>;
 
 // ============================================================================
 // LAYER 1 — Universal Measurement System Models

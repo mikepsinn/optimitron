@@ -12,11 +12,14 @@ import {
   RelationshipDirectionSchema,
   EvidenceGradeSchema,
   NotificationStatusSchema,
+  PersonhoodProviderSchema,
+  PersonhoodVerificationStatusSchema,
   JurisdictionTypeSchema,
   SubjectTypeSchema,
   VoteAnswerSchema,
   // Models
   AccountSchema,
+  PersonhoodVerificationSchema,
   UserSchema,
   SessionSchema,
   UnitSchema,
@@ -235,6 +238,18 @@ describe('Enum schemas', () => {
     expect(VoteAnswerSchema.parse('YES')).toBe('YES');
     expect(VoteAnswerSchema.parse('NO')).toBe('NO');
     expect(VoteAnswerSchema.safeParse('MAYBE').success).toBe(false);
+  });
+
+  it('20. PersonhoodProvider — accepts supported providers', () => {
+    expect(PersonhoodProviderSchema.parse('WORLD_ID')).toBe('WORLD_ID');
+    expect(PersonhoodProviderSchema.parse('HUMAN_PASSPORT')).toBe('HUMAN_PASSPORT');
+    expect(PersonhoodProviderSchema.safeParse('HOLONYM').success).toBe(false);
+  });
+
+  it('21. PersonhoodVerificationStatus — accepts VERIFIED and REVOKED', () => {
+    expect(PersonhoodVerificationStatusSchema.parse('VERIFIED')).toBe('VERIFIED');
+    expect(PersonhoodVerificationStatusSchema.parse('REVOKED')).toBe('REVOKED');
+    expect(PersonhoodVerificationStatusSchema.safeParse('PENDING').success).toBe(false);
   });
 });
 
@@ -479,7 +494,27 @@ describe('Auth and referral models', () => {
     expect(VerificationTokenSchema.safeParse(data).success).toBe(true);
   });
 
-  it('39. validates a WishocraticAllocation', () => {
+  it('39. validates a PersonhoodVerification', () => {
+    const data = {
+      id: 'pov_1',
+      userId: 'user_1',
+      provider: 'WORLD_ID' as const,
+      status: 'VERIFIED' as const,
+      externalId: '0xabc123',
+      action: 'personhood',
+      verificationLevel: 'orb',
+      signalHash: '0xsignal',
+      verifiedAt: now,
+      lastVerifiedAt: now,
+      metadataJson: '{"protocolVersion":"3.0"}',
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    };
+    expect(PersonhoodVerificationSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('40. validates a WishocraticAllocation', () => {
     const data = {
       id: 'wa_1',
       userId: 'user_1',
@@ -493,7 +528,7 @@ describe('Auth and referral models', () => {
     expect(WishocraticAllocationSchema.safeParse(data).success).toBe(true);
   });
 
-  it('40. validates a WishocraticCategorySelection', () => {
+  it('41. validates a WishocraticCategorySelection', () => {
     const data = {
       id: 'wcs_1',
       userId: 'user_1',

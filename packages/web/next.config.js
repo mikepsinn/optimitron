@@ -12,6 +12,13 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 const nextConfig = {
   output: isStaticExport ? 'export' : undefined,
   basePath: isStaticExport ? '/optomitron' : '',
+  transpilePackages: [
+    '@optomitron/optimizer',
+    '@optomitron/wishocracy',
+    '@optomitron/opg',
+    '@optomitron/obg',
+    '@optomitron/data',
+  ],
   images: {
     unoptimized: true,
   },

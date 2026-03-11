@@ -174,6 +174,18 @@ enum VoteAnswer {
   NO
 }
 
+/// External proof-of-personhood provider
+enum PersonhoodProvider {
+  WORLD_ID
+  HUMAN_PASSPORT
+}
+
+/// Status of a proof-of-personhood verification
+enum PersonhoodVerificationStatus {
+  VERIFIED
+  REVOKED
+}
+
 // ============================================================================
 // AUTH / ACCOUNT LAYER
 // ============================================================================
@@ -224,6 +236,7 @@ model User {
 
   // -- Relations --
   accounts                      Account[]
+  personhoodVerifications       PersonhoodVerification[]
   referrals                     Vote[]                         @relation("UserReferrals")
   sessions                      Session[]
   vote                          Vote?                          @relation("UserVotes")
@@ -353,6 +366,64 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@index([expires])
+  @@index([deletedAt])
+}
+
+/// Verified proof-of-personhood attached to a user account
+model PersonhoodVerification {
+  /// Unique identifier for this verification record
+  id String @id @default(cuid())
+
+  /// The user who completed this verification
+  userId String
+
+  /// Which provider issued this verification
+  provider PersonhoodProvider
+
+  /// Current status of this verification
+  status PersonhoodVerificationStatus @default(VERIFIED)
+
+  /// Provider-scoped identifier used to enforce uniqueness
+  externalId String
+
+  /// Provider action or scoring context
+  action String?
+
+  /// Provider-specific level or credential type
+  verificationLevel String?
+
+  /// Optional signal hash or equivalent binding field
+  signalHash String?
+
+  /// Timestamp of the first successful verification
+  verifiedAt DateTime @default(now())
+
+  /// Timestamp of the most recent successful verification
+  lastVerifiedAt DateTime @default(now())
+
+  /// Optional expiration time for time-bounded verifications
+  expiresAt DateTime?
+
+  /// JSON-encoded provider metadata for future extensibility
+  metadataJson String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, externalId])
+  @@unique([userId, provider])
+  @@index([userId, status])
+  @@index([provider, status])
+  @@index([verifiedAt])
   @@index([deletedAt])
 }
 
