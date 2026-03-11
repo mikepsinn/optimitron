@@ -1,4 +1,5 @@
-import { hashSignal, type IDKitResult } from "@worldcoin/idkit";
+import type { IDKitResult } from "@worldcoin/idkit";
+import { hashSignal } from "@worldcoin/idkit/hashing";
 import { signRequest } from "@worldcoin/idkit/signing";
 import { PersonhoodProvider } from "@prisma/client";
 import { upsertPersonhoodVerification } from "@/lib/personhood.server";
@@ -26,6 +27,10 @@ function getWorldIdAction() {
   return process.env.WORLD_ID_ACTION ?? "verify-personhood";
 }
 
+function getWorldIdAllowLegacyProofs() {
+  return process.env.WORLD_ID_ALLOW_LEGACY_PROOFS !== "false";
+}
+
 function getWorldIdRequestTtlSeconds() {
   const rawValue = Number(process.env.WORLD_ID_REQUEST_TTL_SECONDS);
   return Number.isFinite(rawValue) && rawValue > 0 ? rawValue : 300;
@@ -42,6 +47,7 @@ function getWorldIdConfig() {
 
   return {
     action: getWorldIdAction(),
+    allowLegacyProofs: getWorldIdAllowLegacyProofs(),
     appId: appId as `app_${string}`,
     environment: getWorldIdEnvironment(),
     rpId,
@@ -67,7 +73,7 @@ export function createWorldIdRequestPayload(userId: string): WorldIdRequestPaylo
   return {
     app_id: config.appId,
     action: config.action,
-    allow_legacy_proofs: false,
+    allow_legacy_proofs: config.allowLegacyProofs,
     environment: config.environment,
     rp_context: {
       rp_id: config.rpId,
@@ -80,8 +86,22 @@ export function createWorldIdRequestPayload(userId: string): WorldIdRequestPaylo
   };
 }
 
+type WorldIdProofResult = IDKitResult & {
+  action: string;
+  environment: "production" | "staging";
+  protocol_version?: string;
+  responses: WorldIdResponseItem[];
+};
+
+function isWorldIdProofResult(result: IDKitResult): result is WorldIdProofResult {
+  return (
+    typeof (result as { action?: unknown }).action === "string" &&
+    Array.isArray((result as { responses?: unknown }).responses)
+  );
+}
+
 function getPrimaryResponseItem(result: IDKitResult): WorldIdResponseItem {
-  if ("session_id" in result) {
+  if (!isWorldIdProofResult(result)) {
     throw new Error("World ID session proofs are not supported for personhood verification.");
   }
 
@@ -98,7 +118,7 @@ function getPrimaryResponseItem(result: IDKitResult): WorldIdResponseItem {
 }
 
 function ensureWorldIdResultMatchesUser(result: IDKitResult, userId: string) {
-  if ("session_id" in result) {
+  if (!isWorldIdProofResult(result)) {
     throw new Error("World ID session proofs are not supported for personhood verification.");
   }
 
@@ -121,6 +141,7 @@ function ensureWorldIdResultMatchesUser(result: IDKitResult, userId: string) {
   return {
     expectedSignalHash,
     primaryResponse,
+    result,
   };
 }
 
@@ -144,17 +165,21 @@ async function verifyWorldIdWithProvider(result: IDKitResult) {
 }
 
 export async function verifyAndSaveWorldIdResult(userId: string, result: IDKitResult) {
-  const { expectedSignalHash, primaryResponse } = ensureWorldIdResultMatchesUser(result, userId);
+  const {
+    expectedSignalHash,
+    primaryResponse,
+    result: verifiedResult,
+  } = ensureWorldIdResultMatchesUser(result, userId);
   await verifyWorldIdWithProvider(result);
 
   const metadataJson = JSON.stringify({
-    environment: result.environment,
-    protocolVersion: result.protocol_version,
-    responses: result.responses.map((response) => response.identifier),
+    environment: verifiedResult.environment,
+    protocolVersion: verifiedResult.protocol_version,
+    responses: verifiedResult.responses.map((response) => response.identifier),
   });
 
   await upsertPersonhoodVerification({
-    action: result.action,
+    action: verifiedResult.action,
     externalId: primaryResponse.nullifier,
     metadataJson,
     provider: PersonhoodProvider.WORLD_ID,

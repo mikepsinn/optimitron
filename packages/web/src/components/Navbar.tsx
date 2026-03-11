@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
+import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
+import type { PersonhoodProviderValue } from "@/lib/personhood";
 
 const navLinks = [
   { href: "/outcomes", label: "Outcome Hubs" },
@@ -18,9 +20,13 @@ const navLinks = [
 function AccountLinks({
   isAuthenticated,
   accountLabel,
+  personhoodProvider,
+  personhoodVerified,
 }: {
   isAuthenticated: boolean;
   accountLabel: string | null;
+  personhoodProvider: PersonhoodProviderValue | null;
+  personhoodVerified: boolean;
 }) {
   if (isAuthenticated) {
     return (
@@ -34,6 +40,12 @@ function AccountLinks({
         <span className="hidden lg:block text-xs font-bold uppercase text-muted-foreground">
           {accountLabel}
         </span>
+        <div className="hidden lg:block">
+          <PersonhoodStatusBadge
+            provider={personhoodProvider}
+            verified={personhoodVerified}
+          />
+        </div>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
@@ -95,7 +107,12 @@ export default function Navbar() {
           </div>
 
           <div className="hidden items-center gap-3 md:flex">
-            <AccountLinks isAuthenticated={isAuthenticated} accountLabel={accountLabel} />
+            <AccountLinks
+              isAuthenticated={isAuthenticated}
+              accountLabel={accountLabel}
+              personhoodProvider={session?.user?.personhoodProvider ?? null}
+              personhoodVerified={Boolean(session?.user?.personhoodVerified)}
+            />
             <a
               href="https://github.com/mikepsinn/optomitron"
               target="_blank"

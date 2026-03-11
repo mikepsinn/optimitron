@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optomitron/optimizer --filter @optomitron/wishocracy build",
+    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optomitron/optimizer --filter @optomitron/wishocracy --filter @optomitron/opg --filter @optomitron/obg --filter @optomitron/data build",
     "dev": "next dev",
     "prebuild": "pnpm run build:workspace-deps",
     "build": "next build",

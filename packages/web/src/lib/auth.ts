@@ -1,3 +1,4 @@
+import { PersonhoodVerificationStatus } from "@prisma/client";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
@@ -5,11 +6,12 @@ import GoogleProvider from "next-auth/providers/google";
 import { compare, hash } from "bcryptjs";
 import { createAuthAdapter } from "@/lib/auth-adapter";
 import { sendMagicLinkEmail } from "@/lib/magic-link-email";
+import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
 import { sendWelcomeReferralEmailForUser } from "@/lib/referral-email.server";
 
 async function getSessionIdentity(userId: string) {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       createdAt: true,
@@ -18,12 +20,38 @@ async function getSessionIdentity(userId: string) {
       image: true,
       name: true,
       newsletterSubscribed: true,
+      personhoodVerifications: {
+        where: {
+          deletedAt: null,
+          status: PersonhoodVerificationStatus.VERIFIED,
+        },
+        select: {
+          deletedAt: true,
+          lastVerifiedAt: true,
+          provider: true,
+          status: true,
+          verificationLevel: true,
+          verifiedAt: true,
+        },
+        orderBy: [{ lastVerifiedAt: "desc" }],
+      },
       referralCode: true,
       referralEmailSequenceLastSentAt: true,
       referralEmailSequenceStep: true,
       username: true,
     },
   });
+
+  if (!user) {
+    return null;
+  }
+
+  const personhood = summarizePersonhoodVerifications(user.personhoodVerifications);
+
+  return {
+    ...user,
+    ...personhood,
+  };
 }
 
 const providers: NextAuthOptions["providers"] = [
@@ -112,16 +140,25 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.id) {
-        const identity = await getSessionIdentity(user.id);
+    async jwt({ token, user, trigger }) {
+      const identityUserId =
+        user?.id ??
+        (trigger === "update" && typeof token.id === "string" ? token.id : undefined);
+
+      if (identityUserId) {
+        const identity = await getSessionIdentity(identityUserId);
         if (identity) {
           token.id = identity.id;
           token.email = identity.email;
           token.name = identity.name;
+          token.personhoodProvider = identity.personhoodProvider;
+          token.personhoodVerificationLevel = identity.personhoodVerificationLevel;
+          token.personhoodVerified = identity.isVerified;
+          token.personhoodVerifiedAt = identity.personhoodVerifiedAt;
           token.picture = identity.image;
           token.referralCode = identity.referralCode;
           token.username = identity.username;
+          token.verifiedProviders = identity.verifiedProviders;
         }
       }
 
@@ -130,8 +167,18 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.personhoodProvider =
+          (token.personhoodProvider as typeof session.user.personhoodProvider) ?? null;
+        session.user.personhoodVerificationLevel =
+          (token.personhoodVerificationLevel as string | null | undefined) ?? null;
+        session.user.personhoodVerified = Boolean(token.personhoodVerified);
+        session.user.personhoodVerifiedAt =
+          (token.personhoodVerifiedAt as string | null | undefined) ?? null;
         session.user.referralCode = token.referralCode as string | undefined;
         session.user.username = (token.username as string | null | undefined) ?? null;
+        session.user.verifiedProviders = Array.isArray(token.verifiedProviders)
+          ? (token.verifiedProviders as typeof session.user.verifiedProviders)
+          : [];
       }
 
       return session;

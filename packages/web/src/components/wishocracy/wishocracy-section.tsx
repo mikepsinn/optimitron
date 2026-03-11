@@ -15,6 +15,7 @@ import { WishocracyLoadingCard } from "./WishocracyLoadingCard";
 import { WishocracyReferralCard } from "./WishocracyReferralCard";
 import { WishocracyResetButton } from "./WishocracyResetButton";
 import { WishocracyStatusBar } from "./WishocracyStatusBar";
+import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
 
 export default function WishocracySection() {
   const { state, handlers } = useWishocracyState();
@@ -66,6 +67,8 @@ export default function WishocracySection() {
           referralCode={referralCode}
           onShowAuthPrompt={() => handlers.setShowAuthPrompt(true)}
         />
+
+        <WorldIdVerificationCard show={isAuthenticated && !state.isLoading} />
 
         <WishocracyReferralCard
           show={isAuthenticated && !state.isLoading}
