@@ -140,7 +140,7 @@ export function WishocracyEditSection({
     JSON.stringify(Array.from(editedCategories).sort()) !== JSON.stringify(Array.from(selectedCategories).sort())
 
   return (
-    <div className="max-w-3xl mx-auto mt-8">
+    <div className="max-w-3xl mx-auto mt-8" data-edit-allocations>
       <Card className="bg-background border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         {/* Header - Always visible */}
         <button

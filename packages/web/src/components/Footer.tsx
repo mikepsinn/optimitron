@@ -91,7 +91,7 @@ export default function Footer() {
           <p>
             © {new Date().getFullYear()} Optomitron — Open source evidence-based policy analysis by{" "}
             <a
-              href="https://github.com/mikepsinn"
+              href="https://mikesinn.com"
               className="text-black font-bold hover:underline"
               target="_blank"
               rel="noopener noreferrer"

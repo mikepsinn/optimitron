@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 
 const nextConfig = {
-  output: 'export',
-  basePath: isGitHubPages ? '/optomitron' : '',
+  output: isStaticExport ? 'export' : undefined,
+  basePath: isStaticExport ? '/optomitron' : '',
   images: {
     unoptimized: true,
   },

@@ -168,6 +168,67 @@ enum SubjectType {
   ORGANIZATION
 }
 
+/// Referral/signup vote answer
+enum VoteAnswer {
+  YES
+  NO
+}
+
+// ============================================================================
+// AUTH / ACCOUNT LAYER
+// ============================================================================
+
+/// Application user account used for Optomitron and Wishocracy sign-in
+model User {
+  /// Unique identifier for this user
+  id String @id @default(cuid())
+
+  /// Unique email address used for authentication
+  email String @unique
+
+  /// Optional display name
+  name String?
+
+  /// Optional public username used in referral links
+  username String? @unique
+
+  /// Optional avatar URL
+  image String?
+
+  /// Password hash for credentials auth
+  password String?
+
+  /// Human-shareable referral code
+  referralCode String @unique @default(cuid())
+
+  /// Set once the user has completed email verification
+  emailVerified DateTime?
+
+  /// Whether the user wants updates about progress
+  newsletterSubscribed Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  referrals                     Vote[]                        @relation("UserReferrals")
+  vote                          Vote?                         @relation("UserVotes")
+  wishocraticAllocations        WishocraticAllocation[]       @relation("UserWishocraticAllocations")
+  wishocraticCategorySelections WishocraticCategorySelection[] @relation("UserWishocraticCategorySelections")
+
+  @@index([email])
+  @@index([username])
+  @@index([referralCode])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
 // ============================================================================
 // LAYER 1 — Universal Measurement System
 // ============================================================================
@@ -1460,6 +1521,113 @@ model Participant {
 
   @@index([jurisdictionId])
   @@index([region])
+}
+
+/// Referral/signup record for tracking who brought in a user
+model Vote {
+  /// Unique identifier for this vote
+  id String @id @default(cuid())
+
+  /// Whether the user opted into the referral/signup flow
+  answer VoteAnswer
+
+  /// The user who signed up (one vote per user)
+  userId String? @unique
+
+  /// The user whose referral link led to this signup
+  referredByUserId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  referrer User? @relation("UserReferrals", fields: [referredByUserId], references: [id])
+  user     User? @relation("UserVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([referredByUserId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+/// Saved pairwise allocations for authenticated Wishocracy users
+model WishocraticAllocation {
+  /// Unique identifier for this allocation
+  id String @id @default(cuid())
+
+  /// The user who made this pairwise allocation
+  userId String
+
+  /// First category in the normalized pair
+  categoryA String
+
+  /// Second category in the normalized pair
+  categoryB String
+
+  /// Allocation to category A
+  allocationA Int
+
+  /// Allocation to category B
+  allocationB Int
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  user User @relation("UserWishocraticAllocations", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryA, categoryB])
+  @@index([userId])
+  @@index([categoryA])
+  @@index([categoryB])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+/// Saved category-inclusion choices for authenticated Wishocracy users
+model WishocraticCategorySelection {
+  /// Unique identifier for this category selection
+  id String @id @default(cuid())
+
+  /// The user who made this choice
+  userId String
+
+  /// Budget category identifier from the web app
+  categoryId String
+
+  /// Whether the category is included in the user's run
+  selected Boolean
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  user User @relation("UserWishocraticCategorySelections", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId])
+  @@index([userId])
+  @@index([categoryId])
+  @@index([selected])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
 
 /// A single pairwise comparison: "Given $100, how would you split it between A and B?"

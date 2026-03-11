@@ -1,9 +1,28 @@
+import { getUsernameOrReferralCode } from "@/lib/referral.client";
+
 export function getBaseUrl(): string {
-  if (typeof window !== 'undefined') return window.location.origin;
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://optomitron.com';
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+
+  return "http://localhost:3000";
 }
 
-export function buildUserReferralUrl(user: any, baseUrl: string): string {
-  const username = user?.username || user?.id || 'anonymous';
-  return `${baseUrl}?ref=${username}`;
+export function buildReferralUrl(identifier?: string | null, baseUrl: string = getBaseUrl()): string {
+  return identifier ? `${baseUrl}/vote/${identifier}` : `${baseUrl}/vote`;
+}
+
+export function buildUserReferralUrl(
+  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  baseUrl: string = getBaseUrl(),
+): string {
+  return buildReferralUrl(getUsernameOrReferralCode(user), baseUrl);
 }

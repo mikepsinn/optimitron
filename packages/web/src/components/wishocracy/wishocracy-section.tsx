@@ -1,73 +1,75 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { BudgetPairSlider } from "./budget-pair-slider"
-import { ProgressIndicator } from "./progress-indicator"
-import { WishocracyIntroCard } from "./WishocracyIntroCard"
-import { WishocracyCategorySelection } from "./WishocracyCategorySelection"
-import { WishocracyStatusBar } from "./WishocracyStatusBar"
-import { WishocracyAuthPromptCard } from "./WishocracyAuthPromptCard"
-import { WishocracyAllocationCard } from "./WishocracyAllocationCard"
-import { WishocracyEditSection } from "./WishocracyEditSection"
-import { WishocracyResetButton } from "./WishocracyResetButton"
-import { WishocracyCompletionCard } from "./WishocracyCompletionCard"
-import { WishocracyLoadingCard } from "./WishocracyLoadingCard"
-import { useWishocracyState } from "@/hooks/useWishocracyState"
+import { AnimatePresence, motion } from "framer-motion";
+import { useWishocracyState } from "@/hooks/useWishocracyState";
+import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+import { BudgetPairSlider } from "./budget-pair-slider";
+import { ProgressIndicator } from "./progress-indicator";
+import { WishocracyAllocationCard } from "./WishocracyAllocationCard";
+import { WishocracyAuthPromptCard } from "./WishocracyAuthPromptCard";
+import { WishocracyCategorySelection } from "./WishocracyCategorySelection";
+import { WishocracyCompletionCard } from "./WishocracyCompletionCard";
+import { WishocracyEditSection } from "./WishocracyEditSection";
+import { WishocracyIntroCard } from "./WishocracyIntroCard";
+import { WishocracyLoadingCard } from "./WishocracyLoadingCard";
+import { WishocracyResetButton } from "./WishocracyResetButton";
+import { WishocracyStatusBar } from "./WishocracyStatusBar";
 
 export default function WishocracySection() {
-  const { state, handlers } = useWishocracyState()
-
-  const shareUrl = typeof window !== "undefined" ? window.location.href : ""
+  const { state, handlers } = useWishocracyState();
+  const baseUrl = getBaseUrl();
+  const shareUrl = state.session?.user
+    ? buildUserReferralUrl(state.session.user, baseUrl)
+    : `${baseUrl}/vote`;
+  const isAuthenticated = state.status === "authenticated";
+  const referralCode = state.searchParams?.get("ref") ?? null;
+  const isComplete =
+    !state.showIntro &&
+    !state.showCategorySelection &&
+    state.comparisons.length >= state.totalPossiblePairs;
 
   return (
-    <section className="bg-brutal-yellow pt-4 pb-32 border-b-4 border-black min-h-screen">
+    <section className="min-h-screen border-b-4 border-black bg-brutal-yellow pb-32 pt-4">
       <div className="mx-auto max-w-6xl px-4">
-
-        {/* Loading Genie */}
         <WishocracyLoadingCard isLoading={state.isLoading} />
 
-        {/* Intro Card */}
         <WishocracyIntroCard
           show={state.showIntro}
           isLoading={state.isLoading}
           onStart={() => {
-            handlers.setShowIntro(false)
-            handlers.setShowCategorySelection(true)
+            handlers.setShowIntro(false);
+            handlers.setShowCategorySelection(true);
           }}
         />
 
-        {/* Category Selection */}
         <WishocracyCategorySelection
           show={state.showCategorySelection}
           onComplete={handlers.handleCategorySelectionComplete}
           onBack={() => {
-            handlers.setShowCategorySelection(false)
-            handlers.setShowIntro(true)
+            handlers.setShowCategorySelection(false);
+            handlers.setShowIntro(true);
           }}
         />
 
-        {/* Progress Bar */}
-        {!state.isLoading && !state.showIntro && !state.showCategorySelection && state.comparisons.length < state.totalPossiblePairs && (
-          <ProgressIndicator
-            current={state.comparisons.length}
-            total={state.totalPossiblePairs}
-          />
-        )}
+        {!state.isLoading &&
+        !state.showIntro &&
+        !state.showCategorySelection &&
+        state.comparisons.length < state.totalPossiblePairs ? (
+          <ProgressIndicator current={state.comparisons.length} total={state.totalPossiblePairs} />
+        ) : null}
 
-        {/* Status Bar */}
         <WishocracyStatusBar
           show={!state.isLoading && !state.showIntro && !state.showCategorySelection}
           isLoading={state.isLoading}
-          isAuthenticated={false}
-          referralCode={null}
+          isAuthenticated={isAuthenticated}
+          referralCode={referralCode}
           onShowAuthPrompt={() => handlers.setShowAuthPrompt(true)}
         />
 
-        {/* Current Pair Slider */}
         <AnimatePresence mode="wait">
           {!state.showIntro &&
-           !state.showCategorySelection &&
-           state.shuffledPairs[state.currentPairIndex] && (
+          !state.showCategorySelection &&
+          state.shuffledPairs[state.currentPairIndex] ? (
             <motion.div
               key={state.currentPairIndex}
               initial={{ opacity: 0, x: 100 }}
@@ -82,52 +84,47 @@ export default function WishocracySection() {
                 onSubmit={handlers.handlePairSubmit}
               />
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
 
-        {/* Auth Prompt (disabled) */}
         <WishocracyAuthPromptCard
           show={state.showAuthPrompt}
-          isAuthenticated={false}
+          isAuthenticated={isAuthenticated}
           comparisonsCount={state.comparisons.length}
-          referralCode={null}
+          referralCode={referralCode}
           authCardRef={state.authCardRef}
           onDismiss={() => handlers.setShowAuthPrompt(false)}
         />
 
-        {/* Completion Celebration Card */}
         <WishocracyCompletionCard
-          show={!state.showIntro && !state.showCategorySelection && state.comparisons.length >= state.totalPossiblePairs}
+          show={isComplete}
           comparisons={state.comparisons}
-          isAuthenticated={false}
-          userEmail={null}
+          isAuthenticated={isAuthenticated}
+          userEmail={state.session?.user?.email}
           shareUrl={shareUrl}
         />
 
-        {/* Budget Allocation Results */}
         <WishocracyAllocationCard
           show={!state.showIntro && !state.showCategorySelection}
           isLoading={state.isLoading}
           comparisons={state.comparisons}
         />
 
-        {/* Edit Section - available for all users when survey is complete */}
-        {!state.showIntro && !state.showCategorySelection && state.comparisons.length >= state.totalPossiblePairs && (
+        {isAuthenticated && isComplete ? (
           <WishocracyEditSection
             comparisons={state.comparisons}
             selectedCategories={state.selectedCategories}
             onSave={handlers.handleEditSave}
           />
-        )}
+        ) : null}
 
-        {/* Reset Button */}
         <WishocracyResetButton
-          show={!state.showIntro && !state.showCategorySelection && state.comparisons.length >= state.totalPossiblePairs}
+          show={isComplete}
           isLoading={state.isLoading}
           hasComparisons={state.comparisons.length > 0}
           onReset={handlers.handleReset}
         />
       </div>
     </section>
-  )
+  );
 }

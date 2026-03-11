@@ -12,7 +12,7 @@
 import { z } from 'zod';
 
 // ============================================================================
-// ENUMS (13)
+// ENUMS (14)
 // ============================================================================
 
 export const CombinationOperationSchema = z.enum(['SUM', 'MEAN']);
@@ -66,17 +66,41 @@ export type JurisdictionType = z.infer<typeof JurisdictionTypeSchema>;
 export const SubjectTypeSchema = z.enum(['USER', 'JURISDICTION', 'COHORT', 'ORGANIZATION']);
 export type SubjectType = z.infer<typeof SubjectTypeSchema>;
 
-// 13 enums in the schema:
+export const VoteAnswerSchema = z.enum(['YES', 'NO']);
+export type VoteAnswer = z.infer<typeof VoteAnswerSchema>;
+
+// 14 enums in the schema:
 // 1. CombinationOperation  2. FillingType  3. Valence  4. MeasurementScale
 // 5. UnitCodeSystem  6. AnalysisStatus  7. StrengthLevel  8. ConfidenceLevel
 // 9. RelationshipDirection  10. EvidenceGrade  11. NotificationStatus
-// 12. JurisdictionType  13. SubjectType
+// 12. JurisdictionType  13. SubjectType  14. VoteAnswer
 
 // ============================================================================
 // HELPER: coerce string dates to Date objects
 // ============================================================================
 const dateSchema = z.coerce.date();
 const nullableDateSchema = z.coerce.date().nullable().optional();
+
+// ============================================================================
+// AUTH / ACCOUNT MODELS
+// ============================================================================
+
+/** Zod schema for the User model */
+export const UserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string().nullable().optional(),
+  username: z.string().nullable().optional(),
+  image: z.string().nullable().optional(),
+  password: z.string().nullable().optional(),
+  referralCode: z.string(),
+  emailVerified: nullableDateSchema,
+  newsletterSubscribed: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type UserType = z.infer<typeof UserSchema>;
 
 // ============================================================================
 // LAYER 1 — Universal Measurement System Models
@@ -499,6 +523,46 @@ export const ParticipantSchema = z.object({
 });
 export type ParticipantType = z.infer<typeof ParticipantSchema>;
 
+/** Zod schema for the Vote model */
+export const VoteSchema = z.object({
+  id: z.string(),
+  answer: VoteAnswerSchema,
+  userId: z.string().nullable().optional(),
+  referredByUserId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type VoteType = z.infer<typeof VoteSchema>;
+
+/** Zod schema for the WishocraticAllocation model */
+export const WishocraticAllocationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  categoryA: z.string(),
+  categoryB: z.string(),
+  allocationA: z.number().int(),
+  allocationB: z.number().int(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type WishocraticAllocationType = z.infer<typeof WishocraticAllocationSchema>;
+
+/** Zod schema for the WishocraticCategorySelection model */
+export const WishocraticCategorySelectionSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  categoryId: z.string(),
+  selected: z.boolean(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type WishocraticCategorySelectionType = z.infer<
+  typeof WishocraticCategorySelectionSchema
+>;
+
 /** Zod schema for the PairwiseComparison model */
 export const PairwiseComparisonSchema = z.object({
   id: z.string(),
@@ -586,4 +650,3 @@ export const AlignmentScoreSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type AlignmentScoreType = z.infer<typeof AlignmentScoreSchema>;
-

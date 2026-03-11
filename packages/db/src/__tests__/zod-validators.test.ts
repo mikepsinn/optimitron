@@ -14,7 +14,9 @@ import {
   NotificationStatusSchema,
   JurisdictionTypeSchema,
   SubjectTypeSchema,
+  VoteAnswerSchema,
   // Models
+  UserSchema,
   UnitSchema,
   VariableCategorySchema,
   GlobalVariableSchema,
@@ -33,6 +35,9 @@ import {
   PreferenceWeightSchema,
   ItemSchema,
   ParticipantSchema,
+  VoteSchema,
+  WishocraticAllocationSchema,
+  WishocraticCategorySelectionSchema,
   AggregationRunSchema,
   IntegrationProviderSchema,
   IntegrationConnectionSchema,
@@ -222,6 +227,12 @@ describe('Enum schemas', () => {
   it('18. SubjectType — rejects invalid value', () => {
     expect(SubjectTypeSchema.safeParse('TEAM').success).toBe(false);
   });
+
+  it('19. VoteAnswer — accepts YES and NO', () => {
+    expect(VoteAnswerSchema.parse('YES')).toBe('YES');
+    expect(VoteAnswerSchema.parse('NO')).toBe('NO');
+    expect(VoteAnswerSchema.safeParse('MAYBE').success).toBe(false);
+  });
 });
 
 // ============================================================================
@@ -393,6 +404,64 @@ describe('SubjectSchema', () => {
 });
 
 // ============================================================================
+// MODEL TESTS — Auth / referral models
+// ============================================================================
+
+describe('Auth and referral models', () => {
+  it('34. validates a User', () => {
+    const data = {
+      id: 'user_1',
+      email: 'user@example.com',
+      name: 'Test User',
+      username: 'test-user',
+      referralCode: 'REFCODE1',
+      newsletterSubscribed: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(UserSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('35. validates a Vote', () => {
+    const data = {
+      id: 'vote_1',
+      answer: 'YES' as const,
+      userId: 'user_1',
+      referredByUserId: 'user_2',
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(VoteSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('36. validates a WishocraticAllocation', () => {
+    const data = {
+      id: 'wa_1',
+      userId: 'user_1',
+      categoryA: 'MILITARY_OPERATIONS',
+      categoryB: 'PRAGMATIC_CLINICAL_TRIALS',
+      allocationA: 60,
+      allocationB: 40,
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(WishocraticAllocationSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('37. validates a WishocraticCategorySelection', () => {
+    const data = {
+      id: 'wcs_1',
+      userId: 'user_1',
+      categoryId: 'PRAGMATIC_CLINICAL_TRIALS',
+      selected: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(WishocraticCategorySelectionSchema.safeParse(data).success).toBe(true);
+  });
+});
+
+// ============================================================================
 // MODEL TESTS — NOf1VariableRelationship
 // ============================================================================
 
@@ -441,7 +510,7 @@ describe('NOf1VariableRelationshipSchema', () => {
 // ============================================================================
 
 describe('AggregateVariableRelationshipSchema', () => {
-  it('34. validates a correct AggregateVariableRelationship', () => {
+  it('38. validates a correct AggregateVariableRelationship', () => {
     const data = {
       id: 'gvr_1',
       predictorGlobalVariableId: 'gv_1',
@@ -459,7 +528,7 @@ describe('AggregateVariableRelationshipSchema', () => {
     expect(AggregateVariableRelationshipSchema.safeParse(data).success).toBe(true);
   });
 
-  it('35. fails when numberOfUnits is missing', () => {
+  it('39. fails when numberOfUnits is missing', () => {
     const data = {
       id: 'gvr_1',
       predictorGlobalVariableId: 'gv_1',
@@ -482,7 +551,7 @@ describe('AggregateVariableRelationshipSchema', () => {
 // ============================================================================
 
 describe('Governance models', () => {
-  it('35. validates a Politician', () => {
+  it('40. validates a Politician', () => {
     const data = {
       id: 'pol_1',
       jurisdictionId: 'jur_us',
@@ -495,7 +564,7 @@ describe('Governance models', () => {
     expect(PoliticianSchema.safeParse(data).success).toBe(true);
   });
 
-  it('36. validates a PoliticianVote', () => {
+  it('41. validates a PoliticianVote', () => {
     const data = {
       id: 'pv_1',
       politicianId: 'pol_1',
@@ -507,7 +576,7 @@ describe('Governance models', () => {
     expect(PoliticianVoteSchema.safeParse(data).success).toBe(true);
   });
 
-  it('37. validates an AlignmentScore', () => {
+  it('42. validates an AlignmentScore', () => {
     const data = {
       id: 'as_1',
       politicianId: 'pol_1',
@@ -520,7 +589,7 @@ describe('Governance models', () => {
     expect(AlignmentScoreSchema.safeParse(data).success).toBe(true);
   });
 
-  it('38. AlignmentScore fails when score is missing', () => {
+  it('43. AlignmentScore fails when score is missing', () => {
     const data = {
       id: 'as_1',
       politicianId: 'pol_1',
@@ -538,7 +607,7 @@ describe('Governance models', () => {
 // ============================================================================
 
 describe('Preference elicitation models', () => {
-  it('39. validates a PairwiseComparison', () => {
+  it('44. validates a PairwiseComparison', () => {
     const data = {
       id: 'pc_1',
       participantId: 'part_1',
@@ -552,7 +621,7 @@ describe('Preference elicitation models', () => {
     expect(PairwiseComparisonSchema.safeParse(data).success).toBe(true);
   });
 
-  it('40. PairwiseComparison fails when allocationA is missing', () => {
+  it('45. PairwiseComparison fails when allocationA is missing', () => {
     const data = {
       id: 'pc_1',
       participantId: 'part_1',
@@ -564,7 +633,7 @@ describe('Preference elicitation models', () => {
     expect(PairwiseComparisonSchema.safeParse(data).success).toBe(false);
   });
 
-  it('41. validates a PreferenceWeight', () => {
+  it('46. validates a PreferenceWeight', () => {
     const data = {
       id: 'pw_1',
       aggregationRunId: 'run_1',
@@ -577,7 +646,7 @@ describe('Preference elicitation models', () => {
     expect(PreferenceWeightSchema.safeParse(data).success).toBe(true);
   });
 
-  it('42. PreferenceWeight fails when rank is a float', () => {
+  it('47. PreferenceWeight fails when rank is a float', () => {
     const data = {
       id: 'pw_1',
       aggregationRunId: 'run_1',
@@ -597,7 +666,7 @@ describe('Preference elicitation models', () => {
 // ============================================================================
 
 describe('Additional models', () => {
-  it('43. validates a VariableCategory with defaults', () => {
+  it('48. validates a VariableCategory with defaults', () => {
     const data = {
       id: 'vc_1',
       name: 'Treatment',
@@ -613,7 +682,7 @@ describe('Additional models', () => {
     }
   });
 
-  it('44. validates a GlobalVariable', () => {
+  it('49. validates a GlobalVariable', () => {
     const data = {
       id: 'gv_1',
       name: 'Overall Mood',
@@ -626,7 +695,7 @@ describe('Additional models', () => {
     expect(result.success).toBe(true);
   });
 
-  it('45. validates a NOf1Variable', () => {
+  it('50. validates a NOf1Variable', () => {
     const data = {
       id: 'uv_1',
       userId: 'user_1',
@@ -638,7 +707,7 @@ describe('Additional models', () => {
     expect(NOf1VariableSchema.safeParse(data).success).toBe(true);
   });
 
-  it('46. validates a TrackingReminder', () => {
+  it('51. validates a TrackingReminder', () => {
     const data = {
       id: 'tr_1',
       userId: 'user_1',
@@ -652,7 +721,7 @@ describe('Additional models', () => {
     expect(TrackingReminderSchema.safeParse(data).success).toBe(true);
   });
 
-  it('47. validates a TrackingReminderNotification', () => {
+  it('52. validates a TrackingReminderNotification', () => {
     const data = {
       id: 'trn_1',
       userId: 'user_1',
@@ -668,7 +737,7 @@ describe('Additional models', () => {
     }
   });
 
-  it('48. validates an Item', () => {
+  it('53. validates an Item', () => {
     const data = {
       id: 'item_1',
       jurisdictionId: 'jur_1',
@@ -681,7 +750,7 @@ describe('Additional models', () => {
     expect(ItemSchema.safeParse(data).success).toBe(true);
   });
 
-  it('49. validates a Participant', () => {
+  it('54. validates a Participant', () => {
     const data = {
       id: 'part_1',
       jurisdictionId: 'jur_1',
@@ -694,7 +763,7 @@ describe('Additional models', () => {
     expect(ParticipantSchema.safeParse(data).success).toBe(true);
   });
 
-  it('50. validates an AggregationRun', () => {
+  it('55. validates an AggregationRun', () => {
     const data = {
       id: 'run_1',
       jurisdictionId: 'jur_1',
@@ -707,7 +776,7 @@ describe('Additional models', () => {
     expect(AggregationRunSchema.safeParse(data).success).toBe(true);
   });
 
-  it('51. validates an IntegrationProvider', () => {
+  it('56. validates an IntegrationProvider', () => {
     const data = {
       id: 'ip_1',
       key: 'fitbit',
@@ -724,7 +793,7 @@ describe('Additional models', () => {
     }
   });
 
-  it('52. validates an IntegrationConnection', () => {
+  it('57. validates an IntegrationConnection', () => {
     const data = {
       id: 'ic_1',
       userId: 'user_1',
@@ -735,7 +804,7 @@ describe('Additional models', () => {
     expect(IntegrationConnectionSchema.safeParse(data).success).toBe(true);
   });
 
-  it('53. validates an IntegrationSyncLog', () => {
+  it('58. validates an IntegrationSyncLog', () => {
     const data = {
       id: 'isl_1',
       integrationConnectionId: 'ic_1',
@@ -756,30 +825,30 @@ describe('Additional models', () => {
 // ============================================================================
 
 describe('Edge cases', () => {
-  it('54. rejects completely empty object for Measurement', () => {
+  it('59. rejects completely empty object for Measurement', () => {
     expect(MeasurementSchema.safeParse({}).success).toBe(false);
   });
 
-  it('55. rejects null for a required string field', () => {
+  it('60. rejects null for a required string field', () => {
     expect(
       MeasurementSchema.safeParse({ ...validMeasurement, id: null }).success,
     ).toBe(false);
   });
 
-  it('56. rejects number for a string field', () => {
+  it('61. rejects number for a string field', () => {
     expect(
       MeasurementSchema.safeParse({ ...validMeasurement, userId: 12345 }).success,
     ).toBe(false);
   });
 
-  it('57. accepts extra properties (passthrough by default in zod)', () => {
+  it('62. accepts extra properties (passthrough by default in zod)', () => {
     const withExtra = { ...validMeasurement, extraField: 'hello' };
     // zod strips unknown keys by default but doesn't fail
     const result = MeasurementSchema.safeParse(withExtra);
     expect(result.success).toBe(true);
   });
 
-  it('58. GlobalVariable rejects non-integer for numberOfMeasurements', () => {
+  it('63. GlobalVariable rejects non-integer for numberOfMeasurements', () => {
     const data = {
       id: 'gv_1',
       name: 'Test Var',
@@ -792,7 +861,7 @@ describe('Edge cases', () => {
     expect(GlobalVariableSchema.safeParse(data).success).toBe(false);
   });
 
-  it('59. TrackingReminderNotification rejects invalid status', () => {
+  it('64. TrackingReminderNotification rejects invalid status', () => {
     const data = {
       id: 'trn_1',
       userId: 'user_1',
@@ -805,9 +874,20 @@ describe('Edge cases', () => {
     expect(TrackingReminderNotificationSchema.safeParse(data).success).toBe(false);
   });
 
-  it('60. Unit rejects missing abbreviatedName', () => {
+  it('65. Unit rejects missing abbreviatedName', () => {
     const { abbreviatedName, ...noAbbrev } = validUnit;
     expect(UnitSchema.safeParse(noAbbrev).success).toBe(false);
   });
-});
 
+  it('66. User rejects an invalid email address', () => {
+    expect(
+      UserSchema.safeParse({
+        id: 'user_1',
+        email: 'not-an-email',
+        referralCode: 'REFCODE1',
+        createdAt: now,
+        updatedAt: now,
+      }).success,
+    ).toBe(false);
+  });
+});
