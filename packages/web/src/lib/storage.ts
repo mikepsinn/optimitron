@@ -92,12 +92,15 @@ function removeStorageItem(key: string): void {
 export const storage = {
   getSignupName: () => getStringItem(STORAGE_KEYS.signupName),
   setSignupName: (name: string) => setStringItem(STORAGE_KEYS.signupName, name),
+  clearSignupName: () => removeStorageItem(STORAGE_KEYS.signupName),
 
   getSignupReferral: () => getStringItem(STORAGE_KEYS.signupReferral),
   setSignupReferral: (code: string) => setStringItem(STORAGE_KEYS.signupReferral, code),
+  clearSignupReferral: () => removeStorageItem(STORAGE_KEYS.signupReferral),
 
   getSignupSubscribe: () => getBooleanItem(STORAGE_KEYS.signupSubscribe),
   setSignupSubscribe: (subscribe: boolean) => setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
+  clearSignupSubscribe: () => removeStorageItem(STORAGE_KEYS.signupSubscribe),
 
   clearSignupData: () => {
     removeStorageItem(STORAGE_KEYS.signupName);

@@ -16,9 +16,12 @@ import {
   SubjectTypeSchema,
   VoteAnswerSchema,
   // Models
+  AccountSchema,
   UserSchema,
+  SessionSchema,
   UnitSchema,
   VariableCategorySchema,
+  VerificationTokenSchema,
   GlobalVariableSchema,
   SubjectSchema,
   NOf1VariableSchema,
@@ -416,6 +419,8 @@ describe('Auth and referral models', () => {
       username: 'test-user',
       referralCode: 'REFCODE1',
       newsletterSubscribed: true,
+      referralEmailSequenceStep: 0,
+      referralEmailSequenceLastSentAt: null,
       createdAt: now,
       updatedAt: now,
     };
@@ -434,7 +439,47 @@ describe('Auth and referral models', () => {
     expect(VoteSchema.safeParse(data).success).toBe(true);
   });
 
-  it('36. validates a WishocraticAllocation', () => {
+  it('36. validates an Account', () => {
+    const data = {
+      id: 'account_1',
+      userId: 'user_1',
+      type: 'oauth',
+      provider: 'google',
+      providerAccountId: 'google-123',
+      access_token: 'token',
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    };
+    expect(AccountSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('37. validates a Session', () => {
+    const data = {
+      id: 'session_1',
+      sessionToken: 'session-token',
+      userId: 'user_1',
+      expires: now,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    };
+    expect(SessionSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('38. validates a VerificationToken', () => {
+    const data = {
+      identifier: 'user@example.com',
+      token: 'verify-token',
+      expires: now,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    };
+    expect(VerificationTokenSchema.safeParse(data).success).toBe(true);
+  });
+
+  it('39. validates a WishocraticAllocation', () => {
     const data = {
       id: 'wa_1',
       userId: 'user_1',
@@ -448,7 +493,7 @@ describe('Auth and referral models', () => {
     expect(WishocraticAllocationSchema.safeParse(data).success).toBe(true);
   });
 
-  it('37. validates a WishocraticCategorySelection', () => {
+  it('40. validates a WishocraticCategorySelection', () => {
     const data = {
       id: 'wcs_1',
       userId: 'user_1',

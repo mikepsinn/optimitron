@@ -96,11 +96,58 @@ export const UserSchema = z.object({
   referralCode: z.string(),
   emailVerified: nullableDateSchema,
   newsletterSubscribed: z.boolean().default(true),
+  referralEmailSequenceStep: z.number().int().default(0),
+  referralEmailSequenceLastSentAt: nullableDateSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
 export type UserType = z.infer<typeof UserSchema>;
+
+/** Zod schema for the Account model */
+export const AccountSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.string(),
+  provider: z.string(),
+  providerAccountId: z.string(),
+  refresh_token: z.string().nullable().optional(),
+  access_token: z.string().nullable().optional(),
+  expires_at: z.number().int().nullable().optional(),
+  token_type: z.string().nullable().optional(),
+  scope: z.string().nullable().optional(),
+  id_token: z.string().nullable().optional(),
+  session_state: z.string().nullable().optional(),
+  oauth_token_secret: z.string().nullable().optional(),
+  oauth_token: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type AccountType = z.infer<typeof AccountSchema>;
+
+/** Zod schema for the Session model */
+export const SessionSchema = z.object({
+  id: z.string(),
+  sessionToken: z.string(),
+  userId: z.string(),
+  expires: dateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type SessionType = z.infer<typeof SessionSchema>;
+
+/** Zod schema for the VerificationToken model */
+export const VerificationTokenSchema = z.object({
+  identifier: z.string(),
+  token: z.string(),
+  expires: dateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type VerificationTokenType = z.infer<typeof VerificationTokenSchema>;
 
 // ============================================================================
 // LAYER 1 — Universal Measurement System Models

@@ -207,6 +207,12 @@ model User {
   /// Whether the user wants updates about progress
   newsletterSubscribed Boolean @default(true)
 
+  /// Number of referral-sequence emails already sent to this user
+  referralEmailSequenceStep Int @default(0)
+
+  /// Timestamp of the most recent referral-sequence email
+  referralEmailSequenceLastSentAt DateTime?
+
   /// When this record was created
   createdAt DateTime @default(now())
 
@@ -217,15 +223,136 @@ model User {
   deletedAt DateTime?
 
   // -- Relations --
-  referrals                     Vote[]                        @relation("UserReferrals")
-  vote                          Vote?                         @relation("UserVotes")
-  wishocraticAllocations        WishocraticAllocation[]       @relation("UserWishocraticAllocations")
+  accounts                      Account[]
+  referrals                     Vote[]                         @relation("UserReferrals")
+  sessions                      Session[]
+  vote                          Vote?                          @relation("UserVotes")
+  wishocraticAllocations        WishocraticAllocation[]        @relation("UserWishocraticAllocations")
   wishocraticCategorySelections WishocraticCategorySelection[] @relation("UserWishocraticCategorySelections")
 
   @@index([email])
   @@index([username])
   @@index([referralCode])
   @@index([createdAt])
+  @@index([referralEmailSequenceStep, referralEmailSequenceLastSentAt])
+  @@index([deletedAt])
+}
+
+/// OAuth, email, or credentials account attached to a user
+model Account {
+  /// Unique identifier for this account link
+  id String @id @default(cuid())
+
+  /// The user who owns this provider account
+  userId String
+
+  /// Provider type ("oauth", "email", "credentials")
+  type String
+
+  /// Provider identifier ("google", "email", "credentials")
+  provider String
+
+  /// Provider-specific account identifier
+  providerAccountId String
+
+  /// OAuth refresh token if supplied
+  refresh_token String?
+
+  /// OAuth access token if supplied
+  access_token String?
+
+  /// Absolute expiry time of the access token in seconds
+  expires_at Int?
+
+  /// OAuth token type if supplied
+  token_type String?
+
+  /// OAuth scopes if supplied
+  scope String?
+
+  /// OIDC ID token if supplied
+  id_token String?
+
+  /// Provider session state if supplied
+  session_state String?
+
+  /// OAuth 1.0 token secret if supplied
+  oauth_token_secret String?
+
+  /// OAuth 1.0 access token if supplied
+  oauth_token String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@index([provider])
+  @@index([deletedAt])
+}
+
+/// Active login session for database-backed NextAuth flows
+model Session {
+  /// Unique identifier for this session
+  id String @id @default(cuid())
+
+  /// Random session token stored in the session cookie
+  sessionToken String @unique
+
+  /// The user who owns this session
+  userId String
+
+  /// When this session expires
+  expires DateTime
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  // -- Relations --
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
+  @@index([deletedAt])
+}
+
+/// One-time magic-link verification token
+model VerificationToken {
+  /// Email address that requested the token
+  identifier String
+
+  /// Hashed or raw verification token depending on provider config
+  token String @unique
+
+  /// When the token expires
+  expires DateTime
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp; non-null means this record is logically deleted
+  deletedAt DateTime?
+
+  @@unique([identifier, token])
+  @@index([expires])
   @@index([deletedAt])
 }
 
