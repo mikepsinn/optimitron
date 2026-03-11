@@ -52,7 +52,7 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 21 | FRED (St. Louis Fed) fetcher | done | `fetchers/fred.ts` + tests. |
 | 22 | WHO Global Health Observatory fetcher | done | `fetchers/who.ts` + tests. |
 | 23 | Congress API vote records fetcher | done | `fetchers/congress.ts` + tests. |
-| 24 | USAspending.gov budget fetcher | todo | Actual federal allocations. No dedicated fetcher yet; budget data currently uses static datasets. |
+| 24 | USAspending.gov budget fetcher | done | `fetchers/usaspending.ts` — Spending Explorer API (no key required). Fetches by budget function/subfunction for FY2017+. Includes `fetchFederalBudgetByFunction()`, `fetchBudgetFunctionTimeSeries()`, `fetchLatestBudgetBreakdown()`. 26 tests passing. |
 | 25 | Politician vote → budget category mapping | todo | No implementation yet. |
 
 ## P4: Database & API

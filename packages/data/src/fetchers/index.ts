@@ -6,3 +6,4 @@ export * from './world-bank.js';
 export * from './who.js';
 export * from './fred.js';
 export * from './congress.js';
+export * from './usaspending.js';

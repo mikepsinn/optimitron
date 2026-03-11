@@ -9,9 +9,15 @@ const footerLinks = {
   ],
   resources: [
     { label: "dFDA Spec", href: "https://dfda-spec.warondisease.org", external: true },
-    { label: "Wishocracy Paper", href: "https://wishocracy.warondisease.org", external: true },
+    { label: "Wishocracy", href: "https://wishocracy.warondisease.org", external: true },
     { label: "OPG Paper", href: "https://opg.warondisease.org", external: true },
     { label: "OBG Paper", href: "https://obg.warondisease.org", external: true },
+    { label: "Optimocracy", href: "https://optimocracy.warondisease.org", external: true },
+    { label: "Invisible Graveyard", href: "https://invisible-graveyard.warondisease.org", external: true },
+    { label: "The 1% Treaty", href: "https://impact.warondisease.org", external: true },
+    { label: "Political Dysfunction Tax", href: "https://political-dysfunction-tax.warondisease.org", external: true },
+    { label: "Incentive Alignment Bonds", href: "https://iab.warondisease.org", external: true },
+    { label: "Full Manual", href: "https://manual.warondisease.org", external: true },
   ],
   community: [
     { label: "GitHub", href: "https://github.com/mikepsinn/optomitron", external: true },

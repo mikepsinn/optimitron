@@ -264,6 +264,189 @@ describe('orchestrator', () => {
     expect(publishPolicy).not.toHaveBeenCalled();
   });
 
+  it('retries once when the verifier requests another attempt and then succeeds', async () => {
+    const queue = createReasonerQueue([
+      {
+        selectedTargets: [baseTarget],
+        rationale: 'Strong tractability.',
+        discardedItemIds: [],
+      },
+      {
+        plannedTargets: [baseTarget],
+        rationale: 'Run the highest-confidence target first.',
+        executionNotes: [],
+      },
+      {
+        summary: 'First pass is inconclusive.',
+        confidenceAssessment: 'Confidence is low.',
+        caveats: ['One data source lagged.'],
+        additionalDataNeeded: ['Retry with refreshed inputs.'],
+      },
+      {
+        verdict: 'retry',
+        rationale: 'One retry is justified.',
+        retryReason: 'Refresh inputs and rerun the analysis.',
+      },
+      {
+        summary: 'Second pass supports publication.',
+        confidenceAssessment: 'Confidence is moderate to high.',
+        caveats: ['Subnational coverage remains thinner than OECD coverage.'],
+        additionalDataNeeded: [],
+      },
+      {
+        verdict: 'proceed',
+        rationale: 'The rerun passed.',
+      },
+    ]);
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ...baseArtifact,
+        policyName: 'Preventive Care Reallocation Draft',
+      })
+      .mockResolvedValueOnce(baseArtifact);
+    const publishPolicy = vi.fn().mockResolvedValue({
+      refs: {
+        activity: {
+          uri: 'at://did:plc:optomitron/org.hypercerts.claim.activity/2',
+          cid: 'cid-activity-2',
+        },
+        attachments: [],
+        evaluation: {
+          uri: 'at://did:plc:optomitron/org.hypercerts.context.evaluation/2',
+          cid: 'cid-evaluation-2',
+        },
+        measurements: [],
+      },
+    });
+
+    const log = await runAgent({
+      manifest: createAgentManifest(),
+      reasoner: queue.reasoner,
+      now: () => new Date('2026-03-11T12:00:00.000Z'),
+      runInput: {
+        jurisdictionId: 'us-federal',
+        preferenceGaps: [
+          {
+            itemId: 'preventive-care',
+            itemName: 'Preventive Care',
+            preferredPct: 0.28,
+            actualPct: 0.11,
+            gapPct: 0.17,
+          },
+        ],
+        availableDataSources: ['oecd', 'world-bank'],
+      },
+      adapters: {
+        analysis: {
+          execute,
+        },
+        hypercerts: {
+          publishPolicy,
+        },
+      },
+    });
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(publishPolicy).toHaveBeenCalledTimes(1);
+    expect(log.targetExecutions[0]?.attemptCount).toBe(2);
+    expect(log.targetExecutions[0]?.status).toBe('completed');
+    expect(log.targetExecutions[0]?.verification).toEqual({
+      verdict: 'proceed',
+      rationale: 'The rerun passed.',
+    });
+    expect(queue.generateObject).toHaveBeenCalledTimes(6);
+  });
+
+  it('fails fast when the API call cap is exceeded during planning', async () => {
+    const queue = createReasonerQueue([
+      {
+        selectedTargets: [baseTarget],
+        rationale: 'Strong tractability.',
+        discardedItemIds: [],
+      },
+    ]);
+
+    await expect(
+      runAgent({
+        manifest: createAgentManifest({
+          computeConstraints: {
+            maxAnalysesPerRun: 10,
+            maxAPICallsPerRun: 1,
+            timeoutSeconds: 300,
+          },
+        }),
+        reasoner: queue.reasoner,
+        now: () => new Date('2026-03-11T12:00:00.000Z'),
+        runInput: {
+          jurisdictionId: 'us-federal',
+          preferenceGaps: [
+            {
+              itemId: 'preventive-care',
+              itemName: 'Preventive Care',
+              preferredPct: 0.28,
+              actualPct: 0.11,
+              gapPct: 0.17,
+            },
+          ],
+          availableDataSources: ['oecd', 'world-bank'],
+        },
+        adapters: {
+          analysis: {
+            execute: vi.fn(),
+          },
+          hypercerts: {
+            publishPolicy: vi.fn(),
+          },
+        },
+      }),
+    ).rejects.toThrow('API call limit exceeded');
+
+    expect(queue.generateObject).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails before discovery when the runtime budget is already exhausted', async () => {
+    const queue = createReasonerQueue([]);
+
+    await expect(
+      runAgent({
+        manifest: createAgentManifest({
+          computeConstraints: {
+            maxAnalysesPerRun: 10,
+            maxAPICallsPerRun: 100,
+            timeoutSeconds: 1,
+          },
+        }),
+        reasoner: queue.reasoner,
+        now: () => new Date('2026-03-11T12:00:02.000Z'),
+        runInput: {
+          jurisdictionId: 'us-federal',
+          startedAt: '2026-03-11T12:00:00.000Z',
+          preferenceGaps: [
+            {
+              itemId: 'preventive-care',
+              itemName: 'Preventive Care',
+              preferredPct: 0.28,
+              actualPct: 0.11,
+              gapPct: 0.17,
+            },
+          ],
+          availableDataSources: ['oecd', 'world-bank'],
+        },
+        adapters: {
+          analysis: {
+            execute: vi.fn(),
+          },
+          hypercerts: {
+            publishPolicy: vi.fn(),
+          },
+        },
+      }),
+    ).rejects.toThrow('Runtime limit exceeded');
+
+    expect(queue.generateObject).not.toHaveBeenCalled();
+  });
+
   it('validates the checked-in sample agent log fixture', async () => {
     const raw = await readFile(
       new URL('../../agent_log.json', import.meta.url),

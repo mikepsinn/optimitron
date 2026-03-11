@@ -110,6 +110,98 @@ export default function Home() {
         </div>
       </section>
 
+      {/* The Cost of Inaction */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
+            The Cost of Inaction
+          </h2>
+          <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
+            Governance dysfunction isn&apos;t just inefficient — it&apos;s the
+            deadliest force on earth. These numbers are from peer-reviewed
+            research and official data.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <a
+            href="https://political-dysfunction-tax.warondisease.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-8 border-4 border-black bg-red-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+          >
+            <div className="text-4xl sm:text-5xl font-black text-red-600 mb-2">
+              $101T/yr
+            </div>
+            <h3 className="text-lg font-black text-black mb-3">
+              Political Dysfunction Tax
+            </h3>
+            <p className="text-sm text-black/70 leading-relaxed font-medium">
+              $12,600 per person per year in waste and suppressed innovation —
+              from administrative bloat, regulatory capture, migration
+              restrictions, and underfunded science. Civilization operates at
+              ~52% of its technological potential.
+            </p>
+            <span className="mt-4 inline-flex items-center text-xs font-black text-red-600 uppercase">
+              Read the paper &rarr;
+            </span>
+          </a>
+          <a
+            href="https://invisible-graveyard.warondisease.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-8 border-4 border-black bg-orange-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+          >
+            <div className="text-4xl sm:text-5xl font-black text-orange-600 mb-2">
+              102M deaths
+            </div>
+            <h3 className="text-lg font-black text-black mb-3">
+              The Invisible Graveyard
+            </h3>
+            <p className="text-sm text-black/70 leading-relaxed font-medium">
+              Since 1962, the FDA&apos;s 8.2-year post-safety efficacy delays
+              have caused an estimated 102 million preventable deaths and $1.19
+              quadrillion in deadweight loss. Treatments that passed safety
+              review sat waiting while people died.
+            </p>
+            <span className="mt-4 inline-flex items-center text-xs font-black text-orange-600 uppercase">
+              Read the paper &rarr;
+            </span>
+          </a>
+          <a
+            href="https://impact.warondisease.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-8 border-4 border-black bg-sky-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+          >
+            <div className="text-4xl sm:text-5xl font-black text-sky-600 mb-2">
+              10.7B saved
+            </div>
+            <h3 className="text-lg font-black text-black mb-3">
+              The 1% Treaty
+            </h3>
+            <p className="text-sm text-black/70 leading-relaxed font-medium">
+              Redirecting just 1% of global military spending ($27.2B/year) to
+              pragmatic clinical trials could prevent 10.7 billion deaths and
+              accelerate treatment access by 212 years. Trial costs drop from
+              $41K to $929 per patient.
+            </p>
+            <span className="mt-4 inline-flex items-center text-xs font-black text-sky-600 uppercase">
+              Read the paper &rarr;
+            </span>
+          </a>
+        </div>
+        <div className="text-center mt-8">
+          <a
+            href="https://manual.warondisease.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
+          >
+            Read the full manual: How to End War and Disease &rarr;
+          </a>
+        </div>
+      </section>
+
       {/* The Two Metrics That Matter */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">

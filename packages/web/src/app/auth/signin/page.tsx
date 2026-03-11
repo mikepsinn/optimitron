@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AuthForm } from "@/components/auth/AuthForm";
 
-export default function SignInPage() {
+function SignInContent() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get("callbackUrl") || "/vote";
   const referralCode = searchParams?.get("ref") || null;
@@ -14,5 +15,13 @@ export default function SignInPage() {
         <AuthForm callbackUrl={callbackUrl} referralCode={referralCode} />
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInContent />
+    </Suspense>
   );
 }

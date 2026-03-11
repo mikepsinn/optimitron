@@ -27,10 +27,13 @@
     "test:integration": "pnpm run build:deps && vitest run src/integration-tests/"
   },
   "dependencies": {
+    "@optomitron/agent": "workspace:*",
     "@optomitron/data": "workspace:*",
+    "@optomitron/hypercerts": "workspace:*",
     "@optomitron/obg": "workspace:*",
     "@optomitron/opg": "workspace:*",
     "@optomitron/optimizer": "workspace:*",
+    "@optomitron/storage": "workspace:*",
     "@optomitron/wishocracy": "workspace:*"
   },
   "devDependencies": {
