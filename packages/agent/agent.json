@@ -1,0 +1,29 @@
+{
+  "name": "Optomitron Policy Analyst",
+  "version": "1.0.0",
+  "operatorWallet": "0x0000000000000000000000000000000000000000",
+  "erc8004Identity": "0x0000000000000000000000000000000000000000",
+  "erc8004RegistrationTx": "0x",
+  "supportedTools": [
+    "optomitron-optimizer",
+    "optomitron-opg",
+    "optomitron-obg",
+    "optomitron-data-oecd",
+    "optomitron-data-worldbank",
+    "optomitron-data-who",
+    "hypercerts-atproto",
+    "storacha-storage"
+  ],
+  "supportedTechStack": ["typescript", "node22", "atproto", "storacha", "erc8004"],
+  "computeConstraints": {
+    "maxAnalysesPerRun": 10,
+    "maxAPICallsPerRun": 100,
+    "timeoutSeconds": 300
+  },
+  "supportedTaskCategories": [
+    "policy-analysis",
+    "budget-optimization",
+    "preference-aggregation",
+    "impact-attestation"
+  ]
+}

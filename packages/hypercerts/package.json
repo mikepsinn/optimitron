@@ -1,0 +1,24 @@
+{
+  "name": "@optomitron/hypercerts",
+  "version": "0.1.0",
+  "description": "Hypercert record builders and AT Protocol publishing helpers for Optomitron",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.19.3",
+    "@atproto/jwk-jose": "^0.1.11",
+    "@atproto/oauth-client-node": "^0.3.17",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@optomitron/agent",
+  "version": "0.1.0",
+  "description": "Autonomous Optomitron policy analyst with Hypercerts and Storacha receipts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@optomitron/data": "workspace:*",
+    "@optomitron/hypercerts": "workspace:*",
+    "@optomitron/obg": "workspace:*",
+    "@optomitron/opg": "workspace:*",
+    "@optomitron/storage": "workspace:*",
+    "@optomitron/wishocracy": "workspace:*",
+    "ethers": "^6.16.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
