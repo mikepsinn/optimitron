@@ -59,3 +59,4 @@ packages/db/prisma/dev.db
 # Local scratch files
 tmp-*
 NUL
+.vercel
