@@ -46,7 +46,6 @@ reports/*.md
 !reports/.gitkeep
 
 # Prisma
-packages/db/prisma/migrations/
 packages/db/prisma/dev.db
 
 # Terraform / infra state

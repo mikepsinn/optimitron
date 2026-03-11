@@ -40,7 +40,11 @@ function makeRecommendation(overrides: Partial<PolicyRecommendation> = {}): Poli
     recommendationType: 'enact',
     welfareEffect: {
       incomeEffect: 0.25,
+      incomeEffectCILow: 0.18,
+      incomeEffectCIHigh: 0.31,
       healthEffect: 0.15,
+      healthEffectCILow: 0.10,
+      healthEffectCIHigh: 0.20,
     },
     evidenceGrade: 'A',
     policyImpactScore: 0.85,
@@ -90,7 +94,11 @@ function makeFullResult(overrides: Partial<PolicyRankingResult> = {}): PolicyRan
       recommendedTarget: '$2.50/pack',
       welfareEffect: {
         incomeEffect: -0.02,
+        incomeEffectCILow: -0.05,
+        incomeEffectCIHigh: 0.01,
         healthEffect: 0.25,
+        healthEffectCILow: 0.18,
+        healthEffectCIHigh: 0.32,
       },
       evidenceGrade: 'A',
       policyImpactScore: 0.85,
@@ -112,7 +120,11 @@ function makeFullResult(overrides: Partial<PolicyRankingResult> = {}): PolicyRan
       recommendationType: 'enact',
       welfareEffect: {
         incomeEffect: 0.02,
+        incomeEffectCILow: 0.00,
+        incomeEffectCIHigh: 0.04,
         healthEffect: 0.15,
+        healthEffectCILow: 0.10,
+        healthEffectCIHigh: 0.20,
       },
       evidenceGrade: 'A',
       policyImpactScore: 0.81,
@@ -173,7 +185,7 @@ describe('generatePolicyReport', () => {
   it('contains top policies welfare impact table', () => {
     const report = generatePolicyReport(makeFullResult());
     expect(report).toContain('## Top Policies by Welfare Impact');
-    expect(report).toContain('| Rank | Policy | Recommendation | Welfare Score | Evidence | Causal Confidence |');
+    expect(report).toContain('| Rank | Policy | Recommendation | Welfare Score | Welfare 95% CI | Evidence | Causal Confidence |');
     expect(report).toContain('Universal Pre-K');
     expect(report).toContain('Tobacco Excise Tax');
     expect(report).toContain('Primary Seat Belt Enforcement');
@@ -198,6 +210,12 @@ describe('generatePolicyReport', () => {
     const report = generatePolicyReport(makeFullResult());
     // Pre-K: (0.25+0.15)*100 = 40.0
     expect(report).toContain('40.0');
+  });
+
+  it('shows welfare confidence intervals when available', () => {
+    const report = generatePolicyReport(makeFullResult());
+    expect(report).toContain('[28.0, 51.0]');
+    expect(report).toContain('Welfare 95% CI: 28.0 to 51.0');
   });
 
   it('shows causal confidence labels', () => {

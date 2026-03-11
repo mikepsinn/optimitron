@@ -9,6 +9,7 @@
 import type { SpendingGap, SpendingCategory, OSLEstimate } from './budget.js';
 import type { DiminishingReturnsModel } from './diminishing-returns.js';
 import type { WESCalculationResult } from './budget-impact-score.js';
+import type { WelfareEffect } from '@optomitron/opg';
 
 // ---------------------------------------------------------------------------
 // Result types
@@ -87,6 +88,45 @@ function formatPct(value: number, decimals: number = 1): string {
   if (!isFinite(value)) return 'N/A';
   const prefix = value > 0 ? '+' : '';
   return `${prefix}${value.toFixed(decimals)}%`;
+}
+
+/**
+ * Format a confidence interval when both bounds are available.
+ */
+function formatConfidenceInterval(
+  low?: number,
+  high?: number,
+): string {
+  if (low === undefined || high === undefined) {
+    return '—';
+  }
+  return `[${formatUsd(low)}, ${formatUsd(high)}]`;
+}
+
+/**
+ * Format the welfare effect interval when both metric CIs are available.
+ */
+function formatWelfareEffectInterval(effect: WelfareEffect): string | null {
+  const {
+    incomeEffectCILow,
+    incomeEffectCIHigh,
+    healthEffectCILow,
+    healthEffectCIHigh,
+  } = effect;
+
+  if (
+    incomeEffectCILow === undefined ||
+    incomeEffectCIHigh === undefined ||
+    healthEffectCILow === undefined ||
+    healthEffectCIHigh === undefined
+  ) {
+    return null;
+  }
+
+  return (
+    `Income ${formatPct(incomeEffectCILow * 100)} to ${formatPct(incomeEffectCIHigh * 100)}; ` +
+    `Health ${formatPct(healthEffectCILow * 100)} to ${formatPct(healthEffectCIHigh * 100)}`
+  );
 }
 
 /**
@@ -327,12 +367,12 @@ export function generateBudgetReport(
   }
   lines.push('');
 
-  // --- Current vs Optimal Allocation ---
+    // --- Current vs Optimal Allocation ---
   if (analysis.categories.length > 0) {
     lines.push('## Current vs Optimal Allocation');
     lines.push('');
-    lines.push('| Category | Current ($) | Current (%) | Optimal ($) | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |');
-    lines.push('|----------|------------|-------------|------------|-------------|---------|---------|--------|----------|');
+    lines.push('| Category | Current ($) | Current (%) | Optimal ($) | Optimal 95% CI | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |');
+    lines.push('|----------|------------|-------------|------------|----------------|-------------|---------|---------|--------|----------|');
 
     const sortedByGap = [...analysis.categories].sort(
       (a, b) => Math.abs(b.gap.gapUsd) - Math.abs(a.gap.gapUsd)
@@ -353,6 +393,7 @@ export function generateBudgetReport(
         `| ${formatUsd(cat.category.currentSpendingUsd)} ` +
         `| ${formatNum(currentPct)}% ` +
         `| ${formatUsd(cat.oslEstimate.oslUsd)} ` +
+        `| ${formatConfidenceInterval(cat.oslEstimate.ciLow, cat.oslEstimate.ciHigh)} ` +
         `| ${formatNum(optimalPct)}% ` +
         `| ${formatGapUsd(cat.gap.gapUsd)} ` +
         `| ${formatPct(cat.gap.gapPct)} ` +
@@ -378,6 +419,9 @@ export function generateBudgetReport(
       lines.push('');
       lines.push(`- **Current Spending:** ${formatUsd(cat.category.currentSpendingUsd)}`);
       lines.push(`- **Optimal Spending Level:** ${formatUsd(cat.oslEstimate.oslUsd)}`);
+      if (cat.oslEstimate.ciLow !== undefined && cat.oslEstimate.ciHigh !== undefined) {
+        lines.push(`- **Optimal 95% CI:** ${formatConfidenceInterval(cat.oslEstimate.ciLow, cat.oslEstimate.ciHigh)}`);
+      }
       if (cat.elasticity !== undefined) {
         const sign = cat.elasticity < 0 ? '' : '';
         lines.push(`- **Elasticity:** ${sign}${cat.elasticity.toFixed(2)} (1% spending increase → ${cat.elasticity.toFixed(2)}% outcome increase)`);
@@ -439,6 +483,10 @@ export function generateBudgetReport(
           `WES: ${formatNum(cat.oslEstimate.welfareEvidenceScore, 2)}; ` +
           `Evidence: ${cat.oslEstimate.evidenceGrade} (${describeGrade(cat.oslEstimate.evidenceGrade)})`
         );
+        const welfareEffectInterval = formatWelfareEffectInterval(cat.gap.welfareEffect);
+        if (welfareEffectInterval) {
+          lines.push(`   - Welfare 95% CI: ${welfareEffectInterval}`);
+        }
         if (cat.elasticity !== undefined) {
           lines.push(`   - Elasticity: ${cat.elasticity.toFixed(2)} (1% spending increase → ${cat.elasticity.toFixed(2)}% outcome increase)`);
         } else if (cat.marginalReturn !== undefined) {

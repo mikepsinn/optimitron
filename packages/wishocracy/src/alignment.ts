@@ -13,6 +13,30 @@
 import type { PreferenceWeight, AlignmentScore, PreferenceGap } from './types.js';
 
 /**
+ * Gap, in percentage points, at which a single category is treated as fully
+ * misaligned. Public budgets are finite, so a 25-point miss already implies a
+ * materially different governing priority mix.
+ */
+export const FULL_MISALIGNMENT_GAP_PCT = 25;
+
+/**
+ * Convert a percentage-point gap into a bounded alignment score in [0, 1].
+ * Small misses remain visible, while very large misses saturate at 0.
+ */
+export function scoreCategoryAlignment(
+  preferredPct: number,
+  votedPct: number,
+  fullMisalignmentGapPct: number = FULL_MISALIGNMENT_GAP_PCT,
+): number {
+  if (fullMisalignmentGapPct <= 0) {
+    return preferredPct === votedPct ? 1 : 0;
+  }
+
+  const gapPct = Math.abs(preferredPct - votedPct);
+  return Math.max(0, 1 - gapPct / fullMisalignmentGapPct);
+}
+
+/**
  * Calculate Citizen Alignment Score for a politician
  * 
  * Compares how a politician's votes align with citizen preferences.
@@ -35,15 +59,8 @@ export function calculateAlignmentScore(
 
     votesCompared++;
 
-    // Per-category alignment: min/max ratio, naturally bounded [0, 1].
-    //   - Perfect match → 1.0
-    //   - Citizens want 5%, politician votes 10% → 5/10 = 0.50
-    //   - Citizens want 80%, politician votes 20% → 20/80 = 0.25
-    // Symmetric: over-allocating and under-allocating by the same ratio penalize equally.
     const preferredPct = pref.weight * 100;
-    const maxVal = Math.max(preferredPct, votedPct);
-    const minVal = Math.min(preferredPct, votedPct);
-    const itemAlignment = maxVal > 0 ? minVal / maxVal : 1; // both 0 → agree
+    const itemAlignment = scoreCategoryAlignment(preferredPct, votedPct);
     const weight = pref.weight;
 
     totalWeightedAlignment += itemAlignment * weight;

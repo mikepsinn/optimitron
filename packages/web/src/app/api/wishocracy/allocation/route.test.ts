@@ -1,20 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const requireAuth = vi.fn();
-const findFirst = vi.fn();
-const update = vi.fn();
-const create = vi.fn();
+const mocks = vi.hoisted(() => ({
+  requireAuth: vi.fn(),
+  findFirst: vi.fn(),
+  update: vi.fn(),
+  create: vi.fn(),
+}));
 
 vi.mock("@/lib/auth-utils", () => ({
-  requireAuth,
+  requireAuth: mocks.requireAuth,
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     wishocraticAllocation: {
-      findFirst,
-      update,
-      create,
+      findFirst: mocks.findFirst,
+      update: mocks.update,
+      create: mocks.create,
     },
   },
 }));
@@ -23,14 +25,14 @@ import { POST } from "./route";
 
 describe("wishocracy allocation route", () => {
   beforeEach(() => {
-    requireAuth.mockReset();
-    findFirst.mockReset();
-    update.mockReset();
-    create.mockReset();
+    mocks.requireAuth.mockReset();
+    mocks.findFirst.mockReset();
+    mocks.update.mockReset();
+    mocks.create.mockReset();
   });
 
   it("returns 401 when authentication fails", async () => {
-    requireAuth.mockRejectedValue(new Error("Unauthorized"));
+    mocks.requireAuth.mockRejectedValue(new Error("Unauthorized"));
 
     const response = await POST(
       new Request("http://localhost/api/wishocracy/allocation", {
@@ -44,7 +46,7 @@ describe("wishocracy allocation route", () => {
   });
 
   it("rejects invalid allocation totals", async () => {
-    requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
 
     const response = await POST(
       new Request("http://localhost/api/wishocracy/allocation", {
@@ -59,13 +61,13 @@ describe("wishocracy allocation route", () => {
     );
 
     expect(response.status).toBe(400);
-    expect(create).not.toHaveBeenCalled();
-    expect(update).not.toHaveBeenCalled();
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 
   it("normalizes reversed category pairs before creating allocations", async () => {
-    requireAuth.mockResolvedValue({ userId: "user_1" });
-    findFirst.mockResolvedValue(null);
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findFirst.mockResolvedValue(null);
 
     const response = await POST(
       new Request("http://localhost/api/wishocracy/allocation", {
@@ -80,14 +82,14 @@ describe("wishocracy allocation route", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(findFirst).toHaveBeenCalledWith({
+    expect(mocks.findFirst).toHaveBeenCalledWith({
       where: {
         userId: "user_1",
         categoryA: "ADDICTION_TREATMENT",
         categoryB: "MILITARY_OPERATIONS",
       },
     });
-    expect(create).toHaveBeenCalledWith({
+    expect(mocks.create).toHaveBeenCalledWith({
       data: {
         userId: "user_1",
         categoryA: "ADDICTION_TREATMENT",

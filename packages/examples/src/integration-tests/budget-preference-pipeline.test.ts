@@ -18,6 +18,7 @@ import {
   type Item,
   type PreferenceWeight,
   aggregateComparisons,
+  bootstrapConfidenceIntervals,
   buildComparisonMatrix,
   principalEigenvector,
   consistencyRatio,
@@ -234,6 +235,10 @@ describe('Budget Preference Pipeline — End-to-End', () => {
 
   // Step 4: Extract preference weights
   const weights = principalEigenvector(matrix);
+  const ciResult = bootstrapConfidenceIntervals(allComparisons, {
+    iterations: 40,
+    seed: 42,
+  });
 
   describe('Step 4: Preference Weights', () => {
     it('should sum to approximately 1', () => {
@@ -259,6 +264,18 @@ describe('Budget Preference Pipeline — End-to-End', () => {
       expect(
         top3Ids.includes('education') || top3Ids.includes('public_safety'),
       ).toBe(true);
+    });
+  });
+
+  describe('Step 4b: Bootstrap Confidence Intervals', () => {
+    it('should produce confidence intervals for each category weight', () => {
+      expect(ciResult.weights).toHaveLength(10);
+      for (const weight of ciResult.weights) {
+        expect(weight.ciLow).toBeDefined();
+        expect(weight.ciHigh).toBeDefined();
+        expect(weight.weight).toBeGreaterThanOrEqual(weight.ciLow ?? 0);
+        expect(weight.weight).toBeLessThanOrEqual(weight.ciHigh ?? 1);
+      }
     });
   });
 

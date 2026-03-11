@@ -1,20 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getCurrentUser = vi.fn();
-const findMany = vi.fn();
-const deleteMany = vi.fn();
-const createMany = vi.fn();
+const mocks = vi.hoisted(() => ({
+  getCurrentUser: vi.fn(),
+  findMany: vi.fn(),
+  deleteMany: vi.fn(),
+  createMany: vi.fn(),
+}));
 
 vi.mock("@/lib/auth-utils", () => ({
-  getCurrentUser,
+  getCurrentUser: mocks.getCurrentUser,
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     wishocraticAllocation: {
-      findMany,
-      deleteMany,
-      createMany,
+      findMany: mocks.findMany,
+      deleteMany: mocks.deleteMany,
+      createMany: mocks.createMany,
     },
   },
 }));
@@ -32,15 +34,15 @@ import { GET, PATCH } from "./route";
 
 describe("wishocracy allocations route", () => {
   beforeEach(() => {
-    getCurrentUser.mockReset();
-    findMany.mockReset();
-    deleteMany.mockReset();
-    createMany.mockReset();
+    mocks.getCurrentUser.mockReset();
+    mocks.findMany.mockReset();
+    mocks.deleteMany.mockReset();
+    mocks.createMany.mockReset();
   });
 
   it("dedupes by pair and normalizes the latest saved orientation on GET", async () => {
-    getCurrentUser.mockResolvedValue({ id: "user_1" });
-    findMany.mockResolvedValue([
+    mocks.getCurrentUser.mockResolvedValue({ id: "user_1" });
+    mocks.findMany.mockResolvedValue([
       {
         categoryA: "ADDICTION_TREATMENT",
         categoryB: "MILITARY_OPERATIONS",
@@ -72,7 +74,7 @@ describe("wishocracy allocations route", () => {
   });
 
   it("returns 401 for unauthenticated PATCH requests", async () => {
-    getCurrentUser.mockResolvedValue(null);
+    mocks.getCurrentUser.mockResolvedValue(null);
 
     const response = await PATCH(
       new Request("http://localhost/api/wishocracy/allocations", {
@@ -82,11 +84,11 @@ describe("wishocracy allocations route", () => {
     );
 
     expect(response.status).toBe(401);
-    expect(createMany).not.toHaveBeenCalled();
+    expect(mocks.createMany).not.toHaveBeenCalled();
   });
 
   it("normalizes reversed comparisons before recreating saved allocations", async () => {
-    getCurrentUser.mockResolvedValue({ id: "user_1" });
+    mocks.getCurrentUser.mockResolvedValue({ id: "user_1" });
 
     const response = await PATCH(
       new Request("http://localhost/api/wishocracy/allocations", {
@@ -106,7 +108,7 @@ describe("wishocracy allocations route", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(deleteMany).toHaveBeenCalledWith({
+    expect(mocks.deleteMany).toHaveBeenCalledWith({
       where: {
         userId: "user_1",
         OR: [
@@ -121,7 +123,7 @@ describe("wishocracy allocations route", () => {
         ],
       },
     });
-    expect(createMany).toHaveBeenCalledWith({
+    expect(mocks.createMany).toHaveBeenCalledWith({
       data: [
         {
           userId: "user_1",

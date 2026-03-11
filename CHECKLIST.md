@@ -208,8 +208,8 @@ Last updated: 2026-02-06.
 - [x] **Zod validators** — auto-generate from Prisma via `zod-prisma-types` (HIGH)
 - [x] **Variable category seed data** — sensible defaults per category (onset delay, duration, filling, combination op) (HIGH)
   - Legacy has ~30 hardcoded category classes with defaults
-- [ ] **Schema validation tests** — test that seed data matches schema constraints (MEDIUM)
-- [ ] **Migration setup** — needs DATABASE_URL for `prisma migrate` (MEDIUM)
+- [x] **Schema validation tests** — Zod schema coverage plus committed migration asset checks and env-gated seed smoke test in `packages/db/src/__tests__/`
+- [x] **Migration setup** — Docker Compose Postgres + committed Prisma migrations + root `db:*` workflow
 - [ ] **CommonTag model** — variable parent-child hierarchy (MEDIUM)
 - [ ] **UserTag model** — per-user variable aliasing (LOW)
 - [ ] **CorrelationVote models** — causality + usefulness voting (MEDIUM)
@@ -218,7 +218,7 @@ Last updated: 2026-02-06.
   - `analysisRequestedAt` exists but no scheduling logic
 
 ### Test Gaps
-- [ ] Seed script execution test (needs DATABASE_URL)
+- [x] Seed script execution test (env-gated `packages/db/src/__tests__/seed.integration.test.ts`)
 - [ ] Enum completeness validation
 - [ ] Foreign key integrity tests
 
@@ -299,4 +299,3 @@ Last updated: 2026-02-06.
 28. Analysis queue / scheduling (@optomitron/db)
 29. CorrelationVote models (@optomitron/db)
 30. Study model (@optomitron/db)
-

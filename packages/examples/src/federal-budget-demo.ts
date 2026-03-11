@@ -16,8 +16,8 @@ import {
   type PairwiseComparison,
   type Item,
   aggregateComparisons,
+  bootstrapConfidenceIntervals,
   buildComparisonMatrix,
-  principalEigenvector,
   consistencyRatio,
   calculatePreferenceGaps,
 } from '@optomitron/wishocracy';
@@ -195,23 +195,18 @@ function main(): void {
   const entries = aggregateComparisons(allComparisons);
   const itemIds = categories.map(c => c.id);
   const matrix = buildComparisonMatrix(itemIds, entries);
+  const ciResult = bootstrapConfidenceIntervals(allComparisons, {
+    iterations: 300,
+    seed: 42,
+  });
 
-  // 3. Extract eigenvector weights
-  const weights = principalEigenvector(matrix);
-
-  // 4. Consistency check
+  // 3. Consistency check
   const cr = consistencyRatio(matrix);
 
-  // 5. Build PreferenceWeight array for gap analysis
-  const indexed = weights.map((w, i) => ({ itemId: itemIds[i]!, weight: w }));
-  indexed.sort((a, b) => b.weight - a.weight);
-  const preferenceWeights = indexed.map((pw, rank) => ({
-    itemId: pw.itemId,
-    weight: pw.weight,
-    rank: rank + 1,
-  }));
+  // 4. Preference weights with confidence intervals
+  const preferenceWeights = ciResult.weights;
 
-  // 6. Preference gaps
+  // 5. Preference gaps
   const gaps = calculatePreferenceGaps(preferenceWeights, categories, TOTAL_BUDGET_USD);
 
   // ─── Markdown report ──────────────────────────────────────────────
@@ -226,6 +221,7 @@ function main(): void {
   add(`**Comparisons:** ${allComparisons.length.toLocaleString()}`);
   add(`**Total Budget:** $${(TOTAL_BUDGET_USD / 1e12).toFixed(2)}T (FY 2025 est.)`);
   add(`**Consistency Ratio:** ${cr.toFixed(4)} ${cr < 0.1 ? '✅ (< 0.10 threshold)' : '⚠️ (> 0.10 — inconsistent)'}`);
+  add(`**Preference CI bootstrap:** ${ciResult.iterations} iterations at ${(ciResult.confidenceLevel * 100).toFixed(0)}% confidence`);
   add('');
 
   // Archetype summary
@@ -242,11 +238,14 @@ function main(): void {
   // Weights table
   add('## Preference Weights (Eigenvector)');
   add('');
-  add('| Rank | Category | Weight | Desired % |');
-  add('|-----:|----------|-------:|----------:|');
+  add('| Rank | Category | Weight | Desired % | 95% CI |');
+  add('|-----:|----------|-------:|----------:|---------|');
   for (const pw of preferenceWeights) {
     const cat = categories.find(c => c.id === pw.itemId);
-    add(`| ${pw.rank} | ${cat?.name ?? pw.itemId} | ${pw.weight.toFixed(4)} | ${(pw.weight * 100).toFixed(1)}% |`);
+    const ci = pw.ciLow !== undefined && pw.ciHigh !== undefined
+      ? `[${(pw.ciLow * 100).toFixed(1)}%, ${(pw.ciHigh * 100).toFixed(1)}%]`
+      : '—';
+    add(`| ${pw.rank} | ${cat?.name ?? pw.itemId} | ${pw.weight.toFixed(4)} | ${(pw.weight * 100).toFixed(1)}% | ${ci} |`);
   }
   add('');
 

@@ -11,10 +11,9 @@
 import {
   type PairwiseComparison,
   type Item,
-  type PreferenceWeight,
   aggregateComparisons,
+  bootstrapConfidenceIntervals,
   buildComparisonMatrix,
-  principalEigenvector,
   consistencyRatio,
   calculateAlignmentScore,
   calculatePreferenceGaps,
@@ -247,17 +246,12 @@ function main(): void {
   const entries = aggregateComparisons(allComparisons);
   const itemIds = categories.map(c => c.id);
   const matrix = buildComparisonMatrix(itemIds, entries);
-  const weights = principalEigenvector(matrix);
   const cr = consistencyRatio(matrix);
-
-  // Build PreferenceWeight array
-  const indexed = weights.map((w, i) => ({ itemId: itemIds[i]!, weight: w }));
-  indexed.sort((a, b) => b.weight - a.weight);
-  const preferenceWeights: PreferenceWeight[] = indexed.map((pw, rank) => ({
-    itemId: pw.itemId,
-    weight: pw.weight,
-    rank: rank + 1,
-  }));
+  const ciResult = bootstrapConfidenceIntervals(allComparisons, {
+    iterations: 300,
+    seed: 999,
+  });
+  const preferenceWeights = ciResult.weights;
 
   // 3. Calculate alignment for each politician
   const alignmentScores = politicians.map(pol => {
@@ -293,16 +287,20 @@ function main(): void {
   add(`**Policy categories:** ${categories.length}`);
   add(`**Politicians evaluated:** ${politicians.length}`);
   add(`**Consistency Ratio:** ${cr.toFixed(4)} ${cr < 0.1 ? '✅' : '⚠️'}`);
+  add(`**Preference CI bootstrap:** ${ciResult.iterations} iterations at ${(ciResult.confidenceLevel * 100).toFixed(0)}% confidence`);
   add('');
 
   // Citizen preference weights
   add('## Aggregated Citizen Preferences');
   add('');
-  add('| Rank | Category | Weight | Desired % |');
-  add('|-----:|----------|-------:|----------:|');
+  add('| Rank | Category | Weight | Desired % | 95% CI |');
+  add('|-----:|----------|-------:|----------:|---------|');
   for (const pw of preferenceWeights) {
     const cat = categories.find(c => c.id === pw.itemId);
-    add(`| ${pw.rank} | ${cat?.name ?? pw.itemId} | ${pw.weight.toFixed(4)} | ${(pw.weight * 100).toFixed(1)}% |`);
+    const ci = pw.ciLow !== undefined && pw.ciHigh !== undefined
+      ? `[${(pw.ciLow * 100).toFixed(1)}%, ${(pw.ciHigh * 100).toFixed(1)}%]`
+      : '—';
+    add(`| ${pw.rank} | ${cat?.name ?? pw.itemId} | ${pw.weight.toFixed(4)} | ${(pw.weight * 100).toFixed(1)}% | ${ci} |`);
   }
   add('');
 

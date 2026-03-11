@@ -6,12 +6,15 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "prisma generate && tsc",
+    "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate --schema prisma/schema.prisma",
+    "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
+    "prisma:push": "prisma db push --schema prisma/schema.prisma",
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",

@@ -16,6 +16,7 @@ import {
   type Item,
   type PreferenceWeight,
   aggregateComparisons,
+  bootstrapConfidenceIntervals,
   buildComparisonMatrix,
   principalEigenvector,
   consistencyRatio,
@@ -221,6 +222,10 @@ describe('Politician Alignment Pipeline — End-to-End', () => {
   const matrix = buildComparisonMatrix(itemIds, entries);
   const weights = principalEigenvector(matrix);
   const cr = consistencyRatio(matrix);
+  const ciResult = bootstrapConfidenceIntervals(allComparisons, {
+    iterations: 40,
+    seed: 777,
+  });
 
   const indexed = weights.map((w, i) => ({ itemId: itemIds[i]!, weight: w }));
   indexed.sort((a, b) => b.weight - a.weight);
@@ -247,6 +252,18 @@ describe('Politician Alignment Pipeline — End-to-End', () => {
     it('should rank items from 1 to 8', () => {
       const ranks = preferenceWeights.map(pw => pw.rank).sort((a, b) => a - b);
       expect(ranks).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    });
+  });
+
+  describe('Step 2b: Preference Weight Confidence Intervals', () => {
+    it('should attach confidence intervals to each aggregated preference weight', () => {
+      expect(ciResult.weights).toHaveLength(8);
+      for (const weight of ciResult.weights) {
+        expect(weight.ciLow).toBeDefined();
+        expect(weight.ciHigh).toBeDefined();
+        expect(weight.weight).toBeGreaterThanOrEqual(weight.ciLow ?? 0);
+        expect(weight.weight).toBeLessThanOrEqual(weight.ciHigh ?? 1);
+      }
     });
   });
 

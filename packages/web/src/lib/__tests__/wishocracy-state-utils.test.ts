@@ -1,23 +1,41 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getPendingWishocracy = vi.fn();
+const mocks = vi.hoisted(() => ({
+  getPendingWishocracy: vi.fn(),
+  syncPendingWishocracy: vi.fn(),
+}));
 
 vi.mock("@/lib/storage", () => ({
   storage: {
-    getPendingWishocracy,
+    getPendingWishocracy: mocks.getPendingWishocracy,
   },
 }));
 
+vi.mock("@/lib/wishocracy-utils", async () => {
+  const actual = await vi.importActual<typeof import("../wishocracy-utils")>(
+    "../wishocracy-utils",
+  );
+
+  return {
+    ...actual,
+    syncPendingWishocracy: mocks.syncPendingWishocracy,
+  };
+});
+
 import {
   buildSelectedPairQueue,
+  getInitialGuestState,
   getRejectedCategories,
+  hydrateAuthenticatedState,
   hydrateGuestState,
   shouldShowIntro,
 } from "../wishocracy-state-utils";
 
 describe("wishocracy state utils", () => {
   beforeEach(() => {
-    getPendingWishocracy.mockReset();
+    mocks.getPendingWishocracy.mockReset();
+    mocks.syncPendingWishocracy.mockReset();
+    vi.unstubAllGlobals();
   });
 
   it("marks both categories as rejected for 0/0 comparisons", () => {
@@ -69,7 +87,7 @@ describe("wishocracy state utils", () => {
   });
 
   it("hydrates guest progress from local storage and filters invalid pairs", () => {
-    getPendingWishocracy.mockReturnValue({
+    mocks.getPendingWishocracy.mockReturnValue({
       comparisons: [
         {
           categoryA: "PRAGMATIC_CLINICAL_TRIALS",
@@ -134,5 +152,88 @@ describe("wishocracy state utils", () => {
         new Set(),
       ),
     ).toBe(false);
+  });
+
+  it("creates the initial guest state with a random batch and intro enabled", () => {
+    const state = getInitialGuestState();
+
+    expect(state.comparisons).toEqual([]);
+    expect(state.selectedCategories.size).toBe(0);
+    expect(state.rejectedCategories.size).toBe(0);
+    expect(state.shuffledPairs).toHaveLength(25);
+    expect(state.showIntro).toBe(true);
+  });
+
+  it("hydrates authenticated state from synced server data", async () => {
+    mocks.syncPendingWishocracy.mockResolvedValue(true);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        json: async () => ({
+          allocations: [
+            {
+              categoryA: "PRAGMATIC_CLINICAL_TRIALS",
+              categoryB: "ADDICTION_TREATMENT",
+              allocationA: 60,
+              allocationB: 40,
+            },
+            {
+              categoryA: "NOT_REAL_CATEGORY",
+              categoryB: "ADDICTION_TREATMENT",
+              allocationA: 20,
+              allocationB: 80,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        json: async () => ({
+          selections: [
+            {
+              categoryId: "PRAGMATIC_CLINICAL_TRIALS",
+              selected: true,
+            },
+            {
+              categoryId: "ADDICTION_TREATMENT",
+              selected: true,
+            },
+            {
+              categoryId: "EARLY_CHILDHOOD_EDUCATION",
+              selected: true,
+            },
+          ],
+        }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const state = await hydrateAuthenticatedState({
+      user: {
+        id: "user_1",
+      },
+    } as never);
+
+    expect(mocks.syncPendingWishocracy).toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/wishocracy/allocations");
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/wishocracy/category-selections");
+    expect(state.selectedCategories).toEqual(
+      new Set([
+        "PRAGMATIC_CLINICAL_TRIALS",
+        "ADDICTION_TREATMENT",
+        "EARLY_CHILDHOOD_EDUCATION",
+      ]),
+    );
+    expect(state.comparisons).toEqual([
+      {
+        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
+        categoryB: "ADDICTION_TREATMENT",
+        allocationA: 60,
+        allocationB: 40,
+      },
+    ]);
+    expect(state.rejectedCategories.size).toBe(0);
+    expect(state.shuffledPairs).toEqual([
+      ["PRAGMATIC_CLINICAL_TRIALS", "EARLY_CHILDHOOD_EDUCATION"],
+      ["ADDICTION_TREATMENT", "EARLY_CHILDHOOD_EDUCATION"],
+    ]);
+    expect(state.showIntro).toBe(false);
   });
 });

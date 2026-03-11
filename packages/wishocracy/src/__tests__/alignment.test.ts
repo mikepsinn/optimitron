@@ -3,6 +3,7 @@ import {
   calculateAlignmentScore,
   calculatePreferenceGaps,
   rankPoliticians,
+  scoreCategoryAlignment,
 } from '../alignment.js';
 import type { PreferenceWeight, AlignmentScore } from '../types.js';
 
@@ -110,6 +111,10 @@ describe('calculateAlignmentScore', () => {
 
     // Politician B should score higher because they align on the item citizens care about more
     expect(scoreB.score).toBeGreaterThan(scoreA.score);
+  });
+
+  it('penalizes a several-point category miss more than the old near-perfect range', () => {
+    expect(scoreCategoryAlignment(40, 35.3) * 100).toBeCloseTo(81.2, 1);
   });
 
   it('politician who doubles spending vs citizen preference scores meaningfully lower', () => {

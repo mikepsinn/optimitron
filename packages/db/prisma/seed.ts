@@ -29,6 +29,7 @@ import {
   JurisdictionType,
   type Prisma,
 } from "@prisma/client";
+import { pathToFileURL } from "node:url";
 
 const prisma = new PrismaClient();
 
@@ -673,7 +674,7 @@ async function seedBudgetItems(usJurisdictionId: string) {
 // MAIN
 // ============================================================================
 
-async function main() {
+export async function seedDatabase() {
   console.log("🌱 Starting Optomitron seed...\n");
 
   const unitMap = await seedUnits();
@@ -685,11 +686,21 @@ async function main() {
   console.log("\n🎉 Seed complete!");
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Seed failed:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+export async function disconnectSeedClient() {
+  await prisma.$disconnect();
+}
+
+const isMainModule =
+  process.argv[1] !== undefined &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMainModule) {
+  seedDatabase()
+    .catch((e) => {
+      console.error("❌ Seed failed:", e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await disconnectSeedClient();
+    });
+}

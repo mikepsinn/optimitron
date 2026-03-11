@@ -87,6 +87,34 @@ function welfareScore(rec: PolicyRecommendation): number {
 }
 
 /**
+ * Calculate welfare score confidence interval when component CIs are available.
+ */
+function welfareScoreConfidenceInterval(
+  rec: PolicyRecommendation,
+): [number, number] | null {
+  const {
+    incomeEffectCILow,
+    incomeEffectCIHigh,
+    healthEffectCILow,
+    healthEffectCIHigh,
+  } = rec.welfareEffect;
+
+  if (
+    incomeEffectCILow === undefined ||
+    incomeEffectCIHigh === undefined ||
+    healthEffectCILow === undefined ||
+    healthEffectCIHigh === undefined
+  ) {
+    return null;
+  }
+
+  return [
+    (incomeEffectCILow + healthEffectCILow) * 100,
+    (incomeEffectCIHigh + healthEffectCIHigh) * 100,
+  ];
+}
+
+/**
  * Describe a Bradford Hill criterion score.
  */
 function describeBHScore(score: number | null | undefined): string {
@@ -192,12 +220,13 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
 
     lines.push('## Top Policies by Welfare Impact');
     lines.push('');
-    lines.push('| Rank | Policy | Recommendation | Welfare Score | Evidence | Causal Confidence |');
-    lines.push('|------|--------|----------------|--------------|----------|-------------------|');
+    lines.push('| Rank | Policy | Recommendation | Welfare Score | Welfare 95% CI | Evidence | Causal Confidence |');
+    lines.push('|------|--------|----------------|--------------|----------------|----------|-------------------|');
 
     for (let i = 0; i < ranked.length; i++) {
       const p = ranked[i]!;
       const ws = welfareScore(p.recommendation);
+      const wsCi = welfareScoreConfidenceInterval(p.recommendation);
       const grade = p.recommendation.evidenceGrade;
       const confidence = describeCausalConfidence(p.causalConfidenceScore);
 
@@ -206,6 +235,7 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
         `| ${p.policy.name} ` +
         `| ${describeRecommendationType(p.recommendation.recommendationType)} ` +
         `| ${fmt(ws)} ` +
+        `| ${wsCi ? `[${fmt(wsCi[0])}, ${fmt(wsCi[1])}]` : '—'} ` +
         `| ${grade} (${describeGrade(grade)}) ` +
         `| ${confidence} |`
       );
@@ -285,6 +315,10 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
             `welfare impact: ${fmt(ws)}`
           );
           lines.push(`   - Priority score: ${fmt(rec.priorityScore, 2)}; Policy impact score: ${fmt(rec.policyImpactScore, 2)}`);
+          const welfareCi = welfareScoreConfidenceInterval(rec);
+          if (welfareCi) {
+            lines.push(`   - Welfare 95% CI: ${fmt(welfareCi[0])} to ${fmt(welfareCi[1])}`);
+          }
 
           if (rec.rationale) {
             lines.push(`   - ${rec.rationale}`);

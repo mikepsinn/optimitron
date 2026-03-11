@@ -29,6 +29,8 @@ function makeOSL(overrides: Partial<OSLEstimate> = {}): OSLEstimate {
     categoryId: 'education',
     estimationMethod: 'diminishing_returns',
     oslUsd: 62_000_000_000,
+    ciLow: 55_000_000_000,
+    ciHigh: 70_000_000_000,
     evidenceGrade: 'B',
     welfareEvidenceScore: 0.70,
     ...overrides,
@@ -45,7 +47,14 @@ function makeGap(overrides: Partial<SpendingGap> = {}): SpendingGap {
     gapPct: 24,
     welfareEvidenceScore: 0.70,
     priorityScore: 8_400_000_000,
-    welfareEffect: { incomeEffect: 0.15, healthEffect: 0.10 },
+    welfareEffect: {
+      incomeEffect: 0.15,
+      incomeEffectCILow: 0.10,
+      incomeEffectCIHigh: 0.20,
+      healthEffect: 0.10,
+      healthEffectCILow: 0.06,
+      healthEffectCIHigh: 0.14,
+    },
     recommendedAction: 'increase',
     ...overrides,
   };
@@ -181,10 +190,15 @@ describe('generateBudgetReport', () => {
   it('contains current vs optimal allocation table', () => {
     const report = generateBudgetReport(makeFullResult());
     expect(report).toContain('## Current vs Optimal Allocation');
-    expect(report).toContain('| Category | Current ($) | Current (%) | Optimal ($) | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |');
+    expect(report).toContain('| Category | Current ($) | Current (%) | Optimal ($) | Optimal 95% CI | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |');
     expect(report).toContain('Education');
     expect(report).toContain('Military');
     expect(report).toContain('Healthcare');
+  });
+
+  it('shows OSL confidence intervals when available', () => {
+    const report = generateBudgetReport(makeFullResult());
+    expect(report).toContain('[$55B, $70B]');
   });
 
   it('sorts allocation table by absolute gap size', () => {
@@ -222,6 +236,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('## Diminishing Returns Analysis');
     expect(report).toContain('Log-linear');
     expect(report).toContain('R² = 0.85');
+    expect(report).toContain('Optimal 95% CI');
     expect(report).toContain('Elasticity');
     expect(report).toContain('0.12');
     expect(report).toContain('Under-invested');
@@ -260,6 +275,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Decrease Military');
     expect(report).toContain('Priority: 100/100');
     expect(report).toContain('Evidence: C (Moderate evidence)');
+    expect(report).toContain('Welfare 95% CI: Income +10.0% to +20.0%; Health +6.0% to +14.0%');
   });
 
   it('sorts recommendations by priority score', () => {
