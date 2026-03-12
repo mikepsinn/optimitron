@@ -15,12 +15,19 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  generateBudgetAnalysisArtifacts,
+  type BudgetAnalysisArtifacts,
+} from './generate-budget-analysis.js';
+
+import {
   runCountryAnalysis,
   scoreToGrade,
   type AnnualTimeSeries,
 } from '@optomitron/obg';
 import {
   buildAdaptiveNumericBins,
+  partialCorrelation,
+  pearsonCorrelation,
   type NumericBin,
 } from '@optomitron/optimizer';
 
@@ -39,6 +46,13 @@ const DEFAULT_SENSITIVITY_START_YEARS = [1990, 1995, 2000] as const;
 const DEFAULT_JURISDICTIONS = [...TOP_COUNTRIES];
 const CAUSAL_ONSET_DAYS = 365;
 const CAUSAL_DURATION_DAYS = 1095;
+const COVID_EXCLUDED_YEARS = new Set([2020, 2021]);
+const HEADLINE_OUTCOME_IDS = new Set([
+  'healthy_life_expectancy_years',
+  'after_tax_median_income_ppp',
+]);
+const HEADLINE_SCORE_TOLERANCE = 0.35;
+const FLOOR_TOLERANCES = [0.15, 0.35, 0.75] as const;
 
 type OutcomeDirection = 'higher_better' | 'lower_better';
 
@@ -63,7 +77,9 @@ interface OutcomeAnalysis {
   direction: OutcomeDirection;
   weight: number;
   meanForwardPearson: number;
+  meanPredictivePearson: number;
   meanPercentChange: number;
+  meanBradfordHillStrength: number;
   positiveCount: number;
   negativeCount: number;
   jurisdictionsAnalyzed: number;
@@ -73,6 +89,13 @@ interface OutcomeAnalysis {
   p75OptimalPctGdp: number;
   confidenceScore: number;
   confidenceGrade: ReturnType<typeof scoreToGrade>;
+  pooledPctGdpCorrelation: number | null;
+  pooledPctGdpPartialCorrelation: number | null;
+  pooledPerCapitaCorrelation: number | null;
+  pooledPerCapitaPartialCorrelation: number | null;
+  pooledObservationCount: number;
+  headlineEligible: boolean;
+  headlineEligibilityReason: string;
   jurisdictions: Array<{
     jurisdictionId: string;
     jurisdictionName: string;
@@ -93,10 +116,36 @@ interface SensitivityScenario {
   optimalPctGdp: number;
   optimalBandLowPctGdp: number;
   optimalBandHighPctGdp: number;
+  usEquivalentOptimalPctGdp: number | null;
+  usEquivalentBandLowPctGdp: number | null;
+  usEquivalentBandHighPctGdp: number | null;
   usModeledSpendingPctGdp: number;
   usStatus: 'above_optimal_band' | 'below_optimal_band' | 'within_optimal_band';
   isPrimaryScenario: boolean;
 }
+
+interface ObjectiveFloor {
+  id: string;
+  name: string;
+  outcomeIds: string[];
+  tolerance: number;
+  optimalPctGdp: number;
+  optimalBandLowPctGdp: number;
+  optimalBandHighPctGdp: number;
+  optimalSpendingPerCapitaPpp: number;
+  optimalBandLowPerCapitaPpp: number;
+  optimalBandHighPerCapitaPpp: number;
+  usEquivalentOptimalPctGdp: number | null;
+  usEquivalentBandLowPctGdp: number | null;
+  usEquivalentBandHighPctGdp: number | null;
+  weightingMethod: string;
+  floorMethod: string;
+  headlineEligibleOutcomeIds: string[];
+  excludedOutcomeIds: string[];
+  qualifyingJurisdictions: number;
+}
+
+type ToleranceFloorScenario = ObjectiveFloor;
 
 interface AdaptiveBinningMetadata {
   method: string;
@@ -130,6 +179,41 @@ interface SpendingPerCapitaTier extends TierOutcomeSummary {
   maxSpendingPerCapitaPpp: number | null;
 }
 
+interface EfficientJurisdiction {
+  jurisdictionId: string;
+  jurisdictionName: string;
+  qualifyingObservations: number;
+  medianSpendingPctGdp: number;
+  medianSpendingPerCapitaPpp: number;
+  medianHealthyLifeExpectancyYears: number | null;
+  medianAfterTaxMedianIncomePpp: number | null;
+}
+
+interface FederalCompositionCategory {
+  name: string;
+  currentSpendingUsd: number;
+  targetSpendingUsd: number;
+  reallocationUsd: number;
+  reallocationPct: number;
+  evidenceGrade: string;
+  action: string;
+  isNonDiscretionary: boolean;
+  targetSharePct: number;
+}
+
+interface FederalCompositionSummary {
+  sourceBudgetLevel: string;
+  fiscalYear: number;
+  currentBudgetUsd: number;
+  unconstrainedOptimalBudgetUsd: number;
+  unconstrainedGapUsd: number;
+  unconstrainedGapPct: number;
+  compositionCaveat: string;
+  topIncreaseCategories: FederalCompositionCategory[];
+  topDecreaseCategories: FederalCompositionCategory[];
+  largestTargetShares: FederalCompositionCategory[];
+}
+
 interface GovernmentSizeAnalysisData {
   predictor: {
     id: string;
@@ -145,8 +229,11 @@ interface GovernmentSizeAnalysisData {
     };
   };
   outcomes: OutcomeAnalysis[];
+  objectiveFloors: ObjectiveFloor[];
+  toleranceSensitivity: ToleranceFloorScenario[];
   sensitivity: {
     startYearScenarios: SensitivityScenario[];
+    covidExcludedScenario: SensitivityScenario | null;
     note: string;
   };
   spendingLevelTable: {
@@ -184,14 +271,29 @@ interface GovernmentSizeAnalysisData {
     optimalPctGdp: number;
     optimalBandLowPctGdp: number;
     optimalBandHighPctGdp: number;
+    optimalSpendingPerCapitaPpp: number;
+    optimalBandLowPerCapitaPpp: number;
+    optimalBandHighPerCapitaPpp: number;
+    usEquivalentOptimalPctGdp: number | null;
+    usEquivalentBandLowPctGdp: number | null;
+    usEquivalentBandHighPctGdp: number | null;
     weightingMethod: string;
+    floorMethod: string;
+    headlineEligibleOutcomeIds: string[];
+    excludedOutcomeIds: string[];
+    qualifyingJurisdictions: number;
   };
   usSnapshot: {
     latestYear: number;
     modeledSpendingPctGdp: number;
+    modeledGdpPerCapitaPpp: number | null;
+    modeledSpendingPerCapitaPpp: number | null;
     gapToOptimalPctPoints: number;
+    gapToOptimalSpendingPerCapitaPpp: number | null;
     status: 'above_optimal_band' | 'below_optimal_band' | 'within_optimal_band';
   };
+  efficientJurisdictions: EfficientJurisdiction[];
+  federalComposition: FederalCompositionSummary;
   generatedAt: string;
 }
 
@@ -230,16 +332,31 @@ interface IndicatorDataset {
 
 interface ScenarioAnalysis {
   outcomeAnalyses: OutcomeAnalysis[];
+  objectiveFloors: ObjectiveFloor[];
+  toleranceSensitivity: ToleranceFloorScenario[];
   overall: {
     optimalPctGdp: number;
     optimalBandLowPctGdp: number;
     optimalBandHighPctGdp: number;
+    optimalSpendingPerCapitaPpp: number;
+    optimalBandLowPerCapitaPpp: number;
+    optimalBandHighPerCapitaPpp: number;
+    usEquivalentOptimalPctGdp: number | null;
+    usEquivalentBandLowPctGdp: number | null;
+    usEquivalentBandHighPctGdp: number | null;
     weightingMethod: string;
+    floorMethod: string;
+    headlineEligibleOutcomeIds: string[];
+    excludedOutcomeIds: string[];
+    qualifyingJurisdictions: number;
   };
   usSnapshot: {
     latestYear: number;
     modeledSpendingPctGdp: number;
+    modeledGdpPerCapitaPpp: number | null;
+    modeledSpendingPerCapitaPpp: number | null;
     gapToOptimalPctPoints: number;
+    gapToOptimalSpendingPerCapitaPpp: number | null;
     status: 'above_optimal_band' | 'below_optimal_band' | 'within_optimal_band';
   };
   coverage: {
@@ -267,10 +384,28 @@ interface SpendingObservation {
   year: number;
   spendingPctGdp: number;
   spendingPerCapitaPpp: number | null;
+  gdpPerCapitaPpp: number | null;
   healthyLifeExpectancyYears: number | null;
   healthyLifeExpectancyGrowthPct: number | null;
   afterTaxMedianIncomePpp: number | null;
   afterTaxMedianIncomeGrowthPct: number | null;
+}
+
+interface FloorBenchmark {
+  optimalPctGdp: number;
+  optimalBandLowPctGdp: number;
+  optimalBandHighPctGdp: number;
+  optimalSpendingPerCapitaPpp: number;
+  optimalBandLowPerCapitaPpp: number;
+  optimalBandHighPerCapitaPpp: number;
+  usEquivalentOptimalPctGdp: number | null;
+  usEquivalentBandLowPctGdp: number | null;
+  usEquivalentBandHighPctGdp: number | null;
+  weightingMethod: string;
+  floorMethod: string;
+  headlineEligibleOutcomeIds: string[];
+  excludedOutcomeIds: string[];
+  qualifyingJurisdictions: number;
 }
 
 const OUTCOMES: OutcomeSpec[] = [
@@ -319,6 +454,58 @@ const ADAPTIVE_PER_CAPITA_BIN_CONFIG = Object.freeze({
   anchors: [5_000, 10_000, 20_000],
   roundTo: 500,
 });
+const ISO3_NAMES: Record<string, string> = {
+  USA: 'United States',
+  GBR: 'United Kingdom',
+  CAN: 'Canada',
+  AUS: 'Australia',
+  DEU: 'Germany',
+  FRA: 'France',
+  JPN: 'Japan',
+  KOR: 'South Korea',
+  SGP: 'Singapore',
+  NZL: 'New Zealand',
+  NOR: 'Norway',
+  SWE: 'Sweden',
+  DNK: 'Denmark',
+  FIN: 'Finland',
+  NLD: 'Netherlands',
+  BEL: 'Belgium',
+  AUT: 'Austria',
+  CHE: 'Switzerland',
+  IRL: 'Ireland',
+  ISR: 'Israel',
+  ITA: 'Italy',
+  ESP: 'Spain',
+  PRT: 'Portugal',
+  GRC: 'Greece',
+  CZE: 'Czech Republic',
+  POL: 'Poland',
+  HUN: 'Hungary',
+  SVK: 'Slovakia',
+  SVN: 'Slovenia',
+  EST: 'Estonia',
+  LTU: 'Lithuania',
+  LVA: 'Latvia',
+  CHL: 'Chile',
+  MEX: 'Mexico',
+  COL: 'Colombia',
+  BRA: 'Brazil',
+  ARG: 'Argentina',
+  ZAF: 'South Africa',
+  TUR: 'Turkey',
+  IND: 'India',
+  CHN: 'China',
+  IDN: 'Indonesia',
+  THA: 'Thailand',
+  MYS: 'Malaysia',
+  PHL: 'Philippines',
+  VNM: 'Vietnam',
+  RUS: 'Russia',
+  UKR: 'Ukraine',
+  EGY: 'Egypt',
+  NGA: 'Nigeria',
+};
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
@@ -361,8 +548,37 @@ function weightedMean(values: Array<{ value: number; weight: number }>): number 
   return weighted / sumWeights;
 }
 
+function stddev(values: number[]): number {
+  if (values.length < 2) return 0;
+  const mean = avg(values);
+  const variance = avg(values.map(value => (value - mean) ** 2));
+  return Math.sqrt(variance);
+}
+
 function withinWindow(year: number, window: YearWindow): boolean {
   return year >= window.startYear && year <= window.endYear;
+}
+
+function toPerCapitaPpp(
+  spendingPctGdp: number,
+  gdpPerCapitaPpp: number | null,
+): number | null {
+  if (!isFiniteNumber(spendingPctGdp) || !isFiniteNumber(gdpPerCapitaPpp)) return null;
+  return (spendingPctGdp / 100) * gdpPerCapitaPpp;
+}
+
+function toPctGdpEquivalent(
+  spendingPerCapitaPpp: number,
+  gdpPerCapitaPpp: number | null,
+): number | null {
+  if (
+    !isFiniteNumber(spendingPerCapitaPpp) ||
+    !isFiniteNumber(gdpPerCapitaPpp) ||
+    gdpPerCapitaPpp <= 0
+  ) {
+    return null;
+  }
+  return (spendingPerCapitaPpp / gdpPerCapitaPpp) * 100;
 }
 
 function keyFor(jurisdictionIso3: string, year: number): string {
@@ -371,6 +587,10 @@ function keyFor(jurisdictionIso3: string, year: number): string {
 
 function filterDataPoints(points: DataPoint[], window: YearWindow): DataPoint[] {
   return points.filter(point => withinWindow(point.year, window) && isFiniteNumber(point.value));
+}
+
+function excludeYears(points: DataPoint[], years: Set<number>): DataPoint[] {
+  return points.filter(point => !years.has(point.year));
 }
 
 function byCountryYear(points: DataPoint[]): Map<string, number> {
@@ -449,6 +669,45 @@ function getOutcomePoints(dataset: IndicatorDataset, sourceKey: OutcomeSourceKey
   }
 }
 
+function getObservationOutcomeValue(
+  observation: SpendingObservation,
+  sourceKey: OutcomeSourceKey,
+): number | null {
+  switch (sourceKey) {
+    case 'healthyLifeExpectancy':
+      return observation.healthyLifeExpectancyYears;
+    case 'healthyLifeExpectancyGrowthPct':
+      return observation.healthyLifeExpectancyGrowthPct;
+    case 'afterTaxMedianIncomePpp':
+      return observation.afterTaxMedianIncomePpp;
+    case 'afterTaxMedianIncomeGrowthPct':
+      return observation.afterTaxMedianIncomeGrowthPct;
+  }
+}
+
+function headlineEligibilityReason(outcome: OutcomeAnalysis): string {
+  if (!HEADLINE_OUTCOME_IDS.has(outcome.id)) {
+    return 'Excluded from headline because this outcome is a growth/proxy diagnostic.';
+  }
+  if (outcome.meanPercentChange <= 0) {
+    return 'Excluded from headline because change-from-baseline is non-positive.';
+  }
+  const positivePartialSignal =
+    (outcome.pooledPctGdpPartialCorrelation ?? Number.NEGATIVE_INFINITY) > 0.05 ||
+    (outcome.pooledPerCapitaPartialCorrelation ?? Number.NEGATIVE_INFINITY) > 0.05;
+  if (outcome.meanPredictivePearson <= 0.02 && !positivePartialSignal) {
+    return 'Excluded from headline because directionality is weak and the confound-adjusted pooled signal is not positive.';
+  }
+  if (outcome.confidenceScore < 0.3) {
+    return 'Excluded from headline because the Bradford-Hill confidence score is too low.';
+  }
+  return 'Eligible for headline floor benchmark.';
+}
+
+function iso3Name(iso3: string): string {
+  return ISO3_NAMES[iso3] ?? iso3;
+}
+
 async function fetchIndicatorDataset(
   window: YearWindow,
   jurisdictions: string[],
@@ -497,6 +756,20 @@ async function fetchIndicatorDataset(
   };
 }
 
+function filterIndicatorDataset(
+  dataset: IndicatorDataset,
+  excludedYears: Set<number>,
+): IndicatorDataset {
+  return {
+    predictor: excludeYears(dataset.predictor, excludedYears),
+    gdpPerCapita: excludeYears(dataset.gdpPerCapita, excludedYears),
+    healthyLifeExpectancy: excludeYears(dataset.healthyLifeExpectancy, excludedYears),
+    healthyLifeExpectancyGrowthPct: excludeYears(dataset.healthyLifeExpectancyGrowthPct, excludedYears),
+    afterTaxMedianIncomePpp: excludeYears(dataset.afterTaxMedianIncomePpp, excludedYears),
+    afterTaxMedianIncomeGrowthPct: excludeYears(dataset.afterTaxMedianIncomeGrowthPct, excludedYears),
+  };
+}
+
 function toAnnualSeries(
   points: DataPoint[],
   variableId: string,
@@ -521,7 +794,7 @@ function toAnnualSeries(
   for (const [iso3, annualValues] of byCountry) {
     series.push({
       jurisdictionId: iso3,
-      jurisdictionName: iso3,
+      jurisdictionName: iso3Name(iso3),
       variableId,
       variableName,
       unit,
@@ -574,6 +847,9 @@ function analyzeOutcome(
     0,
     1,
   );
+  const meanPredictivePearson = avg(
+    result.jurisdictions.map(jurisdiction => jurisdiction.analysis.predictivePearson),
+  );
 
   const jurisdictions = result.jurisdictions
     .map(j => ({
@@ -595,7 +871,9 @@ function analyzeOutcome(
     direction: spec.direction,
     weight: spec.weight,
     meanForwardPearson: aggregate.meanForwardPearson,
+    meanPredictivePearson,
     meanPercentChange: aggregate.meanPercentChange,
+    meanBradfordHillStrength: aggregate.meanBradfordHill.strength,
     positiveCount: aggregate.positiveCount,
     negativeCount: aggregate.negativeCount,
     jurisdictionsAnalyzed: aggregate.n,
@@ -605,6 +883,13 @@ function analyzeOutcome(
     p75OptimalPctGdp: quantile(optimals, 0.75),
     confidenceScore,
     confidenceGrade: scoreToGrade(confidenceScore),
+    pooledPctGdpCorrelation: null,
+    pooledPctGdpPartialCorrelation: null,
+    pooledPerCapitaCorrelation: null,
+    pooledPerCapitaPartialCorrelation: null,
+    pooledObservationCount: 0,
+    headlineEligible: false,
+    headlineEligibilityReason: 'Headline diagnostics have not been computed yet.',
     jurisdictions,
   };
 }
@@ -621,62 +906,87 @@ function computeScenario(
   const predictors = toAnnualSeries(
     predictorPoints,
     'governmentExpenditurePercentGdp',
-    'Government Expenditure (% GDP)',
+    'Government Expense (% GDP)',
     '% GDP',
   );
 
-  const outcomeAnalyses = OUTCOMES.map(spec => analyzeOutcome(spec, predictors, dataset, window));
-
-  const totalWeight = outcomeAnalyses.reduce((sum, outcome) => sum + outcome.weight, 0);
-  const normalized = outcomeAnalyses.map(outcome => ({
-    ...outcome,
-    baseWeight: totalWeight > 0 ? outcome.weight / totalWeight : 0,
-  }));
-
-  const optimalPctGdp = weightedMean(normalized.map(outcome => ({
-    value: outcome.medianOptimalPctGdp,
-    weight: outcome.baseWeight * (0.2 + 0.8 * outcome.confidenceScore),
-  })));
-
-  const optimalBandLowPctGdp = weightedMean(normalized.map(outcome => ({
-    value: outcome.p25OptimalPctGdp,
-    weight: outcome.baseWeight * (0.2 + 0.8 * outcome.confidenceScore),
-  })));
-
-  const optimalBandHighPctGdp = weightedMean(normalized.map(outcome => ({
-    value: outcome.p75OptimalPctGdp,
-    weight: outcome.baseWeight * (0.2 + 0.8 * outcome.confidenceScore),
-  })));
+  const panelRows = buildPanelRows(dataset, window);
+  const spendingObservations = buildLagAlignedSpendingObservations(
+    panelRows,
+    daysToWholeYears(CAUSAL_ONSET_DAYS),
+    daysToWholeYears(CAUSAL_DURATION_DAYS),
+  );
+  const outcomeAnalyses = enrichOutcomeAnalyses(
+    OUTCOMES.map(spec => analyzeOutcome(spec, predictors, dataset, window)),
+    spendingObservations,
+  );
+  const overallBase = computeFloorBenchmark(outcomeAnalyses, spendingObservations);
 
   const usaRows = predictorPoints
     .filter(point => point.jurisdictionIso3 === 'USA')
     .sort((a, b) => b.year - a.year);
+  const gdpPerCapitaMap = byCountryYear(filterDataPoints(dataset.gdpPerCapita, window));
 
   const latestUs = usaRows[0];
   if (!latestUs || !isFiniteNumber(latestUs.value)) {
     throw new Error('No USA predictor data found for government expenditure analysis');
   }
+  const latestUsGdpPerCapitaPpp = gdpPerCapitaMap.get(keyFor('USA', latestUs.year)) ?? null;
+  const latestUsPerCapita = toPerCapitaPpp(latestUs.value, latestUsGdpPerCapitaPpp);
+  const overall: ScenarioAnalysis['overall'] = attachUsEquivalentFloor(
+    overallBase,
+    latestUsGdpPerCapitaPpp,
+  );
+  const objectiveFloors = buildObjectiveFloors(
+    outcomeAnalyses,
+    spendingObservations,
+    latestUsGdpPerCapitaPpp,
+  );
+  const toleranceSensitivity = buildToleranceSensitivity(
+    outcomeAnalyses,
+    spendingObservations,
+    latestUsGdpPerCapitaPpp,
+  );
 
-  const usGapToOptimal = latestUs.value - optimalPctGdp;
+  const usGapToOptimal = latestUs.value - (overall.usEquivalentOptimalPctGdp ?? overall.optimalPctGdp);
+  const usGapToOptimalPerCapita =
+    latestUsPerCapita == null ? null : latestUsPerCapita - overall.optimalSpendingPerCapitaPpp;
   let status: ScenarioAnalysis['usSnapshot']['status'] = 'within_optimal_band';
-  if (latestUs.value > optimalBandHighPctGdp) status = 'above_optimal_band';
-  if (latestUs.value < optimalBandLowPctGdp) status = 'below_optimal_band';
+  if (latestUsPerCapita != null) {
+    if (latestUsPerCapita > overall.optimalBandHighPerCapitaPpp) {
+      status = 'above_optimal_band';
+    } else if (latestUsPerCapita < overall.optimalBandLowPerCapitaPpp) {
+      status = 'below_optimal_band';
+    }
+  } else if (overall.usEquivalentBandLowPctGdp != null && overall.usEquivalentBandHighPctGdp != null) {
+    if (latestUs.value > overall.usEquivalentBandHighPctGdp) {
+      status = 'above_optimal_band';
+    } else if (latestUs.value < overall.usEquivalentBandLowPctGdp) {
+      status = 'below_optimal_band';
+    }
+  } else {
+    if (latestUs.value > overall.optimalBandHighPctGdp) {
+      status = 'above_optimal_band';
+    } else if (latestUs.value < overall.optimalBandLowPctGdp) {
+      status = 'below_optimal_band';
+    }
+  }
 
   const years = [...new Set(predictorPoints.map(point => point.year))];
   const jurisdictions = new Set(predictorPoints.map(point => point.jurisdictionIso3));
 
   return {
     outcomeAnalyses,
-    overall: {
-      optimalPctGdp,
-      optimalBandLowPctGdp,
-      optimalBandHighPctGdp,
-      weightingMethod: 'outcome-weighted average with evidence modulation (0.2 + 0.8*confidence)',
-    },
+    objectiveFloors,
+    toleranceSensitivity,
+    overall,
     usSnapshot: {
       latestYear: latestUs.year,
       modeledSpendingPctGdp: latestUs.value,
+      modeledGdpPerCapitaPpp: latestUsGdpPerCapitaPpp,
+      modeledSpendingPerCapitaPpp: latestUsPerCapita,
       gapToOptimalPctPoints: usGapToOptimal,
+      gapToOptimalSpendingPerCapitaPpp: usGapToOptimalPerCapita,
       status,
     },
     coverage: {
@@ -785,8 +1095,8 @@ function buildLagAlignedSpendingObservations(
         jurisdictionIso3,
         year: row.year,
         spendingPctGdp: row.predictorPctGdp,
-        spendingPerCapitaPpp:
-          row.gdpPerCapitaPpp == null ? null : (row.predictorPctGdp / 100) * row.gdpPerCapitaPpp,
+        spendingPerCapitaPpp: toPerCapitaPpp(row.predictorPctGdp, row.gdpPerCapitaPpp),
+        gdpPerCapitaPpp: row.gdpPerCapitaPpp,
         healthyLifeExpectancyYears,
         healthyLifeExpectancyGrowthPct,
         afterTaxMedianIncomePpp,
@@ -796,6 +1106,457 @@ function buildLagAlignedSpendingObservations(
   }
 
   return observations;
+}
+
+function enrichOutcomeAnalyses(
+  outcomes: OutcomeAnalysis[],
+  observations: SpendingObservation[],
+): OutcomeAnalysis[] {
+  return outcomes.map((outcome) => {
+    const spec = OUTCOMES.find(candidate => candidate.id === outcome.id);
+    if (!spec) return outcome;
+
+    const validRows = observations.filter((observation) => {
+      const outcomeValue = getObservationOutcomeValue(observation, spec.sourceKey);
+      return (
+        isFiniteNumber(outcomeValue) &&
+        isFiniteNumber(observation.spendingPctGdp) &&
+        isFiniteNumber(observation.spendingPerCapitaPpp) &&
+        isFiniteNumber(observation.gdpPerCapitaPpp)
+      );
+    });
+
+    const pct = validRows.map(row => row.spendingPctGdp);
+    const ppp = validRows
+      .map(row => row.spendingPerCapitaPpp)
+      .filter((value): value is number => isFiniteNumber(value));
+    const outcomeValues = validRows
+      .map(row => getObservationOutcomeValue(row, spec.sourceKey))
+      .filter((value): value is number => isFiniteNumber(value));
+    const gdp = validRows
+      .map(row => row.gdpPerCapitaPpp)
+      .filter((value): value is number => isFiniteNumber(value));
+
+    const pooledPctGdpCorrelation =
+      pct.length >= 3 ? pearsonCorrelation(pct, outcomeValues) : NaN;
+    const pooledPerCapitaCorrelation =
+      ppp.length >= 3 ? pearsonCorrelation(ppp, outcomeValues) : NaN;
+    const pooledPctGdpPartialCorrelation =
+      pct.length >= 3 ? partialCorrelation(pct, outcomeValues, gdp) : NaN;
+    const pooledPerCapitaPartialCorrelation =
+      ppp.length >= 3 ? partialCorrelation(ppp, outcomeValues, gdp) : NaN;
+
+    const enriched: OutcomeAnalysis = {
+      ...outcome,
+      pooledPctGdpCorrelation: Number.isFinite(pooledPctGdpCorrelation)
+        ? pooledPctGdpCorrelation
+        : null,
+      pooledPctGdpPartialCorrelation: Number.isFinite(pooledPctGdpPartialCorrelation)
+        ? pooledPctGdpPartialCorrelation
+        : null,
+      pooledPerCapitaCorrelation: Number.isFinite(pooledPerCapitaCorrelation)
+        ? pooledPerCapitaCorrelation
+        : null,
+      pooledPerCapitaPartialCorrelation: Number.isFinite(pooledPerCapitaPartialCorrelation)
+        ? pooledPerCapitaPartialCorrelation
+        : null,
+      pooledObservationCount: validRows.length,
+    };
+
+    return {
+      ...enriched,
+      headlineEligible: headlineEligibilityReason(enriched) === 'Eligible for headline floor benchmark.',
+      headlineEligibilityReason: headlineEligibilityReason(enriched),
+    };
+  });
+}
+
+function zScoreMap(valuesById: Map<string, number>): Map<string, number> {
+  const values = [...valuesById.values()];
+  const mean = avg(values);
+  const sd = stddev(values);
+  return new Map(
+    [...valuesById.entries()].map(([id, value]) => [id, sd === 0 ? 0 : (value - mean) / sd]),
+  );
+}
+
+function emptyFloorBenchmark(outcomes: OutcomeAnalysis[], reason: string): FloorBenchmark {
+  return {
+    optimalPctGdp: 0,
+    optimalBandLowPctGdp: 0,
+    optimalBandHighPctGdp: 0,
+    optimalSpendingPerCapitaPpp: 0,
+    optimalBandLowPerCapitaPpp: 0,
+    optimalBandHighPerCapitaPpp: 0,
+    usEquivalentOptimalPctGdp: null,
+    usEquivalentBandLowPctGdp: null,
+    usEquivalentBandHighPctGdp: null,
+    weightingMethod: reason,
+    floorMethod: reason,
+    headlineEligibleOutcomeIds: [],
+    excludedOutcomeIds: outcomes.map(outcome => outcome.id),
+    qualifyingJurisdictions: 0,
+  };
+}
+
+function computeFloorBenchmark(
+  outcomes: OutcomeAnalysis[],
+  observations: SpendingObservation[],
+  options: {
+    outcomeIds?: string[];
+    tolerance?: number;
+    requireEligible?: boolean;
+  } = {},
+): FloorBenchmark {
+  const tolerance = options.tolerance ?? HEADLINE_SCORE_TOLERANCE;
+  const configuredOutcomes = options.outcomeIds == null
+    ? null
+    : outcomes.filter(outcome => options.outcomeIds?.includes(outcome.id));
+  const eligibleConfiguredOutcomes = configuredOutcomes?.filter(outcome => outcome.headlineEligible) ?? [];
+  const eligibleOutcomes = outcomes.filter(outcome => outcome.headlineEligible);
+  const headlineOutcomes =
+    configuredOutcomes == null
+      ? eligibleOutcomes.length > 0
+        ? eligibleOutcomes
+        : outcomes.filter(outcome => HEADLINE_OUTCOME_IDS.has(outcome.id))
+      : options.requireEligible === false || eligibleConfiguredOutcomes.length === 0
+        ? configuredOutcomes
+        : eligibleConfiguredOutcomes;
+
+  const spendingPerCapitaValues = observations
+    .map(observation => observation.spendingPerCapitaPpp)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  if (headlineOutcomes.length === 0 || spendingPerCapitaValues.length === 0) {
+    return emptyFloorBenchmark(outcomes, 'No minimum-efficient floor could be derived.');
+  }
+
+  const bins = buildAdaptiveNumericBins(
+    spendingPerCapitaValues,
+    ADAPTIVE_PER_CAPITA_BIN_CONFIG,
+  );
+
+  const scoredBins = bins.map((bin, index) => {
+    const isLast = index === bins.length - 1;
+    const matches = observations.filter((observation) => {
+      if (!isFiniteNumber(observation.spendingPerCapitaPpp)) return false;
+      return observation.spendingPerCapitaPpp >= bin.lowerBound &&
+        (isLast
+          ? observation.spendingPerCapitaPpp <= bin.upperBound
+          : observation.spendingPerCapitaPpp < bin.upperBound);
+    });
+
+    return {
+      bin,
+      matches,
+      outcomeMedians: new Map(
+        headlineOutcomes.map(outcome => {
+          const spec = OUTCOMES.find(candidate => candidate.id === outcome.id)!;
+          const values = matches
+            .map(observation => getObservationOutcomeValue(observation, spec.sourceKey))
+            .filter((value): value is number => isFiniteNumber(value));
+          return [outcome.id, quantileOrNull(values, 0.5) ?? NaN];
+        }),
+      ),
+    };
+  }).filter(bin => bin.matches.length > 0);
+
+  const outcomeScores = headlineOutcomes.map((outcome) => {
+    const rawValues = new Map<string, number>();
+    for (const scoredBin of scoredBins) {
+      const value = scoredBin.outcomeMedians.get(outcome.id);
+      if (isFiniteNumber(value)) rawValues.set(scoredBin.bin.lowerBound.toString(), value);
+    }
+    return {
+      outcome,
+      zScores: zScoreMap(rawValues),
+    };
+  });
+
+  const scored = scoredBins.map((scoredBin) => {
+    const key = scoredBin.bin.lowerBound.toString();
+    const components = outcomeScores.map(score => ({
+      weight: score.outcome.weight,
+      value: score.zScores.get(key) ?? 0,
+    }));
+    const composite = weightedMean(components);
+    return {
+      ...scoredBin,
+      compositeScore: composite,
+    };
+  });
+
+  const bestScore = Math.max(...scored.map(entry => entry.compositeScore));
+  const qualifyingBins = scored
+    .filter(entry => entry.compositeScore >= bestScore - tolerance)
+    .sort((a, b) => a.bin.lowerBound - b.bin.lowerBound);
+  const floorBin = qualifyingBins[0] ?? scored.sort((a, b) => a.bin.lowerBound - b.bin.lowerBound)[0]!;
+  const floorObservations = floorBin.matches;
+  const qualifyingObservations = qualifyingBins.flatMap(entry => entry.matches);
+
+  const floorPctValues = floorObservations.map(observation => observation.spendingPctGdp);
+  const floorPerCapitaValues = floorObservations
+    .map(observation => observation.spendingPerCapitaPpp)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  return {
+    optimalPctGdp: quantile(floorPctValues, 0.5),
+    optimalBandLowPctGdp: quantile(floorPctValues, 0.25),
+    optimalBandHighPctGdp: quantile(floorPctValues, 0.75),
+    optimalSpendingPerCapitaPpp: quantile(floorPerCapitaValues, 0.5),
+    optimalBandLowPerCapitaPpp: floorBin.bin.lowerBound,
+    optimalBandHighPerCapitaPpp: floorBin.bin.upperBound,
+    usEquivalentOptimalPctGdp: null,
+    usEquivalentBandLowPctGdp: null,
+    usEquivalentBandHighPctGdp: null,
+    weightingMethod:
+      'Composite z-score across selected direct-welfare outcomes, weighted by outcome weights.',
+    floorMethod:
+      `Lowest per-capita PPP spending bin within ${tolerance.toFixed(2)} composite-score units of the best bin.`,
+    headlineEligibleOutcomeIds: headlineOutcomes.map(outcome => outcome.id),
+    excludedOutcomeIds: outcomes
+      .filter(outcome => !headlineOutcomes.some(eligible => eligible.id === outcome.id))
+      .map(outcome => outcome.id),
+    qualifyingJurisdictions: new Set(
+      qualifyingObservations.map(observation => observation.jurisdictionIso3),
+    ).size,
+  };
+}
+
+function attachUsEquivalentFloor(
+  floor: FloorBenchmark,
+  gdpPerCapitaPpp: number | null,
+): FloorBenchmark {
+  return {
+    ...floor,
+    usEquivalentOptimalPctGdp: toPctGdpEquivalent(floor.optimalSpendingPerCapitaPpp, gdpPerCapitaPpp),
+    usEquivalentBandLowPctGdp: toPctGdpEquivalent(floor.optimalBandLowPerCapitaPpp, gdpPerCapitaPpp),
+    usEquivalentBandHighPctGdp: toPctGdpEquivalent(floor.optimalBandHighPerCapitaPpp, gdpPerCapitaPpp),
+  };
+}
+
+function buildObjectiveFloors(
+  outcomes: OutcomeAnalysis[],
+  observations: SpendingObservation[],
+  gdpPerCapitaPpp: number | null,
+): ObjectiveFloor[] {
+  const definitions = [
+    {
+      id: 'combined_direct_welfare',
+      name: 'Combined Direct Welfare',
+      outcomeIds: ['healthy_life_expectancy_years', 'after_tax_median_income_ppp'],
+    },
+    {
+      id: 'hale_only',
+      name: 'Healthy Life Expectancy Only',
+      outcomeIds: ['healthy_life_expectancy_years'],
+    },
+    {
+      id: 'income_only',
+      name: 'Income Proxy Only',
+      outcomeIds: ['after_tax_median_income_ppp'],
+    },
+  ] as const;
+
+  return definitions.map((definition) => {
+    const floor = attachUsEquivalentFloor(
+      computeFloorBenchmark(outcomes, observations, {
+        outcomeIds: [...definition.outcomeIds],
+        tolerance: HEADLINE_SCORE_TOLERANCE,
+        requireEligible: false,
+      }),
+      gdpPerCapitaPpp,
+    );
+    return {
+      id: definition.id,
+      name: definition.name,
+      outcomeIds: [...definition.outcomeIds],
+      tolerance: HEADLINE_SCORE_TOLERANCE,
+      ...floor,
+    };
+  });
+}
+
+function buildToleranceSensitivity(
+  outcomes: OutcomeAnalysis[],
+  observations: SpendingObservation[],
+  gdpPerCapitaPpp: number | null,
+): ToleranceFloorScenario[] {
+  const combinedOutcomeIds = ['healthy_life_expectancy_years', 'after_tax_median_income_ppp'];
+  return FLOOR_TOLERANCES.map((tolerance) => {
+    const floor = attachUsEquivalentFloor(
+      computeFloorBenchmark(outcomes, observations, {
+        outcomeIds: combinedOutcomeIds,
+        tolerance,
+        requireEligible: false,
+      }),
+      gdpPerCapitaPpp,
+    );
+    return {
+      id: `tolerance_${tolerance.toFixed(2)}`,
+      name: `Combined Direct Welfare (tol ${tolerance.toFixed(2)})`,
+      outcomeIds: combinedOutcomeIds,
+      tolerance,
+      ...floor,
+    };
+  });
+}
+
+function buildFederalCompositionSummary(
+  budgetArtifacts: BudgetAnalysisArtifacts,
+): FederalCompositionSummary {
+  const currentBudgetUsd = budgetArtifacts.websiteData.totalBudget;
+  const unconstrainedOptimalBudgetUsd = budgetArtifacts.result.totalOptimalUsd;
+  const constrained = budgetArtifacts.websiteData.constrainedReallocation.categories;
+  const targetShareDenominator = Math.max(currentBudgetUsd, 1);
+  const categories: FederalCompositionCategory[] = constrained.map(category => ({
+    name: category.name,
+    currentSpendingUsd: category.currentSpending,
+    targetSpendingUsd: category.constrainedOptimal,
+    reallocationUsd: category.reallocation,
+    reallocationPct: category.reallocationPercent,
+    evidenceGrade: category.evidenceGrade,
+    action: category.action,
+    isNonDiscretionary: category.isNonDiscretionary,
+    targetSharePct: (category.constrainedOptimal / targetShareDenominator) * 100,
+  }));
+
+  const actionable = categories.filter(category =>
+    !category.isNonDiscretionary && category.evidenceGrade !== 'F',
+  );
+
+  return {
+    sourceBudgetLevel: `US federal budget FY${budgetArtifacts.result.fiscalYear}`,
+    fiscalYear: budgetArtifacts.result.fiscalYear,
+    currentBudgetUsd,
+    unconstrainedOptimalBudgetUsd,
+    unconstrainedGapUsd: unconstrainedOptimalBudgetUsd - currentBudgetUsd,
+    unconstrainedGapPct: currentBudgetUsd > 0
+      ? ((unconstrainedOptimalBudgetUsd - currentBudgetUsd) / currentBudgetUsd) * 100
+      : 0,
+    compositionCaveat:
+      'This composition model is federal-budget only; the category table below is constrained to the current federal budget even though standalone category optima sum to a different total.',
+    topIncreaseCategories: actionable
+      .filter(category => category.reallocationUsd > 0)
+      .sort((a, b) => b.reallocationUsd - a.reallocationUsd)
+      .slice(0, 5),
+    topDecreaseCategories: actionable
+      .filter(category => category.reallocationUsd < 0)
+      .sort((a, b) => a.reallocationUsd - b.reallocationUsd)
+      .slice(0, 5),
+    largestTargetShares: [...categories]
+      .sort((a, b) => b.targetSharePct - a.targetSharePct)
+      .slice(0, 8),
+  };
+}
+
+function computeEfficientJurisdictions(
+  observations: SpendingObservation[],
+  overall: ScenarioAnalysis['overall'],
+): EfficientJurisdiction[] {
+  const benchmarkOutcomeIds = overall.headlineEligibleOutcomeIds.length > 0
+    ? new Set(overall.headlineEligibleOutcomeIds)
+    : HEADLINE_OUTCOME_IDS;
+  const qualifying = observations.filter((observation) => {
+    if (!isFiniteNumber(observation.spendingPerCapitaPpp)) return false;
+    return observation.spendingPerCapitaPpp >= overall.optimalBandLowPerCapitaPpp &&
+      observation.spendingPerCapitaPpp <= overall.optimalBandHighPerCapitaPpp;
+  });
+
+  const byJurisdiction = new Map<string, SpendingObservation[]>();
+  for (const observation of qualifying) {
+    const existing = byJurisdiction.get(observation.jurisdictionIso3);
+    if (existing) {
+      existing.push(observation);
+    } else {
+      byJurisdiction.set(observation.jurisdictionIso3, [observation]);
+    }
+  }
+
+  const base = [...byJurisdiction.entries()]
+    .map(([jurisdictionIso3, rows]) => ({
+      jurisdictionId: jurisdictionIso3,
+      jurisdictionName: iso3Name(jurisdictionIso3),
+      qualifyingObservations: rows.length,
+      medianSpendingPctGdp: quantile(rows.map(row => row.spendingPctGdp), 0.5),
+      medianSpendingPerCapitaPpp: quantile(
+        rows
+          .map(row => row.spendingPerCapitaPpp)
+          .filter((value): value is number => isFiniteNumber(value)),
+        0.5,
+      ),
+      medianHealthyLifeExpectancyYears: quantileOrNull(
+        rows
+          .map(row => row.healthyLifeExpectancyYears)
+          .filter((value): value is number => isFiniteNumber(value)),
+        0.5,
+      ),
+      medianAfterTaxMedianIncomePpp: quantileOrNull(
+        rows
+          .map(row => row.afterTaxMedianIncomePpp)
+          .filter((value): value is number => isFiniteNumber(value)),
+        0.5,
+      ),
+    }))
+    .filter(jurisdiction => jurisdiction.qualifyingObservations >= 2);
+
+  if (base.length === 0) return [];
+
+  const haleScores = zScoreMap(
+    new Map(
+      base
+        .filter((jurisdiction) => jurisdiction.medianHealthyLifeExpectancyYears != null)
+        .map(jurisdiction => [
+          jurisdiction.jurisdictionId,
+          jurisdiction.medianHealthyLifeExpectancyYears!,
+        ]),
+    ),
+  );
+  const incomeScores = zScoreMap(
+    new Map(
+      base
+        .filter((jurisdiction) => jurisdiction.medianAfterTaxMedianIncomePpp != null)
+        .map(jurisdiction => [
+          jurisdiction.jurisdictionId,
+          jurisdiction.medianAfterTaxMedianIncomePpp!,
+        ]),
+    ),
+  );
+
+  const scored = base
+    .map((jurisdiction) => {
+      const components: number[] = [];
+      if (
+        benchmarkOutcomeIds.has('healthy_life_expectancy_years') &&
+        jurisdiction.medianHealthyLifeExpectancyYears != null
+      ) {
+        components.push(haleScores.get(jurisdiction.jurisdictionId) ?? 0);
+      }
+      if (
+        benchmarkOutcomeIds.has('after_tax_median_income_ppp') &&
+        jurisdiction.medianAfterTaxMedianIncomePpp != null
+      ) {
+        components.push(incomeScores.get(jurisdiction.jurisdictionId) ?? 0);
+      }
+      return {
+        ...jurisdiction,
+        benchmarkScore: components.length > 0 ? avg(components) : Number.NEGATIVE_INFINITY,
+      };
+    })
+    .filter(jurisdiction => Number.isFinite(jurisdiction.benchmarkScore));
+
+  const selected = (scored.filter(jurisdiction => jurisdiction.benchmarkScore >= 0).length >= 3
+    ? scored.filter(jurisdiction => jurisdiction.benchmarkScore >= 0)
+    : [...scored].sort((a, b) => b.benchmarkScore - a.benchmarkScore)
+  )
+    .sort(
+      (a, b) =>
+        a.medianSpendingPerCapitaPpp - b.medianSpendingPerCapitaPpp ||
+        b.benchmarkScore - a.benchmarkScore,
+    )
+    .slice(0, 8);
+
+  return selected.map(({ benchmarkScore: _benchmarkScore, ...jurisdiction }) => jurisdiction);
 }
 
 function formatPct(value: number): string {
@@ -922,6 +1683,9 @@ function buildSensitivityScenarios(
       optimalPctGdp: scenario.overall.optimalPctGdp,
       optimalBandLowPctGdp: scenario.overall.optimalBandLowPctGdp,
       optimalBandHighPctGdp: scenario.overall.optimalBandHighPctGdp,
+      usEquivalentOptimalPctGdp: scenario.overall.usEquivalentOptimalPctGdp,
+      usEquivalentBandLowPctGdp: scenario.overall.usEquivalentBandLowPctGdp,
+      usEquivalentBandHighPctGdp: scenario.overall.usEquivalentBandHighPctGdp,
       usModeledSpendingPctGdp: scenario.usSnapshot.modeledSpendingPctGdp,
       usStatus: scenario.usSnapshot.status,
       isPrimaryScenario: startYear === primaryStartYear,
@@ -929,8 +1693,35 @@ function buildSensitivityScenarios(
   });
 }
 
+function buildCovidExcludedScenario(
+  dataset: IndicatorDataset,
+  window: YearWindow,
+): SensitivityScenario | null {
+  const filtered = filterIndicatorDataset(dataset, COVID_EXCLUDED_YEARS);
+  const scenario = computeScenario(filtered, window);
+
+  return {
+    startYear: window.startYear,
+    endYear: window.endYear,
+    observations: scenario.coverage.observations,
+    jurisdictions: scenario.coverage.jurisdictions,
+    optimalPctGdp: scenario.overall.optimalPctGdp,
+    optimalBandLowPctGdp: scenario.overall.optimalBandLowPctGdp,
+    optimalBandHighPctGdp: scenario.overall.optimalBandHighPctGdp,
+    usEquivalentOptimalPctGdp: scenario.overall.usEquivalentOptimalPctGdp,
+    usEquivalentBandLowPctGdp: scenario.overall.usEquivalentBandLowPctGdp,
+    usEquivalentBandHighPctGdp: scenario.overall.usEquivalentBandHighPctGdp,
+    usModeledSpendingPctGdp: scenario.usSnapshot.modeledSpendingPctGdp,
+    usStatus: scenario.usSnapshot.status,
+    isPrimaryScenario: false,
+  };
+}
+
 function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   const lines: string[] = [];
+  const lowestObjectiveFloor = [...data.objectiveFloors]
+    .filter(objective => objective.usEquivalentOptimalPctGdp != null)
+    .sort((a, b) => (a.usEquivalentOptimalPctGdp ?? Infinity) - (b.usEquivalentOptimalPctGdp ?? Infinity))[0];
 
   lines.push(
     `# Government Size Analysis: World Bank Panel (${data.predictor.coverage.yearMin}-${data.predictor.coverage.yearMax})`,
@@ -940,31 +1731,84 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('## Summary');
   lines.push('');
   lines.push(
-    `Evidence-weighted N-of-1 analysis suggests an optimal government spending share of ` +
-      `**${data.overall.optimalPctGdp.toFixed(1)}% of GDP** ` +
-      `(band: **${data.overall.optimalBandLowPctGdp.toFixed(1)}% - ${data.overall.optimalBandHighPctGdp.toFixed(1)}%**).`,
+    `Lag-aligned panel diagnostics suggest a **minimum efficient government spending floor** ` +
+      `around **${formatUsd(data.overall.optimalSpendingPerCapitaPpp)} PPP per capita** ` +
+      `(support bin **${formatUsd(data.overall.optimalBandLowPerCapitaPpp)} - ${formatUsd(data.overall.optimalBandHighPerCapitaPpp)}**).`,
   );
   lines.push('');
+  if (
+    data.overall.usEquivalentOptimalPctGdp != null &&
+    data.overall.usEquivalentBandLowPctGdp != null &&
+    data.overall.usEquivalentBandHighPctGdp != null
+  ) {
+    lines.push(
+      `- **U.S.-equivalent floor share:** ${data.overall.usEquivalentOptimalPctGdp.toFixed(1)}% of GDP ` +
+        `(band ${data.overall.usEquivalentBandLowPctGdp.toFixed(1)}-${data.overall.usEquivalentBandHighPctGdp.toFixed(1)})`,
+    );
+  }
+  lines.push(
+    `- **Cross-country floor-bin median share (descriptive only):** ${data.overall.optimalPctGdp.toFixed(1)}% of GDP ` +
+      `(IQR ${data.overall.optimalBandLowPctGdp.toFixed(1)}-${data.overall.optimalBandHighPctGdp.toFixed(1)})`,
+  );
   lines.push(
     `- **US latest spending share (${data.usSnapshot.latestYear}):** ${data.usSnapshot.modeledSpendingPctGdp.toFixed(1)}%`,
   );
+  if (data.usSnapshot.modeledGdpPerCapitaPpp != null) {
+    lines.push(
+      `- **US latest GDP per-capita PPP (${data.usSnapshot.latestYear}):** ${formatUsd(data.usSnapshot.modeledGdpPerCapitaPpp)}`,
+    );
+  }
+  if (data.usSnapshot.modeledSpendingPerCapitaPpp != null) {
+    lines.push(
+      `- **US latest spending per-capita PPP (${data.usSnapshot.latestYear}):** ${formatUsd(data.usSnapshot.modeledSpendingPerCapitaPpp)}`,
+    );
+  }
   lines.push(
-    `- **US gap to central estimate:** ${
+    `- **US gap to U.S.-equivalent floor:** ${
       data.usSnapshot.gapToOptimalPctPoints >= 0 ? '+' : ''
     }${data.usSnapshot.gapToOptimalPctPoints.toFixed(1)} percentage points`,
   );
+  if (data.usSnapshot.gapToOptimalSpendingPerCapitaPpp != null) {
+    lines.push(
+      `- **US gap to per-capita floor estimate:** ${
+        data.usSnapshot.gapToOptimalSpendingPerCapitaPpp >= 0 ? '+' : ''
+      }${formatUsd(data.usSnapshot.gapToOptimalSpendingPerCapitaPpp)}`,
+    );
+  }
   lines.push(
     `- **US status vs inferred band:** ${data.usSnapshot.status.replaceAll('_', ' ')}`,
+  );
+  lines.push(
+    `- **Headline outcomes used:** ${
+      data.overall.headlineEligibleOutcomeIds.length > 0
+        ? data.outcomes
+            .filter(outcome => data.overall.headlineEligibleOutcomeIds.includes(outcome.id))
+            .map(outcome => outcome.name)
+            .join(', ')
+        : 'None'
+    }`,
+  );
+  lines.push(`- **Qualifying low-spend / high-outcome jurisdictions:** ${data.overall.qualifyingJurisdictions}`);
+  if (lowestObjectiveFloor?.usEquivalentOptimalPctGdp != null) {
+    lines.push(
+      `- **Lowest direct-outcome floor in this model:** ${lowestObjectiveFloor.name} at ${lowestObjectiveFloor.usEquivalentOptimalPctGdp.toFixed(1)}% of U.S. GDP`,
+    );
+  }
+  lines.push(
+    `- **Federal current-budget composition view:** standalone category optima sum to ${formatUsd(data.federalComposition.unconstrainedOptimalBudgetUsd)} ` +
+      `(${data.federalComposition.unconstrainedGapPct >= 0 ? '+' : ''}${data.federalComposition.unconstrainedGapPct.toFixed(1)}% vs current federal budget), ` +
+      `but the composition table below is constrained to today's federal budget`,
   );
   lines.push('');
 
   lines.push('## Predictor Definition');
   lines.push('');
-  lines.push('Government Expenditure (% GDP):');
+  lines.push('Government Expense (% GDP):');
   lines.push('- World Bank WDI `GC.XPN.TOTL.GD.ZS`');
   lines.push(
-    '- Includes total general government spending share relative to GDP (not category-level decomposition).',
+    '- World Bank labels this series as government expense; it is not a category decomposition.',
   );
+  lines.push('- Cross-country headline comparisons should use per-capita PPP; raw % GDP is descriptive only.');
   lines.push('- Source taxonomy and alternative definitions: `government-spending-metric-comparison.md`.');
   lines.push('');
 
@@ -975,33 +1819,170 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push(`- Country-year observations: ${data.predictor.coverage.observations}`);
   lines.push('');
 
+  lines.push('## Objective Floors');
+  lines.push('');
+  lines.push(
+    'These floors isolate direct welfare objectives instead of forcing a single combined headline. Each row uses the same lag-aligned floor method and then translates the per-capita floor into a U.S.-equivalent % GDP share.',
+  );
+  lines.push('');
+  lines.push('| Objective | U.S.-Equiv Floor % GDP | U.S.-Equiv Band | Floor PPP / Capita | Qualifying Jurisdictions |');
+  lines.push('|-----------|-----------------------:|----------------|-------------------:|-------------------------:|');
+  for (const objective of data.objectiveFloors) {
+    lines.push(
+      `| ${objective.name} ` +
+        `| ${objective.usEquivalentOptimalPctGdp?.toFixed(1) ?? 'N/A'} ` +
+        `| ${
+          objective.usEquivalentBandLowPctGdp != null && objective.usEquivalentBandHighPctGdp != null
+            ? `${objective.usEquivalentBandLowPctGdp.toFixed(1)}-${objective.usEquivalentBandHighPctGdp.toFixed(1)}`
+            : 'N/A'
+        } ` +
+        `| ${formatUsd(objective.optimalSpendingPerCapitaPpp)} ` +
+        `| ${objective.qualifyingJurisdictions} |`,
+    );
+  }
+  lines.push('');
+
+  lines.push('## Floor Tolerance');
+  lines.push('');
+  lines.push(
+    'This checks how much the combined direct-welfare floor moves when the "within tolerance of best bin" rule is tightened or loosened.',
+  );
+  lines.push('');
+  lines.push('| Tolerance | U.S.-Equiv Floor % GDP | U.S.-Equiv Band | Floor PPP / Capita |');
+  lines.push('|----------:|-----------------------:|----------------|-------------------:|');
+  for (const scenario of data.toleranceSensitivity) {
+    lines.push(
+      `| ${scenario.tolerance.toFixed(2)} ` +
+        `| ${scenario.usEquivalentOptimalPctGdp?.toFixed(1) ?? 'N/A'} ` +
+        `| ${
+          scenario.usEquivalentBandLowPctGdp != null && scenario.usEquivalentBandHighPctGdp != null
+            ? `${scenario.usEquivalentBandLowPctGdp.toFixed(1)}-${scenario.usEquivalentBandHighPctGdp.toFixed(1)}`
+            : 'N/A'
+        } ` +
+        `| ${formatUsd(scenario.optimalSpendingPerCapitaPpp)} |`,
+    );
+  }
+  lines.push('');
+
   lines.push('## Temporal Sensitivity (Start Year)');
   lines.push('');
   lines.push(
     data.sensitivity.note,
   );
   lines.push('');
-  lines.push('| Start Year | End Year | Country-Years | Jurisdictions | Optimal % GDP | Inferred Band | US % GDP | US Status |');
-  lines.push('|-----------:|---------:|--------------:|--------------:|--------------:|--------------|---------:|----------|');
+  lines.push('| Start Year | End Year | Country-Years | Jurisdictions | U.S.-Equiv Floor % GDP | U.S.-Equiv Band | Raw Bin Median % GDP | US % GDP | US Status |');
+  lines.push('|-----------:|---------:|--------------:|--------------:|------------------------:|----------------|---------------------:|---------:|----------|');
   for (const scenario of data.sensitivity.startYearScenarios) {
-    const band = `${scenario.optimalBandLowPctGdp.toFixed(1)}-${scenario.optimalBandHighPctGdp.toFixed(1)}`;
+    const band = scenario.usEquivalentBandLowPctGdp != null && scenario.usEquivalentBandHighPctGdp != null
+      ? `${scenario.usEquivalentBandLowPctGdp.toFixed(1)}-${scenario.usEquivalentBandHighPctGdp.toFixed(1)}`
+      : 'N/A';
     const status = scenario.usStatus.replaceAll('_', ' ');
     lines.push(
       `| ${scenario.startYear} ` +
         `| ${scenario.endYear} ` +
         `| ${scenario.observations} ` +
         `| ${scenario.jurisdictions} ` +
-        `| ${scenario.optimalPctGdp.toFixed(1)} ` +
+        `| ${scenario.usEquivalentOptimalPctGdp?.toFixed(1) ?? 'N/A'} ` +
         `| ${band} ` +
+        `| ${scenario.optimalPctGdp.toFixed(1)} ` +
         `| ${scenario.usModeledSpendingPctGdp.toFixed(1)} ` +
         `| ${status}${scenario.isPrimaryScenario ? ' (primary)' : ''} |`,
+    );
+  }
+  lines.push('');
+  if (data.sensitivity.covidExcludedScenario) {
+    const covid = data.sensitivity.covidExcludedScenario;
+    lines.push(
+      `COVID exclusion check (dropping 2020-2021 source years): ` +
+        `${covid.usEquivalentOptimalPctGdp?.toFixed(1) ?? 'N/A'}% GDP U.S.-equivalent ` +
+        `(band ${
+          covid.usEquivalentBandLowPctGdp?.toFixed(1) ?? 'N/A'
+        }-${
+          covid.usEquivalentBandHighPctGdp?.toFixed(1) ?? 'N/A'
+        }; raw floor-bin median ${covid.optimalPctGdp.toFixed(1)}% GDP; ` +
+        `US status ${covid.usStatus.replaceAll('_', ' ')}).`,
+    );
+    lines.push('');
+  }
+
+  lines.push('## Federal Composition');
+  lines.push('');
+  lines.push(
+    `The budget-composition summary below comes from the existing US federal budget model, not the cross-country general-government panel. ` +
+      `It is useful for "where should money go?" but should not be equated mechanically with the total government size floor.`,
+  );
+  lines.push('');
+  lines.push(
+    `- **Current federal budget:** ${formatUsd(data.federalComposition.currentBudgetUsd)}`,
+  );
+  lines.push(
+    `- **Standalone federal category optima sum:** ${formatUsd(data.federalComposition.unconstrainedOptimalBudgetUsd)}`,
+  );
+  lines.push(
+    `- **Gap vs current federal budget if each category hit its standalone optimum:** ${
+      data.federalComposition.unconstrainedGapUsd >= 0 ? '+' : ''
+    }${formatUsd(data.federalComposition.unconstrainedGapUsd)} ` +
+      `(${data.federalComposition.unconstrainedGapPct >= 0 ? '+' : ''}${data.federalComposition.unconstrainedGapPct.toFixed(1)}%)`,
+  );
+  lines.push(`- **Caveat:** ${data.federalComposition.compositionCaveat}`);
+  lines.push('');
+  lines.push('| Top Scale-Ups At Current Budget | Reallocation % | Evidence | Target Share |');
+  lines.push('|---------------|------:|----------|--------------:|');
+  for (const category of data.federalComposition.topIncreaseCategories) {
+    lines.push(
+      `| ${category.name} ` +
+        `| +${category.reallocationPct.toFixed(1)}% ` +
+        `| ${category.evidenceGrade} ` +
+        `| ${category.targetSharePct.toFixed(1)}% |`,
+    );
+  }
+  lines.push('');
+  lines.push('| Top Scale-Downs At Current Budget | Reallocation % | Evidence | Target Share |');
+  lines.push('|-----------------|------:|----------|--------------:|');
+  for (const category of data.federalComposition.topDecreaseCategories) {
+    lines.push(
+      `| ${category.name} ` +
+        `| ${category.reallocationPct.toFixed(1)}% ` +
+        `| ${category.evidenceGrade} ` +
+        `| ${category.targetSharePct.toFixed(1)}% |`,
+    );
+  }
+  lines.push('');
+  lines.push('| Largest Target Shares At Current Budget | Target Share | Current | Target |');
+  lines.push('|--------------------------------|--------------:|--------:|--------:|');
+  for (const category of data.federalComposition.largestTargetShares) {
+    lines.push(
+      `| ${category.name} ` +
+        `| ${category.targetSharePct.toFixed(1)}% ` +
+        `| ${formatUsd(category.currentSpendingUsd)} ` +
+        `| ${formatUsd(category.targetSpendingUsd)} |`,
+    );
+  }
+  lines.push('');
+
+  lines.push('## Efficient Jurisdictions');
+  lines.push('');
+  lines.push(
+    'These are jurisdictions with at least two lag-aligned observations inside the minimum-efficient per-capita band and non-negative welfare benchmark scores within that band.',
+  );
+  lines.push('');
+  lines.push('| Jurisdiction | Qualifying Obs | Median % GDP | Median Spend / Capita PPP | Median HALE | Median Income Proxy |');
+  lines.push('|--------------|---------------:|-------------:|--------------------------:|------------:|--------------------:|');
+  for (const jurisdiction of data.efficientJurisdictions) {
+    lines.push(
+      `| ${jurisdiction.jurisdictionName} ` +
+        `| ${jurisdiction.qualifyingObservations} ` +
+        `| ${jurisdiction.medianSpendingPctGdp.toFixed(1)} ` +
+        `| ${formatUsd(jurisdiction.medianSpendingPerCapitaPpp)} ` +
+        `| ${jurisdiction.medianHealthyLifeExpectancyYears?.toFixed(1) ?? 'N/A'} ` +
+        `| ${jurisdiction.medianAfterTaxMedianIncomePpp == null ? 'N/A' : formatUsd(jurisdiction.medianAfterTaxMedianIncomePpp)} |`,
     );
   }
   lines.push('');
 
   lines.push('## Spending Levels vs Typical Outcomes');
   lines.push('');
-  lines.push('Primary welfare outcomes are median healthy life years and real after-tax median income growth.');
+  lines.push('Headline floor logic uses only outcomes that pass directionality/confounding gates; all four outcomes are still published below.');
   lines.push(
     `Rows are lag-aligned for causal interpretation: predictor at year t, outcomes summarized over t+${data.spendingLevelTable.alignment.onsetYears} to t+${data.spendingLevelTable.alignment.durationYears}.`,
   );
@@ -1054,7 +2035,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('### Spending Per-Capita (PPP) Bins');
   lines.push('');
   lines.push(
-    'Per-capita PPP spending is derived as: government expenditure % GDP × GDP per capita PPP.',
+    'Per-capita PPP spending is derived as: government expense % GDP × GDP per capita PPP.',
   );
   lines.push(
     `- Adaptive bins: target ${data.spendingPerCapitaLevelTable.binning.targetBinCount}, ` +
@@ -1095,21 +2076,18 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
 
   lines.push('## Outcome-Level Results');
   lines.push('');
-  lines.push('| Outcome | Direction | Weight | N | +/- | Mean r | Mean % Change | Optimal %GDP (Median) | IQR | Confidence |');
-  lines.push('|---------|-----------|-------:|---:|-----|-------:|--------------:|----------------------:|-----|------------|');
+  lines.push('| Outcome | Weight | N | Mean r | Mean pred r | Mean % Change | Partial r (%GDP \\| GDP/cap) | Headline | Confidence |');
+  lines.push('|---------|-------:|---:|-------:|------------:|--------------:|-----------------------------:|----------|------------|');
   for (const outcome of data.outcomes) {
-    const pctChange = `${outcome.meanPercentChange >= 0 ? '+' : ''}${outcome.meanPercentChange.toFixed(2)}%`;
-    const iqr = `${outcome.p25OptimalPctGdp.toFixed(1)}-${outcome.p75OptimalPctGdp.toFixed(1)}`;
     lines.push(
       `| ${outcome.name} ` +
-        `| ${outcome.direction === 'higher_better' ? 'Higher is better' : 'Lower is better (negated)'} ` +
         `| ${outcome.weight.toFixed(2)} ` +
         `| ${outcome.jurisdictionsAnalyzed} ` +
-        `| ${outcome.positiveCount}/${outcome.negativeCount} ` +
         `| ${outcome.meanForwardPearson.toFixed(3)} ` +
-        `| ${pctChange} ` +
-        `| ${outcome.medianOptimalPctGdp.toFixed(1)} ` +
-        `| ${iqr} ` +
+        `| ${outcome.meanPredictivePearson.toFixed(3)} ` +
+        `| ${outcome.meanPercentChange >= 0 ? '+' : ''}${outcome.meanPercentChange.toFixed(2)}% ` +
+        `| ${outcome.pooledPctGdpPartialCorrelation == null ? 'N/A' : outcome.pooledPctGdpPartialCorrelation.toFixed(3)} ` +
+        `| ${outcome.headlineEligible ? 'Yes' : `No: ${outcome.headlineEligibilityReason}`} ` +
         `| ${outcome.confidenceGrade} (${outcome.confidenceScore.toFixed(2)}) |`,
     );
   }
@@ -1118,19 +2096,26 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('## Method');
   lines.push('');
   lines.push('- Run N-of-1 longitudinal causal analysis within each jurisdiction.');
-  lines.push('- Estimate per-jurisdiction optimal predictor value from high-outcome periods.');
-  lines.push('- Aggregate outcome-level medians and uncertainty bands (IQR).');
+  lines.push('- Keep Bradford Hill scoring, forward vs reverse Pearson, and change-from-baseline as the core within-jurisdiction diagnostics.');
   lines.push(
     `- Build lag-aligned bin tables from predictor year t to outcome follow-up window t+${data.spendingLevelTable.alignment.onsetYears}..t+${data.spendingLevelTable.alignment.durationYears}.`,
   );
-  lines.push(`- Combine outcomes via ${data.overall.weightingMethod}.`);
-  lines.push('- Report start-year sensitivity to show temporal robustness of the estimate.');
+  lines.push('- Compute pooled partial correlations controlling for GDP per capita as a confounding check.');
+  lines.push(`- Derive the headline from ${data.overall.floorMethod}`);
+  lines.push(`- Score the floor bin via ${data.overall.weightingMethod}`);
+  lines.push('- Translate the per-capita floor into a U.S.-equivalent % GDP share using the latest U.S. GDP per-capita PPP.');
+  lines.push('- Re-run the same floor logic for HALE-only, income-only, and tolerance-sensitivity scenarios.');
+  lines.push('- Import the separate federal budget model to summarize minimum-budget composition recommendations by category.');
+  lines.push('- Report start-year and COVID-excluded sensitivity to show how stable the floor estimate is.');
   lines.push('');
 
   lines.push('## Limitations');
   lines.push('');
   lines.push('- This is cross-country observational panel analysis; confounding remains possible.');
-  lines.push('- Government spending % GDP captures scale, not composition quality.');
+  lines.push('- Total government expense still collapses composition quality, capture, and corruption into a single scalar.');
+  lines.push('- Raw cross-country % GDP medians are descriptive and not portable across countries with very different GDP per capita.');
+  lines.push('- The federal composition summary is a separate model and a different budget level from the general-government size floor.');
+  lines.push('- Category-level floors are a better policy object than a single total-size number.');
   lines.push('- Real after-tax median income is currently proxied by GNI per-capita PPP (not direct median disposable income).');
   lines.push('- HALE growth and income-growth series are annualized derivatives and can be noisy in sparse panels.');
   lines.push('- Indicator revisions in source databases can shift historical estimates over time.');
@@ -1194,19 +2179,34 @@ export async function generateGovernmentSizeAnalysisArtifacts(
     sensitivityStartYears,
     startYear,
   );
+  const covidExcludedScenario = buildCovidExcludedScenario(dataset, primaryWindow);
+  const efficientJurisdictions = computeEfficientJurisdictions(
+    spendingObservations,
+    primaryScenario.overall,
+  );
+  const budgetArtifacts = generateBudgetAnalysisArtifacts({
+    outputDir,
+    writeFiles: false,
+    logSummary: false,
+  });
+  const federalComposition = buildFederalCompositionSummary(budgetArtifacts);
 
   const data: GovernmentSizeAnalysisData = {
     predictor: {
       id: 'government_expenditure_pct_gdp',
-      name: 'Government Expenditure (% GDP)',
+      name: 'Government Expense (% GDP)',
       definition: 'World Bank WDI GC.XPN.TOTL.GD.ZS',
       fields: ['GC.XPN.TOTL.GD.ZS'],
       coverage: primaryScenario.coverage,
     },
     outcomes: primaryScenario.outcomeAnalyses,
+    objectiveFloors: primaryScenario.objectiveFloors,
+    toleranceSensitivity: primaryScenario.toleranceSensitivity,
     sensitivity: {
       startYearScenarios: sensitivity,
-      note: 'All scenarios use the same methodology and countries where data is available; only the start year changes.',
+      covidExcludedScenario,
+      note:
+        'Start-year sensitivity re-runs the same floor benchmark with different left-window cutoffs; a separate COVID exclusion check drops 2020-2021 source years.',
     },
     spendingLevelTable: {
       alignment: {
@@ -1237,7 +2237,7 @@ export async function generateGovernmentSizeAnalysisArtifacts(
       tiers: spendingLevelTable,
     },
     spendingPerCapitaLevelTable: {
-      definition: 'Government expenditure per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.',
+      definition: 'Government expense per-capita PPP derived as (%GDP / 100) * GDP per-capita PPP.',
       alignment: {
         type: 'lag_aligned_follow_up',
         onsetYears,
@@ -1257,6 +2257,8 @@ export async function generateGovernmentSizeAnalysisArtifacts(
     },
     overall: primaryScenario.overall,
     usSnapshot: primaryScenario.usSnapshot,
+    efficientJurisdictions,
+    federalComposition,
     generatedAt: new Date().toISOString(),
   };
 
@@ -1277,8 +2279,9 @@ export async function generateGovernmentSizeAnalysisArtifacts(
   if (logSummary) {
     console.log('\n--- Government Size Analysis Summary ---');
     console.log(
-      `Optimal spending share: ${data.overall.optimalPctGdp.toFixed(1)}% GDP ` +
-        `(band ${data.overall.optimalBandLowPctGdp.toFixed(1)}-${data.overall.optimalBandHighPctGdp.toFixed(1)})`,
+      `Minimum efficient spending floor: ${formatUsd(data.overall.optimalSpendingPerCapitaPpp)} PPP/capita ` +
+        `(U.S.-equivalent ${data.overall.usEquivalentOptimalPctGdp?.toFixed(1) ?? 'N/A'}% GDP; ` +
+        `raw floor-bin median ${data.overall.optimalPctGdp.toFixed(1)}% GDP)`,
     );
     console.log(
       `US (${data.usSnapshot.latestYear}): ${data.usSnapshot.modeledSpendingPctGdp.toFixed(1)}% GDP ` +

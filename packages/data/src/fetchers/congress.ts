@@ -177,7 +177,7 @@ export interface RawMemberDetail {
 export interface RawBillListItem {
   congress: number;
   type: string;
-  number: number;
+  number: number | string;
   title: string;
   latestAction?: {
     actionDate: string;
@@ -190,7 +190,7 @@ export interface RawBillListItem {
 export interface RawBillDetail {
   congress: number;
   type: string;
-  number: number;
+  number: number | string;
   title: string;
   policyArea?: { name: string };
   subjects?: {
@@ -360,7 +360,7 @@ export function parseBillListItem(raw: RawBillListItem): Bill {
     title: raw.title,
     congress: raw.congress,
     type: raw.type,
-    number: raw.number,
+    number: Number(raw.number),
     subjects: [],
     policyArea: null,
     latestAction: raw.latestAction
@@ -380,13 +380,18 @@ export function parseBillDetail(raw: RawBillDetail): Bill {
     title: raw.title,
     congress: raw.congress,
     type: raw.type,
-    number: raw.number,
+    number: Number(raw.number),
     subjects,
     policyArea: raw.policyArea?.name ?? null,
     latestAction: raw.latestAction
       ? { date: raw.latestAction.actionDate, text: raw.latestAction.text }
       : null,
   };
+}
+
+function buildBillListPath(congress: number, billType?: string): string {
+  const normalizedBillType = billType?.trim().toLowerCase();
+  return normalizedBillType ? `/bill/${congress}/${normalizedBillType}` : `/bill/${congress}`;
 }
 
 // ─── Fetch functions ────────────────────────────────────────────────
@@ -458,8 +463,16 @@ export async function fetchBills(
   _subject?: string,
   limit = DEFAULT_LIMIT,
 ): Promise<Bill[]> {
+  return fetchBillsByType(congress, undefined, limit);
+}
+
+export async function fetchBillsByType(
+  congress?: number,
+  billType?: string,
+  limit = DEFAULT_LIMIT,
+): Promise<Bill[]> {
   const congressNum = congress ?? CURRENT_CONGRESS;
-  const url = buildCongressUrl(`/bill/${congressNum}`, { limit });
+  const url = buildCongressUrl(buildBillListPath(congressNum, billType), { limit });
 
   const json = await fetchCongressJson<{ bills: RawBillListItem[]; pagination?: CongressPagination }>(url);
   if (!json?.bills) return [];

@@ -60,6 +60,34 @@ function defaultTitleForChamber(chamber: string | undefined): string {
   return normalizeMemberChamber(chamber) === "house" ? "Representative" : "Senator";
 }
 
+function normalizeMemberParty(
+  party: string | undefined,
+  fallbackParty: string,
+): string {
+  const normalized = party?.trim();
+  if (!normalized || normalized.toLowerCase() === "unknown") {
+    return fallbackParty;
+  }
+
+  return normalized;
+}
+
+function formatMemberDistrict(
+  state: string | undefined,
+  district: number | undefined,
+  chamber: string | undefined,
+): string | null {
+  if (!state) {
+    return null;
+  }
+
+  if (normalizeMemberChamber(chamber) === "house" && district != null) {
+    return `${state}-${district}`;
+  }
+
+  return state;
+}
+
 function buildLegislativeSummary(
   allocations: Record<BudgetCategoryId, number>,
   coverageLevel: "full" | "partial",
@@ -113,7 +141,9 @@ function mergeSyncedPoliticianProfile(
     sourceType,
     sourceLabel,
     sourceNote,
+    categoriesCovered: derived.categoriesCovered,
     lastSyncedAt: (derived.latestVoteDate ?? row.updatedAt).toISOString(),
+    rollCallCount: derived.rollCallCount,
     allocations: derived.allocations,
   };
 }
@@ -227,19 +257,19 @@ export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoli
       update: {
         chamber: normalizeMemberChamber(member.chamber),
         deletedAt: null,
-        district: member.state,
+        district: formatMemberDistrict(member.state, member.district, member.chamber),
         jurisdictionId: usJurisdiction.id,
         name: member.name,
-        party: member.party,
+        party: normalizeMemberParty(member.party, benchmark.party),
         title: defaultTitleForChamber(member.chamber),
       },
       create: {
         chamber: normalizeMemberChamber(member.chamber),
-        district: member.state,
+        district: formatMemberDistrict(member.state, member.district, member.chamber),
         externalId: benchmark.externalId,
         jurisdictionId: usJurisdiction.id,
         name: member.name,
-        party: member.party,
+        party: normalizeMemberParty(member.party, benchmark.party),
         title: defaultTitleForChamber(member.chamber),
       },
     });

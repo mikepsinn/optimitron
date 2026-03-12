@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   fetchBillSubjects: vi.fn(),
   fetchBillVotes: vi.fn(),
   fetchBills: vi.fn(),
+  fetchBillsByType: vi.fn(),
   fetchRollCallVote: vi.fn(),
 }));
 
@@ -12,6 +13,7 @@ vi.mock("@optomitron/data", () => ({
     fetchBillSubjects: mocks.fetchBillSubjects,
     fetchBillVotes: mocks.fetchBillVotes,
     fetchBills: mocks.fetchBills,
+    fetchBillsByType: mocks.fetchBillsByType,
     fetchRollCallVote: mocks.fetchRollCallVote,
   },
 }));
@@ -28,6 +30,7 @@ describe("alignment legislative sync helpers", () => {
     mocks.fetchBillSubjects.mockReset();
     mocks.fetchBillVotes.mockReset();
     mocks.fetchBills.mockReset();
+    mocks.fetchBillsByType.mockReset();
     mocks.fetchRollCallVote.mockReset();
   });
 
@@ -128,6 +131,7 @@ describe("alignment legislative sync helpers", () => {
         },
       ])
       .mockResolvedValueOnce([]);
+    mocks.fetchBillsByType.mockResolvedValue([]);
     mocks.fetchBillSubjects.mockResolvedValue({
       subjects: ["Substance abuse treatment"],
       policyArea: "Health",
@@ -160,5 +164,64 @@ describe("alignment legislative sync helpers", () => {
     expect(rows[0]?.externalId).toBe("S000033");
     expect(rows.some((row) => row.itemCategory === "ADDICTION_TREATMENT")).toBe(true);
     expect(rows[0]?.allocationPct).toBeGreaterThan(0);
+  });
+
+  it("includes senate-specific bill feeds when the mixed recent bill list misses them", async () => {
+    mocks.fetchBills.mockResolvedValue([]);
+    mocks.fetchBillsByType.mockImplementation(
+      async (congress?: number, billType?: string) => {
+        if (congress === 119 && billType === "s") {
+          return [
+            {
+              billId: "119-s-5",
+              title: "Laken Riley Act",
+              congress: 119,
+              type: "s",
+              number: 5,
+              subjects: [],
+              policyArea: null,
+              latestAction: { date: "2025-01-20", text: "Passed Senate with an amendment" },
+            },
+          ];
+        }
+
+        return [];
+      },
+    );
+    mocks.fetchBillSubjects.mockResolvedValue({
+      subjects: ["Border security and unlawful immigration", "Detention of persons"],
+      policyArea: "Immigration",
+    });
+    mocks.fetchBillVotes.mockResolvedValue([
+      {
+        chamber: "senate",
+        congress: 119,
+        rollNumber: 7,
+        sessionNumber: 1,
+        url: "https://www.senate.gov/legislative/LIS/roll_call_votes/vote1191/vote_119_1_00007.xml",
+      },
+    ]);
+    mocks.fetchRollCallVote.mockResolvedValue({
+      chamber: "senate",
+      congress: 119,
+      date: "2025-01-20",
+      memberVotes: [{ bioguideId: "S000033", position: "Nay" }],
+      question: "On Passage",
+      result: "Passed",
+      rollCallNumber: 7,
+      session: 1,
+    });
+
+    const rows = await deriveRecentLegislativeVoteRows(["S000033"]);
+
+    expect(mocks.fetchBillsByType).toHaveBeenCalledWith(119, "s", 60);
+    expect(mocks.fetchBillsByType).toHaveBeenCalledWith(119, "sjres", 25);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      externalId: "S000033",
+      billId: "119-s-5:senate:1:7",
+      itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+    });
+    expect(rows[0]?.allocationPct).toBeLessThan(0);
   });
 });

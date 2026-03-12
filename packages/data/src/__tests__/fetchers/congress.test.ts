@@ -10,6 +10,7 @@ import {
   fetchMembers,
   fetchMemberDetails,
   fetchBills,
+  fetchBillsByType,
   fetchBillDetail,
   fetchBillSubjects,
   fetchBillVotes,
@@ -89,7 +90,7 @@ const mockMemberDetail: RawMemberDetail = {
 const mockBillListItem: RawBillListItem = {
   congress: 118,
   type: 'HR',
-  number: 3076,
+  number: '3076',
   title: 'Postal Service Reform Act of 2022',
   latestAction: {
     actionDate: '2022-04-06',
@@ -101,7 +102,7 @@ const mockBillListItem: RawBillListItem = {
 const mockBillDetail: RawBillDetail = {
   congress: 118,
   type: 'HR',
-  number: 3076,
+  number: '3076',
   title: 'Postal Service Reform Act of 2022',
   policyArea: { name: 'Government Operations and Politics' },
   subjects: {
@@ -636,6 +637,43 @@ describe('Congress Fetcher', () => {
 
       const bills = await fetchBills(118);
       expect(bills).toEqual([]);
+    });
+  });
+
+  describe('fetchBillsByType', () => {
+    it('builds a bill-type list URL', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockBillsListResponse),
+      });
+
+      await fetchBillsByType(119, 's', 25);
+      const callUrl = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
+      expect(callUrl).toContain('/bill/119/s');
+      expect(callUrl).toContain('limit=25');
+    });
+
+    it('parses typed-list bill numbers into numbers', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            bills: [
+              {
+                ...mockBillListItem,
+                congress: 119,
+                type: 'S',
+                number: '5',
+                title: 'Laken Riley Act',
+              },
+            ],
+          }),
+      });
+
+      const bills = await fetchBillsByType(119, 's', 20);
+      expect(bills).toHaveLength(1);
+      expect(bills[0]?.number).toBe(5);
+      expect(bills[0]?.billId).toBe('119-s-5');
     });
   });
 

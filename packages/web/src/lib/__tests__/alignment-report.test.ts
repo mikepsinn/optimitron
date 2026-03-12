@@ -99,6 +99,7 @@ describe("alignment report utilities", () => {
       report.ranking[1]?.score ?? 0,
     );
     expect(report.politicians[0]?.closestMatches.length).toBeGreaterThan(0);
+    expect(report.politicians[0]?.sourceLabel).toBeTruthy();
   });
 
   it("keeps simulated benchmark profiles normalized to 100 percent", () => {

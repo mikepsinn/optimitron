@@ -28,52 +28,171 @@ interface CategoryRule {
 const CATEGORY_RULES: readonly CategoryRule[] = [
   {
     categoryId: "PRAGMATIC_CLINICAL_TRIALS",
-    keywords: ["clinical trial", "medical research", "biomedical research", "nih", "comparative effectiveness", "arpa-h", "cancer research"],
+    keywords: [
+      "clinical trial",
+      "medical research",
+      "biomedical research",
+      "national institutes of health",
+      "nih",
+      "comparative effectiveness",
+      "arpa h",
+      "arpa-h",
+      "cancer research",
+      "research administration and funding",
+    ],
     policyAreas: ["health", "science", "technology"],
   },
   {
     categoryId: "ADDICTION_TREATMENT",
-    keywords: ["addiction treatment", "substance use disorder", "opioid treatment", "recovery", "harm reduction", "naloxone", "behavioral health"],
+    keywords: [
+      "addiction treatment",
+      "substance abuse treatment",
+      "substance use disorder",
+      "opioid treatment",
+      "recovery",
+      "harm reduction",
+      "naloxone",
+      "behavioral health",
+      "behavioral health services",
+      "overdose prevention",
+    ],
     policyAreas: ["health", "drugs", "families"],
   },
   {
     categoryId: "EARLY_CHILDHOOD_EDUCATION",
-    keywords: ["early childhood", "child care", "childcare", "prekindergarten", "pre-kindergarten", "preschool", "head start", "school readiness"],
+    keywords: [
+      "early childhood",
+      "child care",
+      "childcare",
+      "child care and development block grant",
+      "prekindergarten",
+      "pre kindergarten",
+      "pre-kindergarten",
+      "preschool",
+      "head start",
+      "school readiness",
+      "early learning",
+      "day care",
+    ],
     policyAreas: ["education", "families", "children"],
   },
   {
     categoryId: "DRUG_WAR_ENFORCEMENT",
-    keywords: ["drug enforcement", "dea", "controlled substance", "narcotics", "drug trafficking", "interdiction", "drug control"],
+    keywords: [
+      "drug enforcement",
+      "dea",
+      "controlled substance",
+      "drug trafficking",
+      "drug trafficking and controlled substances",
+      "interdiction",
+      "drug control",
+      "drug control policy",
+    ],
     policyAreas: ["crime and law enforcement", "drugs"],
   },
   {
     categoryId: "ICE_IMMIGRATION_ENFORCEMENT",
-    keywords: ["ice", "immigration detention", "deportation", "removal", "border patrol", "immigration enforcement", "detention center"],
+    keywords: [
+      "immigration detention",
+      "deportation",
+      "removal proceedings",
+      "border patrol",
+      "border security",
+      "unlawful immigration",
+      "immigration enforcement",
+      "detention center",
+      "detention of persons",
+      "sanctuary city",
+      "deportable alien",
+      "removable alien",
+      "alien gang",
+    ],
     policyAreas: ["immigration", "crime and law enforcement"],
   },
   {
     categoryId: "FARM_SUBSIDIES_AGRIBUSINESS",
-    keywords: ["farm subsidy", "commodity support", "crop insurance", "agricultural subsidy", "farm bill", "agribusiness"],
+    keywords: [
+      "farm subsidy",
+      "farm support",
+      "commodity support",
+      "commodity programs",
+      "crop insurance",
+      "agricultural subsidy",
+      "farm bill",
+      "farm credit",
+      "agribusiness",
+    ],
     policyAreas: ["agriculture and food"],
   },
   {
     categoryId: "FOSSIL_FUEL_SUBSIDIES",
-    keywords: ["oil and gas", "fossil fuel", "drilling", "pipeline", "coal", "petroleum", "gas export", "offshore leasing"],
+    keywords: [
+      "oil and gas",
+      "fossil fuel",
+      "drilling",
+      "pipeline",
+      "coal",
+      "petroleum",
+      "gas export",
+      "lng export",
+      "oil leasing",
+      "gas leasing",
+      "offshore leasing",
+      "offshore oil",
+    ],
     policyAreas: ["energy", "environmental protection"],
   },
   {
     categoryId: "NUCLEAR_WEAPONS_MODERNIZATION",
-    keywords: ["nuclear weapon", "nuclear modernization", "warhead", "icbm", "strategic forces", "nuclear triad", "missile silo"],
+    keywords: [
+      "nuclear weapon",
+      "nuclear modernization",
+      "warhead",
+      "icbm",
+      "strategic forces",
+      "strategic deterrent",
+      "nuclear triad",
+      "missile silo",
+      "ballistic missile",
+      "national nuclear security administration",
+    ],
     policyAreas: ["armed forces and national security"],
   },
   {
     categoryId: "PRISON_CONSTRUCTION",
-    keywords: ["prison construction", "bureau of prisons", "correctional facility", "detention facility", "jail construction", "carceral"],
+    keywords: [
+      "prison construction",
+      "bureau of prisons",
+      "correctional facility",
+      "correctional facilities",
+      "detention facility",
+      "detention facilities",
+      "jail construction",
+      "carceral",
+    ],
     policyAreas: ["crime and law enforcement"],
   },
   {
     categoryId: "MILITARY_OPERATIONS",
-    keywords: ["defense appropriation", "armed forces", "pentagon", "military operation", "weapons system", "navy", "army", "air force", "missile defense"],
+    keywords: [
+      "defense appropriation",
+      "defense appropriations",
+      "armed forces",
+      "armed services",
+      "pentagon",
+      "military operation",
+      "military procurement",
+      "foreign military sale",
+      "defense articles and services",
+      "arms sale",
+      "military facilities",
+      "weapons system",
+      "weapons development",
+      "navy",
+      "army",
+      "air force",
+      "missile defense",
+    ],
     policyAreas: ["armed forces and national security"],
   },
 ];
@@ -119,8 +238,20 @@ function normalizeText(value: string | null | undefined): string {
   return (value ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function countMatches(text: string, keywords: readonly string[]): Array<string> {
-  return keywords.filter((keyword) => text.includes(normalizeText(keyword)));
+  return keywords.filter((keyword) => {
+    const normalizedKeyword = normalizeText(keyword);
+    if (!normalizedKeyword) {
+      return false;
+    }
+
+    const pattern = new RegExp(`(?:^| )${escapeRegExp(normalizedKeyword).replace(/ /g, " +")}(?: |$)`);
+    return pattern.test(text);
+  });
 }
 
 function toConfidence(score: number): LegislativeMatchConfidence {
@@ -135,13 +266,17 @@ export function classifyLegislativeBill(
   const title = normalizeText(bill.title);
   const policyArea = normalizeText(bill.policyArea);
   const subjectText = normalizeText(bill.subjects.join(" "));
-  const combinedText = [title, policyArea, subjectText].filter(Boolean).join(" ");
+  const latestActionText = normalizeText(bill.latestActionText);
+  const supportingText = [subjectText, latestActionText].filter(Boolean).join(" ");
   const matches = CATEGORY_RULES
     .map((rule) => {
       const matchedTerms = new Set<string>();
       const titleMatches = countMatches(title, rule.keywords);
-      const textMatches = countMatches(combinedText, rule.keywords);
-      const policyMatches = countMatches(policyArea, rule.policyAreas ?? []);
+      const textMatches = countMatches(supportingText, rule.keywords);
+      const hasKeywordEvidence = titleMatches.length + textMatches.length > 0;
+      const policyMatches = hasKeywordEvidence
+        ? countMatches(policyArea, rule.policyAreas ?? [])
+        : [];
       for (const term of [...titleMatches, ...textMatches, ...policyMatches]) {
         matchedTerms.add(term);
       }
@@ -182,6 +317,14 @@ export function inferLegislativeBudgetDirection(
   bill: LegislativeBillInput,
 ): LegislativeBudgetDirection {
   const text = normalizeText([bill.title, bill.latestActionText].filter(Boolean).join(" "));
+  const isMilitarySaleRestriction =
+    countMatches(text, ["foreign military sale", "defense articles and services", "arms sale"])
+      .length > 0 &&
+    countMatches(text, ["disapproval", "disapproving", "terminate", "terminating"]).length > 0;
+  if (isMilitarySaleRestriction) {
+    return "decrease";
+  }
+
   const supportiveMatches = countMatches(text, SUPPORTIVE_KEYWORDS).length;
   const restrictiveMatches = countMatches(text, RESTRICTIVE_KEYWORDS).length;
 

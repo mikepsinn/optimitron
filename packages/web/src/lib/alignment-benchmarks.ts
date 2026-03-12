@@ -17,7 +17,9 @@ export interface AlignmentBenchmarkProfile {
   sourceType: AlignmentBenchmarkSourceType;
   sourceLabel: string;
   sourceNote: string;
+  categoriesCovered?: number;
   lastSyncedAt?: string;
+  rollCallCount?: number;
   allocations: Record<BudgetCategoryId, number>;
 }
 
@@ -185,6 +187,168 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
       NUCLEAR_WEAPONS_MODERNIZATION: 10,
       PRISON_CONSTRUCTION: 10,
       MILITARY_OPERATIONS: 7,
+    },
+  },
+  {
+    politicianId: "alexandria-ocasio-cortez",
+    externalId: "O000172",
+    name: "Alexandria Ocasio-Cortez",
+    party: "Democratic",
+    title: "Representative",
+    district: "New York-14",
+    chamber: "house",
+    summary:
+      "Progressive House benchmark that pushes hard toward early-life investment, treatment, and research while rejecting higher immigration enforcement and fossil priorities.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID O000172. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 20,
+      ADDICTION_TREATMENT: 17,
+      EARLY_CHILDHOOD_EDUCATION: 19,
+      DRUG_WAR_ENFORCEMENT: 3,
+      ICE_IMMIGRATION_ENFORCEMENT: 3,
+      FARM_SUBSIDIES_AGRIBUSINESS: 8,
+      FOSSIL_FUEL_SUBSIDIES: 4,
+      NUCLEAR_WEAPONS_MODERNIZATION: 3,
+      PRISON_CONSTRUCTION: 6,
+      MILITARY_OPERATIONS: 17,
+    },
+  },
+  {
+    politicianId: "ro-khanna",
+    externalId: "K000389",
+    name: "Ro Khanna",
+    party: "Democratic",
+    title: "Representative",
+    district: "California-17",
+    chamber: "house",
+    summary:
+      "Tech-progressive House benchmark that is especially research-forward, treatment-forward, and skeptical of higher military, fossil, and immigration-enforcement allocations.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID K000389. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 24,
+      ADDICTION_TREATMENT: 14,
+      EARLY_CHILDHOOD_EDUCATION: 15,
+      DRUG_WAR_ENFORCEMENT: 4,
+      ICE_IMMIGRATION_ENFORCEMENT: 4,
+      FARM_SUBSIDIES_AGRIBUSINESS: 8,
+      FOSSIL_FUEL_SUBSIDIES: 5,
+      NUCLEAR_WEAPONS_MODERNIZATION: 4,
+      PRISON_CONSTRUCTION: 5,
+      MILITARY_OPERATIONS: 17,
+    },
+  },
+  {
+    politicianId: "greg-casar",
+    externalId: "C001131",
+    name: "Greg Casar",
+    party: "Democratic",
+    title: "Representative",
+    district: "Texas-35",
+    chamber: "house",
+    summary:
+      "Movement-progressive House benchmark that strongly favors education, treatment, and anti-carceral reallocation while keeping immigration enforcement especially low.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID C001131. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 18,
+      ADDICTION_TREATMENT: 17,
+      EARLY_CHILDHOOD_EDUCATION: 19,
+      DRUG_WAR_ENFORCEMENT: 4,
+      ICE_IMMIGRATION_ENFORCEMENT: 2,
+      FARM_SUBSIDIES_AGRIBUSINESS: 8,
+      FOSSIL_FUEL_SUBSIDIES: 4,
+      NUCLEAR_WEAPONS_MODERNIZATION: 4,
+      PRISON_CONSTRUCTION: 5,
+      MILITARY_OPERATIONS: 19,
+    },
+  },
+  {
+    politicianId: "pete-aguilar",
+    externalId: "A000371",
+    name: "Pete Aguilar",
+    party: "Democratic",
+    title: "Representative",
+    district: "California-33",
+    chamber: "house",
+    summary:
+      "Leadership-aligned House Democrat benchmark that still tilts clearly toward domestic investment, but less sharply than the progressive flank.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID A000371. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 15,
+      ADDICTION_TREATMENT: 14,
+      EARLY_CHILDHOOD_EDUCATION: 13,
+      DRUG_WAR_ENFORCEMENT: 6,
+      ICE_IMMIGRATION_ENFORCEMENT: 6,
+      FARM_SUBSIDIES_AGRIBUSINESS: 8,
+      FOSSIL_FUEL_SUBSIDIES: 6,
+      NUCLEAR_WEAPONS_MODERNIZATION: 7,
+      PRISON_CONSTRUCTION: 7,
+      MILITARY_OPERATIONS: 18,
+    },
+  },
+  {
+    politicianId: "dan-crenshaw",
+    externalId: "C001120",
+    name: "Dan Crenshaw",
+    party: "Republican",
+    title: "Representative",
+    district: "Texas-2",
+    chamber: "house",
+    summary:
+      "Hawkish House Republican benchmark centered on military, immigration enforcement, fossil energy, and other hard-power priorities.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID C001120. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 8,
+      ADDICTION_TREATMENT: 6,
+      EARLY_CHILDHOOD_EDUCATION: 6,
+      DRUG_WAR_ENFORCEMENT: 10,
+      ICE_IMMIGRATION_ENFORCEMENT: 11,
+      FARM_SUBSIDIES_AGRIBUSINESS: 9,
+      FOSSIL_FUEL_SUBSIDIES: 10,
+      NUCLEAR_WEAPONS_MODERNIZATION: 12,
+      PRISON_CONSTRUCTION: 8,
+      MILITARY_OPERATIONS: 20,
+    },
+  },
+  {
+    politicianId: "kat-cammack",
+    externalId: "C001039",
+    name: "Kat Cammack",
+    party: "Republican",
+    title: "Representative",
+    district: "Florida-3",
+    chamber: "house",
+    summary:
+      "Conservative House benchmark with especially strong immigration and fossil-energy emphasis, plus consistently elevated military and enforcement posture.",
+    sourceType: "curated_real",
+    sourceLabel: "Current federal benchmark profile",
+    sourceNote:
+      "Identity keyed to Bioguide ID C001039. Budget posture is Optomitron's category coding of current public priorities.",
+    allocations: {
+      PRAGMATIC_CLINICAL_TRIALS: 6,
+      ADDICTION_TREATMENT: 5,
+      EARLY_CHILDHOOD_EDUCATION: 6,
+      DRUG_WAR_ENFORCEMENT: 11,
+      ICE_IMMIGRATION_ENFORCEMENT: 14,
+      FARM_SUBSIDIES_AGRIBUSINESS: 10,
+      FOSSIL_FUEL_SUBSIDIES: 12,
+      NUCLEAR_WEAPONS_MODERNIZATION: 10,
+      PRISON_CONSTRUCTION: 8,
+      MILITARY_OPERATIONS: 18,
     },
   },
 ];

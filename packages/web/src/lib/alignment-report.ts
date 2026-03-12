@@ -57,7 +57,11 @@ export interface PersonalAlignmentCandidateReport
   extends PersonalAlignmentRankingEntry {
   chamber?: string;
   district?: string;
+  categoriesCovered?: number;
+  rollCallCount?: number;
   summary: string;
+  sourceLabel: string;
+  sourceNote: string;
   sourceType: AlignmentBenchmarkProfile["sourceType"];
   normalizedAllocations: Record<BudgetCategoryId, number>;
   unresolvedCategories: string[];
@@ -310,8 +314,12 @@ export function buildPersonalAlignmentReport(input: {
     return {
       ...entry,
       chamber: politician.chamber,
+      categoriesCovered: politician.categoriesCovered,
       district: politician.district,
+      rollCallCount: politician.rollCallCount,
       summary: politician.summary,
+      sourceLabel: politician.sourceLabel,
+      sourceNote: politician.sourceNote,
       sourceType: politician.sourceType,
       normalizedAllocations: result.normalizedAllocations,
       unresolvedCategories: result.unresolvedCategories,

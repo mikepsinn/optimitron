@@ -28,12 +28,15 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
     .filter((value): value is string => typeof value === "string" && value.length > 0)
     .sort()
     .at(-1) ?? null;
+  const fullCount = profiles.filter((profile) => profile.sourceType === "congress_sync").length;
+  const partialCount = profiles.filter((profile) => profile.sourceType === "congress_partial").length;
+  const curatedCount = profiles.filter((profile) => profile.sourceType === "curated_real").length;
 
   if (sourceTypes.size === 1 && sourceTypes.has("congress_sync")) {
     return {
       candidateLastSyncedAt: lastSyncedAt,
       candidateSourceNote:
-        "All benchmark politicians on this report are derived from recent classified Congress roll calls stored in Optomitron's database.",
+        `All ${fullCount} benchmark politicians on this report are derived from recent classified Congress roll calls stored in Optomitron's database.`,
       candidateSourceType: "congress_sync" as const,
     };
   }
@@ -42,7 +45,7 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
     return {
       candidateLastSyncedAt: lastSyncedAt,
       candidateSourceNote:
-        "All benchmark politicians on this report blend curated benchmark priors with limited recent classified Congress roll calls. Categories without enough recent legislative coverage remain anchored to the curated baseline.",
+        `All ${partialCount} benchmark politicians on this report blend curated benchmark priors with limited recent classified Congress roll calls. Categories without enough recent legislative coverage remain anchored to the curated baseline.`,
       candidateSourceType: "congress_partial" as const,
     };
   }
@@ -51,7 +54,7 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
     return {
       candidateLastSyncedAt: lastSyncedAt,
       candidateSourceNote:
-        "Some politicians on this report are fully derived from recent classified Congress roll calls, some use partial live vote overlays, and the remainder still use the curated fallback benchmark set because recent legislative coverage is thin.",
+        `${fullCount} benchmark politicians are fully derived from recent classified Congress roll calls, ${partialCount} use partial live vote overlays, and ${curatedCount} still use the curated fallback benchmark set because recent legislative coverage is thin.`,
       candidateSourceType: "mixed" as const,
     };
   }

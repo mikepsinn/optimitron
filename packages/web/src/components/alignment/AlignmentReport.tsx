@@ -23,6 +23,21 @@ function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
 }
 
+function formatCoverageLabel(input: {
+  categoriesCovered?: number;
+  rollCallCount?: number;
+  sourceLabel: string;
+}) {
+  const parts = [input.sourceLabel];
+  if (input.rollCallCount && input.rollCallCount > 0) {
+    parts.push(`${input.rollCallCount} roll call${input.rollCallCount === 1 ? "" : "s"}`);
+  }
+  if (input.categoriesCovered && input.categoriesCovered > 0) {
+    parts.push(`${input.categoriesCovered} categor${input.categoriesCovered === 1 ? "y" : "ies"}`);
+  }
+  return parts.join(" · ");
+}
+
 export function AlignmentReport({
   state,
   shareUrl,
@@ -146,9 +161,14 @@ export function AlignmentReport({
                 <h2 className="text-3xl font-black uppercase text-black">
                   {topMatch?.name}
                 </h2>
-                <p className="mt-1 text-sm font-bold uppercase tracking-[0.15em] text-black/60">
+              <p className="mt-1 text-sm font-bold uppercase tracking-[0.15em] text-black/60">
                   {topMatch?.title} · {topMatch?.party}
                 </p>
+                {topMatch ? (
+                  <p className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-black/50">
+                    {formatCoverageLabel(topMatch)}
+                  </p>
+                ) : null}
               </div>
               <p className="max-w-2xl text-sm font-medium text-black/70">
                 {topMatch?.summary}
@@ -286,6 +306,9 @@ export function AlignmentReport({
                   </h3>
                   <p className="mt-1 text-sm font-bold uppercase tracking-[0.15em] text-black/60">
                     {politician.title} · {politician.party}
+                  </p>
+                  <p className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-black/50">
+                    {formatCoverageLabel(politician)}
                   </p>
                 </div>
                 <div className="border-2 border-black bg-white px-3 py-2 text-right">

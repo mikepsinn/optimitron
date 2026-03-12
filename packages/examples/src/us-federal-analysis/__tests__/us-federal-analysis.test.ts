@@ -329,17 +329,40 @@ describe('Government Size Analysis JSON', () => {
     for (const outcome of governmentSizeJson.outcomes) {
       expect(typeof outcome.name).toBe('string');
       expect(typeof outcome.meanForwardPearson).toBe('number');
+      expect(typeof outcome.meanPredictivePearson).toBe('number');
       expect(typeof outcome.medianOptimalPctGdp).toBe('number');
+      expect(typeof outcome.headlineEligible).toBe('boolean');
+      expect(typeof outcome.headlineEligibilityReason).toBe('string');
       expect(outcome.jurisdictionsAnalyzed).toBeGreaterThanOrEqual(10);
     }
   });
 
-  it('should include overall optimal estimate and uncertainty band', () => {
+  it('should include overall minimum-efficient estimate and uncertainty band', () => {
     const overall = governmentSizeJson.overall;
     expect(overall.optimalPctGdp).toBeGreaterThan(0);
     expect(overall.optimalPctGdp).toBeLessThan(100);
     expect(overall.optimalBandLowPctGdp).toBeLessThanOrEqual(overall.optimalPctGdp);
     expect(overall.optimalBandHighPctGdp).toBeGreaterThanOrEqual(overall.optimalPctGdp);
+    expect(overall.optimalSpendingPerCapitaPpp).toBeGreaterThan(0);
+    expect(overall.optimalBandLowPerCapitaPpp).toBeLessThanOrEqual(overall.optimalSpendingPerCapitaPpp);
+    expect(overall.optimalBandHighPerCapitaPpp).toBeGreaterThanOrEqual(overall.optimalSpendingPerCapitaPpp);
+    expect(overall.usEquivalentOptimalPctGdp).toBeGreaterThan(0);
+    expect(Array.isArray(overall.headlineEligibleOutcomeIds)).toBe(true);
+  });
+
+  it('should include objective-specific floors and tolerance sensitivity', () => {
+    expect(Array.isArray(governmentSizeJson.objectiveFloors)).toBe(true);
+    expect(governmentSizeJson.objectiveFloors.length).toBeGreaterThanOrEqual(3);
+    const haleOnly = governmentSizeJson.objectiveFloors.find((floor: any) => floor.id === 'hale_only');
+    expect(haleOnly).toBeDefined();
+    expect(haleOnly.usEquivalentOptimalPctGdp).toBeGreaterThan(0);
+
+    expect(Array.isArray(governmentSizeJson.toleranceSensitivity)).toBe(true);
+    expect(governmentSizeJson.toleranceSensitivity.length).toBeGreaterThanOrEqual(3);
+    for (const scenario of governmentSizeJson.toleranceSensitivity) {
+      expect(typeof scenario.tolerance).toBe('number');
+      expect(scenario.optimalSpendingPerCapitaPpp).toBeGreaterThan(0);
+    }
   });
 
   it('should include spending-level table with proxy notes', () => {
@@ -381,6 +404,8 @@ describe('Government Size Analysis JSON', () => {
     const us = governmentSizeJson.usSnapshot;
     expect(us.latestYear).toBeGreaterThanOrEqual(2018);
     expect(us.modeledSpendingPctGdp).toBeGreaterThan(0);
+    expect(us.modeledGdpPerCapitaPpp).toBeGreaterThan(0);
+    expect(us.modeledSpendingPerCapitaPpp).toBeGreaterThan(0);
     expect(['above_optimal_band', 'below_optimal_band', 'within_optimal_band']).toContain(us.status);
   });
 
@@ -391,6 +416,28 @@ describe('Government Size Analysis JSON', () => {
     expect(starts).toContain(1990);
     expect(starts).toContain(1995);
     expect(starts).toContain(2000);
+    expect(governmentSizeJson.sensitivity.covidExcludedScenario).toBeDefined();
+  });
+
+  it('should include efficient jurisdiction exemplars', () => {
+    expect(Array.isArray(governmentSizeJson.efficientJurisdictions)).toBe(true);
+    expect(governmentSizeJson.efficientJurisdictions.length).toBeGreaterThanOrEqual(3);
+    const first = governmentSizeJson.efficientJurisdictions[0];
+    expect(typeof first.jurisdictionName).toBe('string');
+    expect(first.qualifyingObservations).toBeGreaterThanOrEqual(2);
+    expect(first.medianSpendingPerCapitaPpp).toBeGreaterThan(0);
+  });
+
+  it('should include a federal composition summary', () => {
+    const composition = governmentSizeJson.federalComposition;
+    expect(composition).toBeDefined();
+    expect(composition.currentBudgetUsd).toBeGreaterThan(1_000_000_000_000);
+    expect(composition.unconstrainedOptimalBudgetUsd).toBeGreaterThan(1_000_000_000_000);
+    expect(Array.isArray(composition.topIncreaseCategories)).toBe(true);
+    expect(Array.isArray(composition.topDecreaseCategories)).toBe(true);
+    expect(Array.isArray(composition.largestTargetShares)).toBe(true);
+    expect(composition.topIncreaseCategories.length).toBeGreaterThanOrEqual(3);
+    expect(composition.topDecreaseCategories.length).toBeGreaterThanOrEqual(1);
   });
 });
 
@@ -399,16 +446,25 @@ describe('Government Size Report Markdown', () => {
     expect(governmentSizeMarkdown).toContain('Government Size Analysis');
     expect(governmentSizeMarkdown).toContain('## Summary');
     expect(governmentSizeMarkdown).toContain('## Predictor Definition');
+    expect(governmentSizeMarkdown).toContain('## Objective Floors');
+    expect(governmentSizeMarkdown).toContain('## Floor Tolerance');
+    expect(governmentSizeMarkdown).toContain('## Federal Composition');
     expect(governmentSizeMarkdown).toContain('## Outcome-Level Results');
+    expect(governmentSizeMarkdown).toContain('## Efficient Jurisdictions');
   });
 
   it('should include an outcome table and limitations', () => {
-    expect(governmentSizeMarkdown).toContain('| Outcome | Direction | Weight |');
+    expect(governmentSizeMarkdown).toContain('| Outcome | Weight | N | Mean r | Mean pred r |');
     expect(governmentSizeMarkdown).toContain('## Temporal Sensitivity (Start Year)');
     expect(governmentSizeMarkdown).toContain('## Spending Levels vs Typical Outcomes');
     expect(governmentSizeMarkdown).toContain('### Spending Share (% GDP) Bins');
     expect(governmentSizeMarkdown).toContain('### Spending Per-Capita (PPP) Bins');
     expect(governmentSizeMarkdown).toContain('Per-capita PPP spending is derived as');
+    expect(governmentSizeMarkdown).toContain('minimum efficient government spending floor');
+    expect(governmentSizeMarkdown).toContain('U.S.-equivalent floor share');
+    expect(governmentSizeMarkdown).toContain('Lowest direct-outcome floor in this model');
+    expect(governmentSizeMarkdown).toContain('Federal current-budget composition view');
+    expect(governmentSizeMarkdown).toContain('COVID exclusion check');
     expect(governmentSizeMarkdown).toContain('Rows are lag-aligned for causal interpretation');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (HALE)');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth');

@@ -10,7 +10,7 @@
     "start": "next start",
     "sync:alignment-politicians": "tsx scripts/sync-alignment-politicians.ts",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm run build:workspace-deps && tsc --noEmit",
     "test": "pnpm exec vitest run",
     "generate": "tsx scripts/generate-analysis.ts",
     "fetch": "tsx scripts/fetch-and-generate.ts",
