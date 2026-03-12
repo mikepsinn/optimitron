@@ -1,0 +1,649 @@
+/* ==========================================================================
+   Neobrutalist theme overrides for @optomitron/chat-ui BEM classes
+   ========================================================================== */
+
+/* --- Chat container layout --- */
+.opto-chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 8rem);
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* --- Message list (scrollable) --- */
+.opto-chat__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.opto-chat__message-wrapper {
+  max-width: 85%;
+}
+
+.opto-chat__message-wrapper:has(.opto-chat__bubble--user) {
+  align-self: flex-end;
+}
+
+.opto-chat__message-wrapper:has(.opto-chat__bubble--assistant) {
+  align-self: flex-start;
+}
+
+/* --- Chat bubbles --- */
+.opto-chat__bubble {
+  padding: 0.75rem 1rem;
+  border: 2px solid black;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.opto-chat__bubble--user {
+  background: rgb(var(--brutal-pink));
+  color: white;
+  font-weight: 600;
+}
+
+.opto-chat__bubble--assistant {
+  background: rgb(var(--brutal-cyan));
+  color: black;
+}
+
+/* --- Input bar --- */
+.opto-chat__input-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-top: 3px solid black;
+}
+
+.opto-chat__input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid black;
+  border-radius: 0;
+  font-size: 1rem;
+  outline: none;
+  background: white;
+  transition: box-shadow 0.15s;
+}
+
+.opto-chat__input:focus {
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-chat__send-btn {
+  padding: 0.75rem 1.5rem;
+  background: rgb(var(--brutal-yellow));
+  color: black;
+  border: 2px solid black;
+  border-radius: 0;
+  font-weight: 900;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-chat__send-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-chat__send-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-chat__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Base card --- */
+.opto-card {
+  background: white;
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
+  padding: 1rem;
+  margin: 0.25rem 0;
+}
+
+/* --- Mood card --- */
+.opto-mood-card__header {
+  font-weight: 900;
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.opto-mood-card__buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.opto-mood-card__btn {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid black;
+  background: rgb(var(--brutal-yellow));
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-mood-card__btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-mood-card__btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-mood-card--confirmed {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-mood-card__confirmation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opto-mood-card__emoji-large {
+  font-size: 2rem;
+}
+
+.opto-mood-card__label {
+  font-weight: 700;
+}
+
+.opto-mood-card__timestamp {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-left: auto;
+}
+
+/* --- Treatment card --- */
+.opto-treatment-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.opto-treatment-card__name {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.opto-treatment-card__dose {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.opto-treatment-card__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.opto-treatment-card__btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid black;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-treatment-card__btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-treatment-card__btn--done {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-treatment-card__btn--skip {
+  background: rgb(var(--brutal-yellow));
+}
+
+.opto-treatment-card__btn--snooze {
+  background: rgb(var(--brutal-pink));
+  color: white;
+}
+
+.opto-treatment-card__snooze-options {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.opto-treatment-card__snooze-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.opto-treatment-card__snooze-btn {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid black;
+  background: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s;
+}
+
+.opto-treatment-card__snooze-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+.opto-treatment-card__snooze-cancel {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid black;
+  background: rgb(var(--brutal-red));
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.opto-treatment-card--completed {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-treatment-card__status {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+/* --- Symptom card --- */
+.opto-symptom-card__header {
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.opto-symptom-card__scale {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.opto-symptom-card__btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid black;
+  background: rgb(var(--brutal-yellow));
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-symptom-card__btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-symptom-card--confirmed {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-symptom-card__result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opto-symptom-card__badge {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid black;
+  background: rgb(var(--brutal-yellow));
+  font-weight: 700;
+}
+
+.opto-symptom-card__recorded {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* --- Pairwise card --- */
+.opto-pairwise-card__header {
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.opto-pairwise-card__items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.opto-pairwise-card__item-label {
+  font-weight: 700;
+}
+
+.opto-pairwise-card__vs {
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.opto-pairwise-card__slider-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.opto-pairwise-card__alloc {
+  font-weight: 700;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.opto-pairwise-card__slider {
+  flex: 1;
+  accent-color: rgb(var(--brutal-pink));
+}
+
+.opto-pairwise-card__presets {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.opto-pairwise-card__preset-btn {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid black;
+  background: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s;
+}
+
+.opto-pairwise-card__preset-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+.opto-pairwise-card__submit {
+  padding: 0.5rem 1.5rem;
+  background: rgb(var(--brutal-pink));
+  color: white;
+  border: 2px solid black;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-pairwise-card__submit:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-pairwise-card--submitted {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-pairwise-card__result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opto-pairwise-card__item {
+  font-weight: 700;
+}
+
+.opto-pairwise-card__divider {
+  opacity: 0.4;
+}
+
+/* --- Food card --- */
+.opto-food-card__header {
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.opto-food-card__input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.opto-food-card__input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid black;
+  border-radius: 0;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.opto-food-card__input:focus {
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-food-card__log-btn {
+  padding: 0.5rem 1rem;
+  background: rgb(var(--brutal-yellow));
+  border: 2px solid black;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s;
+}
+
+.opto-food-card__log-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+.opto-food-card__suggestions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.opto-food-card__suggestion {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid black;
+  background: rgb(var(--brutal-cyan));
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s;
+}
+
+.opto-food-card__suggestion:hover {
+  transform: translate(-1px, -1px);
+}
+
+.opto-food-card__recent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.opto-food-card__recent-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.opto-food-card__chip {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid black;
+  background: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.opto-food-card__chip:hover {
+  background: rgb(var(--brutal-yellow));
+}
+
+.opto-food-card--logged {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-food-card__confirmation {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* --- Insight card --- */
+.opto-insight-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.opto-insight-card__icon {
+  font-size: 1.5rem;
+}
+
+.opto-insight-card__title {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.opto-insight-card__body {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.opto-insight-card__chart-placeholder {
+  height: 6rem;
+  border: 2px dashed black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  opacity: 0.5;
+  margin-bottom: 0.75rem;
+}
+
+.opto-insight-card__action {
+  padding: 0.5rem 1rem;
+  background: rgb(var(--brutal-pink));
+  color: white;
+  border: 2px solid black;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s;
+}
+
+.opto-insight-card__action:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+}
+
+/* --- API Key card --- */
+.opto-apikey-card__header {
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.opto-apikey-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.opto-apikey-card__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.opto-apikey-card__select,
+.opto-apikey-card__input {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid black;
+  border-radius: 0;
+  font-size: 0.9rem;
+  outline: none;
+  background: white;
+}
+
+.opto-apikey-card__select:focus,
+.opto-apikey-card__input:focus {
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-apikey-card__save-btn {
+  padding: 0.5rem 1rem;
+  background: rgb(var(--brutal-yellow));
+  border: 2px solid black;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+  align-self: flex-start;
+}
+
+.opto-apikey-card__save-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-apikey-card__disclaimer {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-top: 0.5rem;
+}
+
+.opto-apikey-card--saved {
+  background: rgb(var(--brutal-cyan));
+}
+
+.opto-apikey-card__confirmation {
+  font-weight: 700;
+  text-transform: uppercase;
+}

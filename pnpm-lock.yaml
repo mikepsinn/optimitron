@@ -305,6 +305,9 @@ importers:
       '@next-auth/prisma-adapter':
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@6.19.2)(next-auth@4.24.13)
+      '@optomitron/chat-ui':
+        specifier: workspace:^
+        version: link:../chat-ui
       '@optomitron/data':
         specifier: workspace:^
         version: link:../data

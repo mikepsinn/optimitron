@@ -219,6 +219,51 @@ model User {
   /// Whether the user wants updates about progress
   newsletterSubscribed Boolean @default(true)
 
+  /// Preferred IANA time zone for reminders and daily check-ins
+  timeZone String?
+
+  /// Country or country code for decentralized census grouping
+  countryCode String?
+
+  /// State, province, or other first-level region
+  regionCode String?
+
+  /// City or locality
+  city String?
+
+  /// Postal or ZIP code
+  postalCode String?
+
+  /// Latest saved latitude for profile/home location
+  latitude Float?
+
+  /// Latest saved longitude for profile/home location
+  longitude Float?
+
+  /// Self-reported annual household income in USD
+  annualHouseholdIncomeUsd Float?
+
+  /// Number of people supported by the household income
+  householdSize Int?
+
+  /// Self-reported birth year
+  birthYear Int?
+
+  /// Highest completed education level
+  educationLevel String?
+
+  /// Employment status for census segmentation
+  employmentStatus String?
+
+  /// Self-described gender identity
+  genderIdentity String?
+
+  /// Free-form census notes for additional demographic context
+  censusNotes String?
+
+  /// When the census/location snapshot was last updated
+  censusUpdatedAt DateTime?
+
   /// Number of referral-sequence emails already sent to this user
   referralEmailSequenceStep Int @default(0)
 
@@ -246,6 +291,9 @@ model User {
   @@index([email])
   @@index([username])
   @@index([referralCode])
+  @@index([countryCode, regionCode])
+  @@index([annualHouseholdIncomeUsd])
+  @@index([censusUpdatedAt])
   @@index([createdAt])
   @@index([referralEmailSequenceStep, referralEmailSequenceLastSentAt])
   @@index([deletedAt])

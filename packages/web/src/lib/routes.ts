@@ -1,6 +1,7 @@
 export const ROUTES = {
   home: "/",
   vote: "/vote",
+  chat: "/chat",
   signIn: "/auth/signin",
 } as const;
 
@@ -53,6 +54,12 @@ export const topLinks: NavItem[] = [
     label: "Wishocracy",
     emoji: "🗳️",
     description: "Allocate your ideal budget via pairwise comparisons",
+  },
+  {
+    href: "/chat",
+    label: "Track",
+    emoji: "💬",
+    description: "Log treatments, symptoms, and meals",
   },
   {
     href: "/about",

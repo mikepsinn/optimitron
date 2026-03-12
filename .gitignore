@@ -60,3 +60,4 @@ packages/db/prisma/dev.db
 tmp-*
 NUL
 .vercel
+.playwright-mcp/

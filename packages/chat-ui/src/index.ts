@@ -21,3 +21,14 @@ export type {
   ApiKeyCardProps,
   ChatContainerProps,
 } from './types.js';
+
+// NLP
+export { ConversationContext, textToMeasurements, parseWithRegex } from './nlp/index.js';
+export type {
+  ParsedMeasurement,
+  LLMProvider,
+  TextToMeasurementsOptions,
+  ConversationMessage,
+  ParseWithContextOptions,
+  ContextParseResult,
+} from './nlp/index.js';

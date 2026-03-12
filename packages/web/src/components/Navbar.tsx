@@ -23,6 +23,12 @@ function AccountLinks({
     return (
       <>
         <Link
+          href="/profile"
+          className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+        >
+          Profile
+        </Link>
+        <Link
           href="/vote"
           className="text-sm font-bold px-4 py-2 border-2 border-black bg-yellow-300 hover:bg-yellow-400 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
@@ -255,6 +261,15 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="border-t-2 border-gray-200 my-2" />
+            {isAuthenticated ? (
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
+              >
+                Profile
+              </Link>
+            ) : null}
             <Link
               href={
                 isAuthenticated
