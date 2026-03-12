@@ -6,7 +6,7 @@
     {
       "id": "drug-war-deaths",
       "myth": "The War on Drugs reduces drug deaths",
-      "reality": "Overdose deaths rose 5.6x while enforcement spending rose 4x. YoY correlation ≈ 0.",
+      "reality": "We spent 4x more fighting drugs, yet overdose deaths went up 5.6x. Year-to-year changes in spending had virtually no effect on death rates.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-drug-war",
@@ -15,7 +15,7 @@
     {
       "id": "drug-war-crime",
       "myth": "Tough-on-crime drug policy reduces violent crime",
-      "reality": "Drug war spending has near-zero YoY correlation with violent crime rates.",
+      "reality": "Increases in drug war spending show no measurable effect on violent crime rates.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-drug-war",
@@ -24,7 +24,7 @@
     {
       "id": "immigration-wages",
       "myth": "Immigration enforcement protects wages",
-      "reality": "No meaningful YoY correlation between enforcement spending and median income.",
+      "reality": "Spending more on immigration enforcement had no measurable effect on wages.",
       "grade": "F",
       "category": "economics",
       "dataset": "us-immigration-tariffs",
@@ -33,7 +33,7 @@
     {
       "id": "tariffs-economy",
       "myth": "Tariffs protect the economy",
-      "reality": "Tariff increases correlate with higher consumer prices, not higher income.",
+      "reality": "When tariffs went up, consumer prices rose — but incomes didn't.",
       "grade": "F",
       "category": "economics",
       "dataset": "us-immigration-tariffs",
@@ -42,7 +42,7 @@
     {
       "id": "minimum-wage-unemployment",
       "myth": "Minimum wage increases cause unemployment",
-      "reality": "Near-zero YoY correlation between minimum wage changes and unemployment.",
+      "reality": "Minimum wage increases had no measurable effect on unemployment rates.",
       "grade": "F",
       "category": "economics",
       "dataset": "us-minimum-wage",
@@ -51,7 +51,7 @@
     {
       "id": "laffer-curve",
       "myth": "Lower tax rates increase tax revenue",
-      "reality": "Federal revenue stays at 15-20% GDP regardless of top rate (91% or 37%).",
+      "reality": "Whether the top tax rate was 91% or 37%, the government collected roughly the same share of GDP (15–20%).",
       "grade": "F",
       "category": "economics",
       "dataset": "us-laffer-curve",
@@ -60,7 +60,7 @@
     {
       "id": "healthcare-spending",
       "myth": "More healthcare spending means better outcomes",
-      "reality": "US spends 2.2x OECD average, gets 2.4 fewer years life expectancy.",
+      "reality": "The US spends more than double what other wealthy nations spend per person, yet Americans live 2.4 fewer years on average.",
       "grade": "F",
       "category": "healthcare",
       "dataset": "us-healthcare-spending",
@@ -69,7 +69,7 @@
     {
       "id": "police-spending",
       "myth": "More police spending prevents crime",
-      "reality": "Crime drives spending (reactive), not the reverse. YoY correlation ≈ 0.",
+      "reality": "Crime goes up first, then police budgets increase in response — not the other way around.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-police-spending",
@@ -78,7 +78,7 @@
     {
       "id": "incarceration-crime",
       "myth": "Mass incarceration reduces crime",
-      "reality": "US has 5x incarceration of peers with similar crime. YoY r = 0.09-0.23.",
+      "reality": "The US locks up 5x more people than similar countries, with no meaningful reduction in crime.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-incarceration",
@@ -87,7 +87,7 @@
     {
       "id": "guns-homicide",
       "myth": "Gun ownership directly predicts homicide rates",
-      "reality": "Only 23 data points; near-zero YoY correlation. Confounded by poverty and urbanization.",
+      "reality": "Gun ownership rates show no direct year-to-year link to homicide rates. Poverty and urbanization are stronger factors.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-gun-data",
@@ -96,7 +96,7 @@
     {
       "id": "death-penalty",
       "myth": "The death penalty deters murder",
-      "reality": "Absolute r = -0.655 vanishes to r = -0.013 in YoY. Entirely spurious.",
+      "reality": "Executions and murder rates both declined over decades, creating a fake correlation. Year to year, there's zero relationship.",
       "grade": "F",
       "category": "criminal-justice",
       "dataset": "us-death-penalty",
@@ -105,7 +105,7 @@
     {
       "id": "foreign-aid",
       "myth": "Foreign aid reduces conflict",
-      "reality": "Aid correlates positively with conflict (r = +0.715) — it's reactive, not preventive.",
+      "reality": "More aid goes to places with more conflict — because aid responds to crises, not because it causes them.",
       "grade": "F",
       "category": "international",
       "dataset": "us-foreign-aid",
@@ -114,7 +114,7 @@
     {
       "id": "abstinence-education",
       "myth": "Abstinence education reduces teen pregnancy",
-      "reality": "Strongest causal finding: abstinence funding INCREASES teen pregnancy (r = +0.713).",
+      "reality": "States that spent more on abstinence-only education actually had higher teen pregnancy rates.",
       "grade": "F",
       "category": "education",
       "dataset": "us-abstinence-education",
@@ -123,7 +123,7 @@
     {
       "id": "regulation-gdp",
       "myth": "Regulation kills economic growth",
-      "reality": "Complete null — no correlation between regulatory volume and GDP/business formation.",
+      "reality": "The number of regulations has no measurable relationship with GDP growth or new business creation.",
       "grade": "F",
       "category": "economics",
       "dataset": "us-regulation",
@@ -132,7 +132,7 @@
     {
       "id": "climate-spending",
       "myth": "Climate spending hurts the economy",
-      "reality": "Zero GDP harm from renewables. Strong CO2 reduction (r = -0.960, trend-driven).",
+      "reality": "Renewable energy investment shows no harm to GDP, while CO₂ emissions dropped significantly.",
       "grade": "A",
       "category": "environment",
       "dataset": "us-climate-spending",
