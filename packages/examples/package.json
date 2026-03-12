@@ -16,6 +16,8 @@
     "generate:government-spending-metrics": "pnpm run build:deps && tsx src/us-federal-analysis/generate-government-spending-metric-comparison.ts",
     "generate:policy": "pnpm run build:deps && tsx src/us-federal-analysis/generate-policy-analysis.ts",
     "generate:mega-studies": "pnpm run build:deps && tsx src/analysis-explorer/generate-mega-studies.ts",
+    "review:mega-studies": "pnpm run build:deps && tsx src/analysis-explorer/review-mega-study-output.ts",
+    "generate:mega-studies:reviewed": "pnpm run generate:mega-studies && pnpm run review:mega-studies",
     "generate:drug-war-proxy-aggregated": "pnpm run build:deps && tsx src/analysis-explorer/generate-drug-war-proxy-aggregated-study.ts",
     "generate:drug-enforcement-aggregated": "pnpm run build:deps && tsx src/analysis-explorer/generate-drug-enforcement-aggregated-comparison.ts",
     "generate:drug-enforcement-aggregated-comparison": "pnpm run build:deps && tsx src/analysis-explorer/generate-drug-enforcement-aggregated-comparison.ts",

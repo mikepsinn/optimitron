@@ -60,6 +60,20 @@ pnpm --filter @optomitron/web run start
 pnpm --filter @optomitron/web run generate
 ```
 
+### Analysis Explorer Mega Studies
+```bash
+# Generate structured mega-study outputs
+pnpm --filter @optomitron/examples run generate:mega-studies
+
+# Run the agent-assisted publication review on mega-study-api.json
+pnpm --filter @optomitron/examples run review:mega-studies
+
+# Or do both in one step
+pnpm --filter @optomitron/examples run generate:mega-studies:reviewed
+```
+Review artifact:
+- `packages/examples/output/mega-studies/mega-study-publication-review.json`
+
 ### Typecheck Everything
 ```bash
 pnpm run typecheck
