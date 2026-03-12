@@ -93,9 +93,9 @@
 - "As a biohacker, I want causal inference on my Apple Health data"
 
 **Features needed:**
-- [ ] Health data import (Apple Health, Fitbit, etc. — ✅ DONE)
-- [ ] Personal analysis pipeline (✅ DONE)
-- [ ] Report generation (✅ DONE)
+- [x] Health data import (Apple Health, Fitbit, etc.)
+- [x] Personal analysis pipeline
+- [x] Report generation
 - [x] User accounts + basic profile/census storage
 - [x] Daily health/happiness/income tracking
 - [ ] Health data upload into user accounts
