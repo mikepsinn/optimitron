@@ -1,3 +1,4 @@
+import "@/lib/server-env";
 import { prisma } from "@/lib/prisma";
 import { getReferralCountsByUserIds } from "@/lib/referral.server";
 import {

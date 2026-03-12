@@ -134,10 +134,7 @@ export function AuthForm({
   return (
     <div className="w-full rounded-xl border-4 border-black bg-white p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <div className="mb-5 text-center">
-        <h2 className="text-xl font-black uppercase">Continue to Optomitron</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Use Google or get a magic link by email. Your account will be created automatically.
-        </p>
+        <h2 className="text-xl font-black uppercase">Sign In</h2>
       </div>
 
       {error ? <AlertCard type="error" message={error} className="mb-4" /> : null}

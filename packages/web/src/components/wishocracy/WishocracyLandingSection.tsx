@@ -103,30 +103,6 @@ export function WishocracyLandingSection() {
               government spending.
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="border-4 border-black bg-white p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                <div className="text-xs font-black uppercase text-black/50">Participants</div>
-                <div className="mt-2 text-3xl font-black text-pink-500">
-                  {isLoading ? "..." : summary.totalUsers}
-                </div>
-              </div>
-              <div className="border-4 border-black bg-white p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                <div className="text-xs font-black uppercase text-black/50">Comparisons</div>
-                <div className="mt-2 text-3xl font-black text-cyan-500">
-                  {isLoading ? "..." : summary.totalComparisons}
-                </div>
-              </div>
-              <div className="border-4 border-black bg-white p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                <div className="text-xs font-black uppercase text-black/50">Top Priority</div>
-                <div className="mt-2 text-sm font-black uppercase text-black">
-                  {topCategory ? topCategory.category.name : "Be the first voter"}
-                </div>
-                <div className="mt-1 text-xs font-bold text-black/60">
-                  {topCategory ? `${topCategory.communityPercent.toFixed(1)}% community average` : "No saved allocations yet"}
-                </div>
-              </div>
-            </div>
-
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
                 href="/vote"

@@ -1,3 +1,4 @@
+import "@/lib/server-env";
 import { Resend } from "resend";
 
 interface ResendMessage {

@@ -1,3 +1,4 @@
+import "@/lib/server-env";
 import type { IDKitResult } from "@worldcoin/idkit";
 import { hashSignal } from "@worldcoin/idkit/hashing";
 import { signRequest } from "@worldcoin/idkit/signing";

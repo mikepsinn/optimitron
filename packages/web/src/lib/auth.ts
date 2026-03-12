@@ -1,3 +1,4 @@
+import "@/lib/server-env";
 import { PersonhoodVerificationStatus } from "@prisma/client";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
