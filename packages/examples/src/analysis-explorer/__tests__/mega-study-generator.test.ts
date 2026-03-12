@@ -20,6 +20,7 @@ import {
   derivePairQualityTier,
   derivePairQualityWarnings,
   isPercentGdpUnit,
+  isPublicationEligibleRecommendation,
   isReportEligibleOutcome,
   isReportEligiblePredictor,
   resolveActionableOptimalValue,
@@ -688,6 +689,80 @@ describe("mega-study-generator helpers", () => {
 
     expect(resolveDecisionTargetSource(pair)).toBe("unavailable");
     expect(resolveDecisionOptimalValue(pair)).toBeNull();
+  });
+
+  it("isPublicationEligibleRecommendation blocks low-reliability and insufficient-quality rows", () => {
+    expect(
+      isPublicationEligibleRecommendation({
+        dataSufficiency: { status: "sufficient" },
+        qualityTier: "exploratory",
+        reliability: { band: "moderate" },
+        responseCurve: {
+          supportConstrainedTargets: {
+            supportConstrainedOptimalValue: 14,
+            robustOptimalValue: 12,
+          },
+        },
+      } as Parameters<typeof isPublicationEligibleRecommendation>[0]),
+    ).toBe(true);
+
+    expect(
+      isPublicationEligibleRecommendation({
+        dataSufficiency: { status: "sufficient" },
+        qualityTier: "insufficient",
+        reliability: { band: "moderate" },
+        responseCurve: {
+          supportConstrainedTargets: {
+            supportConstrainedOptimalValue: 14,
+            robustOptimalValue: 12,
+          },
+        },
+      } as Parameters<typeof isPublicationEligibleRecommendation>[0]),
+    ).toBe(false);
+
+    expect(
+      isPublicationEligibleRecommendation({
+        dataSufficiency: { status: "sufficient" },
+        qualityTier: "exploratory",
+        reliability: { band: "low" },
+        responseCurve: {
+          supportConstrainedTargets: {
+            supportConstrainedOptimalValue: 14,
+            robustOptimalValue: 12,
+          },
+        },
+      } as Parameters<typeof isPublicationEligibleRecommendation>[0]),
+    ).toBe(false);
+
+    expect(
+      isPublicationEligibleRecommendation({
+        dataSufficiency: { status: "sufficient" },
+        qualityTier: "exploratory",
+        reliability: { band: "moderate" },
+        predictorObservedMin: 0,
+        predictorObservedMax: 20,
+        predictorBinRows: [
+          {
+            lowerBound: 0,
+            upperBound: 10,
+            isUpperInclusive: false,
+            outcomeMean: 5,
+          },
+          {
+            lowerBound: 10,
+            upperBound: 20,
+            isUpperInclusive: true,
+            outcomeMean: 3,
+          },
+        ],
+        responseCurve: {
+          supportConstrainedTargets: {
+            supportConstrainedOptimalValue: 14,
+            robustOptimalValue: 12,
+          },
+        },
+      } as Parameters<typeof isPublicationEligibleRecommendation>[0]),
+    ).toBe(false);
   });
 
   it("computePairMarginalTradeoffDiagnostics marks near-zero tail gains as no clear marginal gain", () => {

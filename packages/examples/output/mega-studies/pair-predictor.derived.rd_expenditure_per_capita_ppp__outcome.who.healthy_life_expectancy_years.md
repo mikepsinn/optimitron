@@ -7,7 +7,7 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 16
 - Temporal candidates with valid results: 16
-- Temporal profile score: 0.7514
+- Temporal profile score: 0.7493
 - Included subjects: 95
 - Skipped subjects: 0
 - Total aligned pairs: 6270
@@ -16,7 +16,7 @@
 - Confidence score: 0.658 (medium confidence)
 - Signal tag: early signal
 - Direction: positive
-- Uncertainty score: 0.0667 (lower is better)
+- Uncertainty score: 0.0668 (lower is better)
 
 ## Quick Meanings
 
@@ -31,12 +31,12 @@
 - Recommended R&D Expenditure Per Capita (PPP) level for higher Healthy Life Expectancy (HALE): 1356.1 international $/person (data-backed level).
 - Best level directly seen in the grouped data: 1356.1 international $/person.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 1302.4 international $/person; model-optimal minus observed-anchor difference is -953.35 (-73.2%).
+- Best observed bin anchor (median/mean) is 1302.4 international $/person; model-optimal minus observed-anchor difference is -953.04 (-73.2%).
 - Backup level check (middle 10-90% of data) suggests 805.20 international $/person.
-- The math-only guess and backup level differ by 130.7%, which means extreme values may matter a lot.
+- The math-only guess and backup level differ by 130.4%, which means extreme values may matter a lot.
 - Minimum effective level (first consistently positive zone): 5.168 international $/person.
 - Diminishing returns likely begin near 12.003 international $/person.
-- Saturation/plateau zone starts around 290.74 international $/person and extends through 1356.1 international $/person.
+- Saturation/plateau zone starts around 540.46 international $/person and extends through 1356.1 international $/person.
 - Highest observed mean Healthy Life Expectancy (HALE) appears when R&D Expenditure Per Capita (PPP) is in [984.07, 2227.7] (mean outcome 70.299).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
@@ -59,8 +59,8 @@
 
 - Forward and direction signals disagree; direction may be unstable.
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0040); temporal assumptions are not yet robust.
-- Robustness check: trimmed-range optimal differs by 130.7% from raw optimal; tail observations materially influence target.
+- Top temporal profiles are close (score delta 0.0041); temporal assumptions are not yet robust.
+- Robustness check: trimmed-range optimal differs by 130.4% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
 
@@ -68,17 +68,17 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | 0.4412 |
-| Reverse correlation | 0.6472 |
-| Direction score (forward - reverse) | -0.2060 |
-| Effect size (% change from baseline) | 2.7541 |
-| Significance score | 0.9333 |
+| Forward correlation | 0.4413 |
+| Reverse correlation | 0.6453 |
+| Direction score (forward - reverse) | -0.2040 |
+| Effect size (% change from baseline) | 2.7520 |
+| Significance score | 0.9332 |
 | Weighted PIS | 0.4793 |
-| Value linked with higher outcome | 349.0992 |
-| Value linked with lower outcome | 240.1539 |
-| Math-only best daily value | 349.0992 |
+| Value linked with higher outcome | 349.4044 |
+| Value linked with lower outcome | 240.2505 |
+| Math-only best daily value | 349.4044 |
 | Recommended level (reader-facing) | 1356.1 international $/person (data-backed level) |
-| Math-only guess (technical) | 349.10 international $/person |
+| Math-only guess (technical) | 349.40 international $/person |
 | Data-backed level | 1356.1 international $/person |
 | Data-backed range | [1081.6, 2227.7] |
 | Backup level (middle-data check) | 832.82 international $/person |
@@ -92,15 +92,15 @@
 | Best observed outcome average | 70.299 |
 | Best observed outcome average (middle-data check) | 69.426 |
 | Backup level (bucket median) | 805.20 international $/person |
-| Math-only vs backup difference | 456.10 (+130.7%) |
+| Math-only vs backup difference | 455.80 (+130.4%) |
 | Middle-data share kept | 80.1% (5025/6270) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.6577 (medium confidence) |
+| Confidence score | 0.6578 (medium confidence) |
 | Reliability support component | 0.8167 |
-| Reliability significance component | 0.9333 |
+| Reliability significance component | 0.9332 |
 | Reliability directional component | 1.0000 |
-| Reliability temporal-stability component | 0.1344 |
+| Reliability temporal-stability component | 0.1355 |
 | Reliability robustness component | 0.0000 |
 | Signal tag | early signal |
 
@@ -109,32 +109,32 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | 5.168 international $/person (z=8.11) |
-| Point where gains start slowing | 12.003 international $/person (ratio=0.102) |
-| Flat zone range | [201.55, 2227.7] |
+| Point where gains start slowing | 12.003 international $/person (ratio=0.100) |
+| Flat zone range | [421.41, 2227.7] |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | -1007.0 (-74.3%) |
+| Math-only guess minus data-backed level | -1006.7 (-74.2%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 2 | 3 | interpolation | 0.7514 | 0.0000 | 95 | 6270 |
-| Runner-up | predictor_default | 3 | 2 | interpolation | 0.7474 | 0.0040 | 95 | 6270 |
-| Runner-up | predictor_default | 1 | 5 | interpolation | 0.7445 | 0.0069 | 95 | 6270 |
-| Runner-up | predictor_default | 2 | 2 | interpolation | 0.7445 | 0.0070 | 95 | 6270 |
+| Selected | predictor_default | 2 | 3 | interpolation | 0.7493 | 0.0000 | 95 | 6270 |
+| Runner-up | predictor_default | 3 | 2 | interpolation | 0.7453 | 0.0041 | 95 | 6270 |
+| Runner-up | predictor_default | 2 | 2 | interpolation | 0.7444 | 0.0050 | 95 | 6270 |
+| Runner-up | predictor_default | 1 | 5 | interpolation | 0.7422 | 0.0072 | 95 | 6270 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
-| 1 | [0.19723, 4.613) | 618 | 18 | 2.3694 | 2.2318 | 58.9927 | 60.1360 |
+| 1 | [0.19723, 4.613) | 618 | 18 | 2.3734 | 2.2318 | 58.9927 | 60.1360 |
 | 2 | [4.613, 11.087) | 636 | 21 | 7.4869 | 7.6446 | 61.4661 | 61.8401 |
-| 3 | [11.087, 24.172) | 627 | 30 | 17.1634 | 16.2550 | 62.1412 | 62.4978 |
-| 4 | [24.172, 43.740) | 627 | 38 | 33.0305 | 32.7531 | 63.6085 | 64.1014 |
-| 5 | [43.740, 71.336) | 627 | 35 | 57.2962 | 56.6989 | 64.4015 | 65.3388 |
-| 6 | [71.336, 120.66) | 627 | 35 | 91.3537 | 89.0756 | 64.5696 | 65.4448 |
-| 7 | [120.66, 273.12) | 627 | 30 | 183.1283 | 175.8964 | 66.6598 | 66.9342 |
-| 8 | [273.12, 573.37) | 627 | 33 | 413.8453 | 421.4101 | 68.1867 | 68.4392 |
+| 3 | [11.087, 24.253) | 627 | 30 | 17.1947 | 16.2889 | 62.1348 | 62.4961 |
+| 4 | [24.253, 43.980) | 627 | 36 | 33.1914 | 33.0383 | 63.5899 | 64.1014 |
+| 5 | [43.980, 71.636) | 627 | 36 | 57.7832 | 57.9164 | 64.4206 | 65.3890 |
+| 6 | [71.636, 120.98) | 627 | 35 | 92.1846 | 89.1112 | 64.5565 | 65.4448 |
+| 7 | [120.98, 275.23) | 627 | 30 | 185.7405 | 177.5360 | 66.6791 | 66.9574 |
+| 8 | [275.23, 573.37) | 627 | 34 | 413.9161 | 421.4101 | 68.1864 | 68.4392 |
 | 9 | [573.37, 984.07) | 627 | 26 | 769.8248 | 763.4699 | 69.3222 | 69.4762 |
 | 10 | [984.07, 2227.7] | 627 | 21 | 1340.2222 | 1302.4465 | 70.2989 | 70.5071 |
 
@@ -142,8 +142,8 @@
 
 ```text
 Predictor Distribution (R&D Expenditure Per Capita (PPP))
-[0.19723, 185.82) | ############################## 4119
-[185.82, 371.45) | #### 483
+[0.19723, 185.82) | ############################## 4113
+[185.82, 371.45) | #### 489
 [371.45, 557.07) | ### 390
 [557.07, 742.69) | ## 297
 [742.69, 928.32) | ## 273
@@ -178,9 +178,9 @@ Outcome Distribution (Healthy Life Expectancy (HALE), welfare-aligned)
 |---------|----------:|------------------:|---------:|------:|
 | HND | -0.2633 | -1.0573 | -0.196 | 66 |
 | PRY | -0.2993 | -0.9549 | -0.678 | 66 |
+| UKR | 0.2851 | 0.8633 | 2.314 | 66 |
 | PER | -0.1839 | -0.8456 | -0.068 | 66 |
 | ARE | -0.0270 | -0.8015 | 0.675 | 66 |
 | MUS | 0.1804 | -0.7516 | 0.844 | 66 |
-| BGR | 0.2091 | -0.7296 | 1.557 | 66 |
+| BGR | 0.2124 | -0.7316 | 1.557 | 66 |
 | USA | -0.1167 | -0.7214 | 0.269 | 66 |
-| PHL | -0.1450 | -0.7159 | -0.513 | 66 |

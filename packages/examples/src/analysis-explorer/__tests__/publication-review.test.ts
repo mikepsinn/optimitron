@@ -22,6 +22,7 @@ const basePayload: MegaStudyApiPayload = {
       reliabilityBand: 'high',
       pairId: 'pair_1',
       pairMarkdownFile: 'pair_1.md',
+      publicationEligible: true,
     }],
   }],
   pairs: [{
@@ -49,9 +50,12 @@ const basePayload: MegaStudyApiPayload = {
       totalPairs: 5000,
       extrapolative: false,
       outsideBestObservedBin: false,
+      modelExtrapolative: false,
+      modelOutsideBestObservedBin: false,
       dataSufficiencyStatus: 'sufficient',
       reliabilityScore: 0.88,
       reliabilityBand: 'high',
+      publicationEligible: true,
     },
     links: { markdownFile: 'pair_1.md' },
   }],
@@ -81,6 +85,7 @@ describe('mega study publication review adapter', () => {
             extrapolative: true,
             reliabilityBand: 'low',
             reliabilityScore: 0.21,
+            publicationEligible: false,
           },
         },
       ],
@@ -94,5 +99,45 @@ describe('mega study publication review adapter', () => {
 
     expect(result.review.status).toBe('pass');
     expect(result.formatted).toContain('AI publication review');
+  });
+
+  it('skips non-publishable top rows and reviews the next publishable candidate', () => {
+    const input = buildMegaStudyPublicationReviewInput({
+      ...basePayload,
+      outcomes: [{
+        ...basePayload.outcomes[0]!,
+        rows: [
+          {
+            ...basePayload.outcomes[0]!.rows[0]!,
+            pairId: 'pair_blocked',
+            predictorId: 'predictor.caffeine',
+            predictorLabel: 'Caffeine',
+            qualityTier: 'insufficient',
+            reliabilityBand: 'low',
+            reliabilityScore: 0.42,
+            publicationEligible: false,
+          },
+          basePayload.outcomes[0]!.rows[0]!,
+        ],
+      }],
+      pairs: [
+        {
+          ...basePayload.pairs[0]!,
+          pairId: 'pair_blocked',
+          predictor: { id: 'predictor.caffeine', label: 'Caffeine', unit: 'mg' },
+          diagnostics: {
+            ...basePayload.pairs[0]!.diagnostics,
+            qualityTier: 'insufficient',
+            reliabilityBand: 'low',
+            reliabilityScore: 0.42,
+            publicationEligible: false,
+          },
+        },
+        basePayload.pairs[0]!,
+      ],
+    });
+
+    expect(input.outcomes[0]?.topRecommendations).toHaveLength(1);
+    expect(input.outcomes[0]?.topRecommendations[0]?.pairId).toBe('pair_1');
   });
 });

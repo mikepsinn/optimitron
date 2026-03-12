@@ -7,13 +7,13 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 15
 - Temporal candidates with valid results: 15
-- Temporal profile score: 0.6767
+- Temporal profile score: 0.6864
 - Included subjects: 134
 - Skipped subjects: 0
 - Total aligned pairs: 8844
 - Signal grade: A (very strong)
 - Data status: enough data
-- Confidence score: 0.813 (higher confidence)
+- Confidence score: 0.824 (higher confidence)
 - Signal tag: early signal
 - Direction: neutral
 - Uncertainty score: 0.0893 (lower is better)
@@ -52,13 +52,13 @@
 - The estimate uses 134 subjects and 8844 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [12.846, 14.703) (mean outcome 65.740).
 - A minimum effective predictor level appears near 12.940 % of government expenditure in the binned response curve.
-- Confidence score is 0.813 (higher confidence); data status is enough data.
+- Confidence score is 0.824 (higher confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0162); temporal assumptions are not yet robust.
+- Top temporal profiles are close (score delta 0.0157); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 25.5% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
@@ -68,8 +68,8 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | -0.0031 |
-| Reverse correlation | -0.1110 |
-| Direction score (forward - reverse) | 0.1079 |
+| Reverse correlation | -0.1207 |
+| Direction score (forward - reverse) | 0.1176 |
 | Effect size (% change from baseline) | 0.0990 |
 | Significance score | 0.9107 |
 | Weighted PIS | 0.4100 |
@@ -95,11 +95,11 @@
 | Middle-data share kept | 80.0% (7074/8844) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.8131 (higher confidence) |
+| Confidence score | 0.8238 (higher confidence) |
 | Reliability support component | 0.9467 |
 | Reliability significance component | 0.9107 |
-| Reliability directional component | 0.7195 |
-| Reliability temporal-stability component | 0.5384 |
+| Reliability directional component | 0.7843 |
+| Reliability temporal-stability component | 0.5234 |
 | Reliability robustness component | 0.8275 |
 | Signal tag | early signal |
 
@@ -117,10 +117,10 @@
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 5 | 5 | interpolation | 0.6767 | 0.0000 | 134 | 8844 |
-| Runner-up | predictor_default | 5 | 3 | interpolation | 0.6605 | 0.0162 | 134 | 8844 |
-| Runner-up | predictor_default | 3 | 5 | interpolation | 0.6548 | 0.0219 | 134 | 8844 |
-| Runner-up | predictor_default | 5 | 2 | interpolation | 0.6520 | 0.0246 | 134 | 8844 |
+| Selected | predictor_default | 5 | 5 | interpolation | 0.6864 | 0.0000 | 134 | 8844 |
+| Runner-up | predictor_default | 3 | 5 | interpolation | 0.6707 | 0.0157 | 134 | 8844 |
+| Runner-up | predictor_default | 5 | 3 | interpolation | 0.6690 | 0.0174 | 134 | 8844 |
+| Runner-up | predictor_default | 5 | 2 | interpolation | 0.6591 | 0.0273 | 134 | 8844 |
 
 ### Binned Pattern Table
 
@@ -177,9 +177,9 @@ Outcome Distribution (Healthy Life Expectancy (HALE), welfare-aligned)
 |---------|----------:|------------------:|---------:|------:|
 | TZA | 0.6856 | 1.4316 | 12.683 | 66 |
 | LUX | 0.6899 | 1.3743 | 3.388 | 66 |
-| ZAF | -0.9072 | -1.3210 | -13.055 | 66 |
 | COD | -0.6028 | -1.3012 | -8.719 | 66 |
 | CYP | 0.6699 | 1.2069 | 1.668 | 66 |
 | TTO | 0.4149 | 1.1916 | 2.011 | 66 |
 | NZL | 0.4616 | 1.1869 | 1.915 | 66 |
 | SGP | 0.5155 | 1.1630 | 2.183 | 66 |
+| CIV | 0.4451 | 1.1411 | 10.351 | 66 |

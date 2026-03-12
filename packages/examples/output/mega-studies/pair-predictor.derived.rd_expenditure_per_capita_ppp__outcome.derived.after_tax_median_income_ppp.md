@@ -7,7 +7,7 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.5966
+- Temporal profile score: 0.5965
 - Included subjects: 123
 - Skipped subjects: 0
 - Total aligned pairs: 4134
@@ -31,13 +31,13 @@
 - Recommended R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 1186.3 international $/person (data-backed level).
 - Best level directly seen in the grouped data: 1186.3 international $/person.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 1078.4 international $/person; model-optimal minus observed-anchor difference is -739.87 (-68.6%).
+- Best observed bin anchor (median/mean) is 1078.6 international $/person; model-optimal minus observed-anchor difference is -739.69 (-68.6%).
 - Backup level check (middle 10-90% of data) suggests 597.32 international $/person.
-- The math-only guess and backup level differ by 76.4%, which means extreme values may matter a lot.
+- The math-only guess and backup level differ by 76.2%, which means extreme values may matter a lot.
 - Minimum effective level (first consistently positive zone): 6.556 international $/person.
 - Diminishing returns likely begin near 13.986 international $/person.
-- Saturation/plateau zone starts around 231.03 international $/person and extends through 1186.3 international $/person.
-- Highest observed mean After-Tax Median Income (PPP) appears when R&D Expenditure Per Capita (PPP) is in [774.74, 2285.7] (mean outcome 53568.3).
+- Saturation/plateau zone starts around 231.52 international $/person and extends through 1186.3 international $/person.
+- Highest observed mean After-Tax Median Income (PPP) appears when R&D Expenditure Per Capita (PPP) is in [774.88, 2285.7] (mean outcome 53570.5).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
@@ -50,7 +50,7 @@
 
 - Higher R&D Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income (PPP).
 - The estimate uses 123 subjects and 4134 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [774.74, 2285.7] (mean outcome 53568.3).
+- Best observed mean outcome appears in predictor bin [774.88, 2285.7] (mean outcome 53570.5).
 - A minimum effective predictor level appears near 6.556 international $/person in the binned response curve.
 - Confidence score is 0.502 (lower confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
@@ -58,7 +58,7 @@
 ## Quality Warnings
 
 - Top temporal profiles are close (score delta 0.0013); temporal assumptions are not yet robust.
-- Robustness check: trimmed-range optimal differs by 76.4% from raw optimal; tail observations materially influence target.
+- Robustness check: trimmed-range optimal differs by 76.2% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
 
@@ -67,16 +67,16 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | 0.8427 |
-| Reverse correlation | 0.8102 |
-| Direction score (forward - reverse) | 0.0324 |
-| Effect size (% change from baseline) | 115.1686 |
+| Reverse correlation | 0.8104 |
+| Direction score (forward - reverse) | 0.0323 |
+| Effect size (% change from baseline) | 115.5196 |
 | Significance score | 0.8975 |
 | Weighted PIS | 0.8094 |
-| Value linked with higher outcome | 338.5466 |
-| Value linked with lower outcome | 161.6559 |
-| Math-only best daily value | 338.5466 |
+| Value linked with higher outcome | 338.9250 |
+| Value linked with lower outcome | 161.6714 |
+| Math-only best daily value | 338.9250 |
 | Recommended level (reader-facing) | 1186.3 international $/person (data-backed level) |
-| Math-only guess (technical) | 338.55 international $/person |
+| Math-only guess (technical) | 338.93 international $/person |
 | Data-backed level | 1186.3 international $/person |
 | Data-backed range | [861.87, 2285.7] |
 | Backup level (middle-data check) | 638.11 international $/person |
@@ -85,65 +85,65 @@
 | Seen data range | [0.1972, 3227.4604] |
 | Math-only guess outside seen data? | no (within observed range) |
 | Math-only guess outside best observed bucket? | yes |
-| Best observed range | [774.74, 2285.7] |
-| Best observed range (middle-data check) | [482.31, 774.12] |
-| Best observed outcome average | 53568.3 |
-| Best observed outcome average (middle-data check) | 34996.7 |
+| Best observed range | [774.88, 2285.7] |
+| Best observed range (middle-data check) | [482.31, 774.59] |
+| Best observed outcome average | 53570.5 |
+| Best observed outcome average (middle-data check) | 35001.9 |
 | Backup level (bucket median) | 597.32 international $/person |
-| Math-only vs backup difference | 258.77 (+76.4%) |
+| Math-only vs backup difference | 258.39 (+76.2%) |
 | Middle-data share kept | 80.0% (3306/4134) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.5020 (lower confidence) |
+| Confidence score | 0.5024 (lower confidence) |
 | Reliability support component | 0.7545 |
 | Reliability significance component | 0.8975 |
-| Reliability directional component | 0.2163 |
-| Reliability temporal-stability component | 0.0427 |
-| Reliability robustness component | 0.2618 |
+| Reliability directional component | 0.2155 |
+| Reliability temporal-stability component | 0.0449 |
+| Reliability robustness component | 0.2640 |
 | Signal tag | early signal |
 
 ### Response-Curve Diagnostics
 
 | Diagnostic | Result |
 |------------|--------|
-| Minimum useful level | 6.556 international $/person (z=9.72) |
-| Point where gains start slowing | 13.986 international $/person (ratio=0.285) |
-| Flat zone range | [168.00, 2285.7] |
+| Minimum useful level | 6.556 international $/person (z=9.63) |
+| Point where gains start slowing | 13.986 international $/person (ratio=0.281) |
+| Flat zone range | [170.94, 2285.7] |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | -847.76 (-71.5%) |
+| Math-only guess minus data-backed level | -847.38 (-71.4%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 1 | 8 | interpolation | 0.5966 | 0.0000 | 123 | 4134 |
-| Runner-up | predictor_default | 3 | 8 | interpolation | 0.5953 | 0.0013 | 123 | 4134 |
-| Runner-up | predictor_default | 2 | 8 | interpolation | 0.5929 | 0.0037 | 123 | 4134 |
-| Runner-up | predictor_default | 3 | 5 | interpolation | 0.5860 | 0.0105 | 123 | 4134 |
+| Selected | predictor_default | 1 | 8 | interpolation | 0.5965 | 0.0000 | 123 | 4134 |
+| Runner-up | predictor_default | 3 | 8 | interpolation | 0.5951 | 0.0013 | 123 | 4134 |
+| Runner-up | predictor_default | 2 | 8 | interpolation | 0.5927 | 0.0037 | 123 | 4134 |
+| Runner-up | predictor_default | 3 | 5 | interpolation | 0.5858 | 0.0106 | 123 | 4134 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
-| 1 | [0.19730, 4.790) | 414 | 18 | 2.7367 | 2.9228 | 3764.6377 | 3120.0000 |
-| 2 | [4.790, 13.399) | 413 | 30 | 8.8281 | 9.1280 | 5480.1071 | 4960.0000 |
-| 3 | [13.399, 25.497) | 413 | 40 | 20.0462 | 20.3536 | 9491.4037 | 7290.0000 |
-| 4 | [25.497, 43.596) | 414 | 44 | 33.7737 | 33.2607 | 12627.1604 | 7945.0000 |
-| 5 | [43.596, 65.301) | 413 | 49 | 53.2651 | 52.0011 | 13870.6079 | 9830.0000 |
-| 6 | [65.301, 108.62) | 413 | 55 | 85.5879 | 84.5110 | 18895.4942 | 15030.0000 |
-| 7 | [108.62, 219.03) | 414 | 50 | 153.1756 | 146.1237 | 24936.1542 | 20060.0252 |
-| 8 | [219.03, 438.59) | 413 | 43 | 331.1454 | 336.0487 | 31854.6968 | 26330.0000 |
-| 9 | [438.59, 774.74) | 413 | 37 | 581.0355 | 552.4188 | 33811.8198 | 32491.7693 |
-| 10 | [774.74, 2285.7] | 414 | 30 | 1162.0310 | 1078.4120 | 53568.2559 | 50212.1864 |
+| 1 | [0.19730, 4.790) | 414 | 18 | 2.7390 | 2.9228 | 3775.0483 | 3120.0000 |
+| 2 | [4.790, 13.399) | 413 | 30 | 8.8304 | 9.1280 | 5483.4727 | 4960.0000 |
+| 3 | [13.399, 25.497) | 413 | 40 | 20.0657 | 20.3609 | 9511.5518 | 7290.0000 |
+| 4 | [25.497, 43.622) | 414 | 44 | 33.8164 | 33.2607 | 12663.7380 | 7955.0000 |
+| 5 | [43.622, 65.647) | 413 | 49 | 53.4953 | 52.0011 | 13871.1141 | 9824.7707 |
+| 6 | [65.647, 109.03) | 413 | 55 | 86.1187 | 85.0621 | 19076.1518 | 15120.0000 |
+| 7 | [109.03, 219.30) | 410 | 50 | 153.7649 | 147.0577 | 25034.9067 | 20240.0000 |
+| 8 | [219.30, 438.59) | 417 | 43 | 330.6572 | 336.0487 | 31967.5407 | 26420.0000 |
+| 9 | [438.59, 774.88) | 413 | 37 | 581.1006 | 552.4188 | 33816.4856 | 32500.0000 |
+| 10 | [774.88, 2285.7] | 414 | 30 | 1162.0915 | 1078.6111 | 53570.4548 | 50220.0000 |
 
 ### Distribution Charts
 
 ```text
 Predictor Distribution (R&D Expenditure Per Capita (PPP))
-[0.19730, 190.65) | ############################## 2825
-[190.65, 381.11) | #### 355
-[381.11, 571.57) | #### 351
-[571.57, 762.02) | ## 180
+[0.19730, 190.65) | ############################## 2822
+[190.65, 381.11) | #### 358
+[381.11, 571.57) | #### 350
+[571.57, 762.02) | ## 181
 [762.02, 952.48) | ## 148
 [952.48, 1142.9) | # 93
 [1142.9, 1333.4) | # 73
@@ -156,11 +156,11 @@ Predictor Distribution (R&D Expenditure Per Capita (PPP))
 
 ```text
 Outcome Distribution (After-Tax Median Income (PPP), welfare-aligned)
-[440.00, 10870.8) | ############################## 1696
-[10870.8, 21301.7) | ################# 972
-[21301.7, 31732.5) | ########## 567
-[31732.5, 42163.3) | ###### 353
-[42163.3, 52594.2) | #### 224
+[440.00, 10870.8) | ############################## 1691
+[10870.8, 21301.7) | ################# 967
+[21301.7, 31732.5) | ########## 570
+[31732.5, 42163.3) | ###### 356
+[42163.3, 52594.2) | #### 228
 [52594.2, 63025.0) | ## 125
 [63025.0, 73455.8) | # 84
 [73455.8, 83886.7) | # 44

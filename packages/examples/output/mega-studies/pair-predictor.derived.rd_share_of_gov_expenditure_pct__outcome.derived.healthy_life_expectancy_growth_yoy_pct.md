@@ -7,16 +7,16 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 16
 - Temporal candidates with valid results: 16
-- Temporal profile score: 0.3594
+- Temporal profile score: 0.3639
 - Included subjects: 82
 - Skipped subjects: 0
 - Total aligned pairs: 1722
 - Signal grade: F (very weak)
 - Data status: not enough data
-- Confidence score: 0.490 (lower confidence)
+- Confidence score: 0.446 (lower confidence)
 - Signal tag: not enough data
 - Direction: neutral
-- Uncertainty score: 0.8059 (lower is better)
+- Uncertainty score: 0.7879 (lower is better)
 
 ## Quick Meanings
 
@@ -43,15 +43,16 @@
 
 - No strong directional pattern is detected between R&D Share of Government Spending and Healthy Life Expectancy Growth (YoY %).
 - The estimate uses 82 subjects and 1722 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [9.525, 20.356] (mean outcome 0.44588).
-- Confidence score is 0.490 (lower confidence); data status is not enough data.
+- Best observed mean outcome appears in predictor bin [9.525, 20.356] (mean outcome 0.53447).
+- Confidence score is 0.446 (lower confidence); data status is not enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak significance score (<0.70).
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Robustness check: trimmed-range optimal differs by 32.5% from raw optimal; tail observations materially influence target.
+- Top temporal profiles are close (score delta 0.0061); temporal assumptions are not yet robust.
+- Robustness check: trimmed-range optimal differs by 60.1% from raw optimal; tail observations materially influence target.
 - Data status warning: aligned-pair support below minimum (1722 < 2000)
 
 ## Appendix: Technical Diagnostics
@@ -60,40 +61,40 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | 0.0009 |
-| Reverse correlation | -0.1450 |
-| Direction score (forward - reverse) | 0.1459 |
-| Effect size (% change from baseline) | 283.7272 |
-| Significance score | 0.1941 |
-| Weighted PIS | 0.0698 |
-| Value linked with higher outcome | 3.4806 |
-| Value linked with lower outcome | 3.5086 |
-| Math-only best daily value | 3.4806 |
+| Forward correlation | -0.0051 |
+| Reverse correlation | -0.1491 |
+| Direction score (forward - reverse) | 0.1441 |
+| Effect size (% change from baseline) | -596.7575 |
+| Significance score | 0.2121 |
+| Weighted PIS | 0.0864 |
+| Value linked with higher outcome | 3.4867 |
+| Value linked with lower outcome | 3.5401 |
+| Math-only best daily value | 3.4867 |
 | Recommended level (reader-facing) | N/A (not enough data) |
-| Math-only guess (technical) | 3.481 % of government expenditure |
-| Data-backed level | 13.243 % of government expenditure |
-| Data-backed range | [10.327, 20.356] |
-| Backup level (middle-data check) | 0.99475 % of government expenditure |
+| Math-only guess (technical) | 3.487 % of government expenditure |
+| Data-backed level | 1.375 % of government expenditure |
+| Data-backed range | [1.205, 1.504) |
+| Backup level (middle-data check) | 4.323 % of government expenditure |
 | Math-only guess inside seen data range? | yes |
 | Math-only guess inside data-backed range? | no |
 | Seen data range | [0.0487, 35.0684] |
 | Math-only guess outside seen data? | no (within observed range) |
 | Math-only guess outside best observed bucket? | yes |
 | Best observed range | [9.525, 20.356] |
-| Best observed range (middle-data check) | [4.384, 5.030) |
-| Best observed outcome average | 0.44588 |
-| Best observed outcome average (middle-data check) | 0.31515 |
-| Backup level (bucket median) | 4.613 % of government expenditure |
-| Math-only vs backup difference | 1.133 (+32.5%) |
+| Best observed range (middle-data check) | [1.266, 1.513) |
+| Best observed outcome average | 0.53447 |
+| Best observed outcome average (middle-data check) | 0.59245 |
+| Backup level (bucket median) | 1.390 % of government expenditure |
+| Math-only vs backup difference | -2.096 (-60.1%) |
 | Middle-data share kept | 79.9% (1376/1722) |
 | Data status | not enough data |
 | Data-status details | aligned-pair support below minimum (1722 < 2000) |
-| Confidence score | 0.4900 (lower confidence) |
+| Confidence score | 0.4462 (lower confidence) |
 | Reliability support component | 0.4168 |
-| Reliability significance component | 0.1941 |
-| Reliability directional component | 0.9728 |
-| Reliability temporal-stability component | 1.0000 |
-| Reliability robustness component | 0.7495 |
+| Reliability significance component | 0.2121 |
+| Reliability directional component | 0.9606 |
+| Reliability temporal-stability component | 0.2025 |
+| Reliability robustness component | 0.4430 |
 | Signal tag | not enough data |
 
 ### Response-Curve Diagnostics
@@ -101,34 +102,34 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | Not identified (no_consistent_effective_dose_detected) |
-| Point where gains start slowing | 1.027 % of government expenditure (ratio=0.069) |
-| Flat zone range | [5.920, 20.356] |
+| Point where gains start slowing | 1.375 % of government expenditure (ratio=-0.432) |
+| Flat zone range | [3.618, 20.356] |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | -9.762 (-73.7%) |
+| Math-only guess minus data-backed level | 2.112 (+153.6%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 5 | 8 | interpolation | 0.3594 | 0.0000 | 82 | 1722 |
-| Runner-up | predictor_default | 2 | 5 | interpolation | 0.3282 | 0.0312 | 82 | 1722 |
-| Runner-up | predictor_default | 3 | 3 | interpolation | 0.3121 | 0.0473 | 82 | 1722 |
-| Runner-up | predictor_default | 1 | 5 | interpolation | 0.3099 | 0.0495 | 82 | 1722 |
+| Selected | predictor_default | 5 | 8 | interpolation | 0.3639 | 0.0000 | 82 | 1722 |
+| Runner-up | predictor_default | 5 | 5 | interpolation | 0.3578 | 0.0061 | 82 | 1722 |
+| Runner-up | predictor_default | 5 | 3 | interpolation | 0.3125 | 0.0514 | 82 | 1722 |
+| Runner-up | predictor_default | 3 | 8 | interpolation | 0.3079 | 0.0560 | 82 | 1722 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
-| 1 | [0.06241, 0.67640) | 173 | 13 | 0.4154 | 0.4445 | -0.0858 | 0.1274 |
-| 2 | [0.67640, 0.99311) | 172 | 18 | 0.8277 | 0.8021 | -0.0006 | 0.0682 |
-| 3 | [0.99311, 1.392) | 172 | 27 | 1.1943 | 1.2058 | 0.0634 | 0.2505 |
-| 4 | [1.392, 1.750) | 163 | 25 | 1.5505 | 1.5385 | -0.4861 | 0.0396 |
-| 5 | [1.750, 2.211) | 181 | 31 | 1.9643 | 1.9515 | 0.0291 | 0.1335 |
-| 6 | [2.211, 2.952) | 172 | 21 | 2.5341 | 2.5010 | 0.1104 | 0.1903 |
-| 7 | [2.952, 3.973) | 172 | 20 | 3.4756 | 3.5838 | -0.0268 | 0.3048 |
-| 8 | [3.973, 4.711) | 171 | 16 | 4.4125 | 4.4787 | 0.1708 | 0.2165 |
-| 9 | [4.711, 9.525) | 173 | 17 | 6.7981 | 6.8821 | 0.1381 | 0.2307 |
-| 10 | [9.525, 20.356] | 173 | 11 | 13.4376 | 12.6047 | 0.4459 | 0.2270 |
+| 1 | [0.06241, 0.67640) | 173 | 13 | 0.4154 | 0.4445 | -0.1017 | 0.0336 |
+| 2 | [0.67640, 0.99311) | 172 | 18 | 0.8277 | 0.8021 | 0.1850 | 0.2220 |
+| 3 | [0.99311, 1.392) | 172 | 27 | 1.1943 | 1.2058 | 0.4884 | 0.3796 |
+| 4 | [1.392, 1.750) | 163 | 25 | 1.5505 | 1.5385 | -0.3433 | 0.1236 |
+| 5 | [1.750, 2.211) | 181 | 31 | 1.9643 | 1.9515 | 0.0851 | 0.1452 |
+| 6 | [2.211, 2.952) | 172 | 21 | 2.5341 | 2.5010 | -0.2367 | 0.1288 |
+| 7 | [2.952, 3.973) | 172 | 20 | 3.4756 | 3.5838 | 0.0157 | 0.2824 |
+| 8 | [3.973, 4.711) | 171 | 16 | 4.4125 | 4.4787 | 0.3796 | 0.2689 |
+| 9 | [4.711, 9.525) | 173 | 17 | 6.7981 | 6.8821 | 0.1035 | 0.2268 |
+| 10 | [9.525, 20.356] | 173 | 11 | 13.4376 | 12.6047 | 0.5345 | 0.2608 |
 
 ### Distribution Charts
 
@@ -150,29 +151,29 @@ Predictor Distribution (R&D Share of Government Spending)
 
 ```text
 Outcome Distribution (Healthy Life Expectancy Growth (YoY %), welfare-aligned)
-[-18.191, -14.967) | # 3
-[-14.967, -11.743) | # 7
-[-11.743, -8.519) | # 17
-[-8.519, -5.296) | ## 77
-[-5.296, -2.072) | ######## 234
-[-2.072, 1.152) | ############################## 927
-[1.152, 4.376) | ########## 324
-[4.376, 7.600) | ### 94
-[7.600, 10.824) | # 27
-[10.824, 14.048) | # 7
-[14.048, 17.272) | # 4
-[17.272, 20.496] | # 1
+[-16.329, -13.626) | # 2
+[-13.626, -10.924) | # 11
+[-10.924, -8.221) | # 14
+[-8.221, -5.518) | ## 58
+[-5.518, -2.815) | ###### 161
+[-2.815, -0.11259) | ################# 423
+[-0.11259, 2.590) | ############################## 759
+[2.590, 5.293) | ####### 186
+[5.293, 7.996) | ### 75
+[7.996, 10.698) | # 24
+[10.698, 13.401) | # 5
+[13.401, 16.104] | # 4
 ```
 
 ### Top Subjects
 
 | Subject | Forward r | Directional Score | Effect % | Pairs |
 |---------|----------:|------------------:|---------:|------:|
-| TTO | 0.7288 | 1.5620 | -130.048 | 21 |
-| EGY | -0.6588 | -1.5307 | -447.096 | 21 |
-| MDG | 0.6026 | 1.3028 | -795.271 | 21 |
-| RUS | 0.3988 | 1.2427 | -115.103 | 21 |
-| BGR | -0.4387 | -1.1256 | -293.821 | 21 |
-| PHL | -0.1943 | -1.0333 | -699.249 | 21 |
-| TUR | 0.2482 | 0.8825 | -188.559 | 21 |
-| CRI | -0.1903 | -0.8522 | -58.957 | 21 |
+| ZAF | 0.7441 | 1.5442 | -241.632 | 21 |
+| EGY | -0.5581 | -1.4700 | -345.061 | 21 |
+| RUS | 0.5321 | 1.4275 | -89.416 | 21 |
+| MDG | 0.6225 | 1.4210 | 1706.194 | 21 |
+| PHL | -0.3392 | -1.2234 | -142.643 | 21 |
+| BGR | -0.3185 | -1.1661 | -5852.026 | 21 |
+| IRN | 0.1488 | 1.0815 | -102.361 | 21 |
+| SVK | -0.2989 | -1.0772 | 762.089 | 21 |

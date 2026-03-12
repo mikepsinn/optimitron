@@ -21,7 +21,7 @@ export interface AlignmentBenchmarkProfile {
 }
 
 export const ALIGNMENT_BENCHMARK_SOURCE_NOTE =
-  "These are real current federal politicians benchmarked against Optomitron's budget categories. Member identity can sync from Congress.gov, while category allocations remain a curated public-position coding until bill-level classification is wired in.";
+  "These are real current federal politicians benchmarked against Optomitron's budget categories. When enough recent classified Congress roll calls are available, the profile is derived from legislative behavior; otherwise Optomitron falls back to a curated public-position benchmark.";
 
 export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
   {

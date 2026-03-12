@@ -67,9 +67,9 @@
 | Effect size (% change from baseline) | 153.7844 |
 | Significance score | 0.6315 |
 | Weighted PIS | 0.3653 |
-| Value linked with higher outcome | 178.7561 |
-| Value linked with lower outcome | 170.7799 |
-| Math-only best daily value | 178.7561 |
+| Value linked with higher outcome | 178.7563 |
+| Value linked with lower outcome | 170.7803 |
+| Math-only best daily value | 178.7563 |
 | Recommended level (reader-facing) | N/A (not enough data) |
 | Math-only guess (technical) | 178.76 international $/person |
 | Data-backed level | 7.153 international $/person |
@@ -89,7 +89,7 @@
 | Middle-data share kept | 80.0% (921/1151) |
 | Data status | not enough data |
 | Data-status details | aligned-pair support below minimum (1151 < 2000) |
-| Confidence score | 0.4717 (lower confidence) |
+| Confidence score | 0.4718 (lower confidence) |
 | Reliability support component | 0.2826 |
 | Reliability significance component | 0.6315 |
 | Reliability directional component | 0.9953 |
@@ -129,7 +129,7 @@
 | 7 | [125.44, 166.80) | 115 | 20 | 145.7273 | 146.2801 | -2090.8435 | -586.0000 |
 | 8 | [166.80, 260.48) | 115 | 22 | 211.0803 | 214.6655 | -14453.3913 | -1118.0000 |
 | 9 | [260.48, 443.23) | 115 | 15 | 343.9541 | 335.8312 | -1790.9565 | -236.0000 |
-| 10 | [443.23, 6481.2] | 116 | 15 | 1492.5451 | 727.4579 | -7115.7241 | -122.5000 |
+| 10 | [443.23, 6481.2] | 116 | 15 | 1492.5511 | 727.4579 | -7115.7241 | -122.5000 |
 
 ### Distribution Charts
 

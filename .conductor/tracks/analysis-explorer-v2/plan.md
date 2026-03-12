@@ -232,6 +232,14 @@
   4) Implement item 14 (multi-horizon outcomes).
   5) Implement item 8 (direct after-tax median income integration).
 
+## Progress Notes (2026-03-12)
+- LLM review integration: Gemini reviews policy evaluation outputs for reasonableness (scored 94/100 on golden path).
+- Mega study publication review functionality added in `packages/examples/src/analysis-explorer/publication-review.ts`.
+- Gemini model updated from `gemini-2.5-flash` → `gemini-3-flash-preview`.
+- `askGemini()` convenience helper added to `@optomitron/agent` for structured LLM review calls.
+- Mega study generator updated with review workflow integration.
+- Updated golden path results timestamp and output artifacts.
+
 ## Progress Notes (2026-02-14)
 - Pivoted to a single clear-cut pilot pair before broader KPI expansion:
   - implemented `drug war spending per capita -> overdose deaths` focused study module with:

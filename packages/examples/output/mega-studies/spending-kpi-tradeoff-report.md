@@ -9,31 +9,31 @@
 
 | Spending Type | Lead KPI | KPI Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |---------------|----------|----------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| Civilian Government Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 16280.7 international $/person (data-backed level) | 237.92 international $/person | 516.72 international $/person | 0.700 (medium confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| Civilian Government Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 16280.7 international $/person (data-backed level) | 237.92 international $/person | 516.72 international $/person | 0.701 (medium confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
 | Education Expenditure Per Capita (PPP) | Primary School Completion Rate | mission KPI | 2362.1 international $/person (data-backed level) | 43.782 international $/person | 69.668 international $/person | 0.703 (medium confidence) | enough data | [pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md](pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md) |
 | Education Share of Government Spending | Primary School Completion Rate | mission KPI | 13.672 % of government expenditure (data-backed level) | 12.034 % of government expenditure | 13.672 % of government expenditure | 0.651 (medium confidence) | enough data | [pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md](pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md) |
-| Government Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 16474.4 international $/person (data-backed level) | 302.76 international $/person | 596.04 international $/person | 0.690 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
-| Government Health Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 2778.5 international $/person (data-backed level) | 16.917 international $/person | 28.924 international $/person | 0.692 (medium confidence) | enough data | [pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
-| Government Health Share of Government Spending | Healthy Life Expectancy (HALE) | mission KPI | 27.789 % of government expenditure (data-backed level) | 6.559 % of government expenditure | 10.748 % of government expenditure | 0.736 (medium confidence) | enough data | [pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md) |
+| Government Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 16474.4 international $/person (data-backed level) | 302.76 international $/person | 596.04 international $/person | 0.693 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| Government Health Expenditure Per Capita (PPP) | Healthy Life Expectancy (HALE) | mission KPI | 2778.5 international $/person (data-backed level) | 16.917 international $/person | 28.924 international $/person | 0.691 (medium confidence) | enough data | [pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| Government Health Share of Government Spending | Healthy Life Expectancy (HALE) | mission KPI | 27.789 % of government expenditure (data-backed level) | 6.559 % of government expenditure | 10.748 % of government expenditure | 0.732 (medium confidence) | enough data | [pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md) |
 | Military Expenditure Per Capita (PPP) | Battle-Related Deaths | mission KPI | N/A | N/A | 134.72 international $/person | 0.472 (lower confidence) | not enough data | [pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md](pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md) |
 | Military Share of Government Spending | Battle-Related Deaths | mission KPI | N/A | 6.972 % of government expenditure | 8.746 % of government expenditure | 0.490 (lower confidence) | not enough data | [pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md](pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md) |
 | R&D Expenditure Per Capita (PPP) | After-Tax Median Income (PPP) | mission KPI | 1186.3 international $/person (data-backed level) | 6.556 international $/person | 13.986 international $/person | 0.502 (lower confidence) | enough data | [pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
-| R&D Share of Government Spending | After-Tax Median Income (PPP) | mission KPI | 12.690 % of government expenditure (data-backed level) | 3.602 % of government expenditure | 4.917 % of government expenditure | 0.638 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md) |
+| R&D Share of Government Spending | After-Tax Median Income (PPP) | mission KPI | 12.690 % of government expenditure (data-backed level) | 3.602 % of government expenditure | 4.917 % of government expenditure | 0.636 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md) |
 
 ## Civilian Government Expenditure Per Capita (PPP)
 
 - Predictor: `predictor.derived.gov_non_military_expenditure_per_capita_ppp`
 - Unit: international $/person
 - Mission KPIs configured: 2
-- Ranges in this section: MED 237.92 to 246.50 international $/person; slowdown knee 461.43 to 516.72 international $/person; suggested level 14637.5 to 16280.7 international $/person.
+- Ranges in this section: MED 237.92 to 246.50 international $/person; slowdown knee 461.43 to 516.72 international $/person; suggested level 14731.8 to 16280.7 international $/person.
 - Additional non-primary outcome studies available: 4 (see linked pair pages).
 
 ### Primary KPI Rows
 
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| Healthy Life Expectancy (HALE) | mission KPI | 16280.7 international $/person (data-backed level) | 237.92 international $/person | 516.72 international $/person | 0.700 (medium confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
-| After-Tax Median Income (PPP) | mission KPI | 14637.5 international $/person (data-backed level) | 246.50 international $/person | 461.43 international $/person | 0.547 (lower confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
+| Healthy Life Expectancy (HALE) | mission KPI | 16280.7 international $/person (data-backed level) | 237.92 international $/person | 516.72 international $/person | 0.701 (medium confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| After-Tax Median Income (PPP) | mission KPI | 14731.8 international $/person (data-backed level) | 246.50 international $/person | 461.43 international $/person | 0.547 (lower confidence) | enough data | [pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
 
 ## Education Expenditure Per Capita (PPP)
 
@@ -70,15 +70,15 @@
 - Predictor: `predictor.derived.gov_expenditure_per_capita_ppp`
 - Unit: international $/person
 - Mission KPIs configured: 2
-- Ranges in this section: MED 302.76 to 314.42 international $/person; slowdown knee 596.04 to 6357.6 international $/person; suggested level 15206.7 to 16474.4 international $/person.
+- Ranges in this section: MED 302.76 to 314.42 international $/person; slowdown knee 596.04 to 6445.6 international $/person; suggested level 15275.5 to 16474.4 international $/person.
 - Additional non-primary outcome studies available: 4 (see linked pair pages).
 
 ### Primary KPI Rows
 
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| Healthy Life Expectancy (HALE) | mission KPI | 16474.4 international $/person (data-backed level) | 302.76 international $/person | 596.04 international $/person | 0.690 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
-| After-Tax Median Income (PPP) | mission KPI | 15206.7 international $/person (data-backed level) | 314.42 international $/person | 6357.6 international $/person | 0.566 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
+| Healthy Life Expectancy (HALE) | mission KPI | 16474.4 international $/person (data-backed level) | 302.76 international $/person | 596.04 international $/person | 0.693 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| After-Tax Median Income (PPP) | mission KPI | 15275.5 international $/person (data-backed level) | 314.42 international $/person | 6445.6 international $/person | 0.566 (medium confidence) | enough data | [pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
 
 ## Government Health Expenditure Per Capita (PPP)
 
@@ -92,7 +92,7 @@
 
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| Healthy Life Expectancy (HALE) | mission KPI | 2778.5 international $/person (data-backed level) | 16.917 international $/person | 28.924 international $/person | 0.692 (medium confidence) | enough data | [pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
+| Healthy Life Expectancy (HALE) | mission KPI | 2778.5 international $/person (data-backed level) | 16.917 international $/person | 28.924 international $/person | 0.691 (medium confidence) | enough data | [pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md) |
 
 ## Government Health Share of Government Spending
 
@@ -106,7 +106,7 @@
 
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| Healthy Life Expectancy (HALE) | mission KPI | 27.789 % of government expenditure (data-backed level) | 6.559 % of government expenditure | 10.748 % of government expenditure | 0.736 (medium confidence) | enough data | [pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md) |
+| Healthy Life Expectancy (HALE) | mission KPI | 27.789 % of government expenditure (data-backed level) | 6.559 % of government expenditure | 10.748 % of government expenditure | 0.732 (medium confidence) | enough data | [pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md](pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md) |
 
 ## Military Expenditure Per Capita (PPP)
 
@@ -143,7 +143,7 @@
 - Predictor: `predictor.derived.rd_expenditure_per_capita_ppp`
 - Unit: international $/person
 - Mission KPIs configured: 2
-- Ranges in this section: MED 6.556 to 6.556 international $/person; slowdown knee 13.986 to 15.455 international $/person; suggested level 15.455 to 1186.3 international $/person.
+- Ranges in this section: MED 6.556 to 6.556 international $/person; slowdown knee 13.986 to 15.443 international $/person; suggested level 15.443 to 1186.3 international $/person.
 - Additional non-primary outcome studies available: 4 (see linked pair pages).
 
 ### Primary KPI Rows
@@ -151,7 +151,7 @@
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
 | After-Tax Median Income (PPP) | mission KPI | 1186.3 international $/person (data-backed level) | 6.556 international $/person | 13.986 international $/person | 0.502 (lower confidence) | enough data | [pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md) |
-| After-Tax Median Income Growth (YoY %) | mission KPI | 15.455 international $/person (data-backed level) | N/A | 15.455 international $/person | 0.664 (medium confidence) | enough data | [pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md](pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md) |
+| After-Tax Median Income Growth (YoY %) | mission KPI | 15.443 international $/person (data-backed level) | N/A | 15.443 international $/person | 0.658 (medium confidence) | enough data | [pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md](pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md) |
 
 ## R&D Share of Government Spending
 
@@ -165,5 +165,5 @@
 
 | KPI | Role | Suggested Level | MED | Slowdown Knee | Confidence | Data Status | Pair Report |
 |-----|------|----------------:|----:|--------------:|-----------:|-------------|------------|
-| After-Tax Median Income (PPP) | mission KPI | 12.690 % of government expenditure (data-backed level) | 3.602 % of government expenditure | 4.917 % of government expenditure | 0.638 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md) |
-| After-Tax Median Income Growth (YoY %) | mission KPI | 1.498 % of government expenditure (data-backed level) | N/A | 1.498 % of government expenditure | 0.578 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md) |
+| After-Tax Median Income (PPP) | mission KPI | 12.690 % of government expenditure (data-backed level) | 3.602 % of government expenditure | 4.917 % of government expenditure | 0.636 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md) |
+| After-Tax Median Income Growth (YoY %) | mission KPI | 1.498 % of government expenditure (data-backed level) | N/A | 1.498 % of government expenditure | 0.559 (medium confidence) | enough data | [pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md](pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md) |

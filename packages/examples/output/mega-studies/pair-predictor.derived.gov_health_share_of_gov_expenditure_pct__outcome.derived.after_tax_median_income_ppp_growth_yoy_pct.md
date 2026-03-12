@@ -7,16 +7,16 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.6210
+- Temporal profile score: 0.6179
 - Included subjects: 168
 - Skipped subjects: 0
 - Total aligned pairs: 5509
 - Signal grade: C (moderate)
 - Data status: enough data
-- Confidence score: 0.882 (higher confidence)
+- Confidence score: 0.876 (higher confidence)
 - Signal tag: early signal
 - Direction: positive
-- Uncertainty score: 0.3021 (lower is better)
+- Uncertainty score: 0.3076 (lower is better)
 
 ## Quick Meanings
 
@@ -34,7 +34,7 @@
 - Could not find a clear minimum useful level (no_consistent_effective_dose_detected).
 - Diminishing returns likely begin near 12.642 % of government expenditure.
 - Saturation/plateau zone starts around 14.970 % of government expenditure and extends through 27.065 % of government expenditure.
-- Highest observed mean After-Tax Median Income Growth (YoY %) appears when Government Health Share of Government Spending is in [12.186, 13.363) (mean outcome 5.778).
+- Highest observed mean After-Tax Median Income Growth (YoY %) appears when Government Health Share of Government Spending is in [12.186, 13.363) (mean outcome 5.756).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
@@ -47,15 +47,15 @@
 
 - Higher Government Health Share of Government Spending tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 168 subjects and 5509 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [12.186, 13.363) (mean outcome 5.778).
-- Confidence score is 0.882 (higher confidence); data status is enough data.
+- Best observed mean outcome appears in predictor bin [12.186, 13.363) (mean outcome 5.756).
+- Confidence score is 0.876 (higher confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak significance score (<0.70).
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0298); temporal assumptions are not yet robust.
+- Top temporal profiles are close (score delta 0.0291); temporal assumptions are not yet robust.
 
 ## Appendix: Technical Diagnostics
 
@@ -63,17 +63,17 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | 0.0625 |
-| Reverse correlation | -0.0642 |
-| Direction score (forward - reverse) | 0.1267 |
-| Effect size (% change from baseline) | 63.1946 |
-| Significance score | 0.6979 |
-| Weighted PIS | 0.1829 |
-| Value linked with higher outcome | 13.1490 |
-| Value linked with lower outcome | 13.1200 |
-| Math-only best daily value | 13.1490 |
+| Forward correlation | 0.0585 |
+| Reverse correlation | -0.0671 |
+| Direction score (forward - reverse) | 0.1256 |
+| Effect size (% change from baseline) | 62.0627 |
+| Significance score | 0.6924 |
+| Weighted PIS | 0.1779 |
+| Value linked with higher outcome | 13.1539 |
+| Value linked with lower outcome | 13.1290 |
+| Math-only best daily value | 13.1539 |
 | Recommended level (reader-facing) | 12.642 % of government expenditure (data-backed level) |
-| Math-only guess (technical) | 13.149 % of government expenditure |
+| Math-only guess (technical) | 13.154 % of government expenditure |
 | Data-backed level | 12.642 % of government expenditure |
 | Data-backed range | [12.186, 12.999) |
 | Backup level (middle-data check) | 12.584 % of government expenditure |
@@ -84,18 +84,18 @@
 | Math-only guess outside best observed bucket? | no |
 | Best observed range | [12.186, 13.363) |
 | Best observed range (middle-data check) | [12.164, 12.930) |
-| Best observed outcome average | 5.778 |
-| Best observed outcome average (middle-data check) | 6.080 |
+| Best observed outcome average | 5.756 |
+| Best observed outcome average (middle-data check) | 6.064 |
 | Backup level (bucket median) | 12.600 % of government expenditure |
-| Math-only vs backup difference | -0.54889 (-4.2%) |
+| Math-only vs backup difference | -0.55378 (-4.2%) |
 | Middle-data share kept | 80.1% (4415/5509) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.8824 (higher confidence) |
+| Confidence score | 0.8756 (higher confidence) |
 | Reliability support component | 0.9591 |
-| Reliability significance component | 0.6979 |
-| Reliability directional component | 0.8450 |
-| Reliability temporal-stability component | 0.9941 |
+| Reliability significance component | 0.6924 |
+| Reliability directional component | 0.8370 |
+| Reliability temporal-stability component | 0.9686 |
 | Reliability robustness component | 1.0000 |
 | Signal tag | early signal |
 
@@ -104,33 +104,33 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | Not identified (no_consistent_effective_dose_detected) |
-| Point where gains start slowing | 12.642 % of government expenditure (ratio=-1.148) |
+| Point where gains start slowing | 12.642 % of government expenditure (ratio=-1.151) |
 | Flat zone range | [14.444, 65.863] |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | 0.50649 (+4.0%) |
+| Math-only guess minus data-backed level | 0.51139 (+4.0%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 3 | 5 | interpolation | 0.6210 | 0.0000 | 168 | 5509 |
-| Runner-up | predictor_default | 2 | 5 | interpolation | 0.5912 | 0.0298 | 168 | 5509 |
-| Runner-up | predictor_default | 1 | 5 | interpolation | 0.5816 | 0.0395 | 168 | 5509 |
-| Runner-up | predictor_default | 1 | 2 | interpolation | 0.5703 | 0.0507 | 168 | 5509 |
+| Selected | predictor_default | 3 | 5 | interpolation | 0.6179 | 0.0000 | 168 | 5509 |
+| Runner-up | predictor_default | 2 | 5 | interpolation | 0.5888 | 0.0291 | 168 | 5509 |
+| Runner-up | predictor_default | 1 | 5 | interpolation | 0.5807 | 0.0372 | 168 | 5509 |
+| Runner-up | predictor_default | 1 | 2 | interpolation | 0.5684 | 0.0495 | 168 | 5509 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
 | 1 | [0.93053, 6.049) | 543 | 26 | 4.7675 | 4.8975 | 4.8081 | 5.1903 |
-| 2 | [6.049, 8.429) | 559 | 42 | 7.2378 | 7.1371 | 5.2849 | 5.7348 |
-| 3 | [8.429, 9.678) | 546 | 49 | 9.0853 | 9.1087 | 3.8754 | 3.9136 |
-| 4 | [9.678, 10.932) | 556 | 66 | 10.2960 | 10.3285 | 4.1369 | 4.4945 |
-| 5 | [10.932, 12.186) | 550 | 68 | 11.4969 | 11.4836 | 4.6032 | 4.5839 |
-| 6 | [12.186, 13.363) | 551 | 65 | 12.7209 | 12.7043 | 5.7782 | 5.4653 |
-| 7 | [13.363, 14.894) | 551 | 64 | 14.1503 | 14.0994 | 4.7206 | 4.3796 |
-| 8 | [14.894, 16.642) | 541 | 53 | 15.6293 | 15.5800 | 4.4920 | 4.4815 |
-| 9 | [16.642, 20.850) | 561 | 40 | 18.5960 | 18.5823 | 4.6905 | 4.6518 |
+| 2 | [6.049, 8.429) | 559 | 42 | 7.2378 | 7.1371 | 5.2952 | 5.7348 |
+| 3 | [8.429, 9.678) | 546 | 49 | 9.0853 | 9.1087 | 3.8676 | 3.9136 |
+| 4 | [9.678, 10.932) | 556 | 66 | 10.2960 | 10.3285 | 4.1646 | 4.5012 |
+| 5 | [10.932, 12.186) | 550 | 68 | 11.4969 | 11.4836 | 4.6115 | 4.5599 |
+| 6 | [12.186, 13.363) | 551 | 65 | 12.7209 | 12.7043 | 5.7562 | 5.4958 |
+| 7 | [13.363, 14.894) | 551 | 64 | 14.1503 | 14.0994 | 4.7005 | 4.3796 |
+| 8 | [14.894, 16.642) | 541 | 53 | 15.6293 | 15.5800 | 4.5016 | 4.5097 |
+| 9 | [16.642, 20.850) | 561 | 40 | 18.5960 | 18.5823 | 4.6880 | 4.6561 |
 | 10 | [20.850, 65.863] | 551 | 28 | 29.6309 | 26.1008 | 4.0605 | 3.8818 |
 
 ### Distribution Charts
@@ -155,9 +155,9 @@ Predictor Distribution (Government Health Share of Government Spending)
 Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 [-49.393, -31.954) | # 9
 [-31.954, -14.516) | # 44
-[-14.516, 2.923) | ############## 1730
-[2.923, 20.361) | ############################## 3652
-[20.361, 37.799) | # 60
+[-14.516, 2.923) | ############## 1727
+[2.923, 20.361) | ############################## 3656
+[20.361, 37.799) | # 59
 [37.799, 55.238) | # 7
 [55.238, 72.676) | # 6
 [142.43, 159.87] | # 1
@@ -169,9 +169,9 @@ Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 |---------|----------:|------------------:|---------:|------:|
 | GRC | -0.4579 | -1.2205 | -78.221 | 33 |
 | TUN | -0.3670 | -1.1335 | -44.400 | 33 |
-| SRB | -0.4550 | -1.1280 | -48.442 | 26 |
-| SST | 0.4274 | 1.0975 | 39.632 | 33 |
+| SST | 0.4063 | 1.0775 | 35.889 | 33 |
 | EAR | 0.3428 | 1.0720 | 52.761 | 33 |
+| SRB | -0.3297 | -1.0247 | -37.722 | 26 |
 | USA | 0.2692 | 1.0147 | 31.699 | 33 |
 | NAC | 0.2370 | 0.9964 | 31.277 | 33 |
 | AUS | 0.3790 | 0.9873 | 7.206 | 33 |

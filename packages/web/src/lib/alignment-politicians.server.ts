@@ -2,6 +2,10 @@ import { fetchers } from "@optomitron/data";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import {
+  buildAllocationRecordFromStoredVotes,
+  deriveRecentLegislativeVoteRows,
+} from "@/lib/alignment-legislative-sync.server";
+import {
   ALIGNMENT_BENCHMARKS,
   type AlignmentBenchmarkProfile,
 } from "@/lib/alignment-benchmarks";
@@ -20,6 +24,7 @@ interface SyncablePoliticianRow {
   updatedAt: Date;
   votes: Array<{
     allocationPct: number;
+    billId: string | null;
     itemCategory: string;
     updatedAt: Date;
     voteDate: Date | null;
@@ -54,49 +59,27 @@ function defaultTitleForChamber(chamber: string | undefined): string {
   return normalizeMemberChamber(chamber) === "house" ? "Representative" : "Senator";
 }
 
-function buildAllocationRecordFromVotes(
-  votes: SyncablePoliticianRow["votes"],
-): Record<BudgetCategoryId, number> | null {
-  const latestByCategory = new Map<BudgetCategoryId, { allocationPct: number; timestamp: number }>();
+function buildLegislativeSummary(
+  allocations: Record<BudgetCategoryId, number>,
+): string {
+  const topCategories = Object.entries(allocations)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 3)
+    .map(([categoryId]) => BUDGET_CATEGORIES[categoryId as BudgetCategoryId].name);
 
-  for (const vote of votes) {
-    if (!ALIGNMENT_CATEGORY_IDS.includes(vote.itemCategory as BudgetCategoryId)) {
-      continue;
-    }
-
-    const categoryId = vote.itemCategory as BudgetCategoryId;
-    const timestamp = vote.voteDate?.getTime() ?? vote.updatedAt.getTime();
-    const existing = latestByCategory.get(categoryId);
-
-    if (!existing || timestamp >= existing.timestamp) {
-      latestByCategory.set(categoryId, {
-        allocationPct: vote.allocationPct,
-        timestamp,
-      });
-    }
+  if (topCategories.length === 0) {
+    return "Recent classified congressional votes do not yet cover enough categories to summarize this profile.";
   }
 
-  if (latestByCategory.size !== ALIGNMENT_CATEGORY_IDS.length) {
-    return null;
-  }
-
-  return ALIGNMENT_CATEGORY_IDS.reduce(
-    (record, categoryId) => {
-      record[categoryId] = Number(
-        (latestByCategory.get(categoryId)?.allocationPct ?? 0).toFixed(1),
-      );
-      return record;
-    },
-    {} as Record<BudgetCategoryId, number>,
-  );
+  return `Recent classified congressional votes lean most toward ${topCategories.join(", ")}.`;
 }
 
 function mergeSyncedPoliticianProfile(
   benchmark: AlignmentBenchmarkProfile,
   row: SyncablePoliticianRow,
 ): AlignmentBenchmarkProfile {
-  const allocations = buildAllocationRecordFromVotes(row.votes);
-  if (!allocations) {
+  const derived = buildAllocationRecordFromStoredVotes(row.votes);
+  if (!derived) {
     return benchmark;
   }
 
@@ -107,12 +90,13 @@ function mergeSyncedPoliticianProfile(
     title: row.title ?? benchmark.title,
     district: row.district ?? benchmark.district,
     chamber: row.chamber ?? benchmark.chamber,
+    summary: buildLegislativeSummary(derived.allocations),
     sourceType: "congress_sync",
-    sourceLabel: "Congress-synced current member",
+    sourceLabel: "Recent Congress vote profile",
     sourceNote:
-      "Current member identity synced from Congress.gov. Category allocations are stored in the Optomitron database and can be refreshed by the alignment sync job.",
-    lastSyncedAt: row.updatedAt.toISOString(),
-    allocations,
+      `Derived from ${derived.rollCallCount} recent classified Congress roll calls across ${derived.categoriesCovered} budget categories. This is a recent legislative support index built from bill subjects and recorded member positions, not a lifetime ideology score.`,
+    lastSyncedAt: (derived.latestVoteDate ?? row.updatedAt).toISOString(),
+    allocations: derived.allocations,
   };
 }
 
@@ -153,6 +137,7 @@ export async function loadAlignmentBenchmarkProfiles(): Promise<AlignmentBenchma
         orderBy: [{ voteDate: "desc" }, { updatedAt: "desc" }],
         select: {
           allocationPct: true,
+          billId: true,
           itemCategory: true,
           updatedAt: true,
           voteDate: true,
@@ -204,6 +189,7 @@ export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoli
   let syncedPoliticians = 0;
   let syncedVotes = 0;
   const updatedExternalIds: string[] = [];
+  const politicianIdByExternalId = new Map<string, string>();
 
   for (const benchmark of ALIGNMENT_BENCHMARKS) {
     if (!benchmark.externalId) {
@@ -240,28 +226,44 @@ export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoli
       },
     });
 
-    await prisma.politicianVote.deleteMany({
-      where: {
-        politicianId: politician.id,
-        itemCategory: {
-          in: ALIGNMENT_CATEGORY_IDS,
-        },
-      },
-    });
-
-    const createdVotes = await prisma.politicianVote.createMany({
-      data: ALIGNMENT_CATEGORY_IDS.map((categoryId) => ({
-        politicianId: politician.id,
-        itemCategory: categoryId,
-        allocationPct: benchmark.allocations[categoryId],
-        billId: `alignment-benchmark:${benchmark.politicianId}`,
-        voteDate: new Date(),
-      })),
-    });
-
+    politicianIdByExternalId.set(benchmark.externalId, politician.id);
     syncedPoliticians += 1;
-    syncedVotes += createdVotes.count;
     updatedExternalIds.push(benchmark.externalId);
+  }
+
+  const rawVoteRows = await deriveRecentLegislativeVoteRows(updatedExternalIds);
+
+  await prisma.politicianVote.deleteMany({
+    where: {
+      politicianId: {
+        in: [...politicianIdByExternalId.values()],
+      },
+      itemCategory: {
+        in: ALIGNMENT_CATEGORY_IDS,
+      },
+    },
+  });
+
+  if (rawVoteRows.length > 0) {
+    const createdVotes = await prisma.politicianVote.createMany({
+      data: rawVoteRows
+        .map((row) => {
+          const politicianId = politicianIdByExternalId.get(row.externalId);
+          if (!politicianId) {
+            return null;
+          }
+
+          return {
+            politicianId,
+            itemCategory: row.itemCategory,
+            allocationPct: row.allocationPct,
+            billId: row.billId,
+            voteDate: row.voteDate,
+          };
+        })
+        .filter((row): row is NonNullable<typeof row> => row != null),
+    });
+    syncedVotes = createdVotes.count;
   }
 
   return {

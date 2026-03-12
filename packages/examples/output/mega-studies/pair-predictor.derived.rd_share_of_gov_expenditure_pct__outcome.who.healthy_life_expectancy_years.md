@@ -7,13 +7,13 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 16
 - Temporal candidates with valid results: 16
-- Temporal profile score: 0.6517
+- Temporal profile score: 0.6409
 - Included subjects: 82
 - Skipped subjects: 0
 - Total aligned pairs: 5412
 - Signal grade: A (very strong)
 - Data status: enough data
-- Confidence score: 0.749 (medium confidence)
+- Confidence score: 0.735 (medium confidence)
 - Signal tag: early signal
 - Direction: positive
 - Uncertainty score: 0.0816 (lower is better)
@@ -52,7 +52,7 @@
 - The estimate uses 82 subjects and 5412 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [9.390, 20.356] (mean outcome 69.965).
 - A minimum effective predictor level appears near 4.042 % of government expenditure in the binned response curve.
-- Confidence score is 0.749 (medium confidence); data status is enough data.
+- Confidence score is 0.735 (medium confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -67,8 +67,8 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | 0.1700 |
-| Reverse correlation | 0.0422 |
-| Direction score (forward - reverse) | 0.1277 |
+| Reverse correlation | 0.0530 |
+| Direction score (forward - reverse) | 0.1169 |
 | Effect size (% change from baseline) | 0.5810 |
 | Significance score | 0.9184 |
 | Weighted PIS | 0.4176 |
@@ -94,10 +94,10 @@
 | Middle-data share kept | 80.0% (4332/5412) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.7492 (medium confidence) |
+| Confidence score | 0.7348 (medium confidence) |
 | Reliability support component | 0.7243 |
 | Reliability significance component | 0.9184 |
-| Reliability directional component | 0.8516 |
+| Reliability directional component | 0.7796 |
 | Reliability temporal-stability component | 1.0000 |
 | Reliability robustness component | 0.1211 |
 | Signal tag | early signal |
@@ -116,10 +116,10 @@
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 5 | 8 | interpolation | 0.6517 | 0.0000 | 82 | 5412 |
-| Runner-up | predictor_default | 5 | 5 | interpolation | 0.6154 | 0.0363 | 82 | 5412 |
-| Runner-up | predictor_default | 5 | 3 | interpolation | 0.6024 | 0.0492 | 82 | 5412 |
-| Runner-up | predictor_default | 3 | 8 | interpolation | 0.6019 | 0.0497 | 82 | 5412 |
+| Selected | predictor_default | 5 | 8 | interpolation | 0.6409 | 0.0000 | 82 | 5412 |
+| Runner-up | predictor_default | 5 | 5 | interpolation | 0.6026 | 0.0382 | 82 | 5412 |
+| Runner-up | predictor_default | 3 | 8 | interpolation | 0.5879 | 0.0529 | 82 | 5412 |
+| Runner-up | predictor_default | 5 | 3 | interpolation | 0.5875 | 0.0534 | 82 | 5412 |
 
 ### Binned Pattern Table
 
@@ -174,9 +174,9 @@ Outcome Distribution (Healthy Life Expectancy (HALE), welfare-aligned)
 
 | Subject | Forward r | Directional Score | Effect % | Pairs |
 |---------|----------:|------------------:|---------:|------:|
+| GBR | -0.5375 | -1.4035 | -1.686 | 66 |
 | IND | 0.7836 | 1.3893 | 5.277 | 66 |
 | UZB | 0.5326 | 1.3687 | 8.405 | 66 |
-| GBR | -0.5375 | -1.2438 | -1.686 | 66 |
 | CAN | 0.6492 | 1.2012 | 1.513 | 66 |
 | MEX | 0.2219 | 1.1587 | 0.700 | 66 |
 | TUN | 0.4867 | 1.1195 | 1.401 | 66 |

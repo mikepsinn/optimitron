@@ -1,574 +1,602 @@
 {
   "jurisdiction": "United States of America",
-  "totalBudget": 6707000000000,
+  "totalBudget": 6750000000000,
   "categories": [
     {
-      "name": "Interest on Debt",
-      "currentSpending": 892000000000,
-      "optimalSpending": 802800000000,
-      "gap": -89200000000,
-      "gapPercent": -10,
-      "marginalReturn": 0.0001,
-      "recommendation": "maintain",
+      "name": "Education",
+      "currentSpending": 238000000000,
+      "optimalSpending": 1170775323989.3784,
+      "gap": 932775323989.3784,
+      "gapPercent": 391.922405037554,
+      "marginalReturn": 20.575629851985255,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "A",
+      "evidenceDescription": "Strong causal evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 767859067764.8467,
+      "elasticity": 0.7036324297622262,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.526218371017746,
+        "n": 529,
+        "lowFit": false,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 5.458671878270352,
+        "healthEffect": 3.2752031269622113
+      },
       "outcomeMetrics": [
         {
-          "name": "Debt-to-GDP ratio",
-          "value": 121,
-          "trend": "declining"
+          "name": "PISA Average Score",
+          "value": 489,
+          "trend": "decreasing"
         },
         {
-          "name": "Net interest as % of revenue",
-          "value": 18,
-          "trend": "declining"
+          "name": "College Completion Rate",
+          "value": 62.2,
+          "trend": "increasing"
         },
         {
-          "name": "Average interest rate on debt",
-          "value": 3.3,
-          "trend": "declining"
+          "name": "Student Debt per Graduate ($K)",
+          "value": 37.6,
+          "trend": "increasing"
         }
       ]
     },
     {
       "name": "Military",
       "currentSpending": 886000000000,
-      "optimalSpending": 841700000000,
-      "gap": -44300000000,
-      "gapPercent": -5,
-      "marginalReturn": 0.0015,
-      "recommendation": "maintain",
+      "optimalSpending": 443000000000,
+      "gap": -443000000000,
+      "gapPercent": -50,
+      "marginalReturn": -0.0001028225355234275,
+      "recommendation": "decrease",
+      "recommendedAction": "major_decrease",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 375005720418.0123,
+      "elasticity": -0.003384926258965176,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.006189722836379308,
+        "n": 529,
+        "lowFit": true,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0000018467455866022667,
+        "healthEffect": -0.00000110804735196136
+      },
       "outcomeMetrics": [
         {
-          "name": "Global Peace Index ranking (US)",
-          "value": 131,
-          "trend": "declining"
-        },
-        {
-          "name": "Military strength index (Global Firepower)",
+          "name": "Global Firepower Index Rank",
           "value": 1,
           "trend": "stable"
         },
         {
-          "name": "Active duty personnel",
-          "value": 1.33,
-          "trend": "declining"
+          "name": "Military Readiness Score",
+          "value": 87,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Science & Space (NASA, NSF)",
+      "currentSpending": 81000000000,
+      "optimalSpending": 461026689020.17535,
+      "gap": 380026689020.17535,
+      "gapPercent": 469.1687518767597,
+      "marginalReturn": 36.40441349096675,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "B",
+      "evidenceDescription": "Probable causal link",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 299356097248.6339,
+      "elasticity": 0.31807157194706004,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.31800482279935205,
+        "n": 529,
+        "lowFit": false,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 3.8342661997880705,
+        "healthEffect": 2.300559719872842
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Patent Applications",
+          "value": 350000,
+          "trend": "increasing"
         },
         {
-          "name": "Military spending as % GDP",
-          "value": 3,
+          "name": "STEM Graduates per 100K",
+          "value": 28,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Transportation & Infrastructure",
+      "currentSpending": 168000000000,
+      "optimalSpending": 663073037958.2012,
+      "gap": 495073037958.2012,
+      "gapPercent": 294.6863321179769,
+      "marginalReturn": 0.053100233241181675,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 90200525389.99547,
+      "elasticity": 0.651540837111797,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9674378988714181,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.006385716133133254,
+        "healthEffect": 0.003831429679879952
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Infrastructure Quality Index",
+          "value": 58.5,
+          "trend": "stable"
+        },
+        {
+          "name": "Bridge Deficiency Rate",
+          "value": 7.5,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Commute Time (minutes)",
+          "value": 27.6,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Income Security (SNAP, Housing)",
+      "currentSpending": 304000000000,
+      "optimalSpending": 608000000000,
+      "gap": 304000000000,
+      "gapPercent": 100,
+      "marginalReturn": 0.0014212525984477462,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 88231169169.84708,
+      "elasticity": 0.020667369318781104,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.0813812141645276,
+        "n": 330,
+        "lowFit": true,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0003501584600790166,
+        "healthEffect": 0.00021009507604740995
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Food Insecurity Rate",
+          "value": 12.8,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Poverty Rate",
+          "value": 11.5,
+          "trend": "stable"
+        },
+        {
+          "name": "Homelessness per 10K",
+          "value": 18,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Justice & Law Enforcement",
+      "currentSpending": 68000000000,
+      "optimalSpending": 206771740919.0071,
+      "gap": 138771740919.0071,
+      "gapPercent": 204.07608958677517,
+      "marginalReturn": 0.22173723670302645,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 25370148218.588898,
+      "elasticity": 1.2078478148291332,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.8573276203074891,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0021851476312567107,
+        "healthEffect": 0.0013110885787540264
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Violent Crime Rate per 100K",
+          "value": 380,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Incarceration Rate per 100K",
+          "value": 531,
+          "trend": "decreasing"
+        }
+      ]
+    },
+    {
+      "name": "International Affairs & Aid",
+      "currentSpending": 68000000000,
+      "optimalSpending": 148378040617.7017,
+      "gap": 80378040617.70169,
+      "gapPercent": 118.20300090838485,
+      "marginalReturn": 0.11548584787930415,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 14588117497.627533,
+      "elasticity": 0.39882797565788053,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9937155910524301,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.00713721076634274,
+        "healthEffect": 0.004282326459805644
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Aid as % of GNI",
+          "value": 0.17,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Global Influence Index",
+          "value": 54.5,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Community & Regional Development",
+      "currentSpending": 41000000000,
+      "optimalSpending": 102809202124.3387,
+      "gap": 61809202124.3387,
+      "gapPercent": 150.7541515227773,
+      "marginalReturn": 0.16565208352368918,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 14149027764.680208,
+      "elasticity": 0.3661285061869093,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9974010610529958,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.018960088858119034,
+        "healthEffect": 0.01137605331487142
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Housing Affordability Index",
+          "value": 52,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Community Development Score",
+          "value": 55,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Farm Subsidies",
+      "currentSpending": 30000000000,
+      "optimalSpending": 15000000000.000002,
+      "gap": -14999999999.999998,
+      "gapPercent": -49.99999999999999,
+      "marginalReturn": -0.045594349442446086,
+      "recommendation": "decrease",
+      "recommendedAction": "decrease",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 13708547475.066118,
+      "elasticity": -0.05130928883100197,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.22333771639765698,
+        "n": 9,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0003028041685572896,
+        "healthEffect": -0.00018168250113437376
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Farm Income Index",
+          "value": 74,
+          "trend": "stable"
+        },
+        {
+          "name": "Food Price Index",
+          "value": 108,
+          "trend": "increasing"
+        },
+        {
+          "name": "Subsidy per Capita",
+          "value": 89,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Energy Programs",
+      "currentSpending": 54000000000,
+      "optimalSpending": 104447885670.81783,
+      "gap": 50447885670.817825,
+      "gapPercent": 93.42201050151449,
+      "marginalReturn": 0.14675424590697142,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 12662546487.48399,
+      "elasticity": 0.36639956438098653,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9956807520359329,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.018417842852308356,
+        "healthEffect": 0.011050705711385013
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Renewable Energy Share %",
+          "value": 21,
+          "trend": "increasing"
+        },
+        {
+          "name": "Energy Independence Index",
+          "value": 58,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Health Research (NIH, CDC)",
+      "currentSpending": 102000000000,
+      "optimalSpending": 148270641791.5879,
+      "gap": 46270641791.58789,
+      "gapPercent": 45.363374305478324,
+      "marginalReturn": 0.0593150182582553,
+      "recommendation": "increase",
+      "recommendedAction": "increase",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 8359602775.5191765,
+      "elasticity": 0.23710875622398156,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.9947071121354132,
+        "n": 10,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.028849921994127396,
+        "healthEffect": 0.017309953196476435
+      },
+      "outcomeMetrics": [
+        {
+          "name": "NIH-Funded Publications",
+          "value": 85000,
+          "trend": "increasing"
+        },
+        {
+          "name": "Drug Approvals (FDA)",
+          "value": 55,
+          "trend": "increasing"
+        },
+        {
+          "name": "Life Expectancy",
+          "value": 77.5,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Immigration & Customs Enforcement",
+      "currentSpending": 9000000000,
+      "optimalSpending": 1680000000,
+      "gap": -7320000000,
+      "gapPercent": -81.33333333333333,
+      "marginalReturn": -0.13283184845801563,
+      "recommendation": "decrease",
+      "recommendedAction": "major_decrease",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 7279423390.02019,
+      "elasticity": -0.04612748230875006,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9885495551726966,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0007363205065270656,
+        "healthEffect": -0.00044179230391623933
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Deportations per Year",
+          "value": 170000,
+          "trend": "increasing"
+        },
+        {
+          "name": "Border Encounters per Year",
+          "value": 2000000,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Environment & EPA",
+      "currentSpending": 68000000000,
+      "optimalSpending": 97310980109.96185,
+      "gap": 29310980109.961853,
+      "gapPercent": 43.104382514649785,
+      "marginalReturn": 0.11615249581521574,
+      "recommendation": "increase",
+      "recommendedAction": "increase",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 5342627730.032323,
+      "elasticity": 0.32426666675205296,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9925329151859725,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.012620758995421501,
+        "healthEffect": 0.0075724553972529
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Air Quality Index (avg)",
+          "value": 63.5,
+          "trend": "improving"
+        },
+        {
+          "name": "CO2 Emissions (Mt)",
+          "value": 4900,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Clean Water Access %",
+          "value": 99.2,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Agriculture & Food Safety",
+      "currentSpending": 38000000000,
+      "optimalSpending": 125143969984.08743,
+      "gap": 87143969984.08743,
+      "gapPercent": 229.3262368002301,
+      "marginalReturn": 0.19329460623472997,
+      "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 2588044879.353822,
+      "elasticity": 0.3722802590227495,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.9803715216533956,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0028702795842549594,
+        "healthEffect": 0.0017221677505529756
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Food Safety Violations per 1000",
+          "value": 3.2,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Farm Income Stability Index",
+          "value": 74,
           "trend": "stable"
         }
       ]
     },
     {
       "name": "Social Security",
-      "currentSpending": 1461000000000,
-      "optimalSpending": 1497525000000,
-      "gap": 36525000000,
-      "gapPercent": 2.5,
-      "marginalReturn": 0.0038,
+      "currentSpending": 1418000000000,
+      "optimalSpending": 1418000000000,
+      "gap": 0,
+      "gapPercent": 0,
+      "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
-          "name": "Elderly poverty rate",
+          "name": "Elderly Poverty Rate",
           "value": 10.2,
-          "trend": "stable"
+          "trend": "decreasing"
         },
         {
-          "name": "Beneficiaries",
-          "value": 67.9,
-          "trend": "improving"
-        },
-        {
-          "name": "Average monthly retirement benefit",
-          "value": 1907,
-          "trend": "improving"
-        },
-        {
-          "name": "Trust fund depletion year (projected)",
-          "value": 2033,
-          "trend": "declining"
-        }
-      ]
-    },
-    {
-      "name": "Other Mandatory Programs",
-      "currentSpending": 842000000000,
-      "optimalSpending": 813933333333,
-      "gap": -28066666667,
-      "gapPercent": -3.3,
-      "marginalReturn": 0.002,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "SNAP participation",
-          "value": 41.2,
-          "trend": "declining"
-        },
-        {
-          "name": "Unemployment rate",
-          "value": 4.2,
-          "trend": "stable"
-        },
-        {
-          "name": "Poverty rate (overall)",
-          "value": 11.1,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Veterans Affairs",
-      "currentSpending": 325000000000,
-      "optimalSpending": 349375000000,
-      "gap": 24375000000,
-      "gapPercent": 7.5,
-      "marginalReturn": 0.0053,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Veteran suicide rate",
-          "value": 33.9,
-          "trend": "stable"
-        },
-        {
-          "name": "VA patient satisfaction (inpatient)",
-          "value": 71,
-          "trend": "improving"
-        },
-        {
-          "name": "Veteran homelessness",
-          "value": 35286,
-          "trend": "improving"
-        },
-        {
-          "name": "Average wait time for primary care",
-          "value": 20.3,
-          "trend": "improving"
-        }
-      ]
-    },
-    {
-      "name": "Medicaid",
-      "currentSpending": 616000000000,
-      "optimalSpending": 600600000000,
-      "gap": -15400000000,
-      "gapPercent": -2.5,
-      "marginalReturn": 0.0023,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Uninsured rate (overall)",
-          "value": 7.9,
-          "trend": "improving"
-        },
-        {
-          "name": "Medicaid enrollment",
-          "value": 72,
-          "trend": "declining"
-        },
-        {
-          "name": "Infant mortality rate",
-          "value": 5.6,
-          "trend": "declining"
-        },
-        {
-          "name": "Children covered by Medicaid/CHIP",
-          "value": 39.7,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Health (non-Medicare/Medicaid)",
-      "currentSpending": 94000000000,
-      "optimalSpending": 103400000000,
-      "gap": 9400000000,
-      "gapPercent": 10,
-      "marginalReturn": 0.006,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Life expectancy at birth",
-          "value": 77.5,
-          "trend": "improving"
-        },
-        {
-          "name": "Opioid overdose deaths",
-          "value": 81083,
-          "trend": "improving"
-        },
-        {
-          "name": "NIH-funded clinical trials",
-          "value": 13500,
-          "trend": "improving"
-        }
-      ]
-    },
-    {
-      "name": "Education",
-      "currentSpending": 102000000000,
-      "optimalSpending": 93840000000,
-      "gap": -8160000000,
-      "gapPercent": -8,
-      "marginalReturn": 0.0006,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "High school graduation rate",
-          "value": 87,
-          "trend": "stable"
-        },
-        {
-          "name": "College enrollment rate (18-24)",
-          "value": 38,
-          "trend": "declining"
-        },
-        {
-          "name": "PISA math score (US)",
-          "value": 465,
-          "trend": "declining"
-        },
-        {
-          "name": "PISA reading score (US)",
-          "value": 504,
-          "trend": "declining"
-        },
-        {
-          "name": "Student loan debt (total)",
-          "value": 1740,
-          "trend": "declining"
-        }
-      ]
-    },
-    {
-      "name": "HUD / Housing",
-      "currentSpending": 73000000000,
-      "optimalSpending": 68133333333,
-      "gap": -4866666667,
-      "gapPercent": -6.7,
-      "marginalReturn": 0.001,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Total homeless population",
-          "value": 653104,
-          "trend": "declining"
-        },
-        {
-          "name": "Housing cost burden (>30% income)",
-          "value": 30,
-          "trend": "declining"
-        },
-        {
-          "name": "Homeownership rate",
-          "value": 65.6,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Agriculture",
-      "currentSpending": 38000000000,
-      "optimalSpending": 34200000000,
-      "gap": -3800000000,
-      "gapPercent": -10,
-      "marginalReturn": 0.0001,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Food insecurity rate",
-          "value": 12.8,
-          "trend": "declining"
-        },
-        {
-          "name": "Farm income (net)",
-          "value": 116.1,
-          "trend": "declining"
-        },
-        {
-          "name": "Crop export value",
-          "value": 171,
-          "trend": "declining"
-        }
-      ]
-    },
-    {
-      "name": "Justice / Law Enforcement",
-      "currentSpending": 40000000000,
-      "optimalSpending": 42666666667,
-      "gap": 2666666667,
-      "gapPercent": 6.7,
-      "marginalReturn": 0.005,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Violent crime rate",
-          "value": 363.8,
-          "trend": "improving"
-        },
-        {
-          "name": "Incarceration rate",
-          "value": 531,
-          "trend": "improving"
-        },
-        {
-          "name": "Federal prison population",
-          "value": 158169,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Science / NASA",
-      "currentSpending": 44000000000,
-      "optimalSpending": 46200000000,
-      "gap": 2200000000,
-      "gapPercent": 5,
-      "marginalReturn": 0.0045,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "R&D as % of GDP (federal)",
-          "value": 0.67,
-          "trend": "stable"
-        },
-        {
-          "name": "US patents granted",
-          "value": 352013,
-          "trend": "stable"
-        },
-        {
-          "name": "Nobel Prizes in science (cumulative, US-affiliated)",
-          "value": 285,
-          "trend": "improving"
-        },
-        {
-          "name": "NASA commercial crew missions",
-          "value": 12,
-          "trend": "improving"
-        }
-      ]
-    },
-    {
-      "name": "Foreign Aid / International Affairs",
-      "currentSpending": 63000000000,
-      "optimalSpending": 65100000000,
-      "gap": 2100000000,
-      "gapPercent": 3.3,
-      "marginalReturn": 0.004,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Foreign aid as % GNI",
-          "value": 0.22,
-          "trend": "stable"
-        },
-        {
-          "name": "PEPFAR lives saved (cumulative)",
-          "value": 25,
-          "trend": "improving"
-        },
-        {
-          "name": "Countries receiving US bilateral aid",
-          "value": 140,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Homeland Security",
-      "currentSpending": 62000000000,
-      "optimalSpending": 59933333333,
-      "gap": -2066666667,
-      "gapPercent": -3.3,
-      "marginalReturn": 0.002,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Southwest border encounters",
-          "value": 2048000,
-          "trend": "declining"
-        },
-        {
-          "name": "Domestic terrorism incidents",
-          "value": 38,
-          "trend": "improving"
-        },
-        {
-          "name": "Disaster relief obligated (FEMA)",
-          "value": 34.2,
-          "trend": "declining"
-        }
-      ]
-    },
-    {
-      "name": "Energy",
-      "currentSpending": 52000000000,
-      "optimalSpending": 53733333333,
-      "gap": 1733333333,
-      "gapPercent": 3.3,
-      "marginalReturn": 0.004,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Renewable energy share of electricity",
-          "value": 22.7,
-          "trend": "improving"
-        },
-        {
-          "name": "Energy-related CO₂ emissions",
-          "value": 4790,
-          "trend": "improving"
-        },
-        {
-          "name": "Average retail electricity price",
-          "value": 12.7,
-          "trend": "declining"
-        }
-      ]
-    },
-    {
-      "name": "Treasury / General Government",
-      "currentSpending": 30000000000,
-      "optimalSpending": 28500000000,
-      "gap": -1500000000,
-      "gapPercent": -5,
-      "marginalReturn": 0.0015,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Tax gap (estimated)",
-          "value": 688,
-          "trend": "declining"
-        },
-        {
-          "name": "IRS voluntary compliance rate",
-          "value": 83.6,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Labor",
-      "currentSpending": 42000000000,
-      "optimalSpending": 43400000000,
-      "gap": 1400000000,
-      "gapPercent": 3.3,
-      "marginalReturn": 0.004,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Labor force participation rate",
-          "value": 62.5,
-          "trend": "stable"
-        },
-        {
-          "name": "Median weekly earnings",
-          "value": 1145,
-          "trend": "improving"
-        },
-        {
-          "name": "Workplace fatalities",
-          "value": 5283,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "State Department / Diplomacy",
-      "currentSpending": 19000000000,
-      "optimalSpending": 19950000000,
-      "gap": 950000000,
-      "gapPercent": 5,
-      "marginalReturn": 0.0045,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "US passport holders",
-          "value": 160,
-          "trend": "improving"
-        },
-        {
-          "name": "Bilateral trade agreements active",
-          "value": 14,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Commerce / Economic Development",
-      "currentSpending": 18000000000,
-      "optimalSpending": 18900000000,
-      "gap": 900000000,
-      "gapPercent": 5,
-      "marginalReturn": 0.0045,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "GDP growth rate (real)",
-          "value": 2.5,
-          "trend": "stable"
-        },
-        {
-          "name": "New business applications",
-          "value": 5500000,
-          "trend": "improving"
-        }
-      ]
-    },
-    {
-      "name": "Interior / Natural Resources",
-      "currentSpending": 17000000000,
-      "optimalSpending": 17566666667,
-      "gap": 566666667,
-      "gapPercent": 3.3,
-      "marginalReturn": 0.004,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "National park visits",
-          "value": 325.5,
-          "trend": "improving"
-        },
-        {
-          "name": "Wildfire acres burned",
-          "value": 2693910,
-          "trend": "declining"
-        },
-        {
-          "name": "Endangered species recovered",
-          "value": 54,
-          "trend": "improving"
-        }
-      ]
-    },
-    {
-      "name": "EPA / Environment",
-      "currentSpending": 12000000000,
-      "optimalSpending": 12300000000,
-      "gap": 300000000,
-      "gapPercent": 2.5,
-      "marginalReturn": 0.0038,
-      "recommendation": "maintain",
-      "outcomeMetrics": [
-        {
-          "name": "Days exceeding Air Quality Index standards",
-          "value": 117,
-          "trend": "declining"
-        },
-        {
-          "name": "Greenhouse gas emissions",
-          "value": 5060,
-          "trend": "improving"
-        },
-        {
-          "name": "Superfund sites cleaned up (cumulative)",
-          "value": 459,
-          "trend": "improving"
-        },
-        {
-          "name": "Clean Water Act compliance rate",
-          "value": 86,
+          "name": "Retirement Security Index",
+          "value": 67,
           "trend": "stable"
         }
       ]
@@ -579,65 +607,166 @@
       "optimalSpending": 874000000000,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": 0.003,
+      "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "B",
+      "evidenceDescription": "Probable causal link",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
-          "name": "Life expectancy at 65",
-          "value": 18.9,
-          "trend": "declining"
+          "name": "Life Expectancy at 65",
+          "value": 19.4,
+          "trend": "stable"
         },
         {
-          "name": "Medicare beneficiaries",
-          "value": 67.4,
-          "trend": "improving"
+          "name": "Uninsured Rate (65+)",
+          "value": 1,
+          "trend": "stable"
         },
         {
-          "name": "Hospital readmission rate (30-day)",
-          "value": 15.3,
-          "trend": "improving"
-        },
-        {
-          "name": "Per-capita Medicare spending",
-          "value": 13050,
-          "trend": "declining"
+          "name": "Preventable Hospitalizations per 1000",
+          "value": 48,
+          "trend": "decreasing"
         }
       ]
     },
     {
-      "name": "Transportation",
-      "currentSpending": 105000000000,
-      "optimalSpending": 105000000000,
+      "name": "Medicaid & CHIP",
+      "currentSpending": 575000000000,
+      "optimalSpending": 575000000000,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": 0.003,
+      "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "C",
+      "evidenceDescription": "Moderate evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
-          "name": "Infrastructure grade (ASCE)",
+          "name": "Uninsured Rate (Low-Income)",
+          "value": 12.5,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Infant Mortality Rate",
+          "value": 5.4,
+          "trend": "decreasing"
+        },
+        {
+          "name": "Child Health Coverage Rate",
+          "value": 95.2,
+          "trend": "increasing"
+        }
+      ]
+    },
+    {
+      "name": "Net Interest on Debt",
+      "currentSpending": 881000000000,
+      "optimalSpending": 881000000000,
+      "gap": 0,
+      "gapPercent": 0,
+      "marginalReturn": 0,
+      "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "C",
+      "evidenceDescription": "Moderate evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Debt-to-GDP Ratio",
+          "value": 124,
+          "trend": "increasing"
+        },
+        {
+          "name": "Sovereign Credit Rating (S&P)",
+          "value": 85,
+          "trend": "stable"
+        }
+      ]
+    },
+    {
+      "name": "Veterans Benefits",
+      "currentSpending": 270000000000,
+      "optimalSpending": 270000000000,
+      "gap": 0,
+      "gapPercent": 0,
+      "marginalReturn": 0,
+      "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
+      "outcomeMetrics": [
+        {
+          "name": "Veteran Unemployment Rate",
+          "value": 3.5,
+          "trend": "decreasing"
+        },
+        {
+          "name": "VA Healthcare Satisfaction",
           "value": 67,
-          "trend": "improving"
-        },
-        {
-          "name": "Traffic fatalities",
-          "value": 40990,
-          "trend": "declining"
-        },
-        {
-          "name": "Traffic fatality rate",
-          "value": 12.1,
-          "trend": "declining"
-        },
-        {
-          "name": "Structurally deficient bridges",
-          "value": 42966,
-          "trend": "improving"
+          "trend": "increasing"
         }
       ]
     }
   ],
-  "topRecommendations": [],
-  "generatedAt": "2026-02-07T04:45:33.021Z",
-  "generatedBy": "@optomitron/obg",
-  "note": "Generated from real US federal budget data using diminishing returns analysis. Not mock data."
+  "topRecommendations": [
+    "Increase Education by $932.8B (+391.9%)",
+    "Decrease Military by $443.0B (-50.0%)",
+    "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
+    "Increase Income Security (SNAP, Housing) by $304.0B (+100.0%)",
+    "Increase Community & Regional Development by $61.8B (+150.8%)",
+    "Increase Energy Programs by $50.4B (+93.4%)"
+  ],
+  "generatedAt": "2026-03-12T21:02:35.982Z"
 }

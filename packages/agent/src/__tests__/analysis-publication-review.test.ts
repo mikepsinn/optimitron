@@ -87,6 +87,29 @@ describe('analysis publication review', () => {
     expect(review.flaggedPairIds).toContain('pair_1');
   });
 
+  it('fails deterministic review when a top recommendation is tagged not-enough-data quality', async () => {
+    const review = await reviewAnalysisPublication({
+      input: {
+        ...baseInput,
+        outcomes: [{
+          ...baseInput.outcomes[0]!,
+          topRecommendations: [{
+            ...baseInput.outcomes[0]!.topRecommendations[0]!,
+            qualityTier: 'insufficient',
+          }],
+        }],
+        highlightedPairs: [{
+          ...baseInput.highlightedPairs[0]!,
+          qualityTier: 'insufficient',
+        }],
+      },
+    });
+
+    expect(review.status).toBe('fail');
+    expect(review.shouldPublish).toBe(false);
+    expect(review.flaggedPairIds).toContain('pair_1');
+  });
+
   it('uses the provided reasoner and keeps deterministic blockers', async () => {
     const generateObject = vi.fn(async ({ parse }: { parse: (value: unknown) => unknown }) =>
       parse({

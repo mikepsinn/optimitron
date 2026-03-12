@@ -33,7 +33,7 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
     return {
       candidateLastSyncedAt: lastSyncedAt,
       candidateSourceNote:
-        "All benchmark politicians on this report were refreshed from Congress-synced database rows.",
+        "All benchmark politicians on this report are derived from recent classified Congress roll calls stored in Optomitron's database.",
       candidateSourceType: "congress_sync" as const,
     };
   }
@@ -42,7 +42,7 @@ function summarizeCandidateSource(profiles: AlignmentBenchmarkProfile[]) {
     return {
       candidateLastSyncedAt: lastSyncedAt,
       candidateSourceNote:
-        "Some politicians on this report are synced from Congress-backed database rows, while the remainder use the curated fallback benchmark set.",
+        "Some politicians on this report are derived from recent classified Congress roll calls, while the remainder use the curated fallback benchmark set because recent legislative coverage is still thin.",
       candidateSourceType: "mixed" as const,
     };
   }

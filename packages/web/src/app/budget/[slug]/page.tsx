@@ -14,6 +14,22 @@ interface Category {
   gapPercent: number;
   marginalReturn: number;
   recommendation: string;
+  recommendedAction: string;
+  evidenceGrade: string;
+  evidenceDescription: string;
+  investmentStatus: string;
+  priorityScore: number;
+  elasticity?: number;
+  diminishingReturns?: {
+    modelType: string;
+    r2: number;
+    n: number;
+    lowFit: boolean;
+    smallSample: boolean;
+  };
+  welfareEffect: { incomeEffect: number; healthEffect: number };
+  oslCiLow?: number;
+  oslCiHigh?: number;
   outcomeMetrics: { name: string; value: number; trend: string }[];
 }
 
@@ -56,6 +72,39 @@ function trendColor(trend: string): string {
   return "text-black/50";
 }
 
+function gradeBg(grade: string): string {
+  switch (grade) {
+    case "A": return "bg-emerald-300";
+    case "B": return "bg-yellow-300";
+    case "C": return "bg-amber-300";
+    case "D": return "bg-orange-300";
+    case "F": return "bg-red-300";
+    default: return "bg-gray-200";
+  }
+}
+
+function actionBadgeStyle(action: string): string {
+  switch (action) {
+    case "scale_up": return "bg-emerald-400 text-black";
+    case "increase": return "bg-emerald-300 text-black";
+    case "maintain": return "bg-gray-200 text-black";
+    case "decrease": return "bg-orange-300 text-black";
+    case "major_decrease": return "bg-red-300 text-black";
+    default: return "bg-gray-200 text-black";
+  }
+}
+
+function actionLabel(action: string): string {
+  switch (action) {
+    case "scale_up": return "Scale Up";
+    case "increase": return "Increase";
+    case "maintain": return "Maintain";
+    case "decrease": return "Decrease";
+    case "major_decrease": return "Major Decrease";
+    default: return action;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Static params                                                     */
 /* ------------------------------------------------------------------ */
@@ -90,8 +139,8 @@ export default async function BudgetCategoryPage({
   const maxBar = Math.max(cat.currentSpending, cat.optimalSpending);
   const currentPct = (cat.currentSpending / maxBar) * 100;
   const optimalPct = (cat.optimalSpending / maxBar) * 100;
-  const isIncrease = cat.recommendation === "increase";
   const totalOptimal = data.categories.reduce((s, c) => s + c.optimalSpending, 0);
+  const dr = cat.diminishingReturns;
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
@@ -108,7 +157,7 @@ export default async function BudgetCategoryPage({
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight text-black mb-4">
           {cat.name}
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="border-2 border-black p-4 bg-cyan-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase text-black/60 mb-1">Current Spending</div>
             <div className="text-2xl sm:text-3xl font-black text-black">{fmt(cat.currentSpending)}</div>
@@ -116,23 +165,34 @@ export default async function BudgetCategoryPage({
           <div className="border-2 border-black p-4 bg-yellow-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase text-black/60 mb-1">Optimal Spending</div>
             <div className="text-2xl sm:text-3xl font-black text-black">{fmt(cat.optimalSpending)}</div>
+            {cat.oslCiLow != null && cat.oslCiHigh != null && (
+              <div className="text-xs font-bold text-black/40 mt-1">
+                95% CI: {fmt(cat.oslCiLow)} – {fmt(cat.oslCiHigh)}
+              </div>
+            )}
           </div>
           <div
             className={`border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
-              isIncrease ? "bg-emerald-300" : "bg-red-300"
+              cat.gap >= 0 ? "bg-emerald-300" : "bg-red-300"
             }`}
           >
             <div className="text-xs font-bold uppercase text-black/60 mb-1">Gap</div>
             <div className="text-2xl sm:text-3xl font-black text-black">
               {fmt(Math.abs(cat.gap))} ({pct(cat.gapPercent)})
             </div>
+            <div className="text-xs font-bold text-black/50 mt-1">{cat.investmentStatus}</div>
+          </div>
+          <div className={`border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${gradeBg(cat.evidenceGrade)}`}>
+            <div className="text-xs font-bold uppercase text-black/60 mb-1">Evidence Grade</div>
+            <div className="text-2xl sm:text-3xl font-black text-black">{cat.evidenceGrade}</div>
+            <div className="text-xs font-bold text-black/50 mt-1">{cat.evidenceDescription}</div>
           </div>
         </div>
       </div>
 
       {/* Bar chart: Current vs Optimal */}
       <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">📊 Current vs Optimal</h2>
+        <h2 className="text-lg font-black uppercase text-black mb-4">Current vs Optimal</h2>
         <div className="space-y-3">
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -164,9 +224,53 @@ export default async function BudgetCategoryPage({
         </div>
       </section>
 
+      {/* Diminishing Returns */}
+      {dr && (
+        <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
+          <h2 className="text-lg font-black uppercase text-black mb-4">Diminishing Returns Analysis</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div className="border-2 border-black p-3 bg-white">
+              <div className="text-xs font-bold uppercase text-black/50">Model Type</div>
+              <div className="text-lg font-black text-black">{dr.modelType}</div>
+            </div>
+            <div className="border-2 border-black p-3 bg-white">
+              <div className="text-xs font-bold uppercase text-black/50">R² (Model Fit)</div>
+              <div className="text-lg font-black text-black">{(dr.r2 * 100).toFixed(0)}%</div>
+              <div className="mt-1 h-2 bg-gray-100 border border-black overflow-hidden">
+                <div className="h-full bg-pink-500" style={{ width: `${dr.r2 * 100}%` }} />
+              </div>
+            </div>
+            {cat.elasticity != null && (
+              <div className="border-2 border-black p-3 bg-white">
+                <div className="text-xs font-bold uppercase text-black/50">Elasticity</div>
+                <div className="text-lg font-black text-black">{cat.elasticity.toFixed(2)}</div>
+                <div className="text-xs text-black/40 font-bold mt-1">
+                  1% spending increase → {cat.elasticity.toFixed(2)}% outcome change
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs font-bold px-2 py-0.5 border-2 border-black bg-gray-100">
+              N = {dr.n} observations
+            </span>
+            {dr.lowFit && (
+              <span className="text-xs font-bold px-2 py-0.5 border-2 border-black bg-amber-200">
+                Low fit (R²&lt;0.3) — treat with caution
+              </span>
+            )}
+            {dr.smallSample && (
+              <span className="text-xs font-bold px-2 py-0.5 border-2 border-black bg-amber-200">
+                Small sample (n≤10) — may overfit
+              </span>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Outcome Metrics */}
       <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">📈 Outcome Metrics</h2>
+        <h2 className="text-lg font-black uppercase text-black mb-4">Outcome Metrics</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {cat.outcomeMetrics.map((m) => (
             <div
@@ -193,18 +297,21 @@ export default async function BudgetCategoryPage({
       {/* Recommendation Callout */}
       <section
         className={`border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 ${
-          isIncrease ? "bg-emerald-100" : "bg-red-100"
+          cat.gap >= 0 ? "bg-emerald-100" : "bg-red-100"
         }`}
       >
         <h2 className="text-lg font-black uppercase text-black mb-2">
-          {isIncrease ? "↑ RECOMMENDATION: INCREASE" : "↓ RECOMMENDATION: DECREASE"}
+          <span className={`inline-block px-2 py-0.5 mr-2 text-sm border-2 border-black ${actionBadgeStyle(cat.recommendedAction)}`}>
+            {actionLabel(cat.recommendedAction)}
+          </span>
+          RECOMMENDATION
         </h2>
         <p className="text-black/70 font-medium mb-3">
-          {isIncrease
+          {cat.gap >= 0
             ? `Spending on ${cat.name} should be increased by ${fmt(Math.abs(cat.gap))} (${pct(cat.gapPercent)}) to reach the optimal allocation of ${fmt(cat.optimalSpending)}.`
             : `Spending on ${cat.name} should be decreased by ${fmt(Math.abs(cat.gap))} (${pct(Math.abs(cat.gapPercent))}) to reach the optimal allocation of ${fmt(cat.optimalSpending)}.`}
         </p>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
           <div className="border-2 border-black p-3 bg-white">
             <div className="text-xs font-bold uppercase text-black/50">Marginal Return</div>
             <div className="text-xl font-black text-black">{(cat.marginalReturn * 100).toFixed(2)}%</div>
@@ -215,12 +322,36 @@ export default async function BudgetCategoryPage({
               {((cat.currentSpending / data.totalBudget) * 100).toFixed(1)}%
             </div>
           </div>
+          <div className="border-2 border-black p-3 bg-white">
+            <div className="text-xs font-bold uppercase text-black/50">Income Effect</div>
+            <div className={`text-xl font-black ${cat.welfareEffect.incomeEffect >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+              {cat.welfareEffect.incomeEffect >= 0 ? "+" : ""}{(cat.welfareEffect.incomeEffect * 100).toFixed(0)}%
+            </div>
+            <div className="mt-1 h-2 bg-gray-100 border border-black overflow-hidden">
+              <div
+                className={`h-full ${cat.welfareEffect.incomeEffect >= 0 ? "bg-emerald-400" : "bg-red-400"}`}
+                style={{ width: `${Math.min(Math.abs(cat.welfareEffect.incomeEffect) * 100, 100)}%` }}
+              />
+            </div>
+          </div>
+          <div className="border-2 border-black p-3 bg-white">
+            <div className="text-xs font-bold uppercase text-black/50">Health Effect</div>
+            <div className={`text-xl font-black ${cat.welfareEffect.healthEffect >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+              {cat.welfareEffect.healthEffect >= 0 ? "+" : ""}{(cat.welfareEffect.healthEffect * 100).toFixed(0)}%
+            </div>
+            <div className="mt-1 h-2 bg-gray-100 border border-black overflow-hidden">
+              <div
+                className={`h-full ${cat.welfareEffect.healthEffect >= 0 ? "bg-emerald-400" : "bg-red-400"}`}
+                style={{ width: `${Math.min(Math.abs(cat.welfareEffect.healthEffect) * 100, 100)}%` }}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Budget Context */}
       <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
-        <h2 className="text-lg font-black uppercase text-black mb-4">💰 Budget Context</h2>
+        <h2 className="text-lg font-black uppercase text-black mb-4">Budget Context</h2>
         <div className="space-y-2">
           <div className="flex justify-between text-sm font-bold text-black/70">
             <span>Category share (current)</span>
@@ -250,7 +381,7 @@ export default async function BudgetCategoryPage({
       {/* Methodology */}
       <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
         <h2 className="text-lg font-black uppercase text-black mb-4">
-          🔬 How Is Optimal Calculated?
+          How Is Optimal Calculated?
         </h2>
         <div className="space-y-4 text-sm text-black/70 font-medium">
           <p>

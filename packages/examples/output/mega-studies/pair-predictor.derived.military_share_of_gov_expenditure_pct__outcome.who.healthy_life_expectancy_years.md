@@ -7,13 +7,13 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.6039
+- Temporal profile score: 0.6060
 - Included subjects: 126
 - Skipped subjects: 0
 - Total aligned pairs: 8316
 - Signal grade: A (very strong)
 - Data status: enough data
-- Confidence score: 0.642 (medium confidence)
+- Confidence score: 0.648 (medium confidence)
 - Signal tag: early signal
 - Direction: negative
 - Uncertainty score: 0.0792 (lower is better)
@@ -51,13 +51,13 @@
 - Higher Military Share of Government Spending tends to align with worse Healthy Life Expectancy (HALE).
 - The estimate uses 126 subjects and 8316 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [2.653, 3.717) (mean outcome 65.359).
-- Confidence score is 0.642 (medium confidence); data status is enough data.
+- Confidence score is 0.648 (medium confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0149); temporal assumptions are not yet robust.
+- Top temporal profiles are close (score delta 0.0155); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 61.0% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
@@ -67,8 +67,8 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | -0.3633 |
-| Reverse correlation | -0.3317 |
-| Direction score (forward - reverse) | -0.0317 |
+| Reverse correlation | -0.3296 |
+| Direction score (forward - reverse) | -0.0338 |
 | Effect size (% change from baseline) | -2.4929 |
 | Significance score | 0.9208 |
 | Weighted PIS | 0.4859 |
@@ -94,11 +94,11 @@
 | Middle-data share kept | 80.0% (6654/8316) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.6420 (medium confidence) |
+| Confidence score | 0.6476 (medium confidence) |
 | Reliability support component | 0.9200 |
 | Reliability significance component | 0.9208 |
-| Reliability directional component | 0.2112 |
-| Reliability temporal-stability component | 0.4972 |
+| Reliability directional component | 0.2252 |
+| Reliability temporal-stability component | 0.5159 |
 | Reliability robustness component | 0.4335 |
 | Signal tag | early signal |
 
@@ -116,10 +116,10 @@
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 3 | 3 | interpolation | 0.6039 | 0.0000 | 126 | 8316 |
-| Runner-up | predictor_default | 2 | 3 | interpolation | 0.5890 | 0.0149 | 126 | 8316 |
-| Runner-up | predictor_default | 0 | 1 | interpolation | 0.5865 | 0.0174 | 126 | 8316 |
-| Runner-up | predictor_default | 3 | 2 | interpolation | 0.5854 | 0.0186 | 126 | 8316 |
+| Selected | predictor_default | 3 | 3 | interpolation | 0.6060 | 0.0000 | 126 | 8316 |
+| Runner-up | predictor_default | 2 | 3 | interpolation | 0.5906 | 0.0155 | 126 | 8316 |
+| Runner-up | predictor_default | 3 | 2 | interpolation | 0.5874 | 0.0186 | 126 | 8316 |
+| Runner-up | predictor_default | 0 | 1 | interpolation | 0.5862 | 0.0198 | 126 | 8316 |
 
 ### Binned Pattern Table
 
@@ -174,10 +174,10 @@ Outcome Distribution (Healthy Life Expectancy (HALE), welfare-aligned)
 | Subject | Forward r | Directional Score | Effect % | Pairs |
 |---------|----------:|------------------:|---------:|------:|
 | TJK | -0.6734 | -1.1974 | -6.019 | 66 |
-| BGD | -0.6777 | -1.1749 | -3.817 | 66 |
+| BGD | -0.6777 | -1.1140 | -3.817 | 66 |
 | GAB | -0.4487 | -1.0584 | -5.818 | 66 |
 | USA | 0.5035 | 1.0131 | 1.242 | 66 |
-| BFA | -0.7820 | -0.9604 | -9.561 | 66 |
+| BFA | -0.7820 | -0.9560 | -9.561 | 66 |
 | ECU | 0.0520 | 0.9178 | -1.103 | 66 |
 | TGO | -0.5115 | -0.8765 | -6.065 | 66 |
-| ZAF | -0.8651 | -0.8473 | -13.055 | 66 |
+| UKR | -0.3754 | -0.8575 | -2.691 | 66 |

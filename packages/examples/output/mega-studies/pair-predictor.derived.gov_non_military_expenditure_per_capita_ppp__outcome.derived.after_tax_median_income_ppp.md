@@ -28,16 +28,16 @@
 
 ## Key Numeric Takeaways
 
-- Recommended Civilian Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 14637.5 international $/person (data-backed level).
-- Best level directly seen in the grouped data: 14637.5 international $/person.
+- Recommended Civilian Government Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 14731.8 international $/person (data-backed level).
+- Best level directly seen in the grouped data: 14731.8 international $/person.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 13696.7 international $/person; model-optimal minus observed-anchor difference is -8483.4 (-61.9%).
-- Backup level check (middle 10-90% of data) suggests 8929.0 international $/person.
-- The math-only guess and backup level differ by 71.3%, which means extreme values may matter a lot.
+- Best observed bin anchor (median/mean) is 13773.2 international $/person; model-optimal minus observed-anchor difference is -8538.3 (-62.0%).
+- Backup level check (middle 10-90% of data) suggests 8943.1 international $/person.
+- The math-only guess and backup level differ by 70.8%, which means extreme values may matter a lot.
 - Minimum effective level (first consistently positive zone): 246.50 international $/person.
 - Could not find a clear point where gains start slowing down (drop_below_detection_threshold).
 - Could not find a stable flat zone (no_plateau_zone_detected).
-- Highest observed mean After-Tax Median Income (PPP) appears when Civilian Government Expenditure Per Capita (PPP) is in [10279.3, 47874.3] (mean outcome 50214.8).
+- Highest observed mean After-Tax Median Income (PPP) appears when Civilian Government Expenditure Per Capita (PPP) is in [10301.5, 47874.3] (mean outcome 50353.3).
 - Direction signal is neutral; use caution and rely on the data-backed level.
 
 ## Decision Summary
@@ -50,7 +50,7 @@
 
 - No strong directional pattern is detected between Civilian Government Expenditure Per Capita (PPP) and After-Tax Median Income (PPP).
 - The estimate uses 148 subjects and 5001 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [10279.3, 47874.3] (mean outcome 50214.8).
+- Best observed mean outcome appears in predictor bin [10301.5, 47874.3] (mean outcome 50353.3).
 - A minimum effective predictor level appears near 246.50 international $/person in the binned response curve.
 - Confidence score is 0.547 (lower confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
@@ -58,8 +58,8 @@
 ## Quality Warnings
 
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0032); temporal assumptions are not yet robust.
-- Robustness check: trimmed-range optimal differs by 71.3% from raw optimal; tail observations materially influence target.
+- Top temporal profiles are close (score delta 0.0031); temporal assumptions are not yet robust.
+- Robustness check: trimmed-range optimal differs by 70.8% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
 
@@ -67,40 +67,40 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | 0.8436 |
-| Reverse correlation | 0.8666 |
+| Forward correlation | 0.8438 |
+| Reverse correlation | 0.8669 |
 | Direction score (forward - reverse) | -0.0231 |
-| Effect size (% change from baseline) | 107.9927 |
+| Effect size (% change from baseline) | 108.7375 |
 | Significance score | 0.9002 |
-| Weighted PIS | 0.7997 |
-| Value linked with higher outcome | 5213.3706 |
-| Value linked with lower outcome | 2660.3716 |
-| Math-only best daily value | 5213.3706 |
-| Recommended level (reader-facing) | 14637.5 international $/person (data-backed level) |
-| Math-only guess (technical) | 5213.4 international $/person |
-| Data-backed level | 14637.5 international $/person |
-| Data-backed range | [11104.4, 47874.3] |
-| Backup level (middle-data check) | 9175.3 international $/person |
+| Weighted PIS | 0.8000 |
+| Value linked with higher outcome | 5234.8822 |
+| Value linked with lower outcome | 2661.1524 |
+| Math-only best daily value | 5234.8822 |
+| Recommended level (reader-facing) | 14731.8 international $/person (data-backed level) |
+| Math-only guess (technical) | 5234.9 international $/person |
+| Data-backed level | 14731.8 international $/person |
+| Data-backed range | [11134.6, 47874.3] |
+| Backup level (middle-data check) | 9193.2 international $/person |
 | Math-only guess inside seen data range? | yes |
 | Math-only guess inside data-backed range? | no |
 | Seen data range | [7.6041, 62399.1940] |
 | Math-only guess outside seen data? | no (within observed range) |
 | Math-only guess outside best observed bucket? | yes |
-| Best observed range | [10279.3, 47874.3] |
-| Best observed range (middle-data check) | [7202.5, 10279.3] |
-| Best observed outcome average | 50214.8 |
-| Best observed outcome average (middle-data check) | 35832.3 |
-| Backup level (bucket median) | 8929.0 international $/person |
-| Math-only vs backup difference | 3715.7 (+71.3%) |
+| Best observed range | [10301.5, 47874.3] |
+| Best observed range (middle-data check) | [7245.7, 10301.5] |
+| Best observed outcome average | 50353.3 |
+| Best observed outcome average (middle-data check) | 35997.4 |
+| Backup level (bucket median) | 8943.1 international $/person |
+| Math-only vs backup difference | 3708.3 (+70.8%) |
 | Middle-data share kept | 80.4% (4019/5001) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.5470 (lower confidence) |
+| Confidence score | 0.5475 (lower confidence) |
 | Reliability support component | 0.9101 |
 | Reliability significance component | 0.9002 |
-| Reliability directional component | 0.1538 |
-| Reliability temporal-stability component | 0.1051 |
-| Reliability robustness component | 0.3192 |
+| Reliability directional component | 0.1537 |
+| Reliability temporal-stability component | 0.1036 |
+| Reliability robustness component | 0.3240 |
 | Signal tag | early signal |
 
 ### Response-Curve Diagnostics
@@ -111,16 +111,16 @@
 | Point where gains start slowing | Not identified (drop_below_detection_threshold) |
 | Flat zone range | Not identified (no_plateau_zone_detected) |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | -9424.1 (-64.4%) |
+| Math-only guess minus data-backed level | -9496.9 (-64.5%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
 | Selected | predictor_default | 3 | 3 | interpolation | 0.5881 | 0.0000 | 148 | 5001 |
-| Runner-up | predictor_default | 3 | 2 | interpolation | 0.5850 | 0.0032 | 148 | 5001 |
-| Runner-up | predictor_default | 3 | 1 | interpolation | 0.5815 | 0.0066 | 148 | 5001 |
-| Runner-up | predictor_default | 2 | 3 | interpolation | 0.5766 | 0.0115 | 148 | 5001 |
+| Runner-up | predictor_default | 3 | 2 | interpolation | 0.5850 | 0.0031 | 148 | 5001 |
+| Runner-up | predictor_default | 3 | 1 | interpolation | 0.5817 | 0.0064 | 148 | 5001 |
+| Runner-up | predictor_default | 2 | 3 | interpolation | 0.5767 | 0.0114 | 148 | 5001 |
 
 ### Binned Pattern Table
 
@@ -128,24 +128,24 @@
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
 | 1 | [7.604, 208.35) | 482 | 21 | 112.1199 | 104.8715 | 1291.0174 | 1160.0000 |
 | 2 | [208.35, 435.58) | 518 | 38 | 291.2491 | 285.0898 | 2575.7031 | 2370.0000 |
-| 3 | [435.58, 787.92) | 500 | 45 | 591.9147 | 581.5755 | 4338.9913 | 3860.0000 |
-| 4 | [787.92, 1176.2) | 492 | 59 | 987.4203 | 968.5864 | 6156.8984 | 5909.5321 |
-| 5 | [1176.2, 1913.3) | 508 | 58 | 1545.7130 | 1564.6194 | 8246.5561 | 7992.4863 |
-| 6 | [1913.3, 3080.2) | 477 | 60 | 2478.5799 | 2412.5586 | 12234.2639 | 11690.0000 |
-| 7 | [3080.2, 4292.3) | 523 | 68 | 3635.7349 | 3590.6432 | 15357.5435 | 14650.3394 |
-| 8 | [4292.3, 6669.7) | 500 | 65 | 5292.7728 | 5141.9361 | 24393.0413 | 21568.3500 |
-| 9 | [6669.7, 10279.3) | 500 | 54 | 8441.1003 | 8494.4286 | 34537.7064 | 30294.4029 |
-| 10 | [10279.3, 47874.3] | 501 | 43 | 15551.1837 | 13696.7368 | 50214.7706 | 46720.0000 |
+| 3 | [435.58, 787.92) | 500 | 45 | 591.7877 | 581.5755 | 4338.7913 | 3860.0000 |
+| 4 | [787.92, 1176.2) | 492 | 59 | 987.7493 | 968.5864 | 6162.1584 | 5919.3469 |
+| 5 | [1176.2, 1913.4) | 508 | 58 | 1548.4946 | 1564.5766 | 8252.0221 | 7992.4517 |
+| 6 | [1913.4, 3080.9) | 500 | 61 | 2514.7668 | 2438.6249 | 12143.2880 | 11685.0000 |
+| 7 | [3080.9, 4301.1) | 500 | 69 | 3681.0203 | 3675.4137 | 15762.8427 | 14944.8718 |
+| 8 | [4301.1, 6669.7) | 497 | 64 | 5311.9351 | 5166.3367 | 24423.5429 | 21555.8097 |
+| 9 | [6669.7, 10301.5) | 503 | 54 | 8459.4235 | 8517.1898 | 34564.6716 | 30310.0000 |
+| 10 | [10301.5, 47874.3] | 501 | 44 | 15598.1853 | 13773.1992 | 50353.3495 | 46678.1515 |
 
 ### Distribution Charts
 
 ```text
 Predictor Distribution (Civilian Government Expenditure Per Capita (PPP))
-[7.604, 3996.5) | ############################## 3415
-[3996.5, 7985.4) | ####### 780
-[7985.4, 11974.3) | #### 460
-[11974.3, 15963.2) | ## 179
-[15963.2, 19952.0) | # 83
+[7.604, 3996.5) | ############################## 3410
+[3996.5, 7985.4) | ####### 781
+[7985.4, 11974.3) | #### 458
+[11974.3, 15963.2) | ## 184
+[15963.2, 19952.0) | # 84
 [19952.0, 23940.9) | # 50
 [23940.9, 27929.8) | # 21
 [27929.8, 31918.7) | # 2
@@ -157,11 +157,11 @@ Predictor Distribution (Civilian Government Expenditure Per Capita (PPP))
 
 ```text
 Outcome Distribution (After-Tax Median Income (PPP), welfare-aligned)
-[280.00, 10724.2) | ############################## 2692
-[10724.2, 21168.3) | ########### 985
-[21168.3, 31612.5) | ###### 541
-[31612.5, 42056.7) | #### 319
-[42056.7, 52500.8) | ### 227
+[280.00, 10724.2) | ############################## 2684
+[10724.2, 21168.3) | ########### 982
+[21168.3, 31612.5) | ###### 545
+[31612.5, 42056.7) | #### 321
+[42056.7, 52500.8) | ### 232
 [52500.8, 62945.0) | # 112
 [62945.0, 73389.2) | # 70
 [73389.2, 83833.3) | # 29

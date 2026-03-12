@@ -130,11 +130,19 @@ export default function PoliciesPage() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <Link href={`/policies/${slugify(policy.name)}`} className="text-black font-black truncate hover:text-pink-500 transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
                     <GradeBadge grade={policy.evidenceGrade} />
+                    <RecommendationBadge type={policy.recommendationType} />
                     <span className="text-xs text-black/50 px-2 py-0.5 bg-gray-100 border border-black font-bold">
                       {policy.category.replace(/_/g, " ")}
                     </span>
                   </div>
                   <p className="text-sm text-black/60 line-clamp-1 font-medium">{policy.description}</p>
+                  {(policy.currentStatus || policy.recommendedTarget) && (
+                    <p className="text-xs text-black/40 font-bold mt-1">
+                      {policy.currentStatus && <>Current: {policy.currentStatus}</>}
+                      {policy.currentStatus && policy.recommendedTarget && " → "}
+                      {policy.recommendedTarget && <>Target: {policy.recommendedTarget}</>}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0">
                   <Metric label="Welfare" value={`+${policy.welfareScore}`} />
@@ -238,6 +246,20 @@ function GradeBadge({ grade }: { grade: string }) {
   return (
     <span className={`badge-${grade} text-xs font-black px-2 py-0.5`}>
       Grade {grade}
+    </span>
+  );
+}
+
+function RecommendationBadge({ type }: { type: string }) {
+  const styles: Record<string, string> = {
+    enact: "bg-emerald-300",
+    modify: "bg-yellow-300",
+    repeal: "bg-red-300",
+    maintain: "bg-gray-200",
+  };
+  return (
+    <span className={`text-xs font-black px-2 py-0.5 border border-black ${styles[type] ?? "bg-gray-200"}`}>
+      {type}
     </span>
   );
 }

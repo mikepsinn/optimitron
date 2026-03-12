@@ -158,6 +158,18 @@ function deterministicReview(input: AnalysisPublicationReviewInput): AnalysisPub
       recommendedEdits.push('Do not publish top recommendations with insufficient data as actionable advice.');
     }
 
+    if (pair.qualityTier === 'insufficient') {
+      status = worstStatus(status, 'fail');
+      shouldPublish = false;
+      findings.push({
+        severity: 'high',
+        title: 'Top recommendation is still tagged as not-enough-data quality',
+        evidence: [`${pair.predictorLabel} -> ${pair.outcomeLabel}`, `qualityTier=${pair.qualityTier}`],
+      });
+      flaggedPairIds.add(pair.pairId);
+      recommendedEdits.push('Do not surface top recommendations whose quality tier is still not-enough-data.');
+    }
+
     if (pair.reliabilityBand === 'low') {
       status = worstStatus(status, 'warn');
       findings.push({

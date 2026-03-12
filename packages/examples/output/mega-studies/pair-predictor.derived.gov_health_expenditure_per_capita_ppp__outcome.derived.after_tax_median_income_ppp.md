@@ -7,13 +7,13 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.5776
+- Temporal profile score: 0.5779
 - Included subjects: 229
 - Skipped subjects: 0
 - Total aligned pairs: 7585
 - Signal grade: A (very strong)
 - Data status: enough data
-- Confidence score: 0.495 (lower confidence)
+- Confidence score: 0.497 (lower confidence)
 - Signal tag: early signal
 - Direction: neutral
 - Uncertainty score: 0.1095 (lower is better)
@@ -28,16 +28,16 @@
 
 ## Key Numeric Takeaways
 
-- Recommended Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 2501.0 international $/person (data-backed level).
-- Best level directly seen in the grouped data: 2501.0 international $/person.
+- Recommended Government Health Expenditure Per Capita (PPP) level for higher After-Tax Median Income (PPP): 2504.9 international $/person (data-backed level).
+- Best level directly seen in the grouped data: 2504.9 international $/person.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 2304.3 international $/person; model-optimal minus observed-anchor difference is -1618.6 (-70.2%).
-- Backup level check (middle 10-90% of data) suggests 1369.4 international $/person.
-- The math-only guess and backup level differ by 99.7%, which means extreme values may matter a lot.
+- Best observed bin anchor (median/mean) is 2315.1 international $/person; model-optimal minus observed-anchor difference is -1627.4 (-70.3%).
+- Backup level check (middle 10-90% of data) suggests 1372.0 international $/person.
+- The math-only guess and backup level differ by 99.5%, which means extreme values may matter a lot.
 - Minimum effective level (first consistently positive zone): 17.753 international $/person.
 - Diminishing returns likely begin near 33.100 international $/person.
 - Could not find a stable flat zone (no_plateau_zone_detected).
-- Highest observed mean After-Tax Median Income (PPP) appears when Government Health Expenditure Per Capita (PPP) is in [1635.2, 5977.9] (mean outcome 46324.6).
+- Highest observed mean After-Tax Median Income (PPP) appears when Government Health Expenditure Per Capita (PPP) is in [1639.8, 5977.9] (mean outcome 46276.9).
 - Direction signal is neutral; use caution and rely on the data-backed level.
 
 ## Decision Summary
@@ -50,15 +50,15 @@
 
 - No strong directional pattern is detected between Government Health Expenditure Per Capita (PPP) and After-Tax Median Income (PPP).
 - The estimate uses 229 subjects and 7585 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [1635.2, 5977.9] (mean outcome 46324.6).
+- Best observed mean outcome appears in predictor bin [1639.8, 5977.9] (mean outcome 46276.9).
 - A minimum effective predictor level appears near 17.753 international $/person in the binned response curve.
-- Confidence score is 0.495 (lower confidence); data status is enough data.
+- Confidence score is 0.497 (lower confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
-- Top temporal profiles are close (score delta 0.0000); temporal assumptions are not yet robust.
-- Robustness check: trimmed-range optimal differs by 99.7% from raw optimal; tail observations materially influence target.
+- Top temporal profiles are close (score delta 0.0004); temporal assumptions are not yet robust.
+- Robustness check: trimmed-range optimal differs by 99.5% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
 
@@ -67,39 +67,39 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | 0.8133 |
-| Reverse correlation | 0.8292 |
-| Direction score (forward - reverse) | -0.0159 |
-| Effect size (% change from baseline) | 100.9860 |
+| Reverse correlation | 0.8295 |
+| Direction score (forward - reverse) | -0.0162 |
+| Effect size (% change from baseline) | 101.2009 |
 | Significance score | 0.8905 |
 | Weighted PIS | 0.7625 |
-| Value linked with higher outcome | 685.6825 |
-| Value linked with lower outcome | 391.3345 |
-| Math-only best daily value | 685.6825 |
-| Recommended level (reader-facing) | 2501.0 international $/person (data-backed level) |
-| Math-only guess (technical) | 685.68 international $/person |
-| Data-backed level | 2501.0 international $/person |
-| Data-backed range | [1831.4, 5977.9] |
-| Backup level (middle-data check) | 1403.7 international $/person |
+| Value linked with higher outcome | 687.6606 |
+| Value linked with lower outcome | 391.5440 |
+| Math-only best daily value | 687.6606 |
+| Recommended level (reader-facing) | 2504.9 international $/person (data-backed level) |
+| Math-only guess (technical) | 687.66 international $/person |
+| Data-backed level | 2504.9 international $/person |
+| Data-backed range | [1837.7, 5977.9] |
+| Backup level (middle-data check) | 1420.7 international $/person |
 | Math-only guess inside seen data range? | yes |
 | Math-only guess inside data-backed range? | no |
 | Seen data range | [0.2591, 8503.2455] |
 | Math-only guess outside seen data? | no (within observed range) |
 | Math-only guess outside best observed bucket? | yes |
-| Best observed range | [1635.2, 5977.9] |
-| Best observed range (middle-data check) | [1002.6, 1630.3] |
-| Best observed outcome average | 46324.6 |
-| Best observed outcome average (middle-data check) | 36980.6 |
-| Backup level (bucket median) | 1369.4 international $/person |
-| Math-only vs backup difference | 683.73 (+99.7%) |
+| Best observed range | [1639.8, 5977.9] |
+| Best observed range (middle-data check) | [1003.3, 1639.5] |
+| Best observed outcome average | 46276.9 |
+| Best observed outcome average (middle-data check) | 37112.6 |
+| Backup level (bucket median) | 1372.0 international $/person |
+| Math-only vs backup difference | 684.32 (+99.5%) |
 | Middle-data share kept | 80.0% (6067/7585) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.4946 (lower confidence) |
+| Confidence score | 0.4969 (lower confidence) |
 | Reliability support component | 1.0000 |
 | Reliability significance component | 0.8905 |
-| Reliability directional component | 0.1063 |
-| Reliability temporal-stability component | 0.0015 |
-| Reliability robustness component | 0.0032 |
+| Reliability directional component | 0.1081 |
+| Reliability temporal-stability component | 0.0122 |
+| Reliability robustness component | 0.0054 |
 | Signal tag | early signal |
 
 ### Response-Curve Diagnostics
@@ -107,19 +107,19 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | 17.753 international $/person (z=17.66) |
-| Point where gains start slowing | 33.100 international $/person (ratio=0.323) |
+| Point where gains start slowing | 33.100 international $/person (ratio=0.322) |
 | Flat zone range | Not identified (no_plateau_zone_detected) |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | -1815.3 (-72.6%) |
+| Math-only guess minus data-backed level | -1817.3 (-72.5%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 3 | 5 | interpolation | 0.5776 | 0.0000 | 229 | 7585 |
-| Runner-up | predictor_default | 0 | 3 | interpolation | 0.5776 | 0.0000 | 229 | 7585 |
-| Runner-up | predictor_default | 0 | 2 | interpolation | 0.5755 | 0.0021 | 229 | 7585 |
-| Runner-up | predictor_default | 0 | 5 | interpolation | 0.5717 | 0.0059 | 229 | 7585 |
+| Selected | predictor_default | 3 | 5 | interpolation | 0.5779 | 0.0000 | 229 | 7585 |
+| Runner-up | predictor_default | 0 | 3 | interpolation | 0.5775 | 0.0004 | 229 | 7585 |
+| Runner-up | predictor_default | 0 | 2 | interpolation | 0.5754 | 0.0024 | 229 | 7585 |
+| Runner-up | predictor_default | 0 | 5 | interpolation | 0.5716 | 0.0063 | 229 | 7585 |
 
 ### Binned Pattern Table
 
@@ -128,24 +128,24 @@
 | 1 | [0.25914, 15.955) | 759 | 34 | 8.7585 | 8.6572 | 1374.8372 | 1170.0000 |
 | 2 | [15.955, 31.472) | 758 | 53 | 21.5214 | 20.1254 | 2487.2113 | 2205.0000 |
 | 3 | [31.472, 66.791) | 755 | 59 | 45.0000 | 41.9080 | 3966.5172 | 3356.5380 |
-| 4 | [66.791, 114.38) | 762 | 59 | 89.5003 | 89.2877 | 4619.6878 | 4199.9152 |
-| 5 | [114.38, 195.43) | 758 | 69 | 153.1366 | 154.3724 | 7688.5031 | 7115.0000 |
-| 6 | [195.43, 284.60) | 746 | 80 | 234.3313 | 232.8851 | 9423.1872 | 8925.0000 |
-| 7 | [284.60, 461.72) | 771 | 87 | 361.1506 | 362.3802 | 12916.4208 | 12284.9373 |
-| 8 | [461.72, 867.40) | 759 | 73 | 612.1788 | 577.9993 | 19425.6553 | 17940.0000 |
-| 9 | [867.40, 1635.2) | 758 | 58 | 1246.5472 | 1245.4132 | 35381.7842 | 28360.0000 |
-| 10 | [1635.2, 5977.9] | 759 | 42 | 2596.5810 | 2304.3273 | 46324.6418 | 41990.0000 |
+| 4 | [66.791, 114.38) | 762 | 59 | 89.4992 | 89.2877 | 4619.9119 | 4199.9152 |
+| 5 | [114.38, 195.83) | 758 | 69 | 153.2012 | 154.3724 | 7693.6020 | 7125.0000 |
+| 6 | [195.83, 284.60) | 746 | 80 | 234.5006 | 233.0067 | 9440.0382 | 8930.0000 |
+| 7 | [284.60, 463.04) | 771 | 87 | 361.9150 | 362.5836 | 13019.5898 | 12310.0000 |
+| 8 | [463.04, 871.32) | 756 | 73 | 615.8674 | 578.0396 | 19441.7623 | 17995.0000 |
+| 9 | [871.32, 1639.8) | 761 | 59 | 1249.2997 | 1268.1838 | 35536.4886 | 28610.0000 |
+| 10 | [1639.8, 5977.9] | 759 | 42 | 2598.0347 | 2315.1032 | 46276.8750 | 42010.0000 |
 
 ### Distribution Charts
 
 ```text
 Predictor Distribution (Government Health Expenditure Per Capita (PPP))
-[0.25914, 498.39) | ############################## 5432
-[498.39, 996.52) | #### 782
+[0.25914, 498.39) | ############################## 5426
+[498.39, 996.52) | #### 786
 [996.52, 1494.7) | ### 474
-[1494.7, 1992.8) | ## 356
-[1992.8, 2490.9) | # 221
-[2490.9, 2989.1) | # 121
+[1494.7, 1992.8) | ## 357
+[1992.8, 2490.9) | # 220
+[2490.9, 2989.1) | # 123
 [2989.1, 3487.2) | # 77
 [3487.2, 3985.3) | # 55
 [3985.3, 4483.5) | # 29
@@ -156,10 +156,10 @@ Predictor Distribution (Government Health Expenditure Per Capita (PPP))
 
 ```text
 Outcome Distribution (After-Tax Median Income (PPP), welfare-aligned)
-[280.00, 14356.7) | ############################## 5180
-[14356.7, 28433.3) | ####### 1273
-[28433.3, 42510.0) | ### 552
-[42510.0, 56586.7) | ## 285
+[280.00, 14356.7) | ############################## 5169
+[14356.7, 28433.3) | ####### 1276
+[28433.3, 42510.0) | ### 558
+[42510.0, 56586.7) | ## 287
 [56586.7, 70663.3) | # 142
 [70663.3, 84740.0) | # 79
 [84740.0, 98816.7) | # 43

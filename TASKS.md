@@ -132,3 +132,12 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 55 | ERC-8004 on-chain identity | blocked | `packages/agent/src/erc8004.ts` includes identity/reputation registry helpers, but live Sepolia registration and reputation writes still require a funded wallet, deployed registry addresses, and a real transaction. |
 | 56 | Agent manifest and logging | done | `packages/agent/agent.json` and `packages/agent/agent_log.json` exist and are validated in tests; manifest placeholders remain until Task 55 is executed live. |
 | 57 | Agent safety guardrails | done | Guardrails implemented in `packages/agent`: input validation, response validation, insufficient-data aborts, retry/proceed logic, API-call caps, runtime caps, and no financial transaction execution. |
+
+## P11: Policy Evaluation & Review Pipeline
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 58 | Three-layer policy evaluation pipeline | done | `evaluatePolicy()`, `runNaturalExperiment()`, `buildPanelAnalysis()`, `aggregateEffectSizes()` in `packages/opg/src/policy-evaluation.ts`. `PolicyEvaluation` and `NaturalExperimentDef` types. Portugal natural experiment dataset in `packages/data/src/datasets/natural-experiments.ts`. |
+| 59 | LLM review evaluation with Gemini | done | Gemini sanity-checks policy evaluation outputs for reasonableness. Scored 94/100 on golden path test. Tests in `packages/agent/src/__tests__/analysis-publication-review.test.ts` and `packages/examples/src/analysis-explorer/__tests__/publication-review.test.ts`. |
+| 60 | Mega study publication review | done | Review workflow for mega study outputs. `packages/examples/src/analysis-explorer/publication-review.ts` + `mega-study-generator.ts` updates. Output in `packages/examples/output/mega-studies/mega-study-publication-review.json`. |
+| 61 | Gemini model update + `askGemini()` helper | done | Updated from `gemini-2.5-flash` to `gemini-3-flash-preview`. Added `askGemini()` convenience helper to `@optomitron/agent` (`packages/agent/src/analysis-publication-review.ts`). |

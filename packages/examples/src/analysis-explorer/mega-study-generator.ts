@@ -448,9 +448,12 @@ export interface MegaStudyApiPair {
     totalPairs: number;
     extrapolative: boolean;
     outsideBestObservedBin: boolean;
+    modelExtrapolative: boolean;
+    modelOutsideBestObservedBin: boolean;
     dataSufficiencyStatus: DataSufficiencyStatus;
     reliabilityScore: number;
     reliabilityBand: ReliabilityBand;
+    publicationEligible: boolean;
   };
   links: {
     markdownFile: string;
@@ -470,6 +473,7 @@ export interface MegaStudyApiOutcomeRow {
   reliabilityBand: ReliabilityBand;
   pairId: string;
   pairMarkdownFile: string;
+  publicationEligible: boolean;
 }
 
 export interface MegaStudyApiOutcome {
@@ -1485,7 +1489,7 @@ function buildPairNarrativeSummary(pair: PairStudyArtifact): string[] {
 }
 
 function bestObservedBinRow(pair: PairStudyArtifact): PairBinSummaryRow | null {
-  return bestObservedBinFromRows(pair.predictorBinRows);
+  return bestObservedBinFromRows(pair.predictorBinRows ?? []);
 }
 
 function isOutsideBestObservedBin(pair: PairStudyArtifact, value: number | null): boolean {
@@ -1543,6 +1547,18 @@ export function resolveActionableOptimalValue(pair: PairStudyArtifact): number |
 
 function isRecommendationEligible(pair: PairStudyArtifact): boolean {
   return pair.dataSufficiency?.status !== "insufficient_data";
+}
+
+export function isPublicationEligibleRecommendation(pair: PairStudyArtifact): boolean {
+  if (!isRecommendationEligible(pair)) return false;
+  if (pair.qualityTier === "insufficient") return false;
+  if (pair.reliability.band === "low") return false;
+  const decisionLevel = resolveDecisionOptimalValue(pair);
+  if (resolveDecisionTargetSource(pair) === "unavailable") return false;
+  if (isOutsideObservedRange(decisionLevel, pair.predictorObservedMin, pair.predictorObservedMax)) {
+    return false;
+  }
+  return !isOutsideBestObservedBin(pair, decisionLevel);
 }
 
 function resolvePredictorObjectiveProfile(predictorId: string): PredictorObjectiveProfile {
@@ -2183,6 +2199,7 @@ export function buildMegaStudyApiPayload(
   const pairByKey = new Map(pairStudies.map((pair) => [`${pair.predictorId}::${pair.outcomeId}`, pair]));
   const pairs: MegaStudyApiPair[] = pairStudies.map((pair) => {
     const modelBest = resolveActionableOptimalValue(pair);
+    const decisionBest = resolveDecisionOptimalValue(pair);
     return {
       pairId: pair.pairId,
       predictor: {
@@ -2196,7 +2213,7 @@ export function buildMegaStudyApiPayload(
         unit: pair.outcomeUnit,
       },
       targets: {
-        decisionBest: resolveDecisionOptimalValue(pair),
+        decisionBest,
         decisionTargetSource: resolveDecisionTargetSource(pair),
         modelBest,
         observedSupportBest: pair.responseCurve.supportConstrainedTargets.supportConstrainedOptimalValue,
@@ -2215,14 +2232,21 @@ export function buildMegaStudyApiPayload(
         includedSubjects: pair.includedSubjects,
         totalPairs: pair.totalPairs,
         extrapolative: isOutsideObservedRange(
+          decisionBest,
+          pair.predictorObservedMin,
+          pair.predictorObservedMax,
+        ),
+        outsideBestObservedBin: isOutsideBestObservedBin(pair, decisionBest),
+        modelExtrapolative: isOutsideObservedRange(
           modelBest,
           pair.predictorObservedMin,
           pair.predictorObservedMax,
         ),
-        outsideBestObservedBin: isOutsideBestObservedBin(pair, modelBest),
+        modelOutsideBestObservedBin: isOutsideBestObservedBin(pair, modelBest),
         dataSufficiencyStatus: pair.dataSufficiency.status,
         reliabilityScore: pair.reliability.overallScore,
         reliabilityBand: pair.reliability.band,
+        publicationEligible: isPublicationEligibleRecommendation(pair),
       },
       links: {
         markdownFile: toPairFileName(pair),
@@ -2255,6 +2279,7 @@ export function buildMegaStudyApiPayload(
             reliabilityBand: pair.reliability.band,
             pairId: pair.pairId,
             pairMarkdownFile: toPairFileName(pair),
+            publicationEligible: isPublicationEligibleRecommendation(pair),
           } satisfies MegaStudyApiOutcomeRow;
         })
         .filter((row): row is MegaStudyApiOutcomeRow => row != null),
@@ -2594,24 +2619,35 @@ function buildOutcomeMarkdown(
     }))
     .filter((entry): entry is ActionableOutcomeRow => entry.pair != null)
     .filter((entry) => isRecommendationEligible(entry.pair));
+  const publishableRankedRows = rankedRows.filter((entry) =>
+    isPublicationEligibleRecommendation(entry.pair)
+  );
   if (displayRows.length > 0) {
-    const lead = rankedRows[0]?.row ?? displayRows[0]!.row;
+    const lead = publishableRankedRows[0]?.row ?? rankedRows[0]?.row ?? displayRows[0]!.row;
     const topPair = pairByKey.get(`${lead.predictorId}::${lead.outcomeId}`);
-    const topDecisionLevel = topPair
+    const hasLeadRecommendation = publishableRankedRows.length > 0 && topPair != null;
+    const topDecisionLevel = hasLeadRecommendation && topPair
       ? formatValueWithUnit(resolveDecisionOptimalValue(topPair), topPair.predictorUnit)
       : "N/A";
-    const topDecisionSource = topPair ? resolveDecisionTargetSource(topPair) : "unavailable";
+    const topDecisionSource = hasLeadRecommendation && topPair ? resolveDecisionTargetSource(topPair) : "unavailable";
     const topBestLevel = topPair
       ? formatValueWithUnit(resolveActionableOptimalValue(topPair), topPair.predictorUnit)
       : "N/A";
-    const topBestPppValue = topPair ? resolveDecisionBestPerCapitaPpp(topPair) : null;
+    const topBestPppValue = hasLeadRecommendation && topPair ? resolveDecisionBestPerCapitaPpp(topPair) : null;
     const topBestPpp = topBestPppValue == null
       ? "N/A"
       : `${formatCompactNumber(topBestPppValue)} international $/person`;
     lines.push("");
     lines.push("## Lead Takeaway");
     lines.push("");
-    lines.push(`- Lead predictor for ${outcomeLabel}: ${lead.predictorLabel ?? lead.predictorId}.`);
+    lines.push(
+      publishableRankedRows.length === 0
+        ? `- Highest-ranked diagnostic row for ${outcomeLabel}: ${lead.predictorLabel ?? lead.predictorId}.`
+        : `- Lead predictor for ${outcomeLabel}: ${lead.predictorLabel ?? lead.predictorId}.`,
+    );
+    if (!hasLeadRecommendation) {
+      lines.push("- Publication gate: no row currently clears the publishable recommendation threshold for this outcome.");
+    }
     lines.push(`- Recommended level: ${topDecisionLevel} (${toSimpleDecisionTargetSourceLabel(topDecisionSource)}).`);
     if (topBestPpp !== "N/A") {
       lines.push(`- Approximate PPP per-person amount for that recommended level: ${topBestPpp}.`);
@@ -2643,6 +2679,11 @@ function buildOutcomeMarkdown(
     lines.push(
       `- Average confidence score across predictors: ${meanReliabilityScore.toFixed(3)}.`,
     );
+    if (publishableRankedRows.length < rankedRows.length) {
+      lines.push(
+        `- Publication gate: ${publishableRankedRows.length}/${rankedRows.length} ranked rows are currently safe to surface as top recommendations.`,
+      );
+    }
   }
   if (sufficientOutcomePairs.length === 0 && insufficientOutcomePairs.length > 0) {
     lines.push("");
@@ -2693,10 +2734,10 @@ function buildOutcomeMarkdown(
   lines.push("");
   lines.push("## Top Recommended Levels");
   lines.push("");
-  lines.push("- These are the top recommended levels from the highest-scoring predictor/outcome relationships.");
+  lines.push("- These are the top recommended levels from ranked relationships that pass the publication gate.");
   lines.push("- Use them as practical guidance, not guaranteed cause-and-effect rules.");
   lines.push("");
-  const topRecommendations = [...rankedRows]
+  const topRecommendations = [...publishableRankedRows]
     .sort((left, right) => left.row.rank - right.row.rank)
     .slice(0, 5);
   let recommendationRank = 1;
@@ -2726,9 +2767,11 @@ function buildOutcomeMarkdown(
   }
   if (topRecommendations.length === 0) {
     lines.push(
-      sufficientOutcomePairs.length === 0 && insufficientOutcomePairs.length > 0
-        ? "1. No recommendations available because all pairs were gated as insufficient data."
-        : "1. No recommendations available because no pair studies were generated.",
+      rankedRows.length > 0
+        ? "1. No publishable recommendation yet because the current ranked rows remain lower-confidence or exploratory."
+        : sufficientOutcomePairs.length === 0 && insufficientOutcomePairs.length > 0
+          ? "1. No recommendations available because all pairs were gated as insufficient data."
+          : "1. No recommendations available because no pair studies were generated.",
     );
   }
   lines.push("");
@@ -2868,14 +2911,16 @@ function buildOutcomeMarkdown(
     }
   }
   if (displayRows.length > 0) {
-    const top = displayRows[0]!;
+    const top = publishableRankedRows[0] ?? rankedRows[0] ?? displayRows[0]!;
     const pair = top.pair;
     const direction = pair?.direction ?? "neutral";
     lines.push("");
     lines.push("## Plain-Language Summary");
     lines.push("");
     lines.push(
-      `- Highest-ranked row is ${top.row.predictorLabel ?? top.row.predictorId} with direction ${direction}.`,
+      publishableRankedRows.length === 0
+        ? `- No row currently clears the publication gate; the highest-ranked diagnostic row is ${top.row.predictorLabel ?? top.row.predictorId} with direction ${direction}.`
+        : `- Highest-ranked publishable row is ${top.row.predictorLabel ?? top.row.predictorId} with direction ${direction}.`,
     );
     lines.push(
       `- This outcome page includes ${displayRows.length} predictor studies; ${significantCount} pass the stats threshold.`,

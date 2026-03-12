@@ -7,16 +7,16 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.6345
+- Temporal profile score: 0.6301
 - Included subjects: 123
 - Skipped subjects: 0
 - Total aligned pairs: 4011
 - Signal grade: C (moderate)
 - Data status: enough data
-- Confidence score: 0.664 (medium confidence)
+- Confidence score: 0.658 (medium confidence)
 - Signal tag: early signal
 - Direction: positive
-- Uncertainty score: 0.3286 (lower is better)
+- Uncertainty score: 0.3376 (lower is better)
 
 ## Quick Meanings
 
@@ -28,16 +28,16 @@
 
 ## Key Numeric Takeaways
 
-- Recommended R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 15.455 international $/person (data-backed level).
-- Best level directly seen in the grouped data: 15.455 international $/person.
+- Recommended R&D Expenditure Per Capita (PPP) level for higher After-Tax Median Income Growth (YoY %): 15.443 international $/person (data-backed level).
+- Best level directly seen in the grouped data: 15.443 international $/person.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 3.140 international $/person; model-optimal minus observed-anchor difference is 279.67 (+8906.3%).
+- Best observed bin anchor (median/mean) is 3.140 international $/person; model-optimal minus observed-anchor difference is 281.21 (+8955.2%).
 - Backup level check (middle 10-90% of data) suggests 18.124 international $/person.
 - The math-only guess and backup level differ by 93.6%, which means extreme values may matter a lot.
 - Could not find a clear minimum useful level (no_consistent_effective_dose_detected).
-- Diminishing returns likely begin near 15.455 international $/person.
-- Saturation/plateau zone starts around 93.634 international $/person and extends through 1333.4 international $/person.
-- Highest observed mean After-Tax Median Income Growth (YoY %) appears when R&D Expenditure Per Capita (PPP) is in [0.19723, 4.911) (mean outcome 5.327).
+- Diminishing returns likely begin near 15.443 international $/person.
+- Saturation/plateau zone starts around 94.082 international $/person and extends through 1333.4 international $/person.
+- Highest observed mean After-Tax Median Income Growth (YoY %) appears when R&D Expenditure Per Capita (PPP) is in [0.19723, 4.911) (mean outcome 5.341).
 - Direction is positive in this analysis, so increasing this predictor is associated with better outcomes.
 
 ## Decision Summary
@@ -50,14 +50,14 @@
 
 - Higher R&D Expenditure Per Capita (PPP) tends to align with better After-Tax Median Income Growth (YoY %).
 - The estimate uses 123 subjects and 4011 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [0.19723, 4.911) (mean outcome 5.327).
-- Confidence score is 0.664 (medium confidence); data status is enough data.
+- Best observed mean outcome appears in predictor bin [0.19723, 4.911) (mean outcome 5.341).
+- Confidence score is 0.658 (medium confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak significance score (<0.70).
-- Top temporal profiles are close (score delta 0.0201); temporal assumptions are not yet robust.
+- Top temporal profiles are close (score delta 0.0197); temporal assumptions are not yet robust.
 - Robustness check: trimmed-range optimal differs by 93.6% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
@@ -66,18 +66,18 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | 0.1030 |
-| Reverse correlation | -0.0465 |
-| Direction score (forward - reverse) | 0.1495 |
-| Effect size (% change from baseline) | 18.4336 |
-| Significance score | 0.6714 |
-| Weighted PIS | 0.1516 |
-| Value linked with higher outcome | 282.8121 |
-| Value linked with lower outcome | 271.9464 |
-| Math-only best daily value | 282.8121 |
-| Recommended level (reader-facing) | 15.455 international $/person (data-backed level) |
-| Math-only guess (technical) | 282.81 international $/person |
-| Data-backed level | 15.455 international $/person |
+| Forward correlation | 0.0927 |
+| Reverse correlation | -0.0556 |
+| Direction score (forward - reverse) | 0.1483 |
+| Effect size (% change from baseline) | 17.0052 |
+| Significance score | 0.6624 |
+| Weighted PIS | 0.1439 |
+| Value linked with higher outcome | 284.3493 |
+| Value linked with lower outcome | 274.3898 |
+| Math-only best daily value | 284.3493 |
+| Recommended level (reader-facing) | 15.443 international $/person (data-backed level) |
+| Math-only guess (technical) | 284.35 international $/person |
+| Data-backed level | 15.443 international $/person |
 | Data-backed range | [10.830, 22.540) |
 | Backup level (middle-data check) | 14.138 international $/person |
 | Math-only guess inside seen data range? | yes |
@@ -86,20 +86,20 @@
 | Math-only guess outside seen data? | no (within observed range) |
 | Math-only guess outside best observed bucket? | yes |
 | Best observed range | [0.19723, 4.911) |
-| Best observed range (middle-data check) | [12.117, 23.120) |
-| Best observed outcome average | 5.327 |
-| Best observed outcome average (middle-data check) | 5.629 |
+| Best observed range (middle-data check) | [12.117, 23.282) |
+| Best observed outcome average | 5.341 |
+| Best observed outcome average (middle-data check) | 5.669 |
 | Backup level (bucket median) | 18.124 international $/person |
-| Math-only vs backup difference | -264.69 (-93.6%) |
+| Math-only vs backup difference | -266.23 (-93.6%) |
 | Middle-data share kept | 80.0% (3209/4011) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.6643 (medium confidence) |
+| Confidence score | 0.6583 (medium confidence) |
 | Reliability support component | 0.7442 |
-| Reliability significance component | 0.6714 |
-| Reliability directional component | 0.9967 |
-| Reliability temporal-stability component | 0.6693 |
-| Reliability robustness component | 0.0712 |
+| Reliability significance component | 0.6624 |
+| Reliability directional component | 0.9886 |
+| Reliability temporal-stability component | 0.6556 |
+| Reliability robustness component | 0.0708 |
 | Signal tag | early signal |
 
 ### Response-Curve Diagnostics
@@ -107,41 +107,41 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | Not identified (no_consistent_effective_dose_detected) |
-| Point where gains start slowing | 15.455 international $/person (ratio=-0.371) |
-| Flat zone range | [76.100, 2948.5] |
+| Point where gains start slowing | 15.443 international $/person (ratio=-0.374) |
+| Flat zone range | [77.029, 2948.5] |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | 267.36 (+1729.9%) |
+| Math-only guess minus data-backed level | 268.91 (+1741.3%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 1 | 2 | interpolation | 0.6345 | 0.0000 | 123 | 4011 |
-| Runner-up | predictor_default | 2 | 2 | interpolation | 0.6144 | 0.0201 | 123 | 4011 |
-| Runner-up | predictor_default | 2 | 3 | interpolation | 0.6045 | 0.0300 | 123 | 4011 |
-| Runner-up | predictor_default | 2 | 5 | interpolation | 0.6006 | 0.0339 | 123 | 4011 |
+| Selected | predictor_default | 1 | 2 | interpolation | 0.6301 | 0.0000 | 123 | 4011 |
+| Runner-up | predictor_default | 2 | 2 | interpolation | 0.6105 | 0.0197 | 123 | 4011 |
+| Runner-up | predictor_default | 2 | 3 | interpolation | 0.6024 | 0.0277 | 123 | 4011 |
+| Runner-up | predictor_default | 2 | 5 | interpolation | 0.5973 | 0.0329 | 123 | 4011 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
-| 1 | [0.19723, 4.911) | 401 | 18 | 2.8467 | 3.1402 | 5.3267 | 5.0445 |
+| 1 | [0.19723, 4.911) | 401 | 18 | 2.8495 | 3.1402 | 5.3414 | 5.0691 |
 | 2 | [4.911, 14.231) | 401 | 34 | 9.5944 | 9.4844 | 5.1562 | 5.5375 |
-| 3 | [14.231, 28.491) | 401 | 45 | 21.7821 | 22.5401 | 5.0783 | 5.2556 |
-| 4 | [28.491, 47.930) | 401 | 54 | 37.8205 | 37.9368 | 4.9059 | 5.8468 |
-| 5 | [47.930, 76.100) | 401 | 53 | 59.1117 | 58.4383 | 5.2599 | 5.2652 |
-| 6 | [76.100, 129.82) | 401 | 53 | 98.6215 | 96.4321 | 5.2457 | 5.5459 |
-| 7 | [129.82, 261.40) | 401 | 50 | 186.2917 | 181.2867 | 5.0168 | 5.1784 |
-| 8 | [261.40, 482.00) | 401 | 51 | 373.5176 | 373.5937 | 4.9778 | 4.7493 |
-| 9 | [482.00, 879.05) | 401 | 48 | 654.1199 | 646.5337 | 4.2484 | 4.0711 |
-| 10 | [879.05, 2948.5] | 402 | 30 | 1333.6187 | 1249.0209 | 4.4293 | 4.0044 |
+| 3 | [14.231, 28.593) | 401 | 45 | 21.8231 | 22.5401 | 5.1023 | 5.2556 |
+| 4 | [28.593, 47.979) | 396 | 53 | 37.7628 | 37.8837 | 4.9023 | 5.9512 |
+| 5 | [47.979, 77.029) | 406 | 53 | 59.2836 | 58.5554 | 5.3006 | 5.4010 |
+| 6 | [77.029, 130.68) | 401 | 53 | 99.2386 | 97.0200 | 5.2849 | 5.4958 |
+| 7 | [130.68, 261.72) | 401 | 50 | 188.0262 | 184.2178 | 5.0060 | 5.2723 |
+| 8 | [261.72, 482.00) | 401 | 50 | 374.1383 | 373.5937 | 4.8877 | 4.7417 |
+| 9 | [482.00, 879.28) | 401 | 48 | 654.2920 | 646.9555 | 4.2334 | 4.0711 |
+| 10 | [879.28, 2948.5] | 402 | 30 | 1333.6945 | 1249.0209 | 4.4274 | 4.0023 |
 
 ### Distribution Charts
 
 ```text
 Predictor Distribution (R&D Expenditure Per Capita (PPP))
-[0.19723, 245.89) | ############################## 2766
-[245.89, 491.57) | ##### 477
+[0.19723, 245.89) | ############################## 2759
+[245.89, 491.57) | ##### 484
 [491.57, 737.26) | ### 245
 [737.26, 982.95) | ## 190
 [982.95, 1228.6) | # 120
@@ -161,9 +161,9 @@ Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 [-31.654, -22.785) | # 7
 [-22.785, -13.916) | # 29
 [-13.916, -5.047) | ## 137
-[-5.047, 3.822) | ################## 1342
-[3.822, 12.691) | ############################## 2246
-[12.691, 21.560) | ### 207
+[-5.047, 3.822) | ################## 1334
+[3.822, 12.691) | ############################## 2256
+[12.691, 21.560) | ### 205
 [21.560, 30.430) | # 25
 [30.430, 39.299) | # 7
 [39.299, 48.168) | # 2
@@ -177,8 +177,8 @@ Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 | OMN | 0.0063 | -0.7112 | -144.977 | 33 |
 | TJK | 0.1768 | 0.6872 | 288.500 | 33 |
 | PAK | -0.1524 | -0.6426 | -8.998 | 33 |
+| OSS | 0.1646 | 0.5959 | -2.379 | 33 |
+| MNE | 0.0346 | -0.5956 | 92.993 | 26 |
 | ISL | 0.2453 | 0.5840 | 16.582 | 33 |
-| LMY | 0.1697 | 0.5810 | -4.778 | 33 |
-| OSS | 0.2131 | 0.5807 | 2.108 | 33 |
-| MIC | 0.1816 | 0.5805 | -3.803 | 33 |
-| UGA | -0.0591 | -0.5751 | -22.755 | 33 |
+| LMY | 0.1686 | 0.5805 | -4.842 | 33 |
+| MIC | 0.1806 | 0.5800 | -3.867 | 33 |

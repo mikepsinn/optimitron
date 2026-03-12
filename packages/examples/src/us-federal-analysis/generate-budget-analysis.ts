@@ -812,6 +812,22 @@ interface WebsiteBudgetData {
     gapPercent: number;
     marginalReturn: number;
     recommendation: 'increase' | 'decrease' | 'maintain';
+    recommendedAction: string;
+    evidenceGrade: string;
+    evidenceDescription: string;
+    investmentStatus: string;
+    priorityScore: number;
+    elasticity?: number;
+    diminishingReturns?: {
+      modelType: string;
+      r2: number;
+      n: number;
+      lowFit: boolean;
+      smallSample: boolean;
+    };
+    welfareEffect: { incomeEffect: number; healthEffect: number };
+    oslCiLow?: number;
+    oslCiHigh?: number;
     outcomeMetrics: { name: string; value: number; trend: string }[];
   }[];
   topRecommendations: string[];
@@ -1410,18 +1426,51 @@ export function generateBudgetAnalysisArtifacts(
   const websiteData: WebsiteBudgetData = {
     jurisdiction: 'United States of America',
     totalBudget: TOTAL_BUDGET_USD,
-    categories: categoryAnalyses.map((ca, idx) => ({
-      name: ca.category.name,
-      currentSpending: ca.category.currentSpendingUsd,
-      optimalSpending: ca.oslEstimate.oslUsd,
-      gap: ca.gap.gapUsd,
-      gapPercent: ca.gap.gapPct,
-      marginalReturn: ca.marginalReturn ?? 0,
-      recommendation: mapRecommendation(ca.gap.recommendedAction),
-      outcomeMetrics: CATEGORIES[
-        CATEGORIES.findIndex(c => c.id === ca.category.id)
-      ]?.outcomeMetrics ?? [],
-    })),
+    categories: categoryAnalyses.map((ca, idx) => {
+      const gapPct = ca.gap.gapPct;
+      const investStatus = gapPct > 10 ? 'Under-invested' : gapPct < -10 ? 'Over-invested' : 'Near optimal';
+      const gradeDescriptions: Record<string, string> = {
+        A: 'Strong causal evidence',
+        B: 'Probable causal link',
+        C: 'Moderate evidence',
+        D: 'Weak evidence',
+        F: 'Insufficient evidence',
+      };
+      const drModel = ca.diminishingReturnsModel;
+      return {
+        name: ca.category.name,
+        currentSpending: ca.category.currentSpendingUsd,
+        optimalSpending: ca.oslEstimate.oslUsd,
+        gap: ca.gap.gapUsd,
+        gapPercent: ca.gap.gapPct,
+        marginalReturn: ca.marginalReturn ?? 0,
+        recommendation: mapRecommendation(ca.gap.recommendedAction),
+        recommendedAction: ca.gap.recommendedAction,
+        evidenceGrade: ca.oslEstimate.evidenceGrade,
+        evidenceDescription: gradeDescriptions[ca.oslEstimate.evidenceGrade] ?? 'Unknown',
+        investmentStatus: investStatus,
+        priorityScore: ca.gap.priorityScore,
+        elasticity: ca.elasticity,
+        diminishingReturns: drModel
+          ? {
+              modelType: drModel.type === 'log' ? 'Log-linear' : 'Saturation (Michaelis-Menten)',
+              r2: drModel.r2,
+              n: drModel.n,
+              lowFit: drModel.r2 < 0.3,
+              smallSample: drModel.n <= 10,
+            }
+          : undefined,
+        welfareEffect: {
+          incomeEffect: ca.gap.welfareEffect.incomeEffect,
+          healthEffect: ca.gap.welfareEffect.healthEffect,
+        },
+        oslCiLow: ca.oslEstimate.ciLow,
+        oslCiHigh: ca.oslEstimate.ciHigh,
+        outcomeMetrics: CATEGORIES[
+          CATEGORIES.findIndex(c => c.id === ca.category.id)
+        ]?.outcomeMetrics ?? [],
+      };
+    }),
     topRecommendations: categoryAnalyses
       .filter(
         ca =>

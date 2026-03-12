@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2026-02-14",
-  "generatedAt": "2026-02-14T19:50:43.204Z",
+  "generatedAt": "2026-03-12T19:45:23.068Z",
   "outcomes": [
     {
       "outcomeId": "outcome.derived.after_tax_median_income_ppp",
@@ -11,141 +11,151 @@
           "rank": 1,
           "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
           "predictorLabel": "R&D Expenditure Per Capita (PPP)",
-          "score": 0.7666006496986186,
-          "confidence": 0.8083320855146248,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.7666589236929319,
+          "confidence": 0.8083138920557886,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5019530883688801,
+          "reliabilityScore": 0.5024486241170292,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": false
         },
         {
           "rank": 2,
           "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
           "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.7585910463815483,
-          "confidence": 0.809030941620175,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.7583860366509038,
+          "confidence": 0.8088958408533019,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7320887242301921,
+          "reliabilityScore": 0.7298439921196764,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 3,
           "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
           "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.7230683652165267,
-          "confidence": 0.8084224924519022,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.7246903564072412,
+          "confidence": 0.8084199644240039,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5469743938473239,
+          "reliabilityScore": 0.5474504651648789,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": false
         },
         {
           "rank": 4,
           "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
           "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.718423092221301,
-          "confidence": 0.8089262046501915,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.7198127320618751,
+          "confidence": 0.8089315283184406,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5664918876751854,
+          "reliabilityScore": 0.5664294365233835,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 5,
           "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
           "predictorLabel": "R&D Share of Government Spending",
-          "score": 0.7136845340021641,
-          "confidence": 0.8118242742342265,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.7140546560028426,
+          "confidence": 0.8117360788849394,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6377132139573233,
+          "reliabilityScore": 0.6363355859563403,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 6,
           "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
           "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.6983803172891467,
-          "confidence": 0.8045383192774548,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.6986490703048917,
+          "confidence": 0.8045654781667996,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5521813344541234,
+          "reliabilityScore": 0.5526925862667088,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 7,
           "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
           "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.6832109418142335,
-          "confidence": 0.8031045639252538,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.68361152494615,
+          "confidence": 0.803146730348976,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.4945728939872721,
+          "reliabilityScore": 0.4968798691168057,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": false
         },
         {
           "rank": 8,
           "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
           "predictorLabel": "Military Share of Government Spending",
-          "score": 0.645093700136664,
-          "confidence": 0.8173081489683246,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.6487539134550553,
+          "confidence": 0.8176533319345016,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7514421514093435,
+          "reliabilityScore": 0.7557146836382177,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 9,
           "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
           "predictorLabel": "Education Share of Government Spending",
-          "score": 0.5882933829691132,
-          "confidence": 0.8065616914948236,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.5898639312640679,
+          "confidence": 0.8065878033141911,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.825840501718849,
+          "reliabilityScore": 0.8264161095094902,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         },
         {
           "rank": 10,
           "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
           "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.5447825589615435,
-          "confidence": 0.8026813316731611,
-          "adjustedPValue": 0.13430553866840766,
+          "score": 0.5460681262804765,
+          "confidence": 0.8026885357046891,
+          "adjustedPValue": 0.13430175500850694,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6616052048648164,
+          "reliabilityScore": 0.6631113564532147,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md",
+          "publicationEligible": true
         }
       ]
     },
@@ -158,141 +168,151 @@
           "rank": 1,
           "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
           "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.8432945257698841,
-          "confidence": 0.7264782271674507,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.8393985375628668,
+          "confidence": 0.723494351429486,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.632861023350668,
+          "reliabilityScore": 0.6320603577829835,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 2,
           "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
           "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.7527474791523441,
-          "confidence": 0.7185272129222002,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.754516963166548,
+          "confidence": 0.7172031120096861,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7201981070221783,
+          "reliabilityScore": 0.6903091631877449,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 3,
           "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
           "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.6792807577621156,
-          "confidence": 0.733025994201735,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.6752130166581649,
+          "confidence": 0.7303466440172564,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.8823529390202156,
+          "reliabilityScore": 0.8755623101377561,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 4,
           "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
           "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.6458624766922758,
-          "confidence": 0.7310176303287317,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.6305198767679054,
+          "confidence": 0.730581438119627,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5704276883615661,
+          "reliabilityScore": 0.5539603916013922,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 5,
           "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
           "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.5818997758749618,
-          "confidence": 0.727411266450424,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.573779606190413,
+          "confidence": 0.7243160072180537,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5903277510519777,
+          "reliabilityScore": 0.5851916578917395,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 6,
-          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
-          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
-          "score": 0.5564025957142178,
-          "confidence": 0.724141003091961,
-          "adjustedPValue": 0.3285752107676947,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.5506000116256262,
+          "confidence": 0.7253055934855032,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6643435935589027,
-          "reliabilityBand": "moderate",
-          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "reliabilityScore": 0.7553517030978776,
+          "reliabilityBand": "high",
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 7,
-          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
-          "predictorLabel": "Military Share of Government Spending",
-          "score": 0.5480203390531353,
-          "confidence": 0.7256253456094299,
-          "adjustedPValue": 0.3285752107676947,
+          "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
+          "predictorLabel": "R&D Expenditure Per Capita (PPP)",
+          "score": 0.5505173640533685,
+          "confidence": 0.7199063302148179,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7596173874489534,
-          "reliabilityBand": "high",
-          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "reliabilityScore": 0.6583459088616606,
+          "reliabilityBand": "moderate",
+          "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 8,
           "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
           "predictorLabel": "Education Share of Government Spending",
-          "score": 0.4932176026276717,
-          "confidence": 0.726313440094665,
-          "adjustedPValue": 0.3285752107676947,
+          "score": 0.4991436368054138,
+          "confidence": 0.7261190536654982,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7304094548620595,
+          "reliabilityScore": 0.7380858721562628,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 9,
-          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
-          "predictorLabel": "R&D Share of Government Spending",
-          "score": 0.46528080840018343,
-          "confidence": 0.7299595379849982,
-          "adjustedPValue": 0.3285752107676947,
+          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
+          "predictorLabel": "Military Expenditure Per Capita (PPP)",
+          "score": 0.44354211246073433,
+          "confidence": 0.7249821446946851,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5781164054847849,
+          "reliabilityScore": 0.6736930973101154,
           "reliabilityBand": "moderate",
-          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 10,
-          "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
-          "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.44515546822617463,
-          "confidence": 0.7272072757753718,
-          "adjustedPValue": 0.3285752107676947,
+          "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
+          "predictorLabel": "R&D Share of Government Spending",
+          "score": 0.4305942810930257,
+          "confidence": 0.7266345815152543,
+          "adjustedPValue": 0.3375778127146736,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6753149398656637,
+          "reliabilityScore": 0.5594442029625848,
           "reliabilityBand": "moderate",
-          "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
+          "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md",
+          "publicationEligible": false
         }
       ]
     },
@@ -303,115 +323,123 @@
       "rows": [
         {
           "rank": 1,
-          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
-          "predictorLabel": "Military Share of Government Spending",
-          "score": 0.6581712381705721,
-          "confidence": 0.49482562332087243,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
+          "predictorLabel": "Government Health Share of Government Spending",
+          "score": 0.7810406266060617,
+          "confidence": 0.4921464888593312,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.4737363780687287,
+          "reliabilityScore": 0.5397042614833857,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 2,
-          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
-          "predictorLabel": "Education Share of Government Spending",
-          "score": 0.6399044133387636,
-          "confidence": 0.4962042198200357,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
+          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
+          "score": 0.5148359694033943,
+          "confidence": 0.5173808742712102,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.5077069707239692,
+          "reliabilityScore": 0.4764477100347169,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 3,
-          "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
-          "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.5855949906791209,
-          "confidence": 0.49581622904319006,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
+          "predictorLabel": "Education Share of Government Spending",
+          "score": 0.5069706497654544,
+          "confidence": 0.5028030809168416,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.36714158102597266,
+          "reliabilityScore": 0.4747942687085138,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 4,
-          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
-          "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.5317322629942225,
-          "confidence": 0.4925924131590162,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
+          "predictorLabel": "Education Expenditure Per Capita (PPP)",
+          "score": 0.43590869102385876,
+          "confidence": 0.5270416871598075,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.40724588142833446,
+          "reliabilityScore": 0.4734736897451707,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 5,
-          "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
-          "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.4165636428689864,
-          "confidence": 0.5204174599701856,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Expenditure Per Capita (PPP)",
+          "score": 0.42587845704993643,
+          "confidence": 0.49094799169507797,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6626507286466543,
-          "reliabilityBand": "moderate",
-          "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "reliabilityScore": 0.34951184373374183,
+          "reliabilityBand": "low",
+          "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 6,
-          "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
-          "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.3676527467763118,
-          "confidence": 0.4944757231574747,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
+          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
+          "score": 0.40958912649920354,
+          "confidence": 0.5129923958621213,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.4134605985574229,
+          "reliabilityScore": 0.4183504250506689,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 7,
-          "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
-          "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.2524592220182354,
-          "confidence": 0.5065908305608201,
-          "adjustedPValue": 0.8151369056751466,
+          "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
+          "predictorLabel": "Military Share of Government Spending",
+          "score": 0.37927909203388843,
+          "confidence": 0.48156603481197485,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.35054292200246073,
+          "reliabilityScore": 0.4004600004787915,
           "reliabilityBand": "low",
-          "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 8,
           "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
           "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.25155715826295943,
-          "confidence": 0.496300865530966,
-          "adjustedPValue": 0.8151369056751466,
+          "score": 0.26782496006295586,
+          "confidence": 0.511299681221141,
+          "adjustedPValue": 0.8334067788574823,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.32402899976258476,
+          "reliabilityScore": 0.39836800932238475,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md",
+          "publicationEligible": false
         }
       ]
     },
@@ -430,77 +458,82 @@
           "rank": 1,
           "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
           "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.7610328324903206,
-          "confidence": 0.7304785624396312,
+          "score": 0.7610414112940223,
+          "confidence": 0.7305290766143699,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7353314915170104,
+          "reliabilityScore": 0.7355028345428986,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 2,
           "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
           "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.6263562707980517,
-          "confidence": 0.7152968253823316,
+          "score": 0.626081197114654,
+          "confidence": 0.7154079185125627,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7572948348062005,
+          "reliabilityScore": 0.7570073212309669,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 3,
           "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
           "predictorLabel": "R&D Expenditure Per Capita (PPP)",
-          "score": 0.5704794203638066,
-          "confidence": 0.7218855180144067,
+          "score": 0.5705994975070199,
+          "confidence": 0.7219507278960334,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6550713804799951,
+          "reliabilityScore": 0.6550844734898859,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 4,
           "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
           "predictorLabel": "R&D Share of Government Spending",
-          "score": 0.4781790807947602,
+          "score": 0.4779587650573959,
           "confidence": 0.6864165005238058,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6162806268752412,
+          "reliabilityScore": 0.6162806268752405,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 5,
           "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
           "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.4281578439835709,
-          "confidence": 0.6878832008327281,
+          "score": 0.4279192959863591,
+          "confidence": 0.6878832008327279,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "insufficient",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7504363559133496,
+          "reliabilityScore": 0.7504363559133449,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 6,
           "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
           "predictorLabel": "Education Share of Government Spending",
-          "score": 0.37641979450458873,
+          "score": 0.3762139980188951,
           "confidence": 0.668673214947367,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "insufficient",
@@ -508,63 +541,68 @@
           "reliabilityScore": 0.6509985433080118,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 7,
           "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
           "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.35767440925771027,
-          "confidence": 0.7198124022354591,
+          "score": 0.358010302487905,
+          "confidence": 0.719881933823409,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6012114505233596,
+          "reliabilityScore": 0.6017944262582656,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 8,
           "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
           "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.3347574971926262,
-          "confidence": 0.7195640582955448,
+          "score": 0.33517044182350947,
+          "confidence": 0.7196398929483171,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.4636157060965462,
+          "reliabilityScore": 0.4636597282336866,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         },
         {
           "rank": 9,
           "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
           "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.32885090227075636,
-          "confidence": 0.7233705773969855,
+          "score": 0.3291130428793999,
+          "confidence": 0.7234399939483505,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7033829201894226,
+          "reliabilityScore": 0.7034735343903761,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": true
         },
         {
           "rank": 10,
           "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
           "predictorLabel": "Military Share of Government Spending",
-          "score": 0.27194025406440964,
-          "confidence": 0.6839322054277177,
+          "score": 0.27189045333094075,
+          "confidence": 0.6839322054277176,
           "adjustedPValue": 0.4540878601207279,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.49279436342883387,
+          "reliabilityScore": 0.49279436342883615,
           "reliabilityBand": "low",
           "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct",
-          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md",
+          "publicationEligible": false
         }
       ]
     },
@@ -577,141 +615,151 @@
           "rank": 1,
           "predictorId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp",
           "predictorLabel": "Civilian Government Expenditure Per Capita (PPP)",
-          "score": 0.9352619538972053,
-          "confidence": 0.8490674651046217,
+          "score": 0.9206798122805075,
+          "confidence": 0.8470745840587681,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7000896172958521,
+          "reliabilityScore": 0.7005866993759298,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 2,
           "predictorId": "predictor.derived.gov_health_expenditure_per_capita_ppp",
           "predictorLabel": "Government Health Expenditure Per Capita (PPP)",
-          "score": 0.9248478452110046,
-          "confidence": 0.8455700100993769,
+          "score": 0.9135291612984174,
+          "confidence": 0.8439617526733133,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6920337141225221,
+          "reliabilityScore": 0.6913268342598017,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 3,
           "predictorId": "predictor.derived.gov_expenditure_per_capita_ppp",
           "predictorLabel": "Government Expenditure Per Capita (PPP)",
-          "score": 0.896145734721007,
-          "confidence": 0.8449422526877527,
+          "score": 0.8909059489109686,
+          "confidence": 0.8440616466175336,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6901841707211263,
+          "reliabilityScore": 0.6927312672890311,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 4,
           "predictorId": "predictor.derived.education_expenditure_per_capita_ppp",
           "predictorLabel": "Education Expenditure Per Capita (PPP)",
-          "score": 0.8490463414891922,
-          "confidence": 0.8403209267570078,
+          "score": 0.8508883133063775,
+          "confidence": 0.8403501856741615,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6942746496492821,
+          "reliabilityScore": 0.6877964381436464,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 5,
           "predictorId": "predictor.derived.rd_expenditure_per_capita_ppp",
           "predictorLabel": "R&D Expenditure Per Capita (PPP)",
-          "score": 0.8041449703235718,
-          "confidence": 0.8491798442168014,
+          "score": 0.8038636574901216,
+          "confidence": 0.8487847806548305,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.6576694222787411,
+          "reliabilityScore": 0.6577751907029581,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 6,
           "predictorId": "predictor.derived.military_expenditure_per_capita_ppp",
           "predictorLabel": "Military Expenditure Per Capita (PPP)",
-          "score": 0.7582459987877018,
-          "confidence": 0.8411457674968151,
+          "score": 0.7358938171315971,
+          "confidence": 0.8389524556698671,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7990652562908692,
+          "reliabilityScore": 0.7664833527645366,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 7,
           "predictorId": "predictor.derived.military_share_of_gov_expenditure_pct",
           "predictorLabel": "Military Share of Government Spending",
-          "score": 0.5620393494293371,
-          "confidence": 0.8187275370455948,
+          "score": 0.565076537062166,
+          "confidence": 0.8190422669724015,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.642035218422833,
+          "reliabilityScore": 0.6476371615167498,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": false
         },
         {
           "rank": 8,
           "predictorId": "predictor.derived.rd_share_of_gov_expenditure_pct",
           "predictorLabel": "R&D Share of Government Spending",
-          "score": 0.5133118434546872,
-          "confidence": 0.8291058268375361,
+          "score": 0.5012245188799399,
+          "confidence": 0.8274858889630022,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7491719570750919,
+          "reliabilityScore": 0.7347725093014571,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 9,
           "predictorId": "predictor.derived.gov_health_share_of_gov_expenditure_pct",
           "predictorLabel": "Government Health Share of Government Spending",
-          "score": 0.495605644210953,
-          "confidence": 0.8293136447693448,
+          "score": 0.49262532505068013,
+          "confidence": 0.8287975480436149,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.7361046771008214,
+          "reliabilityScore": 0.7316166787208653,
           "reliabilityBand": "moderate",
           "pairId": "predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         },
         {
           "rank": 10,
           "predictorId": "predictor.derived.education_share_of_gov_expenditure_pct",
           "predictorLabel": "Education Share of Government Spending",
-          "score": 0.4460868296270555,
-          "confidence": 0.8257426011244794,
+          "score": 0.45967678353346386,
+          "confidence": 0.8272005679263942,
           "adjustedPValue": 0.08933105584774392,
           "qualityTier": "exploratory",
           "dataSufficiencyStatus": "sufficient",
-          "reliabilityScore": 0.8131067431462319,
+          "reliabilityScore": 0.8238213135705031,
           "reliabilityBand": "high",
           "pairId": "predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years",
-          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
+          "pairMarkdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md",
+          "publicationEligible": true
         }
       ]
     }
@@ -732,27 +780,30 @@
       "targets": {
         "decisionBest": 16474.401950757296,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 5074.0132330414835,
+        "modelBest": 5096.175806760906,
         "observedSupportBest": 16474.401950757296,
-        "robustBest": 10258.334968532403,
+        "robustBest": 10299.774760563845,
         "minimumEffectiveDose": 302.7637741318975,
         "diminishingReturnsKnee": 596.0418374503303,
-        "saturationStart": 4795.997675937109,
+        "saturationStart": 4866.045714105325,
         "saturationEnd": 16474.401950757296
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.932532389394651,
-        "directionalScore": -0.1695413062148848,
+        "significance": 0.9325410759696954,
+        "directionalScore": -0.1636445393549573,
         "direction": "positive",
         "includedSubjects": 147,
         "totalPairs": 9702,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6901841707211263,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6927312672890311,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -771,29 +822,32 @@
         "unit": "international $"
       },
       "targets": {
-        "decisionBest": 15206.725896604927,
+        "decisionBest": 15275.516519659286,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 5310.506447119201,
-        "observedSupportBest": 15206.725896604927,
-        "robustBest": 8890.067720832798,
+        "modelBest": 5329.568893624291,
+        "observedSupportBest": 15275.516519659286,
+        "robustBest": 8919.578447748847,
         "minimumEffectiveDose": 314.41801231709104,
-        "diminishingReturnsKnee": 6357.640001762503,
+        "diminishingReturnsKnee": 6445.612337908655,
         "saturationStart": null,
         "saturationEnd": null
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8998053996023001,
-        "directionalScore": -0.026969784276235913,
+        "significance": 0.8998053996022171,
+        "directionalScore": -0.027005275398145717,
         "direction": "neutral",
         "includedSubjects": 175,
         "totalPairs": 5915,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5664918876751854,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5664294365233835,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -814,27 +868,30 @@
       "targets": {
         "decisionBest": 931.160712878179,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 4144.518950951735,
+        "modelBest": 4122.338319718222,
         "observedSupportBest": 931.160712878179,
         "robustBest": 974.4380441091262,
         "minimumEffectiveDose": 1837.8309497302985,
         "diminishingReturnsKnee": 931.160712878179,
-        "saturationStart": 4886.207823788924,
-        "saturationEnd": 16263.185865748103
+        "saturationStart": 2604.160533757345,
+        "saturationEnd": 16281.648115718614
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6950399493610454,
-        "directionalScore": 0.09783321655773534,
+        "significance": 0.6893986917343149,
+        "directionalScore": 0.09412192788879144,
         "direction": "positive",
         "includedSubjects": 175,
         "totalPairs": 5740,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5903277510519777,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5851916578917395,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -853,29 +910,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 138.2908691635944,
+        "decisionBest": 132.7925394233256,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 4531.514449642186,
-        "observedSupportBest": 138.2908691635944,
-        "robustBest": 716.18738242096,
+        "modelBest": 4331.532041245223,
+        "observedSupportBest": 132.7925394233256,
+        "robustBest": 688.0066326723522,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 8422.467354368748,
-        "saturationStart": 8422.467354368748,
-        "saturationEnd": 17825.649291861948
+        "diminishingReturnsKnee": 5032.919889818944,
+        "saturationStart": 11462.619579544076,
+        "saturationEnd": 16893.925499419067
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.1848630943248534,
-        "directionalScore": 0.06359555605057121,
+        "significance": 0.18155784647679493,
+        "directionalScore": -0.06254848983515832,
         "direction": "negative",
         "includedSubjects": 147,
         "totalPairs": 3087,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.40724588142833446,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.34951184373374183,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -894,29 +954,32 @@
         "unit": "% of relevant age group"
       },
       "targets": {
-        "decisionBest": 10199.168427194507,
+        "decisionBest": 10221.633586031367,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3790.8578757334963,
-        "observedSupportBest": 10199.168427194507,
-        "robustBest": 9450.744873634054,
+        "modelBest": 3805.8799534989184,
+        "observedSupportBest": 10221.633586031367,
+        "robustBest": 9486.396703420854,
         "minimumEffectiveDose": 315.8545420652955,
         "diminishingReturnsKnee": 547.9203415959931,
-        "saturationStart": 1747.7626240374334,
-        "saturationEnd": 15616.128443435038
+        "saturationStart": 1752.492379101824,
+        "saturationEnd": 15651.444762770625
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6750603344830445,
-        "directionalScore": -0.10738073940174267,
+        "significance": 0.6750743118740413,
+        "directionalScore": -0.10780235114841794,
         "direction": "positive",
         "includedSubjects": 159,
         "totalPairs": 3577,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6012114505233596,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6017944262582656,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -949,15 +1012,18 @@
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
         "significance": 0.6829129182823631,
-        "directionalScore": -0.09220603528754841,
+        "directionalScore": -0.09220603528754852,
         "direction": "neutral",
         "includedSubjects": 40,
         "totalPairs": 839,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.39149818506743234,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.3914981850674328,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -978,27 +1044,30 @@
       "targets": {
         "decisionBest": 2778.5300611919433,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 679.7403274328908,
+        "modelBest": 681.8493030219395,
         "observedSupportBest": 2778.5300611919433,
-        "robustBest": 1454.6913408800192,
+        "robustBest": 1459.2719612458795,
         "minimumEffectiveDose": 16.91749627217534,
         "diminishingReturnsKnee": 28.924066255880167,
-        "saturationStart": 352.5638266054168,
+        "saturationStart": 352.60057384049276,
         "saturationEnd": 2778.5300611919433
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9256527440297928,
-        "directionalScore": -0.1936814847865294,
+        "significance": 0.9257326360610934,
+        "directionalScore": -0.18272009251886942,
         "direction": "positive",
         "includedSubjects": 179,
         "totalPairs": 11814,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6920337141225221,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6913268342598017,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -1017,11 +1086,11 @@
         "unit": "international $"
       },
       "targets": {
-        "decisionBest": 2500.9923299726115,
+        "decisionBest": 2504.939046672167,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 685.6824968247726,
-        "observedSupportBest": 2500.9923299726115,
-        "robustBest": 1369.4087656870583,
+        "modelBest": 687.6606154448253,
+        "observedSupportBest": 2504.939046672167,
+        "robustBest": 1371.9837454173896,
         "minimumEffectiveDose": 17.752671928483295,
         "diminishingReturnsKnee": 33.100225984971175,
         "saturationStart": null,
@@ -1030,16 +1099,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8904800844358548,
-        "directionalScore": -0.015937705507547927,
+        "significance": 0.8904800631131744,
+        "directionalScore": -0.016218878967069972,
         "direction": "neutral",
         "includedSubjects": 229,
         "totalPairs": 7585,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.4945728939872721,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4968798691168057,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -1058,29 +1130,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 361.4905688498849,
+        "decisionBest": 67.44900153569746,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 584.8956119857105,
-        "observedSupportBest": 361.4905688498849,
+        "modelBest": 583.1258504398395,
+        "observedSupportBest": 67.44900153569746,
         "robustBest": 37.036312606292086,
         "minimumEffectiveDose": 35.833740180203165,
         "diminishingReturnsKnee": 35.833740180203165,
-        "saturationStart": 903.599346592656,
-        "saturationEnd": 2793.6143150618664
+        "saturationStart": 917.1373492722707,
+        "saturationEnd": 2790.854133309128
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6820250664649419,
-        "directionalScore": 0.1304605143842432,
+        "significance": 0.676284041889141,
+        "directionalScore": 0.1277910831918805,
         "direction": "positive",
         "includedSubjects": 229,
         "totalPairs": 7356,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.632861023350668,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6320603577829835,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -1099,29 +1174,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 6.994714249998632,
+        "decisionBest": 7.0118451290089965,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 506.8239210074603,
-        "observedSupportBest": 6.994714249998632,
-        "robustBest": 17.661783144062955,
+        "modelBest": 528.1171241351559,
+        "observedSupportBest": 7.0118451290089965,
+        "robustBest": 17.752671928483295,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 869.5308771472996,
-        "saturationStart": 527.9538325783763,
-        "saturationEnd": 2719.8656162477546
+        "diminishingReturnsKnee": 901.998942572654,
+        "saturationStart": 901.998942572654,
+        "saturationEnd": 2737.76003721938
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.22015292438556958,
-        "directionalScore": -0.05032456881405396,
+        "significance": 0.2181028237467948,
+        "directionalScore": -0.099151972739053,
         "direction": "negative",
         "includedSubjects": 179,
         "totalPairs": 3759,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.35054292200246073,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4183504250506689,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -1142,27 +1220,30 @@
       "targets": {
         "decisionBest": 1214.46490523825,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 421.5027623472932,
+        "modelBest": 422.6428012818856,
         "observedSupportBest": 1214.46490523825,
-        "robustBest": 571.1250398392178,
+        "robustBest": 572.6725761033047,
         "minimumEffectiveDose": 17.845098184101097,
-        "diminishingReturnsKnee": 29.5741145244522,
-        "saturationStart": 279.22702671625575,
+        "diminishingReturnsKnee": 29.57411452445222,
+        "saturationStart": 280.240134985212,
         "saturationEnd": 2353.1751687279852
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.698408645653624,
-        "directionalScore": -0.1080118479787497,
+        "significance": 0.6984783009492994,
+        "directionalScore": -0.10813964325664845,
         "direction": "positive",
         "includedSubjects": 205,
         "totalPairs": 4678,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7353314915170104,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7355028345428986,
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -1183,7 +1264,7 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 164.43439443898228,
+        "modelBest": 164.43455216200144,
         "observedSupportBest": 36.19356785408666,
         "robustBest": 36.19356785408666,
         "minimumEffectiveDose": null,
@@ -1195,15 +1276,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
         "significance": 0.6408586575237772,
-        "directionalScore": -0.07980819068811773,
+        "directionalScore": -0.07980803386632716,
         "direction": "neutral",
         "includedSubjects": 55,
         "totalPairs": 1140,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.41663288053234093,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4166324587540124,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -1224,27 +1308,30 @@
       "targets": {
         "decisionBest": 2912.5765092317843,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 842.6295320755622,
+        "modelBest": 845.4475434227573,
         "observedSupportBest": 2912.5765092317843,
-        "robustBest": 1635.6693338719087,
+        "robustBest": 1632.06200634769,
         "minimumEffectiveDose": 52.78977056492365,
         "diminishingReturnsKnee": 92.58143123998713,
-        "saturationStart": 857.1416510452982,
+        "saturationStart": 864.6455481393104,
         "saturationEnd": 2912.5765092317843
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9354319624085063,
-        "directionalScore": -0.12952530256426853,
+        "significance": 0.9354163601362712,
+        "directionalScore": -0.1297671688286661,
         "direction": "positive",
         "includedSubjects": 165,
         "totalPairs": 10890,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6942746496492821,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6877964381436464,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -1265,9 +1352,9 @@
       "targets": {
         "decisionBest": 2563.460420376317,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 822.4183364987309,
+        "modelBest": 824.4792432875819,
         "observedSupportBest": 2563.460420376317,
-        "robustBest": 1376.482941637984,
+        "robustBest": 1378.140967785021,
         "minimumEffectiveDose": 49.62762917031354,
         "diminishingReturnsKnee": 88.36097087346053,
         "saturationStart": null,
@@ -1276,16 +1363,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8929833079774739,
-        "directionalScore": 0.01799940398330435,
+        "significance": 0.8929833079774925,
+        "directionalScore": 0.018180463245546338,
         "direction": "neutral",
         "includedSubjects": 216,
         "totalPairs": 7140,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5521813344541234,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5526925862667088,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -1304,29 +1394,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 413.1369045670073,
+        "decisionBest": 414.3001608754988,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 685.8690632968735,
-        "observedSupportBest": 413.1369045670073,
-        "robustBest": 544.1294590843905,
+        "modelBest": 684.0280512031111,
+        "observedSupportBest": 414.3001608754988,
+        "robustBest": 409.51317888122605,
         "minimumEffectiveDose": 55.09990411509136,
         "diminishingReturnsKnee": 100.73983058199534,
-        "saturationStart": 229.24609090302735,
-        "saturationEnd": 2736.7183330264097
+        "saturationStart": 553.8265602395442,
+        "saturationEnd": 2750.0925882155134
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6852977259833971,
-        "directionalScore": -0.06764877432866326,
+        "significance": 0.6821244757873053,
+        "directionalScore": -0.06834118550017826,
         "direction": "positive",
         "includedSubjects": 216,
         "totalPairs": 6924,
         "extrapolative": false,
         "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7201981070221783,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6903091631877449,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -1345,29 +1438,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 30.522107217156698,
+        "decisionBest": 21.58368987163395,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 744.310481579491,
-        "observedSupportBest": 30.522107217156698,
-        "robustBest": 62.366798031364944,
+        "modelBest": 592.0953711743624,
+        "observedSupportBest": 21.58368987163395,
+        "robustBest": 49.502465939297785,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 1237.3857791517803,
-        "saturationStart": 1899.3320723575155,
-        "saturationEnd": 2949.8259759877424
+        "diminishingReturnsKnee": 513.6489413956679,
+        "saturationStart": null,
+        "saturationEnd": null
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.18495155393776969,
-        "directionalScore": 0.0753446853703961,
+        "significance": 0.24190521699888953,
+        "directionalScore": -0.12159012286925476,
         "direction": "negative",
         "includedSubjects": 165,
         "totalPairs": 3465,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.4134605985574229,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4734736897451707,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -1388,27 +1484,30 @@
       "targets": {
         "decisionBest": 2362.1090957786246,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 467.88108162899977,
+        "modelBest": 468.7168701138852,
         "observedSupportBest": 2362.1090957786246,
-        "robustBest": 785.617024424033,
+        "robustBest": 788.0034575909785,
         "minimumEffectiveDose": 43.781995211241984,
         "diminishingReturnsKnee": 69.66770434512964,
-        "saturationStart": 308.73932584519196,
+        "saturationStart": 308.9442029005728,
         "saturationEnd": 2362.1090957786246
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.691864474405446,
-        "directionalScore": -0.08027766522072055,
+        "significance": 0.6919116378909429,
+        "directionalScore": -0.08059895177332956,
         "direction": "positive",
         "includedSubjects": 198,
         "totalPairs": 4555,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7033829201894226,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7034735343903761,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -1429,7 +1528,7 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 257.00831457784517,
+        "modelBest": 257.0085569562742,
         "observedSupportBest": 44.502469549466376,
         "robustBest": 46.66917679197872,
         "minimumEffectiveDose": null,
@@ -1441,15 +1540,18 @@
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
         "significance": 0.6287738505544733,
-        "directionalScore": -0.16691937890806557,
+        "directionalScore": -0.16691845507154074,
         "direction": "negative",
         "includedSubjects": 49,
         "totalPairs": 983,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.47737397555225947,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.47737633079354364,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -1470,27 +1572,30 @@
       "targets": {
         "decisionBest": 1356.1209677066443,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 349.09923591137033,
+        "modelBest": 349.40437975423924,
         "observedSupportBest": 1356.1209677066443,
         "robustBest": 805.1995455080635,
         "minimumEffectiveDose": 5.1676568200334945,
         "diminishingReturnsKnee": 12.003039449787941,
-        "saturationStart": 290.73854595183064,
+        "saturationStart": 540.458520302593,
         "saturationEnd": 1356.1209677066443
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9333492664782161,
-        "directionalScore": -0.20602009006552474,
+        "significance": 0.933152786819374,
+        "directionalScore": -0.2039757719622459,
         "direction": "positive",
         "includedSubjects": 95,
         "totalPairs": 6270,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6576694222787411,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6577751907029581,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -1511,27 +1616,30 @@
       "targets": {
         "decisionBest": 1186.3039688501674,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 338.54661820129905,
+        "modelBest": 338.92502589250586,
         "observedSupportBest": 1186.3039688501674,
         "robustBest": 597.3167065414776,
         "minimumEffectiveDose": 6.555741066355172,
         "diminishingReturnsKnee": 13.98629509643993,
-        "saturationStart": 231.0328087005506,
+        "saturationStart": 231.5201098730402,
         "saturationEnd": 1186.3039688501674
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8975386174104556,
-        "directionalScore": 0.03244407509096476,
+        "significance": 0.8975386174104565,
+        "directionalScore": 0.03232278536538875,
         "direction": "positive",
         "includedSubjects": 123,
         "totalPairs": 4134,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5019530883688801,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.5024486241170292,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -1550,29 +1658,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 15.454950918081924,
+        "decisionBest": 15.443071088902862,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 282.81214898989316,
-        "observedSupportBest": 15.454950918081924,
+        "modelBest": 284.3493220741938,
+        "observedSupportBest": 15.443071088902862,
         "robustBest": 18.124177839854102,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 15.454950918081924,
-        "saturationStart": 93.63435336868629,
+        "diminishingReturnsKnee": 15.443071088902862,
+        "saturationStart": 94.08219188549681,
         "saturationEnd": 1333.373600965229
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6714247892323053,
-        "directionalScore": 0.14951237699236822,
+        "significance": 0.6624221872853264,
+        "directionalScore": 0.14828903031901652,
         "direction": "positive",
         "includedSubjects": 123,
         "totalPairs": 4011,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6643435935589027,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6583459088616606,
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -1593,27 +1704,30 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 228.02517682363407,
-        "observedSupportBest": 1.8937414997758761,
-        "robustBest": 492.1892061214338,
+        "modelBest": 241.97260084459643,
+        "observedSupportBest": 23.035031717882696,
+        "robustBest": 23.906516172618353,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 548.6296937489087,
-        "saturationStart": 142.6486991115019,
-        "saturationEnd": 1340.2470154685866
+        "diminishingReturnsKnee": 23.035031717882696,
+        "saturationStart": 279.2878688446855,
+        "saturationEnd": 1326.3900369805183
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.2906388438564621,
-        "directionalScore": -0.1701077315536924,
+        "significance": 0.28005761742077273,
+        "directionalScore": -0.1479726242461267,
         "direction": "negative",
         "includedSubjects": 95,
         "totalPairs": 1995,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.39856545263492993,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4750477488636065,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -1634,27 +1748,30 @@
       "targets": {
         "decisionBest": 553.3885819180231,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 167.43479468716922,
+        "modelBest": 167.61549268812163,
         "observedSupportBest": 553.3885819180231,
         "robustBest": 492.1663345368419,
-        "minimumEffectiveDose": 5.778843923778463,
+        "minimumEffectiveDose": 5.789884796212899,
         "diminishingReturnsKnee": 12.370576164215008,
-        "saturationStart": 44.489189775340634,
+        "saturationStart": 44.73977396696127,
         "saturationEnd": 62.67288170682346
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.641118855253314,
-        "directionalScore": -0.22804014963094735,
+        "significance": 0.6411712272928766,
+        "directionalScore": -0.22831776605643792,
         "direction": "positive",
         "includedSubjects": 111,
         "totalPairs": 2510,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6550713804799951,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6550844734898859,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -1692,10 +1809,13 @@
         "includedSubjects": 24,
         "totalPairs": 583,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
         "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -1714,29 +1834,32 @@
         "unit": "years"
       },
       "targets": {
-        "decisionBest": 546.1122983725878,
+        "decisionBest": 553.7817239343913,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 387.9048317380418,
-        "observedSupportBest": 546.1122983725878,
-        "robustBest": 509.0955422279973,
+        "modelBest": 388.0225466211875,
+        "observedSupportBest": 553.7817239343913,
+        "robustBest": 511.4461048012362,
         "minimumEffectiveDose": 18.84913153001937,
         "diminishingReturnsKnee": 28.25031035007437,
-        "saturationStart": 546.1122983725878,
+        "saturationStart": 553.7817239343913,
         "saturationEnd": 2197.3555495429887
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9330004859199567,
-        "directionalScore": -0.14244054177173654,
+        "significance": 0.9347261916413303,
+        "directionalScore": -0.12264134576129479,
         "direction": "positive",
         "includedSubjects": 159,
         "totalPairs": 10494,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7990652562908692,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.7664833527645366,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -1757,27 +1880,30 @@
       "targets": {
         "decisionBest": 1943.0165728845302,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 399.58483835325984,
+        "modelBest": 400.38938675981404,
         "observedSupportBest": 1943.0165728845302,
-        "robustBest": 501.19634199487626,
+        "robustBest": 501.2451795157054,
         "minimumEffectiveDose": 20.901769141744616,
-        "diminishingReturnsKnee": 377.0954486923083,
+        "diminishingReturnsKnee": 377.737657940788,
         "saturationStart": null,
         "saturationEnd": null
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8815390973468232,
-        "directionalScore": -0.08231323342931282,
+        "significance": 0.8814968438484606,
+        "directionalScore": -0.0815393221452471,
         "direction": "positive",
         "includedSubjects": 201,
         "totalPairs": 6630,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7320887242301921,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7298439921196764,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -1796,29 +1922,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 175.3770293662316,
+        "decisionBest": 176.22130189258695,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 387.1498787908141,
-        "observedSupportBest": 175.3770293662316,
-        "robustBest": 174.76557912052962,
+        "modelBest": 388.49571438042244,
+        "observedSupportBest": 176.22130189258695,
+        "robustBest": 175.05703728353646,
         "minimumEffectiveDose": 54.45738385929219,
         "diminishingReturnsKnee": 54.45738385929219,
-        "saturationStart": 598.809029475092,
+        "saturationStart": 605.0930063415851,
         "saturationEnd": 2012.4393147454775
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6927355146493713,
-        "directionalScore": -0.10323287621078174,
+        "significance": 0.6878551715460894,
+        "directionalScore": -0.10303969831604888,
         "direction": "positive",
         "includedSubjects": 201,
         "totalPairs": 6429,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6753149398656637,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6736930973101154,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -1839,27 +1968,30 @@
       "targets": {
         "decisionBest": 8.664962689912299,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 372.098545115494,
+        "modelBest": 356.8618481694376,
         "observedSupportBest": 8.664962689912299,
         "robustBest": 21.7298852259368,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 340.4490880538375,
-        "saturationStart": null,
-        "saturationEnd": null
+        "diminishingReturnsKnee": 342.1316770979737,
+        "saturationStart": 619.7484010772696,
+        "saturationEnd": 2204.7785362100317
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.19664940155323607,
-        "directionalScore": 0.052547336015772377,
+        "significance": 0.22804145565428155,
+        "directionalScore": 0.0583632783138025,
         "direction": "negative",
         "includedSubjects": 159,
         "totalPairs": 3339,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.32402899976258476,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.39836800932238475,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -1880,27 +2012,30 @@
       "targets": {
         "decisionBest": 1567.018253387452,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 223.7289330420067,
+        "modelBest": 224.19729135836843,
         "observedSupportBest": 1567.018253387452,
-        "robustBest": 248.66850472410022,
+        "robustBest": 249.44296569565284,
         "minimumEffectiveDose": 22.67399689123974,
         "diminishingReturnsKnee": 34.81217506096577,
-        "saturationStart": 138.22892680974863,
+        "saturationStart": 138.43948534346578,
         "saturationEnd": 1567.018253387452
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6600977353449935,
-        "directionalScore": -0.12186868680511523,
+        "significance": 0.6603661915898826,
+        "directionalScore": -0.12180393893865558,
         "direction": "positive",
         "includedSubjects": 178,
         "totalPairs": 4175,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7572948348062005,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.7570073212309669,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -1921,7 +2056,7 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 178.75609579796142,
+        "modelBest": 178.75633651354897,
         "observedSupportBest": 7.152596327426481,
         "robustBest": 355.2134947388531,
         "minimumEffectiveDose": null,
@@ -1933,15 +2068,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
         "significance": 0.6315342534028675,
-        "directionalScore": -0.14928970939237238,
+        "directionalScore": -0.14928929853088704,
         "direction": "negative",
         "includedSubjects": 56,
         "totalPairs": 1151,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.4717494593718358,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.47175068534322545,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -1962,27 +2100,30 @@
       "targets": {
         "decisionBest": 16280.704996275439,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 5094.057773930271,
+        "modelBest": 5118.810169382314,
         "observedSupportBest": 16280.704996275439,
-        "robustBest": 9966.369098348569,
+        "robustBest": 9993.232881603262,
         "minimumEffectiveDose": 237.91899814654292,
         "diminishingReturnsKnee": 516.7231287269475,
-        "saturationStart": 1778.8241808915038,
-        "saturationEnd": 2493.763324228396
+        "saturationStart": 1800.2425853474276,
+        "saturationEnd": 3587.4537473278288
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9374885449748788,
-        "directionalScore": -0.18376587214343318,
+        "significance": 0.9374981225955447,
+        "directionalScore": -0.17045126564241128,
         "direction": "positive",
         "includedSubjects": 126,
         "totalPairs": 8316,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7000896172958521,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7005866993759298,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.who.healthy_life_expectancy_years.md"
@@ -2001,11 +2142,11 @@
         "unit": "international $"
       },
       "targets": {
-        "decisionBest": 14637.465289427493,
+        "decisionBest": 14731.830468478489,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 5213.37056274371,
-        "observedSupportBest": 14637.465289427493,
-        "robustBest": 8929.031552835178,
+        "modelBest": 5234.882210621472,
+        "observedSupportBest": 14731.830468478489,
+        "robustBest": 8943.14770913957,
         "minimumEffectiveDose": 246.4984899546465,
         "diminishingReturnsKnee": 461.43054204427153,
         "saturationStart": null,
@@ -2014,16 +2155,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.9001856859101133,
-        "directionalScore": -0.02307463907746633,
+        "significance": 0.9001856859099835,
+        "directionalScore": -0.023057785558533724,
         "direction": "neutral",
         "includedSubjects": 148,
         "totalPairs": 5001,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5469743938473239,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.5474504651648789,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp.md"
@@ -2042,29 +2186,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 484.31030033975657,
+        "decisionBest": 504.9090172608224,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3873.518057223374,
-        "observedSupportBest": 484.31030033975657,
-        "robustBest": 511.7165229925074,
-        "minimumEffectiveDose": 251.59359096617158,
-        "diminishingReturnsKnee": 484.31030033975657,
-        "saturationStart": 3488.0106945368652,
-        "saturationEnd": 15502.083340320261
+        "modelBest": 3994.759010143191,
+        "observedSupportBest": 504.9090172608224,
+        "robustBest": 512.0441346048851,
+        "minimumEffectiveDose": 265.7296481761319,
+        "diminishingReturnsKnee": 504.9090172608224,
+        "saturationStart": 3590.643164428522,
+        "saturationEnd": 15899.107130760767
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "B",
-        "significance": 0.7000288220623666,
-        "directionalScore": 0.10751286543411935,
+        "significance": 0.7018921682780478,
+        "directionalScore": 0.09901487872637771,
         "direction": "positive",
         "includedSubjects": 148,
         "totalPairs": 4853,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5704276883615661,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5539603916013922,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -2085,27 +2232,30 @@
       "targets": {
         "decisionBest": 112.66237265926183,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 4471.558297710671,
+        "modelBest": 4321.9692336490425,
         "observedSupportBest": 112.66237265926183,
-        "robustBest": 305.2118181822812,
+        "robustBest": 649.660159195133,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 5781.148651686146,
-        "saturationStart": 11484.789528603873,
+        "diminishingReturnsKnee": 3937.195079362534,
+        "saturationStart": 8769.95203806387,
         "saturationEnd": 18150.602802320525
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.19074682119773656,
-        "directionalScore": 0.06917980087773852,
+        "significance": 0.23690776607469657,
+        "directionalScore": 0.0744612677669929,
         "direction": "negative",
         "includedSubjects": 126,
         "totalPairs": 2646,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.36714158102597266,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4764477100347169,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -2124,29 +2274,32 @@
         "unit": "% of relevant age group"
       },
       "targets": {
-        "decisionBest": 9843.964619432536,
+        "decisionBest": 9890.811830659655,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3769.9363759417174,
-        "observedSupportBest": 9843.964619432536,
+        "modelBest": 3786.647090758708,
+        "observedSupportBest": 9890.811830659655,
         "robustBest": 9335.49702017412,
         "minimumEffectiveDose": 268.780269224449,
         "diminishingReturnsKnee": 418.03787184014686,
-        "saturationStart": 3336.5817091046847,
-        "saturationEnd": 15216.714474952107
+        "saturationStart": 1650.090348181639,
+        "saturationEnd": 15270.920699701192
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6818904668303775,
-        "directionalScore": -0.08653346756535654,
+        "significance": 0.6819039342945772,
+        "directionalScore": -0.08699862952457288,
         "direction": "positive",
         "includedSubjects": 133,
         "totalPairs": 3043,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.4636157060965462,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4636597282336866,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.primary_completion_rate_pct.md"
@@ -2179,15 +2332,18 @@
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
         "significance": 0.6535434702013109,
-        "directionalScore": -0.12630195502245972,
+        "directionalScore": -0.1263019550224599,
         "direction": "neutral",
         "includedSubjects": 39,
         "totalPairs": 806,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.4432848122600762,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.44328481226007643,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_non_military_expenditure_per_capita_ppp__outcome.wb.battle_related_deaths.md"
@@ -2220,15 +2376,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
         "significance": 0.9169957123801561,
-        "directionalScore": -0.11226037326495085,
+        "directionalScore": -0.1088197284267519,
         "direction": "positive",
         "includedSubjects": 141,
         "totalPairs": 9306,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7361046771008214,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7316166787208653,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
@@ -2249,7 +2408,7 @@
       "targets": {
         "decisionBest": 27.00644457832464,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 13.790009207005399,
+        "modelBest": 13.789619810294228,
         "observedSupportBest": 27.00644457832464,
         "robustBest": 18.906946991254465,
         "minimumEffectiveDose": 6.6056529359197365,
@@ -2260,16 +2419,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8812963892349139,
-        "directionalScore": -0.040952874614222375,
+        "significance": 0.8812217525431547,
+        "directionalScore": -0.041224811566353506,
         "direction": "positive",
         "includedSubjects": 168,
         "totalPairs": 5677,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6616052048648164,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6631113564532147,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
@@ -2290,27 +2452,30 @@
       "targets": {
         "decisionBest": 12.642487822547482,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 13.148982646947573,
+        "modelBest": 13.153875381386632,
         "observedSupportBest": 12.642487822547482,
         "robustBest": 12.600095648302819,
         "minimumEffectiveDose": null,
         "diminishingReturnsKnee": 12.642487822547482,
         "saturationStart": 14.969697372650396,
-        "saturationEnd": 27.065220820908195
+        "saturationEnd": 27.065220820908202
       },
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6979094692872188,
-        "directionalScore": 0.12674472403579712,
+        "significance": 0.6923516394161686,
+        "directionalScore": 0.12555587908575663,
         "direction": "positive",
         "includedSubjects": 168,
         "totalPairs": 5509,
         "extrapolative": false,
         "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": false,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.8823529390202156,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.8755623101377561,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -2329,29 +2494,32 @@
         "unit": "% YoY"
       },
       "targets": {
-        "decisionBest": 15.0348177013589,
+        "decisionBest": 9.583863653168072,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 13.023525189724076,
-        "observedSupportBest": 15.0348177013589,
-        "robustBest": 14.85180201849996,
+        "modelBest": 13.195472694155272,
+        "observedSupportBest": 9.583863653168072,
+        "robustBest": 9.672116400934119,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 15.0348177013589,
-        "saturationStart": null,
-        "saturationEnd": null
+        "diminishingReturnsKnee": 9.583863653168072,
+        "saturationStart": 19.200809662157706,
+        "saturationEnd": 26.295470007472396
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.22726163675628544,
-        "directionalScore": -0.12222363844694295,
+        "significance": 0.16659322114251773,
+        "directionalScore": -0.11575574454921665,
         "direction": "negative",
         "includedSubjects": 141,
         "totalPairs": 2961,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6626507286466543,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5397042614833857,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -2383,16 +2551,19 @@
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
-        "significance": 0.5803163989254475,
-        "directionalScore": -0.17895409127277156,
+        "significance": 0.5803163989254471,
+        "directionalScore": -0.17895409127277098,
         "direction": "neutral",
         "includedSubjects": 152,
         "totalPairs": 3425,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7504363559133496,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.7504363559133449,
+        "reliabilityBand": "high",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
@@ -2424,16 +2595,19 @@
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
-        "significance": 0.6064683147102609,
-        "directionalScore": -0.14404744143291995,
+        "significance": 0.606468314710261,
+        "directionalScore": -0.14404744143291948,
         "direction": "positive",
         "includedSubjects": 37,
         "totalPairs": 773,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
         "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.gov_health_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
@@ -2466,15 +2640,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
         "significance": 0.9106689441522561,
-        "directionalScore": 0.10791839091020218,
+        "directionalScore": 0.11763816958963426,
         "direction": "neutral",
         "includedSubjects": 134,
         "totalPairs": 8844,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.8131067431462319,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.8238213135705031,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
@@ -2495,7 +2672,7 @@
       "targets": {
         "decisionBest": 13.061632962341255,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 19.337041054413074,
+        "modelBest": 19.336016391505183,
         "observedSupportBest": 13.061632962341255,
         "robustBest": 13.284107104972302,
         "minimumEffectiveDose": 11.70248975394442,
@@ -2506,16 +2683,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8656944613315923,
-        "directionalScore": 0.11379813122450899,
+        "significance": 0.8656982449914931,
+        "directionalScore": 0.1139608590405902,
         "direction": "neutral",
         "includedSubjects": 159,
         "totalPairs": 5371,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.825840501718849,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.8264161095094902,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
@@ -2536,7 +2716,7 @@
       "targets": {
         "decisionBest": 13.128855075882726,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 19.035751199235083,
+        "modelBest": 19.053698565664078,
         "observedSupportBest": 13.128855075882726,
         "robustBest": 13.288013063138902,
         "minimumEffectiveDose": null,
@@ -2547,16 +2727,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6807626196096711,
-        "directionalScore": -0.13360532935600358,
+        "significance": 0.679388557446688,
+        "directionalScore": -0.13643160631717483,
         "direction": "neutral",
         "includedSubjects": 159,
         "totalPairs": 5212,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7304094548620595,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7380858721562628,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -2577,7 +2760,7 @@
       "targets": {
         "decisionBest": 33.37800081724307,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 19.440057204301304,
+        "modelBest": 19.382280792862908,
         "observedSupportBest": 33.37800081724307,
         "robustBest": 20.910945991928408,
         "minimumEffectiveDose": 19.591745962315805,
@@ -2588,16 +2771,19 @@
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.19361645582707657,
-        "directionalScore": 0.062265840792617676,
-        "direction": "positive",
+        "significance": 0.20316993672904562,
+        "directionalScore": -0.0775978053987494,
+        "direction": "neutral",
         "includedSubjects": 134,
         "totalPairs": 2814,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": false,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5077069707239692,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4747942687085138,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -2630,15 +2816,18 @@
         "qualityTier": "insufficient",
         "evidenceGrade": "D",
         "significance": 0.5459121398792721,
-        "directionalScore": 0.15438454111975164,
+        "directionalScore": 0.1543845411197519,
         "direction": "positive",
         "includedSubjects": 145,
         "totalPairs": 3343,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
         "reliabilityScore": 0.6509985433080118,
-        "reliabilityBand": "moderate"
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
@@ -2670,16 +2859,19 @@
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "D",
-        "significance": 0.5332332299148621,
-        "directionalScore": -0.18667148366491615,
+        "significance": 0.5332332299148622,
+        "directionalScore": -0.18667148366491595,
         "direction": "neutral",
         "includedSubjects": 37,
         "totalPairs": 759,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
         "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.education_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
@@ -2700,7 +2892,7 @@
       "targets": {
         "decisionBest": 13.184834410424859,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3.8196381637507693,
+        "modelBest": 3.8196381637507706,
         "observedSupportBest": 13.184834410424859,
         "robustBest": 7.222822705604741,
         "minimumEffectiveDose": 4.04241828191268,
@@ -2712,15 +2904,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
         "significance": 0.9183518807163819,
-        "directionalScore": 0.12774679014718093,
+        "directionalScore": 0.11694720431695481,
         "direction": "positive",
         "includedSubjects": 82,
         "totalPairs": 5412,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7491719570750919,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.7347725093014571,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
@@ -2741,7 +2936,7 @@
       "targets": {
         "decisionBest": 12.69047438558201,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 4.0427107936176725,
+        "modelBest": 4.041728441253765,
         "observedSupportBest": 12.69047438558201,
         "robustBest": 7.494834359336486,
         "minimumEffectiveDose": 3.601715508306941,
@@ -2752,16 +2947,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8762594259588379,
-        "directionalScore": 0.12571786942502272,
+        "significance": 0.8762607112901394,
+        "directionalScore": 0.12512604443587066,
         "direction": "positive",
         "includedSubjects": 100,
         "totalPairs": 3380,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6377132139573233,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6363355859563403,
+        "reliabilityBand": "moderate",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
@@ -2782,7 +2980,7 @@
       "targets": {
         "decisionBest": 1.4978461029665882,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3.7105226807204974,
+        "modelBest": 3.7256772426975346,
         "observedSupportBest": 1.4978461029665882,
         "robustBest": 1.5132697420862067,
         "minimumEffectiveDose": null,
@@ -2792,17 +2990,20 @@
       },
       "diagnostics": {
         "qualityTier": "exploratory",
-        "evidenceGrade": "B",
-        "significance": 0.702291687232587,
-        "directionalScore": 0.1018629250024844,
+        "evidenceGrade": "C",
+        "significance": 0.6965946673196448,
+        "directionalScore": 0.09678760827635041,
         "direction": "positive",
         "includedSubjects": 100,
         "totalPairs": 3280,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.5781164054847849,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.5594442029625848,
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -2823,27 +3024,30 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 3.480600552840314,
-        "observedSupportBest": 13.242864932904789,
-        "robustBest": 4.613237946403116,
+        "modelBest": 3.4867050936971284,
+        "observedSupportBest": 1.3750968493970117,
+        "robustBest": 1.3902441715137235,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 1.0270493818945239,
-        "saturationStart": 8.165376528704202,
+        "diminishingReturnsKnee": 1.3750968493970117,
+        "saturationStart": 4.054962435099508,
         "saturationEnd": 13.242864932904789
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.1941134127166331,
-        "directionalScore": 0.14591434720083393,
+        "significance": 0.21213780972427668,
+        "directionalScore": 0.14408463417066336,
         "direction": "neutral",
         "includedSubjects": 82,
         "totalPairs": 1722,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
-        "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4461857627326437,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -2864,7 +3068,7 @@
       "targets": {
         "decisionBest": 12.048593266264387,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 3.2427700687786083,
+        "modelBest": 3.2427700687786087,
         "observedSupportBest": 12.048593266264387,
         "robustBest": 1.0503025744077616,
         "minimumEffectiveDose": 0.7423079631667471,
@@ -2875,16 +3079,19 @@
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
-        "significance": 0.5851309592285373,
-        "directionalScore": -0.1704927653457299,
+        "significance": 0.5851309592285374,
+        "directionalScore": -0.17049276534572957,
         "direction": "negative",
         "includedSubjects": 90,
         "totalPairs": 2012,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.6162806268752412,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6162806268752405,
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
@@ -2905,27 +3112,30 @@
       "targets": {
         "decisionBest": null,
         "decisionTargetSource": "unavailable",
-        "modelBest": 3.1430671659578913,
+        "modelBest": 3.143067165957892,
         "observedSupportBest": 0.6167541524801532,
         "robustBest": 1.5776736328620116,
         "minimumEffectiveDose": null,
         "diminishingReturnsKnee": 0.8166963319999835,
-        "saturationStart": 4.962567114321347,
+        "saturationStart": 4.962567114321352,
         "saturationEnd": 6.250794516687157
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
         "significance": 0.6074874156303989,
-        "directionalScore": 0.3308565007858416,
+        "directionalScore": 0.3308565007858411,
         "direction": "positive",
         "includedSubjects": 18,
         "totalPairs": 430,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
         "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.rd_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"
@@ -2958,15 +3168,18 @@
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
         "significance": 0.9207627687712071,
-        "directionalScore": -0.03167701369426816,
+        "directionalScore": -0.03377521320631313,
         "direction": "negative",
         "includedSubjects": 126,
         "totalPairs": 8316,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.642035218422833,
-        "reliabilityBand": "moderate"
+        "reliabilityScore": 0.6476371615167498,
+        "reliabilityBand": "moderate",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.who.healthy_life_expectancy_years.md"
@@ -2987,9 +3200,9 @@
       "targets": {
         "decisionBest": 3.3893905497790886,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 8.16385598435682,
+        "modelBest": 8.16497482211379,
         "observedSupportBest": 3.3893905497790886,
-        "robustBest": 3.57284170273295,
+        "robustBest": 3.572841702732959,
         "minimumEffectiveDose": 3.3893905497790886,
         "diminishingReturnsKnee": 4.226947616303485,
         "saturationStart": null,
@@ -2998,16 +3211,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "A",
-        "significance": 0.8869872891369602,
-        "directionalScore": -0.12190753950640838,
+        "significance": 0.8873582231724261,
+        "directionalScore": -0.12309595717452451,
         "direction": "negative",
         "includedSubjects": 148,
         "totalPairs": 5001,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7514421514093435,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.7557146836382177,
+        "reliabilityBand": "high",
+        "publicationEligible": true
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp.md"
@@ -3028,7 +3244,7 @@
       "targets": {
         "decisionBest": 4.734361563591145,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 9.784660268281876,
+        "modelBest": 9.801324778909514,
         "observedSupportBest": 4.734361563591145,
         "robustBest": 4.759394153844331,
         "minimumEffectiveDose": null,
@@ -3039,16 +3255,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6808457435359486,
-        "directionalScore": -0.12911353621802785,
+        "significance": 0.680513369423512,
+        "directionalScore": -0.12797897772915992,
         "direction": "negative",
         "includedSubjects": 148,
         "totalPairs": 4853,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.7596173874489534,
-        "reliabilityBand": "high"
+        "reliabilityScore": 0.7553517030978776,
+        "reliabilityBand": "high",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.after_tax_median_income_ppp_growth_yoy_pct.md"
@@ -3069,27 +3288,30 @@
       "targets": {
         "decisionBest": 9.949893295416649,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 9.048287514659966,
+        "modelBest": 8.933239153678866,
         "observedSupportBest": 9.949893295416649,
         "robustBest": 9.882527089733205,
         "minimumEffectiveDose": null,
-        "diminishingReturnsKnee": 9.949893295416649,
-        "saturationStart": null,
-        "saturationEnd": null
+        "diminishingReturnsKnee": 4.317899544847951,
+        "saturationStart": 15.595747417304722,
+        "saturationEnd": 22.32706345962228
       },
       "diagnostics": {
         "qualityTier": "insufficient",
         "evidenceGrade": "F",
-        "significance": 0.19295166439691144,
-        "directionalScore": 0.05596123313142948,
-        "direction": "positive",
+        "significance": 0.17021594690264732,
+        "directionalScore": 0.03577112888823834,
+        "direction": "neutral",
         "includedSubjects": 126,
         "totalPairs": 2646,
         "extrapolative": false,
         "outsideBestObservedBin": true,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.4737363780687287,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.4004600004787915,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.derived.healthy_life_expectancy_growth_yoy_pct.md"
@@ -3110,9 +3332,9 @@
       "targets": {
         "decisionBest": 3.398822372458786,
         "decisionTargetSource": "support_constrained",
-        "modelBest": 8.5486247060125,
+        "modelBest": 8.54862470601247,
         "observedSupportBest": 3.398822372458786,
-        "robustBest": 3.5325458718550276,
+        "robustBest": 3.532545871855034,
         "minimumEffectiveDose": null,
         "diminishingReturnsKnee": 5.1847208507635045,
         "saturationStart": null,
@@ -3121,16 +3343,19 @@
       "diagnostics": {
         "qualityTier": "exploratory",
         "evidenceGrade": "C",
-        "significance": 0.6190998785784866,
-        "directionalScore": 0.03735954653551533,
+        "significance": 0.6190998785784861,
+        "directionalScore": 0.037359546535515965,
         "direction": "negative",
         "includedSubjects": 133,
         "totalPairs": 3043,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "sufficient",
-        "reliabilityScore": 0.49279436342883387,
-        "reliabilityBand": "low"
+        "reliabilityScore": 0.49279436342883615,
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.primary_completion_rate_pct.md"
@@ -3163,15 +3388,18 @@
         "qualityTier": "insufficient",
         "evidenceGrade": "C",
         "significance": 0.6450957965567995,
-        "directionalScore": -0.19136235361786563,
+        "directionalScore": -0.19136235361786513,
         "direction": "negative",
         "includedSubjects": 39,
         "totalPairs": 806,
         "extrapolative": false,
-        "outsideBestObservedBin": true,
+        "outsideBestObservedBin": false,
+        "modelExtrapolative": false,
+        "modelOutsideBestObservedBin": true,
         "dataSufficiencyStatus": "insufficient_data",
         "reliabilityScore": 0.49,
-        "reliabilityBand": "low"
+        "reliabilityBand": "low",
+        "publicationEligible": false
       },
       "links": {
         "markdownFile": "pair-predictor.derived.military_share_of_gov_expenditure_pct__outcome.wb.battle_related_deaths.md"

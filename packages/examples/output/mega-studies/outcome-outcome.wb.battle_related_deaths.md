@@ -34,7 +34,7 @@
 
 ## Top Recommended Levels
 
-- These are the top recommended levels from the highest-scoring predictor/outcome relationships.
+- These are the top recommended levels from ranked relationships that pass the publication gate.
 - Use them as practical guidance, not guaranteed cause-and-effect rules.
 
 1. No recommendations available because all pairs were gated as insufficient data.

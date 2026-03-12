@@ -16,11 +16,13 @@ function sortPairsForReview(payload: MegaStudyApiPayload) {
   return [...payload.pairs].sort((left, right) => {
     const leftRisk =
       Number(left.diagnostics.dataSufficiencyStatus !== 'sufficient') * 10 +
+      Number(left.diagnostics.qualityTier === 'insufficient') * 8 +
       Number(left.diagnostics.reliabilityBand === 'low') * 5 +
       Number(left.diagnostics.extrapolative) * 3 +
       Number(left.diagnostics.outsideBestObservedBin) * 2;
     const rightRisk =
       Number(right.diagnostics.dataSufficiencyStatus !== 'sufficient') * 10 +
+      Number(right.diagnostics.qualityTier === 'insufficient') * 8 +
       Number(right.diagnostics.reliabilityBand === 'low') * 5 +
       Number(right.diagnostics.extrapolative) * 3 +
       Number(right.diagnostics.outsideBestObservedBin) * 2;
@@ -28,19 +30,67 @@ function sortPairsForReview(payload: MegaStudyApiPayload) {
   });
 }
 
+function isPublishableOutcomeRow(
+  row: MegaStudyApiPayload['outcomes'][number]['rows'][number],
+  pair: MegaStudyApiPayload['pairs'][number] | undefined,
+): boolean {
+  if (!pair) return false;
+  if (row.publicationEligible != null) return row.publicationEligible;
+  if (pair.diagnostics.publicationEligible != null) return pair.diagnostics.publicationEligible;
+  if (row.dataSufficiencyStatus !== 'sufficient') return false;
+  if (row.qualityTier === 'insufficient') return false;
+  if (row.reliabilityBand === 'low') return false;
+  if (pair.targets.decisionTargetSource === 'unavailable') return false;
+  if (
+    (pair.diagnostics.modelExtrapolative != null || pair.diagnostics.modelOutsideBestObservedBin != null) &&
+    (pair.diagnostics.extrapolative || pair.diagnostics.outsideBestObservedBin)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function selectTopRowsForReview(
+  outcome: MegaStudyApiPayload['outcomes'][number],
+  pairById: Map<string, MegaStudyApiPayload['pairs'][number]>,
+  topRowsPerOutcome: number,
+) {
+  return outcome.rows
+    .filter((row) => isPublishableOutcomeRow(row, pairById.get(row.pairId)))
+    .slice(0, topRowsPerOutcome);
+}
+
+function getPublishedRiskFlags(pair: MegaStudyApiPayload['pairs'][number]) {
+  const hasSplitModelFlags =
+    pair.diagnostics.modelExtrapolative != null ||
+    pair.diagnostics.modelOutsideBestObservedBin != null;
+  if (!hasSplitModelFlags && pair.targets.decisionTargetSource !== 'unavailable') {
+    return {
+      extrapolative: false,
+      outsideBestObservedBin: false,
+    };
+  }
+  return {
+    extrapolative: pair.diagnostics.extrapolative,
+    outsideBestObservedBin: pair.diagnostics.outsideBestObservedBin,
+  };
+}
+
 export function buildMegaStudyPublicationReviewInput(
   payload: MegaStudyApiPayload,
   topRowsPerOutcome = 3,
 ): AnalysisPublicationReviewInput {
+  const pairById = new Map(payload.pairs.map((pair) => [pair.pairId, pair]));
   const referencedPairIds = new Set(
     payload.outcomes.flatMap((outcome) =>
-      outcome.rows.slice(0, topRowsPerOutcome).map((row) => row.pairId),
+      selectTopRowsForReview(outcome, pairById, topRowsPerOutcome).map((row) => row.pairId),
     ),
   );
   const riskyPairIds = new Set(
     sortPairsForReview(payload)
       .filter((pair) =>
         pair.diagnostics.dataSufficiencyStatus !== 'sufficient' ||
+        pair.diagnostics.qualityTier === 'insufficient' ||
         pair.diagnostics.reliabilityBand === 'low' ||
         pair.diagnostics.extrapolative ||
         pair.diagnostics.outsideBestObservedBin,
@@ -65,7 +115,7 @@ export function buildMegaStudyPublicationReviewInput(
     outcomes: payload.outcomes.map((outcome) => ({
       outcomeId: outcome.outcomeId,
       outcomeLabel: outcome.outcomeLabel,
-      topRecommendations: outcome.rows.slice(0, topRowsPerOutcome).map((row) => ({
+      topRecommendations: selectTopRowsForReview(outcome, pairById, topRowsPerOutcome).map((row) => ({
         rank: row.rank,
         predictorId: row.predictorId,
         predictorLabel: row.predictorLabel,
@@ -81,23 +131,26 @@ export function buildMegaStudyPublicationReviewInput(
     })),
     highlightedPairs: payload.pairs
       .filter((pair) => highlightedPairIds.has(pair.pairId))
-      .map((pair) => ({
-        pairId: pair.pairId,
-        predictorLabel: pair.predictor.label,
-        outcomeLabel: pair.outcome.label,
-        decisionBest: pair.targets.decisionBest,
-        modelBest: pair.targets.modelBest,
-        decisionTargetSource: pair.targets.decisionTargetSource,
-        evidenceGrade: pair.diagnostics.evidenceGrade,
-        qualityTier: pair.diagnostics.qualityTier,
-        dataSufficiencyStatus: pair.diagnostics.dataSufficiencyStatus,
-        reliabilityBand: pair.diagnostics.reliabilityBand,
-        reliabilityScore: pair.diagnostics.reliabilityScore,
-        significance: pair.diagnostics.significance,
-        directionalScore: pair.diagnostics.directionalScore,
-        extrapolative: pair.diagnostics.extrapolative,
-        outsideBestObservedBin: pair.diagnostics.outsideBestObservedBin,
-      })),
+      .map((pair) => {
+        const publishedRisk = getPublishedRiskFlags(pair);
+        return {
+          pairId: pair.pairId,
+          predictorLabel: pair.predictor.label,
+          outcomeLabel: pair.outcome.label,
+          decisionBest: pair.targets.decisionBest,
+          modelBest: pair.targets.modelBest,
+          decisionTargetSource: pair.targets.decisionTargetSource,
+          evidenceGrade: pair.diagnostics.evidenceGrade,
+          qualityTier: pair.diagnostics.qualityTier,
+          dataSufficiencyStatus: pair.diagnostics.dataSufficiencyStatus,
+          reliabilityBand: pair.diagnostics.reliabilityBand,
+          reliabilityScore: pair.diagnostics.reliabilityScore,
+          significance: pair.diagnostics.significance,
+          directionalScore: pair.diagnostics.directionalScore,
+          extrapolative: publishedRisk.extrapolative,
+          outsideBestObservedBin: publishedRisk.outsideBestObservedBin,
+        };
+      }),
   };
 }
 

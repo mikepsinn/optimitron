@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   createMany: vi.fn(),
   deleteMany: vi.fn(),
+  deriveRecentLegislativeVoteRows: vi.fn(),
   fetchMemberDetails: vi.fn(),
   findMany: vi.fn(),
   findUnique: vi.fn(),
@@ -33,6 +34,17 @@ vi.mock("@optomitron/data", () => ({
   },
 }));
 
+vi.mock("@/lib/alignment-legislative-sync.server", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/alignment-legislative-sync.server")>(
+    "@/lib/alignment-legislative-sync.server",
+  );
+
+  return {
+    ...actual,
+    deriveRecentLegislativeVoteRows: mocks.deriveRecentLegislativeVoteRows,
+  };
+});
+
 import { ALIGNMENT_BENCHMARKS } from "@/lib/alignment-benchmarks";
 import {
   loadAlignmentBenchmarkProfiles,
@@ -48,6 +60,7 @@ describe("alignment politician source", () => {
     mocks.findUnique.mockReset();
     mocks.getCongressApiKey.mockReset();
     mocks.upsert.mockReset();
+    mocks.deriveRecentLegislativeVoteRows.mockReset();
   });
 
   it("falls back to curated real profiles when the database has no synced rows", async () => {
@@ -70,6 +83,7 @@ describe("alignment politician source", () => {
         district: "VT",
         updatedAt: new Date("2026-03-12T00:00:00.000Z"),
         votes: Object.entries(bernie?.allocations ?? {}).map(([itemCategory, allocationPct]) => ({
+          billId: `alignment-benchmark:${bernie?.politicianId ?? "bernie-sanders"}`,
           itemCategory,
           allocationPct,
           updatedAt: new Date("2026-03-12T00:00:00.000Z"),
@@ -111,13 +125,38 @@ describe("alignment politician source", () => {
       return { id: `pol-${upsertCallCount}` };
     });
     mocks.deleteMany.mockResolvedValue({ count: 10 });
-    mocks.createMany.mockResolvedValue({ count: 10 });
+    mocks.deriveRecentLegislativeVoteRows.mockResolvedValue(
+      ALIGNMENT_BENCHMARKS.slice(0, 2).flatMap((benchmark, index) => ([
+        {
+          externalId: benchmark?.externalId,
+          allocationPct: 0.8,
+          billId: `bill-${index + 1}`,
+          itemCategory: "ADDICTION_TREATMENT",
+          voteDate: new Date("2026-03-12T00:00:00.000Z"),
+        },
+        {
+          externalId: benchmark?.externalId,
+          allocationPct: -0.6,
+          billId: `bill-${index + 10}`,
+          itemCategory: "MILITARY_OPERATIONS",
+          voteDate: new Date("2026-03-13T00:00:00.000Z"),
+        },
+      ])).filter((row): row is {
+        externalId: string;
+        allocationPct: number;
+        billId: string;
+        itemCategory: "ADDICTION_TREATMENT" | "MILITARY_OPERATIONS";
+        voteDate: Date;
+      } => typeof row.externalId === "string"),
+    );
+    mocks.createMany.mockResolvedValue({ count: 4 });
 
     const result = await syncAlignmentBenchmarkPoliticians();
 
     expect(result.skipped).toBe(false);
     expect(result.syncedPoliticians).toBe(ALIGNMENT_BENCHMARKS.length);
-    expect(result.syncedVotes).toBe(ALIGNMENT_BENCHMARKS.length * 10);
+    expect(result.syncedVotes).toBe(4);
     expect(mocks.fetchMemberDetails).toHaveBeenCalledTimes(ALIGNMENT_BENCHMARKS.length);
+    expect(mocks.deriveRecentLegislativeVoteRows).toHaveBeenCalledTimes(1);
   });
 });

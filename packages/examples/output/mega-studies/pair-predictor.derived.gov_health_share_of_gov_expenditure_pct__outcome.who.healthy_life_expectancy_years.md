@@ -7,13 +7,13 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 15
 - Temporal candidates with valid results: 15
-- Temporal profile score: 0.6832
+- Temporal profile score: 0.6798
 - Included subjects: 141
 - Skipped subjects: 0
 - Total aligned pairs: 9306
 - Signal grade: A (very strong)
 - Data status: enough data
-- Confidence score: 0.736 (medium confidence)
+- Confidence score: 0.732 (medium confidence)
 - Signal tag: early signal
 - Direction: positive
 - Uncertainty score: 0.0830 (lower is better)
@@ -52,7 +52,7 @@
 - The estimate uses 141 subjects and 9306 aligned predictor-outcome observations.
 - Best observed mean outcome appears in predictor bin [20.671, 66.811] (mean outcome 67.739).
 - A minimum effective predictor level appears near 6.559 % of government expenditure in the binned response curve.
-- Confidence score is 0.736 (medium confidence); data status is enough data.
+- Confidence score is 0.732 (medium confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
@@ -69,8 +69,8 @@
 | Metric | Value |
 |--------|------:|
 | Forward correlation | 0.1233 |
-| Reverse correlation | 0.2356 |
-| Direction score (forward - reverse) | -0.1123 |
+| Reverse correlation | 0.2321 |
+| Direction score (forward - reverse) | -0.1088 |
 | Effect size (% change from baseline) | 0.5927 |
 | Significance score | 0.9170 |
 | Weighted PIS | 0.4433 |
@@ -96,11 +96,11 @@
 | Middle-data share kept | 80.0% (7446/9306) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.7361 (medium confidence) |
+| Confidence score | 0.7316 (medium confidence) |
 | Reliability support component | 0.9700 |
 | Reliability significance component | 0.9170 |
-| Reliability directional component | 0.7484 |
-| Reliability temporal-stability component | 0.0966 |
+| Reliability directional component | 0.7255 |
+| Reliability temporal-stability component | 0.0972 |
 | Reliability robustness component | 0.6679 |
 | Signal tag | early signal |
 
@@ -118,10 +118,10 @@
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 2 | 3 | interpolation | 0.6832 | 0.0000 | 141 | 9306 |
-| Runner-up | predictor_default | 3 | 2 | interpolation | 0.6803 | 0.0029 | 141 | 9306 |
-| Runner-up | predictor_default | 2 | 5 | interpolation | 0.6803 | 0.0029 | 141 | 9306 |
-| Runner-up | predictor_default | 3 | 3 | interpolation | 0.6789 | 0.0043 | 141 | 9306 |
+| Selected | predictor_default | 2 | 3 | interpolation | 0.6798 | 0.0000 | 141 | 9306 |
+| Runner-up | predictor_default | 2 | 5 | interpolation | 0.6769 | 0.0029 | 141 | 9306 |
+| Runner-up | predictor_default | 3 | 2 | interpolation | 0.6759 | 0.0038 | 141 | 9306 |
+| Runner-up | predictor_default | 2 | 2 | interpolation | 0.6749 | 0.0048 | 141 | 9306 |
 
 ### Binned Pattern Table
 

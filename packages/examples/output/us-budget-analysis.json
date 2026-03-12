@@ -10,6 +10,23 @@
       "gapPercent": 391.922405037554,
       "marginalReturn": 20.575629851985255,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "A",
+      "evidenceDescription": "Strong causal evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 767859067764.8467,
+      "elasticity": 0.7036324297622262,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.526218371017746,
+        "n": 529,
+        "lowFit": false,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 5.458671878270352,
+        "healthEffect": 3.2752031269622113
+      },
       "outcomeMetrics": [
         {
           "name": "PISA Average Score",
@@ -36,6 +53,23 @@
       "gapPercent": -50,
       "marginalReturn": -0.0001028225355234275,
       "recommendation": "decrease",
+      "recommendedAction": "major_decrease",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 375005720418.0123,
+      "elasticity": -0.003384926258965176,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.006189722836379308,
+        "n": 529,
+        "lowFit": true,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0000018467455866022667,
+        "healthEffect": -0.00000110804735196136
+      },
       "outcomeMetrics": [
         {
           "name": "Global Firepower Index Rank",
@@ -57,6 +91,23 @@
       "gapPercent": 469.1687518767597,
       "marginalReturn": 36.40441349096675,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "B",
+      "evidenceDescription": "Probable causal link",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 299356097248.6339,
+      "elasticity": 0.31807157194706004,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.31800482279935205,
+        "n": 529,
+        "lowFit": false,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 3.8342661997880705,
+        "healthEffect": 2.300559719872842
+      },
       "outcomeMetrics": [
         {
           "name": "Patent Applications",
@@ -78,6 +129,23 @@
       "gapPercent": 294.6863321179769,
       "marginalReturn": 0.053100233241181675,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 90200525389.99547,
+      "elasticity": 0.651540837111797,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9674378988714181,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.006385716133133254,
+        "healthEffect": 0.003831429679879952
+      },
       "outcomeMetrics": [
         {
           "name": "Infrastructure Quality Index",
@@ -104,6 +172,23 @@
       "gapPercent": 100,
       "marginalReturn": 0.0014212525984477462,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 88231169169.84708,
+      "elasticity": 0.020667369318781104,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.0813812141645276,
+        "n": 330,
+        "lowFit": true,
+        "smallSample": false
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0003501584600790166,
+        "healthEffect": 0.00021009507604740995
+      },
       "outcomeMetrics": [
         {
           "name": "Food Insecurity Rate",
@@ -130,6 +215,23 @@
       "gapPercent": 204.07608958677517,
       "marginalReturn": 0.22173723670302645,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 25370148218.588898,
+      "elasticity": 1.2078478148291332,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.8573276203074891,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0021851476312567107,
+        "healthEffect": 0.0013110885787540264
+      },
       "outcomeMetrics": [
         {
           "name": "Violent Crime Rate per 100K",
@@ -151,6 +253,23 @@
       "gapPercent": 118.20300090838485,
       "marginalReturn": 0.11548584787930415,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 14588117497.627533,
+      "elasticity": 0.39882797565788053,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9937155910524301,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.00713721076634274,
+        "healthEffect": 0.004282326459805644
+      },
       "outcomeMetrics": [
         {
           "name": "Aid as % of GNI",
@@ -172,6 +291,23 @@
       "gapPercent": 150.7541515227773,
       "marginalReturn": 0.16565208352368918,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 14149027764.680208,
+      "elasticity": 0.3661285061869093,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9974010610529958,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.018960088858119034,
+        "healthEffect": 0.01137605331487142
+      },
       "outcomeMetrics": [
         {
           "name": "Housing Affordability Index",
@@ -193,6 +329,23 @@
       "gapPercent": -49.99999999999999,
       "marginalReturn": -0.045594349442446086,
       "recommendation": "decrease",
+      "recommendedAction": "decrease",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 13708547475.066118,
+      "elasticity": -0.05130928883100197,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.22333771639765698,
+        "n": 9,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0003028041685572896,
+        "healthEffect": -0.00018168250113437376
+      },
       "outcomeMetrics": [
         {
           "name": "Farm Income Index",
@@ -219,6 +372,23 @@
       "gapPercent": 93.42201050151449,
       "marginalReturn": 0.14675424590697142,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 12662546487.48399,
+      "elasticity": 0.36639956438098653,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9956807520359329,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.018417842852308356,
+        "healthEffect": 0.011050705711385013
+      },
       "outcomeMetrics": [
         {
           "name": "Renewable Energy Share %",
@@ -240,6 +410,23 @@
       "gapPercent": 45.363374305478324,
       "marginalReturn": 0.0593150182582553,
       "recommendation": "increase",
+      "recommendedAction": "increase",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 8359602775.5191765,
+      "elasticity": 0.23710875622398156,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.9947071121354132,
+        "n": 10,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.028849921994127396,
+        "healthEffect": 0.017309953196476435
+      },
       "outcomeMetrics": [
         {
           "name": "NIH-Funded Publications",
@@ -266,6 +453,23 @@
       "gapPercent": -81.33333333333333,
       "marginalReturn": -0.13283184845801563,
       "recommendation": "decrease",
+      "recommendedAction": "major_decrease",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Over-invested",
+      "priorityScore": 7279423390.02019,
+      "elasticity": -0.04612748230875006,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9885495551726966,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": -0.0007363205065270656,
+        "healthEffect": -0.00044179230391623933
+      },
       "outcomeMetrics": [
         {
           "name": "Deportations per Year",
@@ -287,6 +491,23 @@
       "gapPercent": 43.104382514649785,
       "marginalReturn": 0.11615249581521574,
       "recommendation": "increase",
+      "recommendedAction": "increase",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 5342627730.032323,
+      "elasticity": 0.32426666675205296,
+      "diminishingReturns": {
+        "modelType": "Saturation (Michaelis-Menten)",
+        "r2": 0.9925329151859725,
+        "n": 9,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.012620758995421501,
+        "healthEffect": 0.0075724553972529
+      },
       "outcomeMetrics": [
         {
           "name": "Air Quality Index (avg)",
@@ -313,6 +534,23 @@
       "gapPercent": 229.3262368002301,
       "marginalReturn": 0.19329460623472997,
       "recommendation": "increase",
+      "recommendedAction": "scale_up",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Under-invested",
+      "priorityScore": 2588044879.353822,
+      "elasticity": 0.3722802590227495,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0.9803715216533956,
+        "n": 8,
+        "lowFit": false,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0.0028702795842549594,
+        "healthEffect": 0.0017221677505529756
+      },
       "outcomeMetrics": [
         {
           "name": "Food Safety Violations per 1000",
@@ -334,6 +572,22 @@
       "gapPercent": 0,
       "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "D",
+      "evidenceDescription": "Weak evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
           "name": "Elderly Poverty Rate",
@@ -355,6 +609,22 @@
       "gapPercent": 0,
       "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "B",
+      "evidenceDescription": "Probable causal link",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
           "name": "Life Expectancy at 65",
@@ -381,6 +651,22 @@
       "gapPercent": 0,
       "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "C",
+      "evidenceDescription": "Moderate evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
           "name": "Uninsured Rate (Low-Income)",
@@ -407,6 +693,22 @@
       "gapPercent": 0,
       "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "C",
+      "evidenceDescription": "Moderate evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
           "name": "Debt-to-GDP Ratio",
@@ -428,6 +730,22 @@
       "gapPercent": 0,
       "marginalReturn": 0,
       "recommendation": "maintain",
+      "recommendedAction": "maintain",
+      "evidenceGrade": "F",
+      "evidenceDescription": "Insufficient evidence",
+      "investmentStatus": "Near optimal",
+      "priorityScore": 0,
+      "diminishingReturns": {
+        "modelType": "Log-linear",
+        "r2": 0,
+        "n": 0,
+        "lowFit": true,
+        "smallSample": true
+      },
+      "welfareEffect": {
+        "incomeEffect": 0,
+        "healthEffect": 0
+      },
       "outcomeMetrics": [
         {
           "name": "Veteran Unemployment Rate",
@@ -450,5 +768,5 @@
     "Increase Community & Regional Development by $61.8B (+150.8%)",
     "Increase Energy Programs by $50.4B (+93.4%)"
   ],
-  "generatedAt": "2026-02-13T19:58:39.170Z"
+  "generatedAt": "2026-03-12T21:02:35.982Z"
 }

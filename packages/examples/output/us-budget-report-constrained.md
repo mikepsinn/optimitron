@@ -42,27 +42,27 @@ Reallocation within the $6750B budget across 14 discretionary categories could i
 
 ## Current vs Optimal Allocation
 
-| Category | Current ($) | Current (%) | Optimal ($) | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |
-|----------|------------|-------------|------------|-------------|---------|---------|--------|----------|
-| Education | $238B | 3.5% | $1170.8B | 14.1% | +$932.8B | +391.9% | Scale up | A (Strong causal evidence) |
-| Transportation & Infrastructure | $168B | 2.5% | $663.1B | 8% | +$495.1B | +294.7% | Scale up | F (Insufficient evidence) |
-| Military | $886B | 13.1% | $443B | 5.3% | -$443B | -50.0% | Major decrease | D (Weak evidence) |
-| Science & Space (NASA, NSF) | $81B | 1.2% | $461B | 5.5% | +$380B | +469.2% | Scale up | B (Probable causal link) |
-| Income Security (SNAP, Housing) | $304B | 4.5% | $608B | 7.3% | +$304B | +100.0% | Scale up | D (Weak evidence) |
-| Justice & Law Enforcement | $68B | 1% | $206.8B | 2.5% | +$138.8B | +204.1% | Scale up | F (Insufficient evidence) |
-| Agriculture & Food Safety | $38B | 0.6% | $125.1B | 1.5% | +$87.1B | +229.3% | Scale up | F (Insufficient evidence) |
-| International Affairs & Aid | $68B | 1% | $148.4B | 1.8% | +$80.4B | +118.2% | Scale up | F (Insufficient evidence) |
-| Community & Regional Development | $41B | 0.6% | $102.8B | 1.2% | +$61.8B | +150.8% | Scale up | D (Weak evidence) |
-| Energy Programs | $54B | 0.8% | $104.4B | 1.3% | +$50.4B | +93.4% | Scale up | D (Weak evidence) |
-| Health Research (NIH, CDC) | $102B | 1.5% | $148.3B | 1.8% | +$46.3B | +45.4% | Increase | F (Insufficient evidence) |
-| Environment & EPA | $68B | 1% | $97.3B | 1.2% | +$29.3B | +43.1% | Increase | F (Insufficient evidence) |
-| Farm Subsidies | $30B | 0.4% | $15B | 0.2% | -$15B | -50.0% | Decrease | F (Insufficient evidence) |
-| Immigration & Customs Enforcement | $9B | 0.1% | $1.7B | 0% | -$7.3B | -81.3% | Major decrease | F (Insufficient evidence) |
-| Social Security *(non-discretionary)* | $1418B | 21% | $1418B | 17.1% | $0 | 0.0% | Maintain | D (Weak evidence) |
-| Medicare *(non-discretionary)* | $874B | 12.9% | $874B | 10.5% | $0 | 0.0% | Maintain | B (Probable causal link) |
-| Medicaid & CHIP *(non-discretionary)* | $575B | 8.5% | $575B | 6.9% | $0 | 0.0% | Maintain | C (Moderate evidence) |
-| Net Interest on Debt *(non-discretionary)* | $881B | 13.1% | $881B | 10.6% | $0 | 0.0% | Maintain | C (Moderate evidence) |
-| Veterans Benefits *(non-discretionary)* | $270B | 4% | $270B | 3.2% | $0 | 0.0% | Maintain | F (Insufficient evidence) |
+| Category | Current ($) | Current (%) | Optimal ($) | Optimal 95% CI | Optimal (%) | Gap ($) | Gap (%) | Action | Evidence |
+|----------|------------|-------------|------------|----------------|-------------|---------|---------|--------|----------|
+| Education | $238B | 3.5% | $1170.8B | — | 14.1% | +$932.8B | +391.9% | Scale up | A (Strong causal evidence) |
+| Transportation & Infrastructure | $168B | 2.5% | $663.1B | — | 8% | +$495.1B | +294.7% | Scale up | F (Insufficient evidence) |
+| Military | $886B | 13.1% | $443B | — | 5.3% | -$443B | -50.0% | Major decrease | D (Weak evidence) |
+| Science & Space (NASA, NSF) | $81B | 1.2% | $461B | — | 5.5% | +$380B | +469.2% | Scale up | B (Probable causal link) |
+| Income Security (SNAP, Housing) | $304B | 4.5% | $608B | — | 7.3% | +$304B | +100.0% | Scale up | D (Weak evidence) |
+| Justice & Law Enforcement | $68B | 1% | $206.8B | — | 2.5% | +$138.8B | +204.1% | Scale up | F (Insufficient evidence) |
+| Agriculture & Food Safety | $38B | 0.6% | $125.1B | — | 1.5% | +$87.1B | +229.3% | Scale up | F (Insufficient evidence) |
+| International Affairs & Aid | $68B | 1% | $148.4B | — | 1.8% | +$80.4B | +118.2% | Scale up | F (Insufficient evidence) |
+| Community & Regional Development | $41B | 0.6% | $102.8B | — | 1.2% | +$61.8B | +150.8% | Scale up | D (Weak evidence) |
+| Energy Programs | $54B | 0.8% | $104.4B | — | 1.3% | +$50.4B | +93.4% | Scale up | D (Weak evidence) |
+| Health Research (NIH, CDC) | $102B | 1.5% | $148.3B | — | 1.8% | +$46.3B | +45.4% | Increase | F (Insufficient evidence) |
+| Environment & EPA | $68B | 1% | $97.3B | — | 1.2% | +$29.3B | +43.1% | Increase | F (Insufficient evidence) |
+| Farm Subsidies | $30B | 0.4% | $15B | — | 0.2% | -$15B | -50.0% | Decrease | F (Insufficient evidence) |
+| Immigration & Customs Enforcement | $9B | 0.1% | $1.7B | — | 0% | -$7.3B | -81.3% | Major decrease | F (Insufficient evidence) |
+| Social Security *(non-discretionary)* | $1418B | 21% | $1418B | — | 17.1% | $0 | 0.0% | Maintain | D (Weak evidence) |
+| Medicare *(non-discretionary)* | $874B | 12.9% | $874B | — | 10.5% | $0 | 0.0% | Maintain | B (Probable causal link) |
+| Medicaid & CHIP *(non-discretionary)* | $575B | 8.5% | $575B | — | 6.9% | $0 | 0.0% | Maintain | C (Moderate evidence) |
+| Net Interest on Debt *(non-discretionary)* | $881B | 13.1% | $881B | — | 10.6% | $0 | 0.0% | Maintain | C (Moderate evidence) |
+| Veterans Benefits *(non-discretionary)* | $270B | 4% | $270B | — | 3.2% | $0 | 0.0% | Maintain | F (Insufficient evidence) |
 
 ## Diminishing Returns Analysis
 

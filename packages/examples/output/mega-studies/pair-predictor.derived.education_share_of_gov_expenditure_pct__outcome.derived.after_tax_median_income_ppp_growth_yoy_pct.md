@@ -7,16 +7,16 @@
 - Filling strategy: interpolation
 - Temporal candidates evaluated: 12
 - Temporal candidates with valid results: 12
-- Temporal profile score: 0.6219
+- Temporal profile score: 0.6242
 - Included subjects: 159
 - Skipped subjects: 0
 - Total aligned pairs: 5212
 - Signal grade: C (moderate)
 - Data status: enough data
-- Confidence score: 0.730 (medium confidence)
+- Confidence score: 0.738 (medium confidence)
 - Signal tag: early signal
 - Direction: neutral
-- Uncertainty score: 0.3192 (lower is better)
+- Uncertainty score: 0.3206 (lower is better)
 
 ## Quick Meanings
 
@@ -31,13 +31,13 @@
 - Recommended Education Share of Government Spending level for higher After-Tax Median Income Growth (YoY %): 13.129 % of government expenditure (data-backed level).
 - Best level directly seen in the grouped data: 13.129 % of government expenditure.
 - Math-only guess is inside seen data but outside the best-performing bucket, so we still use the data-backed level.
-- Best observed bin anchor (median/mean) is 13.796 % of government expenditure; model-optimal minus observed-anchor difference is 5.240 (+38.0%).
+- Best observed bin anchor (median/mean) is 13.796 % of government expenditure; model-optimal minus observed-anchor difference is 5.257 (+38.1%).
 - Backup level check (middle 10-90% of data) suggests 13.288 % of government expenditure.
-- The math-only guess and backup level differ by 30.2%, which means extreme values may matter a lot.
+- The math-only guess and backup level differ by 30.3%, which means extreme values may matter a lot.
 - Could not find a clear minimum useful level (no_consistent_effective_dose_detected).
 - Diminishing returns likely begin near 13.129 % of government expenditure.
 - Saturation/plateau zone starts around 16.371 % of government expenditure and extends through 17.804 % of government expenditure.
-- Highest observed mean After-Tax Median Income Growth (YoY %) appears when Education Share of Government Spending is in [12.937, 14.674) (mean outcome 5.598).
+- Highest observed mean After-Tax Median Income Growth (YoY %) appears when Education Share of Government Spending is in [12.937, 14.674) (mean outcome 5.579).
 - Direction signal is neutral; use caution and rely on the data-backed level.
 
 ## Decision Summary
@@ -50,16 +50,16 @@
 
 - No strong directional pattern is detected between Education Share of Government Spending and After-Tax Median Income Growth (YoY %).
 - The estimate uses 159 subjects and 5212 aligned predictor-outcome observations.
-- Best observed mean outcome appears in predictor bin [12.937, 14.674) (mean outcome 5.598).
-- Confidence score is 0.730 (medium confidence); data status is enough data.
+- Best observed mean outcome appears in predictor bin [12.937, 14.674) (mean outcome 5.579).
+- Confidence score is 0.738 (medium confidence); data status is enough data.
 - Outcome values in these summaries are welfare-aligned for cross-metric comparison (higher means better).
 
 ## Quality Warnings
 
 - Weak significance score (<0.70).
 - Some country-level direction scores are unusually high; this can happen with this scoring method.
-- Top temporal profiles are close (score delta 0.0064); temporal assumptions are not yet robust.
-- Robustness check: trimmed-range optimal differs by 30.2% from raw optimal; tail observations materially influence target.
+- Top temporal profiles are close (score delta 0.0073); temporal assumptions are not yet robust.
+- Robustness check: trimmed-range optimal differs by 30.3% from raw optimal; tail observations materially influence target.
 
 ## Appendix: Technical Diagnostics
 
@@ -67,17 +67,17 @@
 
 | Metric | Value |
 |--------|------:|
-| Forward correlation | -0.0412 |
-| Reverse correlation | 0.0924 |
-| Direction score (forward - reverse) | -0.1336 |
-| Effect size (% change from baseline) | 7.9630 |
-| Significance score | 0.6808 |
-| Weighted PIS | 0.1767 |
-| Value linked with higher outcome | 19.0358 |
-| Value linked with lower outcome | 18.8879 |
-| Math-only best daily value | 19.0358 |
+| Forward correlation | -0.0423 |
+| Reverse correlation | 0.0942 |
+| Direction score (forward - reverse) | -0.1364 |
+| Effect size (% change from baseline) | 7.7537 |
+| Significance score | 0.6794 |
+| Weighted PIS | 0.1762 |
+| Value linked with higher outcome | 19.0537 |
+| Value linked with lower outcome | 18.9162 |
+| Math-only best daily value | 19.0537 |
 | Recommended level (reader-facing) | 13.129 % of government expenditure (data-backed level) |
-| Math-only guess (technical) | 19.036 % of government expenditure |
+| Math-only guess (technical) | 19.054 % of government expenditure |
 | Data-backed level | 13.129 % of government expenditure |
 | Data-backed range | [12.370, 13.797) |
 | Backup level (middle-data check) | 12.935 % of government expenditure |
@@ -88,19 +88,19 @@
 | Math-only guess outside best observed bucket? | yes |
 | Best observed range | [12.937, 14.674) |
 | Best observed range (middle-data check) | [12.548, 13.910) |
-| Best observed outcome average | 5.598 |
-| Best observed outcome average (middle-data check) | 5.767 |
+| Best observed outcome average | 5.579 |
+| Best observed outcome average (middle-data check) | 5.752 |
 | Backup level (bucket median) | 13.288 % of government expenditure |
-| Math-only vs backup difference | -5.748 (-30.2%) |
+| Math-only vs backup difference | -5.766 (-30.3%) |
 | Middle-data share kept | 80.1% (4174/5212) |
 | Data status | enough data |
 | Data-status details | none |
-| Confidence score | 0.7304 (medium confidence) |
+| Confidence score | 0.7381 (medium confidence) |
 | Reliability support component | 0.9343 |
-| Reliability significance component | 0.6808 |
-| Reliability directional component | 0.8907 |
-| Reliability temporal-stability component | 0.2143 |
-| Reliability robustness component | 0.7756 |
+| Reliability significance component | 0.6794 |
+| Reliability directional component | 0.9095 |
+| Reliability temporal-stability component | 0.2434 |
+| Reliability robustness component | 0.7749 |
 | Signal tag | early signal |
 
 ### Response-Curve Diagnostics
@@ -108,30 +108,30 @@
 | Diagnostic | Result |
 |------------|--------|
 | Minimum useful level | Not identified (no_consistent_effective_dose_detected) |
-| Point where gains start slowing | 13.129 % of government expenditure (ratio=-0.258) |
+| Point where gains start slowing | 13.129 % of government expenditure (ratio=-0.263) |
 | Flat zone range | [15.392, 18.510) |
 | Why this data-backed level was chosen | identified |
-| Math-only guess minus data-backed level | 5.907 (+45.0%) |
+| Math-only guess minus data-backed level | 5.925 (+45.1%) |
 
 ### Temporal Sensitivity
 
 | Profile | Source | Lag (years) | Duration (years) | Filling | Score | Delta vs Best | Included Subjects | Total Pairs |
 |---------|--------|------------:|-----------------:|---------|------:|--------------:|------------------:|------------:|
-| Selected | predictor_default | 2 | 5 | interpolation | 0.6219 | 0.0000 | 159 | 5212 |
-| Runner-up | predictor_default | 1 | 5 | interpolation | 0.6154 | 0.0064 | 159 | 5212 |
-| Runner-up | predictor_default | 1 | 2 | interpolation | 0.6136 | 0.0083 | 159 | 5212 |
-| Runner-up | predictor_default | 3 | 5 | interpolation | 0.6123 | 0.0096 | 159 | 5212 |
+| Selected | predictor_default | 2 | 5 | interpolation | 0.6242 | 0.0000 | 159 | 5212 |
+| Runner-up | predictor_default | 1 | 5 | interpolation | 0.6169 | 0.0073 | 159 | 5212 |
+| Runner-up | predictor_default | 3 | 5 | interpolation | 0.6154 | 0.0088 | 159 | 5212 |
+| Runner-up | predictor_default | 1 | 2 | interpolation | 0.6130 | 0.0112 | 159 | 5212 |
 
 ### Binned Pattern Table
 
 | Bin | Predictor Range | Pairs | Subjects | Predictor Mean | Predictor Median | Outcome Mean | Outcome Median |
 |----:|-----------------|------:|---------:|---------------:|-----------------:|-------------:|---------------:|
-| 1 | [0.00000, 11.068) | 522 | 38 | 9.1273 | 9.6442 | 5.2982 | 5.3833 |
-| 2 | [11.068, 12.937) | 521 | 47 | 12.1173 | 12.0995 | 4.2644 | 4.6958 |
-| 3 | [12.937, 14.674) | 519 | 58 | 13.8039 | 13.7962 | 5.5984 | 5.4354 |
-| 4 | [14.674, 16.814) | 506 | 69 | 15.7132 | 15.6877 | 4.6192 | 4.8955 |
-| 5 | [16.814, 18.510) | 535 | 73 | 17.6632 | 17.7196 | 4.2931 | 4.2966 |
-| 6 | [18.510, 19.964) | 524 | 73 | 19.1804 | 19.1920 | 4.3778 | 4.2261 |
+| 1 | [0.00000, 11.068) | 522 | 38 | 9.1273 | 9.6442 | 5.3090 | 5.4951 |
+| 2 | [11.068, 12.937) | 521 | 47 | 12.1173 | 12.0995 | 4.2680 | 4.7260 |
+| 3 | [12.937, 14.674) | 519 | 58 | 13.8039 | 13.7962 | 5.5795 | 5.4446 |
+| 4 | [14.674, 16.814) | 506 | 69 | 15.7132 | 15.6877 | 4.6257 | 4.9369 |
+| 5 | [16.814, 18.510) | 535 | 73 | 17.6632 | 17.7196 | 4.2936 | 4.2966 |
+| 6 | [18.510, 19.964) | 524 | 73 | 19.1804 | 19.1920 | 4.3786 | 4.2250 |
 | 7 | [19.964, 21.764) | 516 | 72 | 20.8274 | 20.9103 | 4.3378 | 4.7170 |
 | 8 | [21.764, 23.863) | 502 | 66 | 22.8299 | 22.9495 | 4.1305 | 4.2934 |
 | 9 | [23.863, 27.700) | 540 | 55 | 25.5790 | 25.6262 | 4.9008 | 4.9027 |
@@ -162,8 +162,8 @@ Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 [-29.271, -19.210) | # 23
 [-19.210, -9.149) | # 89
 [-9.149, 0.91158) | ####### 837
-[0.91158, 10.972) | ############################## 3724
-[10.972, 21.033) | #### 463
+[0.91158, 10.972) | ############################## 3727
+[10.972, 21.033) | #### 460
 [21.033, 31.094) | # 45
 [31.094, 41.155) | # 7
 [41.155, 51.216) | # 4
@@ -176,7 +176,7 @@ Outcome Distribution (After-Tax Median Income Growth (YoY %), welfare-aligned)
 | Subject | Forward r | Directional Score | Effect % | Pairs |
 |---------|----------:|------------------:|---------:|------:|
 | BRA | -0.4766 | -1.1544 | -51.819 | 33 |
-| SRB | -0.5223 | -1.0357 | -56.721 | 26 |
+| SRB | -0.4005 | -1.0245 | -46.898 | 26 |
 | IDX | 0.2060 | 1.0032 | 14.529 | 33 |
 | CSS | -0.3627 | -0.9924 | -5.654 | 33 |
 | LDC | 0.2016 | 0.9855 | 24.611 | 33 |

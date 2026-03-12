@@ -68,9 +68,9 @@
 | Effect size (% change from baseline) | 268.6496 |
 | Significance score | 0.6288 |
 | Weighted PIS | 0.3816 |
-| Value linked with higher outcome | 257.0083 |
-| Value linked with lower outcome | 233.3339 |
-| Math-only best daily value | 257.0083 |
+| Value linked with higher outcome | 257.0086 |
+| Value linked with lower outcome | 233.3343 |
+| Math-only best daily value | 257.0086 |
 | Recommended level (reader-facing) | N/A (not enough data) |
 | Math-only guess (technical) | 257.01 international $/person |
 | Data-backed level | 44.502 international $/person |
@@ -128,9 +128,9 @@
 | 5 | [91.255, 122.44) | 97 | 21 | 103.6229 | 101.4481 | -5958.4330 | -726.0000 |
 | 6 | [122.44, 171.23) | 99 | 22 | 146.6662 | 146.5405 | -9533.5657 | -504.0000 |
 | 7 | [171.23, 263.49) | 99 | 21 | 209.9784 | 204.7529 | -8449.2727 | -504.0000 |
-| 8 | [263.49, 367.71) | 98 | 17 | 308.3074 | 308.0386 | -13806.5306 | -1167.5000 |
-| 9 | [367.71, 635.88) | 98 | 15 | 504.7319 | 508.5829 | -9812.3571 | -211.5000 |
-| 10 | [635.88, 3660.3] | 99 | 11 | 1415.0126 | 1098.9375 | -2520.4747 | -117.0000 |
+| 8 | [263.49, 367.71) | 98 | 17 | 308.3073 | 308.0386 | -13806.5306 | -1167.5000 |
+| 9 | [367.71, 635.88) | 98 | 15 | 504.7379 | 508.5829 | -9812.3571 | -211.5000 |
+| 10 | [635.88, 3660.3] | 99 | 11 | 1415.0134 | 1098.9375 | -2520.4747 | -117.0000 |
 
 ### Distribution Charts
 
