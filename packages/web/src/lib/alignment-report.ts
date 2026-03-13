@@ -300,6 +300,7 @@ export function buildPersonalAlignmentReport(input: {
       votesCompared: score.votesCompared,
     };
   });
+  const fallbackCandidateSourceNote = input.benchmarkProfiles[0]?.sourceNote ?? "";
 
   const politicians = ranking.map((entry) => {
     const politician = input.benchmarkProfiles.find(
@@ -340,10 +341,7 @@ export function buildPersonalAlignmentReport(input: {
       comparisons.length < PERSONAL_ALIGNMENT_PRELIMINARY_COMPARISON_THRESHOLD &&
       completionRatio < PERSONAL_ALIGNMENT_PRELIMINARY_COMPLETION_THRESHOLD,
     candidateSourceType: input.candidateSourceType ?? "curated_real",
-    candidateSourceNote:
-      input.candidateSourceNote ??
-      input.benchmarkProfiles[0]?.sourceNote ??
-      "",
+    candidateSourceNote: input.candidateSourceNote ?? fallbackCandidateSourceNote,
     candidateLastSyncedAt: input.candidateLastSyncedAt ?? null,
     topPriorities: buildTopPriorityHighlights(summary.citizenAllocations),
     ranking,

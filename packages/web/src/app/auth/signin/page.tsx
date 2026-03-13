@@ -20,9 +20,9 @@ function getAuthErrorMessage(error: string | null) {
 
 function SignInContent() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams?.get("callbackUrl") || ROUTES.vote;
-  const referralCode = searchParams?.get("ref") || null;
-  const initialError = getAuthErrorMessage(searchParams?.get("error") || null);
+  const callbackUrl = searchParams.get("callbackUrl") ?? ROUTES.vote;
+  const referralCode = searchParams.get("ref");
+  const initialError = getAuthErrorMessage(searchParams.get("error"));
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-yellow-300">

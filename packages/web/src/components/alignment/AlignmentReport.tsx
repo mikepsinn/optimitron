@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, BarChart3, Scale, Sparkles, Target } from "lucide-react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
@@ -45,6 +46,10 @@ export function AlignmentReport({
   ownerLabel,
   publicMode = false,
 }: AlignmentReportProps) {
+  const methodNote =
+    state.status === "ready" && state.report.candidateSourceNote.length > 0
+      ? state.report.candidateSourceNote
+      : ALIGNMENT_BENCHMARK_SOURCE_NOTE;
   const reportTitle =
     publicMode && ownerLabel
       ? `Alignment Report for ${ownerLabel}`
@@ -160,19 +165,17 @@ export function AlignmentReport({
               </div>
               <div>
                 <h2 className="text-3xl font-black uppercase text-black">
-                  {topMatch?.name}
+                  {topMatch.name}
                 </h2>
-              <p className="mt-1 text-sm font-bold uppercase tracking-[0.15em] text-black/60">
-                  {topMatch?.title} · {topMatch?.party}
+                <p className="mt-1 text-sm font-bold uppercase tracking-[0.15em] text-black/60">
+                  {topMatch.title} · {topMatch.party}
                 </p>
-                {topMatch ? (
-                  <p className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-black/50">
-                    {formatCoverageLabel(topMatch)}
-                  </p>
-                ) : null}
+                <p className="mt-2 text-[11px] font-black uppercase tracking-[0.15em] text-black/50">
+                  {formatCoverageLabel(topMatch)}
+                </p>
               </div>
               <p className="max-w-2xl text-sm font-medium text-black/70">
-                {topMatch?.summary}
+                {topMatch.summary}
               </p>
             </div>
             <div className="min-w-40 border-4 border-black bg-brutal-cyan p-5 text-center">
@@ -180,7 +183,7 @@ export function AlignmentReport({
                 Alignment Score
               </div>
               <div className="mt-2 text-4xl font-black text-black">
-                {topMatch ? formatScore(topMatch.score) : "0.0%"}
+                {formatScore(topMatch.score)}
               </div>
             </div>
           </div>
@@ -261,7 +264,7 @@ export function AlignmentReport({
           <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-lg font-black uppercase text-black">Method Note</h3>
             <p className="mt-3 text-sm font-medium text-black/70">
-              {state.report.candidateSourceNote || ALIGNMENT_BENCHMARK_SOURCE_NOTE}
+              {methodNote}
             </p>
             <p className="mt-3 text-xs font-bold uppercase tracking-[0.15em] text-black/50">
               Generated {new Date(state.report.generatedAt).toLocaleString()}

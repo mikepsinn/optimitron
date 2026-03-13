@@ -7,7 +7,7 @@ import { getSignInPath, ROUTES } from "@/lib/routes";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const userId = session?.user.id;
 
   if (!userId) {
     redirect(getSignInPath(ROUTES.profile));

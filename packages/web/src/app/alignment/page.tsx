@@ -15,13 +15,12 @@ export const metadata = {
 export default async function AlignmentPage() {
   const session = await getServerSession(authOptions);
   const user = session?.user;
-  const userId = user?.id;
 
-  if (!userId || !user) {
+  if (!user?.id) {
     redirect(getSignInPath(ROUTES.alignment));
   }
 
-  const state = await getPersonalAlignmentState(userId);
+  const state = await getPersonalAlignmentState(user.id);
   const shareUrl = buildUserAlignmentUrl(user, getBaseUrl());
 
   return (

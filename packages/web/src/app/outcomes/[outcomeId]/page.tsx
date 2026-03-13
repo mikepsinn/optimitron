@@ -79,7 +79,7 @@ export default async function OutcomeHubPage({
               <tr key={row.predictorId} className="border-b border-black hover:bg-cyan-50">
                 <td className="px-3 py-2 font-black text-black">#{row.rank}</td>
                 <td className="px-3 py-2 font-bold text-black">
-                  <div>{row.predictorLabel || row.predictorId}</div>
+                  <div>{row.predictorLabel ?? row.predictorId}</div>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {buildOutcomeQualityBadges(row).map(badge => (
                       <span

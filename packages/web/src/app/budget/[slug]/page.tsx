@@ -206,17 +206,18 @@ export default async function BudgetCategoryPage({
   const dr = cat.diminishingReturns;
 
   // Constrained reallocation data for this category
-  const constrainedCat = data.constrainedReallocation?.categories.find(
+  const constrainedCat = data.constrainedReallocation.categories.find(
     (c) => c.name === cat.name
   );
 
   // Causal / domestic evidence for this category
-  const causalEvidence = data.causalEvidenceDetail?.find(
+  const causalEvidence = data.causalEvidenceDetail.find(
     (e) => e.name === cat.name
   );
-  const domesticEvidence = data.domesticEvidenceDetail?.find(
+  const domesticEvidence = data.domesticEvidenceDetail.find(
     (e) => e.name === cat.name
   );
+  const hasEvidence = causalEvidence !== undefined || domesticEvidence !== undefined;
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
@@ -242,7 +243,7 @@ export default async function BudgetCategoryPage({
           <div className="border-2 border-black p-4 bg-yellow-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase text-black/60 mb-1">Optimal Spending</div>
             <div className="text-2xl sm:text-3xl font-black text-black">{fmt(cat.optimalSpending)}</div>
-            {cat.oslCiLow != null && cat.oslCiHigh != null && (
+            {cat.oslCiLow !== undefined && cat.oslCiHigh !== undefined && (
               <div className="text-xs font-bold text-black/40 mt-1">
                 95% CI: {fmt(cat.oslCiLow)} – {fmt(cat.oslCiHigh)}
               </div>
@@ -357,7 +358,7 @@ export default async function BudgetCategoryPage({
                 <div className="h-full bg-pink-500" style={{ width: `${dr.r2 * 100}%` }} />
               </div>
             </div>
-            {cat.elasticity != null && (
+            {cat.elasticity !== undefined && (
               <div className="border-2 border-black p-3 bg-white">
                 <div className="text-xs font-bold uppercase text-black/50">Elasticity</div>
                 <div className="text-lg font-black text-black">{cat.elasticity.toFixed(2)}</div>
@@ -386,7 +387,7 @@ export default async function BudgetCategoryPage({
       )}
 
       {/* Causal Evidence Detail */}
-      {(causalEvidence || domesticEvidence) && (
+      {hasEvidence && (
         <section className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
           <h2 className="text-lg font-black uppercase text-black mb-4">Causal Evidence Detail</h2>
 
