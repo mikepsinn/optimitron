@@ -35,6 +35,7 @@ export const metadata: Metadata = {
     description:
       "Planetary debugging software for budgets, policies, politicians, and public outcomes.",
   },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

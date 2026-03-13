@@ -11,6 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@optomitron/optimizer": "workspace:*",
     "@storacha/client": "^2.1.1",
     "zod": "^3.22.4"
   },

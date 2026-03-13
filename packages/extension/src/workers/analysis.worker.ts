@@ -3,6 +3,7 @@
  * Spawned from the options page to avoid blocking the UI.
  */
 import { runFullAnalysis } from '@optomitron/optimizer';
+import type { NOf1VariableRelationship } from '@optomitron/optimizer';
 import type { AnalysisPair } from '../lib/analysis.js';
 
 export interface WorkerInput {
@@ -10,21 +11,11 @@ export interface WorkerInput {
   pairs: AnalysisPair[];
 }
 
-export interface AnalysisRelationshipResult {
+export interface AnalysisRelationshipResult extends NOf1VariableRelationship {
   predictorVariableId: string;
   outcomeVariableId: string;
   predictorName: string;
   outcomeName: string;
-  forwardPearson: number;
-  reversePearson: number;
-  predictivePearson: number;
-  effectSize: number;
-  statisticalSignificance: number;
-  numberOfPairs: number;
-  valuePredictingHighOutcome?: number;
-  valuePredictingLowOutcome?: number;
-  optimalDailyValue?: number;
-  outcomeFollowUpPercentChangeFromBaseline?: number;
   evidenceGrade?: string;
   pisScore?: number;
 }
@@ -77,6 +68,7 @@ self.onmessage = (event: MessageEvent<WorkerInput>) => {
       );
 
       relationships.push({
+        subjectId: 'local',
         predictorVariableId: pair.predictor.variableId,
         outcomeVariableId: pair.outcome.variableId,
         predictorName: result.predictorName,
@@ -90,7 +82,7 @@ self.onmessage = (event: MessageEvent<WorkerInput>) => {
         valuePredictingHighOutcome: result.optimalValues.valuePredictingHighOutcome,
         valuePredictingLowOutcome: result.optimalValues.valuePredictingLowOutcome,
         optimalDailyValue: result.optimalValues.optimalDailyValue,
-        outcomeFollowUpPercentChangeFromBaseline: result.baselineFollowup.followUpPercentChange,
+        outcomeFollowUpPercentChangeFromBaseline: result.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline,
         evidenceGrade: result.pis.evidenceGrade,
         pisScore: result.pis.score,
       });

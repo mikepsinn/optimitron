@@ -246,7 +246,7 @@ let sortAscending = false;
 
 async function getOrCreateContributorId(): Promise<string> {
   const result = await chrome.storage.local.get("contributorId");
-  if (result.contributorId) return result.contributorId as string;
+  if (result["contributorId"]) return result["contributorId"] as string;
   const id = crypto.randomUUID();
   await chrome.storage.local.set({ contributorId: id });
   return id;
@@ -271,7 +271,7 @@ function setupAnalysis(): void {
   const headers = document.querySelectorAll<HTMLElement>(".sortable");
   for (const header of headers) {
     header.addEventListener("click", () => {
-      const field = header.dataset.sort;
+      const field = header.dataset["sort"];
       if (!field) return;
       if (sortField === field) {
         sortAscending = !sortAscending;
@@ -396,7 +396,7 @@ async function shareResults(): Promise<void> {
 
   const checkboxes = document.querySelectorAll<HTMLInputElement>(".result-checkbox:checked");
   const selectedKeys = new Set(
-    Array.from(checkboxes).map((cb) => `${cb.dataset.predictor}|${cb.dataset.outcome}`),
+    Array.from(checkboxes).map((cb) => `${cb.dataset["predictor"]}|${cb.dataset["outcome"]}`),
   );
 
   const selected = analysisResults.filter(

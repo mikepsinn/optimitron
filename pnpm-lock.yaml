@@ -188,6 +188,13 @@ importers:
         version: 1.6.1(@types/node@25.2.1)
 
   packages/extension:
+    dependencies:
+      '@optomitron/optimizer':
+        specifier: workspace:*
+        version: link:../optimizer
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
     devDependencies:
       '@types/chrome':
         specifier: ^0.0.268
@@ -286,6 +293,9 @@ importers:
 
   packages/storage:
     dependencies:
+      '@optomitron/optimizer':
+        specifier: workspace:*
+        version: link:../optimizer
       '@storacha/client':
         specifier: ^2.1.1
         version: 2.1.1
@@ -323,6 +333,9 @@ importers:
       '@optomitron/optimizer':
         specifier: workspace:^
         version: link:../optimizer
+      '@optomitron/storage':
+        specifier: workspace:^
+        version: link:../storage
       '@optomitron/wishocracy':
         specifier: workspace:^
         version: link:../wishocracy
@@ -422,6 +435,12 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      web-push:
+        specifier: ^3.6.7
+        version: 3.6.7
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -432,6 +451,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.18
         version: 18.3.7(@types/react@18.3.28)
+      '@types/web-push':
+        specifier: ^3.6.4
+        version: 3.6.4
       autoprefixer:
         specifier: ^10.4.17
         version: 10.4.24(postcss@8.5.6)
@@ -3730,6 +3752,12 @@ packages:
     resolution: {integrity: sha512-xoDlM2S4ortawSWORYqsdU+2rxdh4LRW9ytc3zmT37RIKQh6IHyKwwtKhKis9ah8ol07DCkZxPt8BBvPjC6v4g==}
     dev: false
 
+  /@types/web-push@3.6.4:
+    resolution: {integrity: sha512-GnJmSr40H3RAnj0s34FNTcJi1hmWFV5KXugE0mYWnYhgTAHLJ/dJKAwDmvPJYMke0RplY2XE9LnM4hqSqKIjhQ==}
+    dependencies:
+      '@types/node': 20.19.32
+    dev: true
+
   /@typescript-eslint/eslint-plugin@8.54.0(@typescript-eslint/parser@8.54.0)(eslint@8.57.1)(typescript@5.9.3):
     resolution: {integrity: sha512-hAAP5io/7csFStuOmR782YmTthKBJ9ND3WVL60hcOjvtGFb+HJxH4O5huAcmcZ9v9G8P+JETiZ/G1B8MALnWZQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -4458,6 +4486,15 @@ packages:
       is-array-buffer: 3.0.5
     dev: true
 
+  /asn1.js@5.4.1:
+    resolution: {integrity: sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==}
+    dependencies:
+      bn.js: 4.12.3
+      inherits: 2.0.4
+      minimalistic-assert: 1.0.1
+      safer-buffer: 2.1.2
+    dev: false
+
   /assertion-error@1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
     dev: true
@@ -4554,6 +4591,10 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
     dev: true
+
+  /bn.js@4.12.3:
+    resolution: {integrity: sha512-fGTi3gxV/23FTYdAoUtLYp6qySe2KE3teyZitipKNRuVYcBkoP/bB3guXN/XVKUe9mxCHXnc9C4ocyz8OmgN0g==}
+    dev: false
 
   /brace-expansion@1.1.12:
     resolution: {integrity: sha512-9T9UjW3r0UW5c1Q7GTwllptXwhvYmEzFhzMfZ9H7FQWt+uZePjZPjBP/W1ZEyZ1twGWom5/56TF4lPcqjnDHcg==}
@@ -6292,6 +6333,11 @@ packages:
       - supports-color
     dev: true
 
+  /http_ece@1.2.0:
+    resolution: {integrity: sha512-JrF8SSLVmcvc5NducxgyOrKXe3EsyHMgBFgSaIUGmArKe+rwr0uphRkRXvwiom3I+fpIfoItveHrfudL8/rxuA==}
+    engines: {node: '>=16'}
+    dev: false
+
   /https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
@@ -7029,6 +7075,10 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /minimalistic-assert@1.0.1:
+    resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
+    dev: false
+
   /minimatch@10.1.2:
     resolution: {integrity: sha512-fu656aJ0n2kcXwsnwnv9g24tkU5uSmOlTjd6WyyaKm2Z+h1qmY6bAjrcaIxF/BslFqbZ8UBtbJi7KgQOZD2PTw==}
     engines: {node: 20 || >=22}
@@ -7049,7 +7099,6 @@ packages:
 
   /minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
-    dev: true
 
   /minipass@7.1.2:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
@@ -9342,6 +9391,20 @@ packages:
     dependencies:
       xml-name-validator: 5.0.0
     dev: true
+
+  /web-push@3.6.7:
+    resolution: {integrity: sha512-OpiIUe8cuGjrj3mMBFWY+e4MMIkW3SVT+7vEIjvD9kejGUypv8GPDf84JdPWskK8zMRIJ6xYGm+Kxr8YkPyA0A==}
+    engines: {node: '>= 16'}
+    hasBin: true
+    dependencies:
+      asn1.js: 5.4.1
+      http_ece: 1.2.0
+      https-proxy-agent: 7.0.6
+      jws: 4.0.1
+      minimist: 1.2.8
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}

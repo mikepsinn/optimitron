@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { NOf1VariableRelationshipSchema } from '@optomitron/optimizer';
 
 export const CidSchema = z.string().min(1);
 export type Cid = z.infer<typeof CidSchema>;
@@ -78,19 +79,9 @@ export const OptomitronPolicyAnalysisSnapshotSchema = LinkedSnapshotBaseSchema.e
 
 export type OptomitronPolicyAnalysisSnapshot = z.infer<typeof OptomitronPolicyAnalysisSnapshotSchema>;
 
-export const HealthAnalysisRelationshipSchema = z.object({
+export const HealthAnalysisRelationshipSchema = NOf1VariableRelationshipSchema.extend({
   predictorVariableId: z.string(),
   outcomeVariableId: z.string(),
-  forwardPearson: z.number(),
-  reversePearson: z.number(),
-  predictivePearson: z.number(),
-  effectSize: z.number(),
-  statisticalSignificance: z.number(),
-  numberOfPairs: z.number(),
-  valuePredictingHighOutcome: z.number().optional(),
-  valuePredictingLowOutcome: z.number().optional(),
-  optimalDailyValue: z.number().optional(),
-  outcomeFollowUpPercentChangeFromBaseline: z.number().optional(),
   evidenceGrade: z.string().optional(),
   pisScore: z.number().optional(),
 });

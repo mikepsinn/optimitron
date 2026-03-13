@@ -234,6 +234,12 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
     });
   });
 
+  // Update notification preference with check-in timestamp
+  await prisma.notificationPreference.updateMany({
+    where: { userId },
+    data: { lastCheckInAt: new Date() },
+  });
+
   return getProfilePageData(userId);
 }
 

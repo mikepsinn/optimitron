@@ -47,6 +47,37 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Encrypt all user allocations as a single blob for breach protection
+    const jurisdictionKey = process.env.WISHOCRACY_JURISDICTION_KEY;
+    if (jurisdictionKey) {
+      try {
+        const { importKey, encryptJson } = await import("@optomitron/storage");
+        const allAllocations = await prisma.wishocraticAllocation.findMany({
+          where: { userId, deletedAt: null },
+          select: { categoryA: true, categoryB: true, allocationA: true, allocationB: true },
+        });
+        const key = await importKey(jurisdictionKey);
+        const encrypted = await encryptJson(allAllocations, key);
+        await prisma.wishocraticEncryptedAllocation.upsert({
+          where: { userId },
+          update: {
+            ciphertext: encrypted.ciphertext,
+            iv: encrypted.iv,
+            algorithm: encrypted.algorithm,
+          },
+          create: {
+            userId,
+            ciphertext: encrypted.ciphertext,
+            iv: encrypted.iv,
+            algorithm: encrypted.algorithm,
+          },
+        });
+      } catch (encryptError) {
+        console.error("Failed to store encrypted allocation:", encryptError);
+        // Don't fail the request — plaintext write already succeeded
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
