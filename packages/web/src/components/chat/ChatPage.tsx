@@ -10,10 +10,25 @@ import {
 import { MythBusterCard } from "./MythBusterCard";
 import { OutcomeCard } from "./OutcomeCard";
 import { BudgetResultCard } from "./BudgetResultCard";
+import { RepresentativeCard } from "./RepresentativeCard";
+import { BillListCard } from "./BillListCard";
+import { BillSearchCard } from "./BillSearchCard";
+import { BillVoteCard } from "./BillVoteCard";
+import { BillCBACard } from "./BillCBACard";
+import { VoteShareCard } from "./VoteShareCard";
+import { SendToRepCard } from "./SendToRepCard";
 import {
   BUDGET_CATEGORIES,
   getActualGovernmentAllocations,
+  type BudgetCategoryId,
 } from "../../lib/wishocracy-data";
+import {
+  classifyLegislativeBill,
+  inferLegislativeBudgetDirection,
+} from "../../lib/alignment-legislative-classification";
+import { buildBillCBA, type BillCBA } from "../../lib/civic-cba";
+import type { CivicRepresentative } from "../../lib/civic-data";
+import type { ClassifiedBill } from "../../app/api/civic/bills/route";
 import { listExplorerOutcomes, getOutcomeMegaStudy } from "../../lib/analysis-explorer-data";
 import { getOutcomeHubPath } from "../../lib/analysis-explorer-routes";
 import misconceptionsData from "../../../public/data/misconceptions.json";
@@ -27,7 +42,27 @@ type MythCardMessage = { type: "mythCard"; finding: { myth: string; reality: str
 type OutcomeCardMessage = { type: "outcomeCard"; outcome: { label: string; topPredictor: string; score: number; id: string } };
 type BudgetResultMessage = { type: "budgetResult"; allocations: Record<string, number>; actualAllocations: Record<string, number> };
 
-type AppChatMessage = ChatMessage | MythCardMessage | OutcomeCardMessage | BudgetResultMessage;
+// --- Civic engagement message types ---
+type RepCardMessage = { type: "repCard"; representatives: CivicRepresentative[] };
+type BillListMessage = { type: "billList"; bills: ClassifiedBill[] };
+type BillSearchMessage = { type: "billSearch" };
+type BillVoteMessage = { type: "billVote"; bill: ClassifiedBill; cba?: BillCBA };
+type BillCBAMessage = { type: "billCBA"; cba: BillCBA };
+type VoteShareMessage = { type: "voteShare"; billTitle: string; position: string; shareIdentifier: string };
+type SendToRepMessage = { type: "sendToRep"; representatives: CivicRepresentative[]; vote: { billId: string; billTitle: string; position: string; reasoning?: string; cba?: BillCBA } };
+
+type AppChatMessage =
+  | ChatMessage
+  | MythCardMessage
+  | OutcomeCardMessage
+  | BudgetResultMessage
+  | RepCardMessage
+  | BillListMessage
+  | BillSearchMessage
+  | BillVoteMessage
+  | BillCBAMessage
+  | VoteShareMessage
+  | SendToRepMessage;
 
 // --- Budget voting pairs ---
 const BUDGET_PAIRS: Array<[string, string]> = [
@@ -59,6 +94,9 @@ const INITIAL_HINTS: ChatMessage = {
     { label: "Vote on budget", action: "budget" },
     { label: "Bust a myth", action: "myth" },
     { label: "Show an insight", action: "insight" },
+    { label: "Find my reps", action: "findReps" },
+    { label: "See bills", action: "bills" },
+    { label: "Search bills", action: "searchBills" },
   ],
 };
 
@@ -86,6 +124,8 @@ export default function ChatPage() {
   const ctxRef = useRef(new ConversationContext());
   const budgetVotesRef = useRef(new Map<string, number>());
   const budgetStepRef = useRef(0);
+  // Cache representatives for send-to-rep flow
+  const repsRef = useRef<CivicRepresentative[]>([]);
 
   const appendMultiple = useCallback((...msgs: AppChatMessage[]) => {
     setMessages((prev) => [...prev, ...msgs]);
@@ -95,9 +135,259 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, msg]);
   }, []);
 
+  // --- Fetch representatives ---
+  const fetchReps = useCallback(
+    async (stateOrZip: string) => {
+      append({
+        type: "text",
+        role: "assistant",
+        content: "Looking up your representatives...",
+      } as ChatMessage);
+
+      try {
+        const isZip = /^\d{5}$/.test(stateOrZip.trim());
+        const param = isZip
+          ? `zip=${encodeURIComponent(stateOrZip.trim())}`
+          : `state=${encodeURIComponent(stateOrZip.trim().toUpperCase())}`;
+
+        const res = await fetch(`/api/civic/representatives?${param}`);
+        const data = (await res.json()) as { representatives?: CivicRepresentative[]; error?: string };
+
+        if (!res.ok || !data.representatives) {
+          append({
+            type: "text",
+            role: "assistant",
+            content: data.error ?? "Couldn't find representatives. Try a 2-letter state code (e.g. CA) or a 5-digit ZIP.",
+          } as ChatMessage);
+          return;
+        }
+
+        repsRef.current = data.representatives;
+        appendMultiple(
+          { type: "repCard", representatives: data.representatives } as RepCardMessage,
+          {
+            type: "hints",
+            buttons: [
+              { label: "See bills", action: "bills" },
+              { label: "Search bills", action: "searchBills" },
+              { label: "Try another action", action: "menu" },
+            ],
+          } as ChatMessage,
+        );
+      } catch {
+        append({
+          type: "text",
+          role: "assistant",
+          content: "Failed to look up representatives. Try again later.",
+        } as ChatMessage);
+      }
+    },
+    [append, appendMultiple],
+  );
+
+  // --- Fetch bills ---
+  const fetchBills = useCallback(
+    async (category?: BudgetCategoryId | null, query?: string | null) => {
+      append({
+        type: "text",
+        role: "assistant",
+        content: "Fetching recent classified bills from Congress...",
+      } as ChatMessage);
+
+      try {
+        const params = new URLSearchParams({ limit: "5" });
+        if (category) params.set("category", category);
+        if (query) params.set("q", query);
+
+        const res = await fetch(`/api/civic/bills?${params.toString()}`);
+        const data = (await res.json()) as { bills?: ClassifiedBill[]; error?: string };
+
+        if (!res.ok || !data.bills) {
+          append({
+            type: "text",
+            role: "assistant",
+            content: data.error ?? "Couldn't fetch bills. The Congress API may be temporarily unavailable.",
+          } as ChatMessage);
+          return;
+        }
+
+        appendMultiple(
+          { type: "billList", bills: data.bills } as BillListMessage,
+          {
+            type: "hints",
+            buttons: [
+              { label: "Search bills", action: "searchBills" },
+              { label: "Find my reps", action: "findReps" },
+              { label: "Try another action", action: "menu" },
+            ],
+          } as ChatMessage,
+        );
+      } catch {
+        append({
+          type: "text",
+          role: "assistant",
+          content: "Failed to fetch bills. Try again later.",
+        } as ChatMessage);
+      }
+    },
+    [append, appendMultiple],
+  );
+
+  // --- Start bill vote flow ---
+  const startBillVote = useCallback(
+    async (bill: ClassifiedBill) => {
+      const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
+      const provider =
+        (localStorage.getItem(STORAGE_KEY_PROVIDER) as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
+
+      const input = {
+        billId: bill.billId,
+        title: bill.title,
+        subjects: bill.subjects,
+        policyArea: bill.policyArea,
+        latestActionText: bill.latestAction?.text,
+      };
+
+      const matches = classifyLegislativeBill(input);
+      const direction = inferLegislativeBudgetDirection(input);
+
+      let cba: BillCBA | undefined;
+      try {
+        cba = await buildBillCBA(bill.title, bill.subjects, matches, direction, apiKey, provider);
+      } catch {
+        // structural-only CBA on failure
+      }
+
+      appendMultiple(
+        {
+          type: "text",
+          role: "assistant",
+          content: `Right. Time for you to weigh in on ${bill.type.toUpperCase()} ${bill.number}. I've run a cost-benefit analysis — take a look, then cast your vote.`,
+        } as ChatMessage,
+        { type: "billVote", bill, cba } as BillVoteMessage,
+      );
+    },
+    [appendMultiple],
+  );
+
+  // --- Show CBA analysis for a bill ---
+  const showBillAnalysis = useCallback(
+    async (bill: ClassifiedBill) => {
+      const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
+      const provider =
+        (localStorage.getItem(STORAGE_KEY_PROVIDER) as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
+
+      const input = {
+        billId: bill.billId,
+        title: bill.title,
+        subjects: bill.subjects,
+        policyArea: bill.policyArea,
+        latestActionText: bill.latestAction?.text,
+      };
+
+      const matches = classifyLegislativeBill(input);
+      const direction = inferLegislativeBudgetDirection(input);
+
+      try {
+        const cba = await buildBillCBA(bill.title, bill.subjects, matches, direction, apiKey, provider);
+        appendMultiple(
+          {
+            type: "text",
+            role: "assistant",
+            content: `Here's the cost-benefit breakdown for ${bill.type.toUpperCase()} ${bill.number}.`,
+          } as ChatMessage,
+          { type: "billCBA", cba } as BillCBAMessage,
+          {
+            type: "hints",
+            buttons: [
+              { label: "Vote on this bill", action: `voteBill:${bill.billId}` },
+              { label: "See more bills", action: "bills" },
+              { label: "Try another action", action: "menu" },
+            ],
+          } as ChatMessage,
+        );
+      } catch {
+        append({
+          type: "text",
+          role: "assistant",
+          content: "Failed to generate analysis. Try configuring an API key for AI-powered analysis.",
+        } as ChatMessage);
+      }
+    },
+    [append, appendMultiple],
+  );
+
+  // --- Handle vote saved ---
+  const handleVoteSaved = useCallback(
+    (result: { billId: string; position: string; reasoning: string; cbaSnapshot: string; shareIdentifier?: string }) => {
+      if (!result.shareIdentifier) return;
+
+      // Find the bill title from the vote message
+      const voteMsg = messages.find(
+        (m) => m.type === "billVote" && (m as BillVoteMessage).bill.billId === result.billId,
+      ) as BillVoteMessage | undefined;
+
+      const billTitle = voteMsg?.bill.title ?? result.billId;
+      const cba = voteMsg?.cba;
+
+      appendMultiple(
+        {
+          type: "text",
+          role: "assistant",
+          content: "Vote recorded. Democracy in action — or at least a simulation of it. On my planet, we'd have already optimized the outcome, but this is a reasonable start.",
+        } as ChatMessage,
+        {
+          type: "voteShare",
+          billTitle,
+          position: result.position,
+          shareIdentifier: result.shareIdentifier,
+        } as VoteShareMessage,
+        {
+          type: "hints",
+          buttons: [
+            { label: "Send to my rep", action: "sendToRep" },
+            { label: "See more bills", action: "bills" },
+            { label: "Try another action", action: "menu" },
+          ],
+        } as ChatMessage,
+      );
+
+      // Store last vote for send-to-rep
+      lastVoteRef.current = {
+        billId: result.billId,
+        billTitle,
+        position: result.position,
+        reasoning: result.reasoning,
+        cba,
+      };
+    },
+    [appendMultiple, messages],
+  );
+
+  const lastVoteRef = useRef<{
+    billId: string;
+    billTitle: string;
+    position: string;
+    reasoning?: string;
+    cba?: BillCBA;
+  } | null>(null);
+
+  // Keep a ref for bills we've fetched (for voteBill: action)
+  const billsCacheRef = useRef<ClassifiedBill[]>([]);
+
   // --- Hint click handler ---
   const handleHintClick = useCallback(
     (action: string) => {
+      // Handle dynamic actions like "voteBill:119-hr-1234"
+      if (action.startsWith("voteBill:")) {
+        const billId = action.slice("voteBill:".length);
+        const bill = billsCacheRef.current.find((b) => b.billId === billId);
+        if (bill) {
+          void startBillVote(bill);
+        }
+        return;
+      }
+
       switch (action) {
         case "mood":
           append({ type: "mood", id: crypto.randomUUID() } as ChatMessage);
@@ -223,6 +513,67 @@ export default function ChatPage() {
           break;
         }
 
+        case "findReps":
+          appendMultiple(
+            {
+              type: "text",
+              role: "assistant",
+              content: "Let's find your representatives. Enter your 2-letter state code (e.g. CA, NY, TX) or your 5-digit ZIP code.",
+            } as ChatMessage,
+            {
+              type: "hints",
+              buttons: [
+                { label: "CA", action: "repLookup:CA" },
+                { label: "NY", action: "repLookup:NY" },
+                { label: "TX", action: "repLookup:TX" },
+              ],
+            } as ChatMessage,
+          );
+          break;
+
+        case "bills":
+          void fetchBills();
+          break;
+
+        case "searchBills":
+          append({ type: "billSearch" } as BillSearchMessage);
+          break;
+
+        case "sendToRep": {
+          const reps = repsRef.current;
+          const vote = lastVoteRef.current;
+          if (!vote) {
+            append({
+              type: "text",
+              role: "assistant",
+              content: "You haven't voted on a bill yet. Vote on a bill first, then you can send your reasoning to your representatives.",
+            } as ChatMessage);
+            break;
+          }
+          if (reps.length === 0) {
+            appendMultiple(
+              {
+                type: "text",
+                role: "assistant",
+                content: "I don't know your representatives yet. Let's find them first.",
+              } as ChatMessage,
+              {
+                type: "hints",
+                buttons: [
+                  { label: "Find my reps", action: "findReps" },
+                ],
+              } as ChatMessage,
+            );
+            break;
+          }
+          append({
+            type: "sendToRep",
+            representatives: reps,
+            vote,
+          } as SendToRepMessage);
+          break;
+        }
+
         case "menu":
           append(INITIAL_HINTS as ChatMessage);
           break;
@@ -232,10 +583,15 @@ export default function ChatPage() {
           break;
 
         default:
+          // Handle repLookup:STATE dynamic actions
+          if (action.startsWith("repLookup:")) {
+            const stateOrZip = action.slice("repLookup:".length);
+            void fetchReps(stateOrZip);
+          }
           break;
       }
     },
-    [append, appendMultiple],
+    [append, appendMultiple, fetchReps, fetchBills, startBillVote],
   );
 
   // --- Budget-aware pairwise handler ---
@@ -337,14 +693,102 @@ export default function ChatPage() {
         return <OutcomeCard outcome={m.outcome} />;
       case "budgetResult":
         return <BudgetResultCard allocations={m.allocations} actualAllocations={m.actualAllocations} />;
+      case "repCard":
+        return (
+          <RepresentativeCard
+            representatives={m.representatives}
+            onSeeBills={() => void fetchBills()}
+            onViewAlignment={(rep) => {
+              window.location.href = `/alignment?rep=${rep.bioguideId}`;
+            }}
+          />
+        );
+      case "billList": {
+        // Cache bills for dynamic voteBill: actions
+        billsCacheRef.current = m.bills;
+        return (
+          <BillListCard
+            bills={m.bills}
+            onVote={(bill) => void startBillVote(bill)}
+            onAnalysis={(bill) => void showBillAnalysis(bill)}
+            onFilter={(category, query) =>
+              void fetchBills(category, query)
+            }
+          />
+        );
+      }
+      case "billSearch":
+        return (
+          <BillSearchCard
+            onSearch={(category, query) =>
+              void fetchBills(category, query)
+            }
+          />
+        );
+      case "billVote":
+        return (
+          <BillVoteCard
+            bill={m.bill}
+            cba={m.cba}
+            onSave={handleVoteSaved}
+          />
+        );
+      case "billCBA":
+        return <BillCBACard cba={m.cba} />;
+      case "voteShare":
+        return (
+          <VoteShareCard
+            billTitle={m.billTitle}
+            position={m.position}
+            shareIdentifier={m.shareIdentifier}
+            onSendToRep={() => {
+              const reps = repsRef.current;
+              const vote = lastVoteRef.current;
+              if (reps.length === 0 || !vote) return;
+              append({
+                type: "sendToRep",
+                representatives: reps,
+                vote,
+              } as SendToRepMessage);
+            }}
+          />
+        );
+      case "sendToRep":
+        return (
+          <SendToRepCard
+            representatives={m.representatives}
+            vote={m.vote}
+          />
+        );
       default:
         return null;
     }
-  }, []);
+  }, [fetchBills, startBillVote, showBillAnalysis, handleVoteSaved, append]);
 
   const handleSend = useCallback(
     async (text: string) => {
       append({ type: "text", role: "user", content: text } as ChatMessage);
+
+      // Check if user is responding to a rep lookup prompt
+      const trimmed = text.trim();
+      const isStateCode = /^[A-Za-z]{2}$/.test(trimmed);
+      const isZip = /^\d{5}$/.test(trimmed);
+
+      if (isStateCode || isZip) {
+        // Check if the last assistant message was asking for state/zip
+        const lastAssistant = [...messages].reverse().find(
+          (m) => m.type === "text" && "role" in m && m.role === "assistant",
+        );
+        if (
+          lastAssistant &&
+          "content" in lastAssistant &&
+          typeof lastAssistant.content === "string" &&
+          lastAssistant.content.includes("state code")
+        ) {
+          void fetchReps(trimmed);
+          return;
+        }
+      }
 
       const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
       const provider =
@@ -398,7 +842,7 @@ export default function ChatPage() {
         } as ChatMessage);
       }
     },
-    [append],
+    [append, fetchReps, messages],
   );
 
   const handleMoodRate = useCallback(
