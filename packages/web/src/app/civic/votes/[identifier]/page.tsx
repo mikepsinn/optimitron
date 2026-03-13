@@ -47,8 +47,12 @@ export default async function CivicVotePage({
     ? `@${vote.user.username}`
     : vote.user.name ?? "Anonymous citizen";
 
-  const cba = vote.cbaSnapshot ? (() => {
-    try { return JSON.parse(vote.cbaSnapshot) as Record<string, unknown>; } catch { return null; }
+  interface CBASnapshot {
+    structural?: { overallSignal?: string };
+    llm?: { summary?: string };
+  }
+  const cba: CBASnapshot | null = vote.cbaSnapshot ? (() => {
+    try { return JSON.parse(vote.cbaSnapshot) as CBASnapshot; } catch { return null; }
   })() : null;
 
   const positionColor =
@@ -88,18 +92,14 @@ export default async function CivicVotePage({
         {cba && (
           <div className="mt-4 border-t-2 border-black pt-4">
             <p className="text-sm font-bold uppercase opacity-60">Cost-Benefit Analysis</p>
-            {typeof cba === "object" && "structural" in cba && (
+            {cba.structural?.overallSignal && (
               <p className="mt-1 text-sm">
                 Overall signal:{" "}
-                <strong>
-                  {(cba as { structural?: { overallSignal?: string } }).structural?.overallSignal ?? "unknown"}
-                </strong>
+                <strong>{cba.structural.overallSignal}</strong>
               </p>
             )}
-            {typeof cba === "object" && "llm" in cba && cba.llm && (
-              <p className="mt-2 text-sm">
-                {(cba.llm as { summary?: string }).summary}
-              </p>
+            {cba.llm?.summary && (
+              <p className="mt-2 text-sm">{cba.llm.summary}</p>
             )}
           </div>
         )}

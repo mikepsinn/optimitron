@@ -1,5 +1,7 @@
-import { fetchMembers, type CongressMember } from "@optomitron/data";
+import { fetchers } from "@optomitron/data";
 import { ALIGNMENT_BENCHMARKS } from "./alignment-benchmarks";
+
+type CongressMember = Awaited<ReturnType<typeof fetchers.fetchMembers>>[number];
 
 export interface CivicRepresentative {
   bioguideId: string;
@@ -83,7 +85,7 @@ export async function lookupRepresentatives(
   state: string,
   district?: number,
 ): Promise<CivicRepresentative[]> {
-  const members = await fetchMembers(undefined, undefined, 500);
+  const members = await fetchers.fetchMembers(undefined, undefined, 500);
   if (!members.length) return [];
 
   const stateUpper = state.toUpperCase();

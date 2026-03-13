@@ -12,7 +12,18 @@ export const metadata: Metadata = {
   title: "Optomitron — Earth Optimization Tool",
   description:
     "Earth Optimization Tool for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
+  keywords: [
+    "Optomitron",
+    "Earth Optimization Tool",
+    "planetary debugging software",
+    "budget optimization",
+    "policy analysis",
+    "politician alignment",
+    "governance",
+    "public outcomes",
+  ],
   openGraph: {
+    siteName: "Optomitron",
     title: "Optomitron — Earth Optimization Tool",
     description:
       "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",

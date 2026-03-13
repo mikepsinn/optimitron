@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProvenanceBlock } from "@/components/analysis/provenance-block";
@@ -9,6 +10,12 @@ import {
   listExplorerPairSummaries,
 } from "@/lib/analysis-explorer-data";
 import { getOutcomeHubPath, getPairStudyPath } from "@/lib/analysis-explorer-routes";
+
+export const metadata: Metadata = {
+  title: "Studies | Optomitron",
+  description:
+    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optomitron, the Earth Optimization Tool.",
+};
 
 export default function OutcomesIndexPage() {
   const outcomes = listExplorerOutcomes();
@@ -51,7 +58,7 @@ export default function OutcomesIndexPage() {
               {top ? (
                 <div className="border border-black bg-yellow-100 px-3 py-2 mb-4">
                   <p className="text-xs font-black uppercase text-black/60">Top Predictor</p>
-                  <p className="text-sm font-bold text-black">{top.predictorLabel || top.predictorId}</p>
+                  <p className="text-sm font-bold text-black">{top.predictorLabel ?? top.predictorId}</p>
                   <p className="text-xs text-black/60">
                     Score {(top.score * 100).toFixed(1)} • q={(top.adjustedPValue * 100).toFixed(2)}%
                   </p>

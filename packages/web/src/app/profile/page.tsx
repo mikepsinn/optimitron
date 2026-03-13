@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ProfileHub } from "@/components/profile/ProfileHub";
 import { authOptions } from "@/lib/auth";
 import { getProfilePageData } from "@/lib/profile.server";
 import { getSignInPath, ROUTES } from "@/lib/routes";
+
+export const metadata: Metadata = {
+  title: "Profile | Optomitron",
+  description:
+    "Your Earth optimization profile for saved budgets, alignment reports, and daily tracking.",
+};
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);

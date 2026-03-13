@@ -111,7 +111,7 @@ export const trackLink: NavItem = {
   href: ROUTES.chat,
   label: "Wishonia",
   emoji: "👽",
-  description: "Chat with an alien AI that's been governing a planet for 4,237 years",
+  description: "Planetary debugging for your health, habits, and everyday tradeoffs",
 };
 
 export const profileLink: NavItem = {
@@ -132,7 +132,7 @@ export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
   emoji: "ℹ️",
-  description: "How Optomitron works and why it exists",
+  description: "How the Earth Optimization Tool works and why it exists",
 };
 
 /** Top-level nav items (not in dropdown) */
