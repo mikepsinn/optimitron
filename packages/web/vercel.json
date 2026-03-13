@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/alignment-politicians",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/push-notifications",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
