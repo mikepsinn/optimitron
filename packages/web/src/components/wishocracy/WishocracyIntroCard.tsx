@@ -24,19 +24,19 @@ export function WishocracyIntroCard({ show, isLoading, onStart }: WishocracyIntr
               Wishocracy
             </h1>
             <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-6">
-              Which public goods matter most to you? Compare different priorities to help shape a crowdsourced budget.
+              Your government spends $6.75 trillion a year and nobody asked you how. Let&apos;s fix that.
             </p>
             <p className="text-center mb-4 text-muted-foreground">
-              Answer as many or as few as you like. More comparisons = clearer picture of your priorities.
+              I&apos;m going to show you pairs of budget categories. Pick which one matters more. It takes about four minutes. On my planet this is called &ldquo;governance.&rdquo; Here it seems to be called &ldquo;radical.&rdquo;
             </p>
             <p className="text-center mb-8 text-sm text-muted-foreground">
-              Using pairwise preference allocation, we aggregate your choices with others to determine collective priorities.
+              Your choices get aggregated with everyone else&apos;s using eigenvector analysis. It&apos;s like PageRank, but for civilisation.
             </p>
             <Button
               onClick={onStart}
               className="w-full h-16 text-xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-foreground border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
-              START COMPARISONS
+              LET&apos;S GO
             </Button>
           </Card>
         </motion.div>

@@ -171,10 +171,14 @@ export default function MisconceptionsPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {data.title}
         </h1>
-        <p className="text-gray-600 mb-8">
-          {data.summary.gradeFCount} of {data.summary.totalFindings} popular
-          policy beliefs are contradicted by empirical data. Only{" "}
-          {data.summary.gradeACount} grades A.
+        <p className="text-gray-600 mb-2">
+          I tested your species&apos; most popular policy beliefs against actual
+          data. The results are&hellip; well. See for yourself.
+        </p>
+        <p className="text-gray-500 text-sm mb-8">
+          {data.summary.gradeFCount} of {data.summary.totalFindings} beliefs
+          are flatly contradicted by the evidence. Only{" "}
+          {data.summary.gradeACount} survived.
         </p>
 
         {/* Summary cards */}
@@ -333,11 +337,17 @@ export default function MisconceptionsPage() {
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="font-semibold text-blue-900 mb-2">Methodology</h3>
           <p className="text-sm text-blue-800">
-            We compare year-over-year percentage changes (not raw totals) to
-            avoid being fooled by coincidental long-term trends. We also test
-            which direction causation flows — does the policy cause the outcome,
-            or does the outcome drive the spending? Data comes from FRED, BLS,
-            IRS, OMB, FBI UCR, CDC, WHO, OECD, and World Bank (1950–2023).
+            We compare year-over-year percentage changes — not raw totals —
+            because your species has a habit of confusing &ldquo;two things
+            both went up over 50 years&rdquo; with &ldquo;one caused the
+            other.&rdquo; We call this &ldquo;a statistical error.&rdquo; You
+            call it &ldquo;a talking point.&rdquo;
+          </p>
+          <p className="text-sm text-blue-800 mt-2">
+            We also test which direction causation flows — does the policy
+            cause the outcome, or does the outcome drive the spending? Data
+            from FRED, BLS, IRS, OMB, FBI UCR, CDC, WHO, OECD, and World Bank
+            (1950&ndash;2023).
           </p>
           <p className="text-sm text-blue-800 mt-2">
             <strong>Most common mistake:</strong>{" "}

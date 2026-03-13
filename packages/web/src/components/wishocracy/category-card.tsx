@@ -42,6 +42,22 @@ export function CategoryCard({ category, allocation }: CategoryCardProps) {
                 </button>
               </>
             )}
+            {expanded && cat.sources && cat.sources.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                {cat.sources.map((s: { name: string; url: string }) => (
+                  <a
+                    key={s.url}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] text-muted-foreground/70 hover:text-pink-500 transition-colors"
+                    title={s.name}
+                  >
+                    {s.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

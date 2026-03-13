@@ -1,7 +1,7 @@
 {
   "name": "Optomitron",
   "short_name": "Optomitron",
-  "description": "Earth Optimization Tool — track health, happiness, and help optimize governance.",
+  "description": "The Evidence-Based Earth Optimization Machine — planetary debugging software for budgets, policies, and governance.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

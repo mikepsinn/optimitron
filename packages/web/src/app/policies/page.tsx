@@ -76,10 +76,10 @@ export default function PoliciesPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-black mb-2">
-          📊 Policy Rankings
+          Policy Rankings
         </h1>
         <p className="text-black/60 font-medium">
-          {data.policies.length} policies analyzed for the {data.jurisdiction}. Ranked by welfare impact score with evidence grades (A–F).
+          I ranked {data.policies.length} of your policies by whether they actually work. Spoiler: most of them don&apos;t.
         </p>
       </div>
 

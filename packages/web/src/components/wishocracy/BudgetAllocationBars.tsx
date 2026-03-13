@@ -8,6 +8,91 @@ import { BUDGET_CATEGORIES, BudgetCategoryId, getActualGovernmentAllocations } f
 import { calculateAllocationsFromPairwise, Comparison } from "@/lib/wishocracy-calculations"
 import { ArrowUpDown } from "lucide-react"
 
+function CategoryRow({ category, percentage, govPercent, avgPercent }: {
+  category: (typeof BUDGET_CATEGORIES)[keyof typeof BUDGET_CATEGORIES]
+  percentage: number
+  govPercent: number
+  avgPercent: number
+}) {
+  const [detailsOpen, setDetailsOpen] = useState(false)
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-2 text-sm font-bold">
+        <span className="text-lg">{category.icon}</span>
+        <span className="uppercase flex-1">{category.name}</span>
+        <button
+          onClick={() => setDetailsOpen(!detailsOpen)}
+          className="text-[10px] text-muted-foreground hover:text-pink-500 transition-colors font-bold"
+        >
+          {detailsOpen ? "\u25BE Details" : "\u25B8 Details"}
+        </button>
+      </div>
+      {/* Your allocation bar */}
+      <div className="h-6 bg-muted border-2 border-black relative overflow-visible">
+        <div
+          className="h-full bg-brutal-cyan border-r-2 border-black transition-all duration-300"
+          style={{ width: `${percentage}%` }}
+        />
+        <span
+          className="absolute top-1/2 -translate-y-1/2 text-xs font-black whitespace-nowrap"
+          style={{ left: `calc(${percentage}% + 4px)` }}
+        >
+          {percentage.toFixed(1)}% YOU
+        </span>
+      </div>
+      {/* Community average allocation bar */}
+      <div className="h-6 bg-muted border-2 border-brutal-pink relative overflow-visible">
+        <div
+          className="h-full bg-brutal-pink border-r-2 border-black transition-all duration-300"
+          style={{ width: `${avgPercent}%` }}
+        />
+        <span
+          className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap"
+          style={{ left: `calc(${avgPercent}% + 4px)` }}
+        >
+          {avgPercent.toFixed(1)}% AVG
+        </span>
+      </div>
+      {/* Government allocation bar */}
+      <div className="h-6 border-2 border-black relative overflow-visible">
+        <div
+          className="h-full bg-black transition-all duration-300"
+          style={{ width: `${govPercent}%` }}
+        />
+        <span
+          className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap text-black"
+          style={{ left: `calc(${govPercent}% + 4px)` }}
+        >
+          {govPercent.toFixed(1)}% GOVT
+        </span>
+      </div>
+      {/* Expandable details */}
+      {detailsOpen && (
+        <div className="pt-1 pb-2 px-2 text-xs text-muted-foreground leading-relaxed">
+          <p>{category.description}</p>
+          {category.sources && category.sources.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1">
+              {category.sources.map((s: { name: string; url: string }) => (
+                <a
+                  key={s.url}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-muted-foreground/70 hover:text-pink-500 transition-colors"
+                  title={s.name}
+                >
+                  {s.name}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface BudgetAllocationBarsProps {
   comparisons: Comparison[]
 }
@@ -104,51 +189,13 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
       <div className="space-y-3">
         {sortedCategories.map(({ categoryId, percentage, category, govPercent, avgPercent }) => {
           return (
-            <div key={categoryId} className="space-y-1">
-              <div className="flex items-center gap-2 text-sm font-bold">
-                <span className="text-lg">{category.icon}</span>
-                <span className="uppercase">{category.name}</span>
-              </div>
-              {/* Your allocation bar */}
-              <div className="h-6 bg-muted border-2 border-black relative overflow-visible">
-                <div
-                  className="h-full bg-brutal-cyan border-r-2 border-black transition-all duration-300"
-                  style={{ width: `${percentage}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-black whitespace-nowrap"
-                  style={{ left: `calc(${percentage}% + 4px)` }}
-                >
-                  {percentage.toFixed(1)}% YOU
-                </span>
-              </div>
-              {/* Community average allocation bar */}
-              <div className="h-6 bg-muted border-2 border-brutal-pink relative overflow-visible">
-                <div
-                  className="h-full bg-brutal-pink border-r-2 border-black transition-all duration-300"
-                  style={{ width: `${avgPercent}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap"
-                  style={{ left: `calc(${avgPercent}% + 4px)` }}
-                >
-                  {avgPercent.toFixed(1)}% AVG
-                </span>
-              </div>
-              {/* Government allocation bar */}
-              <div className="h-6 border-2 border-black relative overflow-visible">
-                <div
-                  className="h-full bg-black transition-all duration-300"
-                  style={{ width: `${govPercent}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap text-black"
-                  style={{ left: `calc(${govPercent}% + 4px)` }}
-                >
-                  {govPercent.toFixed(1)}% GOVT
-                </span>
-              </div>
-            </div>
+            <CategoryRow
+              key={categoryId}
+              category={category}
+              percentage={percentage}
+              govPercent={govPercent}
+              avgPercent={avgPercent}
+            />
           )
         })}
       </div>

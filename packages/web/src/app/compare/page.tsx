@@ -94,10 +94,10 @@ export default function ComparePage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-black mb-2">
-          🌍 International Comparisons
+          International Comparisons
         </h1>
         <p className="text-black/60 font-medium">
-          Compare health, drug policy, education, and criminal justice outcomes across 20+ countries.
+          Here&apos;s what happens when other countries try things and you don&apos;t copy them.
         </p>
       </div>
 
@@ -142,9 +142,9 @@ function HealthTab() {
       <div className="card bg-emerald-100 border-emerald-800">
         <p className="text-emerald-800 font-black mb-1">🏆 Top Performer</p>
         <p className="text-sm text-black/70 font-medium">
-          <strong className="text-black">Singapore</strong> spends just 4.1% of GDP on health ($3,013/capita) yet achieves
-          a life expectancy of <strong className="text-black">84.1 years</strong> — the highest efficiency among all countries analyzed.
-          The US spends 4× more ($12,555/capita, 17.3% GDP) for a life expectancy of 77.5 years.
+          <strong className="text-black">Singapore</strong> spends $3,013 per person on health. Life expectancy: 84.1 years.
+          The <strong className="text-black">US</strong> spends $12,555 per person. Life expectancy: 77.5 years.
+          It&apos;s like paying four times more for a sandwich and getting fewer years to eat it.
         </p>
       </div>
 
@@ -317,9 +317,9 @@ function EducationTab() {
       <div className="card bg-emerald-100 border-emerald-800">
         <p className="text-emerald-800 font-black mb-1">🏆 Key Finding</p>
         <p className="text-sm text-black/70 font-medium">
-          <strong className="text-black">Singapore</strong> spends only 2.9% of GDP on education yet tops PISA with a math score
-          of 575. The <strong className="text-black">US</strong> spends 4.9% of GDP but scores 465 in math — well below average.
-          Spending alone doesn&apos;t predict outcomes; teacher quality and system design matter more.
+          <strong className="text-black">Singapore</strong> spends 2.9% of GDP on education. Math score: 575 (top globally).
+          The <strong className="text-black">US</strong> spends 4.9% of GDP. Math score: 465. That&apos;s 69% more money for 19% worse results.
+          Turns out you can&apos;t fix a system by throwing cash at it. Weird.
         </p>
       </div>
 
@@ -396,9 +396,9 @@ function JusticeTab() {
       <div className="card bg-emerald-100 border-emerald-800">
         <p className="text-emerald-800 font-black mb-1">🏆 Key Finding</p>
         <p className="text-sm text-black/70 font-medium">
-          <strong className="text-black">Norway</strong> has a 20% recidivism rate with its rehabilitative prison model (Halden).
-          The <strong className="text-black">US</strong> has a 76% recidivism rate with 531 per 100K incarcerated — the highest
-          rate in the developed world. Norway spends more per prisoner but dramatically less on re-incarceration.
+          <strong className="text-black">Norway</strong> rehabilitates prisoners. Recidivism: 20%.
+          The <strong className="text-black">US</strong> punishes them. Recidivism: 76%. Incarceration rate: 531 per 100K — highest in the developed world.
+          You&apos;re paying more to make the problem worse. On my planet this would be called a bug. Here it&apos;s called &ldquo;tough on crime.&rdquo;
         </p>
       </div>
 

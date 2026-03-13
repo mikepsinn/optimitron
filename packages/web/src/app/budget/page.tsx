@@ -139,10 +139,10 @@ export default function BudgetPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-black mb-2">
-          US Federal Budget Dashboard
+          The US Federal Budget, Annotated
         </h1>
         <p className="text-black/60 font-medium">
-          Current vs. optimal spending analysis for {data.categories.length} budget categories. Total budget: {fmt(data.totalBudget)}.
+          Your government&apos;s {fmt(data.totalBudget)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. Most of them wrong.
         </p>
       </div>
 

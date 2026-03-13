@@ -65,7 +65,7 @@ export function WishocracyCompletionCard({
       percentage,
     }));
 
-  const shareText = "I just mapped my budget priorities on Optomitron. Compare yours.";
+  const shareText = "I just did more budget analysis than most elected officials do in a year. Your turn.";
 
   return (
     <div className="mx-auto mb-8 mt-12 max-w-3xl">
@@ -73,9 +73,10 @@ export function WishocracyCompletionCard({
         <div className="mb-4 flex justify-center">
           <CheckCircle2 className="h-16 w-16 text-green-600" />
         </div>
-        <h2 className="text-2xl font-black uppercase">Allocations Complete</h2>
+        <h2 className="text-2xl font-black uppercase">Well Done</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          You&apos;ve finished this round and defined your budget priorities.
+          You&apos;ve just done more budget analysis than most of your elected
+          officials do in a year. Here&apos;s what you think matters.
         </p>
         {isAuthenticated && userEmail ? (
           <p className="mt-1 text-xs font-semibold uppercase text-muted-foreground">
@@ -120,7 +121,7 @@ export function WishocracyCompletionCard({
       <div className="mb-6 border-4 border-black bg-brutal-cyan/20 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="mb-3 text-center text-base font-black uppercase">Share Your Referral Link</h3>
         <p className="mb-4 text-center text-xs text-muted-foreground">
-          Invite other people to compare priorities and submit their own allocations.
+          More humans = better data. Basic statistics, really.
         </p>
         <div className="mb-4">
           <CopyLinkButton link={shareUrl} variant="landing" />
@@ -135,30 +136,30 @@ export function WishocracyCompletionCard({
             <>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Your allocations are saved to your account.</span>
+                <span>Your allocations are saved. Unlike most government records, these ones are actually accurate.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Share your referral link to bring more people into the comparison set.</span>
+                <span>Share your referral link. More humans = better data. Basic statistics, really.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Review the saved allocations below and refine any pair you want.</span>
+                <span>Review the allocations below. Change your mind as often as you like — that&apos;s not indecisiveness, it&apos;s updating on new information.</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Sign in to keep these allocations synced across sessions.</span>
+                <span>Sign in to keep these. Otherwise they&apos;ll vanish, which is what your species usually does with good data.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Your referral link will become personal once you create an account.</span>
+                <span>Your referral link becomes personal once you create an account.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brutal-pink" />
-                <span>Share the page now, then finish sign-up whenever you want to save it.</span>
+                <span>Share now, sign up later. I&apos;ll wait. I&apos;ve been doing this for 4,237 years.</span>
               </div>
             </>
           )}

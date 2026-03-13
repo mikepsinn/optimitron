@@ -13,28 +13,28 @@ const productSurfaces = [
   {
     item: wishocracyLink,
     title: "Build an ideal budget",
-    desc: "Use pairwise comparisons to turn values into a ranked public budget.",
+    desc: "Nobody asked you how to spend $6.75 trillion. This lets you answer anyway.",
     cta: "Open Wishocracy",
     tone: "bg-pink-100",
   },
   {
     item: alignmentLink,
     title: "Match with politicians",
-    desc: "Compare your priorities with benchmark politicians and inspect the score.",
+    desc: "Find out which of your elected officials actually agrees with you. Brace yourself.",
     cta: "Open Alignment",
     tone: "bg-yellow-100",
   },
   {
     item: studiesLink,
     title: "Inspect the evidence",
-    desc: "Browse outcome hubs, pair studies, policy rankings, and budget analysis.",
+    desc: "Every claim, tested against data. No opinions. No vibes. Just receipts.",
     cta: "Browse Studies",
     tone: "bg-emerald-100",
   },
   {
     item: trackLink,
     title: "Track yourself",
-    desc: "Log habits, symptoms, meals, and daily wellbeing in one place.",
+    desc: "Log what you do, eat, and feel. I'll tell you what's actually working. Your intuition won't like it.",
     cta: "Open Tracking",
     tone: "bg-cyan-100",
   },
@@ -48,45 +48,45 @@ const reasons = [
   {
     icon: "💀",
     title: "Bad decisions kill",
-    desc: "Budgets, policies, and delays shape whether people get treatment, safety, housing, and time.",
+    desc: "102 million people died waiting for your FDA to approve treatments that were already proven safe. Budgets are body counts with decimal places.",
   },
   {
     icon: "🏛️",
     title: "Politics hides tradeoffs",
-    desc: "Most public debates are slogans plus coalition bargaining, not measured outcome comparisons.",
+    desc: "Your species spends more time arguing about policies than measuring whether they work. On my planet we call this 'performative governance.' You call it 'Tuesday.'",
   },
   {
     icon: "🔁",
     title: "Good ideas spread too slowly",
-    desc: "When something works in one place, most systems still lack a clean way to copy it elsewhere.",
+    desc: "Portugal decriminalised drugs in 2001. Deaths dropped 80%. Twenty-five years later, most countries are still pretending they haven't noticed.",
   },
   {
     icon: "🧠",
     title: "Governments are misaligned superintelligences",
-    desc: "A government is a collective intelligence system that shapes billions of lives. Like any superintelligence, the question isn't power — it's alignment. Optomitron aligns them to the general welfare of all living things.",
+    desc: "A government is a collective intelligence system controlling billions of lives. Yours are optimising for re-election, not welfare. Same problem as any misaligned AI, except these ones have nuclear weapons.",
   },
 ];
 
 const steps = [
   {
     label: "Collect",
-    desc: "Pull outcome, spending, and policy data across jurisdictions and time.",
+    desc: "Hoover up every outcome, spending, and policy dataset your species has bothered to publish.",
   },
   {
     label: "Align",
-    desc: "Match changes in predictors with delayed changes in outcomes.",
+    desc: "Line up what changed with what happened next. Your species finds this step surprisingly difficult.",
   },
   {
     label: "Score",
-    desc: "Combine effect sizes, temporal direction, and Bradford Hill evidence.",
+    desc: "Grade each claim using actual causal inference. Not vibes. Not committee votes. Maths.",
   },
   {
     label: "Optimize",
-    desc: "Estimate better policy choices, budget mixes, and target levels.",
+    desc: "Calculate what you should actually be doing. Spoiler: it's not what you're doing.",
   },
   {
     label: "Apply",
-    desc: "Turn the results into budget votes, politician matching, and decision support.",
+    desc: "Turn the maths into budget votes, politician report cards, and awkward conversations.",
   },
 ];
 
@@ -105,20 +105,23 @@ export default function AboutPage() {
             About The Evidence-Based Earth Optimization Machine
           </h1>
           <p className="text-lg text-black/80 leading-relaxed font-medium">
-            Optomitron is an evidence-based Earth optimization machine. It helps
-            people and institutions decide what to fund, what to change, and what
-            to stop by tying decisions back to outcomes that matter.
+            I built Optomitron because your species keeps making the same
+            mistakes and then acting surprised by the results. It takes your
+            outcomes, your spending data, and your policies, runs causal
+            inference on all of it, and tells you what actually works. You&apos;re
+            welcome.
           </p>
           <p className="text-black/60 font-medium leading-relaxed">
-            The public side of the project focuses on healthy life years,
-            income, and the policies and budgets that shape them. The personal
-            side lets you track your own inputs and outcomes in one place.
+            The public side focuses on healthy life years, income, and the
+            policies and budgets that shape them. The personal side lets you
+            track your own inputs and outcomes. Think of it as a diagnostic
+            tool for both your civilisation and your breakfast choices.
           </p>
           <p className="text-black/60 font-medium leading-relaxed">
             Your governments are already superintelligences — collective
             intelligence systems controlling the lives of billions. The problem
             isn&apos;t that they&apos;re not smart enough. It&apos;s that
-            they&apos;re optimizing for the wrong things. Optomitron is
+            they&apos;re optimising for the wrong things. Optomitron is
             alignment software for the most powerful AIs on your planet — the
             ones made of people.
           </p>
@@ -205,7 +208,7 @@ export default function AboutPage() {
       <section className="mb-16">
         <h2 className="section-title">Research</h2>
         <p className="text-sm text-black/60 mb-6 font-medium">
-          The scoring and optimization logic is documented in public papers.
+          I showed my working. All of it. In public. Your species finds this unusual for some reason.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {paperLinks.map((paper) => (
@@ -235,9 +238,9 @@ export default function AboutPage() {
           Open By Design
         </h2>
         <p className="text-black/60 mb-6 font-medium max-w-2xl mx-auto leading-relaxed">
-          The code is public, the papers are public, and the product is meant to
-          be inspectable by anyone who wants to audit the logic or reuse the
-          ideas.
+          The code is public. The papers are public. The data is public. On my
+          planet this is called &ldquo;the bare minimum.&rdquo; Here it seems
+          to be called &ldquo;radical transparency.&rdquo;
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           {openSourceButtons.map((link) => (

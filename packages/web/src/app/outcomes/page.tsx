@@ -30,7 +30,7 @@ export default function OutcomesIndexPage() {
           Outcome Hubs
         </h1>
         <p className="text-black/60 font-medium">
-          Choose an outcome to see ranked predictors, pair-study diagnostics, and jurisdiction-level drilldowns.
+          Pick something you care about. I&apos;ll tell you what actually causes it. No opinions. No vibes. Just data.
         </p>
       </header>
 

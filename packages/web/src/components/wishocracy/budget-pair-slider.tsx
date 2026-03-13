@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BUDGET_CATEGORIES, BudgetCategoryId } from "@/lib/wishocracy-data"
 
-function TruncatedDescription({ text }: { text: string }) {
+function TruncatedDescription({ text, sources }: { text: string; sources?: readonly { name: string; url: string }[] }) {
   const [expanded, setExpanded] = useState(false)
   const shouldTruncate = text.length > 100
 
@@ -35,6 +35,22 @@ function TruncatedDescription({ text }: { text: string }) {
                 less
               </button>
             </>
+          )}
+          {expanded && sources && sources.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+              {sources.map((s) => (
+                <a
+                  key={s.url}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-muted-foreground/70 hover:text-pink-500 transition-colors"
+                  title={s.name}
+                >
+                  {s.name}
+                </a>
+              ))}
+            </div>
           )}
         </>
       )}
@@ -194,10 +210,10 @@ export function BudgetPairSlider({
         {/* Descriptions Below Slider */}
         <div className="flex justify-between gap-4">
           <div className="flex-1 text-center">
-            <TruncatedDescription text={catA.description} />
+            <TruncatedDescription text={catA.description} sources={catA.sources} />
           </div>
           <div className="flex-1 text-center">
-            <TruncatedDescription text={catB.description} />
+            <TruncatedDescription text={catB.description} sources={catB.sources} />
           </div>
         </div>
       </div>

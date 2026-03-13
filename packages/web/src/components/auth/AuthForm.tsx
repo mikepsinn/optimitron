@@ -196,7 +196,7 @@ export function AuthForm({
               disabled={isLoading}
               className={`w-full font-black uppercase ${buttonClassName}`}
             >
-              {pendingAction === "magic" ? "Sending Link..." : "Email Me a Magic Link"}
+              {pendingAction === "magic" ? "Sending Link..." : "Email Me Proof of Existence"}
             </Button>
           </form>
         ) : null}
