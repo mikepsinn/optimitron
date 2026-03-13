@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { NavItem } from "@/lib/routes";
-import { allNavLinks, paperLinks } from "@/lib/routes";
+import {
+  communityLinks,
+  exploreLinks,
+  footerAppLinks,
+  paperLinks,
+} from "@/lib/routes";
 
 function FooterLink({ item, external }: { item: NavItem; external?: boolean }) {
   const inner = (
@@ -45,25 +50,39 @@ export default function Footer() {
   return (
     <footer className="border-t-4 border-black mt-24 bg-yellow-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="text-xl font-black uppercase text-black">
               ⚡ Optomitron
             </Link>
             <p className="text-sm text-black/70 mt-3 leading-relaxed font-medium">
-              Minimizing suffering and saving lives using causal inference on
-              real-world policy outcomes.
+              Evidence-backed budget priorities, politician alignment, personal
+              tracking, and causal studies from real-world outcome data.
             </p>
           </div>
 
-          {/* Product */}
+          {/* App */}
           <div>
             <h4 className="text-sm font-black uppercase mb-3 text-black">
-              Features
+              App
             </h4>
             <ul className="space-y-2">
-              {allNavLinks.map((link) => (
+              {footerAppLinks.map((link) => (
+                <li key={link.href}>
+                  <FooterLink item={link} />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Analysis */}
+          <div>
+            <h4 className="text-sm font-black uppercase mb-3 text-black">
+              Analysis
+            </h4>
+            <ul className="space-y-2">
+              {exploreLinks.map((link) => (
                 <li key={link.href}>
                   <FooterLink item={link} />
                 </li>
@@ -85,6 +104,19 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Open Source */}
+          <div>
+            <h4 className="text-sm font-black uppercase mb-3 text-black">
+              Open Source
+            </h4>
+            <ul className="space-y-2">
+              {communityLinks.map((link) => (
+                <li key={link.href}>
+                  <FooterLink item={link} external />
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="mt-12 pt-8 border-t-2 border-black/20 text-center text-sm text-black/70 font-medium">

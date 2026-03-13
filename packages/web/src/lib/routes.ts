@@ -1,7 +1,15 @@
 export const ROUTES = {
   home: "/",
   vote: "/vote",
+  alignment: "/alignment",
+  profile: "/profile",
   chat: "/chat",
+  about: "/about",
+  outcomes: "/outcomes",
+  compare: "/compare",
+  policies: "/policies",
+  budget: "/budget",
+  misconceptions: "/misconceptions",
   signIn: "/auth/signin",
 } as const;
 
@@ -11,66 +19,114 @@ export interface NavItem {
   emoji?: string;
   description?: string;
   external?: boolean;
+  matchPrefixes?: string[];
+}
+
+export function isNavItemActive(pathname: string, item: NavItem): boolean {
+  const prefixes = item.matchPrefixes?.length ? item.matchPrefixes : [item.href];
+
+  return prefixes.some((prefix) => {
+    if (prefix === ROUTES.home) {
+      return pathname === prefix;
+    }
+
+    return pathname === prefix || pathname.startsWith(`${prefix}/`);
+  });
 }
 
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
   {
-    href: "/outcomes",
-    label: "Outcome Hubs",
-    emoji: "📊",
-    description: "Track health and wealth outcomes across jurisdictions",
+    href: ROUTES.outcomes,
+    label: "Studies",
+    emoji: "🧪",
+    description: "Outcome hubs, pair studies, and jurisdiction drilldowns",
+    matchPrefixes: [ROUTES.outcomes, "/studies"],
   },
   {
-    href: "/budget",
+    href: ROUTES.compare,
+    label: "Compare",
+    emoji: "🌍",
+    description: "Side-by-side country and system comparisons",
+  },
+  {
+    href: ROUTES.policies,
+    label: "Policies",
+    emoji: "📋",
+    description: "Evidence-ranked policy recommendations",
+  },
+  {
+    href: ROUTES.budget,
     label: "Optimal Budget",
     emoji: "💰",
-    description: "Evidence-based budget allocation recommendations",
+    description: "Budget size and composition analysis",
   },
   {
-    href: "/policies",
-    label: "Optimal Policies",
-    emoji: "📋",
-    description: "Policy scoring via causal inference on real outcomes",
-  },
-  {
-    href: "/misconceptions",
+    href: ROUTES.misconceptions,
     label: "Myth vs Data",
     emoji: "🔍",
     description: "Popular beliefs tested against empirical data",
   },
+];
+
+export const appLinks: NavItem[] = [
   {
-    href: "/compare",
-    label: "Compare Countries",
-    emoji: "🌍",
-    description: "Side-by-side outcome comparisons across nations",
+    href: ROUTES.vote,
+    label: "Wishocracy",
+    emoji: "🗳️",
+    description: "Build and save your ideal public budget",
+  },
+  {
+    href: ROUTES.alignment,
+    label: "Alignment",
+    emoji: "🏛️",
+    description: "See which benchmark politicians match your priorities",
+  },
+  {
+    href: ROUTES.chat,
+    label: "Track",
+    emoji: "💬",
+    description: "Track health, happiness, habits, and meals",
+  },
+  {
+    href: ROUTES.profile,
+    label: "Profile",
+    emoji: "🧭",
+    description: "Save demographics, daily check-ins, and shared reports",
   },
 ];
+
+const aboutLink: NavItem = {
+  href: ROUTES.about,
+  label: "About",
+  emoji: "ℹ️",
+  description: "How Optomitron works and why it exists",
+};
 
 /** Top-level nav items (not in dropdown) */
 export const topLinks: NavItem[] = [
-  {
-    href: "/vote",
-    label: "Wishocracy",
-    emoji: "🗳️",
-    description: "Allocate your ideal budget via pairwise comparisons",
-  },
-  {
-    href: "/chat",
-    label: "Track",
-    emoji: "💬",
-    description: "Log treatments, symptoms, and meals",
-  },
-  {
-    href: "/about",
-    label: "About",
-    emoji: "ℹ️",
-    description: "How Optomitron works and why it exists",
-  },
+  appLinks[0],
+  appLinks[1],
+  appLinks[2],
+  aboutLink,
 ];
 
-/** All internal nav links (explore + top-level) */
-export const allNavLinks: NavItem[] = [...exploreLinks, ...topLinks];
+/** Footer-only internal links */
+export const footerAppLinks: NavItem[] = [
+  appLinks[0],
+  appLinks[1],
+  appLinks[3],
+  appLinks[2],
+  aboutLink,
+];
+
+/** All internal nav links (explore + top-level + footer app links) */
+export const allNavLinks: NavItem[] = [
+  ...exploreLinks,
+  ...footerAppLinks.filter(
+    (link, index, links) => links.findIndex(({ href }) => href === link.href) === index,
+  ),
+];
 
 /** External paper links for the footer */
 export const paperLinks: NavItem[] = [
@@ -153,6 +209,13 @@ export const communityLinks: NavItem[] = [
     href: "https://github.com/mikepsinn/optomitron",
     emoji: "💻",
     description: "Source code, issues, and contributions",
+    external: true,
+  },
+  {
+    label: "README",
+    href: "https://github.com/mikepsinn/optomitron#readme",
+    emoji: "📝",
+    description: "Feature overview, setup, and architecture at a glance",
     external: true,
   },
   {

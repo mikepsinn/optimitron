@@ -34,7 +34,6 @@ function createEmptySummary(): WishocracyLandingSummary {
 
 export function WishocracyLandingSection() {
   const [summary, setSummary] = useState<WishocracyLandingSummary>(createEmptySummary);
-  const [isLoading, setIsLoading] = useState(true);
   const governmentAllocations = useMemo(() => getActualGovernmentAllocations(), []);
 
   useEffect(() => {
@@ -53,14 +52,10 @@ export function WishocracyLandingSection() {
         }
       } catch {
         // Keep the landing section resilient when the API is unavailable.
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
-        }
       }
     }
 
-    loadSummary();
+    void loadSummary();
 
     return () => {
       isActive = false;
@@ -78,7 +73,7 @@ export function WishocracyLandingSection() {
     return source.slice(0, 5).map(({ categoryId, percentage }) => ({
       categoryId,
       communityPercent: percentage,
-      governmentPercent: governmentAllocations[categoryId] ?? 0,
+      governmentPercent: governmentAllocations[categoryId],
       category: BUDGET_CATEGORIES[categoryId],
     }));
   }, [governmentAllocations, summary.averageAllocations, summary.topCategories]);
@@ -98,10 +93,35 @@ export function WishocracyLandingSection() {
               Community Budget Priorities
             </h2>
             <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-black/70">
-              People can already save Wishocracy allocations to the database. This
-              panel shows the running aggregate and compares it with current
-              government spending.
+              Save your allocation, compare it with current government spending,
+              and see which priorities rise to the top across the community.
             </p>
+            <div className="mt-6 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="border-2 border-black bg-white px-4 py-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-2xl font-black text-black">
+                  {summary.totalUsers > 0 ? summary.totalUsers.toLocaleString() : "Live"}
+                </div>
+                <div className="text-xs font-bold uppercase text-black/60">
+                  Saved Voters
+                </div>
+              </div>
+              <div className="border-2 border-black bg-white px-4 py-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-2xl font-black text-black">
+                  {summary.totalComparisons > 0 ? summary.totalComparisons.toLocaleString() : "Growing"}
+                </div>
+                <div className="text-xs font-bold uppercase text-black/60">
+                  Comparisons Logged
+                </div>
+              </div>
+              <div className="border-2 border-black bg-white px-4 py-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-lg font-black text-black">
+                  {topCategory?.category.name ?? "Starts With You"}
+                </div>
+                <div className="text-xs font-bold uppercase text-black/60">
+                  Top Priority
+                </div>
+              </div>
+            </div>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
@@ -115,6 +135,12 @@ export function WishocracyLandingSection() {
                 className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 Sign In to Save and Share
+              </Link>
+              <Link
+                href="/alignment"
+                className="inline-flex items-center justify-center border-4 border-black bg-yellow-300 px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                See Alignment Reports
               </Link>
             </div>
           </div>

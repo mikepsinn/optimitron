@@ -6,7 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import type { PersonhoodProviderValue } from "@/lib/personhood";
-import { exploreLinks, topLinks } from "@/lib/routes";
+import { exploreLinks, isNavItemActive, topLinks } from "@/lib/routes";
 
 function AccountLinks({
   isAuthenticated,
@@ -28,18 +28,6 @@ function AccountLinks({
         >
           Profile
         </Link>
-        <Link
-          href="/alignment"
-          className="text-sm font-bold px-4 py-2 border-2 border-black bg-white hover:bg-pink-200 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          Alignment
-        </Link>
-        <Link
-          href="/vote"
-          className="text-sm font-bold px-4 py-2 border-2 border-black bg-yellow-300 hover:bg-yellow-400 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          My Allocations
-        </Link>
         <span className="hidden lg:block text-xs font-bold uppercase text-muted-foreground">
           {accountLabel}
         </span>
@@ -51,7 +39,9 @@ function AccountLinks({
         </div>
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={() => {
+            void signOut({ callbackUrl: "/" });
+          }}
           className="text-sm font-bold px-4 py-2 border-2 border-black bg-white hover:bg-black hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
           Sign Out
@@ -84,7 +74,7 @@ function ExploreDropdown({ pathname }: { pathname: string }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const isActive = exploreLinks.some((l) => pathname === l.href);
+  const isActive = exploreLinks.some((link) => isNavItemActive(pathname, link));
 
   return (
     <div ref={ref} className="relative">
@@ -121,7 +111,7 @@ function ExploreDropdown({ pathname }: { pathname: string }) {
               href={link.href}
               onClick={() => setOpen(false)}
               className={`block px-4 py-3 transition-colors ${
-                pathname === link.href
+                isNavItemActive(pathname, link)
                   ? "bg-yellow-300 text-black"
                   : "text-black hover:bg-cyan-200"
               }`}
@@ -148,11 +138,10 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAuthenticated = status === "authenticated";
-  const accountLabel =
-    session?.user?.name ??
-    session?.user?.email ??
-    session?.user?.username ??
-    null;
+  const user = session?.user ?? null;
+  const accountLabel = user
+    ? user.name ?? user.email ?? user.username ?? null
+    : null;
 
   return (
     <nav className="sticky top-0 z-50 border-b-4 border-black bg-white">
@@ -172,7 +161,7 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     className={`text-sm font-bold uppercase px-3 py-2 border-2 transition-all block ${
-                      pathname === link.href
+                      isNavItemActive(pathname, link)
                         ? "border-black bg-yellow-300 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                         : "border-transparent text-black hover:border-black hover:bg-cyan-200 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     }`}
@@ -194,8 +183,8 @@ export default function Navbar() {
             <AccountLinks
               isAuthenticated={isAuthenticated}
               accountLabel={accountLabel}
-              personhoodProvider={session?.user?.personhoodProvider ?? null}
-              personhoodVerified={Boolean(session?.user?.personhoodVerified)}
+              personhoodProvider={user?.personhoodProvider ?? null}
+              personhoodVerified={Boolean(user?.personhoodVerified)}
             />
           </div>
 
@@ -243,7 +232,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block text-sm font-bold uppercase px-3 py-2 border-2 transition-all ${
-                  pathname === link.href
+                  isNavItemActive(pathname, link)
                     ? "border-black bg-yellow-300 text-black"
                     : "border-transparent text-black hover:border-black hover:bg-cyan-200"
                 }`}
@@ -258,7 +247,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block text-sm font-bold uppercase px-3 py-2 border-2 transition-all ${
-                  pathname === link.href
+                  isNavItemActive(pathname, link)
                     ? "border-black bg-yellow-300 text-black"
                     : "border-transparent text-black hover:border-black hover:bg-cyan-200"
                 }`}
@@ -269,15 +258,6 @@ export default function Navbar() {
             <div className="border-t-2 border-gray-200 my-2" />
             {isAuthenticated ? (
               <Link
-                href="/alignment"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold px-3 py-2 border-2 border-black bg-white"
-              >
-                Alignment
-              </Link>
-            ) : null}
-            {isAuthenticated ? (
-              <Link
                 href="/profile"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
@@ -285,23 +265,21 @@ export default function Navbar() {
                 Profile
               </Link>
             ) : null}
-            <Link
-              href={
-                isAuthenticated
-                  ? "/vote"
-                  : "/auth/signin?callbackUrl=%2Fvote"
-              }
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
-            >
-              {isAuthenticated ? "My Allocations" : "Sign In"}
-            </Link>
+            {!isAuthenticated ? (
+              <Link
+                href="/auth/signin?callbackUrl=%2Fvote"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
+              >
+                Sign In
+              </Link>
+            ) : null}
             {isAuthenticated ? (
               <button
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  signOut({ callbackUrl: "/" });
+                  void signOut({ callbackUrl: "/" });
                 }}
                 className="block w-full text-left text-sm font-bold px-3 py-2 border-2 border-black"
               >

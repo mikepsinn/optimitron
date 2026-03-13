@@ -75,6 +75,45 @@ const naturalExperiments = [
   },
 ];
 
+const productWorkflows = [
+  {
+    label: "Wishocracy",
+    title: "Build and share your ideal budget",
+    description:
+      "Use pairwise comparisons to turn your values into a saved public-budget allocation and compare it with current government spending.",
+    href: "/vote",
+    cta: "Start Voting",
+    color: "bg-pink-100",
+  },
+  {
+    label: "Alignment Reports",
+    title: "See which politicians align with you",
+    description:
+      "Compare your priorities against benchmark politician profiles and inspect the evidence behind each score.",
+    href: "/alignment",
+    cta: "Open Alignment",
+    color: "bg-yellow-100",
+  },
+  {
+    label: "Personal Tracking",
+    title: "Track what works for you",
+    description:
+      "Log meals, symptoms, habits, health, and happiness, then use your profile and check-ins to keep a richer personal history.",
+    href: "/chat",
+    cta: "Track Yourself",
+    color: "bg-cyan-100",
+  },
+  {
+    label: "Studies",
+    title: "Inspect the causal evidence",
+    description:
+      "Browse outcome hubs, pair studies, policy rankings, budget analysis, and country comparisons from the same evidence engine.",
+    href: "/outcomes",
+    cta: "Browse Studies",
+    color: "bg-emerald-100",
+  },
+];
+
 export default function Home() {
   return (
     <div>
@@ -88,30 +127,78 @@ export default function Home() {
               <span className="bg-pink-300 px-2">reduce suffering</span>?
             </h1>
             <p className="mt-8 text-lg sm:text-xl text-black/70 max-w-3xl mx-auto leading-relaxed font-medium">
-              Causal inference on thousands of country-years of policy, budget, and
-              outcome data to identify what maximizes{" "}
-              <span className="font-bold text-black">healthy life years</span> and minimizes{" "}
-              <span className="font-bold text-black">preventable death and disease</span>.
+              Causal inference on public outcomes plus live tools for budget voting,
+              politician alignment, and personal tracking. Compare jurisdictions,
+              build your ideal budget, see which officials match your priorities,
+              and track what works for you.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/vote"
                 className="px-8 py-3.5 bg-pink-500 text-white font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
               >
-                🗳️ Allocate Your Budget
+                🗳️ Build Your Ideal Budget
               </Link>
               <Link
-                href="/policies"
+                href="/alignment"
+                className="px-8 py-3.5 bg-yellow-300 text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              >
+                🏛️ See Alignment Reports
+              </Link>
+              <Link
+                href="/outcomes"
                 className="px-8 py-3.5 bg-white text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-cyan-300 transition-all"
               >
-                Explore Policies
+                🧪 Browse Study Explorer
               </Link>
             </div>
+            <p className="mt-6 text-sm font-medium text-black/60 max-w-2xl mx-auto">
+              Save allocations, publish an alignment link, and keep daily
+              wellbeing check-ins in{" "}
+              <Link href="/profile" className="font-black text-black hover:text-pink-500">
+                Profile
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>
 
       <WishocracyLandingSection />
+
+      {/* What You Can Do Today */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
+            What You Can Do Today
+          </h2>
+          <p className="mt-4 text-lg text-black/60 max-w-3xl mx-auto font-medium">
+            Start with the workflow that fits the decision you are trying to make.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {productWorkflows.map((workflow) => (
+            <div
+              key={workflow.title}
+              className={`p-6 border-4 border-black ${workflow.color} shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col`}
+            >
+              <div className="text-xs font-black px-2.5 py-1 bg-black text-white inline-block self-start mb-4 uppercase">
+                {workflow.label}
+              </div>
+              <h3 className="text-xl font-black text-black mb-3">{workflow.title}</h3>
+              <p className="text-sm text-black/70 leading-relaxed font-medium flex-grow">
+                {workflow.description}
+              </p>
+              <Link
+                href={workflow.href}
+                className="mt-6 inline-flex items-center text-sm font-black text-black uppercase hover:text-pink-600 transition-colors"
+              >
+                {workflow.cta} &rarr;
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* The Cost of Inaction */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -441,12 +528,10 @@ export default function Home() {
             Stop Guessing. Start Saving Lives.
           </h2>
           <p className="text-black/70 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-            Every analysis is backed by real outcome data from official sources.
-            Whether you&apos;re a nonprofit allocating grants, a government
-            setting policy, or a researcher studying what works — the data is
-            open and the methodology is transparent.
+            Compare tradeoffs, inspect the evidence, and act on the interventions
+            most likely to improve health, wealth, and human wellbeing.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-4">
             <Link
               href="/compare"
               className="px-8 py-3 bg-black text-white font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -460,10 +545,16 @@ export default function Home() {
               Browse Policies
             </Link>
             <Link
-              href="/budget"
+              href="/alignment"
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
-              View Budget Analysis
+              Open Alignment
+            </Link>
+            <Link
+              href="/chat"
+              className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            >
+              Track Yourself
             </Link>
           </div>
           <div className="mt-6">
@@ -486,7 +577,8 @@ export default function Home() {
             Same Engine, Every Scale
           </h2>
           <p className="mt-4 text-base text-black/60 max-w-2xl mx-auto font-medium">
-            The causal inference engine is domain-agnostic. Feed any two time series
+            The same evidence engine powers public-budget voting, politician
+            alignment, and local-first personal tracking. Feed any two time series
             and it answers: does changing X cause Y to change? By how much?
           </p>
         </div>
