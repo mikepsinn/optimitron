@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { wishocracyLink } from "@/lib/routes";
 
 interface WishocracyStatusBarProps {
   show: boolean;
@@ -46,7 +47,7 @@ export function WishocracyStatusBar({
               Your allocations and referral link will be attached to your account.
             </p>
           </div>
-          <AuthForm callbackUrl="/vote" referralCode={referralCode} compact />
+          <AuthForm callbackUrl={wishocracyLink.href} referralCode={referralCode} compact />
         </Card>
       </div>
     );

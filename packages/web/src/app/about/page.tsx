@@ -1,4 +1,10 @@
 import Link from "next/link";
+import {
+  alignmentLink,
+  studiesLink,
+  trackLink,
+  wishocracyLink,
+} from "@/lib/routes";
 
 const papers = [
   {
@@ -32,28 +38,28 @@ const productSurfaces = [
   {
     title: "Build an ideal budget",
     desc: "Use pairwise comparisons to turn values into a ranked public budget.",
-    href: "/vote",
+    href: wishocracyLink.href,
     cta: "Open Wishocracy",
     tone: "bg-pink-100",
   },
   {
     title: "Match with politicians",
     desc: "Compare your priorities with benchmark politicians and inspect the score.",
-    href: "/alignment",
+    href: alignmentLink.href,
     cta: "Open Alignment",
     tone: "bg-yellow-100",
   },
   {
     title: "Inspect the evidence",
     desc: "Browse outcome hubs, pair studies, policy rankings, and budget analysis.",
-    href: "/outcomes",
+    href: studiesLink.href,
     cta: "Browse Studies",
     tone: "bg-emerald-100",
   },
   {
     title: "Track yourself",
     desc: "Log habits, symptoms, meals, and daily wellbeing in one place.",
-    href: "/chat",
+    href: trackLink.href,
     cta: "Open Tracking",
     tone: "bg-cyan-100",
   },
@@ -125,19 +131,19 @@ export default function AboutPage() {
         </div>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Link
-            href="/vote"
+            href={wishocracyLink.href}
             className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             Start With Wishocracy
           </Link>
           <Link
-            href="/alignment"
+            href={alignmentLink.href}
             className="inline-flex items-center justify-center border-4 border-black bg-yellow-300 px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             See Alignment Reports
           </Link>
           <Link
-            href="/outcomes"
+            href={studiesLink.href}
             className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             Browse Studies

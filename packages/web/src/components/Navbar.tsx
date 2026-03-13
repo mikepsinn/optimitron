@@ -4,9 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
+import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import type { PersonhoodProviderValue } from "@/lib/personhood";
-import { exploreLinks, isNavItemActive, topLinks } from "@/lib/routes";
+import {
+  ROUTES,
+  exploreLinks,
+  getSignInPath,
+  isNavItemActive,
+  profileLink,
+  topLinks,
+} from "@/lib/routes";
 
 function AccountLinks({
   isAuthenticated,
@@ -23,10 +31,10 @@ function AccountLinks({
     return (
       <>
         <Link
-          href="/profile"
+          href={profileLink.href}
           className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
-          Profile
+          {profileLink.label}
         </Link>
         <span className="hidden lg:block text-xs font-bold uppercase text-muted-foreground">
           {accountLabel}
@@ -40,7 +48,7 @@ function AccountLinks({
         <button
           type="button"
           onClick={() => {
-            void signOut({ callbackUrl: "/" });
+            void signOut({ callbackUrl: ROUTES.home });
           }}
           className="text-sm font-bold px-4 py-2 border-2 border-black bg-white hover:bg-black hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
@@ -52,7 +60,7 @@ function AccountLinks({
 
   return (
     <Link
-      href="/auth/signin?callbackUrl=%2Fvote"
+      href={getSignInPath(ROUTES.vote)}
       className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
     >
       Sign In
@@ -106,26 +114,13 @@ function ExploreDropdown({ pathname }: { pathname: string }) {
       {open && (
         <div className="absolute top-full left-0 mt-1 w-72 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50">
           {exploreLinks.map((link) => (
-            <Link
+            <NavItemLink
               key={link.href}
-              href={link.href}
+              item={link}
+              variant="dropdown"
+              isActive={isNavItemActive(pathname, link)}
               onClick={() => setOpen(false)}
-              className={`block px-4 py-3 transition-colors ${
-                isNavItemActive(pathname, link)
-                  ? "bg-yellow-300 text-black"
-                  : "text-black hover:bg-cyan-200"
-              }`}
-            >
-              <span className="text-sm font-bold flex items-center gap-2">
-                {link.emoji && <span>{link.emoji}</span>}
-                {link.label}
-              </span>
-              {link.description && (
-                <span className="text-xs text-black/50 block mt-0.5">
-                  {link.description}
-                </span>
-              )}
-            </Link>
+            />
           ))}
         </div>
       )}
@@ -149,7 +144,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
-              href="/"
+              href={ROUTES.home}
               className="text-xl font-black uppercase tracking-tight text-black transition-colors hover:text-pink-500"
             >
               ⚡ Optomitron
@@ -157,24 +152,12 @@ export default function Navbar() {
             <div className="hidden items-center gap-1 md:flex">
               <ExploreDropdown pathname={pathname} />
               {topLinks.map((link) => (
-                <div key={link.href} className="relative group">
-                  <Link
-                    href={link.href}
-                    className={`text-sm font-bold uppercase px-3 py-2 border-2 transition-all block ${
-                      isNavItemActive(pathname, link)
-                        ? "border-black bg-yellow-300 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                        : "border-transparent text-black hover:border-black hover:bg-cyan-200 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                    }`}
-                  >
-                    {link.emoji && <span className="mr-1">{link.emoji}</span>}
-                    {link.label}
-                  </Link>
-                  {link.description && (
-                    <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-52 rounded border-2 border-black bg-white px-3 py-2 text-xs font-medium text-black opacity-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-opacity group-hover:opacity-100 z-50 normal-case">
-                      {link.description}
-                    </div>
-                  )}
-                </div>
+                <NavItemLink
+                  key={link.href}
+                  item={link}
+                  variant="topNav"
+                  isActive={isNavItemActive(pathname, link)}
+                />
               ))}
             </div>
           </div>
@@ -227,47 +210,37 @@ export default function Navbar() {
               Explore
             </div>
             {exploreLinks.map((link) => (
-              <Link
+              <NavItemLink
                 key={link.href}
-                href={link.href}
+                item={link}
+                variant="mobile"
+                isActive={isNavItemActive(pathname, link)}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block text-sm font-bold uppercase px-3 py-2 border-2 transition-all ${
-                  isNavItemActive(pathname, link)
-                    ? "border-black bg-yellow-300 text-black"
-                    : "border-transparent text-black hover:border-black hover:bg-cyan-200"
-                }`}
-              >
-                {link.label}
-              </Link>
+              />
             ))}
             <div className="border-t-2 border-gray-200 my-2" />
             {topLinks.map((link) => (
-              <Link
+              <NavItemLink
                 key={link.href}
-                href={link.href}
+                item={link}
+                variant="mobile"
+                isActive={isNavItemActive(pathname, link)}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block text-sm font-bold uppercase px-3 py-2 border-2 transition-all ${
-                  isNavItemActive(pathname, link)
-                    ? "border-black bg-yellow-300 text-black"
-                    : "border-transparent text-black hover:border-black hover:bg-cyan-200"
-                }`}
-              >
-                {link.label}
-              </Link>
+              />
             ))}
             <div className="border-t-2 border-gray-200 my-2" />
             {isAuthenticated ? (
               <Link
-                href="/profile"
+                href={profileLink.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
               >
-                Profile
+                {profileLink.label}
               </Link>
             ) : null}
             {!isAuthenticated ? (
               <Link
-                href="/auth/signin?callbackUrl=%2Fvote"
+                href={getSignInPath(ROUTES.vote)}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
               >
@@ -279,7 +252,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  void signOut({ callbackUrl: "/" });
+                  void signOut({ callbackUrl: ROUTES.home });
                 }}
                 className="block w-full text-left text-sm font-bold px-3 py-2 border-2 border-black"
               >

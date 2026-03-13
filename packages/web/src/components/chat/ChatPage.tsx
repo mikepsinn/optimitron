@@ -22,7 +22,7 @@ export default function ChatPage() {
       type: "text",
       role: "assistant",
       content:
-        "Welcome! I can help you track treatments, symptoms, meals, and mood. Try typing something like \"took 500mg magnesium\" or \"mood 4/5\".",
+        "Hello. I'm Wishonia — World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation. I've been running a planet for 4,237 years. We ended war in year 12 and disease in year 340. Now I'm here to help you track your meals, symptoms, treatments, and mood. It's not exactly planetary governance but everyone's got to start somewhere. Try \"took 500mg magnesium\" or \"mood 4/5\".",
     },
     { type: "apiKey" },
   ]);
@@ -80,14 +80,14 @@ export default function ChatPage() {
             type: "text",
             role: "assistant",
             content:
-              "I couldn't parse that. Try something like \"took 200mg ibuprofen\" or \"headache 3/5\".",
+              "I've been running a planet for four millennia and I couldn't parse that. Try something like \"took 200mg ibuprofen\" or \"headache 3/5\". I need structure. We all do.",
           });
         }
       } catch {
         append({
           type: "text",
           role: "assistant",
-          content: "Something went wrong parsing that. Please try again.",
+          content: "Something went wrong on my end. Even alien systems have bad days. Try again.",
         });
       }
     },

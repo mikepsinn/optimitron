@@ -7,6 +7,7 @@ import { CheckCircle2 } from "lucide-react";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { Button } from "@/components/ui/button";
+import { alignmentLink } from "@/lib/routes";
 import { BUDGET_CATEGORIES, BudgetCategoryId } from "@/lib/wishocracy-data";
 import { Comparison, calculateAllocationsFromPairwise } from "@/lib/wishocracy-calculations";
 
@@ -36,7 +37,7 @@ export function WishocracyCompletionCard({
     };
 
     function fire(particleRatio: number, options: confetti.Options) {
-      confetti({
+      void confetti({
         ...defaults,
         ...options,
         particleCount: Math.floor(200 * particleRatio),
@@ -167,7 +168,7 @@ export function WishocracyCompletionCard({
           {isAuthenticated ? (
             <div className="space-y-3">
               <Button asChild className="w-full font-black uppercase">
-                <Link href="/alignment">See Alignment Report</Link>
+                <Link href={alignmentLink.href}>See Alignment Report</Link>
               </Button>
               <Button
                 type="button"

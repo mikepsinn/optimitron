@@ -15,6 +15,7 @@ import {
 } from "@/lib/wishocracy-community";
 import { calculateTotalPairs } from "@/lib/wishocracy-utils";
 import { BUDGET_CATEGORIES, type BudgetCategoryId } from "@/lib/wishocracy-data";
+import { ROUTES } from "@/lib/routes";
 
 const ALL_BUDGET_CATEGORY_IDS = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[];
 const ALIGNMENT_GAP_THRESHOLD_PCT = 0.5;
@@ -371,7 +372,7 @@ export function buildEmptyPersonalAlignmentState(input: {
       headline: "Pick at least two categories",
       description:
         "A personal alignment report needs trade-offs. Add one more category or compare across the full budget set.",
-      ctaHref: "/vote",
+      ctaHref: ROUTES.vote,
       ctaLabel: "Update Categories",
     };
   }
@@ -390,7 +391,7 @@ export function buildEmptyPersonalAlignmentState(input: {
       headline: "Add a few more trade-offs",
       description:
         "You have some saved data, but not enough to produce a stable report yet. Keep comparing budget pairs to sharpen the signal.",
-      ctaHref: "/vote",
+      ctaHref: ROUTES.vote,
       ctaLabel: "Continue Comparing",
     };
   }
@@ -405,7 +406,7 @@ export function buildEmptyPersonalAlignmentState(input: {
     headline: "Generate your first alignment report",
     description:
       "Save budget trade-offs in Wishocracy, then compare your priorities against benchmark politicians.",
-    ctaHref: "/vote",
+    ctaHref: ROUTES.vote,
     ctaLabel: "Start Wishocracy",
   };
 }

@@ -4,6 +4,7 @@ import {
   ROUTES,
   exploreLinks,
   footerAppLinks,
+  getSignInPath,
   isNavItemActive,
   topLinks,
 } from "../routes";
@@ -68,5 +69,17 @@ describe("navigation routes", () => {
     expect(isNavItemActive("/alignment/jane-doe", alignmentLink)).toBe(true);
     expect(isNavItemActive("/chat/history", trackLink)).toBe(true);
     expect(isNavItemActive(ROUTES.compare, studiesLink)).toBe(false);
+  });
+
+  it("builds sign-in links from canonical routes", () => {
+    expect(getSignInPath()).toBe("/auth/signin?callbackUrl=%2Fvote");
+    expect(getSignInPath(ROUTES.alignment)).toBe(
+      "/auth/signin?callbackUrl=%2Falignment",
+    );
+    expect(
+      getSignInPath(ROUTES.vote, {
+        referralCode: "friend-123",
+      }),
+    ).toBe("/auth/signin?callbackUrl=%2Fvote&ref=friend-123");
   });
 });

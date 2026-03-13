@@ -22,6 +22,19 @@ export interface NavItem {
   matchPrefixes?: string[];
 }
 
+export function getSignInPath(
+  callbackUrl: string = ROUTES.vote,
+  options?: { referralCode?: string | null },
+): string {
+  const searchParams = new URLSearchParams({ callbackUrl });
+
+  if (options?.referralCode) {
+    searchParams.set("ref", options.referralCode);
+  }
+
+  return `${ROUTES.signIn}?${searchParams.toString()}`;
+}
+
 export function isNavItemActive(pathname: string, item: NavItem): boolean {
   const prefixes = item.matchPrefixes?.length ? item.matchPrefixes : [item.href];
 
@@ -34,69 +47,87 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
   });
 }
 
+export const studiesLink: NavItem = {
+  href: ROUTES.outcomes,
+  label: "Studies",
+  emoji: "🧪",
+  description: "Outcome hubs, pair studies, and jurisdiction drilldowns",
+  matchPrefixes: [ROUTES.outcomes, "/studies"],
+};
+
+export const compareLink: NavItem = {
+  href: ROUTES.compare,
+  label: "Compare",
+  emoji: "🌍",
+  description: "Side-by-side country and system comparisons",
+};
+
+export const policiesLink: NavItem = {
+  href: ROUTES.policies,
+  label: "Policies",
+  emoji: "📋",
+  description: "Evidence-ranked policy recommendations",
+};
+
+export const budgetLink: NavItem = {
+  href: ROUTES.budget,
+  label: "Optimal Budget",
+  emoji: "💰",
+  description: "Budget size and composition analysis",
+};
+
+export const misconceptionsLink: NavItem = {
+  href: ROUTES.misconceptions,
+  label: "Myth vs Data",
+  emoji: "🔍",
+  description: "Popular beliefs tested against empirical data",
+};
+
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
-  {
-    href: ROUTES.outcomes,
-    label: "Studies",
-    emoji: "🧪",
-    description: "Outcome hubs, pair studies, and jurisdiction drilldowns",
-    matchPrefixes: [ROUTES.outcomes, "/studies"],
-  },
-  {
-    href: ROUTES.compare,
-    label: "Compare",
-    emoji: "🌍",
-    description: "Side-by-side country and system comparisons",
-  },
-  {
-    href: ROUTES.policies,
-    label: "Policies",
-    emoji: "📋",
-    description: "Evidence-ranked policy recommendations",
-  },
-  {
-    href: ROUTES.budget,
-    label: "Optimal Budget",
-    emoji: "💰",
-    description: "Budget size and composition analysis",
-  },
-  {
-    href: ROUTES.misconceptions,
-    label: "Myth vs Data",
-    emoji: "🔍",
-    description: "Popular beliefs tested against empirical data",
-  },
+  studiesLink,
+  compareLink,
+  policiesLink,
+  budgetLink,
+  misconceptionsLink,
 ];
+
+export const wishocracyLink: NavItem = {
+  href: ROUTES.vote,
+  label: "Wishocracy",
+  emoji: "🗳️",
+  description: "Build and save your ideal public budget",
+};
+
+export const alignmentLink: NavItem = {
+  href: ROUTES.alignment,
+  label: "Alignment",
+  emoji: "🏛️",
+  description: "See which benchmark politicians match your priorities",
+};
+
+export const trackLink: NavItem = {
+  href: ROUTES.chat,
+  label: "Wishonia",
+  emoji: "👽",
+  description: "Chat with an alien AI that's been governing a planet for 4,237 years",
+};
+
+export const profileLink: NavItem = {
+  href: ROUTES.profile,
+  label: "Profile",
+  emoji: "🧭",
+  description: "Save demographics, daily check-ins, and shared reports",
+};
 
 export const appLinks: NavItem[] = [
-  {
-    href: ROUTES.vote,
-    label: "Wishocracy",
-    emoji: "🗳️",
-    description: "Build and save your ideal public budget",
-  },
-  {
-    href: ROUTES.alignment,
-    label: "Alignment",
-    emoji: "🏛️",
-    description: "See which benchmark politicians match your priorities",
-  },
-  {
-    href: ROUTES.chat,
-    label: "Track",
-    emoji: "💬",
-    description: "Track health, happiness, habits, and meals",
-  },
-  {
-    href: ROUTES.profile,
-    label: "Profile",
-    emoji: "🧭",
-    description: "Save demographics, daily check-ins, and shared reports",
-  },
+  wishocracyLink,
+  alignmentLink,
+  trackLink,
+  profileLink,
 ];
 
-const aboutLink: NavItem = {
+export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
   emoji: "ℹ️",
@@ -105,18 +136,18 @@ const aboutLink: NavItem = {
 
 /** Top-level nav items (not in dropdown) */
 export const topLinks: NavItem[] = [
-  appLinks[0],
-  appLinks[1],
-  appLinks[2],
+  wishocracyLink,
+  alignmentLink,
+  trackLink,
   aboutLink,
 ];
 
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
-  appLinks[0],
-  appLinks[1],
-  appLinks[3],
-  appLinks[2],
+  wishocracyLink,
+  alignmentLink,
+  profileLink,
+  trackLink,
   aboutLink,
 ];
 

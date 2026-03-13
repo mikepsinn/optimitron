@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createLogger } from "@/lib/logger";
+import { ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
 
 const logger = createLogger("auth-form");
@@ -20,7 +21,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({
-  callbackUrl = "/vote",
+  callbackUrl = ROUTES.vote,
   referralCode,
   initialError = null,
   compact = false,
@@ -169,7 +170,12 @@ export function AuthForm({
         ) : null}
 
         {magicLinkEnabled ? (
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              void handleSubmit(event);
+            }}
+          >
             <div className="space-y-2">
               <Label className="font-bold uppercase" htmlFor="auth-email">
                 Email

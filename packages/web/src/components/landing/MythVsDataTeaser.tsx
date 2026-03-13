@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { misconceptionsLink } from "@/lib/routes";
 
 interface MythCard {
   id: string;
@@ -21,11 +22,13 @@ export function MythVsDataTeaser({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            Myth vs Data
+            Things Everyone Believes That Are Wrong
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-3xl mx-auto font-medium">
-            {totalCount} popular policy beliefs tested against OECD, World Bank,
-            and federal data. {failCount} got an F.
+            I tested {totalCount} of your most popular policy beliefs against
+            OECD, World Bank, and federal data. {failCount} of them got an F.
+            On my planet we&apos;d call this &ldquo;a problem.&rdquo; Here you
+            seem to call it &ldquo;politics.&rdquo;
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -50,10 +53,10 @@ export function MythVsDataTeaser({
         </div>
         <div className="text-center mt-8">
           <Link
-            href="/misconceptions"
+            href={misconceptionsLink.href}
             className="inline-flex items-center text-sm font-black text-red-600 hover:text-red-800 uppercase transition-colors"
           >
-            See All {totalCount} Findings &rarr;
+            See All {totalCount} Findings (brace yourself) &rarr;
           </Link>
         </div>
       </div>

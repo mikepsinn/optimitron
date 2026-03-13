@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { OutcomeMegaStudyRanking } from "@optomitron/optimizer";
 import type { ExplorerOutcome } from "@/lib/analysis-explorer-types";
 import { getOutcomeHubPath } from "@/lib/analysis-explorer-routes";
+import { studiesLink } from "@/lib/routes";
 
 interface OutcomeCard {
   outcome: ExplorerOutcome;
@@ -14,12 +15,13 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       <div className="text-center mb-16">
         <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-          Outcome Explorer
+          The Mega-Study Engine
         </h2>
         <p className="mt-4 text-lg text-black/60 max-w-3xl mx-auto font-medium">
-          Browse the strongest predictors for major health and wealth outcomes,
-          then drill into response curves, optimal values, and jurisdiction
-          detail.
+          Pick an outcome you care about. I&apos;ll show you every predictor
+          ranked by causal evidence strength, with response curves, optimal
+          values, and jurisdiction-level diagnostics. It&apos;s like a search
+          engine, but for &ldquo;what actually works.&rdquo;
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -56,13 +58,13 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
       </div>
       <div className="text-center mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded max-w-2xl mx-auto">
         <p className="text-sm text-black/60 font-medium">
-          Start from the outcome you care about, then work backward to the
-          strongest measurable levers.
+          Every recommendation is gated by direct mission KPI evidence.
+          No vibes. No &ldquo;well it feels like it should work.&rdquo; Just data.
         </p>
       </div>
       <div className="text-center mt-8">
         <Link
-          href="/outcomes"
+          href={studiesLink.href}
           className="inline-flex items-center text-sm font-black text-emerald-700 hover:text-emerald-900 uppercase transition-colors"
         >
           Explore All Outcomes &rarr;

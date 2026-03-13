@@ -7,6 +7,7 @@ import {
   getActualGovernmentAllocations,
   type BudgetCategoryId,
 } from "@/lib/wishocracy-data";
+import { alignmentLink, getSignInPath, wishocracyLink } from "@/lib/routes";
 
 type WishocracyLandingSummary = {
   averageAllocations: Record<BudgetCategoryId, number>;
@@ -125,19 +126,19 @@ export function WishocracyLandingSection() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/vote"
+                href={wishocracyLink.href}
                 className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 Make Your Allocation
               </Link>
               <Link
-                href="/auth/signin?callbackUrl=%2Fvote"
+                href={getSignInPath(wishocracyLink.href)}
                 className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 Sign In to Save and Share
               </Link>
               <Link
-                href="/alignment"
+                href={alignmentLink.href}
                 className="inline-flex items-center justify-center border-4 border-black bg-yellow-300 px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 See Alignment Reports

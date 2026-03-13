@@ -1,50 +1,12 @@
 import Link from "next/link";
-import type { NavItem } from "@/lib/routes";
+import { NavItemLink } from "@/components/navigation/NavItemLink";
 import {
+  ROUTES,
   communityLinks,
   exploreLinks,
   footerAppLinks,
   paperLinks,
 } from "@/lib/routes";
-
-function FooterLink({ item, external }: { item: NavItem; external?: boolean }) {
-  const inner = (
-    <span className="group relative inline-block">
-      <span>
-        {item.emoji && <span className="mr-1">{item.emoji}</span>}
-        {item.label}
-        {external && " ↗"}
-      </span>
-      {item.description && (
-        <span className="pointer-events-none absolute left-0 bottom-full mb-2 w-52 rounded border-2 border-black bg-white px-3 py-2 text-xs font-medium text-black opacity-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-opacity group-hover:opacity-100 z-10">
-          {item.description}
-        </span>
-      )}
-    </span>
-  );
-
-  if (external) {
-    return (
-      <a
-        href={item.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-sm font-medium text-black/70 hover:text-black transition-colors"
-      >
-        {inner}
-      </a>
-    );
-  }
-
-  return (
-    <Link
-      href={item.href}
-      className="text-sm font-medium text-black/70 hover:text-black transition-colors"
-    >
-      {inner}
-    </Link>
-  );
-}
 
 export default function Footer() {
   return (
@@ -53,7 +15,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="text-xl font-black uppercase text-black">
+            <Link href={ROUTES.home} className="text-xl font-black uppercase text-black">
               ⚡ Optomitron
             </Link>
             <p className="text-sm text-black/70 mt-3 leading-relaxed font-medium">
@@ -70,7 +32,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerAppLinks.map((link) => (
                 <li key={link.href}>
-                  <FooterLink item={link} />
+                  <NavItemLink item={link} variant="footer" />
                 </li>
               ))}
             </ul>
@@ -84,7 +46,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {exploreLinks.map((link) => (
                 <li key={link.href}>
-                  <FooterLink item={link} />
+                  <NavItemLink item={link} variant="footer" />
                 </li>
               ))}
             </ul>
@@ -98,7 +60,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {paperLinks.map((link) => (
                 <li key={link.href}>
-                  <FooterLink item={link} external />
+                  <NavItemLink item={link} variant="footer" external />
                 </li>
               ))}
             </ul>
@@ -112,7 +74,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {communityLinks.map((link) => (
                 <li key={link.href}>
-                  <FooterLink item={link} external />
+                  <NavItemLink item={link} variant="footer" external />
                 </li>
               ))}
             </ul>

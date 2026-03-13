@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { wishocracyLink } from "@/lib/routes";
 
 interface WishocracyAuthPromptCardProps {
   show: boolean;
@@ -45,7 +46,7 @@ export function WishocracyAuthPromptCard({
               </p>
             </div>
 
-            <AuthForm callbackUrl="/vote" referralCode={referralCode} compact />
+            <AuthForm callbackUrl={wishocracyLink.href} referralCode={referralCode} compact />
 
             <Button type="button" variant="ghost" className="mt-4 w-full" onClick={onDismiss}>
               Continue Without Signing In

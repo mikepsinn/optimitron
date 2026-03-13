@@ -3,13 +3,14 @@ import { redirect } from "next/navigation";
 import { ProfileHub } from "@/components/profile/ProfileHub";
 import { authOptions } from "@/lib/auth";
 import { getProfilePageData } from "@/lib/profile.server";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
-    redirect(`/auth/signin?callbackUrl=${encodeURIComponent("/profile")}`);
+    redirect(getSignInPath(ROUTES.profile));
   }
 
   const initialData = await getProfilePageData(userId);

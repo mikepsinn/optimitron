@@ -7,6 +7,7 @@ import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { Button } from "@/components/ui/button";
 import { ALIGNMENT_BENCHMARK_SOURCE_NOTE } from "@/lib/alignment-benchmarks";
 import type { PersonalAlignmentState } from "@/lib/alignment-report";
+import { wishocracyLink } from "@/lib/routes";
 
 interface AlignmentReportProps {
   state: PersonalAlignmentState;
@@ -280,7 +281,7 @@ export function AlignmentReport({
               </p>
               <div className="mt-4">
                 <Button asChild className="font-black uppercase">
-                  <Link href="/vote">Start Wishocracy</Link>
+                  <Link href={wishocracyLink.href}>Start Wishocracy</Link>
                 </Button>
               </div>
             </div>

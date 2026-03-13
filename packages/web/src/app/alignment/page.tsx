@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AlignmentReport } from "@/components/alignment/AlignmentReport";
 import { authOptions } from "@/lib/auth";
 import { getPersonalAlignmentState } from "@/lib/alignment-report.server";
+import { getSignInPath, ROUTES } from "@/lib/routes";
 import { buildUserAlignmentUrl, getBaseUrl } from "@/lib/url";
 
 export const metadata = {
@@ -17,7 +18,7 @@ export default async function AlignmentPage() {
   const userId = user?.id;
 
   if (!userId || !user) {
-    redirect(`/auth/signin?callbackUrl=${encodeURIComponent("/alignment")}`);
+    redirect(getSignInPath(ROUTES.alignment));
   }
 
   const state = await getPersonalAlignmentState(userId);

@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { ROUTES } from "@/lib/routes";
 
 function getAuthErrorMessage(error: string | null) {
   switch (error) {
@@ -19,7 +20,7 @@ function getAuthErrorMessage(error: string | null) {
 
 function SignInContent() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams?.get("callbackUrl") || "/vote";
+  const callbackUrl = searchParams?.get("callbackUrl") || ROUTES.vote;
   const referralCode = searchParams?.get("ref") || null;
   const initialError = getAuthErrorMessage(searchParams?.get("error") || null);
 

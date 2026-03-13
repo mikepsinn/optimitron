@@ -13,6 +13,7 @@ import {
   getOutcomeRouteParams,
   getPairStudyPath,
 } from "@/lib/analysis-explorer-routes";
+import { studiesLink } from "@/lib/routes";
 
 function badgeClass(tone: "neutral" | "info" | "warning" | "danger"): string {
   if (tone === "info") return "bg-cyan-100 border-cyan-400";
@@ -44,7 +45,7 @@ export default async function OutcomeHubPage({
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
         <Link
-          href="/outcomes"
+          href={studiesLink.href}
           className="inline-block text-xs font-bold uppercase text-black/50 hover:text-black mb-3"
         >
           ← All Outcomes

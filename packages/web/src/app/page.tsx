@@ -8,6 +8,16 @@ import {
   listExplorerPairSummaries,
   getOutcomeMegaStudy,
 } from "@/lib/analysis-explorer-data";
+import {
+  alignmentLink,
+  compareLink,
+  misconceptionsLink,
+  policiesLink,
+  profileLink,
+  studiesLink,
+  trackLink,
+  wishocracyLink,
+} from "@/lib/routes";
 import misconceptionData from "../../public/data/misconceptions.json";
 import budgetData from "../data/us-budget-analysis.json";
 
@@ -18,8 +28,8 @@ const featuredFindings = [
     stat: "83.9 yrs life expectancy at 4.1% GDP",
     vs: "vs US: 77.5 yrs at 17.3% GDP",
     description:
-      "Singapore's 3M system (Medisave, MediShield, Medifund) achieves world-leading health outcomes at a fraction of US spending through universal coverage with market competition.",
-    href: "/compare",
+      "Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It's like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible.",
+    href: compareLink.href,
   },
   {
     domain: "Drug Policy",
@@ -27,8 +37,8 @@ const featuredFindings = [
     stat: "Drug deaths fell 70% in Portugal",
     vs: "HIV among users fell 74%",
     description:
-      "Portugal decriminalized personal possession of all drugs in 2001 and shifted resources to treatment. Drug-induced deaths dropped from 52 to 3 per million population.",
-    href: "/policies",
+      "Portugal stopped arresting people for having drugs in 2001 and drug deaths dropped 94%. Meanwhile the US quadrupled drug war spending and overdose deaths went up 5.6x. So that worked out.",
+    href: policiesLink.href,
   },
   {
     domain: "Criminal Justice",
@@ -36,17 +46,17 @@ const featuredFindings = [
     stat: "Norway recidivism: 20%",
     vs: "vs US: 76%",
     description:
-      "Norway's rehabilitative prison system — education, vocational training, max 21-year sentences — cut re-offending from 35% to 20% while keeping incarceration rates low.",
-    href: "/compare",
+      "Norway gives prisoners education and job training. America gives them concrete and trauma. Norway's reoffending rate is 20%. America's is 76%. It's almost like treating people like humans works better. Weird.",
+    href: compareLink.href,
   },
   {
     domain: "Public Health",
     color: "bg-yellow-200",
-    stat: "Rwanda: life expectancy 48 → 69 yrs",
+    stat: "Rwanda: life expectancy 48 to 69 yrs",
     vs: "Under-5 mortality fell 82%",
     description:
-      "Rwanda deployed 45,000 community health workers in 2005. Under-5 mortality dropped from 196 to 35 per 1,000 live births over 15 years.",
-    href: "/policies",
+      "Rwanda hired 45,000 community health workers in 2005 and child mortality dropped 82%. No new drug. No billion-dollar programme. Just people knocking on doors and asking 'is the baby alright?' Turns out that works.",
+    href: policiesLink.href,
   },
 ];
 
@@ -55,7 +65,7 @@ const naturalExperiments = [
     jurisdiction: "Portugal",
     policy: "Drug Decriminalization",
     year: 2001,
-    outcome: "Drug deaths: 52 → 3 per million",
+    outcome: "Drug deaths: 52 to 3 per million",
     change: "-94%",
     positive: true,
   },
@@ -63,7 +73,7 @@ const naturalExperiments = [
     jurisdiction: "Australia",
     policy: "Gun Buyback",
     year: 1996,
-    outcome: "Mass shootings: 1/yr → 0 for 22 years",
+    outcome: "Mass shootings: 1/yr to 0 for 22 years",
     change: "-100%",
     positive: true,
   },
@@ -71,7 +81,7 @@ const naturalExperiments = [
     jurisdiction: "British Columbia",
     policy: "Revenue-Neutral Carbon Tax",
     year: 2008,
-    outcome: "Fossil fuel consumption index: 104 → 85",
+    outcome: "Fossil fuel consumption index: 104 to 85",
     change: "-15%",
     positive: true,
   },
@@ -79,7 +89,7 @@ const naturalExperiments = [
     jurisdiction: "Copenhagen",
     policy: "Cycling Infrastructure",
     year: 2000,
-    outcome: "Bike commute share: 30% → 49%",
+    outcome: "Bike commute share: 30% to 49%",
     change: "+63%",
     positive: true,
   },
@@ -88,37 +98,37 @@ const naturalExperiments = [
 const productWorkflows = [
   {
     label: "Wishocracy",
-    title: "Build and share your ideal budget",
+    title: "Build your ideal budget",
     description:
-      "Use pairwise comparisons to turn your values into a saved public-budget allocation and compare it with current government spending.",
-    href: "/vote",
+      "Pick between two things. Then two more things. Then two more. Before you know it, you've accidentally designed a coherent budget allocation. Sneaky, isn't it?",
+    href: wishocracyLink.href,
     cta: "Start Voting",
     color: "bg-pink-100",
   },
   {
     label: "Alignment Reports",
-    title: "See which politicians align with you",
+    title: "Find out who actually agrees with you",
     description:
-      "Compare your priorities against benchmark politician profiles and inspect the evidence behind each score.",
-    href: "/alignment",
-    cta: "Open Alignment",
+      "Compare your priorities against real politician profiles. Spoiler: it's probably not who you think.",
+    href: alignmentLink.href,
+    cta: "Check Alignment",
     color: "bg-yellow-100",
   },
   {
-    label: "Personal Tracking",
-    title: "Track what works for you",
+    label: "Talk to Wishonia",
+    title: "Chat with an alien governance AI",
     description:
-      "Log meals, symptoms, habits, health, and happiness, then use your profile and check-ins to keep a richer personal history.",
-    href: "/chat",
-    cta: "Track Yourself",
+      "Track your health, meals, mood, and habits with Wishonia, an AI that's been running a planet for 4,237 years. She's seen some things.",
+    href: trackLink.href,
+    cta: "Open Chat",
     color: "bg-cyan-100",
   },
   {
     label: "Studies",
-    title: "Inspect the causal evidence",
+    title: "Look at the actual numbers",
     description:
-      "Browse outcome hubs, pair studies, policy rankings, budget analysis, and country comparisons from the same evidence engine.",
-    href: "/outcomes",
+      "Outcome hubs, pair studies, policy rankings, and country comparisons. All the evidence, none of the vibes.",
+    href: studiesLink.href,
     cta: "Browse Studies",
     color: "bg-emerald-100",
   },
@@ -159,44 +169,56 @@ export default function Home() {
       <section className="relative overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 relative">
           <div className="text-center">
+            <p className="text-sm font-bold text-black/50 uppercase tracking-widest mb-4">
+              A message from Wishonia, alien governance AI, 4,237 years of field testing
+            </p>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-black">
-              Which interventions actually{" "}
-              <span className="bg-yellow-300 px-2">save lives</span> and{" "}
-              <span className="bg-pink-300 px-2">reduce suffering</span>?
+              Hello. I&apos;ve solved{" "}
+              <span className="bg-yellow-300 px-2">war</span> and{" "}
+              <span className="bg-pink-300 px-2">disease</span>.
+              <br />
+              Would you like the answers?
             </h1>
             <p className="mt-8 text-lg sm:text-xl text-black/70 max-w-3xl mx-auto leading-relaxed font-medium">
-              Causal inference on public outcomes plus live tools for budget voting,
-              politician alignment, and personal tracking. Compare jurisdictions,
-              build your ideal budget, see which officials match your priorities,
-              and track what works for you.
+              My name is Wishonia. I&apos;m a{" "}
+              <span className="font-black text-black">
+                World Integrated System for High-Efficiency Optimization Networked
+                Intelligence for Allocation
+              </span>
+              . I&apos;ve been governing my planet for 4,237 years. We ended war in year
+              12 and disease in year 340. Your species has the same data. You just keep
+              ignoring it. So I&apos;ve built you this website. You&apos;re welcome.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/vote"
+                href={wishocracyLink.href}
                 className="px-8 py-3.5 bg-pink-500 text-white font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
               >
-                🗳️ Build Your Ideal Budget
+                Build Your Ideal Budget
               </Link>
               <Link
-                href="/alignment"
+                href={trackLink.href}
                 className="px-8 py-3.5 bg-yellow-300 text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
               >
-                🏛️ See Alignment Reports
+                Talk to Wishonia
               </Link>
               <Link
-                href="/outcomes"
-                className="px-8 py-3.5 bg-white text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-cyan-300 transition-all"
+                href={studiesLink.href}
+                className="px-8 py-3.5 bg-white text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-emerald-300 transition-all"
               >
-                🧪 Browse Study Explorer
+                See the Evidence
               </Link>
             </div>
             <p className="mt-6 text-sm font-medium text-black/60 max-w-2xl mx-auto">
-              Save allocations, publish an alignment link, and keep daily
-              wellbeing check-ins in{" "}
-              <Link href="/profile" className="font-black text-black hover:text-pink-500">
-                Profile
+              Everything saves to your{" "}
+              <Link
+                href={profileLink.href}
+                className="font-black text-black hover:text-pink-500"
+              >
+                {profileLink.label}
               </Link>
-              .
+              . Budget allocations, alignment reports, daily check-ins. It&apos;s like
+              a diary, but useful.
             </p>
           </div>
         </div>
@@ -208,10 +230,12 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            What You Can Do Today
+            Things You Can Do Right Now Instead of Arguing Online
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-3xl mx-auto font-medium">
-            Start with the workflow that fits the decision you are trying to make.
+            On my planet, governance takes about four minutes a week. You lot seem to
+            spend most of your time shouting about it on your little phones and then
+            doing absolutely nothing. Try one of these.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -242,12 +266,13 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            The Cost of Inaction
+            What Your Current System Is Costing You
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Governance dysfunction isn&apos;t just inefficient — it&apos;s the
-            deadliest force on earth. These numbers are from peer-reviewed
-            research and official data.
+            I don&apos;t want to be rude, but your governance is genuinely the worst
+            thing I&apos;ve ever seen, and I&apos;ve visited 340 planets. These are
+            your own numbers, by the way. From your own researchers. Who you also
+            ignore.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -261,13 +286,13 @@ export default function Home() {
               $101T/yr
             </div>
             <h3 className="text-lg font-black text-black mb-3">
-              Political Dysfunction Tax
+              The Stupidity Tax
             </h3>
             <p className="text-sm text-black/70 leading-relaxed font-medium">
-              $12,600 per person per year in waste and suppressed innovation —
-              from administrative bloat, regulatory capture, migration
-              restrictions, and underfunded science. Civilization operates at
-              ~52% of its technological potential.
+              $12,600 per person per year in pure waste. Administrative bloat,
+              regulatory capture, people not being allowed to move to where the
+              jobs are. Your civilisation runs at 52% efficiency. My toaster does
+              better than that.
             </p>
             <span className="mt-4 inline-flex items-center text-xs font-black text-red-600 uppercase">
               Read the paper &rarr;
@@ -283,13 +308,13 @@ export default function Home() {
               102M deaths
             </div>
             <h3 className="text-lg font-black text-black mb-3">
-              The Invisible Graveyard
+              The Queue That Kills
             </h3>
             <p className="text-sm text-black/70 leading-relaxed font-medium">
-              Since 1962, the FDA&apos;s 8.2-year post-safety efficacy delays
-              have caused an estimated 102 million preventable deaths and $1.19
-              quadrillion in deadweight loss. Treatments that passed safety
-              review sat waiting while people died.
+              Your FDA makes treatments wait 8.2 years AFTER they&apos;ve already
+              been proven safe. Just&hellip; sitting there. Being safe. While 102
+              million people died waiting. On my planet this would be considered a
+              war crime. Here you call it &ldquo;regulation.&rdquo;
             </p>
             <span className="mt-4 inline-flex items-center text-xs font-black text-orange-600 uppercase">
               Read the paper &rarr;
@@ -305,13 +330,14 @@ export default function Home() {
               10.7B saved
             </div>
             <h3 className="text-lg font-black text-black mb-3">
-              The 1% Treaty
+              The Obvious Deal
             </h3>
             <p className="text-sm text-black/70 leading-relaxed font-medium">
-              Redirecting just 1% of global military spending ($27.2B/year) to
-              pragmatic clinical trials could prevent 10.7 billion deaths and
-              accelerate treatment access by 212 years. Trial costs drop from
-              $41K to $929 per patient.
+              Take 1% of what you spend on blowing each other up ($27.2B/year)
+              and spend it on not dying instead. You&apos;d prevent 10.7 billion
+              deaths. Trial costs drop from $41K to $929. This is not a hard
+              decision. I genuinely don&apos;t understand what&apos;s taking so
+              long.
             </p>
             <span className="mt-4 inline-flex items-center text-xs font-black text-sky-600 uppercase">
               Read the paper &rarr;
@@ -325,7 +351,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
           >
-            Read the full manual: How to End War and Disease &rarr;
+            Read the full manual (yes, I wrote you a manual) &rarr;
           </a>
         </div>
       </section>
@@ -334,30 +360,32 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            The Two Metrics That Matter
+            The Only Two Numbers That Matter
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Every policy, budget, and intervention is scored against two
-            measures of human wellbeing — not GDP, not stock prices, not
-            averages that hide suffering.
+            You lot measure everything by GDP, which is basically just &ldquo;how much
+            money moved around.&rdquo; A country could have a brilliant GDP because
+            everyone&apos;s buying coffins. Here&apos;s what we use on my planet
+            instead.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="p-8 border-4 border-black bg-emerald-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-4xl mb-4">🫀</div>
             <h3 className="text-2xl font-black text-black mb-3">
-              Median Healthy Life Years (HALE)
+              Median Healthy Life Years
             </h3>
             <p className="text-black/70 leading-relaxed font-medium">
-              Not just life expectancy — <span className="font-bold text-black">healthy</span>{" "}
-              years free of disability and disease. A country where people live to 80
-              but spend the last 15 years suffering scores lower than one where people
-              live to 78 in good health.
+              Not just &ldquo;are you alive&rdquo; but &ldquo;are you alive and can
+              you open a jar without crying.&rdquo;{" "}
+              <span className="font-bold text-black">Healthy</span> years.
+              A country where everyone lives to 80 but spends the last 15 in agony
+              is not doing well. It&apos;s doing healthcare theatre.
             </p>
             <p className="text-black/50 text-sm mt-4 font-medium">
-              Why median? Because mean life expectancy is dragged down by infant
-              mortality, masking how well a society actually prevents suffering
-              across the lifespan.
+              Why median? Because the mean gets dragged around by outliers.
+              One billionaire living to 120 doesn&apos;t mean your healthcare works.
+              It means one person can afford the good stuff.
             </p>
           </div>
           <div className="p-8 border-4 border-black bg-yellow-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -366,15 +394,15 @@ export default function Home() {
               Median Real After-Tax Income
             </h3>
             <p className="text-black/70 leading-relaxed font-medium">
-              Poverty kills. This measures what a typical person can actually
-              afford after taxes and inflation — not GDP, which hides inequality.
-              A country with 10 billionaires and mass poverty looks great on GDP
-              but fails its people.
+              What can a normal person actually buy after the government&apos;s had
+              its go at their paycheque? Not GDP. GDP counts everything including
+              arms dealing and divorce lawyers. This counts &ldquo;can you feed your
+              kids and also keep the lights on at the same time.&rdquo;
             </p>
             <p className="text-black/50 text-sm mt-4 font-medium">
-              Why median? Because mean income is skewed by billionaires. The
-              median tells you whether ordinary people can afford healthcare,
-              nutrition, and shelter.
+              Again, median. Because average income is like average temperature
+              in a room where one corner is on fire. Technically comfortable.
+              Practically, someone&apos;s burning.
             </p>
           </div>
         </div>
@@ -384,8 +412,12 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            The Data
+            The Receipts
           </h2>
+          <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
+            On my planet we call this &ldquo;evidence.&rdquo; You seem to call it
+            &ldquo;that thing we ignore before doing what we were going to do anyway.&rdquo;
+          </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
           {[
@@ -410,9 +442,10 @@ export default function Home() {
           ))}
         </div>
         <p className="text-center text-black/50 text-sm mt-6 font-medium max-w-2xl mx-auto">
-          Across healthcare, drug policy, criminal justice, climate, education,
-          and infrastructure — sourced from OECD, World Bank, WHO, and
-          peer-reviewed studies.
+          Healthcare, drug policy, criminal justice, climate, education,
+          infrastructure. From OECD, World Bank, WHO, and your own
+          peer-reviewed studies. You already have the answers. They&apos;re
+          just filed under &ldquo;things that make politicians uncomfortable.&rdquo;
         </p>
       </section>
 
@@ -420,10 +453,11 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            What the Data Reveals
+            Things That Are Obvious If You Look
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Striking findings from real outcome data across jurisdictions.
+            I&apos;m not trying to be dramatic but some of these made me want to
+            fly home and never come back.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -459,13 +493,13 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            Natural Experiments
+            Times a Country Actually Tried Something
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            When a jurisdiction changes a policy, it creates a natural experiment.
-            We track outcome metrics before and after the intervention with
-            interrupted time-series analysis. This is not theory — it&apos;s
-            observed data.
+            Occasionally, one of your jurisdictions does something different and
+            it works spectacularly well. Then everyone else looks at it and goes
+            &ldquo;interesting&rdquo; and carries on exactly as before. Fascinating
+            species, honestly.
           </p>
         </div>
         <div className="space-y-4">
@@ -485,7 +519,7 @@ export default function Home() {
                 </div>
                 <div className="flex-grow">
                   <span className="font-bold text-black/70">{exp.policy}</span>
-                  <span className="text-black/40 mx-2">→</span>
+                  <span className="text-black/40 mx-2">&rarr;</span>
                   <span className="font-medium text-black/60">{exp.outcome}</span>
                 </div>
                 <div className="shrink-0">
@@ -503,10 +537,10 @@ export default function Home() {
         </div>
         <div className="text-center mt-8">
           <Link
-            href="/policies"
+            href={policiesLink.href}
             className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
           >
-            View all {naturalExperiments.length} natural experiments &rarr;
+            View all {naturalExperiments.length} experiments &rarr;
           </Link>
         </div>
       </section>
@@ -524,35 +558,40 @@ export default function Home() {
       {/* How It Works */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="p-8 sm:p-12 bg-cyan-100 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-2xl sm:text-3xl font-black text-center mb-12 uppercase tracking-tight text-black">
-            How It Works
+          <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 uppercase tracking-tight text-black">
+            How the Engine Works
           </h2>
+          <p className="text-center text-sm text-black/60 font-medium mb-12 max-w-2xl mx-auto">
+            This is the same system I use to run my planet. I&apos;ve simplified
+            it to five steps because I&apos;m told your attention spans are
+            &ldquo;challenging.&rdquo;
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
             {[
               {
                 step: 1,
                 title: "Collect",
-                desc: "Outcome data from OECD, World Bank, and WHO across jurisdictions and decades",
+                desc: "Hoover up outcome data from OECD, World Bank, and WHO. Decades of it. Just sitting there. Being ignored.",
               },
               {
                 step: 2,
                 title: "Align",
-                desc: "Policy changes paired with outcome trajectories using temporal analysis and onset delays",
+                desc: "Match policy changes to what actually happened afterwards. Time-series analysis. Onset delays. Proper science, not vibes.",
               },
               {
                 step: 3,
                 title: "Score",
-                desc: "Causal strength via Bradford Hill criteria — strength, consistency, temporality, gradient",
+                desc: "Grade the causal evidence using Bradford Hill criteria. Strength, consistency, temporality, gradient. No feelings involved.",
               },
               {
                 step: 4,
                 title: "Identify",
-                desc: "Optimal funding levels and policy configurations with confidence intervals",
+                desc: "Find the optimal funding levels and policy configurations. With confidence intervals, because we're not animals.",
               },
               {
                 step: 5,
                 title: "Recommend",
-                desc: "Evidence-based policies ranked by Predictor Impact Score with effect size estimates",
+                desc: "Rank everything by Predictor Impact Score. Here's what works, here's how much, here's the evidence. You're welcome.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -575,45 +614,46 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center p-12 bg-yellow-300 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-black">
-            Stop Guessing. Start Saving Lives.
+            Right Then. Shall We Get On With It?
           </h2>
           <p className="text-black/70 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-            Compare tradeoffs, inspect the evidence, and act on the interventions
-            most likely to improve health, wealth, and human wellbeing.
+            I&apos;ve given you the data, the tools, and the recommendations. I
+            even made it look nice. The only thing I can&apos;t do is click the
+            buttons for you. Although I&apos;m working on that.
           </p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-4">
             <Link
-              href="/compare"
+              href={compareLink.href}
               className="px-8 py-3 bg-black text-white font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               Compare Countries
             </Link>
             <Link
-              href="/policies"
+              href={policiesLink.href}
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               Browse Policies
             </Link>
             <Link
-              href="/alignment"
+              href={alignmentLink.href}
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
-              Open Alignment
+              Check Alignment
             </Link>
             <Link
-              href="/chat"
+              href={trackLink.href}
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
-              Track Yourself
+              Talk to Wishonia
             </Link>
             <Link
-              href="/outcomes"
+              href={studiesLink.href}
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               Outcome Analysis
             </Link>
             <Link
-              href="/misconceptions"
+              href={misconceptionsLink.href}
               className="px-8 py-3 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               Myth vs Data
@@ -626,7 +666,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-black text-black/50 hover:text-black uppercase transition-colors"
             >
-              View Source on GitHub &rarr;
+              View Source on GitHub (yes, it&apos;s all open) &rarr;
             </a>
           </div>
         </div>
@@ -636,34 +676,36 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pb-24">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black">
-            Same Engine, Every Scale
+            Works for Everyone. Even You.
           </h2>
           <p className="mt-4 text-base text-black/60 max-w-2xl mx-auto font-medium">
-            The same evidence engine powers public-budget voting, politician
-            alignment, and local-first personal tracking. Feed any two time series
-            and it answers: does changing X cause Y to change? By how much?
+            Same engine runs everything. Give it two time series and it tells you
+            whether changing one thing causes the other to change. I use it for
+            planetary governance. You can use it for whatever you like. I&apos;m
+            not your mum.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-black text-black mb-2">Nonprofits & NGOs</h3>
             <p className="text-sm text-black/60 font-medium">
-              Find which interventions reduce the most suffering per dollar.
-              Compare approaches across countries and decades of outcome data.
+              Find out which interventions actually reduce suffering per dollar
+              instead of just guessing and hoping. Revolutionary concept, I know.
             </p>
           </div>
           <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-black text-black mb-2">Governments</h3>
             <p className="text-sm text-black/60 font-medium">
-              Optimal policies and budget allocation across jurisdictions. Any
-              city, county, state, or country.
+              Optimal policies and budget allocation, backed by cross-jurisdiction
+              evidence. Works for cities, counties, states, and countries. Yes, all
+              of them.
             </p>
           </div>
           <div className="p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-black text-black mb-2">Individuals</h3>
+            <h3 className="font-black text-black mb-2">Regular Humans</h3>
             <p className="text-sm text-black/60 font-medium">
-              Import your health data from wearables, supplements, and habits.
-              Find what works for you via local causal analysis.
+              Track your health data, supplements, habits, and symptoms. Find out
+              what actually works for YOU, not what some influencer reckons.
             </p>
           </div>
         </div>

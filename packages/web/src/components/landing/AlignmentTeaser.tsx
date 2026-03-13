@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { wishocracyLink } from "@/lib/routes";
 
 const steps = [
-  { number: 1, label: "Allocate your ideal budget" },
-  { number: 2, label: "Compare it with politician profiles" },
-  { number: 3, label: "See your ranked politician matches" },
+  { number: 1, label: "Tell us what you'd spend money on" },
+  { number: 2, label: "We check who actually votes that way" },
+  { number: 3, label: "Find out who's been lying to you" },
 ];
 
 export function AlignmentTeaser() {
@@ -11,11 +12,12 @@ export function AlignmentTeaser() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       <div className="text-center mb-16">
         <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-          Which Politicians Match Your Priorities?
+          Which Politicians Actually Agree With You?
         </h2>
         <p className="mt-4 text-lg text-black/60 max-w-3xl mx-auto font-medium">
-          Complete the budget survey, then see how your preferences align with
-          federal politician profiles.
+          On my planet, every official&apos;s alignment score is public and
+          updated in real time. Here, you have to take their word for it. Which
+          is&hellip; bold. Let&apos;s at least check the maths.
         </p>
       </div>
       <div className="max-w-xl mx-auto p-8 bg-pink-100 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -30,11 +32,12 @@ export function AlignmentTeaser() {
           ))}
         </div>
         <p className="text-sm text-black/50 font-medium mt-6">
-          Save it, revisit it, and share it.
+          Your report gets a shareable URL. Forward it to someone who still
+          thinks their favourite politician agrees with them.
         </p>
         <div className="mt-6">
           <Link
-            href="/vote"
+            href={wishocracyLink.href}
             className="inline-block px-8 py-3 bg-black text-white font-black uppercase border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
             Start Your Alignment Report &rarr;
