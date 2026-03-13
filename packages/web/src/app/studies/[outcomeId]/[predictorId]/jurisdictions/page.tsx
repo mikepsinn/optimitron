@@ -8,6 +8,7 @@ import {
 import {
   getJurisdictionStudyPath,
   getPairRouteParams,
+  getPairStudyPath,
 } from "@/lib/analysis-explorer-routes";
 
 function fmt(value: number | null | undefined, digits: number = 2): string {
@@ -36,7 +37,7 @@ export default async function JurisdictionListPage({
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
         <Link
-          href={`/studies/${encodeURIComponent(outcomeId)}/${encodeURIComponent(predictorId)}`}
+          href={getPairStudyPath(outcomeId, predictorId)}
           className="inline-block text-xs font-bold uppercase text-black/50 hover:text-black mb-3"
         >
           ← Back to Pair Study

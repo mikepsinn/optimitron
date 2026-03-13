@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { API_ROUTES } from "@/lib/api-routes";
 import type { ClassifiedBill } from "@/app/api/civic/bills/route";
 import type { BillCBA } from "@/lib/civic-cba";
 import { BillCBACard } from "./BillCBACard";
@@ -20,7 +21,7 @@ export function BillVoteCard({ bill, cba, onSave }: BillVoteCardProps) {
     setSaving(true);
     try {
       const cbaSnapshot = cba ? JSON.stringify(cba) : "";
-      const res = await fetch("/api/civic/votes", {
+      const res = await fetch(API_ROUTES.civic.votes, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

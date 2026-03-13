@@ -1,4 +1,5 @@
 import type { Session } from "next-auth";
+import { API_ROUTES } from "@/lib/api-routes";
 import { BudgetCategoryId, BUDGET_CATEGORIES } from "@/lib/wishocracy-data";
 import { storage } from "@/lib/storage";
 import {
@@ -119,8 +120,8 @@ export async function hydrateAuthenticatedState(
   await syncPendingWishocracy(session);
 
   const [allocationsResponse, selectionsResponse] = await Promise.all([
-    fetch("/api/wishocracy/allocations"),
-    fetch("/api/wishocracy/category-selections"),
+    fetch(API_ROUTES.wishocracy.allocations),
+    fetch(API_ROUTES.wishocracy.categorySelections),
   ]);
   const allocationsPayload = (await allocationsResponse.json()) as {
     allocations?: PendingComparison[];

@@ -5,6 +5,7 @@ import { ShieldCheck, ShieldQuestion } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useTransition } from "react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
       setRequestError(null);
 
       try {
-        const response = await fetch("/api/personhood/world-id/request");
+        const response = await fetch(API_ROUTES.personhood.worldIdRequest);
         const payload = (await response.json().catch(() => null)) as
           | WorldIdRequestPayload
           | { error?: string }
@@ -90,7 +91,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
     setRequestError(null);
 
     try {
-      const response = await fetch("/api/personhood/world-id/verify", {
+      const response = await fetch(API_ROUTES.personhood.worldIdVerify, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

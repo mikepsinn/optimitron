@@ -1,4 +1,5 @@
 import type { Session } from "next-auth";
+import { API_ROUTES } from "@/lib/api-routes";
 import { storage } from "@/lib/storage";
 import { BudgetCategoryId, BUDGET_CATEGORIES } from "@/lib/wishocracy-data";
 import { createLogger } from "@/lib/logger";
@@ -134,7 +135,7 @@ export async function syncPendingWishocracy(
       return false;
     }
 
-    const response = await fetch("/api/wishocracy/sync", {
+    const response = await fetch(API_ROUTES.wishocracy.sync, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

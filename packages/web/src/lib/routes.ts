@@ -11,6 +11,7 @@ export const ROUTES = {
   budget: "/budget",
   misconceptions: "/misconceptions",
   discoveries: "/discoveries",
+  studies: "/studies",
   civic: "/civic",
   signIn: "/auth/signin",
 } as const;
@@ -54,7 +55,7 @@ export const studiesLink: NavItem = {
   label: "Studies",
   emoji: "🧪",
   description: "Outcome hubs, pair studies, and jurisdiction drilldowns",
-  matchPrefixes: [ROUTES.outcomes, "/studies"],
+  matchPrefixes: [ROUTES.outcomes, ROUTES.studies],
 };
 
 export const compareLink: NavItem = {

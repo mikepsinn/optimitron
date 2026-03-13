@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { AlertCard } from "@/components/ui/alert-card";
 import { AmountSelector } from "@/components/ui/amount-selector";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
     setSuccess(null);
 
     startTransition(() => {
-      void fetch("/api/profile/check-in", {
+      void fetch(API_ROUTES.profile.checkIn, {
         body: JSON.stringify({
           happinessRating,
           healthRating,

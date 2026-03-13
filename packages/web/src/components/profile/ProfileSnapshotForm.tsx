@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +70,7 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
     setSuccess(null);
 
     startTransition(() => {
-      void fetch("/api/profile", {
+      void fetch(API_ROUTES.profile.root, {
         body: JSON.stringify({
           annualHouseholdIncomeUsd: formState.annualHouseholdIncomeUsd,
           birthYear: formState.birthYear,

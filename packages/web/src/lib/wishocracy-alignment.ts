@@ -11,6 +11,7 @@ import {
   type PreferenceGap,
   type PreferenceWeight,
 } from "@optomitron/wishocracy";
+import { createEmptyAverageAllocations } from "@/lib/wishocracy-community";
 import { BUDGET_CATEGORIES, type BudgetCategoryId, getActualGovernmentAllocations } from "@/lib/wishocracy-data";
 
 export const DEFAULT_ALIGNMENT_BOOTSTRAP_ITERATIONS = 250;
@@ -69,16 +70,6 @@ export interface PoliticianAlignmentResult {
   preferenceGaps: PreferenceGap[];
 }
 
-function emptyAllocationRecord(): Record<BudgetCategoryId, number> {
-  return ALL_BUDGET_CATEGORY_IDS.reduce(
-    (record, categoryId) => {
-      record[categoryId] = 0;
-      return record;
-    },
-    {} as Record<BudgetCategoryId, number>,
-  );
-}
-
 function normalizeCategoryToken(value: string): string {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
@@ -135,7 +126,7 @@ export function resolveBudgetCategoryId(category: string): BudgetCategoryId | nu
 export function mapVoteAllocationsToBudgetCategories(
   raw: RawPoliticianAllocations,
 ): NormalizedPoliticianAllocations {
-  const totals = emptyAllocationRecord();
+  const totals = createEmptyAverageAllocations();
   const unresolvedCategories: string[] = [];
 
   for (const [rawCategory, rawValue] of toRawAllocationEntries(raw)) {
@@ -162,7 +153,7 @@ export function mapVoteAllocationsToBudgetCategories(
     };
   }
 
-  const normalized = emptyAllocationRecord();
+  const normalized = createEmptyAverageAllocations();
   for (const categoryId of ALL_BUDGET_CATEGORY_IDS) {
     normalized[categoryId] = Number(((totals[categoryId] / totalInput) * 100).toFixed(1));
   }
@@ -188,7 +179,7 @@ export function buildCitizenPreferenceSummary(
   if (pairwiseComparisons.length === 0) {
     return {
       preferenceWeights: [],
-      citizenAllocations: emptyAllocationRecord(),
+      citizenAllocations: createEmptyAverageAllocations(),
       preferenceGaps: [],
       actualGovernmentAllocations,
       totalComparisons: 0,
@@ -224,7 +215,7 @@ export function buildCitizenPreferenceSummary(
     confidenceLevel,
     seed: bootstrapSeed,
   });
-  const citizenAllocations = emptyAllocationRecord();
+  const citizenAllocations = createEmptyAverageAllocations();
 
   for (const weight of ciResult.weights) {
     if (ALL_BUDGET_CATEGORY_IDS.includes(weight.itemId as BudgetCategoryId)) {

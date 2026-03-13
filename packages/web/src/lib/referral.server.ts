@@ -27,7 +27,7 @@ export async function findUserByUsernameOrReferralCode(identifier: string | null
   });
 }
 
-export function getReferralVoteCount(userId: string) {
+export function getReferralCount(userId: string) {
   return prisma.referral.count({
     where: { referredByUserId: userId },
   });

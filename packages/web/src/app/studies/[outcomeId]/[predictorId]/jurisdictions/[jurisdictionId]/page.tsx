@@ -5,7 +5,10 @@ import {
   getPairSubjectDrilldown,
   getPairSummary,
 } from "@/lib/analysis-explorer-data";
-import { getJurisdictionRouteParams } from "@/lib/analysis-explorer-routes";
+import {
+  getJurisdictionRouteParams,
+  getJurisdictionsPath,
+} from "@/lib/analysis-explorer-routes";
 
 function fmt(value: number | null | undefined, digits: number = 2): string {
   if (value == null || !Number.isFinite(value)) return "N/A";
@@ -37,7 +40,7 @@ export default async function JurisdictionStudyPage({
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
         <Link
-          href={`/studies/${encodeURIComponent(outcomeId)}/${encodeURIComponent(predictorId)}/jurisdictions`}
+          href={getJurisdictionsPath(outcomeId, predictorId)}
           className="inline-block text-xs font-bold uppercase text-black/50 hover:text-black mb-3"
         >
           ← All Jurisdictions

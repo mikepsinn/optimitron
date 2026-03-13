@@ -3,6 +3,8 @@
  * These run in the browser — no server imports.
  */
 
+import { API_ROUTES } from "@/lib/api-routes";
+
 export function isPushSupported(): boolean {
   return (
     typeof window !== "undefined" &&
@@ -29,7 +31,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
   if (!registration) return null;
 
   // Get VAPID public key from server
-  const response = await fetch("/api/push/vapid-key");
+  const response = await fetch(API_ROUTES.push.vapidKey);
   if (!response.ok) return null;
 
   const { vapidPublicKey } = await response.json();
@@ -45,7 +47,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     });
 
     // Save subscription to server
-    await fetch("/api/push/subscribe", {
+    await fetch(API_ROUTES.push.subscribe, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(subscription.toJSON()),
@@ -68,7 +70,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     if (!subscription) return true;
 
     // Tell server to mark as expired
-    await fetch("/api/push/unsubscribe", {
+    await fetch(API_ROUTES.push.unsubscribe, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ endpoint: subscription.endpoint }),

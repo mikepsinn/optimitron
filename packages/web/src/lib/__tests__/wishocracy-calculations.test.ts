@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import { BUDGET_CATEGORIES } from "../wishocracy-data";
 import {
   calculateAllocationsFromPairwise,
-  getRemainingPairs,
-  validateComparisons,
 } from "../wishocracy-calculations";
 
 describe("wishocracy calculations", () => {
@@ -47,22 +45,4 @@ describe("wishocracy calculations", () => {
     expect(Object.values(allocations).every((value) => value === 0)).toBe(true);
   });
 
-  it("validates non-empty comparison batches", () => {
-    expect(validateComparisons([])).toBe(false);
-    expect(
-      validateComparisons([
-        {
-          categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-          categoryB: "MILITARY_OPERATIONS",
-          allocationA: 50,
-          allocationB: 50,
-        },
-      ]),
-    ).toBe(true);
-  });
-
-  it("never returns negative remaining pair counts", () => {
-    expect(getRemainingPairs(3, 10)).toBe(7);
-    expect(getRemainingPairs(15, 10)).toBe(0);
-  });
 });

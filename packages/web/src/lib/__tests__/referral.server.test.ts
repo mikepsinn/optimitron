@@ -23,7 +23,7 @@ vi.mock("@/lib/prisma", () => ({
 import {
   findUserByUsernameOrReferralCode,
   getReferralCountsByUserIds,
-  getReferralVoteCount,
+  getReferralCount,
   recordReferralAttributionForUser,
 } from "../referral.server";
 
@@ -69,7 +69,7 @@ describe("referral server helpers", () => {
   it("counts referral votes by referrer id", async () => {
     mocks.count.mockResolvedValue(4);
 
-    await expect(getReferralVoteCount("user_9")).resolves.toBe(4);
+    await expect(getReferralCount("user_9")).resolves.toBe(4);
     expect(mocks.count).toHaveBeenCalledWith({
       where: { referredByUserId: "user_9" },
     });

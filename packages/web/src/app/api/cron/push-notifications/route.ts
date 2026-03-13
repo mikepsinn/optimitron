@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ROUTES } from "@/lib/routes";
 import { isAuthorizedCronRequest } from "@/lib/cron";
 import { prisma } from "@/lib/prisma";
 import { sendPushNotification } from "@/lib/push-sender.server";
@@ -106,7 +107,7 @@ export async function GET(request: Request) {
           title: "How are you feeling?",
           body: "Take a moment to rate your health and happiness today.",
           tag: "daily-checkin",
-          url: "/profile",
+          url: ROUTES.profile,
           actions: [
             { action: "rate", title: "Rate Now" },
             { action: "chat", title: "Open Chat" },

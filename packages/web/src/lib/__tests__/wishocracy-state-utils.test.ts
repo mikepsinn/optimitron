@@ -22,6 +22,7 @@ vi.mock("@/lib/wishocracy-utils", async () => {
   };
 });
 
+import { API_ROUTES } from "../api-routes";
 import {
   buildSelectedPairQueue,
   getInitialGuestState,
@@ -212,8 +213,8 @@ describe("wishocracy state utils", () => {
     } as never);
 
     expect(mocks.syncPendingWishocracy).toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/wishocracy/allocations");
-    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/wishocracy/category-selections");
+    expect(fetchMock).toHaveBeenNthCalledWith(1, API_ROUTES.wishocracy.allocations);
+    expect(fetchMock).toHaveBeenNthCalledWith(2, API_ROUTES.wishocracy.categorySelections);
     expect(state.selectedCategories).toEqual(
       new Set([
         "PRAGMATIC_CLINICAL_TRIALS",

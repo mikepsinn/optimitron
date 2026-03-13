@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { API_ROUTES } from "@/lib/api-routes"
 import { BUDGET_CATEGORIES, BudgetCategoryId, getActualGovernmentAllocations } from "@/lib/wishocracy-data"
 import { calculateAllocationsFromPairwise, Comparison } from "@/lib/wishocracy-calculations"
 import { ArrowUpDown } from "lucide-react"
@@ -114,7 +115,7 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
   useEffect(() => {
     async function fetchAverageAllocations() {
       try {
-        const response = await fetch("/api/wishocracy/average-allocations")
+        const response = await fetch(API_ROUTES.wishocracy.averageAllocations)
         if (response.ok) {
           const data = await response.json()
           setAverageAllocations(data.averageAllocations)

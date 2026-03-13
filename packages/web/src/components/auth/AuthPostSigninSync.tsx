@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { createLogger } from "@/lib/logger";
 import { storage } from "@/lib/storage";
 
@@ -28,7 +29,7 @@ export function AuthPostSigninSync() {
 
     let cancelled = false;
 
-    void fetch("/api/auth/post-signin", {
+    void fetch(API_ROUTES.auth.postSignin, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

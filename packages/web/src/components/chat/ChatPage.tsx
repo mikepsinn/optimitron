@@ -7,6 +7,7 @@ import {
   type ChatMessage,
   type ParsedMeasurement,
 } from "@optomitron/chat-ui";
+import { API_ROUTES } from "@/lib/api-routes";
 import { MythBusterCard } from "./MythBusterCard";
 import { OutcomeCard } from "./OutcomeCard";
 import { BudgetResultCard } from "./BudgetResultCard";
@@ -17,6 +18,7 @@ import { BillVoteCard } from "./BillVoteCard";
 import { BillCBACard } from "./BillCBACard";
 import { VoteShareCard } from "./VoteShareCard";
 import { SendToRepCard } from "./SendToRepCard";
+import { ROUTES } from "@/lib/routes";
 import {
   BUDGET_CATEGORIES,
   getActualGovernmentAllocations,
@@ -152,7 +154,7 @@ export default function ChatPage() {
           ? `zip=${encodeURIComponent(stateOrZip.trim())}`
           : `state=${encodeURIComponent(stateOrZip.trim().toUpperCase())}`;
 
-        const res = await fetch(`/api/civic/representatives?${param}`);
+        const res = await fetch(`${API_ROUTES.civic.representatives}?${param}`);
         const data = (await res.json()) as { representatives?: CivicRepresentative[]; error?: string };
 
         if (!res.ok || !data.representatives) {
@@ -201,7 +203,7 @@ export default function ChatPage() {
         if (category) params.set("category", category);
         if (query) params.set("q", query);
 
-        const res = await fetch(`/api/civic/bills?${params.toString()}`);
+        const res = await fetch(`${API_ROUTES.civic.bills}?${params.toString()}`);
         const data = (await res.json()) as { bills?: ClassifiedBill[]; error?: string };
 
         if (!res.ok || !data.bills) {
@@ -582,7 +584,7 @@ export default function ChatPage() {
           break;
 
         case "alignment":
-          window.location.href = "/wishocracy";
+          window.location.href = ROUTES.wishocracy;
           break;
 
         default:
@@ -703,7 +705,7 @@ export default function ChatPage() {
             representatives={m.representatives}
             onSeeBills={() => void fetchBills()}
             onViewAlignment={(rep) => {
-              window.location.href = `/alignment?rep=${rep.bioguideId}`;
+              window.location.href = `${ROUTES.alignment}?rep=${rep.bioguideId}`;
             }}
           />
         );

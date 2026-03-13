@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { createLogger } from "@/lib/logger";
 import { storage } from "@/lib/storage";
 import {
@@ -129,7 +130,7 @@ export function useWishocracyState() {
 
     if (status === "authenticated" && session?.user?.id) {
       try {
-        const response = await fetch("/api/wishocracy/allocations", {
+        const response = await fetch(API_ROUTES.wishocracy.allocations, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nextComparison),
@@ -171,8 +172,8 @@ export function useWishocracyState() {
 
     if (status === "authenticated" && session?.user?.id) {
       await Promise.allSettled([
-        fetch("/api/wishocracy/category-selections", { method: "DELETE" }),
-        fetch("/api/wishocracy/allocations", { method: "DELETE" }),
+        fetch(API_ROUTES.wishocracy.categorySelections, { method: "DELETE" }),
+        fetch(API_ROUTES.wishocracy.allocations, { method: "DELETE" }),
       ]);
     }
 
@@ -199,7 +200,7 @@ export function useWishocracyState() {
     setShowCategorySelection(false);
 
     if (status === "authenticated" && session?.user?.id) {
-      await fetch("/api/wishocracy/category-selections", {
+      await fetch(API_ROUTES.wishocracy.categorySelections, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -238,7 +239,7 @@ export function useWishocracyState() {
 
     const updatedRejectedCategories = getRejectedCategories(updatedComparisons);
 
-    await fetch("/api/wishocracy/allocations", {
+    await fetch(API_ROUTES.wishocracy.allocations, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -247,7 +248,7 @@ export function useWishocracyState() {
       }),
     });
 
-    await fetch("/api/wishocracy/category-selections", {
+    await fetch(API_ROUTES.wishocracy.categorySelections, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

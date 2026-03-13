@@ -51,19 +51,3 @@ export function calculateAllocationsFromPairwise(
 
   return normalized
 }
-
-/**
- * Validate that comparisons array is valid
- * Accepts any number of comparisons (users can do as many as they want)
- */
-export function validateComparisons(comparisons: Comparison[]): boolean {
-  return Array.isArray(comparisons) && comparisons.length >= 1
-}
-
-/**
- * Get the number of comparisons in current batch
- * Users can continue indefinitely, so this is just for tracking within a batch
- */
-export function getRemainingPairs(currentIndex: number, totalInBatch: number = 25): number {
-  return Math.max(0, totalInBatch - currentIndex)
-}

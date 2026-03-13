@@ -13,6 +13,7 @@ import { buildPairStudyQualityBadges } from "@/lib/analysis-explorer-badges";
 import {
   getJurisdictionStudyPath,
   getJurisdictionsPath,
+  getOutcomeHubPath,
   getPairRouteParams,
 } from "@/lib/analysis-explorer-routes";
 
@@ -55,7 +56,7 @@ export default async function PairStudyPage({
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
         <Link
-          href={`/outcomes/${encodeURIComponent(outcomeId)}`}
+          href={getOutcomeHubPath(outcomeId)}
           className="inline-block text-xs font-bold uppercase text-black/50 hover:text-black mb-3"
         >
           ← Back to Outcome Hub

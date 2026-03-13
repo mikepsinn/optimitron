@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { API_ROUTES } from "@/lib/api-routes";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import {
   BUDGET_CATEGORIES,
@@ -43,7 +44,7 @@ export function WishocracyLandingSection() {
 
     async function loadSummary() {
       try {
-        const response = await fetch("/api/wishocracy/average-allocations");
+        const response = await fetch(API_ROUTES.wishocracy.averageAllocations);
         if (!response.ok) {
           return;
         }
