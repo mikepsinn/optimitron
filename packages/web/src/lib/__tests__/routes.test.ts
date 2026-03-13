@@ -28,18 +28,18 @@ describe("navigation routes", () => {
 
     expect(topHrefs).toEqual(
       expect.arrayContaining([
-        ROUTES.vote,
+        ROUTES.wishocracy,
         ROUTES.alignment,
-        ROUTES.chat,
+        ROUTES.wishonia,
         ROUTES.about,
       ]),
     );
     expect(footerHrefs).toEqual(
       expect.arrayContaining([
-        ROUTES.vote,
+        ROUTES.wishocracy,
         ROUTES.alignment,
         ROUTES.profile,
-        ROUTES.chat,
+        ROUTES.wishonia,
         ROUTES.about,
       ]),
     );
@@ -62,24 +62,24 @@ describe("navigation routes", () => {
   it("keeps nested routes highlighted under the correct parent nav item", () => {
     const studiesLink = requireLink(ROUTES.outcomes, exploreLinks);
     const alignmentLink = requireLink(ROUTES.alignment, topLinks);
-    const trackLink = requireLink(ROUTES.chat, topLinks);
+    const trackLink = requireLink(ROUTES.wishonia, topLinks);
 
     expect(isNavItemActive("/outcomes/healthy-life-years", studiesLink)).toBe(true);
     expect(isNavItemActive("/studies/hale/public-health-spending", studiesLink)).toBe(true);
     expect(isNavItemActive("/alignment/jane-doe", alignmentLink)).toBe(true);
-    expect(isNavItemActive("/chat/history", trackLink)).toBe(true);
+    expect(isNavItemActive("/wishonia/history", trackLink)).toBe(true);
     expect(isNavItemActive(ROUTES.compare, studiesLink)).toBe(false);
   });
 
   it("builds sign-in links from canonical routes", () => {
-    expect(getSignInPath()).toBe("/auth/signin?callbackUrl=%2Fvote");
+    expect(getSignInPath()).toBe("/auth/signin?callbackUrl=%2Fwishocracy");
     expect(getSignInPath(ROUTES.alignment)).toBe(
       "/auth/signin?callbackUrl=%2Falignment",
     );
     expect(
-      getSignInPath(ROUTES.vote, {
+      getSignInPath(ROUTES.wishocracy, {
         referralCode: "friend-123",
       }),
-    ).toBe("/auth/signin?callbackUrl=%2Fvote&ref=friend-123");
+    ).toBe("/auth/signin?callbackUrl=%2Fwishocracy&ref=friend-123");
   });
 });

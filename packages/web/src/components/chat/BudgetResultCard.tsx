@@ -40,7 +40,7 @@ export const BudgetResultCard: FC<BudgetResultCardProps> = ({ allocations, actua
           <span className="opto-budget-result__legend-item opto-budget-result__legend-item--actual">US Gov</span>
         </div>
       )}
-      <a href="/vote" className="opto-budget-result__link">See your full alignment report</a>
+      <a href="/wishocracy" className="opto-budget-result__link">See your full alignment report</a>
     </div>
   );
 };

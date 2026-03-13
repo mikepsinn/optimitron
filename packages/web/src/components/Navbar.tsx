@@ -61,7 +61,7 @@ function AccountLinks({
 
   return (
     <Link
-      href={getSignInPath(ROUTES.vote)}
+      href={getSignInPath(ROUTES.wishocracy)}
       className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
     >
       Sign In
@@ -242,7 +242,7 @@ export default function Navbar() {
             ) : null}
             {!isAuthenticated ? (
               <Link
-                href={getSignInPath(ROUTES.vote)}
+                href={getSignInPath(ROUTES.wishocracy)}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
               >

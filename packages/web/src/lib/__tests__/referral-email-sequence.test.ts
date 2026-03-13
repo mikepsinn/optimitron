@@ -61,11 +61,11 @@ describe("referral email sequence", () => {
       step: 1,
       referralCount: 2,
       name: "Jane Doe",
-      shareUrl: "https://example.com/vote/jane",
+      shareUrl: "https://example.com/wishocracy/jane",
     });
 
     expect(email.subject).toContain("2");
-    expect(email.text).toContain("https://example.com/vote/jane");
+    expect(email.text).toContain("https://example.com/wishocracy/jane");
     expect(email.html).toContain("Copy-and-send message");
   });
 });

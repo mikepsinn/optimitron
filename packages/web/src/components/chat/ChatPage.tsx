@@ -582,7 +582,7 @@ export default function ChatPage() {
           break;
 
         case "alignment":
-          window.location.href = "/vote";
+          window.location.href = "/wishocracy";
           break;
 
         default:

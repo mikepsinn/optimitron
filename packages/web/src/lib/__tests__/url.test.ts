@@ -10,9 +10,9 @@ describe("url helpers", () => {
   it("builds public referral links for a user identifier", () => {
     expect(
       buildUserReferralUrl({ username: "jane", referralCode: "REF123" }, "https://example.com"),
-    ).toBe("https://example.com/vote/jane");
+    ).toBe("https://example.com/wishocracy/jane");
     expect(buildReferralUrl("REF123", "https://example.com")).toBe(
-      "https://example.com/vote/REF123",
+      "https://example.com/wishocracy/REF123",
     );
   });
 

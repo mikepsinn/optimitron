@@ -1,9 +1,9 @@
 export const ROUTES = {
   home: "/",
-  vote: "/vote",
+  wishocracy: "/wishocracy",
   alignment: "/alignment",
   profile: "/profile",
-  chat: "/chat",
+  wishonia: "/wishonia",
   about: "/about",
   outcomes: "/outcomes",
   compare: "/compare",
@@ -25,7 +25,7 @@ export interface NavItem {
 }
 
 export function getSignInPath(
-  callbackUrl: string = ROUTES.vote,
+  callbackUrl: string = ROUTES.wishocracy,
   options?: { referralCode?: string | null },
 ): string {
   const searchParams = new URLSearchParams({ callbackUrl });
@@ -103,7 +103,7 @@ export const exploreLinks: NavItem[] = [
 ];
 
 export const wishocracyLink: NavItem = {
-  href: ROUTES.vote,
+  href: ROUTES.wishocracy,
   label: "Wishocracy",
   emoji: "🗳️",
   description: "Build and save your ideal public budget",
@@ -117,7 +117,7 @@ export const alignmentLink: NavItem = {
 };
 
 export const trackLink: NavItem = {
-  href: ROUTES.chat,
+  href: ROUTES.wishonia,
   label: "Wishonia",
   emoji: "👽",
   description: "Planetary debugging for your health, habits, and everyday tradeoffs",

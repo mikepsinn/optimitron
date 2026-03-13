@@ -51,7 +51,7 @@ const sampleComparisons = [
   },
 ];
 
-describe("wishocracy alignment route", () => {
+describe("wishocracy preferences route", () => {
   beforeEach(() => {
     mocks.findMany.mockReset();
   });
@@ -60,7 +60,7 @@ describe("wishocracy alignment route", () => {
     mocks.findMany.mockResolvedValue([]);
 
     const response = await GET(
-      new NextRequest("http://localhost/api/wishocracy/alignment"),
+      new NextRequest("http://localhost/api/wishocracy/preferences"),
     );
     const body = (await response.json()) as {
       totalComparisons: number;
@@ -81,7 +81,7 @@ describe("wishocracy alignment route", () => {
 
     const response = await GET(
       new NextRequest(
-        "http://localhost/api/wishocracy/alignment?bootstrapIterations=50",
+        "http://localhost/api/wishocracy/preferences?bootstrapIterations=50",
       ),
     );
     const body = (await response.json()) as {
@@ -104,7 +104,7 @@ describe("wishocracy alignment route", () => {
 
   it("rejects invalid politician payloads", async () => {
     const response = await POST(
-      new NextRequest("http://localhost/api/wishocracy/alignment", {
+      new NextRequest("http://localhost/api/wishocracy/preferences", {
         method: "POST",
         body: JSON.stringify({ politicians: [{ politicianId: "pol-1" }] }),
       }),
@@ -121,7 +121,7 @@ describe("wishocracy alignment route", () => {
     mocks.findMany.mockResolvedValue(sampleComparisons);
 
     const response = await POST(
-      new NextRequest("http://localhost/api/wishocracy/alignment", {
+      new NextRequest("http://localhost/api/wishocracy/preferences", {
         method: "POST",
         body: JSON.stringify({
           bootstrapIterations: 50,

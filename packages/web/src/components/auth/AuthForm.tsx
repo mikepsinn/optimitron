@@ -21,7 +21,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({
-  callbackUrl = ROUTES.vote,
+  callbackUrl = ROUTES.wishocracy,
   referralCode,
   initialError = null,
   compact = false,

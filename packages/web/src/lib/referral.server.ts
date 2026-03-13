@@ -1,4 +1,4 @@
-import { VoteAnswer } from "@prisma/client";
+import { ReferralAnswer } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function findUserByUsernameOrReferralCode(identifier: string | null | undefined) {
@@ -28,7 +28,7 @@ export async function findUserByUsernameOrReferralCode(identifier: string | null
 }
 
 export function getReferralVoteCount(userId: string) {
-  return prisma.vote.count({
+  return prisma.referral.count({
     where: { referredByUserId: userId },
   });
 }
@@ -42,7 +42,7 @@ export async function recordReferralAttributionForUser(
     return false;
   }
 
-  const existingVote = await prisma.vote.findUnique({
+  const existingVote = await prisma.referral.findUnique({
     where: { userId },
   });
 
@@ -50,10 +50,10 @@ export async function recordReferralAttributionForUser(
     return false;
   }
 
-  await prisma.vote.create({
+  await prisma.referral.create({
     data: {
       userId,
-      answer: VoteAnswer.YES,
+      answer: ReferralAnswer.YES,
       referredByUserId: referrer.id,
     },
   });
@@ -66,7 +66,7 @@ export async function getReferralCountsByUserIds(userIds: string[]) {
     return new Map<string, number>();
   }
 
-  const rows = await prisma.vote.groupBy({
+  const rows = await prisma.referral.groupBy({
     by: ["referredByUserId"],
     where: {
       referredByUserId: { in: userIds },

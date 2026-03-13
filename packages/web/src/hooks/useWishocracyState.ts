@@ -129,7 +129,7 @@ export function useWishocracyState() {
 
     if (status === "authenticated" && session?.user?.id) {
       try {
-        const response = await fetch("/api/wishocracy/allocation", {
+        const response = await fetch("/api/wishocracy/allocations", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nextComparison),

@@ -168,8 +168,8 @@ enum SubjectType {
   ORGANIZATION
 }
 
-/// Referral/signup vote answer
-enum VoteAnswer {
+/// Referral/signup answer
+enum ReferralAnswer {
   YES
   NO
 }
@@ -282,9 +282,9 @@ model User {
   // -- Relations --
   accounts                      Account[]
   personhoodVerifications       PersonhoodVerification[]
-  referrals                     Vote[]                          @relation("UserReferrals")
+  referrals                     Referral[]                      @relation("UserReferrals")
   sessions                      Session[]
-  vote                          Vote?                           @relation("UserVotes")
+  referral                      Referral?                       @relation("UserReferral")
   wishocraticAllocations        WishocraticAllocation[]         @relation("UserWishocraticAllocations")
   wishocraticCategorySelections WishocraticCategorySelection[]  @relation("UserWishocraticCategorySelections")
   citizenBillVotes              CitizenBillVote[]               @relation("UserCitizenBillVotes")
@@ -1774,14 +1774,14 @@ model Participant {
 }
 
 /// Referral/signup record for tracking who brought in a user
-model Vote {
-  /// Unique identifier for this vote
+model Referral {
+  /// Unique identifier for this referral
   id String @id @default(cuid())
 
   /// Whether the user opted into the referral/signup flow
-  answer VoteAnswer
+  answer ReferralAnswer
 
-  /// The user who signed up (one vote per user)
+  /// The user who signed up (one referral per user)
   userId String? @unique
 
   /// The user whose referral link led to this signup
@@ -1798,12 +1798,13 @@ model Vote {
 
   // -- Relations --
   referrer User? @relation("UserReferrals", fields: [referredByUserId], references: [id])
-  user     User? @relation("UserVotes", fields: [userId], references: [id], onDelete: Cascade)
+  user     User? @relation("UserReferral", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([referredByUserId])
   @@index([createdAt])
   @@index([deletedAt])
+  @@map("Vote")
 }
 
 /// Saved pairwise allocations for authenticated Wishocracy users

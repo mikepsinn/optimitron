@@ -370,7 +370,7 @@ export function buildEmptyPersonalAlignmentState(input: {
       headline: "Pick at least two categories",
       description:
         "A personal alignment report needs trade-offs. Add one more category or compare across the full budget set.",
-      ctaHref: ROUTES.vote,
+      ctaHref: ROUTES.wishocracy,
       ctaLabel: "Update Categories",
     };
   }
@@ -389,7 +389,7 @@ export function buildEmptyPersonalAlignmentState(input: {
       headline: "Add a few more trade-offs",
       description:
         "You have some saved data, but not enough to produce a stable report yet. Keep comparing budget pairs to sharpen the signal.",
-      ctaHref: ROUTES.vote,
+      ctaHref: ROUTES.wishocracy,
       ctaLabel: "Continue Comparing",
     };
   }
@@ -404,7 +404,7 @@ export function buildEmptyPersonalAlignmentState(input: {
     headline: "Generate your first alignment report",
     description:
       "Save budget trade-offs in Wishocracy, then compare your priorities against benchmark politicians.",
-    ctaHref: ROUTES.vote,
+    ctaHref: ROUTES.wishocracy,
     ctaLabel: "Start Wishocracy",
   };
 }

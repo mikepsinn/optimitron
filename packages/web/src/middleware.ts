@@ -4,11 +4,11 @@ import type { NextRequest } from "next/server";
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/vote/")) {
-    const identifier = pathname.replace("/vote/", "");
+  if (pathname.startsWith("/wishocracy/")) {
+    const identifier = pathname.replace("/wishocracy/", "");
     if (identifier) {
       const url = req.nextUrl.clone();
-      url.pathname = "/vote";
+      url.pathname = "/wishocracy";
       url.search = `?ref=${encodeURIComponent(identifier)}`;
       return NextResponse.redirect(url);
     }

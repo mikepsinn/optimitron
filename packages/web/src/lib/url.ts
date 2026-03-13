@@ -17,7 +17,7 @@ export function getBaseUrl(): string {
 }
 
 export function buildReferralUrl(identifier?: string | null, baseUrl: string = getBaseUrl()): string {
-  return identifier ? `${baseUrl}/vote/${identifier}` : `${baseUrl}/vote`;
+  return identifier ? `${baseUrl}/wishocracy/${identifier}` : `${baseUrl}/wishocracy`;
 }
 
 export function buildUserReferralUrl(
@@ -46,6 +46,6 @@ export function buildCivicVoteUrl(
   baseUrl: string = getBaseUrl(),
 ): string {
   return shareIdentifier
-    ? `${baseUrl}/civic/votes/${shareIdentifier}`
-    : `${baseUrl}/civic/votes`;
+    ? `${baseUrl}/civic/wishocracys/${shareIdentifier}`
+    : `${baseUrl}/civic/wishocracys`;
 }

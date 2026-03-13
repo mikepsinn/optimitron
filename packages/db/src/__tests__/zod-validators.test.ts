@@ -16,7 +16,7 @@ import {
   PersonhoodVerificationStatusSchema,
   JurisdictionTypeSchema,
   SubjectTypeSchema,
-  VoteAnswerSchema,
+  ReferralAnswerSchema,
   // Models
   AccountSchema,
   PersonhoodVerificationSchema,
@@ -41,7 +41,7 @@ import {
   PreferenceWeightSchema,
   ItemSchema,
   ParticipantSchema,
-  VoteSchema,
+  ReferralSchema,
   WishocraticAllocationSchema,
   WishocraticCategorySelectionSchema,
   AggregationRunSchema,
@@ -234,10 +234,10 @@ describe('Enum schemas', () => {
     expect(SubjectTypeSchema.safeParse('TEAM').success).toBe(false);
   });
 
-  it('19. VoteAnswer — accepts YES and NO', () => {
-    expect(VoteAnswerSchema.parse('YES')).toBe('YES');
-    expect(VoteAnswerSchema.parse('NO')).toBe('NO');
-    expect(VoteAnswerSchema.safeParse('MAYBE').success).toBe(false);
+  it('19. ReferralAnswer — accepts YES and NO', () => {
+    expect(ReferralAnswerSchema.parse('YES')).toBe('YES');
+    expect(ReferralAnswerSchema.parse('NO')).toBe('NO');
+    expect(ReferralAnswerSchema.safeParse('MAYBE').success).toBe(false);
   });
 
   it('20. PersonhoodProvider — accepts supported providers', () => {
@@ -457,16 +457,16 @@ describe('Auth and referral models', () => {
     expect(UserSchema.safeParse(data).success).toBe(true);
   });
 
-  it('35. validates a Vote', () => {
+  it('35. validates a Referral', () => {
     const data = {
-      id: 'vote_1',
+      id: 'referral_1',
       answer: 'YES' as const,
       userId: 'user_1',
       referredByUserId: 'user_2',
       createdAt: now,
       updatedAt: now,
     };
-    expect(VoteSchema.safeParse(data).success).toBe(true);
+    expect(ReferralSchema.safeParse(data).success).toBe(true);
   });
 
   it('36. validates an Account', () => {

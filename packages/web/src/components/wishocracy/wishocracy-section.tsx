@@ -22,7 +22,7 @@ export default function WishocracySection() {
   const baseUrl = getBaseUrl();
   const shareUrl = state.session?.user
     ? buildUserReferralUrl(state.session.user, baseUrl)
-    : `${baseUrl}/vote`;
+    : `${baseUrl}/wishocracy`;
   const isAuthenticated = state.status === "authenticated";
   const referralCode = state.searchParams?.get("ref") ?? null;
   const isComplete =

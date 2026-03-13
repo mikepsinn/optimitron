@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findFirst: mocks.findFirst },
-    vote: {
+    referral: {
       count: mocks.count,
       create: mocks.create,
       findUnique: mocks.findUnique,

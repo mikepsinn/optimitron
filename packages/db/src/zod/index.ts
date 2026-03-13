@@ -66,8 +66,8 @@ export type JurisdictionType = z.infer<typeof JurisdictionTypeSchema>;
 export const SubjectTypeSchema = z.enum(['USER', 'JURISDICTION', 'COHORT', 'ORGANIZATION']);
 export type SubjectType = z.infer<typeof SubjectTypeSchema>;
 
-export const VoteAnswerSchema = z.enum(['YES', 'NO']);
-export type VoteAnswer = z.infer<typeof VoteAnswerSchema>;
+export const ReferralAnswerSchema = z.enum(['YES', 'NO']);
+export type ReferralAnswer = z.infer<typeof ReferralAnswerSchema>;
 
 export const PersonhoodProviderSchema = z.enum(['WORLD_ID', 'HUMAN_PASSPORT']);
 export type PersonhoodProvider = z.infer<typeof PersonhoodProviderSchema>;
@@ -79,7 +79,7 @@ export type PersonhoodVerificationStatus = z.infer<typeof PersonhoodVerification
 // 1. CombinationOperation  2. FillingType  3. Valence  4. MeasurementScale
 // 5. UnitCodeSystem  6. AnalysisStatus  7. StrengthLevel  8. ConfidenceLevel
 // 9. RelationshipDirection  10. EvidenceGrade  11. NotificationStatus
-// 12. JurisdictionType  13. SubjectType  14. VoteAnswer
+// 12. JurisdictionType  13. SubjectType  14. ReferralAnswer
 // 15. PersonhoodProvider  16. PersonhoodVerificationStatus
 
 // ============================================================================
@@ -612,17 +612,17 @@ export const ParticipantSchema = z.object({
 });
 export type ParticipantType = z.infer<typeof ParticipantSchema>;
 
-/** Zod schema for the Vote model */
-export const VoteSchema = z.object({
+/** Zod schema for the Referral model */
+export const ReferralSchema = z.object({
   id: z.string(),
-  answer: VoteAnswerSchema,
+  answer: ReferralAnswerSchema,
   userId: z.string().nullable().optional(),
   referredByUserId: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type VoteType = z.infer<typeof VoteSchema>;
+export type ReferralType = z.infer<typeof ReferralSchema>;
 
 /** Zod schema for the WishocraticAllocation model */
 export const WishocraticAllocationSchema = z.object({
