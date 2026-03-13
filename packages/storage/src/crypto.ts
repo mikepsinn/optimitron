@@ -2,6 +2,7 @@
  * Encryption primitives using Web Crypto API only — zero external dependencies.
  * Used for encrypting wish allocations and individual submissions at rest.
  */
+import type { webcrypto } from 'node:crypto';
 import { z } from 'zod';
 import { EncryptedPayloadSchema } from './types.js';
 
@@ -12,7 +13,7 @@ const KEY_LENGTH = 256;
 const IV_LENGTH = 12;
 const PBKDF2_ITERATIONS = 600_000;
 
-export async function generateEncryptionKey(): Promise<CryptoKey> {
+export async function generateEncryptionKey(): Promise<webcrypto.CryptoKey> {
   return crypto.subtle.generateKey(
     { name: ALGORITHM, length: KEY_LENGTH },
     true,
@@ -20,12 +21,12 @@ export async function generateEncryptionKey(): Promise<CryptoKey> {
   );
 }
 
-export async function exportKey(key: CryptoKey): Promise<string> {
+export async function exportKey(key: webcrypto.CryptoKey): Promise<string> {
   const raw = await crypto.subtle.exportKey('raw', key);
   return bufferToBase64(raw);
 }
 
-export async function importKey(base64Key: string): Promise<CryptoKey> {
+export async function importKey(base64Key: string): Promise<webcrypto.CryptoKey> {
   const raw = base64ToBuffer(base64Key);
   return crypto.subtle.importKey(
     'raw',
@@ -39,7 +40,7 @@ export async function importKey(base64Key: string): Promise<CryptoKey> {
 export async function deriveKeyFromPassword(
   password: string,
   salt: string,
-): Promise<CryptoKey> {
+): Promise<webcrypto.CryptoKey> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
@@ -64,7 +65,7 @@ export async function deriveKeyFromPassword(
 
 export async function encryptJson(
   value: unknown,
-  key: CryptoKey,
+  key: webcrypto.CryptoKey,
 ): Promise<EncryptedPayload> {
   const encoder = new TextEncoder();
   const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
@@ -83,7 +84,7 @@ export async function encryptJson(
 
 export async function decryptJson<T>(
   payload: EncryptedPayload,
-  key: CryptoKey,
+  key: webcrypto.CryptoKey,
   schema: { parse(value: unknown): T },
 ): Promise<T> {
   const iv = base64ToBuffer(payload.iv);

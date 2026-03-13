@@ -78,6 +78,49 @@
     </section>
 
     <section class="settings-section">
+      <h2>🔬 Analyze &amp; Share</h2>
+      <p class="section-desc">Run causal analysis on your data, then optionally share anonymized results to help others.</p>
+
+      <div id="analysis-controls">
+        <button id="run-analysis-btn" class="btn btn-primary">Run Analysis</button>
+        <div id="analysis-progress" style="display:none">
+          <div class="progress-bar-container">
+            <div id="analysis-progress-bar" class="progress-bar"></div>
+          </div>
+          <p id="analysis-progress-text" class="progress-text"></p>
+        </div>
+      </div>
+
+      <div id="analysis-results" style="display:none">
+        <h3>Results</h3>
+        <div id="analysis-errors" style="display:none" class="analysis-errors"></div>
+        <table id="analysis-table" class="analysis-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="select-all-results" checked></th>
+              <th class="sortable" data-sort="predictor">Predictor</th>
+              <th class="sortable" data-sort="outcome">Outcome</th>
+              <th class="sortable" data-sort="pis">PIS ↕</th>
+              <th class="sortable" data-sort="grade">Grade</th>
+              <th class="sortable" data-sort="effect">Effect %</th>
+              <th class="sortable" data-sort="pairs">Pairs</th>
+            </tr>
+          </thead>
+          <tbody id="analysis-table-body"></tbody>
+        </table>
+
+        <div id="share-controls" style="margin-top:16px">
+          <p class="section-desc">Share selected results anonymously to help build population-level insights.</p>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="share-results-btn" class="btn btn-primary">Share Selected</button>
+            <a id="verify-personhood-link" href="#" target="_blank" class="btn btn-secondary" style="text-decoration:none">Verify Personhood</a>
+          </div>
+          <p id="share-status" style="display:none;margin-top:8px" class="progress-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section">
       <h2>📤 Data Export</h2>
       <p class="section-desc">Export your data for backup or analysis. Compatible with @optomitron/causal TimeSeries format.</p>
       <div class="export-buttons">
