@@ -60,6 +60,11 @@ const reasons = [
     title: "Good ideas spread too slowly",
     desc: "When something works in one place, most systems still lack a clean way to copy it elsewhere.",
   },
+  {
+    icon: "🧠",
+    title: "Governments are misaligned superintelligences",
+    desc: "A government is a collective intelligence system that shapes billions of lives. Like any superintelligence, the question isn't power — it's alignment. Optomitron aligns them to the general welfare of all living things.",
+  },
 ];
 
 const steps = [
@@ -86,9 +91,9 @@ const steps = [
 ];
 
 export const metadata: Metadata = {
-  title: "About the Earth Optimization Tool | Optomitron",
+  title: "About The Evidence-Based Earth Optimization Machine | Optomitron",
   description:
-    "What Optomitron is, how the Earth optimization tool works, and why planetary debugging software might be useful on this planet.",
+    "What Optomitron is, how the Earth Optimization Machine works, and why planetary debugging software might be useful on this planet.",
 };
 
 export default function AboutPage() {
@@ -97,12 +102,12 @@ export default function AboutPage() {
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black">
-            About Optomitron
+            About The Evidence-Based Earth Optimization Machine
           </h1>
           <p className="text-lg text-black/80 leading-relaxed font-medium">
-            Optomitron is an Earth optimization tool. It helps people and
-            institutions decide what to fund, what to change, and what to stop by
-            tying decisions back to outcomes that matter.
+            Optomitron is an evidence-based Earth optimization machine. It helps
+            people and institutions decide what to fund, what to change, and what
+            to stop by tying decisions back to outcomes that matter.
           </p>
           <p className="text-black/60 font-medium leading-relaxed">
             The public side of the project focuses on healthy life years,
@@ -110,9 +115,12 @@ export default function AboutPage() {
             side lets you track your own inputs and outcomes in one place.
           </p>
           <p className="text-black/60 font-medium leading-relaxed">
-            You can also think of it as planetary debugging software: inspect the
-            system, find the broken incentives, and stop pretending the errors are
-            mysterious.
+            Your governments are already superintelligences — collective
+            intelligence systems controlling the lives of billions. The problem
+            isn&apos;t that they&apos;re not smart enough. It&apos;s that
+            they&apos;re optimizing for the wrong things. Optomitron is
+            alignment software for the most powerful AIs on your planet — the
+            ones made of people.
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">

@@ -132,7 +132,7 @@ export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
   emoji: "ℹ️",
-  description: "How the Earth Optimization Tool works and why it exists",
+  description: "How the Earth Optimization Machine works and why it exists",
 };
 
 /** Top-level nav items (not in dropdown) */

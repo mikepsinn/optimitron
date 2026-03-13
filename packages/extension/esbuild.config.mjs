@@ -36,6 +36,14 @@ await esbuild.build({
   format: "esm",
 });
 
+// Analysis web worker (IIFE — workers can't use ESM)
+await esbuild.build({
+  ...shared,
+  entryPoints: ["src/workers/analysis.worker.ts"],
+  outfile: "dist/workers/analysis.worker.js",
+  format: "iife",
+});
+
 // Copy static assets to dist
 mkdirSync("dist", { recursive: true });
 cpSync("public/", "dist/", { recursive: true });

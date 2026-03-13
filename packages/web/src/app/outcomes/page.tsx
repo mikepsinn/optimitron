@@ -14,7 +14,7 @@ import { getOutcomeHubPath, getPairStudyPath } from "@/lib/analysis-explorer-rou
 export const metadata: Metadata = {
   title: "Studies | Optomitron",
   description:
-    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optomitron, the Earth Optimization Tool.",
+    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optomitron, the Earth Optimization Machine.",
 };
 
 export default function OutcomesIndexPage() {

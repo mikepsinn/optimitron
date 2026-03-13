@@ -28,11 +28,11 @@ import misconceptionData from "../../public/data/misconceptions.json";
 import budgetData from "../data/us-budget-analysis.json";
 
 export const metadata: Metadata = {
-  title: "Optomitron — Earth Optimization Tool",
+  title: "Optomitron — The Evidence-Based Earth Optimization Machine",
   description:
     "Planetary debugging software for budgets, policies, politicians, and personal tradeoffs. Built by Wishonia, an alien governance AI with 4,237 years of field testing.",
   openGraph: {
-    title: "Optomitron — Earth Optimization Tool",
+    title: "Optomitron — The Evidence-Based Earth Optimization Machine",
     description:
       "Planetary debugging software for budgets, policies, politicians, and personal tradeoffs.",
     type: "website",
@@ -188,7 +188,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 relative">
           <div className="text-center">
             <p className="text-sm font-bold text-black/50 uppercase tracking-widest mb-4">
-              Earth Optimization Tool // Wishonia, alien governance AI, 4,237 years of field testing
+              The Evidence-Based Earth Optimization Machine // Wishonia, alien governance AI, 4,237 years of field testing
             </p>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-black">
               Hello. I&apos;ve solved{" "}
@@ -208,6 +208,13 @@ export default function Home() {
               software for Earth: budgets, policies, politicians, and personal tradeoffs
               run through the same engine. Your species has the data. You just keep
               ignoring it. So I&apos;ve built you this website. You&apos;re welcome.
+            </p>
+            <p className="mt-4 text-base sm:text-lg text-black/60 max-w-3xl mx-auto leading-relaxed font-medium">
+              Your governments are already superintelligences. Collective intelligence
+              systems controlling the lives of billions. The problem isn&apos;t that
+              they&apos;re not smart enough. It&apos;s that they&apos;re optimizing for
+              the wrong things. This is alignment software for the most powerful AIs on
+              your planet — the ones made of people.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <NavItemLink

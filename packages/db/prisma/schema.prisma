@@ -282,12 +282,15 @@ model User {
   // -- Relations --
   accounts                      Account[]
   personhoodVerifications       PersonhoodVerification[]
-  referrals                     Vote[]                         @relation("UserReferrals")
+  referrals                     Vote[]                          @relation("UserReferrals")
   sessions                      Session[]
-  vote                          Vote?                          @relation("UserVotes")
-  wishocraticAllocations        WishocraticAllocation[]        @relation("UserWishocraticAllocations")
-  wishocraticCategorySelections WishocraticCategorySelection[] @relation("UserWishocraticCategorySelections")
-  citizenBillVotes              CitizenBillVote[]              @relation("UserCitizenBillVotes")
+  vote                          Vote?                           @relation("UserVotes")
+  wishocraticAllocations        WishocraticAllocation[]         @relation("UserWishocraticAllocations")
+  wishocraticCategorySelections WishocraticCategorySelection[]  @relation("UserWishocraticCategorySelections")
+  citizenBillVotes              CitizenBillVote[]               @relation("UserCitizenBillVotes")
+  webPushSubscriptions          WebPushSubscription[]           @relation("UserWebPushSubscriptions")
+  notificationPreference        NotificationPreference?         @relation("UserNotificationPreference")
+  encryptedAllocations          WishocraticEncryptedAllocation? @relation("UserEncryptedAllocations")
 
   @@index([email])
   @@index([username])
@@ -2178,4 +2181,102 @@ model CitizenBillVote {
   @@unique([userId, billId])
   @@index([userId])
   @@index([shareIdentifier])
+}
+
+/// Web push notification subscription for PWA push
+model WebPushSubscription {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user who subscribed
+  userId String
+
+  /// Push endpoint URL (unique per browser)
+  endpoint String @unique
+
+  /// P-256 Diffie-Hellman public key (base64)
+  p256dh String
+
+  /// Authentication secret (base64)
+  auth String
+
+  /// Browser user agent for debugging
+  userAgent String?
+
+  /// When subscription was created
+  createdAt DateTime @default(now())
+
+  /// Last time a notification was sent to this subscription
+  lastSentAt DateTime?
+
+  /// Whether subscription has expired (410 Gone response)
+  expired Boolean @default(false)
+
+  // -- Relations --
+  user User @relation("UserWebPushSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// User preferences for push notification timing
+model NotificationPreference {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user this preference belongs to
+  userId String @unique
+
+  /// Whether push notifications are enabled
+  pushEnabled Boolean @default(true)
+
+  /// How often to send reminders (minutes)
+  reminderFrequencyMinutes Int @default(1440)
+
+  /// Earliest time to send (HH:MM format)
+  reminderStartTime String @default("09:00")
+
+  /// Latest time to send (HH:MM format)
+  quietHoursStart String @default("21:00")
+
+  /// When the last push was sent
+  lastPushSentAt DateTime?
+
+  /// When the user last completed a check-in
+  lastCheckInAt DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  user User @relation("UserNotificationPreference", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Encrypted pairwise allocations for Wishocracy (replaces plaintext per-comparison rows)
+model WishocraticEncryptedAllocation {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user who made these allocations
+  userId String @unique
+
+  /// AES-GCM encrypted JSON blob containing all pairwise allocations
+  ciphertext String
+
+  /// Initialization vector for AES-GCM (base64)
+  iv String
+
+  /// Encryption algorithm identifier
+  algorithm String @default("AES-GCM-256")
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  user User @relation("UserEncryptedAllocations", fields: [userId], references: [id], onDelete: Cascade)
 }

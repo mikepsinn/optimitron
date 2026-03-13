@@ -9,7 +9,7 @@ import { buildUserAlignmentUrl, getBaseUrl } from "@/lib/url";
 export const metadata = {
   title: "Alignment Report | Optomitron",
   description:
-    "See which politicians match your priorities with Optomitron, the Earth Optimization Tool.",
+    "See which politicians match your priorities with Optomitron, the Earth Optimization Machine.",
 };
 
 export default async function AlignmentPage() {

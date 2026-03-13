@@ -9,6 +9,10 @@
     "typecheck": "tsc --noEmit",
     "test": "echo 'No tests yet'"
   },
+  "dependencies": {
+    "@optomitron/optimizer": "workspace:*",
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
     "@types/chrome": "^0.0.268",
     "esbuild": "^0.25.0",

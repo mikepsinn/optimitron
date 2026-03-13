@@ -20,7 +20,7 @@ export default function Footer() {
               ⚡ Optomitron
             </Link>
             <p className="text-sm text-black/70 mt-3 leading-relaxed font-medium">
-              Earth optimization for budgets, politicians, and everyday
+              Earth Optimization Machine for budgets, politicians, and everyday
               tradeoffs.
             </p>
           </div>

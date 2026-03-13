@@ -22,6 +22,7 @@ import {
   getActualGovernmentAllocations,
   type BudgetCategoryId,
 } from "../../lib/wishocracy-data";
+import { generateRandomPairs } from "../../lib/wishocracy-utils";
 import {
   classifyLegislativeBill,
   inferLegislativeBudgetDirection,
@@ -64,16 +65,16 @@ type AppChatMessage =
   | VoteShareMessage
   | SendToRepMessage;
 
-// --- Budget voting pairs ---
-const BUDGET_PAIRS: Array<[string, string]> = [
-  ["Pragmatic Clinical Trials", "Bombing Iran"],
-  ["Addiction Treatment Programs", "Mass Immigrant Detention Camps"],
-  ["Early Childhood Education", "Military Aid for Israel's War in Gaza"],
-  ["Pragmatic Clinical Trials", "Corporate Welfare & Bailouts"],
-  ["Addiction Treatment Programs", "AI Mass Surveillance Programs"],
-  ["Early Childhood Education", "Drug War Enforcement"],
-  ["Pragmatic Clinical Trials", "Nuclear Weapons Development"],
-];
+// --- Budget voting pairs (dynamically generated from all categories) ---
+const CHAT_BUDGET_PAIR_COUNT = 7;
+
+function generateChatBudgetPairs(): Array<[string, string]> {
+  const idPairs = generateRandomPairs(CHAT_BUDGET_PAIR_COUNT);
+  return idPairs.map(([a, b]) => [
+    BUDGET_CATEGORIES[a].name,
+    BUDGET_CATEGORIES[b].name,
+  ]);
+}
 
 const BUDGET_COMMENTARY = [
   "Interesting. Next one.",
@@ -124,6 +125,7 @@ export default function ChatPage() {
   const ctxRef = useRef(new ConversationContext());
   const budgetVotesRef = useRef(new Map<string, number>());
   const budgetStepRef = useRef(0);
+  const budgetPairsRef = useRef<Array<[string, string]>>(generateChatBudgetPairs());
   // Cache representatives for send-to-rep flow
   const repsRef = useRef<CivicRepresentative[]>([]);
 
@@ -409,7 +411,8 @@ export default function ChatPage() {
         case "budget": {
           budgetVotesRef.current.clear();
           budgetStepRef.current = 0;
-          const pair = BUDGET_PAIRS[0];
+          budgetPairsRef.current = generateChatBudgetPairs();
+          const pair = budgetPairsRef.current[0];
           if (!pair) break;
           appendMultiple(
             {
@@ -599,7 +602,7 @@ export default function ChatPage() {
     (id: string, allocationA: number) => {
       if (id.startsWith("budget-")) {
         const step = budgetStepRef.current;
-        const pair = BUDGET_PAIRS[step];
+        const pair = budgetPairsRef.current[step];
         if (pair) {
           // Store votes
           const [itemA, itemB] = pair;
@@ -616,8 +619,8 @@ export default function ChatPage() {
         const nextStep = step + 1;
         budgetStepRef.current = nextStep;
 
-        if (nextStep < BUDGET_PAIRS.length) {
-          const nextPair = BUDGET_PAIRS[nextStep];
+        if (nextStep < budgetPairsRef.current.length) {
+          const nextPair = budgetPairsRef.current[nextStep];
           if (!nextPair) return;
           const commentary = BUDGET_COMMENTARY[step] ?? "Next.";
           appendMultiple(

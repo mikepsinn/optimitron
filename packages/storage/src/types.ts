@@ -78,9 +78,56 @@ export const OptomitronPolicyAnalysisSnapshotSchema = LinkedSnapshotBaseSchema.e
 
 export type OptomitronPolicyAnalysisSnapshot = z.infer<typeof OptomitronPolicyAnalysisSnapshotSchema>;
 
+export const HealthAnalysisRelationshipSchema = z.object({
+  predictorVariableId: z.string(),
+  outcomeVariableId: z.string(),
+  forwardPearson: z.number(),
+  reversePearson: z.number(),
+  predictivePearson: z.number(),
+  effectSize: z.number(),
+  statisticalSignificance: z.number(),
+  numberOfPairs: z.number(),
+  valuePredictingHighOutcome: z.number().optional(),
+  valuePredictingLowOutcome: z.number().optional(),
+  optimalDailyValue: z.number().optional(),
+  outcomeFollowUpPercentChangeFromBaseline: z.number().optional(),
+  evidenceGrade: z.string().optional(),
+  pisScore: z.number().optional(),
+});
+
+export type HealthAnalysisRelationship = z.infer<typeof HealthAnalysisRelationshipSchema>;
+
+export const HealthAnalysisSnapshotSchema = LinkedSnapshotBaseSchema.extend({
+  type: z.literal('health-analysis'),
+  contributorId: z.string(),
+  relationships: z.array(HealthAnalysisRelationshipSchema),
+  dataSpanDays: z.number().nonnegative(),
+  personhoodVerified: z.boolean().optional(),
+});
+
+export type HealthAnalysisSnapshot = z.infer<typeof HealthAnalysisSnapshotSchema>;
+
+export const EncryptedPayloadSchema = z.object({
+  ciphertext: z.string(),
+  iv: z.string(),
+  algorithm: z.literal('AES-GCM-256'),
+});
+
+export type EncryptedPayload = z.infer<typeof EncryptedPayloadSchema>;
+
+export const EncryptedIndividualSubmissionSnapshotSchema = LinkedSnapshotBaseSchema.extend({
+  type: z.literal('encrypted-individual-submission'),
+  encrypted: EncryptedPayloadSchema,
+  submitterIdHash: z.string(),
+});
+
+export type EncryptedIndividualSubmissionSnapshot = z.infer<typeof EncryptedIndividualSubmissionSnapshotSchema>;
+
 export const StoredSnapshotSchema = z.discriminatedUnion('type', [
   WishocracyAggregationSnapshotSchema,
   OptomitronPolicyAnalysisSnapshotSchema,
+  HealthAnalysisSnapshotSchema,
+  EncryptedIndividualSubmissionSnapshotSchema,
 ]);
 
 export type StoredSnapshot = z.infer<typeof StoredSnapshotSchema>;
@@ -104,6 +151,26 @@ export const CreateOptomitronPolicyAnalysisInputSchema =
   });
 
 export type CreateOptomitronPolicyAnalysisInput = z.infer<typeof CreateOptomitronPolicyAnalysisInputSchema>;
+
+export const CreateHealthAnalysisInputSchema =
+  HealthAnalysisSnapshotSchema.omit({
+    type: true,
+    timestamp: true,
+  }).extend({
+    timestamp: z.string().datetime().optional(),
+  });
+
+export type CreateHealthAnalysisInput = z.infer<typeof CreateHealthAnalysisInputSchema>;
+
+export const CreateEncryptedIndividualSubmissionInputSchema =
+  EncryptedIndividualSubmissionSnapshotSchema.omit({
+    type: true,
+    timestamp: true,
+  }).extend({
+    timestamp: z.string().datetime().optional(),
+  });
+
+export type CreateEncryptedIndividualSubmissionInput = z.infer<typeof CreateEncryptedIndividualSubmissionInputSchema>;
 
 export interface StoredSnapshotUpload<TSnapshot extends StoredSnapshot> {
   cid: string;
