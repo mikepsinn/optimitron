@@ -2,47 +2,51 @@
 /**
  * generate-brand-assets.ts
  *
- * Generates all missing image assets for the Optomitron website using
- * the shared image generator (DALL-E 3) and sharp (resizing + ICO).
+ * Generates OG/twitter images using the shared image generator,
+ * then resizes the chosen icon into all required variants.
+ *
+ * The icon source is public/icons/brainstorm-v4/4-inverted-globe-curve.png
+ * (chosen manually). This script only regenerates the OG image and
+ * processes icon variants — it does NOT regenerate the icon itself.
  *
  * Usage:
- *   OPENAI_API_KEY=sk-... pnpm --filter @optomitron/web run generate:assets
+ *   pnpm --filter @optomitron/web run generate:assets
  *
- * What it creates:
- *   public/
- *   ├── favicon.ico              (multi-size ICO: 16, 32, 48)
- *   ├── apple-touch-icon.png     (180x180)
- *   ├── og-image.png             (1200x630 — social sharing)
- *   ├── twitter-image.png        (copy of og-image)
- *   └── icons/
- *       ├── icon-72.png          (notification badge)
- *       ├── icon-192.png         (PWA manifest)
- *       ├── icon-512.png         (PWA manifest / splash)
- *       ├── icon-16.png          (favicon fallback)
- *       ├── icon-32.png          (favicon fallback)
- *       └── icon-maskable-512.png (PWA maskable icon)
- *
- * Also patches layout.tsx and manifest.json to reference the new assets.
+ * Creates:
+ *   public/favicon.ico, apple-touch-icon.png, og-image.jpg, twitter-image.jpg
+ *   public/icons/icon-{16,32,72,192,512}.png, icon-maskable-512.png
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, statSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "fs";
 import { resolve, join, dirname } from "path";
 import { fileURLToPath } from "url";
-import {
-  createImageGenerator,
-  BRAND,
-  ICON_PROMPT,
-  OG_IMAGE_PROMPT,
-} from "./lib/image-generator";
+import { config } from "dotenv";
+import { generateImage, buildPrompt, BRAND } from "./lib/image-generator";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+config({ path: resolve(__dirname, "../../../.env") });
+config({ path: resolve(__dirname, "../.env") });
 
 const PUBLIC_DIR = resolve(__dirname, "../public");
 const ICONS_DIR = join(PUBLIC_DIR, "icons");
 const SRC_DIR = resolve(__dirname, "../src");
 
 const BG_RGBA = BRAND.bgDarkRgba;
+
+// ─── Icon source (manually chosen from brainstorm) ──────────────
+
+const ICON_SOURCE = join(ICONS_DIR, "icon-512.png");
+
+// ─── OG Image Prompt ────────────────────────────────────────────
+
+const OG_PROMPT = buildPrompt(
+  "Wide banner: retro control room with globe, dials, gauges, and growth charts. Text: 'OPTOMITRON' large at top, 'The Earth Optimization Machine' below. No other text.",
+  { style: "Use a fun black and white retro scientific illustration style." },
+);
+
+// ─── Icon Processing ─────────────────────────────────────────────
 
 const ICON_VARIANTS = [
   { name: "icon-16.png", size: 16, maskable: false },
@@ -53,49 +57,34 @@ const ICON_VARIANTS = [
   { name: "icon-maskable-512.png", size: 512, maskable: true },
 ];
 
-// ─── Icon Processing ─────────────────────────────────────────────
-
 async function processIconVariants(sourceBuffer: Buffer) {
   const sharp = (await import("sharp")).default;
   console.log("\nResizing icon variants...");
 
-  for (const variant of ICON_VARIANTS) {
-    const outPath = join(ICONS_DIR, variant.name);
+  for (const v of ICON_VARIANTS) {
+    const outPath = join(ICONS_DIR, v.name);
 
-    if (variant.maskable) {
-      const iconSize = Math.round(variant.size * 0.6);
-      const offset = Math.round((variant.size - iconSize) / 2);
+    if (v.maskable) {
+      const iconSize = Math.round(v.size * 0.6);
+      const offset = Math.round((v.size - iconSize) / 2);
 
-      const resizedIcon = await sharp(sourceBuffer)
-        .resize(iconSize, iconSize, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
+      const resized = await sharp(sourceBuffer)
+        .resize(iconSize, iconSize, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
         .png()
         .toBuffer();
 
-      await sharp({
-        create: {
-          width: variant.size,
-          height: variant.size,
-          channels: 4 as const,
-          background: BG_RGBA,
-        },
-      })
+      await sharp({ create: { width: v.size, height: v.size, channels: 4 as const, background: BG_RGBA } })
         .png()
-        .composite([{ input: resizedIcon, left: offset, top: offset }])
+        .composite([{ input: resized, left: offset, top: offset }])
         .toFile(outPath);
     } else {
       await sharp(sourceBuffer)
-        .resize(variant.size, variant.size, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
+        .resize(v.size, v.size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
         .png()
         .toFile(outPath);
     }
 
-    console.log(`  ${variant.name} (${variant.size}x${variant.size})`);
+    console.log(`  ${v.name} (${v.size}x${v.size})`);
   }
 }
 
@@ -112,49 +101,34 @@ async function generateFavicon() {
     if (existsSync(pngPath)) {
       pngBuffers.push(readFileSync(pngPath));
     } else {
-      const source = join(ICONS_DIR, "icon-72.png");
-      const buf = await sharp(source)
-        .resize(size, size, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
+      const buf = await sharp(join(ICONS_DIR, "icon-72.png"))
+        .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
         .png()
         .toBuffer();
       pngBuffers.push(buf);
     }
   }
 
-  const icoBuffer = await pngToIco(pngBuffers);
-  writeFileSync(join(PUBLIC_DIR, "favicon.ico"), icoBuffer);
-  console.log(`  favicon.ico (${sizes.join(", ")}px multi-size)`);
+  writeFileSync(join(PUBLIC_DIR, "favicon.ico"), await pngToIco(pngBuffers));
+  console.log("  favicon.ico (16, 32, 48px)");
 }
 
 async function generateAppleTouchIcon(sourceBuffer: Buffer) {
   const sharp = (await import("sharp")).default;
   console.log("\nGenerating apple-touch-icon.png...");
 
-  const totalSize = 180;
-  const iconSize = Math.round(totalSize * 0.75);
-  const offset = Math.round((totalSize - iconSize) / 2);
+  const total = 180;
+  const inner = Math.round(total * 0.75);
+  const offset = Math.round((total - inner) / 2);
 
-  const resizedIcon = await sharp(sourceBuffer)
-    .resize(iconSize, iconSize, {
-      fit: "contain",
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    })
+  const resized = await sharp(sourceBuffer)
+    .resize(inner, inner, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png()
     .toBuffer();
 
-  await sharp({
-    create: {
-      width: totalSize,
-      height: totalSize,
-      channels: 4 as const,
-      background: BG_RGBA,
-    },
-  })
+  await sharp({ create: { width: total, height: total, channels: 4 as const, background: BG_RGBA } })
     .png()
-    .composite([{ input: resizedIcon, left: offset, top: offset }])
+    .composite([{ input: resized, left: offset, top: offset }])
     .toFile(join(PUBLIC_DIR, "apple-touch-icon.png"));
 
   console.log("  apple-touch-icon.png (180x180)");
@@ -164,24 +138,28 @@ async function processOgImage(sourceBuffer: Buffer) {
   const sharp = (await import("sharp")).default;
   console.log("\nProcessing OG image...");
 
-  const ogPath = join(PUBLIC_DIR, "og-image.png");
+  const ogPath = join(PUBLIC_DIR, "og-image.jpg");
   await sharp(sourceBuffer)
     .resize(1200, 630, { fit: "cover", position: "centre" })
-    .png()
+    .jpeg({ quality: 85 })
     .toFile(ogPath);
-  console.log("  og-image.png (1200x630)");
+  console.log("  og-image.jpg (1200x630)");
 
-  copyFileSync(ogPath, join(PUBLIC_DIR, "twitter-image.png"));
-  console.log("  twitter-image.png (copy of og-image)");
+  const twitterPath = join(PUBLIC_DIR, "twitter-image.jpg");
+  await sharp(sourceBuffer)
+    .resize(1200, 630, { fit: "cover", position: "centre" })
+    .jpeg({ quality: 85 })
+    .toFile(twitterPath);
+  console.log("  twitter-image.jpg (copy)");
 }
 
-// ─── Auto-patch layout.tsx and manifest.json ─────────────────────
+// ─── Auto-patch layout.tsx + manifest.json ───────────────────────
 
 function patchLayoutMetadata() {
-  console.log("\nPatching layout.tsx metadata...");
+  console.log("\nPatching layout.tsx...");
   const layoutPath = join(SRC_DIR, "app/layout.tsx");
   let content = readFileSync(layoutPath, "utf-8");
-  let patched = false;
+  let changed = false;
 
   if (!content.includes("icons:")) {
     content = content.replace(
@@ -196,43 +174,32 @@ function patchLayoutMetadata() {
   },
   manifest: "/manifest.json",`,
     );
-    patched = true;
+    changed = true;
     console.log("  Added icons config");
   }
 
-  if (!content.includes("og-image.png")) {
+  if (!content.includes("og-image.jpg")) {
     content = content.replace(
       /type: "website",\s*\}/,
       `type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Optomitron — The Evidence-Based Earth Optimization Machine",
-      },
-    ],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optomitron — The Earth Optimization Machine" }],
   }`,
     );
-    patched = true;
+    changed = true;
     console.log("  Added openGraph.images");
   }
 
-  if (!content.includes("twitter-image.png")) {
-    // Find the twitter block's closing and insert images before it
+  if (!content.includes("twitter-image.jpg")) {
     content = content.replace(
       /(twitter:\s*\{[\s\S]*?description:\s*\n?\s*"[^"]*",)\s*\}/,
-      `$1\n    images: ["/twitter-image.png"],\n  }`,
+      `$1\n    images: ["/twitter-image.jpg"],\n  }`,
     );
-    patched = true;
+    changed = true;
     console.log("  Added twitter.images");
   }
 
-  if (patched) {
-    writeFileSync(layoutPath, content);
-  } else {
-    console.log("  Already up to date");
-  }
+  if (changed) writeFileSync(layoutPath, content);
+  else console.log("  Already up to date");
 }
 
 function patchManifest() {
@@ -240,11 +207,7 @@ function patchManifest() {
   const manifestPath = join(PUBLIC_DIR, "manifest.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
 
-  const hasMaskable = manifest.icons?.some(
-    (icon: { purpose?: string }) => icon.purpose === "maskable",
-  );
-
-  if (!hasMaskable) {
+  if (!manifest.icons?.some((i: { purpose?: string }) => i.purpose === "maskable")) {
     manifest.icons.push({
       src: "/icons/icon-maskable-512.png",
       sizes: "512x512",
@@ -252,7 +215,7 @@ function patchManifest() {
       purpose: "maskable",
     });
     writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
-    console.log("  Added maskable icon entry");
+    console.log("  Added maskable icon");
   } else {
     console.log("  Already up to date");
   }
@@ -263,72 +226,57 @@ function patchManifest() {
 async function main() {
   console.log("============================================");
   console.log("  OPTOMITRON BRAND ASSET GENERATOR");
-  console.log("  Planetary debugging software needs a logo.");
   console.log("============================================");
 
-  const gen = await createImageGenerator();
-
-  // Ensure output directories
   if (!existsSync(ICONS_DIR)) mkdirSync(ICONS_DIR, { recursive: true });
 
-  // Step 1: Generate base icon (1024x1024 square)
-  const iconBuffer = await gen.generate({
-    prompt: ICON_PROMPT,
-    size: "1024x1024",
-    label: "icon",
-    outputDir: ICONS_DIR,
-  });
+  // Step 1: Read the chosen icon source
+  if (!existsSync(ICON_SOURCE)) {
+    throw new Error(`Icon source not found: ${ICON_SOURCE}\nRun brainstorm-icons scripts first.`);
+  }
+  const iconBuffer = readFileSync(ICON_SOURCE);
+  console.log(`\nUsing icon: ${ICON_SOURCE} (${(iconBuffer.length / 1024).toFixed(0)}KB)`);
 
-  // Step 2: Generate OG/social image (1792x1024 landscape)
-  const ogBuffer = await gen.generate({
-    prompt: OG_IMAGE_PROMPT,
-    size: "1792x1024",
+  // Step 2: Generate OG image (retro scientific illustration style)
+  const ogBuffer = await generateImage(OG_PROMPT, {
     label: "og",
-    outputDir: ICONS_DIR,
+    aspectRatio: "16:9",
+    rawOutputDir: ICONS_DIR,
   });
 
-  // Step 3: Resize icon into all variants
+  // Step 3-6: Process into all variants
   await processIconVariants(iconBuffer);
-
-  // Step 4: Generate favicon.ico
   await generateFavicon();
-
-  // Step 5: Apple touch icon
   await generateAppleTouchIcon(iconBuffer);
-
-  // Step 6: OG image processing
   await processOgImage(ogBuffer);
 
-  // Step 7: Patch metadata files
+  // Step 7: Patch metadata
   patchLayoutMetadata();
   patchManifest();
 
   // Summary
   console.log("\n============================================");
-  console.log("  All assets generated.");
+  console.log("  Done. Files created:");
   console.log("============================================\n");
 
-  const allFiles = [
+  const files = [
     "public/favicon.ico",
     "public/apple-touch-icon.png",
-    "public/og-image.png",
-    "public/twitter-image.png",
+    "public/og-image.jpg",
+    "public/twitter-image.jpg",
     ...ICON_VARIANTS.map((v) => `public/icons/${v.name}`),
   ];
-  for (const f of allFiles) {
-    const fullPath = join(resolve(__dirname, ".."), f);
-    if (existsSync(fullPath)) {
-      const stat = statSync(fullPath);
-      console.log(`  + ${f} (${(stat.size / 1024).toFixed(1)}KB)`);
+  for (const f of files) {
+    const p = join(resolve(__dirname, ".."), f);
+    if (existsSync(p)) {
+      console.log(`  + ${f} (${(statSync(p).size / 1024).toFixed(1)}KB)`);
     } else {
       console.log(`  - ${f} (missing)`);
     }
   }
-
-  console.log("\nRun 'pnpm dev' and check the results.");
 }
 
 main().catch((err) => {
-  console.error("\nAsset generation failed:", err);
+  console.error("\nFailed:", err);
   process.exit(1);
 });

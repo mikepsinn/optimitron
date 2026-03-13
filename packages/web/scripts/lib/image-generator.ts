@@ -1,27 +1,27 @@
 /**
- * Shared image generation utilities for Optomitron.
+ * Shared image generation for Optomitron.
  *
- * Provides a consistent visual style across all generated images:
- * neobrutalist, flat, thick black outlines, brand colours, Wishonia's
- * deadpan alien aesthetic.
+ * Single source of truth for:
+ *   1. The default visual style (1950s retro scientific illustration)
+ *   2. Brand colours
+ *   3. Gemini image generation wrapper
+ *
+ * Every script that generates images should import from here.
  *
  * Usage:
- *   import { createImageGenerator, BRAND, buildPrompt } from "./lib/image-generator";
+ *   import { generateImage, buildPrompt, BRAND } from "./lib/image-generator";
  *
- *   const gen = await createImageGenerator();
- *   const buffer = await gen.generate({
- *     subject: "A bar chart showing healthcare spending vs outcomes",
- *     size: "1792x1024",
- *     label: "health-comparison",
- *   });
+ *   const buffer = await generateImage(
+ *     buildPrompt("A chart showing healthcare spending vs life expectancy"),
+ *     { label: "health-chart", aspectRatio: "16:9" },
+ *   );
  */
 
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { join, relative } from "path";
+import { writeFileSync } from "fs";
+import { join } from "path";
 
 // ─── Brand Constants ─────────────────────────────────────────────
 
-/** Optomitron brand colours — from globals.css / tailwind.config.ts */
 export const BRAND = {
   pink: "#EC4699",
   cyan: "#7BDDEA",
@@ -32,170 +32,173 @@ export const BRAND = {
   bgDarkRgba: { r: 15, g: 23, b: 42, alpha: 255 },
 } as const;
 
-// ─── Style System ────────────────────────────────────────────────
+// ─── Default Style: 1950s Retro Scientific Illustration ─────────
 
 /**
  * The master style directive prepended to every image generation prompt.
- * This ensures visual consistency across icons, OG images, blog headers,
- * chart illustrations, etc.
+ *
+ * 1950s Popular Science / atomic age / mid-century textbook illustration.
+ * This is the canonical visual style for all Optomitron-generated images.
  */
-const STYLE_DIRECTIVE = [
-  "STYLE REQUIREMENTS (apply to the entire image):",
-  "- Neobrutalist graphic design: thick black outlines (3-6px), flat colour",
-  "  fills, hard drop shadows, sharp corners, zero gradients, zero rounded",
-  "  corners, zero 3D effects, zero photorealism",
-  `- Primary colour palette: hot pink (${BRAND.pink}), cyan (${BRAND.cyan}),`,
-  `  yellow (${BRAND.yellow}), white (${BRAND.white}), black (${BRAND.black})`,
-  `- Background: dark navy (${BRAND.bgDark}) unless otherwise specified`,
-  "- Typography (if text is needed): bold, blocky, sans-serif, all caps,",
-  "  white or cyan text with black outline/shadow",
-  "- Overall aesthetic: confident data dashboard designed by a slightly",
-  "  disappointed alien who has been running a planet for 4,237 years",
-  "- Clean composition with generous negative space — no clutter",
-  "- If charts or data visualisations appear, they should look hand-drawn",
-  "  in the neobrutalist style, not like Excel output",
-].join("\n");
+export const DEFAULT_STYLE = `Use a fun 1950s retro scientific illustration style.`;
+
+// ─── Prompt Builder ──────────────────────────────────────────────
 
 /**
- * Build a complete prompt by combining the shared style directive
- * with a subject-specific description.
+ * Build a complete prompt by combining the default style with a subject.
  *
- * @param subject - What the image should depict (the unique part)
- * @param extras  - Optional additional constraints
+ * @param subject - What the image should depict
+ * @param options.style - Override the default style (rarely needed)
+ * @param options.constraints - Additional constraints (e.g. "NO text")
  */
-export function buildPrompt(subject: string, extras?: string): string {
-  const parts = [STYLE_DIRECTIVE, "", "SUBJECT:", subject];
-  if (extras) {
-    parts.push("", "ADDITIONAL CONSTRAINTS:", extras);
+export function buildPrompt(
+  subject: string,
+  options?: { style?: string; constraints?: string },
+): string {
+  const style = options?.style ?? DEFAULT_STYLE;
+  const parts = [style, "", subject];
+  if (options?.constraints) {
+    parts.push("", options.constraints);
   }
   return parts.join("\n");
 }
 
-// ─── Pre-built Prompts ───────────────────────────────────────────
+// ─── Gemini Image Generation ─────────────────────────────────────
 
-/**
- * Icon prompt — must be recognisable at 16x16.
- *
- * Concept: a stylised globe with a targeting reticle/crosshair overlay
- * and a small upward-trending line — "planetary debugging software"
- * in one symbol. Simple enough for a favicon.
- */
-export const ICON_PROMPT = buildPrompt(
-  [
-    "A bold, minimal app icon for 'Optomitron' — planetary debugging software.",
-    "",
-    "The icon is a stylised globe (simple circle with 1-2 latitude/longitude",
-    "lines) overlaid with a targeting reticle/crosshair and a small upward-",
-    "trending arrow or chart line breaking out of the top-right of the globe.",
-    "The globe fill is hot pink, the crosshair and trend line are cyan, thick",
-    "black outlines on everything.",
-    "",
-    "The overall message: 'we have the planet in our sights and the line is",
-    "going up.' Think: a mission control target lock, not a geography textbook.",
-  ].join("\n"),
-  [
-    "- Square canvas, centred, ~10% padding from edges",
-    "- NO text, NO letters, NO words — pure symbol only",
-    "- Must be recognisable at 16x16 pixels — max 2-3 shapes",
-    `- Background: solid dark navy (${BRAND.bgDark})`,
-    "- Think: simplicity of the Figma or Notion icon, brutalist edges",
-  ].join("\n"),
-);
-
-/**
- * OG / social sharing image — the billboard for Twitter/LinkedIn/iMessage.
- */
-export const OG_IMAGE_PROMPT = buildPrompt(
-  [
-    "A wide social-sharing banner (1200x630px landscape) for",
-    "'Optomitron — The Evidence-Based Earth Optimization Machine'.",
-    "",
-    "Left third: the Optomitron icon — a stylised globe with crosshair",
-    "and upward-trending line, in hot pink with cyan accents, large and bold.",
-    "",
-    "Right two-thirds: bold uppercase text 'OPTOMITRON' in white, with",
-    "'PLANETARY DEBUGGING SOFTWARE' in cyan below it, smaller.",
-    "",
-    "A thin horizontal accent stripe in yellow near the bottom edge.",
-    "The overall feel: mission control dashboard, confident, data-driven.",
-  ].join("\n"),
-  [
-    "- Text must be spelled exactly: OPTOMITRON (10 letters)",
-    "- Keep it clean — lots of negative space",
-    `- Background: dark navy (${BRAND.bgDark})`,
-  ].join("\n"),
-);
-
-// ─── Generator ───────────────────────────────────────────────────
-
-type ImageSize = "1024x1024" | "1792x1024" | "1024x1792";
+const GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image";
 
 interface GenerateOptions {
-  /** The full prompt (use buildPrompt() to construct) */
-  prompt: string;
-  /** DALL-E 3 canvas size */
-  size: ImageSize;
   /** Short label for logging and raw file naming */
   label: string;
-  /** Directory to save the raw generation to (optional) */
-  outputDir?: string;
-}
-
-interface ImageGenerator {
-  /** Generate a single image and return the PNG buffer */
-  generate(options: GenerateOptions): Promise<Buffer>;
+  /** Aspect ratio (default: "1:1") */
+  aspectRatio?: "1:1" | "3:4" | "4:3" | "9:16" | "16:9";
+  /** Directory to save the raw generation PNG (optional) */
+  rawOutputDir?: string;
 }
 
 /**
- * Create a reusable image generator backed by OpenAI DALL-E 3.
+ * Generate a single image using Google Gemini.
  *
- * @param apiKey - OpenAI API key (defaults to OPENAI_API_KEY env var)
+ * @param prompt - Full prompt (use buildPrompt() to construct)
+ * @param options - Label, aspect ratio, optional raw output dir
+ * @returns PNG buffer
  */
-export async function createImageGenerator(apiKey?: string): Promise<ImageGenerator> {
-  const key = apiKey ?? process.env.OPENAI_API_KEY;
-  if (!key) {
+export async function generateImage(
+  prompt: string,
+  options: GenerateOptions,
+): Promise<Buffer> {
+  const { label, aspectRatio = "1:1", rawOutputDir } = options;
+
+  const { GoogleGenAI, Modality } = await import("@google/genai");
+
+  const apiKey =
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ??
+    process.env.GEMINI_API_KEY ??
+    process.env.GOOGLE_API_KEY;
+
+  if (!apiKey) {
     throw new Error(
-      "OPENAI_API_KEY not set. Pass it as an argument or export it:\n" +
-      "  export OPENAI_API_KEY=sk-...",
+      "No Gemini API key. Set GOOGLE_GENERATIVE_AI_API_KEY or GEMINI_API_KEY.",
     );
   }
 
-  const OpenAI = (await import("openai")).default;
-  const client = new OpenAI({ apiKey: key });
+  const client = new GoogleGenAI({ apiKey });
 
-  return {
-    async generate({ prompt, size, label, outputDir }: GenerateOptions): Promise<Buffer> {
-      console.log(`\nGenerating "${label}" (${size})...`);
-      console.log(`  Prompt preview: ${prompt.slice(0, 100).replace(/\n/g, " ")}...`);
+  console.log(`\nGenerating "${label}" (${aspectRatio})...`);
+  console.log(`  Model: ${GEMINI_IMAGE_MODEL}`);
+  console.log(`  Prompt: ${prompt.slice(0, 80).replace(/\n/g, " ")}...`);
 
-      const response = await client.images.generate({
-        model: "dall-e-3",
-        prompt,
-        n: 1,
-        size,
-        quality: "hd",
-        response_format: "url",
-      });
+  const response = await client.models.generateContent({
+    model: GEMINI_IMAGE_MODEL,
+    contents: prompt,
+    config: {
+      responseModalities: [Modality.IMAGE],
+      imageConfig: { aspectRatio: aspectRatio as any },
+    },
+  });
 
-      const url = response.data[0]?.url;
-      if (!url) throw new Error(`No image URL returned for "${label}"`);
+  const parts =
+    response.candidates?.flatMap((c) => c.content?.parts ?? []) ?? [];
 
-      console.log("  Downloading...");
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-      const buffer = Buffer.from(await res.arrayBuffer());
+  for (const part of parts) {
+    if (part.inlineData?.data) {
+      const buffer = Buffer.from(part.inlineData.data, "base64");
       console.log(`  Got ${(buffer.length / 1024).toFixed(0)}KB`);
 
-      if (outputDir) {
-        if (!existsSync(outputDir)) {
-          mkdirSync(outputDir, { recursive: true });
-        }
-        const rawPath = join(outputDir, `_raw-${label}.png`);
+      if (rawOutputDir) {
+        const rawPath = join(rawOutputDir, `_raw-${label}.png`);
         writeFileSync(rawPath, buffer);
-        console.log(`  Saved raw: ${relative(process.cwd(), rawPath)}`);
       }
 
       return buffer;
-    },
-  };
+    }
+  }
+
+  throw new Error(`Gemini returned no image data for "${label}"`);
+}
+
+// ─── Background Removal ─────────────────────────────────────────
+
+/**
+ * Remove the background from an image by sampling corner pixels
+ * and making all similar-coloured pixels transparent.
+ *
+ * Useful when Gemini generates on a coloured background and you
+ * need a transparent PNG (e.g. for icons).
+ *
+ * @param sourceBuffer - PNG buffer
+ * @param tolerance - Colour distance tolerance (default 60)
+ */
+export async function removeBackground(
+  sourceBuffer: Buffer,
+  tolerance: number = 60,
+): Promise<Buffer> {
+  const sharp = (await import("sharp")).default;
+  const { data, info } = await sharp(sourceBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const pixels = new Uint8Array(data.buffer, data.byteOffset, data.length);
+  const w = info.width;
+  const h = info.height;
+
+  // Sample the four corners to detect background colour
+  const corners = [
+    0,
+    (w - 1) * 4,
+    (h - 1) * w * 4,
+    ((h - 1) * w + (w - 1)) * 4,
+  ];
+
+  let rSum = 0, gSum = 0, bSum = 0;
+  for (const idx of corners) {
+    rSum += pixels[idx]!;
+    gSum += pixels[idx + 1]!;
+    bSum += pixels[idx + 2]!;
+  }
+  const bgR = Math.round(rSum / 4);
+  const bgG = Math.round(gSum / 4);
+  const bgB = Math.round(bSum / 4);
+
+  let removed = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    const dr = Math.abs(pixels[i]! - bgR);
+    const dg = Math.abs(pixels[i + 1]! - bgG);
+    const db = Math.abs(pixels[i + 2]! - bgB);
+
+    if (dr <= tolerance && dg <= tolerance && db <= tolerance) {
+      pixels[i + 3] = 0;
+      removed++;
+    }
+  }
+
+  const pct = ((removed / (w * h)) * 100).toFixed(1);
+  console.log(`  Background removal: rgb(${bgR},${bgG},${bgB}) → ${pct}% removed`);
+
+  return sharp(Buffer.from(pixels.buffer), {
+    raw: { width: w, height: h, channels: 4 },
+  })
+    .png()
+    .toBuffer();
 }
