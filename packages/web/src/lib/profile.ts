@@ -60,6 +60,21 @@ function nullableInt(min?: number, max?: number) {
   );
 }
 
+function requireLatLngTogether(
+  value: { latitude?: number | null; longitude?: number | null },
+  ctx: z.RefinementCtx,
+) {
+  const hasLatitude = value.latitude != null;
+  const hasLongitude = value.longitude != null;
+  if (hasLatitude !== hasLongitude) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Latitude and longitude must be provided together.",
+      path: hasLatitude ? ["longitude"] : ["latitude"],
+    });
+  }
+}
+
 export const profileSnapshotInputSchema = z
   .object({
     timeZone: nullableString(100),
@@ -77,18 +92,7 @@ export const profileSnapshotInputSchema = z
     genderIdentity: nullableString(64),
     censusNotes: nullableString(1000),
   })
-  .superRefine((value, ctx) => {
-    const hasLatitude = value.latitude != null;
-    const hasLongitude = value.longitude != null;
-
-    if (hasLatitude !== hasLongitude) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Latitude and longitude must be provided together.",
-        path: hasLatitude ? ["longitude"] : ["latitude"],
-      });
-    }
-  });
+  .superRefine(requireLatLngTogether);
 
 export const dailyCheckInInputSchema = z.object({
   healthRating: z.coerce.number().int().min(1).max(5),
@@ -96,18 +100,7 @@ export const dailyCheckInInputSchema = z.object({
   note: nullableString(500),
   latitude: nullableNumber(-90, 90),
   longitude: nullableNumber(-180, 180),
-}).superRefine((value, ctx) => {
-  const hasLatitude = value.latitude != null;
-  const hasLongitude = value.longitude != null;
-
-  if (hasLatitude !== hasLongitude) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Latitude and longitude must be provided together.",
-      path: hasLatitude ? ["longitude"] : ["latitude"],
-    });
-  }
-});
+}).superRefine(requireLatLngTogether);
 
 export type ProfileSnapshotInput = z.infer<typeof profileSnapshotInputSchema>;
 export type DailyCheckInInput = z.infer<typeof dailyCheckInInputSchema>;

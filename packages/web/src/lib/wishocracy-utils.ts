@@ -83,7 +83,7 @@ function isCategoryValid(categoryId: string): boolean {
   return BUDGET_CATEGORIES[categoryId as BudgetCategoryId] !== undefined;
 }
 
-export function isValidPair(pair: [BudgetCategoryId, BudgetCategoryId]): boolean {
+function isValidPair(pair: [BudgetCategoryId, BudgetCategoryId]): boolean {
   return isCategoryValid(pair[0]) && isCategoryValid(pair[1]);
 }
 

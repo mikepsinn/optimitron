@@ -57,7 +57,7 @@ function setStorageItem<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Ignore storage failures to keep the vote flow usable.
+    // Ignore storage failures silently.
   }
 }
 
@@ -67,7 +67,7 @@ function setStringItem(key: string, value: string): void {
   try {
     localStorage.setItem(key, value);
   } catch {
-    // Ignore storage failures to keep the vote flow usable.
+    // Ignore storage failures silently.
   }
 }
 
@@ -77,7 +77,7 @@ function setBooleanItem(key: string, value: boolean): void {
   try {
     localStorage.setItem(key, String(value));
   } catch {
-    // Ignore storage failures to keep the vote flow usable.
+    // Ignore storage failures silently.
   }
 }
 
@@ -87,7 +87,7 @@ function removeStorageItem(key: string): void {
   try {
     localStorage.removeItem(key);
   } catch {
-    // Ignore storage failures to keep the vote flow usable.
+    // Ignore storage failures silently.
   }
 }
 
