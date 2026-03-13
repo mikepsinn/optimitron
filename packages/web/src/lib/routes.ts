@@ -1,3 +1,5 @@
+import { slugify } from "@/lib/slugify";
+
 export const ROUTES = {
   home: "/",
   wishocracy: "/wishocracy",
@@ -23,6 +25,14 @@ export interface NavItem {
   description?: string;
   external?: boolean;
   matchPrefixes?: string[];
+}
+
+export function getBudgetCategoryPath(name: string): string {
+  return `${ROUTES.budget}/${slugify(name)}`;
+}
+
+export function getPolicyPath(name: string): string {
+  return `${ROUTES.policies}/${slugify(name)}`;
 }
 
 export function getSignInPath(

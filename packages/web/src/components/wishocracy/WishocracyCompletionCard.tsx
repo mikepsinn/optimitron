@@ -124,7 +124,7 @@ export function WishocracyCompletionCard({
           More humans = better data. Basic statistics, really.
         </p>
         <div className="mb-4">
-          <CopyLinkButton link={shareUrl} variant="landing" />
+          <CopyLinkButton url={shareUrl} variant="landing" />
         </div>
         <SocialShareButtons url={shareUrl} text={shareText} />
       </div>

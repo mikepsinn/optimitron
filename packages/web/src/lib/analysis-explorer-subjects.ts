@@ -11,24 +11,14 @@ import type {
   ExplorerSubjectRankingMetrics,
   ExplorerSubjectSummary,
 } from "./analysis-explorer-types";
+import { clamp01, finiteOrNull } from "./numeric-utils";
 
-export const DEFAULT_SUBJECT_QUALITY_THRESHOLDS: ExplorerSubjectQualityThresholds = {
+const DEFAULT_SUBJECT_QUALITY_THRESHOLDS: ExplorerSubjectQualityThresholds = {
   minimumPairs: 10,
   minAbsForwardPearson: 0.05,
   minAbsPredictivePearson: 0.05,
   minAbsPercentChange: 0.25,
 };
-
-function clamp01(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  if (value <= 0) return 0;
-  if (value >= 1) return 1;
-  return value;
-}
-
-function finiteOrNull(value: number | null | undefined): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
 
 function absOrZero(value: number | null | undefined): number {
   return value == null || !Number.isFinite(value) ? 0 : Math.abs(value);

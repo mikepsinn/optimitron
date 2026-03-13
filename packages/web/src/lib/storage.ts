@@ -3,6 +3,8 @@ const STORAGE_KEYS = {
   signupReferral: "signup_referral",
   signupSubscribe: "signup_subscribe",
   pendingWishocracy: "pendingWishocracy",
+  chatApiKey: "opto-chat-api-key",
+  chatProvider: "opto-chat-provider",
 } as const;
 
 type PendingWishocracyState = {
@@ -107,6 +109,12 @@ export const storage = {
     removeStorageItem(STORAGE_KEYS.signupReferral);
     removeStorageItem(STORAGE_KEYS.signupSubscribe);
   },
+
+  getChatApiKey: () => getStringItem(STORAGE_KEYS.chatApiKey),
+  setChatApiKey: (key: string) => setStringItem(STORAGE_KEYS.chatApiKey, key),
+
+  getChatProvider: () => getStringItem(STORAGE_KEYS.chatProvider),
+  setChatProvider: (provider: string) => setStringItem(STORAGE_KEYS.chatProvider, provider),
 
   getPendingWishocracy: () => getStorageItem<PendingWishocracyState>(STORAGE_KEYS.pendingWishocracy),
   setPendingWishocracy: (data: PendingWishocracyState) =>

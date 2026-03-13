@@ -24,6 +24,7 @@ import type {
   ExplorerSubjectSummary,
 } from "./analysis-explorer-types";
 import { buildSubjectDrilldowns } from "./analysis-explorer-subjects";
+import { clamp01, finiteOrNull } from "./numeric-utils";
 
 interface GovernmentSizeTier {
   tier: string;
@@ -223,17 +224,6 @@ function toId(value: string): string {
 
 function toLookupKey(outcomeId: string, predictorId: string): string {
   return `${toId(outcomeId)}::${toId(predictorId)}`;
-}
-
-function clamp01(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  if (value <= 0) return 0;
-  if (value >= 1) return 1;
-  return value;
-}
-
-function finiteOrNull(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function finiteValues(values: Array<number | null | undefined>): number[] {

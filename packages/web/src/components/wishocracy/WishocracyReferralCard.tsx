@@ -27,7 +27,7 @@ export function WishocracyReferralCard({
           signups are attributed to your account.
         </p>
         <div className="mt-4">
-          <CopyLinkButton link={shareUrl} variant="landing" />
+          <CopyLinkButton url={shareUrl} variant="landing" />
         </div>
         <div className="mt-4 flex justify-center">
           <SocialShareButtons

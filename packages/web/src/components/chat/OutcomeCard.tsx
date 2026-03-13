@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { getOutcomeHubPath } from "@/lib/analysis-explorer-routes";
 
 interface OutcomeCardProps {
   outcome: { label: string; topPredictor: string; score: number; id: string };
@@ -20,7 +21,7 @@ export const OutcomeCard: FC<OutcomeCardProps> = ({ outcome }) => (
       </div>
       <span className="opto-outcome-card__score">{(outcome.score * 100).toFixed(0)}%</span>
     </div>
-    <a href={`/outcomes/${encodeURIComponent(outcome.id)}`} className="opto-outcome-card__link">
+    <a href={getOutcomeHubPath(outcome.id)} className="opto-outcome-card__link">
       See full analysis
     </a>
   </div>

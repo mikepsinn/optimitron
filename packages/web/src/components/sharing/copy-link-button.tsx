@@ -6,20 +6,18 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface CopyLinkButtonProps {
-  link?: string;
   url?: string;
   variant?: "default" | "landing";
   className?: string;
 }
 
 export function CopyLinkButton({
-  link,
   url,
   variant = "default",
   className,
 }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
-  const targetUrl = link ?? url ?? "";
+  const targetUrl = url ?? "";
 
   async function handleCopy() {
     if (!targetUrl) {

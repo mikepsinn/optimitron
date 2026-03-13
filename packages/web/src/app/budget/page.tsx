@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import budgetData from "@/data/us-budget-analysis.json";
-import { slugify } from "@/lib/slugify";
+import { getBudgetCategoryPath } from "@/lib/routes";
 
 interface Category {
   name: string;
@@ -209,7 +209,7 @@ export default function BudgetPage() {
         {isConstrained && cr ? (
           <div className="space-y-4">
             {constrainedActionable.map((cat) => (
-              <Link key={cat.name} href={`/budget/${slugify(cat.name)}`} className="card block hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-shadow">
+              <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-shadow">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                   <h3 className="text-sm font-black text-black">{cat.name}</h3>
                   <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export default function BudgetPage() {
                 </h3>
                 <div className="space-y-2">
                   {constrainedNonDisc.map((cat) => (
-                    <Link key={cat.name} href={`/budget/${slugify(cat.name)}`} className="card block opacity-60 hover:opacity-80 transition-opacity">
+                    <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block opacity-60 hover:opacity-80 transition-opacity">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold text-black/60">{cat.name}</h3>
                         <span className="text-sm font-bold text-black/40">{fmt(cat.currentSpending)}</span>
@@ -261,7 +261,7 @@ export default function BudgetPage() {
         ) : (
           <div className="space-y-4">
             {sorted.map((cat) => (
-              <Link key={cat.name} href={`/budget/${slugify(cat.name)}`} className="card block hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-shadow">
+              <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-shadow">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                   <h3 className="text-sm font-black text-black">{cat.name}</h3>
                   <div className="flex items-center gap-2">
@@ -327,7 +327,7 @@ export default function BudgetPage() {
                 constrainedSorted.map((cat) => (
                   <tr key={cat.name} className={`border-b border-black hover:bg-cyan-50 ${cat.isNonDiscretionary ? "opacity-50" : ""}`}>
                     <td className="py-3 px-2 text-black font-bold">
-                      <Link href={`/budget/${slugify(cat.name)}`} className="underline hover:text-pink-500 transition-colors">
+                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-pink-500 transition-colors">
                         {cat.name}
                       </Link>
                       {cat.isNonDiscretionary && (
@@ -355,7 +355,7 @@ export default function BudgetPage() {
                 sorted.map((cat) => (
                   <tr key={cat.name} className="border-b border-black hover:bg-cyan-50">
                     <td className="py-3 px-2 text-black font-bold">
-                      <Link href={`/budget/${slugify(cat.name)}`} className="underline hover:text-pink-500 transition-colors">
+                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-pink-500 transition-colors">
                         {cat.name}
                       </Link>
                     </td>

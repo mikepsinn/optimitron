@@ -19,6 +19,7 @@ import { BillCBACard } from "./BillCBACard";
 import { VoteShareCard } from "./VoteShareCard";
 import { SendToRepCard } from "./SendToRepCard";
 import { ROUTES } from "@/lib/routes";
+import { storage } from "@/lib/storage";
 import {
   BUDGET_CATEGORIES,
   getActualGovernmentAllocations,
@@ -36,9 +37,6 @@ import { listExplorerOutcomes, getOutcomeMegaStudy } from "../../lib/analysis-ex
 import { getOutcomeHubPath } from "../../lib/analysis-explorer-routes";
 import misconceptionsData from "../../../public/data/misconceptions.json";
 import "./chat-theme.css";
-
-const STORAGE_KEY_API = "opto-chat-api-key";
-const STORAGE_KEY_PROVIDER = "opto-chat-provider";
 
 // --- Extended message types for app-specific cards ---
 type MythCardMessage = { type: "mythCard"; finding: { myth: string; reality: string; grade: string } };
@@ -240,9 +238,9 @@ export default function ChatPage() {
   // --- Start bill vote flow ---
   const startBillVote = useCallback(
     async (bill: ClassifiedBill) => {
-      const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
+      const apiKey = storage.getChatApiKey() ?? undefined;
       const provider =
-        (localStorage.getItem(STORAGE_KEY_PROVIDER) as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
+        (storage.getChatProvider() as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
 
       const input = {
         billId: bill.billId,
@@ -277,9 +275,9 @@ export default function ChatPage() {
   // --- Show CBA analysis for a bill ---
   const showBillAnalysis = useCallback(
     async (bill: ClassifiedBill) => {
-      const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
+      const apiKey = storage.getChatApiKey() ?? undefined;
       const provider =
-        (localStorage.getItem(STORAGE_KEY_PROVIDER) as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
+        (storage.getChatProvider() as "openai" | "anthropic" | "gemini" | undefined) ?? undefined;
 
       const input = {
         billId: bill.billId,
@@ -796,9 +794,9 @@ export default function ChatPage() {
         }
       }
 
-      const apiKey = localStorage.getItem(STORAGE_KEY_API) ?? undefined;
+      const apiKey = storage.getChatApiKey() ?? undefined;
       const provider =
-        (localStorage.getItem(STORAGE_KEY_PROVIDER) as
+        (storage.getChatProvider() as
           | "openai"
           | "anthropic"
           | "gemini"
@@ -954,8 +952,8 @@ export default function ChatPage() {
 
   const handleApiKeySave = useCallback(
     (provider: string, key: string) => {
-      localStorage.setItem(STORAGE_KEY_API, key);
-      localStorage.setItem(STORAGE_KEY_PROVIDER, provider);
+      storage.setChatApiKey(key);
+      storage.setChatProvider(provider);
       append({
         type: "text",
         role: "assistant",
