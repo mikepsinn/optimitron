@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   prisma: {
     measurementFindMany: vi.fn(),
+    notificationPreferenceUpdateMany: vi.fn(),
     transaction: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
     userUpdate: vi.fn(),
@@ -30,6 +31,9 @@ vi.mock("@/lib/prisma", () => ({
     $transaction: mocks.prisma.transaction,
     measurement: {
       findMany: mocks.prisma.measurementFindMany,
+    },
+    notificationPreference: {
+      updateMany: mocks.prisma.notificationPreferenceUpdateMany,
     },
     user: {
       findUniqueOrThrow: mocks.prisma.userFindUniqueOrThrow,
@@ -115,6 +119,7 @@ function mockCatalogDefaults() {
   mocks.tx.userUpdate.mockResolvedValue(undefined);
   mocks.tx.measurementCreate.mockResolvedValue(undefined);
   mocks.tx.measurementUpdate.mockResolvedValue(undefined);
+  mocks.prisma.notificationPreferenceUpdateMany.mockResolvedValue({ count: 0 });
 }
 
 function mockProfilePageLoad({

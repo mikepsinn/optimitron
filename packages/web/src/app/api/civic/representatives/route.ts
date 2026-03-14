@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   lookupRepresentatives,
   zipToStateDistrict,
-} from "@/lib/civic-data";
+} from "@/lib/civic-data.server";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
