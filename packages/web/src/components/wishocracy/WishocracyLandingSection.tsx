@@ -85,7 +85,7 @@ export function WishocracyLandingSection() {
   const topCategory = hasCommunityData ? rows[0] : null;
 
   return (
-    <section className="border-y-4 border-black bg-cyan-100">
+    <section className="border-y-4 border-black bg-brutal-cyan">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div>
@@ -130,7 +130,7 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={wishocracyLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-black bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 Make Your Allocation
               </NavItemLink>
@@ -143,7 +143,7 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={alignmentLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-black bg-yellow-300 px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-black bg-brutal-yellow px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 See Alignment Reports
               </NavItemLink>
@@ -180,7 +180,7 @@ export function WishocracyLandingSection() {
                   <div className="space-y-2">
                     <div className="h-5 overflow-hidden border-2 border-black bg-black/10">
                       <div
-                        className="h-full bg-pink-500"
+                        className="h-full bg-brutal-pink"
                         style={{ width: `${row.communityPercent}%` }}
                       />
                     </div>

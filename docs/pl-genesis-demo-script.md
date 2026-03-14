@@ -51,7 +51,21 @@
 
 ---
 
-## 5. $WISH Token + IAB (25s)
+## 5. Earth Optimization Prize (20s)
+
+> "Traditional philanthropy: give money, hope it works, never check. My approach: outcome-based escrow."
+
+*Visual*: Navigate to `/prize`. Show the mechanism steps and donation section.
+
+> "Donors deposit $WISH into a Prize Pool smart contract. The funds are locked until health and income metrics cross verifiable thresholds. Then donors vote on which implementers get paid — weighted by deposit amount. Your deposit IS your identity. No sybil attacks possible."
+
+*Visual*: Highlight the PrizePool contract details — deposit-as-identity, Storacha evidence CIDs, bonded disputes.
+
+> "Implementers register with Storacha CIDs linking to their Hypercert evidence. Challengers can post a bond to dispute allocations. Lose → you forfeit the bond. Win → the fraudster gets deactivated. Accountability with teeth."
+
+---
+
+## 6. $WISH Token + IAB (25s)
 
 > "Now for the part your campaign finance lobbyists won't enjoy."
 
@@ -67,7 +81,7 @@
 
 ---
 
-## 6. Architecture (15s)
+## 7. Architecture (15s)
 
 > "Under the hood: 15 packages, 2,600+ tests, a domain-agnostic causal inference engine, and a fully typed TypeScript monorepo."
 
@@ -77,7 +91,7 @@
 
 ---
 
-## 7. Close (15s)
+## 8. Close (15s)
 
 > "Storacha makes governance data immutable. Hypercerts make it auditable. Smart contracts make it enforceable. Your species has had these tools for years. You just keep not using them."
 

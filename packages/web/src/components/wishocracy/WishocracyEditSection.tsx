@@ -160,16 +160,16 @@ export function WishocracyEditSection({
             <div className="p-6 pt-0 border-t-4 border-black">
               {/* Warning Banner */}
               {showWarning && categoriesToDelete.size > 0 && (
-                <div className="mb-6 p-4 bg-yellow-100 border-4 border-yellow-600 rounded">
+                <div className="mb-6 p-4 bg-brutal-yellow border-4 border-black rounded">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-foreground mt-0.5" />
                     <div>
-                      <p className="font-bold text-yellow-900">Warning: Category Deselection</p>
-                      <p className="text-sm text-yellow-800 mt-1">
+                      <p className="font-bold text-foreground">Warning: Category Deselection</p>
+                      <p className="text-sm text-foreground/80 mt-1">
                         Deselecting a category will permanently delete all comparisons involving that category.
                         You'll need to re-do those comparisons if you change your mind.
                       </p>
-                      <p className="text-xs font-bold text-yellow-900 mt-2">
+                      <p className="text-xs font-bold text-foreground mt-2">
                         Categories to be removed: {Array.from(categoriesToDelete).map(id => BUDGET_CATEGORIES[id].name).join(", ")}
                       </p>
                     </div>
@@ -193,8 +193,8 @@ export function WishocracyEditSection({
                           isSelected && !willBeDeleted
                             ? "border-brutal-cyan bg-brutal-cyan/10"
                             : willBeDeleted
-                            ? "border-red-500 bg-red-50"
-                            : "border-gray-300 bg-gray-50"
+                            ? "border-brutal-red bg-brutal-red/20"
+                            : "border-black/30 bg-muted"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -213,7 +213,7 @@ export function WishocracyEditSection({
                             onChange={(e) => handleCategoryToggle(categoryId, e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-full h-full bg-gray-300 border-2 border-black peer-checked:bg-brutal-cyan transition-colors" />
+                          <div className="w-full h-full bg-muted border-2 border-black peer-checked:bg-brutal-cyan transition-colors" />
                           <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-foreground border-2 border-black transition-transform peer-checked:translate-x-6" />
                         </label>
                       </div>

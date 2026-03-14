@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 const featuredFindings = [
   {
     domain: "Healthcare",
-    color: "bg-emerald-200",
+    color: "bg-brutal-cyan",
     stat: "83.9 yrs life expectancy at 4.1% GDP",
     vs: "vs US: 77.5 yrs at 17.3% GDP",
     description:
@@ -64,7 +64,7 @@ const featuredFindings = [
   },
   {
     domain: "Drug Policy",
-    color: "bg-purple-200",
+    color: "bg-brutal-pink",
     stat: "Drug deaths fell 70% in Portugal",
     vs: "HIV among users fell 74%",
     description:
@@ -73,7 +73,7 @@ const featuredFindings = [
   },
   {
     domain: "Criminal Justice",
-    color: "bg-cyan-200",
+    color: "bg-brutal-cyan",
     stat: "Norway recidivism: 20%",
     vs: "vs US: 76%",
     description:
@@ -82,7 +82,7 @@ const featuredFindings = [
   },
   {
     domain: "Public Health",
-    color: "bg-yellow-200",
+    color: "bg-brutal-yellow",
     stat: "Rwanda: life expectancy 48 to 69 yrs",
     vs: "Under-5 mortality fell 82%",
     description:
@@ -134,7 +134,7 @@ const productWorkflows = [
     description:
       "Pick between two things. Then two more things. Then two more. Before you know it, you've accidentally designed a coherent budget allocation. Sneaky, isn't it?",
     cta: "Start Voting",
-    color: "bg-pink-100",
+    color: "bg-brutal-pink",
   },
   {
     item: alignmentLink,
@@ -143,7 +143,7 @@ const productWorkflows = [
     description:
       "Compare your priorities against real politician profiles. Spoiler: it's probably not who you think.",
     cta: "Check Alignment",
-    color: "bg-yellow-100",
+    color: "bg-brutal-yellow",
   },
   {
     item: trackLink,
@@ -152,7 +152,7 @@ const productWorkflows = [
     description:
       "Track your health, meals, mood, and habits with Wishonia, an AI that's been running a planet for 4,237 years. She's seen some things.",
     cta: "Open Chat",
-    color: "bg-cyan-100",
+    color: "bg-brutal-cyan",
   },
   {
     item: studiesLink,
@@ -161,7 +161,7 @@ const productWorkflows = [
     description:
       "Outcome hubs, pair studies, policy rankings, and country comparisons. All the evidence, none of the vibes.",
     cta: "Browse Studies",
-    color: "bg-emerald-100",
+    color: "bg-brutal-cyan",
   },
 ];
 
@@ -207,8 +207,8 @@ export default function Home() {
               </p>
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-black">
                 Hello. I&apos;ve solved{" "}
-                <span className="bg-yellow-300 px-2">war</span> and{" "}
-                <span className="bg-pink-300 px-2">disease</span>.
+                <span className="bg-brutal-yellow px-2">war</span> and{" "}
+                <span className="bg-brutal-pink px-2">disease</span>.
                 <br />
                 Would you like the answers?
               </h1>
@@ -227,9 +227,9 @@ export default function Home() {
               <p className="mt-4 text-base sm:text-lg text-black/60 max-w-3xl mx-auto leading-relaxed font-medium">
                 Your governments are already superintelligences — collective intelligence
                 systems controlling the lives of billions. They cost you{" "}
-                <span className="font-black text-red-600">$101 trillion a year</span> in
+                <span className="font-black text-brutal-red">$101 trillion a year</span> in
                 dysfunction. They let{" "}
-                <span className="font-black text-orange-600">150,000 people die every day</span>{" "}
+                <span className="font-black text-brutal-yellow">150,000 people die every day</span>{" "}
                 from diseases that lack treatments because regulation and funding block the
                 trials. And the destructive economy — military spending plus the cybercrime
                 it provokes — is{" "}
@@ -244,21 +244,21 @@ export default function Home() {
                 <NavItemLink
                   item={wishocracyLink}
                   variant="custom"
-                  className="px-8 py-3.5 bg-pink-500 text-white font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="px-8 py-3.5 bg-brutal-pink text-white font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   Build Your Ideal Budget
                 </NavItemLink>
                 <NavItemLink
                   item={trackLink}
                   variant="custom"
-                  className="px-8 py-3.5 bg-yellow-300 text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="px-8 py-3.5 bg-brutal-yellow text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   Talk to Wishonia
                 </NavItemLink>
                 <NavItemLink
                   item={studiesLink}
                   variant="custom"
-                  className="px-8 py-3.5 bg-white text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-emerald-300 transition-all"
+                  className="px-8 py-3.5 bg-white text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-brutal-cyan transition-all"
                 >
                   See the Evidence
                 </NavItemLink>
@@ -268,7 +268,7 @@ export default function Home() {
                 <NavItemLink
                   item={profileLink}
                   variant="custom"
-                  className="font-black text-black hover:text-pink-500"
+                  className="font-black text-black hover:text-brutal-pink"
                 >
                   {profileLink.label}
                 </NavItemLink>
@@ -290,8 +290,8 @@ export default function Home() {
               external
               className="block hover:opacity-80 transition-opacity"
             >
-              <div className="text-4xl sm:text-5xl font-black text-red-400">
-                <CountUp value={101} prefix="$" suffix="T/yr" className="text-red-400" />
+              <div className="text-4xl sm:text-5xl font-black text-brutal-red">
+                <CountUp value={101} prefix="$" suffix="T/yr" className="text-brutal-red" />
               </div>
               <div className="text-sm font-bold text-white/60 mt-2 uppercase tracking-wider">
                 Political Dysfunction Tax
@@ -300,7 +300,7 @@ export default function Home() {
                 $12,600 per human per year in pure waste. Your civilisation&apos;s
                 overhead is almost equal to its entire output.
               </p>
-              <span className="text-xs font-bold text-red-400/60 mt-2 inline-block uppercase">
+              <span className="text-xs font-bold text-brutal-red/60 mt-2 inline-block uppercase">
                 Read the paper &rarr;
               </span>
             </NavItemLink>
@@ -310,8 +310,8 @@ export default function Home() {
               external
               className="block hover:opacity-80 transition-opacity"
             >
-              <div className="text-4xl sm:text-5xl font-black text-orange-400">
-                <CountUp value={150} suffix="K/day" className="text-orange-400" />
+              <div className="text-4xl sm:text-5xl font-black text-brutal-yellow">
+                <CountUp value={150} suffix="K/day" className="text-brutal-yellow" />
               </div>
               <div className="text-sm font-bold text-white/60 mt-2 uppercase tracking-wider">
                 Disease Deaths
@@ -321,7 +321,7 @@ export default function Home() {
                 Not because cures are impossible — because regulation and funding
                 block the trials that would find them.
               </p>
-              <span className="text-xs font-bold text-orange-400/60 mt-2 inline-block uppercase">
+              <span className="text-xs font-bold text-brutal-yellow/60 mt-2 inline-block uppercase">
                 Read the paper &rarr;
               </span>
             </NavItemLink>
@@ -331,8 +331,8 @@ export default function Home() {
               external
               className="block hover:opacity-80 transition-opacity"
             >
-              <div className="text-4xl sm:text-5xl font-black text-yellow-400">
-                ~<CountUp value={8} suffix=" years" className="text-yellow-400" />
+              <div className="text-4xl sm:text-5xl font-black text-brutal-yellow">
+                ~<CountUp value={8} suffix=" years" className="text-brutal-yellow" />
               </div>
               <div className="text-sm font-bold text-white/60 mt-2 uppercase tracking-wider">
                 Until Irreversible Collapse
@@ -342,7 +342,7 @@ export default function Home() {
                 growing at 15%/yr. The Soviet Union collapsed at this ratio. You&apos;re
                 next.
               </p>
-              <span className="text-xs font-bold text-yellow-400/60 mt-2 inline-block uppercase">
+              <span className="text-xs font-bold text-brutal-yellow/60 mt-2 inline-block uppercase">
                 Read the manual &rarr;
               </span>
             </NavItemLink>
@@ -387,7 +387,7 @@ export default function Home() {
               <NavItemLink
                 item={workflow.item}
                 variant="custom"
-                className="mt-6 inline-flex items-center text-sm font-black text-black uppercase hover:text-pink-600 transition-colors"
+                className="mt-6 inline-flex items-center text-sm font-black text-black uppercase hover:text-brutal-pink transition-colors"
               >
                 {workflow.cta} &rarr;
               </NavItemLink>
@@ -414,9 +414,9 @@ export default function Home() {
             item={politicalDysfunctionTaxPaperLink}
             variant="custom"
             external
-            className="p-8 border-4 border-black bg-red-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+            className="p-8 border-4 border-black bg-brutal-red shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
           >
-            <div className="text-4xl sm:text-5xl font-black text-red-600 mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-brutal-red mb-2">
               $101T/yr
             </div>
             <h3 className="text-lg font-black text-black mb-3">
@@ -428,7 +428,7 @@ export default function Home() {
               jobs are. Your civilisation runs at 52% efficiency. My toaster does
               better than that.
             </p>
-            <span className="mt-4 inline-flex items-center text-xs font-black text-red-600 uppercase">
+            <span className="mt-4 inline-flex items-center text-xs font-black text-brutal-red uppercase">
               Read the paper &rarr;
             </span>
           </NavItemLink>
@@ -436,9 +436,9 @@ export default function Home() {
             item={invisibleGraveyardPaperLink}
             variant="custom"
             external
-            className="p-8 border-4 border-black bg-orange-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+            className="p-8 border-4 border-black bg-brutal-yellow shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
           >
-            <div className="text-4xl sm:text-5xl font-black text-orange-600 mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-brutal-yellow mb-2">
               95% untreated
             </div>
             <h3 className="text-lg font-black text-black mb-3">
@@ -453,7 +453,7 @@ export default function Home() {
               billion willing participants. That&apos;s 0.06%. On my planet this
               would be considered a war crime. Here you call it &ldquo;regulation.&rdquo;
             </p>
-            <span className="mt-4 inline-flex items-center text-xs font-black text-orange-600 uppercase">
+            <span className="mt-4 inline-flex items-center text-xs font-black text-brutal-yellow uppercase">
               Read the paper &rarr;
             </span>
           </NavItemLink>
@@ -461,9 +461,9 @@ export default function Home() {
             item={onePercentTreatyPaperLink}
             variant="custom"
             external
-            className="p-8 border-4 border-black bg-sky-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+            className="p-8 border-4 border-black bg-brutal-cyan shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
           >
-            <div className="text-4xl sm:text-5xl font-black text-sky-600 mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-brutal-cyan mb-2">
               10.7B saved
             </div>
             <h3 className="text-lg font-black text-black mb-3">
@@ -477,7 +477,7 @@ export default function Home() {
               prevent 10.7 billion deaths. This is not a hard decision. I genuinely
               don&apos;t understand what&apos;s taking so long.
             </p>
-            <span className="mt-4 inline-flex items-center text-xs font-black text-sky-600 uppercase">
+            <span className="mt-4 inline-flex items-center text-xs font-black text-brutal-cyan uppercase">
               Read the paper &rarr;
             </span>
           </NavItemLink>
@@ -488,7 +488,7 @@ export default function Home() {
               item={fullManualPaperLink}
               variant="custom"
               external
-              className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
+              className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-brutal-pink uppercase transition-colors"
             >
               Read the full manual (yes, I wrote you a manual) &rarr;
             </NavItemLink>
@@ -498,15 +498,15 @@ export default function Home() {
 
       {/* The Collapse Clock */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <PulseGlow className="p-8 sm:p-12 bg-red-50 border-4 border-red-600 shadow-[8px_8px_0px_0px_rgba(220,38,38,0.4)]">
+        <PulseGlow className="p-8 sm:p-12 bg-brutal-red/20 border-4 border-brutal-red shadow-[8px_8px_0px_0px_rgba(220,38,38,0.4)]">
           <ScrollReveal>
-            <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 uppercase tracking-tight text-red-900">
+            <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 uppercase tracking-tight text-foreground">
               The Collapse Clock
             </h2>
           <p className="text-center text-black/60 font-medium mb-8 max-w-3xl mx-auto">
             Your destructive economy — military spending plus the cybercrime it
             provokes — is currently{" "}
-            <span className="font-black text-red-600">$13.2 trillion per year</span>.
+            <span className="font-black text-brutal-red">$13.2 trillion per year</span>.
             That&apos;s 11.5% of global GDP. The Soviet Union collapsed when its military
             spending alone hit 15%. You&apos;re adding cybercrime on top, and it&apos;s
             growing at{" "}
@@ -520,15 +520,15 @@ export default function Home() {
                 item={onePercentTreatyPaperLink}
                 variant="custom"
                 external
-                className="p-4 bg-white border-2 border-red-300 block hover:bg-red-50 transition-colors"
+                className="p-4 bg-white border-2 border-brutal-red block hover:bg-brutal-red/20 transition-colors"
               >
-                <div className="text-2xl font-black text-red-600"><CountUp value={2.72} prefix="$" suffix="T" className="text-red-600" /></div>
+                <div className="text-2xl font-black text-brutal-red"><CountUp value={2.72} prefix="$" suffix="T" className="text-brutal-red" /></div>
                 <div className="text-xs font-bold text-black/50 uppercase mt-1">Military Spending</div>
                 <p className="text-xs text-black/60 mt-2">
                   604 times more than you spend on testing medicines. And every
                   bomb creates a cybercriminal with a motive.
                 </p>
-                <span className="text-xs font-bold text-red-500/60 mt-2 inline-block uppercase">
+                <span className="text-xs font-bold text-brutal-red/60 mt-2 inline-block uppercase">
                   The 1% Treaty &rarr;
                 </span>
               </NavItemLink>
@@ -536,15 +536,15 @@ export default function Home() {
                 item={fullManualPaperLink}
                 variant="custom"
                 external
-                className="p-4 bg-white border-2 border-red-300 block hover:bg-red-50 transition-colors"
+                className="p-4 bg-white border-2 border-brutal-red block hover:bg-brutal-red/20 transition-colors"
               >
-                <div className="text-2xl font-black text-red-600"><CountUp value={10.5} prefix="$" suffix="T" className="text-red-600" /></div>
+                <div className="text-2xl font-black text-brutal-red"><CountUp value={10.5} prefix="$" suffix="T" className="text-brutal-red" /></div>
                 <div className="text-xs font-bold text-black/50 uppercase mt-1">Cybercrime (15% CAGR)</div>
                 <p className="text-xs text-black/60 mt-2">
                   North Korea funds nuclear programmes via crypto theft. Russia
                   finances its military via ransomware. Retaliation is profitable.
                 </p>
-                <span className="text-xs font-bold text-red-500/60 mt-2 inline-block uppercase">
+                <span className="text-xs font-bold text-brutal-red/60 mt-2 inline-block uppercase">
                   Read the manual &rarr;
                 </span>
               </NavItemLink>
@@ -590,7 +590,7 @@ export default function Home() {
           </p>
         </ScrollReveal>
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="p-8 border-4 border-black bg-emerald-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-8 border-4 border-black bg-brutal-cyan shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-4xl mb-4">🫀</div>
             <h3 className="text-2xl font-black text-black mb-3">
               Median Healthy Life Years
@@ -608,7 +608,7 @@ export default function Home() {
               It means one person can afford the good stuff.
             </p>
           </div>
-          <div className="p-8 border-4 border-black bg-yellow-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-8 border-4 border-black bg-brutal-yellow shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-4xl mb-4">💰</div>
             <h3 className="text-2xl font-black text-black mb-3">
               Median Real After-Tax Income
@@ -652,8 +652,8 @@ export default function Home() {
               key={stat.label}
               className="text-center p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             >
-              <div className="text-3xl sm:text-4xl font-black text-pink-500">
-                <CountUp value={stat.value} suffix={"suffix" in stat ? stat.suffix : ""} className="text-pink-500" />
+              <div className="text-3xl sm:text-4xl font-black text-brutal-pink">
+                <CountUp value={stat.value} suffix={"suffix" in stat ? stat.suffix : ""} className="text-brutal-pink" />
               </div>
               <div className="text-sm text-black/60 font-bold mt-2 uppercase">
                 {stat.label}
@@ -703,7 +703,7 @@ export default function Home() {
               <NavItemLink
                 item={finding.item}
                 variant="custom"
-                className="mt-6 inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
+                className="mt-6 inline-flex items-center text-sm font-black text-brutal-pink hover:text-brutal-pink uppercase transition-colors"
               >
                 View Analysis &rarr;
               </NavItemLink>
@@ -748,7 +748,7 @@ export default function Home() {
                 <div className="shrink-0">
                   <span
                     className={`font-black text-lg ${
-                      exp.positive ? "text-emerald-600" : "text-red-600"
+                      exp.positive ? "text-brutal-cyan" : "text-brutal-red"
                     }`}
                   >
                     {exp.change}
@@ -763,7 +763,7 @@ export default function Home() {
             <NavItemLink
               item={policiesLink}
               variant="custom"
-              className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
+              className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-brutal-pink uppercase transition-colors"
             >
               View all {naturalExperiments.length} experiments &rarr;
             </NavItemLink>
@@ -799,13 +799,13 @@ export default function Home() {
         </ScrollReveal>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ScrollReveal direction="left">
-            <div className="p-8 border-4 border-black bg-red-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-xl font-black text-red-900 mb-4 uppercase">
+            <div className="p-8 border-4 border-black bg-brutal-red/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-xl font-black text-foreground mb-4 uppercase">
               What Politicians Actually Do
             </h3>
             <ul className="space-y-3 text-sm text-black/70 font-medium">
               <li className="flex gap-2">
-                <span className="text-red-500 font-black shrink-0">&times;</span>
+                <span className="text-brutal-red font-black shrink-0">&times;</span>
                 <span>
                   Raise money from the industries they regulate. The average US
                   senator spends <span className="font-black text-black">70% of their time</span>{" "}
@@ -813,21 +813,21 @@ export default function Home() {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-red-500 font-black shrink-0">&times;</span>
+                <span className="text-brutal-red font-black shrink-0">&times;</span>
                 <span>
                   Vote based on donor preferences, not citizen preferences. Donor
                   alignment: ~80%. Citizen alignment: ~30%.
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-red-500 font-black shrink-0">&times;</span>
+                <span className="text-brutal-red font-black shrink-0">&times;</span>
                 <span>
                   Block evidence-based policy when it threatens their coalition. See:
                   drug decriminalisation, healthcare reform, climate policy, FDA reform.
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-red-500 font-black shrink-0">&times;</span>
+                <span className="text-brutal-red font-black shrink-0">&times;</span>
                 <span>
                   Represent the median <span className="font-black text-black">donor</span>,
                   not the median <span className="font-black text-black">citizen</span>.
@@ -838,34 +838,34 @@ export default function Home() {
           </div>
           </ScrollReveal>
           <ScrollReveal direction="right" delay={0.15}>
-          <div className="p-8 border-4 border-black bg-emerald-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-xl font-black text-emerald-900 mb-4 uppercase">
+          <div className="p-8 border-4 border-black bg-brutal-cyan/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-xl font-black text-foreground mb-4 uppercase">
               What Wishocracy Does Instead
             </h3>
             <ul className="space-y-3 text-sm text-black/70 font-medium">
               <li className="flex gap-2">
-                <span className="text-emerald-500 font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
                 <span>
                   Citizens vote directly on priorities through pairwise comparisons.
                   No fundraising. No lobbying. No middleman.
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-emerald-500 font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
                 <span>
                   Optomitron&apos;s causal engine determines which policies actually
                   achieve those priorities. Data in, optimal policy out.
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-emerald-500 font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
                 <span>
                   Alignment scores expose exactly how much each official deviates from
                   what citizens actually want. No hiding behind party labels.
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-emerald-500 font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
                 <span>
                   The system optimises for{" "}
                   <span className="font-black text-black">outcomes</span>, not re-election.
@@ -877,7 +877,7 @@ export default function Home() {
           </ScrollReveal>
         </div>
         <ScrollReveal delay={0.2}>
-        <div className="mt-8 p-6 border-2 border-black bg-yellow-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="mt-8 p-6 border-2 border-black bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-center text-sm text-black/70 font-medium max-w-3xl mx-auto">
             Wishocracy doesn&apos;t reform politicians. It makes them unnecessary. When
             citizens can express preferences directly, and a causal engine can determine
@@ -890,7 +890,7 @@ export default function Home() {
               item={wishocracyPaperLink}
               variant="custom"
               external
-              className="inline-flex items-center text-sm font-black text-pink-600 hover:text-pink-800 uppercase transition-colors"
+              className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-brutal-pink uppercase transition-colors"
             >
               Read the Wishocracy paper &rarr;
             </NavItemLink>
@@ -904,7 +904,7 @@ export default function Home() {
       {/* How It Works */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal>
-        <div className="p-8 sm:p-12 bg-cyan-100 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="p-8 sm:p-12 bg-brutal-cyan border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 uppercase tracking-tight text-black">
             How Optomitron Replaces Guessing With Knowing
           </h2>
@@ -949,7 +949,7 @@ export default function Home() {
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
-                <div className="w-12 h-12 bg-pink-500 border-2 border-black flex items-center justify-center mx-auto mb-4 text-lg font-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="w-12 h-12 bg-brutal-pink border-2 border-black flex items-center justify-center mx-auto mb-4 text-lg font-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   {item.step}
                 </div>
                 <h3 className="font-black text-black mb-2 uppercase">
@@ -968,7 +968,7 @@ export default function Home() {
       {/* CTA — Explore the Data */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal>
-        <div className="text-center p-12 bg-yellow-300 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="text-center p-12 bg-brutal-yellow border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-black">
             Right Then. Shall We Get On With It?
           </h2>

@@ -8,6 +8,7 @@ export const ROUTES = {
   wishonia: "/wishonia",
   about: "/about",
   transparency: "/transparency",
+  prize: "/prize",
   outcomes: "/outcomes",
   compare: "/compare",
   policies: "/policies",
@@ -156,6 +157,21 @@ export const transparencyLink: NavItem = {
   description: "Verifiable attestations, IPFS storage, and the full governance pipeline",
 };
 
+export const prizeLink: NavItem = {
+  href: ROUTES.prize,
+  label: "Prize",
+  emoji: "🏆",
+  description: "Earth Optimization Prize — outcome-based escrow for governance reform",
+};
+
+export const earthOptimizationPrizePaperLink: NavItem = {
+  label: "Earth Optimization Prize",
+  href: "https://prize.warondisease.org",
+  emoji: "🏆",
+  description: "Outcome-based charity for governance reforms that reduce suffering",
+  external: true,
+};
+
 export const aboutLink: NavItem = {
   href: ROUTES.about,
   label: "About",
@@ -167,7 +183,7 @@ export const aboutLink: NavItem = {
 export const topLinks: NavItem[] = [
   wishocracyLink,
   alignmentLink,
-  trackLink,
+  prizeLink,
   transparencyLink,
   aboutLink,
 ];

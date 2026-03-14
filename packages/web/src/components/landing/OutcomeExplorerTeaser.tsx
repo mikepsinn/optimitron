@@ -32,7 +32,7 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
             <Link
               key={outcome.id}
               href={getOutcomeHubPath(outcome.id)}
-              className="p-6 border-2 border-black bg-emerald-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex flex-col"
+              className="p-6 border-2 border-black bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex flex-col"
             >
               <h3 className="text-lg font-black text-black mb-2">
                 {outcome.label}
@@ -48,7 +48,7 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
                   <p className="text-sm font-black text-black">
                     {topRow.predictorLabel}
                   </p>
-                  <span className="text-xs font-bold text-emerald-700">
+                  <span className="text-xs font-bold text-brutal-cyan">
                     Score {(topRow.score * 100).toFixed(0)}
                   </span>
                 </div>
@@ -57,7 +57,7 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
           );
         })}
       </div>
-      <div className="text-center mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded max-w-2xl mx-auto">
+      <div className="text-center mt-4 p-4 bg-brutal-cyan/20 border border-black rounded max-w-2xl mx-auto">
         <p className="text-sm text-black/60 font-medium">
           Every recommendation is gated by direct mission KPI evidence.
           No vibes. No &ldquo;well it feels like it should work.&rdquo; Just data.
@@ -67,7 +67,7 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
         <NavItemLink
           item={studiesLink}
           variant="custom"
-          className="inline-flex items-center text-sm font-black text-emerald-700 hover:text-emerald-900 uppercase transition-colors"
+          className="inline-flex items-center text-sm font-black text-brutal-cyan hover:text-foreground uppercase transition-colors"
         >
           Explore All Outcomes &rarr;
         </NavItemLink>

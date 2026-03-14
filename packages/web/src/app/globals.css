@@ -1,64 +1,253 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@custom-variant dark (&:is(.dark *));
 
 /* Unified neobrutalist design system with cohesive color palette */
 :root {
   /* Base colors - high contrast neobrutalism */
-  --background: 0 0% 100%;
-  --foreground: 0 0% 0%;
+  --background: rgb(255, 255, 255);
+  --foreground: rgb(0, 0, 0);
 
   /* Card & Popover */
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 0%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 0%;
+  --card: rgb(255, 255, 255);
+  --card-foreground: rgb(0, 0, 0);
+  --popover: rgb(255, 255, 255);
+  --popover-foreground: rgb(0, 0, 0);
 
   /* Primary - Brutal Pink */
-  --primary: 330 83% 60%;
-  --primary-foreground: 0 0% 100%;
+  --primary: rgb(236, 70, 153);
+  --primary-foreground: rgb(255, 255, 255);
 
   /* Secondary - Brutal Yellow */
-  --secondary: 48 100% 67%;
-  --secondary-foreground: 0 0% 0%;
+  --secondary: rgb(255, 221, 87);
+  --secondary-foreground: rgb(0, 0, 0);
 
   /* Accent - Brutal Cyan */
-  --accent: 186 68% 70%;
-  --accent-foreground: 0 0% 0%;
+  --accent: rgb(123, 221, 234);
+  --accent-foreground: rgb(0, 0, 0);
 
   /* Muted - Light gray for subtle backgrounds */
-  --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 25%;
+  --muted: rgb(245, 245, 245);
+  --muted-foreground: rgb(64, 64, 64);
 
   /* Destructive - Keep as red for warnings */
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: rgb(239, 68, 68);
+  --destructive-foreground: rgb(255, 255, 255);
 
   /* Borders & Inputs - Always black for neobrutalism */
-  --border: 0 0% 0%;
-  --input: 0 0% 0%;
-  --ring: 330 83% 60%;
+  --border: rgb(0, 0, 0);
+  --input: rgb(0, 0, 0);
+  --ring: rgb(236, 70, 153);
 
-  /* Chart colors */
-  --chart-1: 330 83% 60%;
-  --chart-2: 186 68% 70%;
-  --chart-3: 48 100% 67%;
-  --chart-4: 142 77% 73%;
-  --chart-5: 263 70% 85%;
+  /* Chart colors - Using our neobrutalist palette */
+  --chart-1: rgb(236, 70, 153); /* Pink */
+  --chart-2: rgb(123, 221, 234); /* Cyan */
+  --chart-3: rgb(255, 221, 87); /* Yellow */
+  --chart-4: rgb(134, 239, 172); /* Light green */
+  --chart-5: rgb(196, 181, 253); /* Light purple */
 
   /* Radius - 0 for sharp neobrutalist edges */
   --radius: 0px;
 
-  /* Neobrutalist color tokens - raw RGB for use with bg-brutal-* */
-  --brutal-pink: 236, 70, 153;
-  --brutal-cyan: 123, 221, 234;
-  --brutal-yellow: 255, 221, 87;
-  --brutal-red: 239, 68, 68;
+  /* Sidebar */
+  --sidebar-background: rgb(250, 250, 250);
+  --sidebar-foreground: rgb(0, 0, 0);
+  --sidebar-primary: rgb(236, 70, 153);
+  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-accent: rgb(123, 221, 234);
+  --sidebar-accent-foreground: rgb(0, 0, 0);
+  --sidebar-border: rgb(0, 0, 0);
+  --sidebar-ring: rgb(236, 70, 153);
+  --sidebar: rgb(245, 245, 245);
+
+  /* Neobrutalist color tokens - matching primary/secondary/accent */
+  --brutal-pink: rgb(236, 70, 153);
+  --brutal-pink-foreground: rgb(255, 255, 255);
+  --brutal-cyan: rgb(123, 221, 234);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
+  --brutal-yellow: rgb(255, 221, 87);
+  --brutal-yellow-foreground: rgb(0, 0, 0);
+  --brutal-red: rgb(239, 68, 68);
+  --brutal-red-foreground: rgb(255, 255, 255);
+
+  /* Shadow system - hard shadows for neobrutalism */
+  --shadow-x: 8px;
+  --shadow-y: 8px;
+  --shadow-blur: 0px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 1;
+  --shadow-color: rgb(0, 0, 0);
+}
+
+/* Dark mode with inverted neobrutalist aesthetic */
+.dark {
+  /* Base colors - inverted */
+  --background: rgb(0, 0, 0);
+  --foreground: rgb(255, 255, 255);
+
+  /* Card & Popover */
+  --card: rgb(23, 23, 23);
+  --card-foreground: rgb(255, 255, 255);
+  --popover: rgb(23, 23, 23);
+  --popover-foreground: rgb(255, 255, 255);
+
+  /* Primary - Brighter pink for dark mode */
+  --primary: rgb(244, 114, 182);
+  --primary-foreground: rgb(0, 0, 0);
+
+  /* Secondary - Brighter yellow for dark mode */
+  --secondary: rgb(253, 224, 71);
+  --secondary-foreground: rgb(0, 0, 0);
+
+  /* Accent - Brighter cyan for dark mode */
+  --accent: rgb(165, 243, 252);
+  --accent-foreground: rgb(0, 0, 0);
+
+  /* Muted */
+  --muted: rgb(38, 38, 38);
+  --muted-foreground: rgb(163, 163, 163);
+
+  /* Destructive */
+  --destructive: rgb(248, 113, 113);
+  --destructive-foreground: rgb(0, 0, 0);
+
+  /* Borders & Inputs - White for dark mode */
+  --border: rgb(255, 255, 255);
+  --input: rgb(255, 255, 255);
+  --ring: rgb(244, 114, 182);
+
+  /* Chart colors - Brighter for dark mode */
+  --chart-1: rgb(244, 114, 182);
+  --chart-2: rgb(165, 243, 252);
+  --chart-3: rgb(253, 224, 71);
+  --chart-4: rgb(134, 239, 172);
+  --chart-5: rgb(196, 181, 253);
+
+  /* Sidebar */
+  --sidebar-background: rgb(10, 10, 10);
+  --sidebar-foreground: rgb(255, 255, 255);
+  --sidebar-primary: rgb(244, 114, 182);
+  --sidebar-primary-foreground: rgb(0, 0, 0);
+  --sidebar-accent: rgb(165, 243, 252);
+  --sidebar-accent-foreground: rgb(0, 0, 0);
+  --sidebar-border: rgb(255, 255, 255);
+  --sidebar-ring: rgb(244, 114, 182);
+  --sidebar: rgb(23, 23, 23);
+
+  /* Dark mode neobrutalist colors */
+  --brutal-pink: rgb(244, 114, 182);
+  --brutal-pink-foreground: rgb(0, 0, 0);
+  --brutal-cyan: rgb(165, 243, 252);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
+  --brutal-yellow: rgb(253, 224, 71);
+  --brutal-yellow-foreground: rgb(0, 0, 0);
+  --brutal-red: rgb(248, 113, 113);
+  --brutal-red-foreground: rgb(0, 0, 0);
+
+  /* Shadow - white shadows for dark mode */
+  --shadow-x: 8px;
+  --shadow-y: 8px;
+  --shadow-blur: 0px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 1;
+  --shadow-color: rgb(255, 255, 255);
+}
+
+/* Tailwind v4 @theme with unified color system */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Neobrutalist color tokens */
+  --color-brutal-pink: var(--brutal-pink);
+  --color-brutal-pink-foreground: var(--brutal-pink-foreground);
+  --color-brutal-cyan: var(--brutal-cyan);
+  --color-brutal-cyan-foreground: var(--brutal-cyan-foreground);
+  --color-brutal-yellow: var(--brutal-yellow);
+  --color-brutal-yellow-foreground: var(--brutal-yellow-foreground);
+  --color-brutal-red: var(--brutal-red);
+  --color-brutal-red-foreground: var(--brutal-red-foreground);
+
+  /* Radius - sharp edges */
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius);
+  --radius-sm: var(--radius);
+  --radius-xl: var(--radius);
+
+  /* Typography */
+  --font-family-sans: var(--font-sans);
+  --font-family-mono: var(--font-mono);
+  --font-sans: var(--v0-font-dm-sans);
+  --font-mono: var(--v0-font-space-mono);
+  --font-serif: var(--v0-font-source-serif-4);
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  /* Shadow system - hard neobrutalist shadows */
+  --shadow-2xs: var(--shadow-x) var(--shadow-y)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-xs: calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-sm: calc(var(--shadow-x) * 0.75) calc(var(--shadow-y) * 0.75) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-md: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-lg: calc(var(--shadow-x) * 1.5) calc(var(--shadow-y) * 1.5) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-xl: calc(var(--shadow-x) * 2) calc(var(--shadow-y) * 2) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow-2xl: calc(var(--shadow-x) * 3) calc(var(--shadow-y) * 3) var(--shadow-blur) var(--shadow-spread)
+    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  --shadow: var(--shadow-md);
+
+  --color-shadow-color: var(--shadow-color);
+  --shadow-opacity: var(--shadow-opacity);
+  --shadow-spread: var(--shadow-spread);
+  --shadow-blur: var(--shadow-blur);
+  --shadow-y: var(--shadow-y);
+  --shadow-x: var(--shadow-x);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
@@ -121,4 +310,13 @@
   to {
     height: 0;
   }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
 }

@@ -20,11 +20,11 @@ export function AlignmentTeaser() {
           is&hellip; bold. Let&apos;s at least check the maths.
         </p>
       </div>
-      <div className="max-w-xl mx-auto p-8 bg-pink-100 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      <div className="max-w-xl mx-auto p-8 bg-brutal-pink border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
         <div className="space-y-6">
           {steps.map((step) => (
             <div key={step.number} className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-pink-500 border-2 border-black flex items-center justify-center text-white font-black shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <div className="w-10 h-10 bg-brutal-pink border-2 border-black flex items-center justify-center text-white font-black shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 {step.number}
               </div>
               <p className="text-base font-bold text-black">{step.label}</p>

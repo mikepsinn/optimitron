@@ -45,13 +45,13 @@
 }
 
 .opto-chat__bubble--user {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   font-weight: 600;
 }
 
 .opto-chat__bubble--assistant {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
   color: black;
 }
 
@@ -80,7 +80,7 @@
 
 .opto-chat__send-btn {
   padding: 0.75rem 1.5rem;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   color: black;
   border: 2px solid black;
   border-radius: 0;
@@ -134,7 +134,7 @@
 .opto-mood-card__btn {
   padding: 0.5rem 0.75rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   font-size: 1.5rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
@@ -152,7 +152,7 @@
 }
 
 .opto-mood-card--confirmed {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-mood-card__confirmation {
@@ -215,15 +215,15 @@
 }
 
 .opto-treatment-card__btn--done {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-treatment-card__btn--skip {
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
 }
 
 .opto-treatment-card__btn--snooze {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
 }
 
@@ -257,14 +257,14 @@
 .opto-treatment-card__snooze-cancel {
   padding: 0.25rem 0.75rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-red));
+  background: var(--brutal-red);
   color: white;
   font-size: 0.8rem;
   cursor: pointer;
 }
 
 .opto-treatment-card--completed {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-treatment-card__status {
@@ -290,7 +290,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -304,7 +304,7 @@
 }
 
 .opto-symptom-card--confirmed {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-symptom-card__result {
@@ -316,7 +316,7 @@
 .opto-symptom-card__badge {
   padding: 0.25rem 0.75rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   font-weight: 700;
 }
 
@@ -368,7 +368,7 @@
 
 .opto-pairwise-card__slider {
   flex: 1;
-  accent-color: rgb(var(--brutal-pink));
+  accent-color: var(--brutal-pink);
 }
 
 .opto-pairwise-card__presets {
@@ -394,7 +394,7 @@
 
 .opto-pairwise-card__submit {
   padding: 0.5rem 1.5rem;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   border: 2px solid black;
   font-weight: 900;
@@ -411,7 +411,7 @@
 }
 
 .opto-pairwise-card--submitted {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-pairwise-card__result {
@@ -456,7 +456,7 @@
 
 .opto-food-card__log-btn {
   padding: 0.5rem 1rem;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   border: 2px solid black;
   font-weight: 700;
   text-transform: uppercase;
@@ -480,7 +480,7 @@
 .opto-food-card__suggestion {
   padding: 0.25rem 0.75rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
   font-size: 0.8rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
@@ -514,11 +514,11 @@
 }
 
 .opto-food-card__chip:hover {
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
 }
 
 .opto-food-card--logged {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-food-card__confirmation {
@@ -562,7 +562,7 @@
 
 .opto-insight-card__action {
   padding: 0.5rem 1rem;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   border: 2px solid black;
   font-weight: 700;
@@ -617,7 +617,7 @@
 
 .opto-apikey-card__save-btn {
   padding: 0.5rem 1rem;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   border: 2px solid black;
   font-weight: 900;
   text-transform: uppercase;
@@ -640,7 +640,7 @@
 }
 
 .opto-apikey-card--saved {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-apikey-card__confirmation {
@@ -658,7 +658,7 @@
 
 .opto-hint-bar__chip {
   padding: 0.4rem 0.85rem;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   border: 2px solid black;
   border-radius: 0;
   font-weight: 700;
@@ -708,7 +708,7 @@
 .opto-checkin-card__btn {
   padding: 0.5rem 0.75rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   font-size: 1.5rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
@@ -721,7 +721,7 @@
 }
 
 .opto-checkin-card__btn--selected {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   transform: translate(1px, 1px);
   box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1);
@@ -743,7 +743,7 @@
 
 .opto-checkin-card__submit {
   padding: 0.5rem 1.5rem;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   border: 2px solid black;
   font-weight: 900;
@@ -765,7 +765,7 @@
 }
 
 .opto-checkin-card--confirmed {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-checkin-card__confirmation {
@@ -800,12 +800,12 @@
 }
 
 .opto-myth-card__grade--f {
-  background: rgb(var(--brutal-red, 239 68 68));
+  background: var(--brutal-red);
   color: white;
 }
 
 .opto-myth-card__grade--a {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
   color: black;
 }
 
@@ -867,7 +867,7 @@
 
 .opto-outcome-card__bar-fill {
   height: 100%;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-outcome-card__score {
@@ -878,7 +878,7 @@
 .opto-outcome-card__link {
   display: inline-block;
   padding: 0.4rem 1rem;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   color: white;
   border: 2px solid black;
   font-weight: 700;
@@ -938,7 +938,7 @@
 }
 
 .opto-budget-result__bar-fill--user {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   z-index: 1;
 }
 
@@ -968,7 +968,7 @@
   display: inline-block;
   width: 0.75rem;
   height: 0.75rem;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   border: 1px solid black;
   margin-right: 0.25rem;
   vertical-align: middle;
@@ -988,7 +988,7 @@
 .opto-budget-result__link {
   display: inline-block;
   padding: 0.4rem 1rem;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   border: 2px solid black;
   font-weight: 700;
   text-transform: uppercase;
@@ -1049,15 +1049,15 @@
 }
 
 .opto-rep-card__party--dem {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-rep-card__party--rep {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-rep-card__party--ind {
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
 }
 
 .opto-rep-card__detail {
@@ -1079,7 +1079,7 @@
   text-transform: uppercase;
   padding: 0.3rem 0.6rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
   transition: transform 0.1s;
@@ -1091,7 +1091,7 @@
 }
 
 .opto-rep-card__btn--alignment {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 /* --- Bill card --- */
@@ -1124,11 +1124,11 @@
 }
 
 .opto-bill-card__direction--increase {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-bill-card__direction--decrease {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-bill-card__title {
@@ -1158,7 +1158,7 @@
   font-weight: 700;
   padding: 0.1rem 0.3rem;
   border: 1px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   text-transform: uppercase;
 }
 
@@ -1194,11 +1194,11 @@
 }
 
 .opto-bill-card__btn--vote {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-bill-card__btn--analysis {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 /* --- Bill list card --- */
@@ -1232,7 +1232,7 @@
   text-transform: uppercase;
   padding: 0.3rem 0.6rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
   transition: transform 0.1s;
@@ -1286,7 +1286,7 @@
   text-transform: uppercase;
   padding: 0.3rem 0.8rem;
   border: 2px solid black;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
   transition: transform 0.1s;
@@ -1336,11 +1336,11 @@
 }
 
 .opto-bill-vote__btn--yes.opto-bill-vote__btn--selected {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-bill-vote__btn--no.opto-bill-vote__btn--selected {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-bill-vote__reasoning {
@@ -1361,7 +1361,7 @@
   font-weight: 800;
   text-transform: uppercase;
   border: 2px solid black;
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
   transition: transform 0.1s;
@@ -1378,7 +1378,7 @@
 }
 
 .opto-bill-vote--confirmed {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-bill-vote__confirmed-position {
@@ -1460,15 +1460,15 @@
 }
 
 .opto-cba__signal--positive {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-cba__signal--negative {
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-cba__signal--mixed {
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
 }
 
 .opto-cba__bars {
@@ -1504,7 +1504,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
 }
 
 .opto-cba__bar-roi {
@@ -1554,7 +1554,7 @@
   font-weight: 800;
   text-transform: uppercase;
   border: 2px solid black;
-  background: rgb(var(--brutal-pink));
+  background: var(--brutal-pink);
   cursor: pointer;
   box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 1);
   transition: transform 0.1s;
@@ -1634,11 +1634,11 @@
 }
 
 .opto-send-rep__btn--email {
-  background: rgb(var(--brutal-cyan));
+  background: var(--brutal-cyan);
 }
 
 .opto-send-rep__btn--copy {
-  background: rgb(var(--brutal-yellow));
+  background: var(--brutal-yellow);
 }
 
 .opto-send-rep__btn--contact {

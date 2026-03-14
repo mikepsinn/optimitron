@@ -4,6 +4,7 @@ import {
   incentiveAlignmentBondsPaperLink,
   wishocracyPaperLink,
   githubLink,
+  prizeLink,
 } from "@/lib/routes";
 import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
@@ -271,6 +272,46 @@ export default function TransparencyPage() {
               &ldquo;utopian.&rdquo;
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-16">
+        <h2 className="text-2xl font-black uppercase text-black mb-6">
+          Earth Optimization Prize
+        </h2>
+        <div className="border-4 border-black bg-yellow-100 p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-medium text-black/70 leading-relaxed mb-4">
+            The Prize Pool is an outcome-based escrow contract. Donors deposit
+            $WISH. When health and income metrics cross verifiable thresholds,
+            the pool unlocks for Wishocratic allocation — donors vote on which
+            implementers deserve funding, weighted by their deposit amount.
+            Bonded disputes prevent fraud. No committee. No application forms.
+            Just measurable outcomes and transparent distribution.
+          </p>
+          <div className="grid gap-4 md:grid-cols-3 mb-4">
+            <div className="border-2 border-black bg-white p-3">
+              <div className="text-xs font-black uppercase text-black/60">Mechanism</div>
+              <div className="text-sm font-black mt-1">Deposit-as-Identity</div>
+              <div className="text-xs text-black/50 mt-1">Your deposit amount = your allocation power. No sybil attacks.</div>
+            </div>
+            <div className="border-2 border-black bg-white p-3">
+              <div className="text-xs font-black uppercase text-black/60">Evidence</div>
+              <div className="text-sm font-black mt-1">Storacha CIDs</div>
+              <div className="text-xs text-black/50 mt-1">Implementers register with IPFS evidence bundles linked to Hypercerts.</div>
+            </div>
+            <div className="border-2 border-black bg-white p-3">
+              <div className="text-xs font-black uppercase text-black/60">Disputes</div>
+              <div className="text-sm font-black mt-1">Bonded Challenges</div>
+              <div className="text-xs text-black/50 mt-1">Post a bond to challenge allocations. Win → bond back. Lose → forfeit.</div>
+            </div>
+          </div>
+          <NavItemLink
+            item={prizeLink}
+            variant="custom"
+            className="inline-flex items-center justify-center gap-2 bg-black px-6 py-3 text-sm font-black text-white uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            Donate to the Prize
+          </NavItemLink>
         </div>
       </section>
 
