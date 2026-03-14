@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build:db-client": "pnpm --dir ../.. --filter @optomitron/db prisma:generate",
-    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optomitron/optimizer --filter @optomitron/wishocracy --filter @optomitron/opg --filter @optomitron/obg --filter @optomitron/data --filter @optomitron/chat-ui --filter @optomitron/storage build",
+    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optomitron/db --filter @optomitron/optimizer --filter @optomitron/wishocracy --filter @optomitron/opg --filter @optomitron/obg --filter @optomitron/data --filter @optomitron/chat-ui --filter @optomitron/storage build",
     "dev": "pnpm run build:workspace-deps && next dev --port 3001",
     "build": "pnpm run build:workspace-deps && next build",
     "start": "next start",
