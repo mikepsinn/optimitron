@@ -24,3 +24,8 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 .cache/
+
+# Playwright
+test-results/
+playwright-report/
+demo-assets/

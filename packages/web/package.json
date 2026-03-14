@@ -15,7 +15,12 @@
     "generate": "tsx scripts/generate-analysis.ts",
     "fetch": "tsx scripts/fetch-and-generate.ts",
     "causal": "tsx scripts/generate-causal-reports.ts",
-    "generate:assets": "tsx scripts/generate-brand-assets.ts"
+    "generate:assets": "tsx scripts/generate-brand-assets.ts",
+    "e2e": "playwright test",
+    "e2e:smoke": "playwright test e2e/smoke.spec.ts",
+    "e2e:demo": "playwright test e2e/demo-recording.spec.ts",
+    "demo:narration": "tsx scripts/generate-narration.ts",
+    "demo:record": "tsx scripts/record-demo.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -69,12 +74,14 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@google/genai": "^1.30.0",
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@types/sharp": "^0.32.0",
     "@types/web-push": "^3.6.4",
-    "@tailwindcss/postcss": "^4.1.9",
     "dotenv": "^17.3.1",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.35",

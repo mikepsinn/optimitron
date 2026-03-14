@@ -25,7 +25,7 @@ function SignInContent() {
   const initialError = getAuthErrorMessage(searchParams.get("error"));
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-yellow-300">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-yellow">
       <div className="w-full max-w-md">
         <AuthForm
           callbackUrl={callbackUrl}

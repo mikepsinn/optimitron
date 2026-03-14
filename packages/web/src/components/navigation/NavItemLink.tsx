@@ -12,8 +12,8 @@ export function getNavItemLinkClasses(
     case "topNav":
       return `text-sm font-bold uppercase px-3 py-2 border-2 transition-all block ${
         isActive
-          ? "border-black bg-brutal-yellow text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          : "border-transparent text-black hover:border-black hover:bg-brutal-cyan hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          ? "border-black bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          : "border-transparent text-black hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
       }`;
     case "dropdown":
       return `block px-4 py-3 transition-colors ${

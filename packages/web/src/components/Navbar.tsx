@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
+import { Menu, User, X } from "lucide-react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import type { PersonhoodProviderValue } from "@/lib/personhood";
@@ -16,55 +17,27 @@ import {
   topLinks,
 } from "@/lib/routes";
 
-function AccountLinks({
+function AvatarButton({
+  user,
   isAuthenticated,
-  accountLabel,
-  personhoodProvider,
-  personhoodVerified,
 }: {
+  user: { name?: string | null; email?: string | null; username?: string | null; personhoodProvider?: PersonhoodProviderValue | null; personhoodVerified?: boolean } | null;
   isAuthenticated: boolean;
-  accountLabel: string | null;
-  personhoodProvider: PersonhoodProviderValue | null;
-  personhoodVerified: boolean;
 }) {
-  if (isAuthenticated) {
-    return (
-      <>
-        <NavItemLink
-          item={profileLink}
-          variant="custom"
-          className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          {profileLink.label}
-        </NavItemLink>
-        <span className="hidden lg:block text-xs font-bold uppercase text-muted-foreground">
-          {accountLabel}
-        </span>
-        <div className="hidden lg:block">
-          <PersonhoodStatusBadge
-            provider={personhoodProvider}
-            verified={personhoodVerified}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            void signOut({ callbackUrl: ROUTES.home });
-          }}
-          className="text-sm font-bold px-4 py-2 border-2 border-black bg-white hover:bg-black hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          Sign Out
-        </button>
-      </>
-    );
-  }
+  const initial = user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? null;
+  const href = isAuthenticated ? ROUTES.profile : getSignInPath(ROUTES.wishocracy);
 
   return (
     <Link
-      href={getSignInPath(ROUTES.wishocracy)}
-      className="text-sm font-bold px-4 py-2 border-2 border-black bg-brutal-cyan hover:bg-brutal-cyan/80 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+      href={href}
+      className="flex items-center justify-center w-10 h-10 border-4 border-black bg-brutal-cyan hover:bg-primary hover:text-primary-foreground font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all rounded-full"
+      title={isAuthenticated ? "Profile" : "Sign In"}
     >
-      Sign In
+      {initial ? (
+        <span className="text-lg font-black uppercase">{initial}</span>
+      ) : (
+        <User className="h-5 w-5 stroke-[3px]" />
+      )}
     </Link>
   );
 }
@@ -92,8 +65,8 @@ function ExploreDropdown({ pathname }: { pathname: string }) {
         onClick={() => setOpen(!open)}
         className={`text-sm font-bold uppercase px-3 py-2 border-2 transition-all flex items-center gap-1 ${
           isActive
-            ? "border-black bg-brutal-yellow text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-            : "border-transparent text-black hover:border-black hover:bg-brutal-cyan hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            ? "border-black bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            : "border-transparent text-black hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         }`}
       >
         Explore
@@ -113,7 +86,7 @@ function ExploreDropdown({ pathname }: { pathname: string }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-72 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50">
+        <div className="absolute top-full left-0 mt-1 w-72 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50">
           {exploreLinks.map((link) => (
             <NavItemLink
               key={link.href}
@@ -135,75 +108,75 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAuthenticated = status === "authenticated";
   const user = session?.user ?? null;
-  const accountLabel = user
-    ? user.name ?? user.email ?? user.username ?? null
-    : null;
 
   return (
-    <nav className="sticky top-0 z-50 border-b-4 border-black bg-white">
+    <nav className="sticky top-0 z-50 border-b-4 border-black bg-brutal-yellow">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link
-              href={ROUTES.home}
-              className="text-xl font-black uppercase tracking-tight text-black transition-colors hover:text-brutal-pink"
-            >
-              ⚡ Optomitron
-            </Link>
-            <div className="hidden items-center gap-1 md:flex">
-              <ExploreDropdown pathname={pathname} />
-              {topLinks.map((link) => (
-                <NavItemLink
-                  key={link.href}
-                  item={link}
-                  variant="topNav"
-                  isActive={isNavItemActive(pathname, link)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden items-center gap-3 md:flex">
-            <AccountLinks
-              isAuthenticated={isAuthenticated}
-              accountLabel={accountLabel}
-              personhoodProvider={user?.personhoodProvider ?? null}
-              personhoodVerified={Boolean(user?.personhoodVerified)}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="border-2 border-black p-2 transition-colors hover:bg-brutal-yellow md:hidden"
-            aria-label="Toggle menu"
+          {/* Logo */}
+          <Link
+            href={ROUTES.home}
+            className="text-xl font-black uppercase tracking-tight text-black hover:underline decoration-4"
           >
-            <svg
-              className="h-6 w-6 text-black"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M4 6h16M4 12h16M4 18h16"
+            <span className="md:hidden">Optomitron</span>
+            <span className="hidden md:inline">⚡ Optomitron</span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden items-center gap-1 md:flex">
+            <ExploreDropdown pathname={pathname} />
+            {topLinks.map((link) => (
+              <NavItemLink
+                key={link.href}
+                item={link}
+                variant="topNav"
+                isActive={isNavItemActive(pathname, link)}
+              />
+            ))}
+          </div>
+
+          {/* Right side: Avatar + Menu */}
+          <div className="flex items-center gap-3">
+            {/* Desktop extras */}
+            <div className="hidden md:flex items-center gap-2">
+              {isAuthenticated && user?.personhoodProvider && (
+                <PersonhoodStatusBadge
+                  provider={user.personhoodProvider as PersonhoodProviderValue}
+                  verified={Boolean(user.personhoodVerified)}
                 />
               )}
-            </svg>
-          </button>
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => void signOut({ callbackUrl: ROUTES.home })}
+                  className="text-xs font-bold uppercase px-3 py-1.5 border-2 border-black bg-white hover:bg-black hover:text-white transition-all"
+                >
+                  Sign Out
+                </button>
+              )}
+            </div>
+
+            {/* Avatar */}
+            <AvatarButton user={user} isAuthenticated={isAuthenticated} />
+
+            {/* Hamburger */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="border-4 border-black bg-white p-2 hover:bg-black hover:text-white font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all md:hidden"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5 stroke-[3px]" />
+              ) : (
+                <Menu className="h-5 w-5 stroke-[3px]" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {mobileMenuOpen ? (
         <div className="border-t-4 border-black bg-white md:hidden">
           <div className="space-y-1 px-4 py-3">
@@ -231,36 +204,35 @@ export default function Navbar() {
             ))}
             <div className="border-t-2 border-black/20 my-2" />
             {isAuthenticated ? (
-              <NavItemLink
-                item={profileLink}
-                variant="custom"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
-              >
-                {profileLink.label}
-              </NavItemLink>
-            ) : null}
-            {!isAuthenticated ? (
+              <>
+                <NavItemLink
+                  item={profileLink}
+                  variant="custom"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-lg font-black uppercase px-3 py-2 hover:text-brutal-pink transition-colors"
+                >
+                  {profileLink.label}
+                </NavItemLink>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    void signOut({ callbackUrl: ROUTES.home });
+                  }}
+                  className="block w-full text-left text-lg font-black uppercase px-3 py-2 hover:text-brutal-pink transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
               <Link
                 href={getSignInPath(ROUTES.wishocracy)}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold px-3 py-2 border-2 border-black bg-brutal-cyan"
+                className="block text-lg font-black uppercase px-3 py-2 border-4 border-black bg-brutal-cyan text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 Sign In
               </Link>
-            ) : null}
-            {isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  void signOut({ callbackUrl: ROUTES.home });
-                }}
-                className="block w-full text-left text-sm font-bold px-3 py-2 border-2 border-black"
-              >
-                Sign Out
-              </button>
-            ) : null}
+            )}
           </div>
         </div>
       ) : null}
