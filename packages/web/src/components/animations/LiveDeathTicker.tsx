@@ -2,50 +2,113 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
-import { DEATHS_PER_SECOND } from "@/data/collapse-constants";
+import {
+  DEATHS_PER_SECOND,
+  DYSFUNCTION_TAX_PER_SECOND,
+  DESTRUCTIVE_PER_SECOND,
+} from "@/data/collapse-constants";
+
+function formatDollars(n: number): string {
+  if (n >= 1e9) return `$${(n / 1e9).toFixed(1)}B`;
+  if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `$${(n / 1e3).toFixed(0)}K`;
+  return `$${Math.floor(n).toLocaleString()}`;
+}
+
+interface CounterConfig {
+  rate: number;
+  format: (n: number) => string;
+  color: string;
+  label: string;
+  quip: string;
+  staticFallback: string;
+}
+
+const counters: CounterConfig[] = [
+  {
+    rate: DEATHS_PER_SECOND,
+    format: (n) => Math.floor(n).toLocaleString(),
+    color: "text-orange-400",
+    label: "Died from treatable diseases since you opened this page",
+    quip: "Each one had a name. But sure, take your time.",
+    staticFallback: "~150,000 deaths per day (~1.7/sec)",
+  },
+  {
+    rate: DYSFUNCTION_TAX_PER_SECOND,
+    format: formatDollars,
+    color: "text-red-400",
+    label: "Burned by misaligned governments since you opened this page",
+    quip: "That's your money, by the way. You earned it. They wasted it.",
+    staticFallback: "$101T/yr in governance dysfunction (~$3.2M/sec)",
+  },
+  {
+    rate: DESTRUCTIVE_PER_SECOND,
+    format: formatDollars,
+    color: "text-yellow-400",
+    label: "Spent on destruction instead of cures since you opened this page",
+    quip: "Every dollar here creates the next cybercriminal. It's a lovely system you've built.",
+    staticFallback: "$13.2T/yr on military + cybercrime (~$418K/sec)",
+  },
+];
 
 export function LiveDeathTicker({ className = "" }: { className?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
+  const refs = [
+    useRef<HTMLSpanElement>(null),
+    useRef<HTMLSpanElement>(null),
+    useRef<HTMLSpanElement>(null),
+  ];
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    let accumulated = 0;
+    const accumulated = [0, 0, 0];
     const interval = setInterval(() => {
-      accumulated += DEATHS_PER_SECOND * 0.05;
-      if (ref.current) {
-        ref.current.textContent = Math.floor(accumulated).toLocaleString();
+      for (let i = 0; i < counters.length; i++) {
+        accumulated[i] += counters[i]!.rate * 0.05;
+        const el = refs[i]!.current;
+        if (el) {
+          el.textContent = counters[i]!.format(accumulated[i]!);
+        }
       }
     }, 50);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersReducedMotion]);
 
   if (prefersReducedMotion) {
     return (
-      <div className={`text-center ${className}`}>
-        <p className="text-sm font-bold text-red-600/80 uppercase tracking-wider">
-          ~150,000 deaths per day (~1.7 per second) from treatable diseases
-        </p>
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 text-center ${className}`}>
+        {counters.map((c) => (
+          <div key={c.label}>
+            <p className={`text-sm font-bold ${c.color}/80 uppercase tracking-wider`}>
+              {c.staticFallback}
+            </p>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className={`text-center ${className}`}>
-      <div
-        className="text-4xl sm:text-5xl font-black text-red-600 tabular-nums"
-        style={{ fontVariantNumeric: "tabular-nums" }}
-      >
-        <span ref={ref}>0</span>
-      </div>
-      <p className="text-xs sm:text-sm font-bold text-red-600/70 mt-2 uppercase tracking-wider max-w-md mx-auto">
-        People who died from treatable diseases since you opened this page
-      </p>
-      <p className="text-xs text-black/40 mt-1 italic max-w-sm mx-auto">
-        Each one had a name. But sure, take your time.
-      </p>
+    <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 text-center ${className}`}>
+      {counters.map((c, i) => (
+        <div key={c.label}>
+          <div
+            className={`text-3xl sm:text-4xl font-black ${c.color}`}
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
+            <span ref={refs[i]}>{c.format(0)}</span>
+          </div>
+          <p className="text-[10px] sm:text-xs font-bold text-white/50 mt-2 uppercase tracking-wider max-w-xs mx-auto">
+            {c.label}
+          </p>
+          <p className="text-[10px] text-white/25 mt-1 italic max-w-xs mx-auto">
+            {c.quip}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }

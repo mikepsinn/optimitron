@@ -13,7 +13,7 @@ import type {
   Item,
   PairwiseComparison,
   PreferenceWeight,
-} from '@prisma/client';
+} from './generated/prisma/client.js';
 
 export type DbCombinationOperation = CombinationOperation;
 export type DbFillingType = FillingType;

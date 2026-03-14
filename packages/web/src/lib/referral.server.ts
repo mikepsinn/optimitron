@@ -1,4 +1,4 @@
-import { ReferralAnswer } from "@prisma/client";
+import { ReferralAnswer } from "@optomitron/db";
 import { prisma } from "@/lib/prisma";
 
 export async function findUserByUsernameOrReferralCode(identifier: string | null | undefined) {

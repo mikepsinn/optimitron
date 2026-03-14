@@ -1,11 +1,13 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
 
 const describeIfDatabase = process.env.DATABASE_URL ? describe : describe.skip;
 
 describeIfDatabase("seedDatabase", () => {
-  const prisma = new PrismaClient();
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  const prisma = new PrismaClient({ adapter });
 
   afterAll(async () => {
     await prisma.$disconnect();

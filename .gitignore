@@ -47,6 +47,7 @@ reports/*.md
 
 # Prisma
 packages/db/prisma/dev.db
+packages/db/src/generated/
 
 # Terraform / infra state
 *.tfstate

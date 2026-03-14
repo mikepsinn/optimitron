@@ -8,7 +8,7 @@ import {
   CombinationOperation,
   FillingType,
   EvidenceGrade,
-} from "@prisma/client";
+} from "@optomitron/db";
 
 const SubmissionRelationshipSchema = NOf1VariableRelationshipSchema.omit({
   subjectId: true,

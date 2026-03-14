@@ -28,10 +28,12 @@ import {
   MeasurementScale,
   JurisdictionType,
   type Prisma,
-} from "@prisma/client";
+} from "../src/generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { pathToFileURL } from "node:url";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 // ---------------------------------------------------------------------------
 // Helper: upsert by unique "name" (or "code" for jurisdictions)

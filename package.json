@@ -48,8 +48,8 @@
       "npx eslint --fix"
     ],
     "packages/db/prisma/**/*.prisma": [
-      "npx prisma validate --schema packages/db/prisma/schema.prisma",
-      "npx prisma format --schema packages/db/prisma/schema.prisma"
+      "pnpm --filter @optomitron/db exec prisma validate",
+      "pnpm --filter @optomitron/db exec prisma format"
     ]
   },
   "packageManager": "pnpm@8.14.0",

@@ -1,4 +1,4 @@
-import { PersonhoodProvider } from "@prisma/client";
+import { PersonhoodProvider } from "@optomitron/db";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WorldIdVerificationPayload } from "../world-id";
 

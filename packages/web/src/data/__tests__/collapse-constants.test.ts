@@ -4,6 +4,10 @@ import {
   computeCollapseYears,
   generateTrajectoryData,
   PROJECTION_YEARS,
+  DYSFUNCTION_TAX_PER_SECOND,
+  DESTRUCTIVE_PER_SECOND,
+  TRIALS_UNFUNDED_PER_SECOND,
+  DEATHS_PER_SECOND,
 } from "../collapse-constants";
 
 describe("collapse-constants", () => {
@@ -57,6 +61,27 @@ describe("collapse-constants", () => {
       expect(crossover).toBeDefined();
       expect(crossover!.year - 2024).toBeGreaterThanOrEqual(6);
       expect(crossover!.year - 2024).toBeLessThanOrEqual(8);
+    });
+  });
+
+  describe("derived rates", () => {
+    it("DEATHS_PER_SECOND is ~1.7", () => {
+      expect(DEATHS_PER_SECOND).toBeCloseTo(1.736, 2);
+    });
+
+    it("DYSFUNCTION_TAX_PER_SECOND is ~$3.2M", () => {
+      expect(DYSFUNCTION_TAX_PER_SECOND).toBeGreaterThan(3e6);
+      expect(DYSFUNCTION_TAX_PER_SECOND).toBeLessThan(3.3e6);
+    });
+
+    it("DESTRUCTIVE_PER_SECOND is ~$418K", () => {
+      expect(DESTRUCTIVE_PER_SECOND).toBeGreaterThan(400e3);
+      expect(DESTRUCTIVE_PER_SECOND).toBeLessThan(430e3);
+    });
+
+    it("TRIALS_UNFUNDED_PER_SECOND is ~0.064", () => {
+      expect(TRIALS_UNFUNDED_PER_SECOND).toBeGreaterThan(0.06);
+      expect(TRIALS_UNFUNDED_PER_SECOND).toBeLessThan(0.07);
     });
   });
 });

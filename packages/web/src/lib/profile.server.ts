@@ -5,7 +5,7 @@ import {
   SubjectType,
   Valence,
   type Prisma,
-} from "@prisma/client";
+} from "@optomitron/db";
 import {
   ANNUAL_HOUSEHOLD_INCOME_VARIABLE_NAME,
   HEALTH_VARIABLE_NAME,

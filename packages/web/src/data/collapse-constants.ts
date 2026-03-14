@@ -7,28 +7,14 @@
  * - Global GDP: World Bank 2024 (~$115T)
  * - Collapse threshold: Soviet precedent (20-25% extraction → collapse)
  * - GDP trajectories: https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html
+ * - Dysfunction tax: Political Dysfunction Tax paper ($101T/yr)
+ * - Clinical trial cost: NIH estimate (~$50M per Phase I-III trial)
  */
+
+// ── Base constants ──────────────────────────────────────────────────
 
 /** Preventable deaths per day (WHO, treatable diseases) */
 export const DEATHS_PER_DAY = 150_000;
-
-/** Derived: deaths per second */
-export const DEATHS_PER_SECOND = DEATHS_PER_DAY / 86_400; // ~1.736
-
-/** Political Dysfunction Tax per year in USD (page hero stat) */
-export const DYSFUNCTION_TAX_PER_YEAR = 101e12; // $101T
-
-/** Derived: dysfunction tax per second */
-export const DYSFUNCTION_TAX_PER_SECOND = DYSFUNCTION_TAX_PER_YEAR / (365.25 * 86_400); // ~$3.2M
-
-/** Destructive economy per second (military + cybercrime, $13.2T/yr) */
-export const DESTRUCTIVE_PER_SECOND = DESTRUCTIVE_BASE_T * 1e12 / (365.25 * 86_400); // ~$418K
-
-/** Average cost of a clinical trial (NIH estimate, Phase I-III) */
-export const CLINICAL_TRIAL_COST = 50e6; // $50M
-
-/** Treatments unfunded per second (dysfunction waste that could have funded trials) */
-export const TRIALS_UNFUNDED_PER_SECOND = DYSFUNCTION_TAX_PER_SECOND / CLINICAL_TRIAL_COST; // ~0.064
 
 /** Destructive economy baseline in trillions (military $2.72T + cybercrime $10.5T, 2024) */
 export const DESTRUCTIVE_BASE_T = 13.2;
@@ -56,6 +42,33 @@ export const TREATY_CAGR = 0.179;
 
 /** Wishonia full optimization scenario: destructive CAGR drops to 25.4% of baseline */
 export const WISHONIA_CAGR = 0.254;
+
+/** Political Dysfunction Tax per year in USD (page hero stat) */
+export const DYSFUNCTION_TAX_PER_YEAR = 101e12; // $101T
+
+/** Average cost of a clinical trial (NIH estimate, Phase I-III) */
+export const CLINICAL_TRIAL_COST = 50e6; // $50M
+
+const SECONDS_PER_YEAR = 365.25 * 86_400;
+
+// ── Derived per-second rates ────────────────────────────────────────
+
+/** Deaths per second from treatable diseases */
+export const DEATHS_PER_SECOND = DEATHS_PER_DAY / 86_400; // ~1.736
+
+/** Dysfunction tax per second */
+export const DYSFUNCTION_TAX_PER_SECOND =
+  DYSFUNCTION_TAX_PER_YEAR / SECONDS_PER_YEAR; // ~$3.2M
+
+/** Destructive economy per second (military + cybercrime) */
+export const DESTRUCTIVE_PER_SECOND =
+  (DESTRUCTIVE_BASE_T * 1e12) / SECONDS_PER_YEAR; // ~$418K
+
+/** Clinical trials that could be funded per second with dysfunction waste */
+export const TRIALS_UNFUNDED_PER_SECOND =
+  DYSFUNCTION_TAX_PER_SECOND / CLINICAL_TRIAL_COST; // ~0.064
+
+// ── Projection functions ────────────────────────────────────────────
 
 /**
  * Solve for t where destructive/GDP >= COLLAPSE_RATIO:
@@ -97,7 +110,8 @@ export function generateTrajectoryData(): TrajectoryPoint[] {
   const points: TrajectoryPoint[] = [];
   for (let t = 0; t <= PROJECTION_YEARS; t++) {
     const productive = GLOBAL_GDP_T * Math.pow(1 + PRODUCTIVE_CAGR, t);
-    const destructive = DESTRUCTIVE_BASE_T * Math.pow(1 + DESTRUCTIVE_CAGR, t);
+    const destructive =
+      DESTRUCTIVE_BASE_T * Math.pow(1 + DESTRUCTIVE_CAGR, t);
     points.push({
       year: 2024 + t,
       productive,

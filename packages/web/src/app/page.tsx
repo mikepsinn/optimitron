@@ -13,6 +13,7 @@ import { PulseGlow } from "@/components/animations/PulseGlow";
 import { LiveDeathTicker } from "@/components/animations/LiveDeathTicker";
 import { CollapseCountdown } from "@/components/animations/CollapseCountdown";
 import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
+import { OpportunityCostTicker } from "@/components/animations/OpportunityCostTicker";
 import { computeCollapseDate } from "@/data/collapse-constants";
 import {
   listExplorerOutcomes,
@@ -548,7 +549,8 @@ export default function Home() {
                 </span>
               </NavItemLink>
             </div>
-            <GdpTrajectoryChart className="mt-8 mb-6" />
+            <GdpTrajectoryChart className="mt-8 mb-4" />
+            <OpportunityCostTicker className="mb-6" />
             <p className="text-sm text-black/70 leading-relaxed font-medium">
               Here&apos;s the part that should terrify you: as the destructive economy
               grows, it devalues your currency, which reduces the reward for productive

@@ -2,7 +2,7 @@ import "@/lib/server-env";
 import type { IDKitResult } from "@worldcoin/idkit";
 import { hashSignal } from "@worldcoin/idkit/hashing";
 import { signRequest } from "@worldcoin/idkit/signing";
-import { PersonhoodProvider } from "@prisma/client";
+import { PersonhoodProvider } from "@optomitron/db";
 import { upsertPersonhoodVerification } from "@/lib/personhood.server";
 import type { WorldIdRequestPayload } from "@/lib/world-id";
 

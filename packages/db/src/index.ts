@@ -4,8 +4,7 @@
  * Database client, Prisma types, and Zod validators for Optomitron
  */
 
-export { PrismaClient } from '@prisma/client';
-export type * from '@prisma/client';
+export * from './generated/prisma/client.js';
 
 // Zod validators for all models and enums
 export * as schemas from './zod/index.js';
