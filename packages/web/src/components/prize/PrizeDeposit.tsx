@@ -179,7 +179,7 @@ export function PrizeDeposit() {
                 <button
                   key={connector.uid}
                   onClick={() => connect({ connector })}
-                  className="border-2 border-black bg-pink-500 px-4 py-2.5 text-sm font-black uppercase text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  className="border-2 border-black bg-brutal-pink px-4 py-2.5 text-sm font-black uppercase text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                   {connector.name === "Injected" ? "Browser Wallet" : connector.name}
                 </button>
@@ -201,14 +201,14 @@ export function PrizeDeposit() {
                 {chainId !== sepolia.id && (
                   <button
                     onClick={() => switchChain({ chainId: sepolia.id })}
-                    className="border-2 border-black bg-yellow-200 px-3 py-1.5 text-xs font-black uppercase hover:bg-yellow-300 transition-colors"
+                    className="border-2 border-black bg-brutal-yellow px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/80 transition-colors"
                   >
                     Switch to Sepolia
                   </button>
                 )}
                 <button
                   onClick={() => disconnect()}
-                  className="border-2 border-black bg-white px-3 py-1.5 text-xs font-black uppercase hover:bg-red-100 transition-colors"
+                  className="border-2 border-black bg-white px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-red/20 transition-colors"
                 >
                   Disconnect
                 </button>
@@ -217,7 +217,7 @@ export function PrizeDeposit() {
 
             {/* Balances */}
             <div className="grid gap-2 grid-cols-2">
-              <div className="border-2 border-black bg-cyan-50 p-2">
+              <div className="border-2 border-black bg-brutal-cyan/20 p-2">
                 <div className="text-[10px] font-black uppercase text-black/50">
                   $WISH Balance
                 </div>
@@ -227,7 +227,7 @@ export function PrizeDeposit() {
                     : "—"}
                 </div>
               </div>
-              <div className="border-2 border-black bg-emerald-50 p-2">
+              <div className="border-2 border-black bg-brutal-cyan/10 p-2">
                 <div className="text-[10px] font-black uppercase text-black/50">
                   Your Deposit
                 </div>
@@ -249,7 +249,7 @@ export function PrizeDeposit() {
         </h3>
 
         {!isDeployed && (
-          <div className="border-2 border-black bg-yellow-100 p-3 mb-4">
+          <div className="border-2 border-black bg-brutal-yellow/20 p-3 mb-4">
             <div className="text-xs font-black uppercase text-black/60">
               Not Yet Deployed
             </div>
@@ -261,7 +261,7 @@ export function PrizeDeposit() {
         )}
 
         <div className="space-y-3">
-          <div className="border-2 border-black bg-yellow-100 p-3">
+          <div className="border-2 border-black bg-brutal-yellow/20 p-3">
             <label className="text-xs font-black uppercase text-black/60 block mb-1">
               Amount ($WISH)
             </label>
@@ -271,7 +271,7 @@ export function PrizeDeposit() {
                 placeholder="1000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
-                className="flex-1 border-2 border-black bg-white px-3 py-2 text-lg font-black focus:outline-none focus:border-pink-500"
+                className="flex-1 border-2 border-black bg-white px-3 py-2 text-lg font-black focus:outline-none focus:border-brutal-pink"
                 disabled={!isConnected || !isDeployed || isBusy}
               />
               <button
@@ -283,7 +283,7 @@ export function PrizeDeposit() {
                   !amount ||
                   parsedAmount === 0n
                 }
-                className="border-2 border-black bg-pink-500 px-4 py-2 text-sm font-black uppercase text-white hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="border-2 border-black bg-brutal-pink px-4 py-2 text-sm font-black uppercase text-white hover:bg-brutal-pink/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isBusy
                   ? step === "approving"
@@ -295,7 +295,7 @@ export function PrizeDeposit() {
               </button>
             </div>
             {isDepositConfirmed && (
-              <p className="text-xs font-black text-emerald-600 mt-2">
+              <p className="text-xs font-black text-brutal-cyan mt-2">
                 Deposit confirmed! Transaction: {depositHash?.slice(0, 10)}...
               </p>
             )}
@@ -305,7 +305,7 @@ export function PrizeDeposit() {
               <button
                 key={preset}
                 onClick={() => setAmount(preset)}
-                className="flex-1 border-2 border-black bg-white px-2 py-1.5 text-xs font-black uppercase hover:bg-yellow-100 transition-colors disabled:opacity-50"
+                className="flex-1 border-2 border-black bg-white px-2 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/20 transition-colors disabled:opacity-50"
                 disabled={!isConnected || !isDeployed || isBusy}
               >
                 {preset}
@@ -317,7 +317,7 @@ export function PrizeDeposit() {
 
       {/* Live Pool Status */}
       {isDeployed && isConnected && (
-        <div className="border-4 border-black bg-emerald-50 p-6">
+        <div className="border-4 border-black bg-brutal-cyan/10 p-6">
           <h3 className="font-black uppercase text-black mb-3">
             Live Pool Status
           </h3>
@@ -326,7 +326,7 @@ export function PrizeDeposit() {
               <div className="text-[10px] font-black uppercase text-black/50">
                 Status
               </div>
-              <div className="text-sm font-black text-emerald-600">
+              <div className="text-sm font-black text-brutal-cyan">
                 {poolStatus !== undefined
                   ? statusLabels[Number(poolStatus)] ?? "Unknown"
                   : "—"}
@@ -363,7 +363,7 @@ export function PrizeDeposit() {
           Donate directly via cryptocurrency. Funds are converted to $WISH and
           deposited into the Prize Pool on your behalf.
         </p>
-        <div className="border-2 border-black bg-emerald-50 p-3">
+        <div className="border-2 border-black bg-brutal-cyan/10 p-3">
           <div className="text-xs font-black uppercase text-black/60 mb-1">
             Send directly to:
           </div>
@@ -377,7 +377,7 @@ export function PrizeDeposit() {
       </div>
 
       {/* Fiat */}
-      <div className="border-4 border-black bg-yellow-100 p-6">
+      <div className="border-4 border-black bg-brutal-yellow/20 p-6">
         <h3 className="font-black uppercase text-black mb-3">
           Traditional Donation
         </h3>
@@ -386,7 +386,7 @@ export function PrizeDeposit() {
           Prize Pool. Email{" "}
           <a
             href="mailto:mike@warondisease.org"
-            className="font-black text-black underline hover:text-pink-600"
+            className="font-black text-black underline hover:text-brutal-pink"
           >
             mike@warondisease.org
           </a>{" "}
@@ -398,7 +398,7 @@ export function PrizeDeposit() {
               <a
                 key={tier}
                 href="mailto:mike@warondisease.org?subject=Earth%20Optimization%20Prize%20Donation"
-                className="border-2 border-black bg-white px-4 py-2 text-sm font-black uppercase hover:bg-pink-100 transition-colors"
+                className="border-2 border-black bg-white px-4 py-2 text-sm font-black uppercase hover:bg-brutal-pink/20 transition-colors"
               >
                 {tier}
               </a>

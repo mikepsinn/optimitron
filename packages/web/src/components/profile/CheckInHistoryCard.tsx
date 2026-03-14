@@ -40,7 +40,7 @@ export function CheckInHistoryCard({ history }: CheckInHistoryCardProps) {
             {history.map((entry) => (
               <div
                 key={entry.date}
-                className="grid gap-4 border-2 border-black bg-cyan-50 p-4 md:grid-cols-[160px_1fr_1fr]"
+                className="grid gap-4 border-2 border-black bg-brutal-cyan/20 p-4 md:grid-cols-[160px_1fr_1fr]"
               >
                 <div>
                   <p className="text-sm font-black uppercase text-black">
@@ -54,13 +54,13 @@ export function CheckInHistoryCard({ history }: CheckInHistoryCardProps) {
                   <p className="text-xs font-black uppercase tracking-wide text-black/60">
                     Health
                   </p>
-                  <RatingBar colorClassName="bg-green-400" value={entry.healthRating} />
+                  <RatingBar colorClassName="bg-brutal-cyan" value={entry.healthRating} />
                 </div>
                 <div className="space-y-2">
                   <p className="text-xs font-black uppercase tracking-wide text-black/60">
                     Happiness
                   </p>
-                  <RatingBar colorClassName="bg-pink-400" value={entry.happinessRating} />
+                  <RatingBar colorClassName="bg-brutal-pink" value={entry.happinessRating} />
                 </div>
               </div>
             ))}

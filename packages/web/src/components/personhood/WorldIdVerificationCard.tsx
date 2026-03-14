@@ -149,20 +149,20 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           {requestError ? <AlertCard type="error" message={requestError} /> : null}
 
           {isVerified ? (
-            <div className="rounded-lg border-2 border-emerald-900 bg-emerald-50 p-4">
+            <div className="rounded-lg border-2 border-black bg-brutal-cyan/10 p-4">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-900" />
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-foreground" />
                 <div className="space-y-1 text-sm">
-                  <p className="font-bold text-emerald-950">
+                  <p className="font-bold text-foreground">
                     Verified with {sessionUser.personhoodProvider === "WORLD_ID" ? "World ID" : "a personhood provider"}.
                   </p>
                   {sessionUser.personhoodVerificationLevel ? (
-                    <p className="text-emerald-900">
+                    <p className="text-foreground">
                       Credential: {sessionUser.personhoodVerificationLevel}
                     </p>
                   ) : null}
                   {verifiedDate ? (
-                    <p className="text-emerald-900">Verified on {verifiedDate}.</p>
+                    <p className="text-foreground">Verified on {verifiedDate}.</p>
                   ) : null}
                 </div>
               </div>

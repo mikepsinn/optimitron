@@ -66,25 +66,25 @@ export function PushNotificationPrompt() {
   if (!supported || loading) return null;
 
   return (
-    <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-      <h3 className="text-sm font-semibold text-slate-200 mb-1">
+    <div className="rounded-lg border border-border bg-card p-4">
+      <h3 className="text-sm font-semibold text-card-foreground mb-1">
         Daily Check-in Reminders
       </h3>
-      <p className="text-xs text-slate-400 mb-3">
+      <p className="text-xs text-muted-foreground mb-3">
         Get gentle reminders to rate your health and happiness — even without the browser extension.
       </p>
 
       {error && (
-        <p className="text-xs text-red-400 mb-2">{error}</p>
+        <p className="text-xs text-brutal-red mb-2">{error}</p>
       )}
 
       {subscribed ? (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-green-400">Notifications enabled</span>
+          <span className="text-xs text-brutal-cyan">Notifications enabled</span>
           <button
             onClick={() => void handleUnsubscribe()}
             disabled={loading}
-            className="text-xs text-slate-400 hover:text-slate-200 underline"
+            className="text-xs text-muted-foreground hover:text-foreground underline"
           >
             Disable
           </button>
@@ -93,7 +93,7 @@ export function PushNotificationPrompt() {
         <button
           onClick={() => void handleSubscribe()}
           disabled={loading}
-          className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+          className="rounded-md bg-brutal-pink px-3 py-1.5 text-xs font-medium text-white hover:bg-brutal-pink/80 disabled:opacity-50"
         >
           Enable Reminders
         </button>

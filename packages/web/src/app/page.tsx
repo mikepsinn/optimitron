@@ -1051,7 +1051,7 @@ export default function Home() {
           </p>
         </ScrollReveal>
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
-          <div className="p-6 border-4 border-black bg-cyan-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-6 border-4 border-black bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl mb-2">🏦</div>
             <h3 className="font-black text-black mb-2">FairTax</h3>
             <p className="text-sm text-black/60 font-medium">
@@ -1060,7 +1060,7 @@ export default function Home() {
               code. Revenue collection as a protocol feature.
             </p>
           </div>
-          <div className="p-6 border-4 border-black bg-emerald-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-6 border-4 border-black bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl mb-2">🍞</div>
             <h3 className="font-black text-black mb-2">Universal Basic Income</h3>
             <p className="text-sm text-black/60 font-medium">
@@ -1069,7 +1069,7 @@ export default function Home() {
               budget on itself. Everyone eats.
             </p>
           </div>
-          <div className="p-6 border-4 border-black bg-pink-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-6 border-4 border-black bg-brutal-pink shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl mb-2">🎯</div>
             <h3 className="font-black text-black mb-2">Prize Pool</h3>
             <p className="text-sm text-black/60 font-medium">
@@ -1083,7 +1083,7 @@ export default function Home() {
           <NavItemLink
             item={prizeLink}
             variant="custom"
-            className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center border-4 border-black bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             Donate to the Prize
           </NavItemLink>
