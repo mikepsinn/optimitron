@@ -432,6 +432,87 @@ export default function PrizePage() {
         </div>
       </section>
 
+      {/* Where Every Dollar Goes */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6">
+          Where Every Dollar Goes
+        </h2>
+        <div className="space-y-4 mb-6">
+          <div className="border-4 border-black bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-black shrink-0">
+                1
+              </span>
+              <h3 className="font-black uppercase text-black">Your Bond</h3>
+            </div>
+            <p className="text-sm text-black/70 font-medium leading-relaxed">
+              USDC → escrow → Aave yield. No management fees. No team cut. 100%
+              stays yours until outcomes are verified.
+            </p>
+          </div>
+          <div className="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-black shrink-0">
+                2
+              </span>
+              <h3 className="font-black uppercase text-black">If Plan Fails</h3>
+            </div>
+            <p className="text-sm text-black/70 font-medium leading-relaxed">
+              Principal + yield returns to you (~4x over 15 years). Zero to any
+              team or founder. The dominant assurance contract means your worst
+              case is getting richer.
+            </p>
+          </div>
+          <div className="border-4 border-black bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-black shrink-0">
+                3
+              </span>
+              <h3 className="font-black uppercase text-black">If Plan Succeeds</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+              <div className="border-2 border-black/20 p-3 bg-white/30">
+                <div className="text-xs font-black uppercase text-black/60 mb-1">
+                  Implementers
+                </div>
+                <p className="text-xs text-black/70 font-medium">
+                  Paid proportional to Wishocratic allocation for producing
+                  measurable outcomes.
+                </p>
+              </div>
+              <div className="border-2 border-black/20 p-3 bg-white/30">
+                <div className="text-xs font-black uppercase text-black/60 mb-1">
+                  Bondholders
+                </div>
+                <p className="text-xs text-black/70 font-medium">
+                  Revenue share on per-capita income gains across adopting
+                  jurisdictions.
+                </p>
+              </div>
+              <div className="border-2 border-black/20 p-3 bg-white/30">
+                <div className="text-xs font-black uppercase text-black/60 mb-1">
+                  Everyone (8 Billion People)
+                </div>
+                <p className="text-xs text-black/70 font-medium">
+                  Median healthy life years increase. Median income rises.
+                  {dysfunctionTaxFormatted}/yr dysfunction tax starts
+                  disappearing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="border-4 border-black bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm text-white/90 font-medium leading-relaxed">
+            The bondholders get a return. The implementers get paid. But the real
+            beneficiaries are the 8 billion people who stop paying{" "}
+            {dysfunctionTaxFormatted} a year in dysfunction tax. You&apos;re not
+            buying a token. You&apos;re buying a probability shift on
+            civilisational-scale welfare gains. The token is just the receipt.
+          </p>
+        </div>
+      </section>
+
       {/* 10 Required Functions */}
       <section className="mb-16">
         <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-4">
@@ -553,7 +634,7 @@ export default function PrizePage() {
         <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6">
           Anti-Capture
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="border-4 border-black bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-black uppercase text-black mb-3">
               Replacement Rule
@@ -576,6 +657,17 @@ export default function PrizePage() {
               keep distributing. Extraction stops when outcomes stop.
             </p>
           </div>
+          <div className="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black uppercase text-black mb-3">
+              Zero Insider Advantage
+            </h3>
+            <p className="text-sm text-black/70 font-medium leading-relaxed">
+              No team allocation. No founder tokens. No advisor tokens.
+              No pre-sale. No private rounds. No early-access pricing.
+              No admin keys that can drain the pool. Your $100 gets exactly
+              the same terms as someone else&apos;s $100,000.
+            </p>
+          </div>
         </div>
         <div className="border-4 border-black bg-white p-6 mt-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <h3 className="font-black uppercase text-black mb-2">
@@ -588,6 +680,11 @@ export default function PrizePage() {
             planet, we replaced the governance protocol three times in four
             thousand years. Each time it was mildly inconvenient and
             comprehensively worth it.
+          </p>
+          <p className="text-sm text-black/70 font-medium leading-relaxed mt-3">
+            The people who built this protocol have exactly the same access as
+            everyone else. Same bond price. Same contract. Same terms. If they
+            want allocation power, they buy bonds like everyone else.
           </p>
         </div>
       </section>

@@ -156,10 +156,13 @@ export function IncentiveAlignmentBondsSection() {
               Why Everyone Lobbies for Expansion
             </h3>
             <p className="text-sm text-black/60 font-medium text-center mb-4">
-              Treaty inflows split 10/10/80. Bondholders earn returns. Politicians get rewarded
-              for alignment. 80% funds pragmatic trials that cure diseases and boost GDP.
-              As GDP rises, everyone gets richer — so everyone lobbies for more treaty funding.
-              1% → 2% → 5%. The loop is self-reinforcing.
+              80% of treaty inflows fund pragmatic trials. Diseases get cured.
+              Everyone&apos;s income rises. Bondholders earn 10% in returns.
+              Politicians earn 10% for alignment. But the real payout is
+              population-wide: the $12,600/year dysfunction tax starts
+              disappearing for every human on Earth. As GDP rises, everyone
+              lobbies for more treaty funding. 1% → 2% → 5%. The loop is
+              self-reinforcing.
             </p>
             <IncentiveFeedbackLoop />
           </div>
@@ -174,6 +177,16 @@ export function IncentiveAlignmentBondsSection() {
             <p className="text-black/60 font-medium max-w-2xl mx-auto mb-4 text-sm">
               Incentive Alignment Bond deposits fund the Earth Optimization Prize. Same money, no separate donation.
             </p>
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
+              {["Zero Team Allocation", "No Pre-Sale", "Auditable On-Chain", "Win Either Way"].map((badge) => (
+                <span
+                  key={badge}
+                  className="text-[10px] font-black uppercase px-2 py-0.5 border border-black/20 bg-black/5 text-black/60"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <NavItemLink
                 item={incentiveAlignmentBondsPaperLink}
