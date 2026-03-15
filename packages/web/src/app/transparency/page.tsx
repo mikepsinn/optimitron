@@ -352,9 +352,9 @@ export default function TransparencyPage() {
             <div className="text-2xl mb-2">🔗</div>
             <h3 className="font-black text-black uppercase mb-2">$WISH Token</h3>
             <p className="text-xs font-medium text-black/60 leading-relaxed">
-              ERC-20 with built-in transaction tax and UBI distribution.
-              Alignment Treasury reads on-chain Hypercert data to distribute
-              funds to politicians based on citizen alignment scores.
+              ERC-20 with built-in transaction tax. WishocraticTreasury splits
+              tax revenue across citizen-voted budget categories. UBIDistributor
+              handles equal per-citizen payouts for the UBI category.
             </p>
           </div>
         </div>

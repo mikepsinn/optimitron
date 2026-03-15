@@ -104,11 +104,11 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
     };
   }
 
-  const treasuryAddress = process.env.WISHOCRATIC_TREASURY_ADDRESS as `0x${string}` | undefined;
+  const wishocraticTreasuryAddress = process.env.WISHOCRATIC_TREASURY_ADDRESS as `0x${string}` | undefined;
   const deployerKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}` | undefined;
   const rpcUrl = process.env.SEPOLIA_RPC_URL;
 
-  if (!treasuryAddress || !deployerKey || !rpcUrl) {
+  if (!wishocraticTreasuryAddress || !deployerKey || !rpcUrl) {
     logger.warn("Missing env vars for on-chain posting — recording off-chain only");
 
     // Record the distribution intent in DB for auditing
@@ -140,7 +140,7 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
     });
 
     const txHash = await client.writeContract({
-      address: treasuryAddress,
+      address: wishocraticTreasuryAddress,
       abi: WISHOCRATIC_TREASURY_ABI,
       functionName: "updateWeights",
       args: [ids, weights, BigInt(summary.totalUsers), BigInt(summary.totalComparisons)],

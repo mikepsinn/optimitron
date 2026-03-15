@@ -4,7 +4,7 @@ import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
 
 export function TreasuryStatusCard() {
   const {
-    treasuryBalance,
+    ubiPendingBalance,
     citizenCount,
     taxRateBps,
     totalSupply,
@@ -13,18 +13,18 @@ export function TreasuryStatusCard() {
   } = useTreasuryData();
 
   const citizenCountNum = Number(citizenCount);
-  const perCitizen = citizenCountNum > 0 ? treasuryBalance / citizenCount : 0n;
+  const perCitizen = citizenCountNum > 0 ? ubiPendingBalance / citizenCount : 0n;
 
   const stats = [
     {
-      label: "Treasury Balance",
-      value: `${formatWish(treasuryBalance)} $WISH`,
-      detail: "100% distributed as UBI",
+      label: "UBI Pending",
+      value: `${formatWish(ubiPendingBalance)} $WISH`,
+      detail: "Awaiting distribution to citizens",
       color: "bg-brutal-cyan/20",
     },
     {
       label: "Per Citizen",
-      value: citizenCountNum > 0 ? `${formatWish(perCitizen)} $WISH` : "—",
+      value: citizenCountNum > 0 ? `${formatWish(perCitizen)} $WISH` : "\u2014",
       detail: citizenCountNum > 0 ? "Next distribution" : "No citizens yet",
       color: "bg-brutal-cyan/10",
     },
