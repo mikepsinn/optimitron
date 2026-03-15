@@ -5,6 +5,7 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { IncentiveFeedbackLoop } from "./IncentiveFeedbackLoop";
+import { IABCalculator } from "./IABCalculator";
 import {
   incentiveAlignmentBondsPaperLink,
   prizeLink,
@@ -128,6 +129,20 @@ export function IncentiveAlignmentBondsSection() {
             </p>
           </motion.div>
         </div>
+
+        {/* Interactive calculator */}
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto mb-8 p-6 border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black text-black uppercase text-center mb-2">
+              Calculate Your Returns
+            </h3>
+            <p className="text-sm text-black/60 font-medium text-center mb-6">
+              Plug in any amount. See what happens in both scenarios.
+              Then notice the break-even probability.
+            </p>
+            <IABCalculator />
+          </div>
+        </ScrollReveal>
 
         {/* Feedback loop diagram */}
         <ScrollReveal>
