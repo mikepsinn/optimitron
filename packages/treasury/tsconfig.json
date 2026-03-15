@@ -10,6 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["./test", "./hardhat.config.ts"],
+  "include": ["./test", "./hardhat.config.ts", "./typechain-types"],
   "files": ["./hardhat.config.ts"]
 }
