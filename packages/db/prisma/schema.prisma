@@ -2386,3 +2386,53 @@ model ReferendumVote {
   @@index([referendumId])
   @@index([referredByUserId])
 }
+
+// ============================================================================
+// WISHOCRATIC TREASURY
+// ============================================================================
+
+/// A registered public goods recipient for a budget category.
+/// Maps budget categories to on-chain wallet addresses that receive $WISH.
+model PublicGoodsRecipient {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Matches BudgetCategoryId (e.g., "UNIVERSAL_BASIC_INCOME")
+  categoryId String @unique
+
+  /// Human-readable name
+  name String
+
+  /// On-chain wallet address (receives $WISH from WishocraticTreasury)
+  walletAddress String
+
+  /// Whether this recipient is currently active
+  active Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+}
+
+/// A record of a wishocratic distribution event on-chain.
+model WishocraticDistribution {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Total $WISH distributed (bigint as string for precision)
+  totalAmount String
+
+  /// Number of recipients in this distribution
+  recipientCount Int
+
+  /// Hash of the allocation weights used (for auditability)
+  weightsHash String
+
+  /// On-chain transaction hash
+  txHash String?
+
+  /// When this distribution occurred
+  createdAt DateTime @default(now())
+}
