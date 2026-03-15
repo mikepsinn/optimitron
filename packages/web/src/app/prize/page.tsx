@@ -228,7 +228,7 @@ export default function PrizePage() {
             external
             className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
-            IAB Paper
+            Incentive Alignment Bonds Paper
           </NavItemLink>
         </div>
       </section>
@@ -499,7 +499,7 @@ export default function PrizePage() {
           <div className="border-4 border-black bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-3xl mb-3">🎯</div>
             <h3 className="font-black uppercase text-white mb-2">
-              IAB Prize Pool
+              Incentive Alignment Bond Prize Pool
             </h3>
             <p className="text-xs font-black uppercase text-white/80 mb-2">
               You&apos;re here
@@ -567,7 +567,7 @@ export default function PrizePage() {
             How They Connect
           </h3>
           <p className="text-sm text-black/70 font-medium leading-relaxed">
-            The IAB Prize Pool is <span className="font-black text-black">investment</span> — you
+            The Incentive Alignment Bond Prize Pool is <span className="font-black text-black">investment</span> — you
             buy bonds that fund governance reforms with attractive return profiles.
             The FairTax is <span className="font-black text-black">automatic</span> — 0.5%
             of every $WISH transaction funds the treasury without anyone filing

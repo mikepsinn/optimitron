@@ -365,19 +365,19 @@ export default function Home() {
             </h3>
             <ul className="space-y-3 text-sm text-black/70 font-medium">
               <li className="flex gap-2">
-                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">✓</span>
                 <span>Citizens vote directly on priorities. No fundraising. No middleman</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">✓</span>
                 <span>Causal engine determines which policies actually work. Data in, optimal policy out</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">✓</span>
                 <span>Alignment scores expose how much each official deviates from citizen preferences</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-brutal-cyan font-black shrink-0">&check;</span>
+                <span className="text-brutal-cyan font-black shrink-0">✓</span>
                 <span>Optimises for <span className="font-black text-black">outcomes</span>, not re-election</span>
               </li>
             </ul>

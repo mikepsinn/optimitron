@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 /**
- * Interactive IAB return calculator.
+ * Interactive Incentive Alignment Bond return calculator.
  *
  * Fail scenario:  principal × (1.10)^15  (10% staking yield, 15-year escrow)
  * Succeed scenario: 272% annual revenue share + per-capita lifetime income gain

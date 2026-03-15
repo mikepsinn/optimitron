@@ -8,9 +8,9 @@ import {
 
 const coreCards = [
   {
-    title: "Built on IABs",
+    title: "Built on Incentive Alignment Bonds",
     description:
-      "The prize pool IS the bond pool. Every IAB purchase adds to the prize. No separate fundraising. No galas. No overhead. One financial instrument does the work of an entire philanthropic apparatus.",
+      "The prize pool IS the bond pool. Every Incentive Alignment Bond purchase adds to the prize. No separate fundraising. No galas. No overhead. One financial instrument does the work of an entire philanthropic apparatus.",
     color: "bg-brutal-pink",
     textColor: "text-white",
   },

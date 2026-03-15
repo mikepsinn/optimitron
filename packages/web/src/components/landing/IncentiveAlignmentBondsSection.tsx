@@ -167,7 +167,7 @@ export function IncentiveAlignmentBondsSection() {
               The bonds ARE the prize pool. One instrument.
             </p>
             <p className="text-black/60 font-medium max-w-2xl mx-auto mb-4 text-sm">
-              IAB deposits fund the Earth Optimization Prize. Same money, no separate donation.
+              Incentive Alignment Bond deposits fund the Earth Optimization Prize. Same money, no separate donation.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <NavItemLink
@@ -176,7 +176,7 @@ export function IncentiveAlignmentBondsSection() {
                 external
                 className="inline-flex items-center text-sm font-black text-brutal-pink uppercase hover:text-black transition-colors"
               >
-                Read the IAB paper &rarr;
+                Read the paper &rarr;
               </NavItemLink>
               <NavItemLink
                 item={prizeLink}
