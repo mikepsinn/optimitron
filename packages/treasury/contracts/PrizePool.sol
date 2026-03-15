@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  *         comparison weighted by deposit amount.
  *
  * Mechanism:
- *   1. Donors deposit $WISH (or ETH) → funds held in escrow
+ *   1. Donors deposit stablecoins → funds held in escrow
  *   2. Oracle reports outcome metrics (health DALYs, income gains)
  *   3. When metrics cross thresholds → pool unlocks for allocation
  *   4. Off-chain Wishocratic pairwise comparison determines implementer shares
@@ -23,11 +23,13 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  *   - Challengers post a bond to dispute an allocation
  *   - If dispute succeeds, challenger gets bond back + penalty from disputed party
  *   - If dispute fails, challenger loses bond (escalation is expensive)
+ *
+ * Token-agnostic: accepts any ERC20 (USDC, DAI, etc.)
  */
 contract PrizePool is Ownable {
     using SafeERC20 for IERC20;
 
-    IERC20 public wishToken;
+    IERC20 public token;
 
     // --- Pool lifecycle ---
 
@@ -100,16 +102,16 @@ contract PrizePool is Ownable {
     event DisputeResolved(uint256 indexed disputeId, bool successful);
 
     constructor(
-        address _wishToken,
+        address _token,
         uint256 _healthThreshold,
         uint256 _incomeThreshold,
         uint256 _disputeBondMinimum
     ) Ownable(msg.sender) {
-        require(_wishToken != address(0), "PrizePool: zero token");
+        require(_token != address(0), "PrizePool: zero token");
         require(_healthThreshold > 0, "PrizePool: zero health threshold");
         require(_incomeThreshold > 0, "PrizePool: zero income threshold");
 
-        wishToken = IERC20(_wishToken);
+        token = IERC20(_token);
         healthThreshold = _healthThreshold;
         incomeThreshold = _incomeThreshold;
         disputeBondMinimum = _disputeBondMinimum;
@@ -119,14 +121,14 @@ contract PrizePool is Ownable {
     // --- Donor functions ---
 
     /**
-     * @notice Deposit $WISH into the prize pool. Deposit amount = allocation power.
+     * @notice Deposit tokens into the prize pool. Deposit amount = allocation power.
      *         This IS your identity — no sybil attacks possible.
      */
     function deposit(uint256 amount) external {
         require(status == PoolStatus.Open, "PrizePool: not accepting deposits");
         require(amount > 0, "PrizePool: zero deposit");
 
-        wishToken.safeTransferFrom(msg.sender, address(this), amount);
+        token.safeTransferFrom(msg.sender, address(this), amount);
 
         if (!donors[msg.sender].exists) {
             donorList.push(msg.sender);
@@ -148,7 +150,7 @@ contract PrizePool is Ownable {
         donors[msg.sender].amount -= amount;
         totalDeposits -= amount;
 
-        wishToken.safeTransfer(msg.sender, amount);
+        token.safeTransfer(msg.sender, amount);
         emit Withdrawn(msg.sender, amount);
     }
 
@@ -262,7 +264,7 @@ contract PrizePool is Ownable {
         require(status == PoolStatus.Allocating, "PrizePool: not in allocation phase");
         require(totalAllocationWeight == 10_000, "PrizePool: allocations not set");
 
-        uint256 balance = wishToken.balanceOf(address(this));
+        uint256 balance = token.balanceOf(address(this));
         require(balance > 0, "PrizePool: no funds");
 
         uint256 distributed = 0;
@@ -274,7 +276,7 @@ contract PrizePool is Ownable {
 
             uint256 share = (balance * impl.allocationWeight) / 10_000;
             if (share > 0) {
-                wishToken.safeTransfer(impl.wallet, share);
+                token.safeTransfer(impl.wallet, share);
                 distributed += share;
                 recipientCount++;
             }
@@ -288,7 +290,7 @@ contract PrizePool is Ownable {
 
     /**
      * @notice Open a dispute against an implementer's allocation.
-     *         Challenger must post a bond in $WISH.
+     *         Challenger must post a bond in the pool's token.
      */
     function openDispute(
         bytes32 implementerId,
@@ -298,7 +300,7 @@ contract PrizePool is Ownable {
         require(implementers[implementerId].active, "PrizePool: not registered");
         require(bond >= disputeBondMinimum, "PrizePool: bond too small");
 
-        wishToken.safeTransferFrom(msg.sender, address(this), bond);
+        token.safeTransferFrom(msg.sender, address(this), bond);
 
         uint256 disputeId = disputeCount++;
         disputes[disputeId] = Dispute({
@@ -326,7 +328,7 @@ contract PrizePool is Ownable {
 
         if (successful) {
             // Challenger wins: return bond + deactivate implementer
-            wishToken.safeTransfer(d.challenger, d.bond);
+            token.safeTransfer(d.challenger, d.bond);
             implementers[d.implementerId].active = false;
             totalAllocationWeight -= implementers[d.implementerId].allocationWeight;
             implementers[d.implementerId].allocationWeight = 0;
@@ -347,7 +349,7 @@ contract PrizePool is Ownable {
     }
 
     function poolBalance() external view returns (uint256) {
-        return wishToken.balanceOf(address(this));
+        return token.balanceOf(address(this));
     }
 
     function donorDeposit(address donor) external view returns (uint256) {

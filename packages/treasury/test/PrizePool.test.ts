@@ -46,7 +46,7 @@ describe("PrizePool", function () {
   describe("Deployment", function () {
     it("sets initial state correctly", async function () {
       const { pool, wish } = await loadFixture(deployFixture);
-      expect(await pool.wishToken()).to.equal(await wish.getAddress());
+      expect(await pool.token()).to.equal(await wish.getAddress());
       expect(await pool.healthThreshold()).to.equal(HEALTH_THRESHOLD);
       expect(await pool.incomeThreshold()).to.equal(INCOME_THRESHOLD);
       expect(await pool.status()).to.equal(0n); // Open
