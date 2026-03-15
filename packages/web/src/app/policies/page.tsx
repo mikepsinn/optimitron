@@ -128,7 +128,7 @@ export default function PoliciesPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <Link href={getPolicyPath(policy.name)} className="text-black font-black truncate hover:text-pink-500 transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
+                    <Link href={getPolicyPath(policy.name)} className="text-black font-black truncate hover:text-brutal-pink transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
                     <GradeBadge grade={policy.evidenceGrade} />
                     <RecommendationBadge type={policy.recommendationType} />
                     <span className="text-xs text-black/50 px-2 py-0.5 bg-muted border border-black font-bold">
@@ -173,11 +173,11 @@ export default function PoliciesPage() {
                       </p>
                       <p className="text-black/60 font-medium">
                         <span className="text-black/40 font-bold">Income Effect:</span>{" "}
-                        <span className="text-emerald-600 font-black">+{(policy.incomeEffect * 100).toFixed(0)}%</span>
+                        <span className="text-brutal-cyan font-black">+{(policy.incomeEffect * 100).toFixed(0)}%</span>
                       </p>
                       <p className="text-black/60 font-medium">
                         <span className="text-black/40 font-bold">Health Effect:</span>{" "}
-                        <span className="text-emerald-600 font-black">+{(policy.healthEffect * 100).toFixed(0)}%</span>
+                        <span className="text-brutal-cyan font-black">+{(policy.healthEffect * 100).toFixed(0)}%</span>
                       </p>
                       {policy.currentStatus && (
                         <p className="text-black/60 font-medium">
@@ -209,7 +209,7 @@ export default function PoliciesPage() {
                           <span className="text-xs text-black/50 w-24 capitalize font-bold">{key}</span>
                           <div className="flex-1 h-2 bg-muted border border-black overflow-hidden">
                             <div
-                              className="h-full bg-pink-500"
+                              className="h-full bg-brutal-pink"
                               style={{ width: `${(val as number) * 100}%` }}
                             />
                           </div>
@@ -224,7 +224,7 @@ export default function PoliciesPage() {
 
                 <Link
                   href={getPolicyPath(policy.name)}
-                  className="inline-block mt-2 border-2 border-black bg-pink-500 text-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
+                  className="inline-block mt-2 border-2 border-black bg-brutal-pink text-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
                   onClick={(e) => e.stopPropagation()}
                 >
                   View Full Analysis →

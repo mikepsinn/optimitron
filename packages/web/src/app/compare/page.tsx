@@ -109,7 +109,7 @@ export default function ComparePage() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-sm font-black uppercase transition-all ${
               activeTab === tab
-                ? "bg-pink-500 text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                ? "bg-brutal-pink text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                 : "text-black hover:bg-brutal-cyan border-2 border-transparent hover:border-black"
             }`}
           >
@@ -176,7 +176,7 @@ function HealthTab() {
                   >
                     <div
                       className={`w-4 h-4 border-2 border-black ${
-                        isUS ? "bg-red-500" : isSG ? "bg-emerald-500" : "bg-pink-500"
+                        isUS ? "bg-brutal-red" : isSG ? "bg-brutal-cyan" : "bg-brutal-pink"
                       }`}
                     />
                     <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border-2 border-black px-3 py-2 text-xs whitespace-nowrap z-10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -190,9 +190,9 @@ function HealthTab() {
             </div>
           </div>
           <div className="flex items-center gap-4 justify-center text-xs text-black/50 mt-2 font-bold">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 border border-black" /> US</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 border border-black" /> Singapore</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-pink-500 border border-black" /> Others</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-brutal-red border border-black" /> US</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-brutal-cyan border border-black" /> Singapore</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-brutal-pink border border-black" /> Others</span>
           </div>
         </div>
       </div>
@@ -290,7 +290,7 @@ function DrugTab() {
                     {d.approach}
                   </span>
                 </td>
-                <td className={`py-2 px-2 text-right font-black ${d.deaths > 10 ? "text-red-600" : d.deaths < 2 ? "text-emerald-600" : "text-black/70"}`}>
+                <td className={`py-2 px-2 text-right font-black ${d.deaths > 10 ? "text-brutal-red" : d.deaths < 2 ? "text-brutal-cyan" : "text-black/70"}`}>
                   {d.deaths}
                 </td>
                 <td className="py-2 px-2 text-right text-black/70 font-medium">{d.incarceration}</td>
@@ -329,12 +329,12 @@ function EducationTab() {
         <div className="space-y-2">
           {sorted.map((d) => (
             <div key={d.country} className="flex items-center gap-3">
-              <span className={`text-xs w-28 truncate font-bold ${d.country === "United States" ? "text-red-600" : "text-black/60"}`}>
+              <span className={`text-xs w-28 truncate font-bold ${d.country === "United States" ? "text-brutal-red" : "text-black/60"}`}>
                 {d.country}
               </span>
               <div className="flex-1 h-6 bg-muted border border-black overflow-hidden relative">
                 <div
-                  className={`h-full ${d.country === "United States" ? "bg-red-400" : "bg-pink-400"}`}
+                  className={`h-full ${d.country === "United States" ? "bg-brutal-red" : "bg-brutal-pink"}`}
                   style={{ width: `${(d.math / maxMath) * 100}%` }}
                 />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-black font-black">
@@ -375,7 +375,7 @@ function EducationTab() {
                   <td className="py-2 px-2 text-right text-black/70 font-medium">{d.math}</td>
                   <td className="py-2 px-2 text-right text-black/70 font-medium">{d.reading}</td>
                   <td className="py-2 px-2 text-right text-black/70 font-medium">{d.science}</td>
-                  <td className="py-2 px-2 text-right font-black text-pink-600">{avg}</td>
+                  <td className="py-2 px-2 text-right font-black text-brutal-pink">{avg}</td>
                 </tr>
               );
             })}
@@ -409,7 +409,7 @@ function JusticeTab() {
           {sorted.map((d) => (
             <div key={d.country} className="card py-3">
               <div className="flex items-center gap-3 mb-2">
-                <span className={`text-xs w-28 truncate font-bold ${d.country === "United States" ? "text-red-600" : "text-black"}`}>
+                <span className={`text-xs w-28 truncate font-bold ${d.country === "United States" ? "text-brutal-red" : "text-black"}`}>
                   {d.country}
                 </span>
                 <span className="text-xs px-2 py-0.5 bg-muted border border-black text-black font-bold">{d.approach}</span>
@@ -419,7 +419,7 @@ function JusticeTab() {
                   <div className="text-[10px] text-black/50 mb-0.5 font-bold">Incarceration /100K</div>
                   <div className="h-3 bg-muted border border-black overflow-hidden">
                     <div
-                      className={`h-full ${d.incarceration > 200 ? "bg-red-400" : "bg-cyan-400"}`}
+                      className={`h-full ${d.incarceration > 200 ? "bg-brutal-red" : "bg-brutal-cyan"}`}
                       style={{ width: `${(d.incarceration / 531) * 100}%` }}
                     />
                   </div>
@@ -429,7 +429,7 @@ function JusticeTab() {
                   <div className="text-[10px] text-black/50 mb-0.5 font-bold">Recidivism %</div>
                   <div className="h-3 bg-muted border border-black overflow-hidden">
                     <div
-                      className={`h-full ${d.recidivism > 50 ? "bg-red-400" : "bg-emerald-400"}`}
+                      className={`h-full ${d.recidivism > 50 ? "bg-brutal-red" : "bg-brutal-cyan"}`}
                       style={{ width: `${d.recidivism}%` }}
                     />
                   </div>
@@ -437,7 +437,7 @@ function JusticeTab() {
                 </div>
                 <div className="w-20 text-right">
                   <div className="text-[10px] text-black/50 font-bold">Homicide</div>
-                  <div className={`text-sm font-black ${d.homicide > 5 ? "text-red-600" : "text-black/70"}`}>
+                  <div className={`text-sm font-black ${d.homicide > 5 ? "text-brutal-red" : "text-black/70"}`}>
                     {d.homicide}
                   </div>
                 </div>

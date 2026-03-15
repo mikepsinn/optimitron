@@ -151,7 +151,7 @@ export default function BudgetPage() {
         <button
           onClick={() => setView("constrained")}
           className={`px-4 py-2 text-sm font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
-            isConstrained ? "bg-pink-500 text-white" : "bg-white text-black hover:bg-brutal-cyan"
+            isConstrained ? "bg-brutal-pink text-white" : "bg-white text-black hover:bg-brutal-cyan"
           }`}
         >
           Fixed Budget
@@ -159,7 +159,7 @@ export default function BudgetPage() {
         <button
           onClick={() => setView("unconstrained")}
           className={`px-4 py-2 text-sm font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
-            !isConstrained ? "bg-pink-500 text-white" : "bg-white text-black hover:bg-brutal-cyan"
+            !isConstrained ? "bg-brutal-pink text-white" : "bg-white text-black hover:bg-brutal-cyan"
           }`}
         >
           Unconstrained
@@ -178,7 +178,7 @@ export default function BudgetPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <SummaryCard label="Total Current" value={fmt(totalCurrent)} />
           <SummaryCard label="Total Optimal" value={fmt(totalOptimal)} />
-          <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-emerald-600" : "text-red-600"} />
+          <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-brutal-cyan" : "text-brutal-red"} />
           <SummaryCard label="Categories Analyzed" value={String(data.categories.length)} />
         </div>
       )}
@@ -190,7 +190,7 @@ export default function BudgetPage() {
           {data.topRecommendations.slice(0, 5).map((rec, i) => (
             <div key={i} className="card border-black">
               <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-pink-500 text-white flex items-center justify-center text-sm font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <span className="flex-shrink-0 w-8 h-8 bg-brutal-pink text-white flex items-center justify-center text-sm font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   {i + 1}
                 </span>
                 <p className="text-sm text-black/70 font-medium">{rec}</p>
@@ -327,7 +327,7 @@ export default function BudgetPage() {
                 constrainedSorted.map((cat) => (
                   <tr key={cat.name} className={`border-b border-black hover:bg-brutal-cyan ${cat.isNonDiscretionary ? "opacity-50" : ""}`}>
                     <td className="py-3 px-2 text-black font-bold">
-                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-pink-500 transition-colors">
+                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
                         {cat.name}
                       </Link>
                       {cat.isNonDiscretionary && (
@@ -336,7 +336,7 @@ export default function BudgetPage() {
                     </td>
                     <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.currentSpending)}</td>
                     <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.constrainedOptimal)}</td>
-                    <td className={`py-3 px-2 text-right font-bold ${cat.reallocation >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                    <td className={`py-3 px-2 text-right font-bold ${cat.reallocation >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
                       {cat.isNonDiscretionary ? "—" : `${cat.reallocation >= 0 ? "+" : ""}${fmt(cat.reallocation)}`}
                     </td>
                     <td className="py-3 px-2 text-center">
@@ -355,13 +355,13 @@ export default function BudgetPage() {
                 sorted.map((cat) => (
                   <tr key={cat.name} className="border-b border-black hover:bg-brutal-cyan">
                     <td className="py-3 px-2 text-black font-bold">
-                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-pink-500 transition-colors">
+                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
                         {cat.name}
                       </Link>
                     </td>
                     <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.currentSpending)}</td>
                     <td className="py-3 px-2 text-right text-black/70 font-medium">{fmt(cat.optimalSpending)}</td>
-                    <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                    <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
                       {pct(cat.gapPercent)}
                     </td>
                     <td className="py-3 px-2 text-center">

@@ -1,87 +1,169 @@
-import { ScrollReveal } from "@/components/animations/ScrollReveal";
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { prizeLink } from "@/lib/routes";
 
-const pathA = [
-  "Destructive economy: $101T/yr in governance dysfunction continues",
-  "Antibiotic resistance goes terminal by 2050 — 10M deaths/yr",
-  "102M more die waiting for treatments stuck in regulatory theatre",
-  "Climate adaptation costs $2.8T/yr by 2030, mostly paid by the poorest",
-  "AI optimises ad revenue while preventable disease kills 150,000/day",
-];
-
-const pathB = [
-  "1% military redirect funds 47M clinical trial slots per year",
-  "dFDA generates outcome labels at $929/patient instead of $41,000",
-  "Cures flow in 36 years instead of 443 — 95% of conditions finally addressed",
-  "Per-capita income gains of $14.9M–$52.1M across adopting jurisdictions",
-  "GDP multiplier: every $1 in health spending returns $2–$4 in productivity",
+const rows = [
+  {
+    metric: "Governance Cost",
+    pathA: "$101T/yr dysfunction",
+    pathB: "1% redirect saves trillions",
+    aWeight: 90,
+    bWeight: 30,
+  },
+  {
+    metric: "Preventable Deaths",
+    pathA: "10M/yr antibiotic resistance",
+    pathB: "95% of conditions treated",
+    aWeight: 80,
+    bWeight: 85,
+  },
+  {
+    metric: "Approval Queue",
+    pathA: "443 years for all treatments",
+    pathB: "36 years via dFDA",
+    aWeight: 95,
+    bWeight: 15,
+  },
+  {
+    metric: "Income Impact",
+    pathA: "Status quo decline",
+    pathB: "$14.9M–$52.1M gains",
+    aWeight: 40,
+    bWeight: 90,
+  },
+  {
+    metric: "Health ROI",
+    pathA: "$0 return on dysfunction",
+    pathB: "$2–$4 per $1 invested",
+    aWeight: 10,
+    bWeight: 75,
+  },
 ];
 
 export function TwoFuturesSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const reduced = useReducedMotion();
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      <ScrollReveal className="text-center mb-16">
+      <motion.div
+        initial={reduced ? {} : { opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4 }}
+        className="text-center mb-12"
+      >
         <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
           Two Futures. Same Species. Same Year.
         </h2>
-        <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-          There isn&apos;t a technology problem. There isn&apos;t a knowledge problem.
-          There&apos;s an allocation problem. These are the two paths, and you are
-          currently on the left one. Not because you chose it. Because nobody chose
-          otherwise.
-        </p>
-      </ScrollReveal>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        <ScrollReveal direction="left">
-          <div className="p-8 border-4 border-black bg-brutal-red/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full">
-            <div className="text-xs font-black px-2.5 py-1 bg-brutal-red text-white inline-block mb-4 uppercase">
+      {/* Diverging bar chart */}
+      <div ref={ref} className="max-w-5xl mx-auto mb-8">
+        {/* Header labels */}
+        <div className="flex items-center mb-4">
+          <div className="w-1/2 pr-4 text-right">
+            <span className="text-xs font-black uppercase text-brutal-red">
               Path A — Status Quo
-            </div>
-            <h3 className="text-xl font-black text-black mb-4">
-              Do Nothing. Keep Arguing.
-            </h3>
-            <ul className="space-y-3">
-              {pathA.map((item) => (
-                <li key={item} className="flex gap-2 text-sm text-black/70 font-medium">
-                  <span className="text-brutal-red font-black shrink-0">&times;</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            </span>
           </div>
-        </ScrollReveal>
-
-        <ScrollReveal direction="right" delay={0.15}>
-          <div className="p-8 border-4 border-black bg-brutal-cyan/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full">
-            <div className="text-xs font-black px-2.5 py-1 bg-brutal-cyan text-black inline-block mb-4 uppercase">
+          <div className="w-px h-4 bg-black/20 shrink-0" />
+          <div className="w-1/2 pl-4 text-left">
+            <span className="text-xs font-black uppercase text-brutal-cyan">
               Path B — 1% Treaty
-            </div>
-            <h3 className="text-xl font-black text-black mb-4">
-              Redirect 1%. Fix Everything.
-            </h3>
-            <ul className="space-y-3">
-              {pathB.map((item) => (
-                <li key={item} className="flex gap-2 text-sm text-black/70 font-medium">
-                  <span className="text-brutal-cyan font-black shrink-0">&check;</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            </span>
           </div>
-        </ScrollReveal>
+        </div>
+
+        {/* Rows */}
+        <div className="space-y-3">
+          {rows.map((row, i) => (
+            <motion.div
+              key={row.metric}
+              initial={reduced ? {} : { opacity: 0, y: 15 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className="flex items-center"
+            >
+              {/* Left side (Path A) — bars grow right-to-left */}
+              <div className="w-1/2 pr-2 sm:pr-4 flex items-center justify-end gap-2">
+                <span className="text-xs text-black/50 font-medium text-right hidden sm:block max-w-32 leading-tight">
+                  {row.pathA}
+                </span>
+                <div className="w-32 sm:w-48 h-8 relative overflow-hidden">
+                  <motion.div
+                    initial={reduced ? { scaleX: 1 } : { scaleX: 0 }}
+                    animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.2 + i * 0.1,
+                      ease: [0.87, 0, 0.13, 1],
+                    }}
+                    style={{ originX: 1, width: `${row.aWeight}%` }}
+                    className="absolute inset-y-0 right-0 bg-brutal-red/70 border-l-2 border-black/20"
+                  />
+                </div>
+              </div>
+
+              {/* Center metric label */}
+              <div className="shrink-0 w-px self-stretch bg-black/30 relative">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-0.5 border border-black/20 whitespace-nowrap z-10">
+                  <span className="text-xs font-black text-black uppercase">
+                    {row.metric}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right side (Path B) — bars grow left-to-right */}
+              <div className="w-1/2 pl-2 sm:pl-4 flex items-center gap-2">
+                <div className="w-32 sm:w-48 h-8 relative overflow-hidden">
+                  <motion.div
+                    initial={reduced ? { scaleX: 1 } : { scaleX: 0 }}
+                    animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.3 + i * 0.1,
+                      ease: [0.87, 0, 0.13, 1],
+                    }}
+                    style={{ originX: 0, width: `${row.bWeight}%` }}
+                    className="absolute inset-y-0 left-0 bg-brutal-cyan/70 border-r-2 border-black/20"
+                  />
+                </div>
+                <span className="text-xs text-black/50 font-medium hidden sm:block max-w-32 leading-tight">
+                  {row.pathB}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Mobile: show labels below for small screens */}
+        <div className="sm:hidden mt-6 space-y-2">
+          {rows.map((row) => (
+            <div key={`mobile-${row.metric}`} className="flex items-start gap-2 text-xs">
+              <span className="font-black text-black shrink-0">{row.metric}:</span>
+              <span className="text-brutal-red">{row.pathA}</span>
+              <span className="text-black/30">vs</span>
+              <span className="text-brutal-cyan">{row.pathB}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <ScrollReveal delay={0.3}>
-        <div className="p-8 border-4 border-black bg-brutal-yellow shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center">
-          <p className="text-xl font-black text-black mb-2">
+      {/* Bottom CTA */}
+      <motion.div
+        initial={reduced ? {} : { opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 0.8 }}
+      >
+        <div className="p-6 border-4 border-black bg-brutal-yellow shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center max-w-3xl mx-auto">
+          <p className="text-xl font-black text-black mb-4">
             Doing nothing IS choosing Path A.
-          </p>
-          <p className="text-black/60 font-medium max-w-2xl mx-auto mb-6">
-            On my planet, inaction was classified as a policy decision in year three.
-            It has the same consequences as action. It just feels less responsible.
-            It isn&apos;t.
           </p>
           <NavItemLink
             item={prizeLink}
@@ -91,7 +173,7 @@ export function TwoFuturesSection() {
             Choose Path B
           </NavItemLink>
         </div>
-      </ScrollReveal>
+      </motion.div>
     </section>
   );
 }

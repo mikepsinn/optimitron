@@ -270,7 +270,7 @@
 
   /* Progress bars — neobrutalist flat style */
   .bar-current {
-    @apply bg-pink-500;
+    @apply bg-brutal-pink;
   }
   .bar-optimal {
     @apply bg-brutal-cyan;
@@ -278,7 +278,7 @@
 
   /* Evidence grade badges */
   .badge-A {
-    @apply bg-emerald-400 text-black border-2 border-black;
+    @apply bg-brutal-cyan text-black border-2 border-black;
   }
   .badge-B {
     @apply bg-brutal-cyan text-black border-2 border-black;
@@ -287,10 +287,10 @@
     @apply bg-brutal-yellow text-black border-2 border-black;
   }
   .badge-D {
-    @apply bg-orange-400 text-black border-2 border-black;
+    @apply bg-brutal-yellow text-black border-2 border-black;
   }
   .badge-F {
-    @apply bg-red-400 text-black border-2 border-black;
+    @apply bg-brutal-red text-black border-2 border-black;
   }
 }
 

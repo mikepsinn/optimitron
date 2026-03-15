@@ -12,6 +12,9 @@ import { EarthOptimizationPrizeSection } from "@/components/landing/EarthOptimiz
 import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
 import { ImplementationPlanSection } from "@/components/landing/ImplementationPlanSection";
 import { TwoFuturesSection } from "@/components/landing/TwoFuturesSection";
+import { NaturalExperimentsChart } from "@/components/landing/NaturalExperimentsChart";
+import { BudgetGapChart } from "@/components/landing/BudgetGapChart";
+import { PersonalIncomeChart } from "@/components/landing/PersonalIncomeChart";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CountUp } from "@/components/animations/CountUp";
@@ -50,41 +53,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-const naturalExperiments = [
-  {
-    jurisdiction: "Portugal",
-    policy: "Drug Decriminalization",
-    year: 2001,
-    outcome: "Drug deaths: 52 to 3 per million",
-    change: "-94%",
-    positive: true,
-  },
-  {
-    jurisdiction: "Australia",
-    policy: "Gun Buyback",
-    year: 1996,
-    outcome: "Mass shootings: 1/yr to 0 for 22 years",
-    change: "-100%",
-    positive: true,
-  },
-  {
-    jurisdiction: "British Columbia",
-    policy: "Revenue-Neutral Carbon Tax",
-    year: 2008,
-    outcome: "Fossil fuel consumption index: 104 to 85",
-    change: "-15%",
-    positive: true,
-  },
-  {
-    jurisdiction: "Copenhagen",
-    policy: "Cycling Infrastructure",
-    year: 2000,
-    outcome: "Bike commute share: 30% to 49%",
-    change: "+63%",
-    positive: true,
-  },
-];
 
 const productWorkflows = [
   {
@@ -235,7 +203,10 @@ export default function Home() {
       {/* ── 5. War vs Cures ── */}
       <WarVsCuresChart />
 
-      {/* ── 6. The Only Two Numbers That Matter ── */}
+      {/* ── 6. How Rich Would You Be? (Interactive Income Trajectory) ── */}
+      <PersonalIncomeChart />
+
+      {/* ── 7. The Only Two Numbers That Matter ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
@@ -271,7 +242,7 @@ export default function Home() {
         </StaggerGrid>
       </section>
 
-      {/* ── 7. How It Works ── */}
+      {/* ── 8. How It Works ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal>
         <div className="p-8 sm:p-12 bg-brutal-cyan border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -327,74 +298,18 @@ export default function Home() {
         </ScrollReveal>
       </section>
 
-      {/* ── 8. Decentralized FDA ── */}
+      {/* ── 9. Decentralized FDA (comparison bars) ── */}
       <DecentralizedFDASection />
 
-      {/* ── 9. Natural Experiments ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <ScrollReveal className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
-            Times a Country Actually Tried Something
-          </h2>
-          <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Occasionally, one of your jurisdictions does something different and
-            it works spectacularly well. Then everyone else looks at it and goes
-            &ldquo;interesting&rdquo; and carries on exactly as before. Fascinating
-            species, honestly.
-          </p>
-        </ScrollReveal>
-        <StaggerGrid className="space-y-4">
-          {naturalExperiments.map((exp) => (
-            <div
-              key={`${exp.jurisdiction}-${exp.year}`}
-              className="p-6 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-xs font-black px-2.5 py-1 bg-black text-white">
-                    {exp.year}
-                  </span>
-                  <span className="font-black text-black">
-                    {exp.jurisdiction}
-                  </span>
-                </div>
-                <div className="flex-grow">
-                  <span className="font-bold text-black/70">{exp.policy}</span>
-                  <span className="text-black/40 mx-2">&rarr;</span>
-                  <span className="font-medium text-black/60">{exp.outcome}</span>
-                </div>
-                <div className="shrink-0">
-                  <span
-                    className={`font-black text-lg ${
-                      exp.positive ? "text-brutal-cyan" : "text-brutal-red"
-                    }`}
-                  >
-                    {exp.change}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </StaggerGrid>
-        <ScrollReveal delay={0.3}>
-          <div className="text-center mt-8">
-            <NavItemLink
-              item={policiesLink}
-              variant="custom"
-              className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-brutal-pink uppercase transition-colors"
-            >
-              View all {naturalExperiments.length} experiments &rarr;
-            </NavItemLink>
-          </div>
-        </ScrollReveal>
-      </section>
+      {/* ── 10. Natural Experiments (interactive chart) ── */}
+      <NaturalExperimentsChart />
 
-      {/* ── 9. Outcome Explorer ── */}
+      {/* ── 11. Outcome Explorer ── */}
       <ScrollReveal>
         <OutcomeExplorerTeaser outcomes={outcomeCards} />
       </ScrollReveal>
 
-      {/* ── 10. Myth vs Data ── */}
+      {/* ── 12. Myth vs Data ── */}
       <ScrollReveal>
         <MythVsDataTeaser
           findings={featuredMyths}
@@ -403,10 +318,10 @@ export default function Home() {
         />
       </ScrollReveal>
 
-      {/* ── 11. Wishocracy ── */}
+      {/* ── 13. Wishocracy ── */}
       <WishocracyLandingSection />
 
-      {/* ── 12. The Bottleneck Is Politicians ── */}
+      {/* ── 14. The Bottleneck Is Politicians ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
@@ -481,60 +396,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 14. Incentive Alignment Bonds ── */}
+      {/* ── 15. Incentive Alignment Bonds ── */}
       <IncentiveAlignmentBondsSection />
 
-      {/* ── 15. Earth Optimization Prize ── */}
+      {/* ── 16. Earth Optimization Prize ── */}
       <EarthOptimizationPrizeSection />
 
-      {/* ── 16. Alignment Teaser ── */}
+      {/* ── 17. Alignment Teaser ── */}
       <AlignmentTeaser />
 
-      {/* ── 17. Implementation Plan ── */}
+      {/* ── 18. Implementation Plan ── */}
       <ImplementationPlanSection />
 
-      {/* ── 18. Two Futures ── */}
+      {/* ── 19. Two Futures (diverging bar chart) ── */}
       <TwoFuturesSection />
 
-      {/* ── 19. The Data — Key Stats ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <ScrollReveal className="text-center mb-16">
+      {/* ── 20. Budget Gap Chart + Compact Receipts ── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-4">
+        <ScrollReveal className="text-center mb-8">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
             The Receipts
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            On my planet we call this &ldquo;evidence.&rdquo; You seem to call it
-            &ldquo;that thing we ignore before doing what we were going to do anyway.&rdquo;
+            On my planet we call this &ldquo;evidence.&rdquo;
           </p>
         </ScrollReveal>
-        <StaggerGrid className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto" staggerDelay={0.08}>
+        <StaggerGrid className="grid grid-cols-3 md:grid-cols-6 gap-3 max-w-4xl mx-auto" staggerDelay={0.05}>
           {[
-            { value: outcomeCount, label: "Outcomes Tracked" },
+            { value: outcomeCount, label: "Outcomes" },
             { value: pairCount, label: "Pair Studies" },
-            { value: budgetCategoryCount, label: "Budget Categories" },
-            { value: 20, label: "Countries Compared", suffix: "+" },
+            { value: budgetCategoryCount, label: "Budget Cats" },
+            { value: 20, label: "Countries", suffix: "+" },
             { value: mythsBusted, label: "Myths Busted" },
             { value: 50, label: "Years of Data", suffix: "+" },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="text-center p-6 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+              className="text-center p-3 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
-              <div className="text-3xl sm:text-4xl font-black text-brutal-pink">
+              <div className="text-2xl font-black text-brutal-pink">
                 <CountUp value={stat.value} suffix={"suffix" in stat ? stat.suffix : ""} className="text-brutal-pink" />
               </div>
-              <div className="text-sm text-black/60 font-bold mt-2 uppercase">
+              <div className="text-xs text-black/60 font-bold mt-1 uppercase">
                 {stat.label}
               </div>
             </div>
           ))}
         </StaggerGrid>
-        <p className="text-center text-black/50 text-sm mt-6 font-medium max-w-2xl mx-auto">
-          From OECD, World Bank, WHO, and peer-reviewed studies.
-        </p>
       </section>
+      <BudgetGapChart />
 
-      {/* ── 17. Things You Can Do Right Now ── */}
+      {/* ── 21. Things You Can Do Right Now ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
@@ -569,7 +481,7 @@ export default function Home() {
         </StaggerGrid>
       </section>
 
-      {/* ── 18. Final CTA ── */}
+      {/* ── 22. Final CTA ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <ScrollReveal>
         <div className="text-center p-12 bg-brutal-yellow border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">

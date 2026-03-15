@@ -113,8 +113,8 @@ function trendIcon(trend: string): string {
 
 function trendColor(trend: string): string {
   const t = trend.toLowerCase();
-  if (t === "increasing" || t === "improving") return "text-emerald-600";
-  if (t === "decreasing") return "text-red-600";
+  if (t === "increasing" || t === "improving") return "text-brutal-cyan";
+  if (t === "decreasing") return "text-brutal-red";
   return "text-black/50";
 }
 
@@ -192,7 +192,7 @@ export default async function BudgetCategoryPage({
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-black mb-4">Category Not Found</h1>
-        <NavItemLink item={budgetLink} variant="custom" className="text-pink-500 font-bold underline">
+        <NavItemLink item={budgetLink} variant="custom" className="text-brutal-pink font-bold underline">
           ← Back to Budget Dashboard
         </NavItemLink>
       </div>
@@ -355,7 +355,7 @@ export default async function BudgetCategoryPage({
               <div className="text-xs font-bold uppercase text-black/50">R² (Model Fit)</div>
               <div className="text-lg font-black text-black">{(dr.r2 * 100).toFixed(0)}%</div>
               <div className="mt-1 h-2 bg-muted border border-black overflow-hidden">
-                <div className="h-full bg-pink-500" style={{ width: `${dr.r2 * 100}%` }} />
+                <div className="h-full bg-brutal-pink" style={{ width: `${dr.r2 * 100}%` }} />
               </div>
             </div>
             {cat.elasticity !== undefined && (
@@ -410,7 +410,7 @@ export default async function BudgetCategoryPage({
                 </div>
                 <div className="border-2 border-black p-3 bg-white">
                   <div className="text-xs font-bold uppercase text-black/50">Mean % Change</div>
-                  <div className={`text-lg font-black ${causalEvidence.meanPercentChange >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                  <div className={`text-lg font-black ${causalEvidence.meanPercentChange >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
                     {causalEvidence.meanPercentChange >= 0 ? "+" : ""}{causalEvidence.meanPercentChange.toFixed(1)}%
                   </div>
                 </div>
@@ -529,24 +529,24 @@ export default async function BudgetCategoryPage({
           </div>
           <div className="border-2 border-black p-3 bg-white">
             <div className="text-xs font-bold uppercase text-black/50">Income Effect</div>
-            <div className={`text-xl font-black ${cat.welfareEffect.incomeEffect >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+            <div className={`text-xl font-black ${cat.welfareEffect.incomeEffect >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
               {cat.welfareEffect.incomeEffect >= 0 ? "+" : ""}{(cat.welfareEffect.incomeEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-1 h-2 bg-muted border border-black overflow-hidden">
               <div
-                className={`h-full ${cat.welfareEffect.incomeEffect >= 0 ? "bg-emerald-400" : "bg-red-400"}`}
+                className={`h-full ${cat.welfareEffect.incomeEffect >= 0 ? "bg-brutal-cyan" : "bg-brutal-red"}`}
                 style={{ width: `${Math.min(Math.abs(cat.welfareEffect.incomeEffect) * 100, 100)}%` }}
               />
             </div>
           </div>
           <div className="border-2 border-black p-3 bg-white">
             <div className="text-xs font-bold uppercase text-black/50">Health Effect</div>
-            <div className={`text-xl font-black ${cat.welfareEffect.healthEffect >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+            <div className={`text-xl font-black ${cat.welfareEffect.healthEffect >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
               {cat.welfareEffect.healthEffect >= 0 ? "+" : ""}{(cat.welfareEffect.healthEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-1 h-2 bg-muted border border-black overflow-hidden">
               <div
-                className={`h-full ${cat.welfareEffect.healthEffect >= 0 ? "bg-emerald-400" : "bg-red-400"}`}
+                className={`h-full ${cat.welfareEffect.healthEffect >= 0 ? "bg-brutal-cyan" : "bg-brutal-red"}`}
                 style={{ width: `${Math.min(Math.abs(cat.welfareEffect.healthEffect) * 100, 100)}%` }}
               />
             </div>
@@ -564,7 +564,7 @@ export default async function BudgetCategoryPage({
           </div>
           <div className="h-4 bg-muted border-2 border-black overflow-hidden">
             <div
-              className="h-full bg-pink-500"
+              className="h-full bg-brutal-pink"
               style={{ width: `${(cat.currentSpending / data.totalBudget) * 100}%` }}
             />
           </div>
@@ -644,7 +644,7 @@ export default async function BudgetCategoryPage({
               item={optimalBudgetGeneratorPaperLink}
               variant="custom"
               external
-              className="text-pink-500 hover:underline"
+              className="text-brutal-pink hover:underline"
             >
               Optimal Budget Generator paper
             </NavItemLink>{" "}

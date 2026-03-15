@@ -88,13 +88,13 @@ const BRADFORD_HILL_DESCRIPTIONS: Record<string, string> = {
 function gradeColor(grade: string): string {
   switch (grade) {
     case "A":
-      return "bg-emerald-400 text-black";
+      return "bg-brutal-cyan text-black";
     case "B":
       return "bg-brutal-yellow text-black";
     case "C":
-      return "bg-orange-400 text-black";
+      return "bg-brutal-yellow text-black";
     default:
-      return "bg-red-400 text-black";
+      return "bg-brutal-red text-black";
   }
 }
 
@@ -143,7 +143,7 @@ export default async function PolicyDetailPage({
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-black mb-4">Policy Not Found</h1>
-        <NavItemLink item={policiesLink} variant="custom" className="text-pink-500 font-bold underline">
+        <NavItemLink item={policiesLink} variant="custom" className="text-brutal-pink font-bold underline">
           ← Back to Policy Rankings
         </NavItemLink>
       </div>
@@ -189,7 +189,7 @@ export default async function PolicyDetailPage({
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <div className="border-2 border-black p-4 bg-pink-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-2 border-black p-4 bg-brutal-pink text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-xs font-bold uppercase opacity-80 mb-1">Welfare Score</div>
             <div className="text-2xl sm:text-3xl font-black">+{policy.welfareScore}</div>
           </div>
@@ -262,7 +262,7 @@ export default async function PolicyDetailPage({
             </div>
             <div className="mt-2 h-3 bg-muted border border-black overflow-hidden">
               <div
-                className="h-full bg-pink-500"
+                className="h-full bg-brutal-pink"
                 style={{ width: `${policy.healthEffect * 100}%` }}
               />
             </div>
@@ -299,7 +299,7 @@ export default async function PolicyDetailPage({
           </div>
           <div>
             <div className="text-xs font-bold uppercase text-black/50 mb-2">Rationale</div>
-            <p className="text-sm text-black/70 font-medium border-l-4 border-pink-500 pl-3">
+            <p className="text-sm text-black/70 font-medium border-l-4 border-brutal-pink pl-3">
               {policy.rationale}
             </p>
 
@@ -384,7 +384,7 @@ export default async function PolicyDetailPage({
               item={optimalPolicyGeneratorPaperLink}
               variant="custom"
               external
-              className="text-pink-500 hover:underline"
+              className="text-brutal-pink hover:underline"
             >
               Optimal Policy Generator paper
             </NavItemLink>{" "}

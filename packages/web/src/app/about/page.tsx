@@ -20,7 +20,7 @@ const productSurfaces = [
     tone: "bg-brutal-pink",
     titleColor: "text-white",
     descColor: "text-white/80",
-    ctaColor: "text-white hover:text-yellow-300",
+    ctaColor: "text-white hover:text-brutal-yellow",
   },
   {
     item: alignmentLink,
@@ -30,7 +30,7 @@ const productSurfaces = [
     tone: "bg-brutal-yellow",
     titleColor: "text-black",
     descColor: "text-black/70",
-    ctaColor: "text-black hover:text-pink-600",
+    ctaColor: "text-black hover:text-brutal-pink",
   },
   {
     item: studiesLink,
@@ -40,7 +40,7 @@ const productSurfaces = [
     tone: "bg-brutal-cyan",
     titleColor: "text-black",
     descColor: "text-black/70",
-    ctaColor: "text-black hover:text-pink-600",
+    ctaColor: "text-black hover:text-brutal-pink",
   },
   {
     item: trackLink,
@@ -50,7 +50,7 @@ const productSurfaces = [
     tone: "bg-brutal-cyan",
     titleColor: "text-black",
     descColor: "text-black/70",
-    ctaColor: "text-black hover:text-pink-600",
+    ctaColor: "text-black hover:text-brutal-pink",
   },
 ];
 
@@ -144,7 +144,7 @@ export default function AboutPage() {
           <NavItemLink
             item={wishocracyLink}
             variant="custom"
-            className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center border-4 border-black bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             Start With Wishocracy
           </NavItemLink>
@@ -209,7 +209,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           {steps.map((step, index) => (
             <div key={step.label} className="card text-center py-5">
-              <div className="text-pink-500 font-black text-lg">{index + 1}</div>
+              <div className="text-brutal-pink font-black text-lg">{index + 1}</div>
               <div className="text-black font-black text-sm uppercase">{step.label}</div>
               <div className="text-xs text-black/50 mt-2 font-medium leading-relaxed">
                 {step.desc}
@@ -262,14 +262,14 @@ export default function AboutPage() {
           <NavItemLink
             item={prizeLink}
             variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-black hover:text-pink-600 transition-colors"
+            className="inline-flex items-center text-sm font-black uppercase text-black hover:text-brutal-pink transition-colors"
           >
             Donate to the Prize Pool &rarr;
           </NavItemLink>
           <NavItemLink
             item={transparencyLink}
             variant="custom"
-            className="inline-flex items-center text-sm font-black uppercase text-black hover:text-pink-600 transition-colors"
+            className="inline-flex items-center text-sm font-black uppercase text-black hover:text-brutal-pink transition-colors"
           >
             See The Full Pipeline &rarr;
           </NavItemLink>
@@ -290,13 +290,13 @@ export default function AboutPage() {
               external
               className="card group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
-              <h3 className="text-black font-black group-hover:text-pink-500 transition-colors">
+              <h3 className="text-black font-black group-hover:text-brutal-pink transition-colors">
                 {paper.label}
               </h3>
               <p className="text-sm text-black/60 mt-2 font-medium leading-relaxed">
                 {paper.description}
               </p>
-              <span className="text-xs text-pink-500 mt-3 inline-block font-black uppercase">
+              <span className="text-xs text-brutal-pink mt-3 inline-block font-black uppercase">
                 Read paper &rarr;
               </span>
             </NavItemLink>

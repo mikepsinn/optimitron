@@ -1,129 +1,194 @@
-import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { StaggerGrid } from "@/components/animations/StaggerGrid";
-import { CountUp } from "@/components/animations/CountUp";
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { dfdaSpecPaperLink } from "@/lib/routes";
 
-const stats = [
-  { label: "Cost per Patient", from: "$41,000", to: "$929", color: "text-brutal-cyan" },
-  { label: "Capacity", from: "1.9M/yr", to: "23.4M/yr", color: "text-brutal-pink" },
-  { label: "Conditions Untreated", value: "95%", color: "text-brutal-red" },
-  { label: "Approval Queue", from: "443 years", to: "36 years", color: "text-brutal-yellow" },
-];
-
-const stages = [
+const comparisons = [
   {
-    stage: "Stage 1",
-    title: "Signal Detection",
-    method: "Real-World Evidence",
-    cost: "~$1/patient",
-    description:
-      "Use data people are already generating — prescriptions, wearables, lab results — to detect which interventions actually correlate with outcomes. No recruitment. No placebo groups. Just pattern recognition on the data that already exists.",
-    color: "bg-brutal-cyan",
+    label: "Cost per Patient",
+    current: { value: 41000, display: "$41,000", color: "bg-brutal-red" },
+    optimized: { value: 929, display: "$929", color: "bg-brutal-cyan" },
+    ratio: "44x cheaper",
+    ratioColor: "text-brutal-cyan",
   },
   {
-    stage: "Stage 2",
-    title: "Pragmatic Trials",
-    method: "Confirmatory RCTs",
-    cost: "~$929/patient",
-    description:
-      "Once signals are detected, run pragmatic trials embedded in routine care. Same doctors, same clinics, real patients. Not the $41,000-per-patient theatrical productions your FDA currently requires. Just rigorous evidence at human scale.",
-    color: "bg-brutal-pink",
+    label: "Annual Capacity",
+    current: { value: 1.9, display: "1.9M/yr", color: "bg-brutal-red/60" },
+    optimized: { value: 23.4, display: "23.4M/yr", color: "bg-brutal-cyan" },
+    ratio: "12x more",
+    ratioColor: "text-brutal-cyan",
+  },
+  {
+    label: "Queue to Test All Treatments",
+    current: { value: 443, display: "443 years", color: "bg-brutal-red" },
+    optimized: { value: 36, display: "36 years", color: "bg-brutal-cyan" },
+    ratio: "12x faster",
+    ratioColor: "text-brutal-cyan",
   },
 ];
 
 export function DecentralizedFDASection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const reduced = useReducedMotion();
+
   return (
     <section className="bg-brutal-cyan/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <ScrollReveal className="text-center mb-16">
+        <motion.div
+          initial={reduced ? {} : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-16"
+        >
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black">
             Your Decentralized FDA
           </h2>
           <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-            Your FDA makes treatments wait 8.2 years AFTER they&apos;ve already been
-            proven safe. Just sitting there. Being safe. While people die waiting.
-            This is the medical infrastructure that all those bonds fund.
+            Your FDA makes treatments wait 8.2 years AFTER they&apos;ve been proven safe. This replaces the theatre with infrastructure.
           </p>
-        </ScrollReveal>
+        </motion.div>
 
-        {/* Stats strip */}
-        <StaggerGrid className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12" staggerDelay={0.08}>
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="p-5 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center"
-            >
-              <div className="text-xs font-black uppercase text-black/50 mb-2">
-                {stat.label}
-              </div>
-              {"value" in stat ? (
-                <div className={`text-2xl font-black ${stat.color}`}>
-                  <CountUp value={95} suffix="%" className={stat.color} />
-                </div>
-              ) : (
-                <div>
-                  <span className="text-sm font-bold text-black/40 line-through">
-                    {stat.from}
-                  </span>
-                  <span className="text-black/40 mx-1">&rarr;</span>
-                  <span className={`text-xl font-black ${stat.color}`}>
-                    {stat.to}
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-        </StaggerGrid>
+        {/* Comparison bars */}
+        <div ref={ref} className="max-w-4xl mx-auto space-y-10 mb-12">
+          {comparisons.map((comp, i) => {
+            const max = Math.max(comp.current.value, comp.optimized.value);
+            const currentPct = (comp.current.value / max) * 100;
+            const optPct = (comp.optimized.value / max) * 100;
 
-        {/* Two-stage pipeline */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {stages.map((item, i) => (
-            <ScrollReveal key={item.stage} delay={i * 0.15}>
-              <div className={`p-6 border-4 border-black ${item.color} shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full`}>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-xs font-black px-2.5 py-1 bg-black text-white uppercase">
-                    {item.stage}
+            return (
+              <div key={comp.label}>
+                <motion.div
+                  initial={reduced ? {} : { opacity: 0, x: -40 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.4, delay: i * 0.15 }}
+                  className="flex items-center justify-between mb-2"
+                >
+                  <span className="text-sm font-black uppercase text-black/60">
+                    {comp.label}
                   </span>
-                  <span className="text-xs font-black px-2.5 py-1 bg-white border-2 border-black">
-                    {item.cost}
+                  <span className={`text-lg sm:text-xl font-black ${comp.ratioColor}`}>
+                    {comp.ratio}
                   </span>
+                </motion.div>
+
+                {/* Current (status quo) bar */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-black/40 w-16 shrink-0">
+                      Current
+                    </span>
+                    <div className="flex-grow relative h-10 bg-black/5 border border-black/10">
+                      <motion.div
+                        initial={reduced ? { scaleX: 1 } : { scaleX: 0 }}
+                        animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                        transition={{
+                          duration: 0.8,
+                          delay: 0.1 + i * 0.15,
+                          ease: [0.87, 0, 0.13, 1],
+                        }}
+                        style={{ originX: 0, width: `${currentPct}%` }}
+                        className={`absolute inset-y-0 left-0 ${comp.current.color} border-r-2 border-black/20`}
+                      />
+                      <div className="absolute inset-0 flex items-center pl-3">
+                        <span className="text-sm font-black text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+                          {comp.current.display}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Optimized (dFDA) bar */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-black/40 w-16 shrink-0">
+                      dFDA
+                    </span>
+                    <div className="flex-grow relative h-10 bg-black/5 border border-black/10">
+                      <motion.div
+                        initial={reduced ? { scaleX: 1 } : { scaleX: 0 }}
+                        animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                        transition={{
+                          duration: 0.8,
+                          delay: 0.2 + i * 0.15,
+                          ease: [0.87, 0, 0.13, 1],
+                        }}
+                        style={{ originX: 0, width: `${optPct}%` }}
+                        className={`absolute inset-y-0 left-0 ${comp.optimized.color} border-r-2 border-black/20`}
+                      />
+                      <div className="absolute inset-0 flex items-center pl-3">
+                        <span className="text-sm font-black text-black">
+                          {comp.optimized.display}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-black text-black mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-xs font-bold text-black/50 mb-3 uppercase">
-                  {item.method}
-                </p>
-                <p className="text-sm text-black/70 leading-relaxed font-medium">
-                  {item.description}
-                </p>
               </div>
-            </ScrollReveal>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Outcome Labels callout */}
-        <ScrollReveal delay={0.3}>
-          <div className="p-6 border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center">
-            <p className="text-lg font-black text-black mb-2">
-              Consumer Reports, but for not dying.
+        {/* Compact stage descriptions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-8">
+          <motion.div
+            initial={reduced ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+            className="p-4 border-2 border-black bg-brutal-cyan/30"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-black px-2 py-0.5 bg-black text-white">
+                Stage 1
+              </span>
+              <span className="text-xs font-black">~$1/patient</span>
+            </div>
+            <p className="text-sm text-black/70 font-medium">
+              Real-world evidence from existing data — prescriptions, wearables, lab results. Pattern recognition, not recruitment.
             </p>
-            <p className="text-black/60 font-medium max-w-2xl mx-auto mb-4">
-              Every treatment gets an Outcome Label — effectiveness, side effects,
-              optimal dosage — generated from millions of real patients, not 200
-              undergraduates in a lab. Updated continuously, not once every 17 years.
+          </motion.div>
+          <motion.div
+            initial={reduced ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            className="p-4 border-2 border-black bg-brutal-pink/30"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-black px-2 py-0.5 bg-black text-white">
+                Stage 2
+              </span>
+              <span className="text-xs font-black">~$929/patient</span>
+            </div>
+            <p className="text-sm text-black/70 font-medium">
+              Pragmatic trials in routine care. Same doctors, same clinics, real patients. Rigorous evidence at human scale.
             </p>
-            <NavItemLink
-              item={dfdaSpecPaperLink}
-              variant="custom"
-              external
-              className="inline-flex items-center text-sm font-black text-brutal-cyan uppercase hover:text-black transition-colors"
-            >
-              Read the dFDA spec &rarr;
-            </NavItemLink>
-          </div>
-        </ScrollReveal>
+          </motion.div>
+        </div>
+
+        {/* Consumer Reports line + link */}
+        <motion.div
+          initial={reduced ? {} : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.7 }}
+          className="text-center"
+        >
+          <p className="text-sm text-black/50 font-bold mb-3">
+            Every treatment gets an Outcome Label — effectiveness, side effects, optimal dosage — from millions of real patients.
+          </p>
+          <NavItemLink
+            item={dfdaSpecPaperLink}
+            variant="custom"
+            external
+            className="inline-flex items-center text-sm font-black text-brutal-cyan uppercase hover:text-black transition-colors"
+          >
+            Read the dFDA spec &rarr;
+          </NavItemLink>
+        </motion.div>
       </div>
     </section>
   );
