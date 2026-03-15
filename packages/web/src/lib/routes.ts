@@ -17,6 +17,8 @@ export const ROUTES = {
   discoveries: "/discoveries",
   studies: "/studies",
   civic: "/civic",
+  money: "/money",
+  federalReserve: "/federal-reserve",
   signIn: "/auth/signin",
 } as const;
 
@@ -105,6 +107,20 @@ export const discoveriesLink: NavItem = {
   description: "Population-level health discoveries from contributor data",
 };
 
+export const moneyLink: NavItem = {
+  href: ROUTES.money,
+  label: "How Money Should Work",
+  emoji: "💸",
+  description: "Programmable currency with built-in governance — transaction tax, UBI, wishocratic allocation",
+};
+
+export const federalReserveLink: NavItem = {
+  href: ROUTES.federalReserve,
+  label: "Algorithmic Central Bank",
+  emoji: "🏦",
+  description: "Why a transparent algorithm beats 12 people guessing about interest rates",
+};
+
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
   studiesLink,
@@ -113,6 +129,8 @@ export const exploreLinks: NavItem[] = [
   budgetLink,
   misconceptionsLink,
   discoveriesLink,
+  moneyLink,
+  federalReserveLink,
 ];
 
 export const wishocracyLink: NavItem = {

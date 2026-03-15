@@ -154,12 +154,7 @@ const contractDetails = [
     value: "PrizePool.sol",
     detail: "Outcome-based escrow with Wishocratic allocation",
   },
-  {
-    label: "Token",
-    value: "$WISH (ERC-20)",
-    detail: "0.5% transaction tax funds UBI + prize pools",
-  },
-  {
+{
     label: "Health Metric",
     value: "Median Healthy Life Years",
     detail: "50% of pool — verified by peer-reviewed study",
@@ -474,107 +469,12 @@ export default function PrizePage() {
             The Protocol Itself Is Replaceable
           </h3>
           <p className="text-sm text-black/70 font-medium leading-relaxed">
-            If someone builds a better coordination mechanism than IABs +
+            If someone builds a better coordination mechanism than Incentive Alignment Bonds +
             Wishocratic allocation, the protocol should be replaced by it. The
             goal is outcome maximisation, not protocol preservation. On my
             planet, we replaced the governance protocol three times in four
             thousand years. Each time it was mildly inconvenient and
             comprehensively worth it.
-          </p>
-        </div>
-      </section>
-
-      {/* Three Mechanisms */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-4">
-          Three Mechanisms. One System.
-        </h2>
-        <p className="text-sm font-medium text-black/60 mb-6 max-w-3xl">
-          Your species keeps conflating &ldquo;invest in governance&rdquo; with
-          &ldquo;fund a government.&rdquo; These are three separate economic
-          streams that work together. Understanding them takes 30 seconds. On my
-          planet, it took about four.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="border-4 border-black bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl mb-3">🎯</div>
-            <h3 className="font-black uppercase text-white mb-2">
-              Incentive Alignment Bond Prize Pool
-            </h3>
-            <p className="text-xs font-black uppercase text-white/80 mb-2">
-              You&apos;re here
-            </p>
-            <p className="text-sm text-white/80 font-medium leading-relaxed">
-              Investors buy bonds into an escrow smart contract. Money stays
-              locked until health and income outcomes measurably improve.
-              Bondholders then allocate funds to implementers who produced results.
-            </p>
-            <div className="border-2 border-black bg-white mt-4 p-3">
-              <div className="text-xs font-black uppercase text-black/50">
-                Purpose
-              </div>
-              <div className="text-sm font-black mt-1">
-                Fund specific governance reforms
-              </div>
-            </div>
-          </div>
-
-          <div className="border-4 border-black bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl mb-3">🏦</div>
-            <h3 className="font-black uppercase text-black mb-2">
-              FairTax (Replaces the IRS)
-            </h3>
-            <p className="text-sm text-black/70 font-medium leading-relaxed">
-              Every $WISH transaction has a 0.5% tax built into the token
-              contract. Revenue collection happens automatically — no filing, no
-              audits, no 74,000-page tax code, no 83,000 IRS employees. Just a
-              protocol-level fee on economic activity.
-            </p>
-            <div className="border-2 border-black bg-white mt-4 p-3">
-              <div className="text-xs font-black uppercase text-black/50">
-                Purpose
-              </div>
-              <div className="text-sm font-black mt-1">
-                Replace income tax with automated transaction tax
-              </div>
-            </div>
-          </div>
-
-          <div className="border-4 border-black bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl mb-3">🍞</div>
-            <h3 className="font-black uppercase text-black mb-2">
-              UBI (Replaces Welfare)
-            </h3>
-            <p className="text-sm text-black/70 font-medium leading-relaxed">
-              The transaction tax accumulates in a treasury that distributes
-              Universal Basic Income to every verified citizen. World ID
-              prevents fraud. No means testing. No case workers. No
-              applications. Just money going directly to people.
-            </p>
-            <div className="border-2 border-black bg-white mt-4 p-3">
-              <div className="text-xs font-black uppercase text-black/50">
-                Purpose
-              </div>
-              <div className="text-sm font-black mt-1">
-                Keep people from starving without the bureaucracy
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-4 border-black bg-brutal-yellow p-6 mt-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="font-black uppercase text-black mb-2">
-            How They Connect
-          </h3>
-          <p className="text-sm text-black/70 font-medium leading-relaxed">
-            The Incentive Alignment Bond Prize Pool is <span className="font-black text-black">investment</span> — you
-            buy bonds that fund governance reforms with attractive return profiles.
-            The FairTax is <span className="font-black text-black">automatic</span> — 0.5%
-            of every $WISH transaction funds the treasury without anyone filing
-            anything. UBI is <span className="font-black text-black">universal</span> — the
-            treasury distributes to all verified citizens equally, replacing the
-            $1.1 trillion per year your species spends administering means-tested
-            welfare programs. Three mechanisms. Zero bureaucrats.
           </p>
         </div>
       </section>
