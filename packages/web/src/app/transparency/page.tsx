@@ -195,7 +195,7 @@ export default function TransparencyPage() {
                   </div>
                 </div>
                 <div className="mt-2 text-[10px] font-bold text-black/40">
-                  {pol.votesCompared} votes compared · {pol.categoryScores.length} categories
+                  {pol.votesCompared} votes compared · {Object.keys(pol.categoryScores).length} categories
                 </div>
               </div>
             ))}

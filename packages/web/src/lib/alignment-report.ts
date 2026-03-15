@@ -128,7 +128,7 @@ export function dedupeLatestWishocraticComparisons(
 ): StoredWishocraticComparison[] {
   const latestByPair = new Map<
     string,
-    StoredWishocraticComparison & { categoryA: BudgetCategoryId; categoryB: BudgetCategoryId }
+    StoredWishocraticComparison & { itemAId: BudgetCategoryId; itemBId: BudgetCategoryId }
   >();
 
   for (const comparison of comparisons) {
@@ -137,7 +137,7 @@ export function dedupeLatestWishocraticComparisons(
       continue;
     }
 
-    const key = `${normalized.categoryA}_${normalized.categoryB}`;
+    const key = `${normalized.itemAId}_${normalized.itemBId}`;
     const existing = latestByPair.get(key);
     const normalizedTimestamp =
       normalized.timestamp instanceof Date
@@ -155,8 +155,8 @@ export function dedupeLatestWishocraticComparisons(
     if (!existing || normalizedTimestamp >= existingTimestamp) {
       latestByPair.set(key, {
         ...normalized,
-        categoryA: normalized.categoryA,
-        categoryB: normalized.categoryB,
+        itemAId: normalized.itemAId,
+        itemBId: normalized.itemBId,
       });
     }
   }

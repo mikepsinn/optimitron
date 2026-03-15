@@ -18,17 +18,17 @@ export const AUTH_PROMPT_MILESTONES = new Set([5, 10, 15]);
 export const ALL_CATEGORY_IDS = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[];
 
 export type PendingComparison = {
-  categoryA: string;
-  categoryB: string;
+  itemAId: string;
+  itemBId: string;
   allocationA: number;
   allocationB: number;
   timestamp?: string;
 };
 
-type PendingSelections = Array<{ categoryId: string; selected: boolean }> | string[] | undefined;
+type PendingSelections = Array<{ itemId: string; selected: boolean }> | string[] | undefined;
 
 type PersistedSelections = {
-  categoryId: string;
+  itemId: string;
   selected: boolean;
 };
 
@@ -43,8 +43,8 @@ export type HydratedWishocracyState = {
 export function getRejectedCategories(comparisons: PendingComparison[]) {
   return comparisons.reduce((rejected, comparison) => {
     if (comparison.allocationA === 0 && comparison.allocationB === 0) {
-      rejected.add(comparison.categoryA as BudgetCategoryId);
-      rejected.add(comparison.categoryB as BudgetCategoryId);
+      rejected.add(comparison.itemAId as BudgetCategoryId);
+      rejected.add(comparison.itemBId as BudgetCategoryId);
     }
     return rejected;
   }, new Set<BudgetCategoryId>());
@@ -89,7 +89,7 @@ function getSelectedCategorySet(selections: PendingSelections) {
   return new Set(
     (selections as PersistedSelections[])
       .filter((selection) => selection.selected)
-      .map((selection) => selection.categoryId)
+      .map((selection) => selection.itemId)
       .filter(
         (categoryId): categoryId is BudgetCategoryId =>
           BUDGET_CATEGORIES[categoryId as BudgetCategoryId] !== undefined,

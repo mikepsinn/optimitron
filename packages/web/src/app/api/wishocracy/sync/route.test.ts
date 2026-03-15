@@ -75,8 +75,8 @@ describe("wishocracy sync route", () => {
         body: JSON.stringify({
           comparisons: [
             {
-              categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-              categoryB: "MILITARY_OPERATIONS",
+              itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+              itemBId: "MILITARY_OPERATIONS",
               allocationA: 80,
               allocationB: 30,
               timestamp: "2026-03-11T00:00:00.000Z",
@@ -112,8 +112,8 @@ describe("wishocracy sync route", () => {
           ],
           comparisons: [
             {
-              categoryA: "MILITARY_OPERATIONS",
-              categoryB: "ADDICTION_TREATMENT",
+              itemAId: "MILITARY_OPERATIONS",
+              itemBId: "ADDICTION_TREATMENT",
               allocationA: 75,
               allocationB: 25,
               timestamp: "2026-03-11T00:00:00.000Z",
@@ -143,12 +143,12 @@ describe("wishocracy sync route", () => {
       data: expect.arrayContaining([
         {
           userId: "user_1",
-          categoryId: "ADDICTION_TREATMENT",
+          itemId: "ADDICTION_TREATMENT",
           selected: true,
         },
         {
           userId: "user_1",
-          categoryId: "PRAGMATIC_CLINICAL_TRIALS",
+          itemId: "PRAGMATIC_CLINICAL_TRIALS",
           selected: false,
         },
       ]),
@@ -160,8 +160,8 @@ describe("wishocracy sync route", () => {
       data: [
         {
           userId: "user_1",
-          categoryA: "ADDICTION_TREATMENT",
-          categoryB: "MILITARY_OPERATIONS",
+          itemAId: "ADDICTION_TREATMENT",
+          itemBId: "MILITARY_OPERATIONS",
           allocationA: 25,
           allocationB: 75,
         },

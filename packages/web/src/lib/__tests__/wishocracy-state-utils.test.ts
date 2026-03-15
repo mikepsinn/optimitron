@@ -42,14 +42,14 @@ describe("wishocracy state utils", () => {
   it("marks both categories as rejected for 0/0 comparisons", () => {
     const rejected = getRejectedCategories([
       {
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 0,
         allocationB: 0,
       },
       {
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "EARLY_CHILDHOOD_EDUCATION",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "EARLY_CHILDHOOD_EDUCATION",
         allocationA: 70,
         allocationB: 30,
       },
@@ -72,8 +72,8 @@ describe("wishocracy state utils", () => {
       selectedCategories,
       [
         {
-          categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-          categoryB: "ADDICTION_TREATMENT",
+          itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+          itemBId: "ADDICTION_TREATMENT",
           allocationA: 60,
           allocationB: 40,
         },
@@ -91,15 +91,15 @@ describe("wishocracy state utils", () => {
     mocks.getPendingWishocracy.mockReturnValue({
       comparisons: [
         {
-          categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-          categoryB: "ADDICTION_TREATMENT",
+          itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+          itemBId: "ADDICTION_TREATMENT",
           allocationA: 60,
           allocationB: 40,
           timestamp: "2026-03-11T00:00:00.000Z",
         },
         {
-          categoryA: "ADDICTION_TREATMENT",
-          categoryB: "MILITARY_OPERATIONS",
+          itemAId: "ADDICTION_TREATMENT",
+          itemBId: "MILITARY_OPERATIONS",
           allocationA: 0,
           allocationB: 0,
           timestamp: "2026-03-11T00:01:00.000Z",
@@ -144,8 +144,8 @@ describe("wishocracy state utils", () => {
       shouldShowIntro(
         [
           {
-            categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-            categoryB: "ADDICTION_TREATMENT",
+            itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+            itemBId: "ADDICTION_TREATMENT",
             allocationA: 50,
             allocationB: 50,
           },
@@ -172,14 +172,14 @@ describe("wishocracy state utils", () => {
         json: async () => ({
           allocations: [
             {
-              categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-              categoryB: "ADDICTION_TREATMENT",
+              itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+              itemBId: "ADDICTION_TREATMENT",
               allocationA: 60,
               allocationB: 40,
             },
             {
-              categoryA: "NOT_REAL_CATEGORY",
-              categoryB: "ADDICTION_TREATMENT",
+              itemAId: "NOT_REAL_CATEGORY",
+              itemBId: "ADDICTION_TREATMENT",
               allocationA: 20,
               allocationB: 80,
             },
@@ -190,15 +190,15 @@ describe("wishocracy state utils", () => {
         json: async () => ({
           selections: [
             {
-              categoryId: "PRAGMATIC_CLINICAL_TRIALS",
+              itemId: "PRAGMATIC_CLINICAL_TRIALS",
               selected: true,
             },
             {
-              categoryId: "ADDICTION_TREATMENT",
+              itemId: "ADDICTION_TREATMENT",
               selected: true,
             },
             {
-              categoryId: "EARLY_CHILDHOOD_EDUCATION",
+              itemId: "EARLY_CHILDHOOD_EDUCATION",
               selected: true,
             },
           ],
@@ -224,8 +224,8 @@ describe("wishocracy state utils", () => {
     );
     expect(state.comparisons).toEqual([
       {
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 60,
         allocationB: 40,
       },

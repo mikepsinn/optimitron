@@ -37,14 +37,14 @@ describe("wishocracy community helpers", () => {
   it("normalizes reversed comparison pairs", () => {
     expect(
       normalizeWishocraticComparison({
-        categoryA: "MILITARY_OPERATIONS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "MILITARY_OPERATIONS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 80,
         allocationB: 20,
       }),
     ).toEqual({
-      categoryA: "ADDICTION_TREATMENT",
-      categoryB: "MILITARY_OPERATIONS",
+      itemAId: "ADDICTION_TREATMENT",
+      itemBId: "MILITARY_OPERATIONS",
       allocationA: 20,
       allocationB: 80,
     });
@@ -54,32 +54,32 @@ describe("wishocracy community helpers", () => {
     const summary = buildWishocracyCommunitySummary([
       {
         userId: "user_1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 40,
         allocationB: 60,
         updatedAt: new Date("2026-03-10T00:00:00.000Z"),
       },
       {
         userId: "user_1",
-        categoryA: "MILITARY_OPERATIONS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "MILITARY_OPERATIONS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 70,
         allocationB: 30,
         updatedAt: new Date("2026-03-11T00:00:00.000Z"),
       },
       {
         userId: "user_2",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 100,
         allocationB: 0,
         updatedAt: new Date("2026-03-11T12:00:00.000Z"),
       },
       {
         userId: "user_3",
-        categoryA: "NOT_A_CATEGORY",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "NOT_A_CATEGORY",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 100,
         allocationB: 0,
         updatedAt: new Date("2026-03-11T12:00:00.000Z"),

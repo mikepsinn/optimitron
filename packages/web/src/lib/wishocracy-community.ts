@@ -6,8 +6,8 @@ import { createLogger } from "@/lib/logger";
 const logger = createLogger("wishocracy-community");
 
 export interface WishocraticComparisonInput {
-  categoryA: string;
-  categoryB: string;
+  itemAId: string;
+  itemBId: string;
   allocationA: number;
   allocationB: number;
 }
@@ -54,14 +54,14 @@ export function isValidAllocationPair(allocationA: number, allocationB: number):
 export function normalizeWishocraticComparison<T extends WishocraticComparisonInput>(
   comparison: T,
 ): T {
-  if (comparison.categoryA <= comparison.categoryB) {
+  if (comparison.itemAId <= comparison.itemBId) {
     return comparison;
   }
 
   return {
     ...comparison,
-    categoryA: comparison.categoryB,
-    categoryB: comparison.categoryA,
+    itemAId: comparison.itemBId,
+    itemBId: comparison.itemAId,
     allocationA: comparison.allocationB,
     allocationB: comparison.allocationA,
   };
@@ -70,13 +70,13 @@ export function normalizeWishocraticComparison<T extends WishocraticComparisonIn
 export function isValidWishocraticComparison(
   comparison: WishocraticComparisonInput,
 ): comparison is WishocraticComparisonInput & {
-  categoryA: BudgetCategoryId;
-  categoryB: BudgetCategoryId;
+  itemAId: BudgetCategoryId;
+  itemBId: BudgetCategoryId;
 } {
   return (
-    comparison.categoryA !== comparison.categoryB &&
-    isBudgetCategoryId(comparison.categoryA) &&
-    isBudgetCategoryId(comparison.categoryB) &&
+    comparison.itemAId !== comparison.itemBId &&
+    isBudgetCategoryId(comparison.itemAId) &&
+    isBudgetCategoryId(comparison.itemBId) &&
     isValidAllocationPair(comparison.allocationA, comparison.allocationB)
   );
 }
@@ -96,10 +96,10 @@ function buildTopCategories(
 
 function dedupeLatestAllocations(
   allocations: WishocraticStoredAllocation[],
-): Map<string, Array<WishocraticComparisonInput & { categoryA: BudgetCategoryId; categoryB: BudgetCategoryId }>> {
+): Map<string, Array<WishocraticComparisonInput & { itemAId: BudgetCategoryId; itemBId: BudgetCategoryId }>> {
   const latestByUserPair = new Map<
     string,
-    WishocraticStoredAllocation & { categoryA: BudgetCategoryId; categoryB: BudgetCategoryId }
+    WishocraticStoredAllocation & { itemAId: BudgetCategoryId; itemBId: BudgetCategoryId }
   >();
 
   for (const allocation of allocations) {
@@ -108,7 +108,7 @@ function dedupeLatestAllocations(
       continue;
     }
 
-    const key = `${normalized.userId}:${normalized.categoryA}_${normalized.categoryB}`;
+    const key = `${normalized.userId}:${normalized.itemAId}_${normalized.itemBId}`;
     const existing = latestByUserPair.get(key);
 
     if (!existing || normalized.updatedAt > existing.updatedAt) {
@@ -118,7 +118,7 @@ function dedupeLatestAllocations(
 
   const allocationsByUser = new Map<
     string,
-    Array<WishocraticComparisonInput & { categoryA: BudgetCategoryId; categoryB: BudgetCategoryId }>
+    Array<WishocraticComparisonInput & { itemAId: BudgetCategoryId; itemBId: BudgetCategoryId }>
   >();
 
   for (const allocation of latestByUserPair.values()) {
@@ -172,8 +172,8 @@ export async function getWishocracyCommunitySummary(): Promise<WishocracyCommuni
     const allocations = await prisma.wishocraticAllocation.findMany({
       select: {
         userId: true,
-        categoryA: true,
-        categoryB: true,
+        itemAId: true,
+        itemBId: true,
         allocationA: true,
         allocationB: true,
         updatedAt: true,

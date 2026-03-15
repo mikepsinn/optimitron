@@ -22,8 +22,8 @@ const ALL_BUDGET_CATEGORY_IDS = Object.keys(BUDGET_CATEGORIES) as BudgetCategory
 
 export interface StoredWishocraticComparison {
   userId: string;
-  categoryA: string;
-  categoryB: string;
+  itemAId: string;
+  itemBId: string;
   allocationA: number;
   allocationB: number;
   timestamp?: string | Date;
@@ -103,14 +103,14 @@ function convertToPairwiseComparisons(
   return comparisons
     .filter(
       (comparison) =>
-        ALL_BUDGET_CATEGORY_IDS.includes(comparison.categoryA as BudgetCategoryId) &&
-        ALL_BUDGET_CATEGORY_IDS.includes(comparison.categoryB as BudgetCategoryId),
+        ALL_BUDGET_CATEGORY_IDS.includes(comparison.itemAId as BudgetCategoryId) &&
+        ALL_BUDGET_CATEGORY_IDS.includes(comparison.itemBId as BudgetCategoryId),
     )
     .map((comparison, index) => ({
       id: `wishocracy-${index}`,
       participantId: comparison.userId,
-      itemAId: comparison.categoryA,
-      itemBId: comparison.categoryB,
+      itemAId: comparison.itemAId,
+      itemBId: comparison.itemBId,
       allocationA: comparison.allocationA,
       timestamp:
         comparison.timestamp instanceof Date

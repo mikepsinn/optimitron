@@ -1732,9 +1732,14 @@ model Item {
   deletedAt DateTime?
 
   // -- Relations --
-  comparisonsAsA PairwiseComparison[] @relation("itemA")
-  comparisonsAsB PairwiseComparison[] @relation("itemB")
-  weights        PreferenceWeight[]
+  comparisonsAsA          PairwiseComparison[]           @relation("itemA")
+  comparisonsAsB          PairwiseComparison[]           @relation("itemB")
+  weights                 PreferenceWeight[]
+  wishAllocationsAsA      WishocraticAllocation[]        @relation("wishItemA")
+  wishAllocationsAsB      WishocraticAllocation[]        @relation("wishItemB")
+  categorySelections      WishocraticCategorySelection[]
+  politicianVotes         PoliticianVote[]
+  categoryAlignmentScores CategoryAlignmentScore[]
 
   @@index([jurisdictionId])
   @@index([category])
@@ -1819,16 +1824,16 @@ model WishocraticAllocation {
   /// The user who made this pairwise allocation
   userId String
 
-  /// First category in the normalized pair
-  categoryA String
+  /// First item in the normalized pair (FK to Item — budget category)
+  itemAId String
 
-  /// Second category in the normalized pair
-  categoryB String
+  /// Second item in the normalized pair (FK to Item — budget category)
+  itemBId String
 
-  /// Allocation to category A
+  /// Allocation to item A (0-100, represents share of hypothetical $100)
   allocationA Int
 
-  /// Allocation to category B
+  /// Allocation to item B (0-100, represents share of hypothetical $100)
   allocationB Int
 
   /// When this record was created
@@ -1841,12 +1846,14 @@ model WishocraticAllocation {
   deletedAt DateTime?
 
   // -- Relations --
-  user User @relation("UserWishocraticAllocations", fields: [userId], references: [id], onDelete: Cascade)
+  user  User @relation("UserWishocraticAllocations", fields: [userId], references: [id], onDelete: Cascade)
+  itemA Item @relation("wishItemA", fields: [itemAId], references: [id])
+  itemB Item @relation("wishItemB", fields: [itemBId], references: [id])
 
-  @@unique([userId, categoryA, categoryB])
+  @@unique([userId, itemAId, itemBId])
   @@index([userId])
-  @@index([categoryA])
-  @@index([categoryB])
+  @@index([itemAId])
+  @@index([itemBId])
   @@index([createdAt])
   @@index([deletedAt])
 }
@@ -1859,8 +1866,8 @@ model WishocraticCategorySelection {
   /// The user who made this choice
   userId String
 
-  /// Budget category identifier from the web app
-  categoryId String
+  /// Budget category item (FK to Item)
+  itemId String
 
   /// Whether the category is included in the user's run
   selected Boolean
@@ -1876,10 +1883,11 @@ model WishocraticCategorySelection {
 
   // -- Relations --
   user User @relation("UserWishocraticCategorySelections", fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id])
 
-  @@unique([userId, categoryId])
+  @@unique([userId, itemId])
   @@index([userId])
-  @@index([categoryId])
+  @@index([itemId])
   @@index([selected])
   @@index([createdAt])
   @@index([deletedAt])
@@ -2062,7 +2070,7 @@ model Politician {
   @@index([party])
 }
 
-/// A politician's vote or position on a budget item category
+/// A politician's vote or position on a budget item
 model PoliticianVote {
   /// Unique identifier for this vote record
   id String @id @default(cuid())
@@ -2073,8 +2081,11 @@ model PoliticianVote {
   /// Relation to the Politician
   politician Politician @relation(fields: [politicianId], references: [id])
 
-  /// What budget category this vote affects
-  itemCategory String
+  /// Budget item this vote applies to (FK to Item)
+  itemId String
+
+  /// Relation to the Item
+  item Item @relation(fields: [itemId], references: [id])
 
   /// Their allocated/voted percentage
   allocationPct Float
@@ -2095,7 +2106,7 @@ model PoliticianVote {
   deletedAt DateTime?
 
   @@index([politicianId])
-  @@index([itemCategory])
+  @@index([itemId])
 }
 
 /// Calculated alignment between citizen preferences and politician votes
@@ -2121,9 +2132,6 @@ model AlignmentScore {
   /// Number of votes compared in this calculation
   votesCompared Int
 
-  /// Per-category alignment scores (JSON: Record<string, number>)
-  categoryScores Json?
-
   /// When this score was published to the public API / Hypercerts
   publishedAt DateTime?
 
@@ -2139,8 +2147,36 @@ model AlignmentScore {
   /// Soft-delete timestamp; non-null means this record is logically deleted
   deletedAt DateTime?
 
+  // -- Relations --
+  categoryScores CategoryAlignmentScore[]
+
   @@unique([politicianId, aggregationRunId])
   @@index([score])
+}
+
+/// Per-category alignment breakdown for a politician in an aggregation run
+model CategoryAlignmentScore {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent alignment score
+  alignmentScoreId String
+
+  /// Relation to the AlignmentScore
+  alignmentScore AlignmentScore @relation(fields: [alignmentScoreId], references: [id], onDelete: Cascade)
+
+  /// Budget category item (FK to Item)
+  itemId String
+
+  /// Relation to the Item
+  item Item @relation(fields: [itemId], references: [id])
+
+  /// Alignment score for this category (0-100%)
+  score Float
+
+  @@unique([alignmentScoreId, itemId])
+  @@index([alignmentScoreId])
+  @@index([itemId])
 }
 
 // ============================================================================

@@ -41,10 +41,10 @@ export function filterRejectedPairs(
 
 export function filterCompletedPairs(
   allPairs: Array<[BudgetCategoryId, BudgetCategoryId]>,
-  completedComparisons: Array<{ categoryA: string; categoryB: string }>,
+  completedComparisons: Array<{ itemAId: string; itemBId: string }>,
 ): Array<[BudgetCategoryId, BudgetCategoryId]> {
   const completedPairKeys = new Set(
-    completedComparisons.map((comparison) => `${comparison.categoryA}_${comparison.categoryB}`),
+    completedComparisons.map((comparison) => `${comparison.itemAId}_${comparison.itemBId}`),
   );
 
   return allPairs.filter(
@@ -95,13 +95,13 @@ export function filterValidPairs(
   >;
 }
 
-export function filterValidComparisons<T extends { categoryA: string; categoryB: string }>(
+export function filterValidComparisons<T extends { itemAId: string; itemBId: string }>(
   comparisons: T[],
   validCategories?: Set<BudgetCategoryId>,
 ): T[] {
   return comparisons.filter((comparison) => {
-    const categoryA = comparison.categoryA as BudgetCategoryId;
-    const categoryB = comparison.categoryB as BudgetCategoryId;
+    const categoryA = comparison.itemAId as BudgetCategoryId;
+    const categoryB = comparison.itemBId as BudgetCategoryId;
     const exists = isCategoryValid(categoryA) && isCategoryValid(categoryB);
     const inValidSet = validCategories
       ? validCategories.has(categoryA) && validCategories.has(categoryB)

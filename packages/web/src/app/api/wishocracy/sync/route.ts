@@ -10,8 +10,8 @@ import {
 } from "@/lib/wishocracy-community";
 
 interface ComparisonData {
-  categoryA: string;
-  categoryB: string;
+  itemAId: string;
+  itemBId: string;
   allocationA: number;
   allocationB: number;
   timestamp: string;
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       await prisma.wishocraticCategorySelection.createMany({
         data: allCategories.map((categoryId) => ({
           userId,
-          categoryId,
+          itemId: categoryId,
           selected: selectedCategories.includes(categoryId),
         })),
       });
@@ -72,8 +72,8 @@ export async function POST(req: NextRequest) {
       const createResult = await prisma.wishocraticAllocation.createMany({
         data: normalizedComparisons.map((comparison) => ({
           userId,
-          categoryA: comparison.categoryA,
-          categoryB: comparison.categoryB,
+          itemAId: comparison.itemAId,
+          itemBId: comparison.itemBId,
           allocationA: comparison.allocationA,
           allocationB: comparison.allocationB,
         })),
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         const { importKey, encryptJson } = await import("@optomitron/storage");
         const allAllocations = await prisma.wishocraticAllocation.findMany({
           where: { userId, deletedAt: null },
-          select: { categoryA: true, categoryB: true, allocationA: true, allocationB: true },
+          select: { itemAId: true, itemBId: true, allocationA: true, allocationB: true },
         });
         const key = await importKey(jurisdictionKey);
         const encrypted = await encryptJson(allAllocations, key);

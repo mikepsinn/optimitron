@@ -1,8 +1,8 @@
 import { BUDGET_CATEGORIES } from './wishocracy-data'
 
 export interface Comparison {
-  categoryA: string
-  categoryB: string
+  itemAId: string
+  itemBId: string
   allocationA: number
   allocationB: number
 }
@@ -28,8 +28,8 @@ export function calculateAllocationsFromPairwise(
   // Note: 0/0 allocations (NEITHER button) naturally get skipped
   // as they contribute 0 to both categories
   comparisons.forEach(comparison => {
-    scores[comparison.categoryA] = (scores[comparison.categoryA] || 0) + comparison.allocationA
-    scores[comparison.categoryB] = (scores[comparison.categoryB] || 0) + comparison.allocationB
+    scores[comparison.itemAId] = (scores[comparison.itemAId] || 0) + comparison.allocationA
+    scores[comparison.itemBId] = (scores[comparison.itemBId] || 0) + comparison.allocationB
   })
 
   // Normalize to percentages (sum to 100)

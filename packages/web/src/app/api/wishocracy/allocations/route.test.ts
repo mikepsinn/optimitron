@@ -56,15 +56,15 @@ describe("wishocracy allocations route", () => {
     mocks.getCurrentUser.mockResolvedValue({ id: "user_1" });
     mocks.findMany.mockResolvedValue([
       {
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 40,
         allocationB: 60,
         updatedAt: new Date("2026-03-10T00:00:00.000Z"),
       },
       {
-        categoryA: "MILITARY_OPERATIONS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "MILITARY_OPERATIONS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 70,
         allocationB: 30,
         updatedAt: new Date("2026-03-11T00:00:00.000Z"),
@@ -76,8 +76,8 @@ describe("wishocracy allocations route", () => {
 
     expect(body.allocations).toEqual([
       {
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 30,
         allocationB: 70,
         timestamp: "2026-03-11T00:00:00.000Z",
@@ -106,8 +106,8 @@ describe("wishocracy allocations route", () => {
       new Request("http://localhost/api/wishocracy/allocations", {
         method: "POST",
         body: JSON.stringify({
-          categoryA: "MILITARY_OPERATIONS",
-          categoryB: "ADDICTION_TREATMENT",
+          itemAId: "MILITARY_OPERATIONS",
+          itemBId: "ADDICTION_TREATMENT",
           allocationA: 80,
           allocationB: 30,
         }),
@@ -130,8 +130,8 @@ describe("wishocracy allocations route", () => {
       new Request("http://localhost/api/wishocracy/allocations", {
         method: "POST",
         body: JSON.stringify({
-          categoryA: "MILITARY_OPERATIONS",
-          categoryB: "ADDICTION_TREATMENT",
+          itemAId: "MILITARY_OPERATIONS",
+          itemBId: "ADDICTION_TREATMENT",
           allocationA: 80,
           allocationB: 20,
         }),
@@ -142,15 +142,15 @@ describe("wishocracy allocations route", () => {
     expect(mocks.findFirst).toHaveBeenCalledWith({
       where: {
         userId: "user_1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
       },
     });
     expect(mocks.create).toHaveBeenCalledWith({
       data: {
         userId: "user_1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 20,
         allocationB: 80,
       },
@@ -180,8 +180,8 @@ describe("wishocracy allocations route", () => {
         body: JSON.stringify({
           updatedComparisons: [
             {
-              categoryA: "MILITARY_OPERATIONS",
-              categoryB: "ADDICTION_TREATMENT",
+              itemAId: "MILITARY_OPERATIONS",
+              itemBId: "ADDICTION_TREATMENT",
               allocationA: 75,
               allocationB: 25,
             },
@@ -197,12 +197,12 @@ describe("wishocracy allocations route", () => {
         userId: "user_1",
         OR: [
           {
-            categoryA: "ADDICTION_TREATMENT",
-            categoryB: "MILITARY_OPERATIONS",
+            itemAId: "ADDICTION_TREATMENT",
+            itemBId: "MILITARY_OPERATIONS",
           },
           {
-            categoryA: "MILITARY_OPERATIONS",
-            categoryB: "ADDICTION_TREATMENT",
+            itemAId: "MILITARY_OPERATIONS",
+            itemBId: "ADDICTION_TREATMENT",
           },
         ],
       },
@@ -211,8 +211,8 @@ describe("wishocracy allocations route", () => {
       data: [
         {
           userId: "user_1",
-          categoryA: "ADDICTION_TREATMENT",
-          categoryB: "MILITARY_OPERATIONS",
+          itemAId: "ADDICTION_TREATMENT",
+          itemBId: "MILITARY_OPERATIONS",
           allocationA: 25,
           allocationB: 75,
         },

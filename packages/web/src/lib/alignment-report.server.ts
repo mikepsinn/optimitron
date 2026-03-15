@@ -93,8 +93,8 @@ export async function getPersonalAlignmentState(
       orderBy: { updatedAt: "asc" },
       select: {
         userId: true,
-        categoryA: true,
-        categoryB: true,
+        itemAId: true,
+        itemBId: true,
         allocationA: true,
         allocationB: true,
         updatedAt: true,
@@ -103,7 +103,7 @@ export async function getPersonalAlignmentState(
     prisma.wishocraticCategorySelection.findMany({
       where: { userId, selected: true },
       select: {
-        categoryId: true,
+        itemId: true,
       },
     }),
   ]);
@@ -119,8 +119,8 @@ export async function getPersonalAlignmentState(
   const report = buildPersonalAlignmentReport({
     comparisons: allocations.map((allocation) => ({
       userId: allocation.userId,
-      categoryA: allocation.categoryA,
-      categoryB: allocation.categoryB,
+      itemAId: allocation.itemAId,
+      itemBId: allocation.itemBId,
       allocationA: allocation.allocationA,
       allocationB: allocation.allocationB,
       timestamp: allocation.updatedAt,

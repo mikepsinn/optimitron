@@ -103,8 +103,8 @@ async function fetchWishocraticComparisons() {
   return prisma.wishocraticAllocation.findMany({
     select: {
       userId: true,
-      categoryA: true,
-      categoryB: true,
+      itemAId: true,
+      itemBId: true,
       allocationA: true,
       allocationB: true,
       updatedAt: true,

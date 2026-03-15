@@ -11,24 +11,24 @@ describe("alignment report utilities", () => {
     const comparisons = dedupeLatestWishocraticComparisons([
       {
         userId: "user-1",
-        categoryA: "MILITARY_OPERATIONS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "MILITARY_OPERATIONS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 20,
         allocationB: 80,
         timestamp: "2026-03-10T00:00:00.000Z",
       },
       {
         userId: "user-1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 85,
         allocationB: 15,
         timestamp: "2026-03-11T00:00:00.000Z",
       },
       {
         userId: "user-1",
-        categoryA: "UNKNOWN",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "UNKNOWN",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 50,
         allocationB: 50,
         timestamp: "2026-03-11T00:00:00.000Z",
@@ -37,8 +37,8 @@ describe("alignment report utilities", () => {
 
     expect(comparisons).toHaveLength(1);
     expect(comparisons[0]).toMatchObject({
-      categoryA: "ADDICTION_TREATMENT",
-      categoryB: "MILITARY_OPERATIONS",
+      itemAId: "ADDICTION_TREATMENT",
+      itemBId: "MILITARY_OPERATIONS",
       allocationA: 85,
       allocationB: 15,
     });
@@ -60,24 +60,24 @@ describe("alignment report utilities", () => {
       comparisons: [
         {
           userId: "user-1",
-          categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-          categoryB: "MILITARY_OPERATIONS",
+          itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+          itemBId: "MILITARY_OPERATIONS",
           allocationA: 90,
           allocationB: 10,
           timestamp: "2026-03-11T00:00:00.000Z",
         },
         {
           userId: "user-1",
-          categoryA: "ADDICTION_TREATMENT",
-          categoryB: "MILITARY_OPERATIONS",
+          itemAId: "ADDICTION_TREATMENT",
+          itemBId: "MILITARY_OPERATIONS",
           allocationA: 85,
           allocationB: 15,
           timestamp: "2026-03-11T00:05:00.000Z",
         },
         {
           userId: "user-1",
-          categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-          categoryB: "ADDICTION_TREATMENT",
+          itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+          itemBId: "ADDICTION_TREATMENT",
           allocationA: 55,
           allocationB: 45,
           timestamp: "2026-03-11T00:10:00.000Z",

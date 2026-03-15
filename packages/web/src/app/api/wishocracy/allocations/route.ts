@@ -20,8 +20,8 @@ export async function GET() {
       where: { userId: user.id },
       orderBy: { updatedAt: "asc" },
       select: {
-        categoryA: true,
-        categoryB: true,
+        itemAId: true,
+        itemBId: true,
         allocationA: true,
         allocationB: true,
         updatedAt: true,
@@ -35,7 +35,7 @@ export async function GET() {
         continue;
       }
 
-      const key = `${normalized.categoryA}_${normalized.categoryB}`;
+      const key = `${normalized.itemAId}_${normalized.itemBId}`;
       const existing = seen.get(key);
       if (!existing || allocation.updatedAt > existing.updatedAt) {
         seen.set(key, allocation);
@@ -45,8 +45,8 @@ export async function GET() {
     const allocations = Array.from(seen.values()).map((allocation) => {
       const normalized = normalizeWishocraticComparison(allocation);
       return {
-        categoryA: normalized.categoryA,
-        categoryB: normalized.categoryB,
+        itemAId: normalized.itemAId,
+        itemBId: normalized.itemBId,
         allocationA: normalized.allocationA,
         allocationB: normalized.allocationB,
         timestamp: allocation.updatedAt.toISOString(),
@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
     const existing = await prisma.wishocraticAllocation.findFirst({
       where: {
         userId,
-        categoryA: normalized.categoryA,
-        categoryB: normalized.categoryB,
+        itemAId: normalized.itemAId,
+        itemBId: normalized.itemBId,
       },
     });
 
@@ -93,8 +93,8 @@ export async function POST(req: NextRequest) {
       await prisma.wishocraticAllocation.create({
         data: {
           userId,
-          categoryA: normalized.categoryA,
-          categoryB: normalized.categoryB,
+          itemAId: normalized.itemAId,
+          itemBId: normalized.itemBId,
           allocationA: normalized.allocationA,
           allocationB: normalized.allocationB,
         },
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         const { importKey, encryptJson } = await import("@optomitron/storage");
         const allAllocations = await prisma.wishocraticAllocation.findMany({
           where: { userId, deletedAt: null },
-          select: { categoryA: true, categoryB: true, allocationA: true, allocationB: true },
+          select: { itemAId: true, itemBId: true, allocationA: true, allocationB: true },
         });
         const key = await importKey(jurisdictionKey);
         const encrypted = await encryptJson(allAllocations, key);
@@ -153,8 +153,8 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     const { updatedComparisons, deletedCategories } = body as {
       updatedComparisons: Array<{
-        categoryA: string;
-        categoryB: string;
+        itemAId: string;
+        itemBId: string;
         allocationA: number;
         allocationB: number;
       }>;
@@ -166,8 +166,8 @@ export async function PATCH(req: Request) {
         where: {
           userId: user.id,
           OR: [
-            { categoryA: { in: deletedCategories } },
-            { categoryB: { in: deletedCategories } },
+            { itemAId: { in: deletedCategories } },
+            { itemBId: { in: deletedCategories } },
           ],
         },
       });
@@ -188,8 +188,8 @@ export async function PATCH(req: Request) {
           where: {
             userId: user.id,
             OR: [
-              { categoryA: comparison.categoryA, categoryB: comparison.categoryB },
-              { categoryA: comparison.categoryB, categoryB: comparison.categoryA },
+              { itemAId: comparison.itemAId, itemBId: comparison.itemBId },
+              { itemAId: comparison.itemBId, itemBId: comparison.itemAId },
             ],
           },
         });
@@ -198,8 +198,8 @@ export async function PATCH(req: Request) {
       await prisma.wishocraticAllocation.createMany({
         data: normalizedComparisons.map((comparison) => ({
           userId: user.id,
-          categoryA: comparison.categoryA,
-          categoryB: comparison.categoryB,
+          itemAId: comparison.itemAId,
+          itemBId: comparison.itemBId,
           allocationA: comparison.allocationA,
           allocationB: comparison.allocationB,
         })),

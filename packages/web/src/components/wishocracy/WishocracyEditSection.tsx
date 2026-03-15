@@ -9,16 +9,16 @@ import { motion, AnimatePresence } from "framer-motion"
 
 interface WishocracyEditSectionProps {
   comparisons: Array<{
-    categoryA: string
-    categoryB: string
+    itemAId: string
+    itemBId: string
     allocationA: number
     allocationB: number
   }>
   selectedCategories: Set<BudgetCategoryId>
   onSave: (
     updatedComparisons: Array<{
-      categoryA: string
-      categoryB: string
+      itemAId: string
+      itemBId: string
       allocationA: number
       allocationB: number
     }>,
@@ -55,8 +55,8 @@ export function WishocracyEditSection({
       const otherSelectedCategories = Array.from(newCategories).filter(cat => cat !== categoryId)
 
       const newPairs: Array<{
-        categoryA: string
-        categoryB: string
+        itemAId: string
+        itemBId: string
         allocationA: number
         allocationB: number
       }> = []
@@ -65,15 +65,15 @@ export function WishocracyEditSection({
       for (const otherCat of otherSelectedCategories) {
         // Check if this pair already exists in either direction
         const pairExists = editedComparisons.some(comp =>
-          (comp.categoryA === categoryId && comp.categoryB === otherCat) ||
-          (comp.categoryA === otherCat && comp.categoryB === categoryId)
+          (comp.itemAId === categoryId && comp.itemBId === otherCat) ||
+          (comp.itemAId === otherCat && comp.itemBId === categoryId)
         )
 
         if (!pairExists) {
           // Add new pair at 50/50
           newPairs.push({
-            categoryA: categoryId,
-            categoryB: otherCat,
+            itemAId: categoryId,
+            itemBId: otherCat,
             allocationA: 50,
             allocationB: 50
           })
@@ -97,13 +97,13 @@ export function WishocracyEditSection({
   }
 
   const handleAllocationChange = (
-    categoryA: string,
-    categoryB: string,
+    itemAId: string,
+    itemBId: string,
     value: number
   ) => {
     setEditedComparisons(prev =>
       prev.map(comp =>
-        comp.categoryA === categoryA && comp.categoryB === categoryB
+        comp.itemAId === itemAId && comp.itemBId === itemBId
           ? { ...comp, allocationA: value, allocationB: 100 - value }
           : comp
       )
@@ -202,7 +202,7 @@ export function WishocracyEditSection({
                           <div>
                             <p className="font-bold text-sm">{category.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {editedComparisons.filter(c => c.categoryA === categoryId || c.categoryB === categoryId).length} allocations
+                              {editedComparisons.filter(c => c.itemAId === categoryId || c.itemBId === categoryId).length} allocations
                             </p>
                           </div>
                         </div>
@@ -226,34 +226,34 @@ export function WishocracyEditSection({
               <div className="mb-6">
                 <h4 className="text-lg font-black uppercase mb-4">
                   Your Allocations ({editedComparisons.filter(comp =>
-                    !categoriesToDelete.has(comp.categoryA as BudgetCategoryId) &&
-                    !categoriesToDelete.has(comp.categoryB as BudgetCategoryId)
+                    !categoriesToDelete.has(comp.itemAId as BudgetCategoryId) &&
+                    !categoriesToDelete.has(comp.itemBId as BudgetCategoryId)
                   ).length})
                 </h4>
                 <div className="space-y-4">
                   {editedComparisons
                     .filter(comp =>
-                      !categoriesToDelete.has(comp.categoryA as BudgetCategoryId) &&
-                      !categoriesToDelete.has(comp.categoryB as BudgetCategoryId)
+                      !categoriesToDelete.has(comp.itemAId as BudgetCategoryId) &&
+                      !categoriesToDelete.has(comp.itemBId as BudgetCategoryId)
                     )
                     .map((comp) => {
-                      const categoryA = BUDGET_CATEGORIES[comp.categoryA as BudgetCategoryId]
-                      const categoryB = BUDGET_CATEGORIES[comp.categoryB as BudgetCategoryId]
+                      const catA = BUDGET_CATEGORIES[comp.itemAId as BudgetCategoryId]
+                      const catB = BUDGET_CATEGORIES[comp.itemBId as BudgetCategoryId]
 
                       return (
                         <div
-                          key={`${comp.categoryA}-${comp.categoryB}`}
+                          key={`${comp.itemAId}-${comp.itemBId}`}
                           className="p-4 border-2 border-black rounded bg-background"
                         >
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                              <span className="text-xl">{categoryA.icon}</span>
-                              <span className="font-bold text-sm">{categoryA.name}</span>
+                              <span className="text-xl">{catA.icon}</span>
+                              <span className="font-bold text-sm">{catA.name}</span>
                             </div>
                             <span className="text-xs text-muted-foreground">vs</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-xl">{categoryB.icon}</span>
-                              <span className="font-bold text-sm">{categoryB.name}</span>
+                              <span className="text-xl">{catB.icon}</span>
+                              <span className="font-bold text-sm">{catB.name}</span>
                             </div>
                           </div>
 
@@ -264,7 +264,7 @@ export function WishocracyEditSection({
                               max="100"
                               value={comp.allocationA}
                               onChange={(e) =>
-                                handleAllocationChange(comp.categoryA, comp.categoryB, Number(e.target.value))
+                                handleAllocationChange(comp.itemAId, comp.itemBId, Number(e.target.value))
                               }
                               className="w-full h-3 bg-background border-2 border-black rounded-none appearance-none cursor-pointer slider-brutal"
                               style={{
@@ -283,8 +283,8 @@ export function WishocracyEditSection({
                 {categoriesToDelete.size > 0 && (
                   <p className="text-sm text-muted-foreground mt-2">
                     {comparisons.filter(c =>
-                      categoriesToDelete.has(c.categoryA as BudgetCategoryId) ||
-                      categoriesToDelete.has(c.categoryB as BudgetCategoryId)
+                      categoriesToDelete.has(c.itemAId as BudgetCategoryId) ||
+                      categoriesToDelete.has(c.itemBId as BudgetCategoryId)
                     ).length} allocations will be deleted when you save.
                   </p>
                 )}

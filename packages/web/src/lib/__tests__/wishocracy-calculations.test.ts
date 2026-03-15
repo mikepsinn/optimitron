@@ -8,14 +8,14 @@ describe("wishocracy calculations", () => {
   it("normalizes pairwise allocations into percentages", () => {
     const allocations = calculateAllocationsFromPairwise([
       {
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 70,
         allocationB: 30,
       },
       {
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 60,
         allocationB: 40,
       },
@@ -32,8 +32,8 @@ describe("wishocracy calculations", () => {
   it("returns zero allocations when every comparison is rejected", () => {
     const allocations = calculateAllocationsFromPairwise([
       {
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 0,
         allocationB: 0,
       },

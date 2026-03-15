@@ -628,8 +628,8 @@ export type ReferralType = z.infer<typeof ReferralSchema>;
 export const WishocraticAllocationSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  categoryA: z.string(),
-  categoryB: z.string(),
+  itemAId: z.string(),
+  itemBId: z.string(),
   allocationA: z.number().int(),
   allocationB: z.number().int(),
   createdAt: dateSchema,
@@ -642,7 +642,7 @@ export type WishocraticAllocationType = z.infer<typeof WishocraticAllocationSche
 export const WishocraticCategorySelectionSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  categoryId: z.string(),
+  itemId: z.string(),
   selected: z.boolean(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -717,7 +717,7 @@ export type PoliticianType = z.infer<typeof PoliticianSchema>;
 export const PoliticianVoteSchema = z.object({
   id: z.string(),
   politicianId: z.string(),
-  itemCategory: z.string(),
+  itemId: z.string(),
   allocationPct: z.number(),
   billId: z.string().nullable().optional(),
   voteDate: nullableDateSchema,

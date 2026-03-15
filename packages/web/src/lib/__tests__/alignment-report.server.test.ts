@@ -58,33 +58,33 @@ describe("alignment report server loader", () => {
     mocks.allocationsFindMany.mockResolvedValue([
       {
         userId: "user-1",
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 90,
         allocationB: 10,
         updatedAt: new Date("2026-03-11T00:00:00.000Z"),
       },
       {
         userId: "user-1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 85,
         allocationB: 15,
         updatedAt: new Date("2026-03-11T00:05:00.000Z"),
       },
       {
         userId: "user-1",
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 55,
         allocationB: 45,
         updatedAt: new Date("2026-03-11T00:10:00.000Z"),
       },
     ]);
     mocks.selectionsFindMany.mockResolvedValue([
-      { categoryId: "PRAGMATIC_CLINICAL_TRIALS" },
-      { categoryId: "ADDICTION_TREATMENT" },
-      { categoryId: "MILITARY_OPERATIONS" },
+      { itemId: "PRAGMATIC_CLINICAL_TRIALS" },
+      { itemId: "ADDICTION_TREATMENT" },
+      { itemId: "MILITARY_OPERATIONS" },
     ]);
 
     const state = await getPersonalAlignmentState("user-1");
@@ -102,33 +102,33 @@ describe("alignment report server loader", () => {
     mocks.allocationsFindMany.mockResolvedValue([
       {
         userId: "user-1",
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 90,
         allocationB: 10,
         updatedAt: new Date("2026-03-11T00:00:00.000Z"),
       },
       {
         userId: "user-1",
-        categoryA: "ADDICTION_TREATMENT",
-        categoryB: "MILITARY_OPERATIONS",
+        itemAId: "ADDICTION_TREATMENT",
+        itemBId: "MILITARY_OPERATIONS",
         allocationA: 85,
         allocationB: 15,
         updatedAt: new Date("2026-03-11T00:05:00.000Z"),
       },
       {
         userId: "user-1",
-        categoryA: "PRAGMATIC_CLINICAL_TRIALS",
-        categoryB: "ADDICTION_TREATMENT",
+        itemAId: "PRAGMATIC_CLINICAL_TRIALS",
+        itemBId: "ADDICTION_TREATMENT",
         allocationA: 55,
         allocationB: 45,
         updatedAt: new Date("2026-03-11T00:10:00.000Z"),
       },
     ]);
     mocks.selectionsFindMany.mockResolvedValue([
-      { categoryId: "PRAGMATIC_CLINICAL_TRIALS" },
-      { categoryId: "ADDICTION_TREATMENT" },
-      { categoryId: "MILITARY_OPERATIONS" },
+      { itemId: "PRAGMATIC_CLINICAL_TRIALS" },
+      { itemId: "ADDICTION_TREATMENT" },
+      { itemId: "MILITARY_OPERATIONS" },
     ]);
     mocks.loadAlignmentBenchmarkProfiles.mockResolvedValue(
       ALIGNMENT_BENCHMARKS.map((profile) => ({

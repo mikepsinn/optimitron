@@ -27,7 +27,7 @@ interface SyncablePoliticianRow {
   votes: Array<{
     allocationPct: number;
     billId: string | null;
-    itemCategory: string;
+    itemId: string;
     updatedAt: Date;
     voteDate: Date | null;
   }>;
@@ -35,7 +35,7 @@ interface SyncablePoliticianRow {
 
 interface PreparedPoliticianVoteRow {
   politicianId: string;
-  itemCategory: BudgetCategoryId;
+  itemId: BudgetCategoryId;
   allocationPct: number;
   billId: string;
   voteDate: Date | null;
@@ -170,7 +170,7 @@ function prepareVoteSyncRows(
 
       return {
         politicianId,
-        itemCategory: row.itemCategory,
+        itemId: row.itemId,
         allocationPct: row.allocationPct,
         billId: row.billId,
         voteDate: row.voteDate,
@@ -221,7 +221,7 @@ export async function loadAlignmentBenchmarkProfiles(): Promise<AlignmentBenchma
         select: {
           allocationPct: true,
           billId: true,
-          itemCategory: true,
+          itemId: true,
           updatedAt: true,
           voteDate: true,
         },
@@ -325,7 +325,7 @@ export async function syncAlignmentBenchmarkPoliticians(): Promise<AlignmentPoli
         politicianId: {
           in: politicianIdsWithFreshVotes,
         },
-        itemCategory: {
+        itemId: {
           in: ALIGNMENT_CATEGORY_IDS,
         },
       },

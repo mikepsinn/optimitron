@@ -82,9 +82,9 @@ describe("alignment politician source", () => {
         chamber: "senate",
         district: "VT",
         updatedAt: new Date("2026-03-12T00:00:00.000Z"),
-        votes: Object.entries(bernie?.allocations ?? {}).map(([itemCategory, allocationPct]) => ({
+        votes: Object.entries(bernie?.allocations ?? {}).map(([itemId, allocationPct]) => ({
           billId: `alignment-benchmark:${bernie?.politicianId ?? "bernie-sanders"}`,
-          itemCategory,
+          itemId,
           allocationPct,
           updatedAt: new Date("2026-03-12T00:00:00.000Z"),
           voteDate: new Date("2026-03-12T00:00:00.000Z"),
@@ -117,14 +117,14 @@ describe("alignment politician source", () => {
         votes: [
           {
             billId: "119-hr-23:Senate:1:22",
-            itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+            itemId: "ICE_IMMIGRATION_ENFORCEMENT",
             allocationPct: -0.8,
             updatedAt: new Date("2026-03-12T00:00:00.000Z"),
             voteDate: new Date("2026-03-12T00:00:00.000Z"),
           },
           {
             billId: "118-hjres-7:Senate:1:80",
-            itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+            itemId: "ICE_IMMIGRATION_ENFORCEMENT",
             allocationPct: -0.7,
             updatedAt: new Date("2026-03-11T00:00:00.000Z"),
             voteDate: new Date("2026-03-11T00:00:00.000Z"),
@@ -175,21 +175,21 @@ describe("alignment politician source", () => {
           externalId: benchmark?.externalId,
           allocationPct: 0.8,
           billId: `bill-${index + 1}`,
-          itemCategory: "ADDICTION_TREATMENT",
+          itemId: "ADDICTION_TREATMENT",
           voteDate: new Date("2026-03-12T00:00:00.000Z"),
         },
         {
           externalId: benchmark?.externalId,
           allocationPct: -0.6,
           billId: `bill-${index + 10}`,
-          itemCategory: "MILITARY_OPERATIONS",
+          itemId: "MILITARY_OPERATIONS",
           voteDate: new Date("2026-03-13T00:00:00.000Z"),
         },
       ])).filter((row): row is {
         externalId: string;
         allocationPct: number;
         billId: string;
-        itemCategory: "ADDICTION_TREATMENT" | "MILITARY_OPERATIONS";
+        itemId: "ADDICTION_TREATMENT" | "MILITARY_OPERATIONS";
         voteDate: Date;
       } => typeof row.externalId === "string"),
     );
@@ -253,14 +253,14 @@ describe("alignment politician source", () => {
         externalId: bernie.externalId,
         allocationPct: 0.8,
         billId: "bill-bernie",
-        itemCategory: "ADDICTION_TREATMENT",
+        itemId: "ADDICTION_TREATMENT",
         voteDate: new Date("2026-03-12T00:00:00.000Z"),
       },
       {
         externalId: warren.externalId,
         allocationPct: -0.6,
         billId: "bill-warren",
-        itemCategory: "MILITARY_OPERATIONS",
+        itemId: "MILITARY_OPERATIONS",
         voteDate: new Date("2026-03-13T00:00:00.000Z"),
       },
     ]);
@@ -276,7 +276,7 @@ describe("alignment politician source", () => {
         politicianId: {
           in: [`pol-${bernie.externalId}`, `pol-${warren.externalId}`],
         },
-        itemCategory: {
+        itemId: {
           in: expect.any(Array),
         },
       },
@@ -285,14 +285,14 @@ describe("alignment politician source", () => {
       data: [
         {
           politicianId: `pol-${bernie.externalId}`,
-          itemCategory: "ADDICTION_TREATMENT",
+          itemId: "ADDICTION_TREATMENT",
           allocationPct: 0.8,
           billId: "bill-bernie",
           voteDate: new Date("2026-03-12T00:00:00.000Z"),
         },
         {
           politicianId: `pol-${warren.externalId}`,
-          itemCategory: "MILITARY_OPERATIONS",
+          itemId: "MILITARY_OPERATIONS",
           allocationPct: -0.6,
           billId: "bill-warren",
           voteDate: new Date("2026-03-13T00:00:00.000Z"),

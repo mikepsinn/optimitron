@@ -106,8 +106,8 @@ export function useWishocracyState() {
     }
 
     const nextComparison: PendingComparison = {
-      categoryA: currentPair[0],
-      categoryB: currentPair[1],
+      itemAId: currentPair[0],
+      itemBId: currentPair[1],
       allocationA,
       allocationB,
       timestamp: new Date().toISOString(),
@@ -205,7 +205,7 @@ export function useWishocracyState() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           selections: ALL_CATEGORY_IDS.map((categoryId) => ({
-            categoryId,
+            itemId: categoryId,
             selected: selected.has(categoryId),
           })),
         }),
@@ -224,8 +224,8 @@ export function useWishocracyState() {
 
   async function handleEditSave(
     updatedComparisons: Array<{
-      categoryA: string;
-      categoryB: string;
+      itemAId: string;
+      itemBId: string;
       allocationA: number;
       allocationB: number;
     }>,
@@ -253,7 +253,7 @@ export function useWishocracyState() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         selections: ALL_CATEGORY_IDS.map((categoryId) => ({
-          categoryId,
+          itemId: categoryId,
           selected: updatedCategories.has(categoryId),
         })),
       }),

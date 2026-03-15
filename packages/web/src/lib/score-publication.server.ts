@@ -51,6 +51,9 @@ export async function publishAggregateScoresToHypercerts(
               externalId: true,
             },
           },
+          categoryScores: {
+            select: { itemId: true, score: true },
+          },
         },
       },
     },
@@ -83,11 +86,9 @@ export async function publishAggregateScoresToHypercerts(
         alignmentScore: score.score,
         votesCompared: score.votesCompared,
         participantCount: run.participantCount,
-        categoryScores: Object.entries(
-          (score.categoryScores as Record<string, number>) ?? {},
-        ).map(([itemId, scoreValue]) => ({
-          itemId,
-          score: scoreValue,
+        categoryScores: score.categoryScores.map((cs) => ({
+          itemId: cs.itemId,
+          score: cs.score,
         })),
         contributorDid,
         evaluatorDid: "did:plc:wishocracy-aggregate",

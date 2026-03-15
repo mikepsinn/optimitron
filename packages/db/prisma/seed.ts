@@ -611,7 +611,7 @@ async function seedBudgetItems(usJurisdictionId: string) {
 
   // Optomitron budget categories — these are the items citizens compare in
   // pairwise RAPPA surveys. IDs match BudgetCategoryId in wishocracy-data.ts
-  // so WishocraticAllocation.categoryA/categoryB map directly to Item.id.
+  // so WishocraticAllocation.itemAId/itemBId map directly to Item.id.
   const categories: {
     id: string;
     name: string;

@@ -533,8 +533,8 @@ describe('Auth and referral models', () => {
     const data = {
       id: 'wa_1',
       userId: 'user_1',
-      categoryA: 'MILITARY_OPERATIONS',
-      categoryB: 'PRAGMATIC_CLINICAL_TRIALS',
+      itemAId: 'MILITARY_OPERATIONS',
+      itemBId: 'PRAGMATIC_CLINICAL_TRIALS',
       allocationA: 60,
       allocationB: 40,
       createdAt: now,
@@ -547,7 +547,7 @@ describe('Auth and referral models', () => {
     const data = {
       id: 'wcs_1',
       userId: 'user_1',
-      categoryId: 'PRAGMATIC_CLINICAL_TRIALS',
+      itemId: 'PRAGMATIC_CLINICAL_TRIALS',
       selected: true,
       createdAt: now,
       updatedAt: now,
@@ -663,7 +663,7 @@ describe('Governance models', () => {
     const data = {
       id: 'pv_1',
       politicianId: 'pol_1',
-      itemCategory: 'Defense',
+      itemId: 'PRAGMATIC_CLINICAL_TRIALS',
       allocationPct: 15.5,
       createdAt: now,
       updatedAt: now,

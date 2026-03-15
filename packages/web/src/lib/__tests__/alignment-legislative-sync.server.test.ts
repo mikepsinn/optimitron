@@ -36,12 +36,12 @@ describe("alignment legislative sync helpers", () => {
 
   it("aggregates raw legislative vote signals into normalized allocations", () => {
     const record = buildAllocationRecordFromStoredVotes([
-      { allocationPct: 1, billId: "bill-1", itemCategory: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-01") },
-      { allocationPct: 0.8, billId: "bill-2", itemCategory: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-02") },
-      { allocationPct: 0.9, billId: "bill-3", itemCategory: "EARLY_CHILDHOOD_EDUCATION", updatedAt: new Date(), voteDate: new Date("2026-01-03") },
-      { allocationPct: 0.7, billId: "bill-4", itemCategory: "PRAGMATIC_CLINICAL_TRIALS", updatedAt: new Date(), voteDate: new Date("2026-01-04") },
-      { allocationPct: -0.9, billId: "bill-5", itemCategory: "MILITARY_OPERATIONS", updatedAt: new Date(), voteDate: new Date("2026-01-05") },
-      { allocationPct: -0.7, billId: "bill-6", itemCategory: "MILITARY_OPERATIONS", updatedAt: new Date(), voteDate: new Date("2026-01-06") },
+      { allocationPct: 1, billId: "bill-1", itemId: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-01") },
+      { allocationPct: 0.8, billId: "bill-2", itemId: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-02") },
+      { allocationPct: 0.9, billId: "bill-3", itemId: "EARLY_CHILDHOOD_EDUCATION", updatedAt: new Date(), voteDate: new Date("2026-01-03") },
+      { allocationPct: 0.7, billId: "bill-4", itemId: "PRAGMATIC_CLINICAL_TRIALS", updatedAt: new Date(), voteDate: new Date("2026-01-04") },
+      { allocationPct: -0.9, billId: "bill-5", itemId: "MILITARY_OPERATIONS", updatedAt: new Date(), voteDate: new Date("2026-01-05") },
+      { allocationPct: -0.7, billId: "bill-6", itemId: "MILITARY_OPERATIONS", updatedAt: new Date(), voteDate: new Date("2026-01-06") },
     ]);
 
     expect(record).not.toBeNull();
@@ -54,8 +54,8 @@ describe("alignment legislative sync helpers", () => {
 
   it("returns null when the stored vote coverage is too thin", () => {
     const record = buildAllocationRecordFromStoredVotes([
-      { allocationPct: 1, billId: "bill-1", itemCategory: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-01") },
-      { allocationPct: 0.8, billId: "bill-2", itemCategory: "EARLY_CHILDHOOD_EDUCATION", updatedAt: new Date(), voteDate: new Date("2026-01-02") },
+      { allocationPct: 1, billId: "bill-1", itemId: "ADDICTION_TREATMENT", updatedAt: new Date(), voteDate: new Date("2026-01-01") },
+      { allocationPct: 0.8, billId: "bill-2", itemId: "EARLY_CHILDHOOD_EDUCATION", updatedAt: new Date(), voteDate: new Date("2026-01-02") },
     ]);
 
     expect(record).toBeNull();
@@ -72,14 +72,14 @@ describe("alignment legislative sync helpers", () => {
         {
           allocationPct: -0.8,
           billId: "bill-1",
-          itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+          itemId: "ICE_IMMIGRATION_ENFORCEMENT",
           updatedAt: new Date(),
           voteDate: new Date("2026-01-01"),
         },
         {
           allocationPct: -0.9,
           billId: "bill-2",
-          itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+          itemId: "ICE_IMMIGRATION_ENFORCEMENT",
           updatedAt: new Date(),
           voteDate: new Date("2026-01-02"),
         },
@@ -91,14 +91,14 @@ describe("alignment legislative sync helpers", () => {
         {
           allocationPct: 0.8,
           billId: "bill-1",
-          itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+          itemId: "ICE_IMMIGRATION_ENFORCEMENT",
           updatedAt: new Date(),
           voteDate: new Date("2026-01-01"),
         },
         {
           allocationPct: 0.9,
           billId: "bill-2",
-          itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+          itemId: "ICE_IMMIGRATION_ENFORCEMENT",
           updatedAt: new Date(),
           voteDate: new Date("2026-01-02"),
         },
@@ -162,7 +162,7 @@ describe("alignment legislative sync helpers", () => {
 
     expect(rows.length).toBeGreaterThan(0);
     expect(rows[0]?.externalId).toBe("S000033");
-    expect(rows.some((row) => row.itemCategory === "ADDICTION_TREATMENT")).toBe(true);
+    expect(rows.some((row) => row.itemId === "ADDICTION_TREATMENT")).toBe(true);
     expect(rows[0]?.allocationPct).toBeGreaterThan(0);
   });
 
@@ -223,7 +223,7 @@ describe("alignment legislative sync helpers", () => {
     expect(rows[0]).toMatchObject({
       externalId: "S000033",
       billId: "119-s-5:senate:1:7",
-      itemCategory: "ICE_IMMIGRATION_ENFORCEMENT",
+      itemId: "ICE_IMMIGRATION_ENFORCEMENT",
     });
     expect(rows[0]?.allocationPct).toBeLessThan(0);
   });

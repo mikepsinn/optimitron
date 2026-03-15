@@ -103,8 +103,8 @@ export async function computeAggregateAlignmentScores(
     orderBy: { updatedAt: "asc" },
     select: {
       userId: true,
-      categoryA: true,
-      categoryB: true,
+      itemAId: true,
+      itemBId: true,
       allocationA: true,
       allocationB: true,
       updatedAt: true,
@@ -119,8 +119,8 @@ export async function computeAggregateAlignmentScores(
   // 2. Convert to the format expected by wishocracy functions
   const comparisons: StoredWishocraticComparison[] = allocations.map((a) => ({
     userId: a.userId,
-    categoryA: a.categoryA,
-    categoryB: a.categoryB,
+    itemAId: a.itemAId,
+    itemBId: a.itemBId,
     allocationA: a.allocationA,
     allocationB: a.allocationB,
     timestamp: a.updatedAt,
@@ -216,9 +216,34 @@ export async function computeAggregateAlignmentScores(
     .filter((d): d is NonNullable<typeof d> => d != null);
 
   if (scoreData.length > 0) {
+    // Create AlignmentScore records (without categoryScores — now a relation)
     await prisma.alignmentScore.createMany({
-      data: scoreData.map(({ rank: _rank, name: _name, ...rest }) => rest),
+      data: scoreData.map(({ rank: _rank, name: _name, categoryScores: _cs, ...rest }) => rest),
     });
+
+    // Create CategoryAlignmentScore child records for each score
+    const createdScores = await prisma.alignmentScore.findMany({
+      where: { aggregationRunId: aggregationRun.id },
+      select: { id: true, politicianId: true },
+    });
+
+    const scoreByPoliticianId = new Map(
+      createdScores.map((s) => [s.politicianId, s.id]),
+    );
+
+    const categoryRows = scoreData.flatMap((d) => {
+      const alignmentScoreId = scoreByPoliticianId.get(d.politicianId);
+      if (!alignmentScoreId) return [];
+      return Object.entries(d.categoryScores).map(([itemId, scoreValue]) => ({
+        alignmentScoreId,
+        itemId,
+        score: scoreValue,
+      }));
+    });
+
+    if (categoryRows.length > 0) {
+      await prisma.categoryAlignmentScore.createMany({ data: categoryRows });
+    }
   }
 
   logger.info(
@@ -302,6 +327,9 @@ export async function getLatestAggregateScores(
           externalId: true,
         },
       },
+      categoryScores: {
+        select: { itemId: true, score: true },
+      },
     },
     orderBy: { score: "desc" },
   });
@@ -338,7 +366,9 @@ export async function getLatestAggregateScores(
       district: s.politician.district,
       score: Number(s.score.toFixed(1)),
       votesCompared: s.votesCompared,
-      categoryScores: (s.categoryScores as Record<string, number>) ?? {},
+      categoryScores: Object.fromEntries(
+        s.categoryScores.map((cs) => [cs.itemId, cs.score]),
+      ),
       rank: index + 1,
       onChainRef: s.onChainRef,
     })),

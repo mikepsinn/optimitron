@@ -23,7 +23,7 @@ const SIGNAL_PRIOR = 0.2;
 export interface StoredAlignmentVoteRow {
   allocationPct: number;
   billId: string | null;
-  itemCategory: string;
+  itemId: string;
   updatedAt: Date;
   voteDate: Date | null;
 }
@@ -40,7 +40,7 @@ export interface DerivedAlignmentVoteRow {
   externalId: string;
   allocationPct: number;
   billId: string;
-  itemCategory: BudgetCategoryId;
+  itemId: BudgetCategoryId;
   voteDate: Date | null;
 }
 
@@ -93,8 +93,8 @@ function buildLegacyAllocationRecord(
   let latestVoteDate: Date | null = null;
 
   for (const vote of votes) {
-    if (!ALIGNMENT_CATEGORY_IDS.includes(vote.itemCategory as BudgetCategoryId)) continue;
-    const categoryId = vote.itemCategory as BudgetCategoryId;
+    if (!ALIGNMENT_CATEGORY_IDS.includes(vote.itemId as BudgetCategoryId)) continue;
+    const categoryId = vote.itemId as BudgetCategoryId;
     const timestamp = toTimestamp(vote.voteDate) || toTimestamp(vote.updatedAt);
     const existing = latestByCategory.get(categoryId);
     if (!existing || timestamp >= existing.timestamp) {
@@ -129,8 +129,8 @@ function collectLegislativeVoteStats(votes: StoredAlignmentVoteRow[]) {
   let latestVoteDate: Date | null = null;
 
   for (const vote of votes) {
-    if (!ALIGNMENT_CATEGORY_IDS.includes(vote.itemCategory as BudgetCategoryId)) continue;
-    const categoryId = vote.itemCategory as BudgetCategoryId;
+    if (!ALIGNMENT_CATEGORY_IDS.includes(vote.itemId as BudgetCategoryId)) continue;
+    const categoryId = vote.itemId as BudgetCategoryId;
     const stats = byCategory.get(categoryId) ?? { count: 0, sum: 0 };
     stats.count += 1;
     stats.sum += normalizeSignal(vote.allocationPct);
@@ -357,7 +357,7 @@ export async function deriveRecentLegislativeVoteRows(
               ).toFixed(3),
             ),
             billId: rollCallId,
-            itemCategory: match.categoryId,
+            itemId: match.categoryId,
             voteDate,
           });
         }

@@ -9,8 +9,8 @@ const STORAGE_KEYS = {
 
 type PendingWishocracyState = {
   comparisons: Array<{
-    categoryA: string;
-    categoryB: string;
+    itemAId: string;
+    itemBId: string;
     allocationA: number;
     allocationB: number;
     timestamp: string;
