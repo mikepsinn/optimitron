@@ -17,7 +17,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
           {text.slice(0, 100)}&hellip;{" "}
           <button
             onClick={() => setExpanded(true)}
-            className="text-pink-500 font-bold hover:underline"
+            className="text-brutal-pink font-bold hover:underline"
           >
             more
           </button>
@@ -30,7 +30,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
               {" "}
               <button
                 onClick={() => setExpanded(false)}
-                className="text-pink-500 font-bold hover:underline"
+                className="text-brutal-pink font-bold hover:underline"
               >
                 less
               </button>
@@ -44,7 +44,7 @@ function TruncatedDescription({ text, sources }: { text: string; sources?: reado
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-muted-foreground/70 hover:text-pink-500 transition-colors"
+                  className="text-[10px] text-muted-foreground/70 hover:text-brutal-pink transition-colors"
                   title={s.name}
                 >
                   {s.name}
@@ -139,7 +139,7 @@ export function BudgetPairSlider({
   if (!catA || !catB) {
     return (
       <Card className="bg-background border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-4xl mx-auto">
-        <p className="text-center text-red-500 font-bold">
+        <p className="text-center text-brutal-red font-bold">
           Error: Invalid category data. Please refresh the page.
         </p>
       </Card>

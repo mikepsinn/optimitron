@@ -71,7 +71,7 @@ export function WishocracyCompletionCard({
     <div className="mx-auto mb-8 mt-12 max-w-3xl">
       <div className="mb-6 text-center">
         <div className="mb-4 flex justify-center">
-          <CheckCircle2 className="h-16 w-16 text-green-600" />
+          <CheckCircle2 className="h-16 w-16 text-brutal-cyan" />
         </div>
         <h2 className="text-2xl font-black uppercase">Well Done</h2>
         <p className="mt-2 text-sm text-muted-foreground">

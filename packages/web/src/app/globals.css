@@ -159,7 +159,15 @@
 }
 
 /* Tailwind v4 @theme with unified color system */
+/* Nuke ALL default Tailwind color scales — only our brutal tokens exist */
 @theme inline {
+  --color-*: initial;
+
+  --color-black: #000;
+  --color-white: #fff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

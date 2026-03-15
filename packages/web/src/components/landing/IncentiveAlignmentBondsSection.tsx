@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
+import { IncentiveFeedbackLoop } from "./IncentiveFeedbackLoop";
 import {
   incentiveAlignmentBondsPaperLink,
   prizeLink,
@@ -45,34 +46,46 @@ export function IncentiveAlignmentBondsSection() {
           </p>
         </ScrollReveal>
 
-        {/* Two outcomes */}
+        {/* Two outcomes — clear upside/downside */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <ScrollReveal direction="left">
             <div className="p-6 border-4 border-black bg-brutal-yellow shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full">
               <div className="text-xs font-black px-2.5 py-1 bg-black text-white inline-block mb-3 uppercase">
-                If the plan fails
+                Your Downside (Plan Fails)
               </div>
               <h3 className="text-2xl font-black text-black mb-2">
-                ~4x Return
+                ~4x Your Money Back
               </h3>
-              <p className="text-sm text-black/70 leading-relaxed font-medium">
-                Dominant assurance contract. Principal back plus a multiplier.
-                You literally get paid for civilisation failing.
+              <p className="text-sm text-black/70 leading-relaxed font-medium mb-3">
+                Dominant assurance contract. If outcome thresholds aren&apos;t met,
+                you get principal back plus a multiplier.
               </p>
+              <div className="p-3 bg-black/10 border border-black/20">
+                <p className="text-xs font-bold text-black/60">
+                  Invest $1,000 → Get back ~$4,000 if the plan fails.
+                  Your &ldquo;worst case&rdquo; is quadrupling your money.
+                </p>
+              </div>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="right" delay={0.15}>
             <div className="p-6 border-4 border-black bg-brutal-cyan shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full">
               <div className="text-xs font-black px-2.5 py-1 bg-black text-white inline-block mb-3 uppercase">
-                If the plan succeeds
+                Your Upside (Plan Succeeds)
               </div>
               <h3 className="text-2xl font-black text-black mb-2">
                 272%/yr Revenue Share
               </h3>
-              <p className="text-sm text-black/70 leading-relaxed font-medium">
-                $14.9M–$52.1M per-capita gains. Your downside is &ldquo;only&rdquo;
-                quadrupling your money.
+              <p className="text-sm text-black/70 leading-relaxed font-medium mb-3">
+                $14.9M–$52.1M per-capita income gains across adopting jurisdictions.
+                Bondholders get a share of the value they helped create.
               </p>
+              <div className="p-3 bg-black/10 border border-black/20">
+                <p className="text-xs font-bold text-black/60">
+                  Invest $1,000 → Revenue share of civilisational upgrade.
+                  Break-even requires only a 0.0067% probability shift.
+                </p>
+              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -86,7 +99,7 @@ export function IncentiveAlignmentBondsSection() {
             className="p-4 border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
           >
             <p className="text-xs font-black uppercase text-black/50 text-center mb-3">
-              Return profile
+              Return profile — you win either way
             </p>
             <div className="flex items-center h-10 gap-0">
               {/* Fail payoff */}
@@ -129,10 +142,26 @@ export function IncentiveAlignmentBondsSection() {
               </motion.div>
             </div>
             <p className="text-xs text-black/40 font-bold text-center mt-2">
-              Break-even: 0.0067% probability shift
+              Break-even: 0.0067% probability shift. Your expected value is positive in virtually all scenarios.
             </p>
           </motion.div>
         </div>
+
+        {/* Feedback loop diagram */}
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto mb-8 p-6 border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black text-black uppercase text-center mb-2">
+              Why Everyone Lobbies for Expansion
+            </h3>
+            <p className="text-sm text-black/60 font-medium text-center mb-4">
+              Treaty inflows split 10/10/80. Bondholders earn returns. Politicians get rewarded
+              for alignment. 80% funds pragmatic trials that cure diseases and boost GDP.
+              As GDP rises, everyone gets richer — so everyone lobbies for more treaty funding.
+              1% → 2% → 5%. The loop is self-reinforcing.
+            </p>
+            <IncentiveFeedbackLoop />
+          </div>
+        </ScrollReveal>
 
         {/* Compact properties - 3 column */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

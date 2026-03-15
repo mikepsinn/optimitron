@@ -28,7 +28,7 @@ const counters: CounterConfig[] = [
   {
     rate: DEATHS_PER_SECOND,
     format: (n) => Math.floor(n).toLocaleString(),
-    color: "text-orange-400",
+    color: "text-brutal-yellow",
     label: "Died from treatable diseases since you opened this page",
     quip: "Each one had a name. But sure, take your time.",
     staticFallback: "~150,000 deaths per day (~1.7/sec)",
@@ -36,7 +36,7 @@ const counters: CounterConfig[] = [
   {
     rate: DYSFUNCTION_TAX_PER_SECOND,
     format: formatDollars,
-    color: "text-red-400",
+    color: "text-brutal-red",
     label: "Burned by misaligned governments since you opened this page",
     quip: "That's your money, by the way. You earned it. They wasted it.",
     staticFallback: "$101T/yr in governance dysfunction (~$3.2M/sec)",
@@ -44,7 +44,7 @@ const counters: CounterConfig[] = [
   {
     rate: DESTRUCTIVE_PER_SECOND,
     format: formatDollars,
-    color: "text-yellow-400",
+    color: "text-brutal-yellow",
     label: "Spent on destruction instead of cures since you opened this page",
     quip: "Every dollar here creates the next cybercriminal. It's a lovely system you've built.",
     staticFallback: "$13.2T/yr on military + cybercrime (~$418K/sec)",

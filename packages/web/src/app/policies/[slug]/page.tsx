@@ -250,7 +250,7 @@ export default async function PolicyDetailPage({
             </div>
             <div className="mt-2 h-3 bg-muted border border-black overflow-hidden">
               <div
-                className="h-full bg-emerald-500"
+                className="h-full bg-brutal-cyan"
                 style={{ width: `${policy.incomeEffect * 100}%` }}
               />
             </div>
@@ -274,7 +274,7 @@ export default async function PolicyDetailPage({
             <div className="text-3xl font-black text-black">+{policy.welfareScore}</div>
             <div className="mt-2 h-3 bg-muted border border-black overflow-hidden">
               <div
-                className="h-full bg-cyan-500"
+                className="h-full bg-brutal-cyan"
                 style={{ width: `${Math.min(policy.welfareScore, 100)}%` }}
               />
             </div>

@@ -17,7 +17,7 @@ export function ProfileHub({ initialData }: ProfileHubProps) {
   return (
     <div className="space-y-8">
       <section className="space-y-3">
-        <p className="text-sm font-black uppercase tracking-[0.2em] text-pink-600">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
           Your Data
         </p>
         <h1 className="text-4xl font-black uppercase tracking-tight text-black">

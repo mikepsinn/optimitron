@@ -187,7 +187,7 @@ export default function PrizePage() {
       {/* Hero */}
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-pink-600">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
             Earth Optimization Prize
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black">
@@ -210,7 +210,7 @@ export default function PrizePage() {
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <a
             href="#invest"
-            className="inline-flex items-center justify-center border-4 border-black bg-pink-500 px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="inline-flex items-center justify-center border-4 border-black bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             Buy Bonds
           </a>
@@ -589,7 +589,7 @@ export default function PrizePage() {
             <div className="text-xs font-black uppercase text-black/60">
               Status
             </div>
-            <div className="mt-2 text-2xl font-black text-emerald-600">
+            <div className="mt-2 text-2xl font-black text-brutal-cyan">
               OPEN
             </div>
           </div>

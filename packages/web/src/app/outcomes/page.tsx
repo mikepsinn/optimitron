@@ -64,7 +64,7 @@ export default function OutcomesIndexPage() {
                   </p>
                   <Link
                     href={getPairStudyPath(outcome.id, top.predictorId)}
-                    className="text-xs font-black text-pink-600 hover:text-pink-800 uppercase"
+                    className="text-xs font-black text-brutal-pink hover:text-brutal-pink uppercase"
                   >
                     Open Pair Study →
                   </Link>

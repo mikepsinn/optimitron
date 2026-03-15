@@ -19,7 +19,7 @@ export function SocialShareButtons({ url, text }: SocialShareButtonsProps) {
         href={`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center justify-center border-2 border-black bg-black px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-800"
+        className="inline-flex items-center justify-center border-2 border-black bg-black px-4 py-2 font-bold text-white transition-colors hover:bg-black/80"
       >
         Share on X
       </a>

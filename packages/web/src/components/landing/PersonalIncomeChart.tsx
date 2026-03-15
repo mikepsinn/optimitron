@@ -3,12 +3,32 @@
 import { useState, useRef, useMemo } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 
-const YEARS = 30;
-const CURRENT_GROWTH = 0.02; // 2% annual real income growth (status quo)
-const OPTIMIZED_GROWTH = 0.047; // 4.7% with dysfunction removed ($2-$4 ROI on health spending)
+const YEARS = 20;
 const DEFAULT_INCOME = 37000; // US median personal income
 
+const scenarios = [
+  {
+    id: "treaty",
+    label: "1% Treaty",
+    rate: 0.179, // 17.9% CAGR — reallocate 1% military spending
+    color: "#00c8c8",
+    description: "Redirect 1% of military spending to health R&D",
+    lifetimeGainLabel: "$14.9M per capita",
+  },
+  {
+    id: "wishonia",
+    label: "Full Optimization",
+    rate: 0.254, // 25.4% CAGR — full governance optimization
+    color: "#f472b6",
+    description: "Full Optomitron governance optimization",
+    lifetimeGainLabel: "$52.1M per capita",
+  },
+] as const;
+
+const CURRENT_RATE = 0.025; // 2.5% current trajectory
+
 function formatCurrency(n: number): string {
+  if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(1)}B`;
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
   return `$${n.toFixed(0)}`;
@@ -24,22 +44,28 @@ function computeTrajectory(start: number, rate: number, years: number): number[]
 
 export function PersonalIncomeChart() {
   const [income, setIncome] = useState(DEFAULT_INCOME);
+  const [scenarioIdx, setScenarioIdx] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const reduced = useReducedMotion();
 
-  const current = useMemo(() => computeTrajectory(income, CURRENT_GROWTH, YEARS), [income]);
-  const optimized = useMemo(() => computeTrajectory(income, OPTIMIZED_GROWTH, YEARS), [income]);
+  const scenario = scenarios[scenarioIdx]!;
+  const current = useMemo(() => computeTrajectory(income, CURRENT_RATE, YEARS), [income]);
+  const optimized = useMemo(
+    () => computeTrajectory(income, scenario.rate, YEARS),
+    [income, scenario.rate],
+  );
 
   const maxVal = optimized[YEARS]!;
   const totalCurrentEarnings = current.reduce((a, b) => a + b, 0);
   const totalOptimizedEarnings = optimized.reduce((a, b) => a + b, 0);
   const lifetimeLost = totalOptimizedEarnings - totalCurrentEarnings;
+  const multiplier = (optimized[YEARS]! / current[YEARS]!).toFixed(0);
 
   // SVG dimensions
   const svgW = 800;
   const svgH = 320;
-  const padL = 70;
+  const padL = 80;
   const padR = 20;
   const padT = 20;
   const padB = 40;
@@ -73,9 +99,11 @@ export function PersonalIncomeChart() {
       .join(" ") +
     " Z";
 
-  // Y-axis ticks
+  // Y-axis ticks (log-friendly)
   const yTicks: number[] = [];
-  const tickStep = Math.pow(10, Math.floor(Math.log10(maxVal))) / 2;
+  const rawStep = maxVal / 5;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const tickStep = Math.ceil(rawStep / magnitude) * magnitude;
   for (let v = 0; v <= maxVal; v += tickStep) {
     yTicks.push(v);
   }
@@ -93,45 +121,65 @@ export function PersonalIncomeChart() {
           How Rich Would You Be?
         </h2>
         <p className="mt-4 text-lg text-black/60 max-w-2xl mx-auto font-medium">
-          Enter your income. See what 30 years of compounding looks like with
+          Enter your income. See what {YEARS} years of compounding looks like with
           and without the $101 trillion governance dysfunction tax.
         </p>
       </motion.div>
 
       <div ref={ref} className="max-w-4xl mx-auto">
-        {/* Income input */}
+        {/* Controls row */}
         <motion.div
           initial={reduced ? {} : { opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+          className="flex flex-col gap-4 mb-8"
         >
-          <label
-            htmlFor="income-input"
-            className="text-sm font-black uppercase text-black/60"
-          >
-            Your Annual Income:
-          </label>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-black">$</span>
-            <input
-              id="income-input"
-              type="number"
-              value={income}
-              onChange={(e) => {
-                const v = parseInt(e.target.value, 10);
-                if (!isNaN(v) && v > 0 && v < 10_000_000) setIncome(v);
-              }}
-              className="w-32 px-3 py-2 border-4 border-black font-black text-lg text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[2px] focus:translate-y-[2px] transition-all"
-            />
-            <span className="text-sm font-bold text-black/40">/year</span>
+          {/* Income input */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <label
+              htmlFor="income-input"
+              className="text-sm font-black uppercase text-black/60"
+            >
+              Your Annual Income:
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-black">$</span>
+              <input
+                id="income-input"
+                type="number"
+                value={income}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value, 10);
+                  if (!isNaN(v) && v > 0 && v < 10_000_000) setIncome(v);
+                }}
+                className="w-32 px-3 py-2 border-4 border-black font-black text-lg text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[2px] focus:translate-y-[2px] transition-all"
+              />
+              <span className="text-sm font-bold text-black/40">/year</span>
+            </div>
+            <button
+              onClick={() => setIncome(DEFAULT_INCOME)}
+              className="text-xs font-bold text-black/40 hover:text-black underline transition-colors"
+            >
+              Reset to median
+            </button>
           </div>
-          <button
-            onClick={() => setIncome(DEFAULT_INCOME)}
-            className="text-xs font-bold text-black/40 hover:text-black underline transition-colors"
-          >
-            Reset to median
-          </button>
+
+          {/* Scenario toggle */}
+          <div className="flex items-center justify-center gap-2">
+            {scenarios.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setScenarioIdx(i)}
+                className={`px-4 py-2 text-xs font-black uppercase border-2 border-black transition-all ${
+                  scenarioIdx === i
+                    ? "bg-black text-white shadow-none translate-x-[2px] translate-y-[2px]"
+                    : "bg-white text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {/* SVG Chart */}
@@ -145,7 +193,7 @@ export function PersonalIncomeChart() {
             viewBox={`0 0 ${svgW} ${svgH}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Income trajectory chart comparing current growth vs optimized growth over 30 years"
+            aria-label={`Income trajectory chart: status quo vs ${scenario.label} over ${YEARS} years`}
           >
             {/* Grid lines */}
             {yTicks.map((v) => (
@@ -170,7 +218,7 @@ export function PersonalIncomeChart() {
             ))}
 
             {/* X-axis labels */}
-            {[0, 5, 10, 15, 20, 25, 30].map((yr) => (
+            {Array.from({ length: YEARS / 5 + 1 }, (_, i) => i * 5).map((yr) => (
               <text
                 key={yr}
                 x={x(yr)}
@@ -184,8 +232,9 @@ export function PersonalIncomeChart() {
 
             {/* Fill between curves */}
             <motion.path
+              key={`fill-${scenario.id}`}
               d={fillPath}
-              fill="rgba(0, 200, 200, 0.12)"
+              fill={`${scenario.color}18`}
               initial={reduced ? {} : { opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 1, delay: 0.8 }}
@@ -205,9 +254,10 @@ export function PersonalIncomeChart() {
 
             {/* Optimized trajectory */}
             <motion.path
+              key={`line-${scenario.id}`}
               d={optimizedPath}
               fill="none"
-              stroke="#00c8c8"
+              stroke={scenario.color}
               strokeWidth="3"
               strokeLinecap="round"
               initial={reduced ? {} : { pathLength: 0 }}
@@ -233,20 +283,21 @@ export function PersonalIncomeChart() {
                 x={x(YEARS) - 5}
                 y={y(optimized[YEARS]!) - 8}
                 textAnchor="end"
-                className="fill-[#00c8c8] text-[11px] font-black"
+                style={{ fill: scenario.color }}
+                className="text-[11px] font-black"
               >
-                {formatCurrency(optimized[YEARS]!)}
+                {formatCurrency(optimized[YEARS]!)} ({multiplier}x)
               </text>
             </motion.g>
 
             {/* Legend */}
             <rect x={padL + 10} y={padT + 5} width={10} height={10} fill="#ef4444" />
             <text x={padL + 24} y={padT + 14} className="fill-black/60 text-[10px] font-bold">
-              Status quo (2%/yr)
+              Status quo ({(CURRENT_RATE * 100).toFixed(1)}%/yr)
             </text>
-            <rect x={padL + 10} y={padT + 22} width={10} height={10} fill="#00c8c8" />
+            <rect x={padL + 10} y={padT + 22} width={10} height={10} fill={scenario.color} />
             <text x={padL + 24} y={padT + 31} className="fill-black/60 text-[10px] font-bold">
-              Optimized (4.7%/yr)
+              {scenario.label} ({(scenario.rate * 100).toFixed(1)}%/yr)
             </text>
           </svg>
         </motion.div>
@@ -260,7 +311,7 @@ export function PersonalIncomeChart() {
         >
           <div className="p-4 border-2 border-black bg-white text-center">
             <div className="text-xs font-black uppercase text-black/50 mb-1">
-              30-Year Status Quo Total
+              {YEARS}-Year Status Quo Total
             </div>
             <div className="text-xl font-black text-brutal-red">
               {formatCurrency(totalCurrentEarnings)}
@@ -268,7 +319,7 @@ export function PersonalIncomeChart() {
           </div>
           <div className="p-4 border-2 border-black bg-white text-center">
             <div className="text-xs font-black uppercase text-black/50 mb-1">
-              30-Year Optimized Total
+              {YEARS}-Year {scenario.label} Total
             </div>
             <div className="text-xl font-black text-brutal-cyan">
               {formatCurrency(totalOptimizedEarnings)}
@@ -290,9 +341,18 @@ export function PersonalIncomeChart() {
           transition={{ duration: 0.4, delay: 0.8 }}
           className="text-center text-xs text-black/30 mt-4 font-medium max-w-2xl mx-auto"
         >
-          Based on historical real income growth (~2%) vs. projected growth with optimised governance (~4.7%,
-          derived from $2–$4 return per $1 in health/education investment). These are illustrative projections,
-          not guarantees — but the compounding gap is real regardless of exact rates.
+          Based on current GDP growth (~2.5%) vs. modelled trajectories from the{" "}
+          <a
+            href="https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-black/50"
+          >
+            GDP Trajectories analysis
+          </a>
+          . 1% Treaty: 17.9% CAGR from military reallocation + research spillovers.
+          Full Optimization: 25.4% CAGR from complete governance reform.
+          Projections are illustrative — the compounding gap is real regardless of exact rates.
         </motion.p>
       </div>
     </section>

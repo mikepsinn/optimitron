@@ -53,7 +53,7 @@ export function DemoLoginButton({
         {loading ? "Signing in..." : "Try Demo"}
       </Button>
       {error && (
-        <p className="mt-1 text-xs text-red-500 font-bold">{error}</p>
+        <p className="mt-1 text-xs text-brutal-red font-bold">{error}</p>
       )}
     </div>
   );

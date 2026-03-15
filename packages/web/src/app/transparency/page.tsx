@@ -83,7 +83,7 @@ export default function TransparencyPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-pink-600">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
             Transparency
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black">

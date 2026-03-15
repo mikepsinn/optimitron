@@ -24,7 +24,7 @@ function CategoryRow({ category, percentage, govPercent, avgPercent }: {
         <span className="uppercase flex-1">{category.name}</span>
         <button
           onClick={() => setDetailsOpen(!detailsOpen)}
-          className="text-[10px] text-muted-foreground hover:text-pink-500 transition-colors font-bold"
+          className="text-[10px] text-muted-foreground hover:text-brutal-pink transition-colors font-bold"
         >
           {detailsOpen ? "\u25BE Details" : "\u25B8 Details"}
         </button>
@@ -80,7 +80,7 @@ function CategoryRow({ category, percentage, govPercent, avgPercent }: {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-muted-foreground/70 hover:text-pink-500 transition-colors"
+                  className="text-[10px] text-muted-foreground/70 hover:text-brutal-pink transition-colors"
                   title={s.name}
                 >
                   {s.name}

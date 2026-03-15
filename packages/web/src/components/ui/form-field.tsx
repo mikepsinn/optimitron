@@ -28,7 +28,7 @@ export function FormField({
       </Label>
       {children}
       {error && (
-        <p className="text-sm font-bold text-red-600">{error}</p>
+        <p className="text-sm font-bold text-brutal-red">{error}</p>
       )}
     </div>
   )

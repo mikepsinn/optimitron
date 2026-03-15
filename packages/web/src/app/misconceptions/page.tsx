@@ -45,7 +45,7 @@ const gradeColors: Record<string, string> = {
   B: "bg-brutal-cyan text-black",
   C: "bg-brutal-yellow text-black",
   D: "bg-brutal-red/60 text-black",
-  F: "bg-red-500 text-white",
+  F: "bg-brutal-red text-white",
 };
 
 const gradeDescriptions: Record<string, string> = {
@@ -127,12 +127,12 @@ function CorrelationBar({ value }: { value: number }) {
     abs < 0.1
       ? "bg-muted"
       : abs < 0.3
-        ? "bg-yellow-400"
+        ? "bg-brutal-yellow"
         : abs < 0.5
-          ? "bg-orange-400"
+          ? "bg-brutal-yellow"
           : abs < 0.7
-            ? "bg-orange-500"
-            : "bg-red-500";
+            ? "bg-brutal-yellow"
+            : "bg-brutal-red";
 
   return (
     <div className="flex items-center gap-2 mt-1">
