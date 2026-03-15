@@ -8,6 +8,13 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
+  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  TREATY_ANNUAL_FUNDING,
+  CURRENT_TRIAL_SLOTS_AVAILABLE,
+  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  EFFICACY_LAG_YEARS,
+  TREATY_EXPECTED_COST_PER_DALY,
 } from "@/lib/parameters-calculations-citations";
 import {
   earthOptimizationPrizePaperLink,
@@ -23,6 +30,17 @@ export const metadata: Metadata = {
   description:
     "A standing market where greed does the coordination. Buy Incentive Alignment Bonds to fund implementations that measurably improve health and income. Wishocratic allocation ensures your money goes where evidence points.",
 };
+
+const dysfunctionTaxFormatted = `$${Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value).toLocaleString()}`;
+const deathsPerDayFormatted = `${Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value).toLocaleString()}`;
+
+const trustBadges = [
+  { label: "Zero Team Allocation", detail: "100% to escrow" },
+  { label: "No Pre-Sale", detail: "Same price for everyone" },
+  { label: "Fully On-Chain", detail: "Every tx auditable" },
+  { label: "No Admin Keys", detail: "Contract controls distribution" },
+  { label: "You Win Either Way", detail: "Fail: ~4x · Succeed: revenue share" },
+];
 
 const mechanismSteps = [
   {
@@ -114,9 +132,9 @@ const whatYouFund = [
 ];
 
 const requiredFunctions = [
-  { id: 1, name: "Reallocation Wedge", description: "Redirect 1% of military spending ($22B) to clinical trials" },
-  { id: 2, name: "Medical Throughput", description: "Expand trial capacity from 1.9M to 23.4M patients/yr" },
-  { id: 3, name: "Regulatory-Delay Removal", description: "Eliminate 8.2 years of post-safety efficacy waiting" },
+  { id: 1, name: "Reallocation Wedge", description: `Redirect 1% of military spending (${fmtParam({...TREATY_ANNUAL_FUNDING, unit: "USD"})}) to clinical trials` },
+  { id: 2, name: "Medical Throughput", description: `Expand trial capacity from ${(CURRENT_TRIAL_SLOTS_AVAILABLE.value / 1e6).toFixed(1)}M to ${(DFDA_PATIENTS_FUNDABLE_ANNUALLY.value / 1e6).toFixed(1)}M patients/yr` },
+  { id: 3, name: "Regulatory-Delay Removal", description: `Eliminate ${EFFICACY_LAG_YEARS.value} years of post-safety efficacy waiting` },
   { id: 4, name: "Preference Aggregation", description: "Collect citizen priorities via pairwise comparison (RAPPA)" },
   { id: 5, name: "Alignment Scoring", description: "Score politicians against citizen preferences, publish as Hypercerts" },
   { id: 6, name: "Campaign Automation", description: "Route funds to high-alignment candidates via smart contracts" },
@@ -237,6 +255,33 @@ export default function PrizePage() {
         </div>
       </section>
 
+      {/* Trust Badges */}
+      <section className="mb-16">
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {trustBadges.map((badge) => (
+            <div
+              key={badge.label}
+              className="border-2 border-black bg-white px-4 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="text-xs font-black uppercase text-black">
+                {badge.label}
+              </div>
+              <div className="text-[10px] font-medium text-black/50">
+                {badge.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm text-black/70 font-medium leading-relaxed">
+            On my planet, financial instruments don&apos;t need trust disclaimers
+            because we eliminated the kind of person who makes them necessary.
+            You lot still have those people. So here&apos;s the fine print: there
+            isn&apos;t any. It&apos;s all on-chain.
+          </p>
+        </div>
+      </section>
+
       {/* Why This Is Rational */}
       <section className="mb-16">
         <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6">
@@ -292,6 +337,65 @@ export default function PrizePage() {
         </div>
       </section>
 
+      {/* Cost of Inaction vs Cost of Action */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6">
+          Cost of Inaction vs Cost of Action
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="border-4 border-black bg-red-50 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-black uppercase text-red-600 mb-3">
+              Cost of Doing Nothing
+            </div>
+            <ul className="space-y-3">
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-red-700">{dysfunctionTaxFormatted}/person/year</span>{" "}
+                — political dysfunction tax you&apos;re already paying
+              </li>
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-red-700">{fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})}/yr</span>{" "}
+                — global waste from misaligned governance
+              </li>
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-red-700">{deathsPerDayFormatted} deaths/day</span>{" "}
+                — preventable, if anyone was paying attention
+              </li>
+            </ul>
+          </div>
+          <div className="border-4 border-black bg-green-50 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-black uppercase text-green-700 mb-3">
+              Cost of Doing Something
+            </div>
+            <ul className="space-y-3">
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-green-700">Your bond amount</span>{" "}
+                — that&apos;s it. That&apos;s the cost.
+              </li>
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-green-700">0.0067% break-even</span>{" "}
+                — probability shift needed for positive expected value
+              </li>
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-green-700">Worst case: ~4x back</span>{" "}
+                — dominant assurance contract if the plan fails
+              </li>
+              <li className="text-sm font-medium text-black/80">
+                <span className="font-black text-green-700">Best case: revenue share</span>{" "}
+                — on trillions in per-capita income gains
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm text-black/70 font-medium leading-relaxed">
+            You are currently paying {dysfunctionTaxFormatted} per year for the
+            privilege of your government being terrible. The break-even on an
+            Incentive Alignment Bond requires a 0.0067% chance of that changing.
+            The arithmetic here is not subtle.
+          </p>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section className="mb-16">
         <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-8">
@@ -337,7 +441,7 @@ export default function PrizePage() {
           The Earth Optimization Plan v1 defines ten functions that must be
           operational for outcome thresholds to be achievable. Any team can
           submit a v2 that beats it on cost per DALY averted. Currently the bar
-          is $0.177/DALY risk-adjusted.
+          is ${TREATY_EXPECTED_COST_PER_DALY.value.toFixed(3)}/DALY risk-adjusted.
         </p>
         <div className="border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
           <table className="w-full text-sm">
@@ -456,7 +560,7 @@ export default function PrizePage() {
             </h3>
             <p className="text-sm text-black/70 font-medium leading-relaxed">
               Any team can submit a v2 plan that beats v1 on cost per DALY
-              averted. The current benchmark is $0.177/DALY risk-adjusted. If
+              averted. The current benchmark is ${TREATY_EXPECTED_COST_PER_DALY.value.toFixed(3)}/DALY risk-adjusted. If
               you can do it cheaper and prove it, the protocol switches to your
               plan. No incumbency advantage. No moat. Just results.
             </p>
@@ -564,7 +668,7 @@ export default function PrizePage() {
         </h2>
         <p className="text-white/80 mb-6 font-medium max-w-2xl mx-auto leading-relaxed">
           The current cost of governance dysfunction is {fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} per year.
-          The Earth Optimization Plan costs roughly $0.177 per DALY averted.
+          The Earth Optimization Plan costs roughly ${TREATY_EXPECTED_COST_PER_DALY.value.toFixed(3)} per DALY averted.
           Your species is leaving a 282,000x improvement on the table. The
           break-even probability shift is 0.0067%. You don&apos;t need to be
           altruistic. You just need to be numerate.

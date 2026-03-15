@@ -153,7 +153,7 @@ export default function Home() {
                 Your governments cost you{" "}
                 <span className="font-black text-brutal-red">{fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} a year</span>{" "}
                 in dysfunction and let{" "}
-                <span className="font-black text-brutal-pink">{GLOBAL_DISEASE_DEATHS_DAILY.value.toLocaleString()} people die daily</span>{" "}
+                <span className="font-black text-brutal-pink">{fmtParam(GLOBAL_DISEASE_DEATHS_DAILY)} people die daily</span>{" "}
                 from treatable diseases. This is alignment software to fix that.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">

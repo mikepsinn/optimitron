@@ -26,4 +26,7 @@ export const API_ROUTES = {
     worldIdRequest: "/api/personhood/world-id/request",
     worldIdVerify: "/api/personhood/world-id/verify",
   },
+  treasury: {
+    registerUbi: "/api/treasury/register-ubi",
+  },
 } as const;

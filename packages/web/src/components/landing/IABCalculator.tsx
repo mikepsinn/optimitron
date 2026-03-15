@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+  VICTORY_BOND_ANNUAL_RETURN_PCT,
 } from "@/lib/parameters-calculations-citations";
 
 /**
@@ -19,7 +20,7 @@ const STAKING_RATE = 0.10;
 const ESCROW_YEARS = 15;
 const FAIL_MULTIPLIER = Math.pow(1 + STAKING_RATE, ESCROW_YEARS); // ≈ 4.177
 
-const ANNUAL_RETURN_RATE = 2.72; // 272% annual revenue share
+const ANNUAL_RETURN_RATE = VICTORY_BOND_ANNUAL_RETURN_PCT.value; // annual revenue share
 
 const TREATY_INCOME_GAIN = TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value; // $14.9M per-capita lifetime
 const WISHONIA_INCOME_GAIN = WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value; // $52.1M per-capita lifetime
@@ -151,7 +152,7 @@ export function IABCalculator() {
             {formatUSD(annualRevShare)}/yr
           </div>
           <div className="text-sm font-bold text-black/60 mb-3">
-            272% annual revenue share of treaty funding flows
+            {(VICTORY_BOND_ANNUAL_RETURN_PCT.value * 100).toFixed(0)}% annual revenue share of treaty funding flows
           </div>
           <div className="text-xs text-black/40 font-medium space-y-1">
             <p>

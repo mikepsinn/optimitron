@@ -304,18 +304,35 @@ export function PrizeDeposit() {
               Connect your wallet to purchase Incentive Alignment Bonds with
               USDC. Your deposit earns yield in Aave while it waits.
             </p>
-            <div className="flex flex-wrap gap-2">
-              {connectors.map((connector) => (
-                <button
-                  key={connector.uid}
-                  onClick={() => connect({ connector })}
-                  className="border-2 border-black bg-brutal-pink px-4 py-2.5 text-sm font-black uppercase text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+            {connectors.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {connectors.map((connector) => (
+                  <button
+                    key={connector.uid}
+                    onClick={() => connect({ connector })}
+                    className="border-2 border-black bg-brutal-pink px-4 py-2.5 text-sm font-black uppercase text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  >
+                    {connector.name === "Injected"
+                      ? "Browser Wallet (MetaMask)"
+                      : connector.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <div className="border-2 border-black bg-brutal-cyan/10 p-3">
+              <p className="text-xs font-medium text-black/60">
+                Need a wallet?{" "}
+                <a
+                  href="https://metamask.io/download/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-black text-black underline hover:text-brutal-pink"
                 >
-                  {connector.name === "Injected"
-                    ? "Browser Wallet"
-                    : connector.name}
-                </button>
-              ))}
+                  Install MetaMask
+                </a>{" "}
+                — it takes about 30 seconds. Then refresh this page and click
+                &quot;Browser Wallet&quot; above.
+              </p>
             </div>
           </div>
         ) : (

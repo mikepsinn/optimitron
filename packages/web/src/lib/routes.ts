@@ -20,6 +20,7 @@ export const ROUTES = {
   money: "/money",
   federalReserve: "/federal-reserve",
   departmentOfWar: "/department-of-war",
+  treasury: "/treasury",
   signIn: "/auth/signin",
 } as const;
 
@@ -184,6 +185,13 @@ export const transparencyLink: NavItem = {
   description: "Verifiable attestations, IPFS storage, and the full governance pipeline",
 };
 
+export const treasuryLink: NavItem = {
+  href: ROUTES.treasury,
+  label: "Treasury",
+  emoji: "🏦",
+  description: "$WISH treasury — transaction tax funds UBI and alignment-based politician funding",
+};
+
 export const prizeLink: NavItem = {
   href: ROUTES.prize,
   label: "Prize",
@@ -211,6 +219,7 @@ export const topLinks: NavItem[] = [
   wishocracyLink,
   alignmentLink,
   prizeLink,
+  treasuryLink,
   transparencyLink,
   aboutLink,
 ];
