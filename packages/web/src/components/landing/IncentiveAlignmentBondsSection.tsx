@@ -10,24 +10,6 @@ import {
   prizeLink,
 } from "@/lib/routes";
 
-const properties = [
-  {
-    title: "No Altruism Required",
-    description:
-      "Attractive returns either way. Greed does the coordination.",
-  },
-  {
-    title: "Market = Probability Signal",
-    description:
-      "Bond prices ARE the probability estimate. Money with skin in the game, not polls.",
-  },
-  {
-    title: "Campaigns Self-Organise",
-    description:
-      "Smart contracts route funds to politicians with the highest Citizen Alignment Scores. No PACs.",
-  },
-];
-
 export function IncentiveAlignmentBondsSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -162,27 +144,6 @@ export function IncentiveAlignmentBondsSection() {
             <IncentiveFeedbackLoop />
           </div>
         </ScrollReveal>
-
-        {/* Compact properties - 3 column */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {properties.map((prop, i) => (
-            <motion.div
-              key={prop.title}
-              initial={reduced ? {} : { opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: 0.1 + i * 0.08 }}
-              className="p-4 border-2 border-black bg-white"
-            >
-              <h3 className="text-sm font-black text-black mb-1 uppercase">
-                {prop.title}
-              </h3>
-              <p className="text-xs text-black/60 font-medium">
-                {prop.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
 
         {/* Bridge to Prize */}
         <ScrollReveal delay={0.3}>

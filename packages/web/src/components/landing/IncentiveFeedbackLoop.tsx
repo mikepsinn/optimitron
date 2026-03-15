@@ -2,22 +2,66 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import { StepReveal } from "@/components/animations/StepReveal";
 
 /**
- * Two-part visualization:
- * 1. Fund flow bar showing the 10/10/80 split
- * 2. Circular feedback loop showing why everyone lobbies for expansion
+ * Vertical flywheel visualization:
+ * 1. Fund flow bar (10/10/80 split)
+ * 2. Three stakeholder cards showing who gets what and why they lobby
+ * 3. Convergence into GDP growth → Treaty expansion
+ * 4. Loop-back indicator
  */
 
-const loopSteps = [
-  { label: "Treaty Funding", detail: "$27B+ military reallocation" },
-  { label: "10% Bondholders", detail: "Returns attract more capital" },
-  { label: "10% Politicians", detail: "Aligned reps get rewarded" },
-  { label: "80% Pragmatic Trials", detail: "Highest net social value" },
-  { label: "Outcomes Improve", detail: "Health + income metrics rise" },
-  { label: "GDP Increases", detail: "Everyone gets richer" },
-  { label: "Lobby for More", detail: "All parties want expansion" },
-  { label: "Treaty Grows", detail: "1% → 2% → 5% → more" },
+const stakeholders = [
+  {
+    name: "Bondholders",
+    cut: "10%",
+    label: "of treaty inflows",
+    color: "bg-brutal-yellow",
+    borderColor: "border-brutal-yellow",
+    why: "Returns rise with each cycle. They buy more bonds.",
+    action: "Buy more →",
+  },
+  {
+    name: "Politicians",
+    cut: "10%",
+    label: "alignment rewards",
+    color: "bg-brutal-pink",
+    borderColor: "border-brutal-pink",
+    textColor: "text-white",
+    why: "Higher alignment scores = more campaign funding. They lobby for expansion.",
+    action: "Lobby more →",
+  },
+  {
+    name: "Citizens",
+    cut: "80%",
+    label: "to pragmatic trials",
+    color: "bg-brutal-cyan",
+    borderColor: "border-brutal-cyan",
+    why: "Diseases cured. Income rises. They demand more treaty funding.",
+    action: "Demand more →",
+  },
+];
+
+const escalationYears = [
+  {
+    year: "Year 1",
+    pct: "1%",
+    amount: "$27B",
+    detail: "$2.7B returns, $2.7B rewards, $21.6B trials",
+  },
+  {
+    year: "Year 5",
+    pct: "2%",
+    amount: "$54B",
+    detail: "Returns double. Politicians campaign for 3%.",
+  },
+  {
+    year: "Year 10",
+    pct: "5%",
+    amount: "$136B",
+    detail: "Cures flowing. GDP accelerating. Everyone demands more.",
+  },
 ];
 
 export function IncentiveFeedbackLoop() {
@@ -25,15 +69,10 @@ export function IncentiveFeedbackLoop() {
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const reduced = useReducedMotion();
 
-  const cx = 200;
-  const cy = 210;
-  const r = 155;
-  const arrowR = 115;
-
   return (
     <div ref={ref}>
       {/* Fund flow split visualization */}
-      <div className="mb-8">
+      <div className="mb-10">
         <p className="text-xs font-black uppercase text-black/50 text-center mb-3">
           Where Treaty Funding Goes
         </p>
@@ -68,208 +107,167 @@ export function IncentiveFeedbackLoop() {
             className="w-[80%] bg-brutal-cyan flex items-center justify-center"
           >
             <span className="text-xs sm:text-sm font-black text-black">
-              80% Pragmatic Trials (Highest Net Social Value)
+              80% Pragmatic Trials
             </span>
           </motion.div>
         </div>
-        <div className="grid grid-cols-3 gap-2 mt-2">
-          <p className="text-[10px] text-black/40 font-medium text-center">
-            Bondholders earn returns → buy more bonds
-          </p>
-          <p className="text-[10px] text-black/40 font-medium text-center">
-            Politicians rewarded for alignment → lobby for treaty expansion
-          </p>
-          <p className="text-[10px] text-black/40 font-medium text-center">
-            Cures discovered → GDP rises → everyone gets richer
-          </p>
+      </div>
+
+      {/* Three stakeholder cards */}
+      <StepReveal
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
+        staggerDelay={0.15}
+      >
+        {stakeholders.map((s) => (
+          <div
+            key={s.name}
+            className={`p-4 border-4 border-black ${s.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+          >
+            <div className="text-xs font-black uppercase tracking-wider text-black/50 mb-1">
+              {s.cut} {s.label}
+            </div>
+            <h4 className={`text-lg font-black uppercase ${s.textColor ?? "text-black"} mb-2`}>
+              {s.name}
+            </h4>
+            <p className={`text-sm font-medium ${s.textColor ? "text-white/80" : "text-black/60"} mb-3`}>
+              {s.why}
+            </p>
+            <div className={`text-sm font-black ${s.textColor ?? "text-black"}`}>
+              {s.action}
+            </div>
+          </div>
+        ))}
+      </StepReveal>
+
+      {/* Convergence arrows */}
+      <div className="flex justify-center mb-6">
+        <div className="flex items-end gap-8 md:gap-16">
+          {/* Left line */}
+          <motion.div
+            initial={reduced ? {} : { height: 0, opacity: 0 }}
+            animate={isInView ? { height: 40, opacity: 1 } : {}}
+            transition={{ duration: 0.4, delay: 0.8 }}
+            className="w-0.5 bg-black/30 hidden md:block"
+          />
+          {/* Center line (always visible) */}
+          <motion.div
+            initial={reduced ? {} : { height: 0, opacity: 0 }}
+            animate={isInView ? { height: 40, opacity: 1 } : {}}
+            transition={{ duration: 0.4, delay: 0.9 }}
+            className="flex flex-col items-center"
+          >
+            <div className="w-0.5 h-10 bg-black/40" />
+            <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-black/40" />
+          </motion.div>
+          {/* Right line */}
+          <motion.div
+            initial={reduced ? {} : { height: 0, opacity: 0 }}
+            animate={isInView ? { height: 40, opacity: 1 } : {}}
+            transition={{ duration: 0.4, delay: 1.0 }}
+            className="w-0.5 bg-black/30 hidden md:block"
+          />
         </div>
       </div>
 
-      {/* Circular feedback loop */}
-      <div className="relative max-w-md mx-auto" style={{ paddingBottom: "105%" }}>
-        <svg
-          viewBox="0 0 400 430"
-          className="absolute inset-0 w-full h-full"
-          role="img"
-          aria-label="Incentive feedback loop showing how treaty funding creates self-reinforcing growth"
+      {/* GDP Increases card */}
+      <motion.div
+        initial={reduced ? {} : { opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.4, delay: 1.1 }}
+        className="p-5 border-4 border-black bg-emerald-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4"
+      >
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <h4 className="text-lg font-black uppercase text-black">
+            GDP Increases
+          </h4>
+          <span className="text-sm font-bold text-black/50">
+            Everyone gets richer.
+          </span>
+        </div>
+        <p className="text-sm font-medium text-black/60 mt-1">
+          $14.9M–$52.1M per-capita income gains across adopting jurisdictions.
+          Bondholders&apos; assets appreciate. Politicians win elections. Citizens live longer.
+        </p>
+      </motion.div>
+
+      {/* Arrow down */}
+      <div className="flex justify-center mb-4">
+        <motion.div
+          initial={reduced ? {} : { opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.3, delay: 1.3 }}
+          className="flex flex-col items-center"
         >
-          {/* Circular arrow path */}
-          <motion.circle
-            cx={cx}
-            cy={cy}
-            r={arrowR}
-            fill="none"
-            stroke="#00c8c8"
-            strokeWidth="3"
-            strokeDasharray="8 6"
-            initial={reduced ? {} : { pathLength: 0, opacity: 0 }}
-            animate={isInView ? { pathLength: 1, opacity: 0.4 } : {}}
-            transition={{ duration: 2, delay: 0.8, ease: "easeOut" }}
-          />
-
-          {/* Animated rotating dot */}
-          {!reduced && (
-            <motion.circle
-              r="5"
-              fill="#00c8c8"
-              initial={{ opacity: 0 }}
-              animate={
-                isInView
-                  ? {
-                      opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-                      cx: loopSteps.map((_, i) => {
-                        const a = ((-i * 360) / loopSteps.length + 90) * (Math.PI / 180);
-                        return cx + arrowR * Math.cos(a);
-                      }),
-                      cy: loopSteps.map((_, i) => {
-                        const a = ((-i * 360) / loopSteps.length + 90) * (Math.PI / 180);
-                        return cy - arrowR * Math.sin(a);
-                      }),
-                    }
-                  : {}
-              }
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "linear",
-                delay: 3,
-              }}
-            />
-          )}
-
-          {/* Step nodes */}
-          {loopSteps.map((step, i) => {
-            const angle = ((-i * 360) / loopSteps.length + 90) * (Math.PI / 180);
-            const lx = cx + r * Math.cos(angle);
-            const ly = cy - r * Math.sin(angle);
-
-            // Color coding
-            let fillColor = "white";
-            let strokeColor = "black";
-            if (i === 0 || i === 7) { fillColor = "#fbbf24"; } // treaty/growth = yellow
-            else if (i === 1) { fillColor = "#fde68a"; } // bondholders = light yellow
-            else if (i === 2) { fillColor = "#f9a8d4"; } // politicians = pink
-            else if (i === 3) { fillColor = "#67e8f9"; } // trials = cyan
-            else if (i === 4 || i === 5) { fillColor = "#a7f3d0"; } // outcomes = green
-            else if (i === 6) { fillColor = "#fde68a"; strokeColor = "#b45309"; } // lobby = amber
-
-            return (
-              <motion.g
-                key={step.label}
-                initial={reduced ? {} : { opacity: 0, scale: 0.5 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.4, delay: 1 + i * 0.12 }}
-              >
-                <circle
-                  cx={lx}
-                  cy={ly}
-                  r="34"
-                  fill={fillColor}
-                  stroke={strokeColor}
-                  strokeWidth="2"
-                />
-                <text
-                  x={lx}
-                  y={ly - 6}
-                  textAnchor="middle"
-                  className="text-[7px] font-black fill-black"
-                >
-                  {step.label.split(" ").length <= 2
-                    ? step.label
-                    : step.label.split(" ").slice(0, 2).join(" ")}
-                </text>
-                {step.label.split(" ").length > 2 && (
-                  <text
-                    x={lx}
-                    y={ly + 3}
-                    textAnchor="middle"
-                    className="text-[7px] font-black fill-black"
-                  >
-                    {step.label.split(" ").slice(2).join(" ")}
-                  </text>
-                )}
-                <text
-                  x={lx}
-                  y={ly + 14}
-                  textAnchor="middle"
-                  className="text-[5px] fill-black/40 font-bold"
-                >
-                  {step.detail.length > 25
-                    ? step.detail.substring(0, 25) + "..."
-                    : step.detail}
-                </text>
-              </motion.g>
-            );
-          })}
-
-          {/* Center label */}
-          <motion.g
-            initial={reduced ? {} : { opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 2.5 }}
-          >
-            <text
-              x={cx}
-              y={cy - 12}
-              textAnchor="middle"
-              className="text-[9px] font-black fill-black"
-            >
-              EVERYONE PROFITS
-            </text>
-            <text
-              x={cx}
-              y={cy + 2}
-              textAnchor="middle"
-              className="text-[9px] font-black fill-[#00c8c8]"
-            >
-              FROM EXPANSION
-            </text>
-            <text
-              x={cx}
-              y={cy + 16}
-              textAnchor="middle"
-              className="text-[6px] fill-black/40 font-bold"
-            >
-              Bondholders, politicians, citizens
-            </text>
-            <text
-              x={cx}
-              y={cy + 25}
-              textAnchor="middle"
-              className="text-[6px] fill-black/40 font-bold"
-            >
-              all incentivized to grow the treaty
-            </text>
-          </motion.g>
-
-          {/* Directional arrows between nodes */}
-          {loopSteps.map((_, i) => {
-            const a1 = ((-i * 360) / loopSteps.length + 90) * (Math.PI / 180);
-            const a2 = ((-(i + 1) * 360) / loopSteps.length + 90) * (Math.PI / 180);
-            const midA = (a1 + a2) / 2;
-            const ax = cx + (arrowR + 2) * Math.cos(midA);
-            const ay = cy - (arrowR + 2) * Math.sin(midA);
-            // Arrow pointing in direction of travel (clockwise = decreasing angle)
-            const dir = midA + Math.PI / 2; // perpendicular, pointing clockwise
-            const sz = 5;
-            return (
-              <motion.polygon
-                key={`arrow-${i}`}
-                points={`
-                  ${ax + sz * Math.cos(dir)},${ay - sz * Math.sin(dir)}
-                  ${ax + sz * 1.2 * Math.cos(dir + 2.4)},${ay - sz * 1.2 * Math.sin(dir + 2.4)}
-                  ${ax + sz * 1.2 * Math.cos(dir - 2.4)},${ay - sz * 1.2 * Math.sin(dir - 2.4)}
-                `}
-                fill="#00c8c8"
-                opacity="0.5"
-                initial={reduced ? {} : { opacity: 0 }}
-                animate={isInView ? { opacity: 0.5 } : {}}
-                transition={{ duration: 0.3, delay: 1.5 + i * 0.1 }}
-              />
-            );
-          })}
-        </svg>
+          <div className="w-0.5 h-6 bg-black/40" />
+          <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-black/40" />
+        </motion.div>
       </div>
+
+      {/* Treaty Expands card */}
+      <motion.div
+        initial={reduced ? {} : { opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.4, delay: 1.4 }}
+        className="p-5 border-4 border-black bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"
+      >
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <h4 className="text-lg font-black uppercase text-black">
+            Treaty Expands
+          </h4>
+          <span className="text-sm font-bold text-black/50">
+            More funding. Bigger pool. Loop repeats at higher scale.
+          </span>
+        </div>
+        <p className="text-2xl font-black text-black mt-2">
+          1% → 2% → 5% → ...
+        </p>
+      </motion.div>
+
+      {/* Loop-back indicator */}
+      <motion.div
+        initial={reduced ? {} : { opacity: 0, scale: 0.9 }}
+        animate={
+          isInView
+            ? { opacity: [0, 1, 1, 0.7, 1], scale: 1 }
+            : {}
+        }
+        transition={{
+          duration: 2,
+          delay: 1.6,
+          repeat: reduced ? 0 : Infinity,
+          repeatDelay: 3,
+        }}
+        className="flex justify-center mb-8"
+      >
+        <div className="px-4 py-2 border-2 border-dashed border-black/30 bg-black/5 text-center">
+          <span className="text-lg mr-2">&#8634;</span>
+          <span className="text-sm font-black text-black/50 uppercase">
+            Each cycle makes the next bigger
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Year 1/5/10 escalation */}
+      <StepReveal staggerDelay={0.15}>
+        <div className="border-2 border-black bg-black/5 p-4">
+          <p className="text-xs font-black uppercase text-black/40 mb-3">
+            The Inevitable Escalation
+          </p>
+          <div className="space-y-3">
+            {escalationYears.map((y) => (
+              <div key={y.year} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
+                <div className="flex items-baseline gap-2 shrink-0">
+                  <span className="text-sm font-black text-black">{y.year}:</span>
+                  <span className="text-sm font-bold text-black/60">{y.pct} = {y.amount}</span>
+                </div>
+                <span className="text-xs font-medium text-black/40">
+                  → {y.detail}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </StepReveal>
     </div>
   );
 }
