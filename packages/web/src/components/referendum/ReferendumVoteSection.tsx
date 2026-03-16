@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useAccount } from "wagmi";
+import Link from "next/link";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
@@ -29,6 +31,8 @@ export function ReferendumVoteSection({
   const [answer, setAnswer] = useState<string | null>(existingAnswer);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mintQueued, setMintQueued] = useState(false);
+  const { address } = useAccount();
 
   // Store referral code for attribution at signup and vote time
   if (typeof window !== "undefined" && referralCode) {
@@ -46,12 +50,21 @@ export function ReferendumVoteSection({
       const res = await fetch(`/api/referendums/${referendumSlug}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answer: position, ref: storedRef }),
+        body: JSON.stringify({
+          answer: position,
+          ref: storedRef,
+          walletAddress: address ?? undefined,
+        }),
       });
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error ?? "Failed to cast vote");
+      }
+
+      const result = (await res.json()) as { voteTokenMint?: unknown };
+      if (result.voteTokenMint) {
+        setMintQueued(true);
       }
 
       setAnswer(position);
@@ -110,6 +123,42 @@ export function ReferendumVoteSection({
             Then share your link below to bring in more verified votes.
           </p>
         </div>
+
+        {/* VOTE token earning info */}
+        {mintQueued ? (
+          <div className="border-4 border-black bg-brutal-cyan/20 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black uppercase text-black mb-2">
+              1 VOTE Token Queued
+            </h3>
+            <p className="text-sm font-medium text-black/70">
+              Your verified vote earned 1 VOTE token. It will be minted
+              on-chain in the next batch.{" "}
+              <Link
+                href="/voter-prize"
+                className="font-black text-brutal-pink underline hover:text-black"
+              >
+                View your VOTE balance &rarr;
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <div className="border-4 border-black bg-brutal-yellow/20 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black uppercase text-black mb-2">
+              Earn VOTE Tokens
+            </h3>
+            <p className="text-sm font-medium text-black/70">
+              Verify with World ID below{address ? "" : " and connect a wallet"} to earn 1 VOTE token for this
+              vote. VOTE tokens are redeemable for a share of the{" "}
+              <Link
+                href="/voter-prize"
+                className="font-black text-brutal-pink underline hover:text-black"
+              >
+                Voter Prize Treasury
+              </Link>{" "}
+              if health and income outcomes improve.
+            </p>
+          </div>
+        )}
 
         {/* World ID verification — only show if not yet verified */}
         <WorldIdVerificationCard show />
