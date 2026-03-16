@@ -10,7 +10,9 @@
     "clean": "hardhat clean",
     "deploy:iab": "hardhat run scripts/deploy-iab.ts",
     "deploy:iab:sepolia": "hardhat run scripts/deploy-iab.ts --network sepolia",
-    "deploy:iab:local": "hardhat run scripts/deploy-iab.ts --network hardhat"
+    "deploy:iab:local": "hardhat run scripts/deploy-iab.ts --network hardhat",
+    "deploy:voter-treasury": "hardhat run scripts/deploy-voter-prize-treasury.ts --network baseSepolia",
+    "deploy:voter-treasury:local": "hardhat run scripts/deploy-voter-prize-treasury.ts --network hardhat"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.1.3",

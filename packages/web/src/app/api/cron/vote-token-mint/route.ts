@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { isAuthorizedCronRequest } from "@/lib/cron";
 import { prisma } from "@/lib/prisma";
+import { ethers } from "ethers";
+import {
+  getMinterWallet,
+  getVoteTokenContract,
+} from "@/lib/contracts/server-client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,10 +19,6 @@ const BATCH_SIZE = 200;
  * 2. Groups into batches of ~200
  * 3. Calls VoteToken.batchMintForVoters() on-chain
  * 4. Updates status to SUBMITTED → CONFIRMED on tx confirmation
- *
- * In production this would use ethers.js + a relayer wallet to submit
- * on-chain transactions. For now, this updates the DB status to track
- * the batch minting pipeline.
  */
 export async function GET(request: Request) {
   if (!isAuthorizedCronRequest(request)) {
@@ -35,35 +36,67 @@ export async function GET(request: Request) {
       return NextResponse.json({ processed: 0, message: "No pending mints" });
     }
 
-    // Mark as SUBMITTED before on-chain call
     const ids = pendingMints.map((m) => m.id);
+
+    // Mark as SUBMITTED before on-chain call
     await prisma.voteTokenMint.updateMany({
       where: { id: { in: ids } },
       data: { status: "SUBMITTED" },
     });
 
-    // TODO: On-chain batch mint call
-    // const voteToken = new ethers.Contract(VOTE_TOKEN_ADDRESS, VoteTokenABI, signer);
-    // const tx = await voteToken.batchMintForVoters(
-    //   pendingMints.map(m => m.walletAddress),
-    //   pendingMints.map(m => ethers.keccak256(ethers.toUtf8Bytes(m.referendumId))),
-    //   pendingMints.map(m => ethers.keccak256(ethers.toUtf8Bytes(m.nullifierHash))),
-    //   pendingMints.map(m => m.amount),
-    // );
-    // const receipt = await tx.wait();
+    const chainId = Number(process.env.VOTE_TOKEN_CHAIN_ID ?? "84532");
+    let txHash: string | null = null;
 
-    // For now, mark as CONFIRMED (replace with actual tx confirmation)
-    await prisma.voteTokenMint.updateMany({
-      where: { id: { in: ids } },
-      data: {
-        status: "CONFIRMED",
-        // txHash: receipt.hash,
-      },
-    });
+    try {
+      const signer = getMinterWallet(chainId);
+      const voteToken = getVoteTokenContract(chainId, signer);
+
+      const voters = pendingMints.map((m) => m.walletAddress);
+      const referendumIds = pendingMints.map((m) =>
+        ethers.keccak256(ethers.toUtf8Bytes(m.referendumId)),
+      );
+      const nullifierHashes = pendingMints.map((m) =>
+        ethers.keccak256(ethers.toUtf8Bytes(m.nullifierHash)),
+      );
+      const amounts = pendingMints.map((m) => m.amount);
+
+      const tx = await voteToken.batchMintForVoters(
+        voters,
+        referendumIds,
+        nullifierHashes,
+        amounts,
+      );
+      const receipt = await tx.wait();
+      txHash = receipt.hash;
+
+      // Mark as CONFIRMED with tx hash
+      await prisma.voteTokenMint.updateMany({
+        where: { id: { in: ids } },
+        data: { status: "CONFIRMED", txHash },
+      });
+    } catch (onChainError) {
+      console.error("[VOTE TOKEN MINT CRON] On-chain error:", onChainError);
+
+      // Revert to FAILED so they can be retried
+      await prisma.voteTokenMint.updateMany({
+        where: { id: { in: ids } },
+        data: { status: "FAILED" },
+      });
+
+      return NextResponse.json(
+        {
+          error: "On-chain minting failed",
+          processed: 0,
+          failedIds: ids,
+        },
+        { status: 502 },
+      );
+    }
 
     return NextResponse.json({
       processed: pendingMints.length,
       ids,
+      txHash,
     });
   } catch (error) {
     console.error("[VOTE TOKEN MINT CRON] Error:", error);

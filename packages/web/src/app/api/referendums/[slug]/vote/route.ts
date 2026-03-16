@@ -89,7 +89,7 @@ export async function POST(
         | undefined;
 
       if (verification && walletAddress) {
-        const chainId = 8453; // Base L2
+        const chainId = Number(process.env.VOTE_TOKEN_CHAIN_ID ?? "84532"); // Base Sepolia (testnet) by default
         const amount = "1000000000000000000"; // 1 VOTE (1e18)
 
         voteTokenMint = await prisma.voteTokenMint.upsert({
