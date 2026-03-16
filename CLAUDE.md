@@ -72,47 +72,34 @@ The papers are large (1000-2000 lines each). Read the specific section relevant 
 ```
 optomitron/
 ├── packages/
-│   ├── causal/       # 🧠 Domain-agnostic causal inference engine
-│   │   └── Temporal alignment, Bradford Hill, PIS, effect size
-│   │
-│   ├── wishocracy/   # 🗳️ Preference aggregation (Wishocracy/RAPPA)
-│   │   └── Pairwise comparisons, eigenvector, alignment scores
-│   │
-│   ├── opg/          # 📋 Optimal Policy Generator
-│   │   └── Policy scoring, jurisdiction analysis (uses causal)
-│   │
-│   ├── obg/          # 💰 Optimal Budget Generator
-│   │   └── Diminishing returns, cost-effectiveness (uses causal)
-│   │
-│   ├── data/         # 📊 Data fetchers
-│   │   └── OECD, World Bank, FRED, WHO, Congress API
-│   │
-│   ├── db/           # 🗄️ Prisma schema + database
-│   │   └── All survey responses, health data, preferences
-│   │
-│   ├── web/          # 🌐 Next.js (Phase 3 — after libraries work)
-│   │   └── Multi-tenant jurisdiction dashboard
-│   │
-│   └── treasury/     # 💎 IAB Treasury (Phase 4 — after web works)
-│       └── Smart contracts, token, alignment-based fund distribution
+│   ├── optimizer/    # Domain-agnostic causal inference engine
+│   ├── wishocracy/   # Preference aggregation (RAPPA, eigenvector, alignment)
+│   ├── opg/          # Optimal Policy Generator (uses optimizer)
+│   ├── obg/          # Optimal Budget Generator (uses optimizer + opg)
+│   ├── data/         # Data fetchers (OECD, World Bank, FRED, WHO, Congress)
+│   ├── db/           # Prisma 7 schema + Zod validators
+│   ├── web/          # Next.js 15 app (auth, dashboard, API routes)
+│   ├── treasury/     # Hardhat/Solidity 0.8.24 (IAB, VoteToken, UBI, prizes)
+│   ├── chat-ui/      # React components for conversational health tracking
+│   ├── storage/      # Storacha-backed snapshot storage
+│   ├── hypercerts/   # Hypercert builders + AT Protocol publishing
+│   ├── agent/        # Autonomous policy analyst (Gemini + Hypercerts)
+│   ├── examples/     # Worked examples (federal budget, causal, alignment)
+│   └── extension/    # Chrome extension (Digital Twin Safe)
 ```
 
-### Phase 4: Treasury / Incentive Alignment Bonds (Future)
+### Treasury / Incentive Alignment Bonds
 
-Citizens donate to a transparent crypto treasury. Smart contracts automatically distribute campaign funds to politicians based on their Citizen Alignment Scores. No middleman.
-
-Flow: Citizens donate → Treasury holds funds → Alignment scores update on-chain → Smart contracts release funds to high-alignment campaigns → AI agents run ads/social media for those candidates
+Citizens donate to a transparent crypto treasury. Smart contracts distribute campaign funds to politicians based on Citizen Alignment Scores.
 
 **Paper**: `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/incentive-alignment-bonds-paper.qmd` ([iab.warondisease.org](https://iab.warondisease.org))
 
-Prerequisites:
-1. ✅ Causal engine working
-2. ⬜ RAPPA collecting real preferences
-3. ⬜ Voting record data flowing in
-4. ⬜ Alignment scores published as Hypercerts
-5. ⬜ Treasury smart contracts reference published alignment scores
-
-Existing Solidity contracts in the old wishocracy repo (`https://github.com/mikepsinn/wishocracy/tree/main/contracts/`) can be a starting point.
+**Contracts** (Hardhat, Solidity 0.8.24, deployed on Base Sepolia testnet):
+- `VoteToken` / `VoterPrizeTreasury` — voting incentives (deployed)
+- `WishToken` / `WishocraticTreasury` — $WISH distribution
+- `IABVault` / `IABSplitter` — Incentive Alignment Bond mechanics
+- `AlignmentScoreOracle` / `PoliticalIncentiveAllocator` — on-chain alignment
+- `UBIDistributor` / `PrizePool` — UBI and prize drawings
 
 ## Jurisdiction Model ("Government OS")
 
@@ -134,7 +121,7 @@ Any jurisdiction (city, county, state, country) should be able to deploy Optomit
 - **Comparison across jurisdictions** is a key feature: "City A spends X on education and gets Y outcomes; City B spends Z..."
 
 ### What This Means for Library Code
-- `causal`, `wishocracy`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
+- `optimizer`, `wishocracy`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
 - `db` schema needs `jurisdictionId` on relevant models
 - `data` fetchers take jurisdiction config as a parameter
 - The **web app** handles multi-tenancy (auth, routing, tenant isolation)
@@ -171,19 +158,20 @@ All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria**
 ## Package Dependencies
 
 ```
-causal ← opg (uses causal for policy scoring)
-causal ← obg (uses causal for budget optimization)
-causal ← wishocracy (alignment → outcome analysis)
-data   ← opg, obg (fetches real-world data)
-db     ← (standalone, Prisma schema for web app)
-wishocracy ← (standalone pure math, NO db imports)
+optimizer ← (nothing, foundation)
+wishocracy ← (nothing, standalone pure math)
+opg ← optimizer
+obg ← optimizer + opg
+data ← (nothing)
+db ← (nothing)
+web ← everything
 ```
 
 Key rules:
-- **`causal` depends on NOTHING** — it's the foundation
+- **`optimizer` depends on NOTHING** — it's the foundation
 - **`wishocracy` has ZERO database imports** — pure functions only
 - **`db` exports pure TS interfaces** — libraries may import TYPE-ONLY exports (not Prisma client)
-- **No circular deps** — if you need something from both directions, it belongs in `causal`
+- **No circular deps** — if you need something from both directions, it belongs in `optimizer`
 
 ### Type Sharing Strategy
 The Prisma schema is the single source of truth. `@optomitron/db` exports:
@@ -204,6 +192,14 @@ We use **Prisma 7** (`prisma@^7.0.0`, `@prisma/client@^7.0.0`) with `@prisma/ada
 3. **Library packages have ZERO database imports.** Pure functions only.
 4. **Types use Zod schemas** where runtime validation matters.
 5. **One task per agent run.** Quality over quantity.
+
+## Tooling
+
+- **Monorepo**: pnpm workspaces
+- **Tests**: vitest (unit/integration), Playwright (e2e in web)
+- **Web**: Next.js 15, Tailwind CSS 4, Radix UI, next-auth + WorldID
+- **Contracts**: Hardhat 2.22, OpenZeppelin 5.1, Solidity 0.8.24
+- **CI**: GitHub Actions (typecheck + lint + test on push/PR; web excluded — Vercel handles it)
 
 ## Type Safety & Linting
 
@@ -242,25 +238,3 @@ If not, simplify it. This should not feel like enterprise Java.
 - Tests read like documentation
 - No unnecessary abstractions — just functions that take data and return results
 
-## Workflow
-
-1. `cd /mnt/e/code/optomitron`
-2. `git pull` (get latest)
-3. Check: `pnpm install && pnpm build && pnpm test`
-4. **Self-review pass** (see above)
-5. Pick first `todo` task from TASKS.md
-6. Implement with tests
-7. `pnpm check` (must pass!)
-8. `git add -A && git commit -m "<conventional commit>" && git push`
-9. Report what you did
-
-## Commit Messages
-Follow conventional commits:
-- `feat: Add OECD data fetcher`
-- `fix: Correct p-value calculation for small n`
-- `test: Add temporal alignment unit tests`
-- `refactor: Split core into opg/obg packages`
-
-## Contact
-
-Email me at mike@warondisease.org.

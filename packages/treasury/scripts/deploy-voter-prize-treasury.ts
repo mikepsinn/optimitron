@@ -3,10 +3,10 @@ import { ethers } from "hardhat";
 /**
  * Deploy VoteToken + VoterPrizeTreasury and wire them together.
  *
- * Base Sepolia addresses (Aave V3):
- *   Pool: 0xA238Dd80C259a72e81d7e4664a9801593F98d1c5
- *   USDC: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
- *   aUSDC: 0x4086fabeE92a080002eeBA1220B9025a27a40A49
+ * Base Sepolia addresses (Aave V3 — from bgd-labs/aave-address-book):
+ *   Pool: 0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27
+ *   USDC: 0xba50Cd2A20f6DA35D788639E581bca8d0B5d4D5f
+ *   aUSDC: 0x10F1A9D11CDf50041f3f8cB7191CBE2f31750ACC
  *
  * Override with env vars: USDC_ADDRESS, AAVE_POOL_ADDRESS, AUSDC_ADDRESS
  *
@@ -18,16 +18,16 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying with account:", deployer.address);
 
-  // --- Config ---
+  // --- Config (Aave V3 on Base Sepolia, from aave-address-book) ---
   const USDC_ADDRESS =
     process.env.USDC_ADDRESS ||
-    "0x036CbD53842c5426634e7929541eC2318f3dCF7e"; // USDC on Base Sepolia
+    "0xba50Cd2A20f6DA35D788639E581bca8d0B5d4D5f"; // Aave testnet USDC on Base Sepolia
   const AUSDC_ADDRESS =
     process.env.AUSDC_ADDRESS ||
-    "0x4086fabeE92a080002eeBA1220B9025a27a40A49"; // aUSDC on Base Sepolia
+    "0x10F1A9D11CDf50041f3f8cB7191CBE2f31750ACC"; // aUSDC on Base Sepolia
   const AAVE_POOL_ADDRESS =
     process.env.AAVE_POOL_ADDRESS ||
-    "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5"; // Aave V3 Pool on Base Sepolia
+    "0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27"; // Aave V3 Pool on Base Sepolia
 
   const MATURITY_DURATION = 473_364_000; // ~15 years in seconds
   const HEALTH_THRESHOLD = 100; // 1% improvement in median healthy life years

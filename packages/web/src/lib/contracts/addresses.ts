@@ -20,12 +20,12 @@ export const CONTRACT_ADDRESSES = {
   84532: {
     iabVault: "0x0000000000000000000000000000000000000000" as Address,
     prizePool: "0x0000000000000000000000000000000000000000" as Address,
-    usdc: "0x036CbD53842c5426634e7929541eC2318f3dCF7e" as Address, // USDC on Base Sepolia
+    usdc: "0xba50Cd2A20f6DA35D788639E581bca8d0B5d4D5f" as Address, // Aave testnet USDC on Base Sepolia
     wishToken: "0x0000000000000000000000000000000000000000" as Address,
     ubiDistributor: "0x0000000000000000000000000000000000000000" as Address,
     wishocraticTreasury: "0x0000000000000000000000000000000000000000" as Address,
-    voteToken: "0x6bA2557F247516eEDA58b5f35CEB416787CF752A" as Address,
-    voterPrizeTreasury: "0xccf0002e0f74B7efbA86F66eaA37a7BB8f075954" as Address,
+    voteToken: "0xfA6238e810E2e93b129c0dAB873f94f2D3587E64" as Address,
+    voterPrizeTreasury: "0xd10f84cb234faFb781C90e74E27a12aa84CbC007" as Address,
   },
   // Localhost (Hardhat)
   31337: {
