@@ -255,7 +255,7 @@ export const topLinks: NavItem[] = [
   wishocracyLink,
   alignmentLink,
   prizeLink,
-  contributeLink,
+  iabLink,
   treasuryLink,
   transparencyLink,
   aboutLink,
@@ -382,9 +382,9 @@ export const githubLink: NavItem = {
 
 export const contractsSourceLink: NavItem = {
   label: "Smart Contracts",
-  href: "https://github.com/mikepsinn/optomitron/tree/main/packages/treasury/contracts",
+  href: "https://github.com/mikepsinn/optomitron/tree/main/packages",
   emoji: "📜",
-  description: "IABVault, PublicGoodsPool, WishocraticTreasury, UBIDistributor — all Solidity source",
+  description: "treasury-prize, treasury-iab, treasury-wish, treasury-shared — all Solidity source",
   external: true,
 };
 

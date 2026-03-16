@@ -245,7 +245,7 @@ export default function PrizePage() {
             href="#invest"
             className="inline-flex items-center justify-center border-4 border-black bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
-            Buy Bonds
+            Deposit to Prize
           </a>
           <NavItemLink
             item={earthOptimizationPrizePaperLink}
@@ -711,7 +711,7 @@ export default function PrizePage() {
               href="#invest"
               className="inline-flex items-center justify-center gap-2 bg-black px-6 py-3 text-sm font-black text-white uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
-              Buy Bonds
+              Deposit to Prize
             </a>
             <NavItemLink
               item={wishocracyLink}

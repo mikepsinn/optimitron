@@ -174,14 +174,14 @@ export function IncentiveAlignmentBondsSection() {
           </div>
         </ScrollReveal>
 
-        {/* Bridge to Prize */}
+        {/* Phase relationship */}
         <ScrollReveal delay={0.3}>
           <div className="p-6 border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center">
             <p className="text-lg font-black text-black mb-2">
-              The bonds ARE the prize pool. One instrument.
+              Two Phases. One Goal. Separate Instruments.
             </p>
             <p className="text-black/60 font-medium max-w-2xl mx-auto mb-4 text-sm">
-              Incentive Alignment Bond deposits fund the Earth Optimization Prize. Same money, no separate donation.
+              Phase 1 (Prize) proves demand via referendum. Phase 2 (IABs) funds the lobbying campaign after demand is proven. Different contracts, different timelines, same endgame.
             </p>
             <div className="flex flex-wrap justify-center gap-2 mb-4">
               {["Zero Team Allocation", "No Pre-Sale", "Auditable On-Chain", "Win Either Way"].map((badge) => (

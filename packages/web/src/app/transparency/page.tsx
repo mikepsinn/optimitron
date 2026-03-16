@@ -291,28 +291,29 @@ export default function TransparencyPage() {
         </h2>
         <div className="border-4 border-black bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-medium text-black/70 leading-relaxed mb-4">
-            The Prize Pool is an outcome-based escrow contract. Donors deposit
-            $WISH. When health and income metrics cross verifiable thresholds,
-            the pool unlocks for Wishocratic allocation — donors vote on which
-            implementers deserve funding, weighted by their deposit amount.
-            Bonded disputes prevent fraud. No committee. No application forms.
-            Just measurable outcomes and transparent distribution.
+            The Prize is a dominant assurance contract (VoterPrizeTreasury).
+            Depositors fund the escrow with USDC, which earns Aave V3 yield.
+            Recruiters share referral links — each verified voter (World ID)
+            earns the recruiter 1 VOTE token. When health and income metrics
+            cross thresholds, VOTE holders claim proportional prize share.
+            If thresholds aren&apos;t met after 15 years, depositors reclaim
+            principal + ~4.2x yield. All on-chain. No committee.
           </p>
           <div className="grid gap-4 md:grid-cols-3 mb-4">
             <div className="border-2 border-black bg-white p-3">
-              <div className="text-xs font-black uppercase text-black/60">Mechanism</div>
-              <div className="text-sm font-black mt-1">Deposit-as-Identity</div>
-              <div className="text-xs text-black/50 mt-1">Your deposit amount = your allocation power. No sybil attacks.</div>
+              <div className="text-xs font-black uppercase text-black/60">Depositors</div>
+              <div className="text-sm font-black mt-1">PRIZE Shares</div>
+              <div className="text-xs text-black/50 mt-1">USDC → Aave yield. ~4.2x floor if plan fails. Sybil-resistant via capital commitment.</div>
             </div>
             <div className="border-2 border-black bg-white p-3">
-              <div className="text-xs font-black uppercase text-black/60">Evidence</div>
-              <div className="text-sm font-black mt-1">Storacha CIDs</div>
-              <div className="text-xs text-black/50 mt-1">Implementers register with IPFS evidence bundles linked to Hypercerts.</div>
+              <div className="text-xs font-black uppercase text-black/60">Recruiters</div>
+              <div className="text-sm font-black mt-1">VOTE Tokens</div>
+              <div className="text-xs text-black/50 mt-1">1 VOTE per verified voter recruited via referral link. World ID prevents duplicates.</div>
             </div>
             <div className="border-2 border-black bg-white p-3">
-              <div className="text-xs font-black uppercase text-black/60">Disputes</div>
-              <div className="text-sm font-black mt-1">Bonded Challenges</div>
-              <div className="text-xs text-black/50 mt-1">Post a bond to challenge allocations. Win → bond back. Lose → forfeit.</div>
+              <div className="text-xs font-black uppercase text-black/60">Outcomes</div>
+              <div className="text-sm font-black mt-1">Two Metrics</div>
+              <div className="text-xs text-black/50 mt-1">Median healthy life years (1% threshold) + median real income (0.5% threshold).</div>
             </div>
           </div>
           <NavItemLink
@@ -320,7 +321,7 @@ export default function TransparencyPage() {
             variant="custom"
             className="inline-flex items-center justify-center gap-2 bg-black px-6 py-3 text-sm font-black text-white uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
-            Donate to the Prize
+            Join the Prize
           </NavItemLink>
         </div>
       </section>

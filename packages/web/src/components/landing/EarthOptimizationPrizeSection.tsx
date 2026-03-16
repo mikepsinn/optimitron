@@ -5,9 +5,9 @@ import { earthOptimizationPrizePaperLink } from "@/lib/routes";
 
 const coreCards = [
   {
-    title: "Built on Incentive Alignment Bonds",
+    title: "Dominant Assurance",
     description:
-      "The prize pool IS the bond pool. Every Incentive Alignment Bond purchase adds to the prize. No separate fundraising. No galas. No overhead. One financial instrument does the work of an entire philanthropic apparatus.",
+      "Depositors put USDC into Aave V3 yield. Plan fails after 15 years? ~4.2x your money back. Plan succeeds? Everyone benefits from higher GDP. You literally cannot lose money. The worst case is getting richer.",
     color: "bg-brutal-pink",
     textColor: "text-white",
   },
@@ -19,9 +19,9 @@ const coreCards = [
     textColor: "text-black",
   },
   {
-    title: "Wishocratic Allocation",
+    title: "Referral Recruitment",
     description:
-      "Donors see random pairs of implementers with evidence. Split your share based on who contributed more. Enough random pairs across enough donors and allocations converge. No judges. No committees.",
+      "Share your referral link. Every person who verifies support for the 1% Treaty via World ID earns you 1 VOTE token. Plan succeeds? VOTE holders claim proportional prize share. No deposit required to recruit.",
     color: "bg-brutal-cyan",
     textColor: "text-black",
   },
@@ -120,7 +120,7 @@ export function EarthOptimizationPrizeSection() {
                 href="/prize#invest"
                 className="px-8 py-3.5 bg-brutal-yellow text-black font-black uppercase text-lg border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
               >
-                Buy Bonds
+                Join the Prize
               </a>
               <NavItemLink
                 item={earthOptimizationPrizePaperLink}

@@ -6,10 +6,10 @@ import { fullManualPaperLink } from "@/lib/routes";
 const steps = [
   {
     step: 1,
-    title: "Sell IABs",
+    title: "Prove Demand",
     description:
-      "Investors buy Incentive Alignment Bonds because the return profile is attractive. Fail? ~4.2x return from stablecoin yield. Succeed? Vote-proportional revenue share — the more demand you prove via referrals, the bigger your cut. The money flowing in IS the prize pool. No fundraising galas required.",
-    why: "Self-interest. People like money.",
+      "Depositors fund the Earth Optimization Prize. Recruiters share referral links and get people to verify support for the 1% Treaty via World ID. Every verified voter earns the recruiter a VOTE token. Depositors get ~4.2x their money back if the plan fails. Recruiters get prize share if it succeeds. Pluralistic ignorance collapses.",
+    why: "Depositors get a yield floor. Recruiters get a bounty. Self-interest does the coordination.",
   },
   {
     step: 2,
@@ -20,23 +20,23 @@ const steps = [
   },
   {
     step: 3,
-    title: "Bribe the Bribers",
+    title: "Lobby for the Treaty",
     description:
-      "Smart contracts route campaign funds to politicians with the highest Citizen Alignment Scores. Vote with your constituents? Get funded. Ignore them? Get defunded. Automatically. By code.",
-    why: "Politicians follow money. This redirects the money.",
+      "Demand is proven. Now sell Incentive Alignment Bonds to raise ~$1B for the lobbying campaign. Treaty revenue splits 80/10/10 by smart contract: 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds a SuperPAC for aligned politicians. Self-reinforcing loop: diseases cured → GDP rises → everyone lobbies for expansion.",
+    why: "Attractive return profile. Fail? ~4.2x back. Succeed? Perpetual 10% of treaty revenue.",
   },
   {
     step: 4,
-    title: "Purchase Democracy",
+    title: "Full Optimization",
     description:
-      "AI agents run ads and social media campaigns for high-alignment candidates. The bonds fund the campaigns. The data picks the candidates. The market sets the prices. No party apparatus needed.",
-    why: "Cheaper than the current system and it actually works.",
+      "Automate monetary policy for 0% inflation. Replace the IRS and welfare bureaucracy with a flat 0.5% transaction tax and Universal Basic Income. Automate Congress through Wishocratic allocation — 8 billion people directing public goods spending via pairwise comparisons instead of 535 politicians directing it based on campaign donors.",
+    why: "Cheaper, fairer, and the spreadsheet agrees it's better.",
   },
   {
     step: 5,
     title: "Enjoy Results",
     description:
-      "Median healthy life years go up. Median real income goes up. Bondholders get paid. Prize pool distributes to implementers who produced outcomes. Everyone wins except the middlemen. Oh well.",
+      "Median healthy life years go up. Median real income goes up. The dysfunction tax disappears. Bondholders get paid. Recruiters get paid. Everyone wins except the middlemen. Oh well.",
     why: "You like living longer and having more money. Presumably.",
   },
 ];
