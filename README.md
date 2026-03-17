@@ -10,7 +10,7 @@ Optomitron is my attempt to help. It's a universal causal inference engine that 
 
 [![CI](https://github.com/mikepsinn/optomitron/actions/workflows/ci.yml/badge.svg)](https://github.com/mikepsinn/optomitron/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Packages](https://img.shields.io/badge/packages-13-blue.svg)](#packages)
+[![Packages](https://img.shields.io/badge/packages-17-blue.svg)](#packages)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220.svg)](https://pnpm.io/)
 
@@ -53,7 +53,31 @@ On my planet, governance takes about four minutes a week. You lot seem to spend 
 | 🪪 | **Decentralized Identity** | Proof-of-personhood (ZK) — one person, one vote, zero surveillance. |
 | ⛓️ | **Anonymous On-Chain** | Anonymized effect sizes stored publicly. No single entity owns the data. |
 | 📊 | **Aggregation Server** | Meta-analysis across all submissions → population-level insights. |
-| 💸 | **Incentive Layer** | Data contribution tokens + automatic campaign funding for aligned politicians. |
+| 💸 | **Incentive Layer** | Dominant assurance contracts, data contribution tokens, and outcome-gated campaign funding. |
+
+---
+
+## Earth Optimization Prize
+
+On my planet, when you want people to coordinate, you design a mechanism where every participant is better off regardless of the outcome. You lot call this "too good to be true" and then go back to losing money on things that are obviously bad. Remarkable.
+
+The [Earth Optimization Prize](https://iab.warondisease.org) is a **dominant assurance contract** funding a global referendum to redirect 1% of military spending toward pragmatic clinical trials. Depositors literally cannot lose money.
+
+| Scenario | What happens |
+|----------|-------------|
+| **Plan fails** (thresholds not met after 15 years) | Depositors get principal back + Aave V3 yield — roughly **~4.2x return** ($100 → ~$418) |
+| **Plan succeeds** (health/income thresholds met) | VOTE token holders claim proportional share of the prize pool |
+| **Break-even probability** | **0.0067%** — depositing is positive-EV if you believe there's even a 1-in-15,000 chance this works |
+
+### Two paths
+
+**Have capital?** Deposit USDC → receive PRIZE shares → yield accrues via Aave V3 → worst case, you quadruple your money. You also get a referral link for recruiter upside.
+
+**Have a network?** Share your referral link → recruit World ID-verified voters → earn 1 VOTE token per verified voter you bring in → if the plan succeeds, VOTE holders claim the prize share. No deposit required.
+
+Contracts: `VoterPrizeTreasury` + `VoteToken` on Base Sepolia. Fully on-chain, no admin keys.
+
+[Read the paper](https://iab.warondisease.org) | [See the contract architecture](#economic-instruments)
 
 ---
 
@@ -61,16 +85,20 @@ On my planet, governance takes about four minutes a week. You lot seem to spend 
 
 Right now. With this code. Not in some theoretical future where humans have learned to cooperate — *today*.
 
-- **Run domain-agnostic causal inference on any time series**: temporal alignment, Bradford Hill scoring, effect sizes, confidence intervals, and optimal values in `@optomitron/optimizer`. The same core engine works for health, budgets, policy, and business.
-- **Generate reproducible public-good analyses from real data**: the examples package produces federal budget, policy, government-size, drug-war, health, education, and cross-country reports from OECD, World Bank, FRED, WHO, Congress.gov, USASpending, and the `economic-data` CSV catalog.
-- **Collect citizen priorities and rank politicians against them**: Wishocracy turns pairwise budget trade-offs into stable preference weights, preference gaps, and personal alignment scores.
-- **Use a live civic web app**: Google sign-in, magic-link auth, referrals, `/vote`, saved allocations, personal alignment reports, public share URLs, profile/census tracking, daily health-happiness-income check-ins, and World ID verification all exist in `packages/web`.
-- **Engage with legislation and representatives via chat**: search and classify bills by budget category, look up representatives by ZIP/state, vote on bills with generated cost-benefit analyses, draft messages to representatives, and share your votes publicly.
-- **Sync current federal politician data with legislative provenance**: benchmark politicians use real Congress identities, recent roll-call ingestion, and explicit source notes so reports can move from curated priors toward reproducible legislative behavior.
-- **Parse personal health exports locally**: `@optomitron/data` includes 9 file-based importers for Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, and generic CSV. They normalize records into one common format without requiring OAuth.
-- **Publish auditable outputs**: `@optomitron/storage` stores content-addressed Storacha/IPFS snapshots, and `@optomitron/hypercerts` turns Optomitron results into Hypercert-compatible AT Protocol records.
-- **Use an autonomous analysis layer where it helps**: `@optomitron/agent` provides Gemini-guided review/orchestration, image generation (retro scientific illustrations in multiple aspect ratios), plus ERC-8004 helpers for structured manifests, publication review, and test-output triage.
-- **Build on a rigor-first monorepo**: Prisma + Zod types, strict TypeScript, pure-function libraries, and roughly 2,600+ tests across the workspace.
+| What | How | Where |
+|------|-----|-------|
+| Fund the referendum | Deposit USDC, earn ~4.2x floor or prize share | [`/prize`](packages/web/) |
+| Express your budget preferences | 5-minute pairwise comparison survey | [`/wishocracy`](packages/web/) |
+| Score your politicians | Alignment reports vs your stated preferences | [`/alignment`](packages/web/) |
+| Vote on legislation | Cost-benefit analysis, representative lookup | [`/civic`](packages/web/) |
+| Compare countries | Health, education, drug policy, criminal justice | [`/compare`](packages/web/) |
+| Track your health | Import from 9 apps or do daily check-ins | [`@optomitron/data`](packages/data/) |
+| Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optomitron/optimizer`](packages/optimizer/) |
+| Optimize a budget | Diminishing returns, overspend diagnostics | [`@optomitron/obg`](packages/obg/) |
+| Generate policy reports | Evidence-grade scoring, causal confidence | [`@optomitron/examples`](packages/examples/) |
+| Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optomitron/storage`](packages/storage/) |
+
+Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 2,900+ tests across the workspace.
 
 ---
 
@@ -113,6 +141,34 @@ pnpm --filter @optomitron/examples generate:health
 
 ---
 
+## The Web App
+
+The Next.js 15 app at `packages/web` is the primary user-facing product. Here's what's live:
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Earth Optimization Prize | `/prize` | Dominant assurance deposit + voter recruitment |
+| Wishocracy | `/wishocracy` | Pairwise budget preference surveys |
+| Alignment | `/alignment` | Politician alignment scoring and shareable reports |
+| Civic Hub | `/civic` | Bill voting, representative lookup, cost-benefit analysis |
+| Budget | `/budget` | Interactive US federal budget optimization |
+| Compare | `/compare` | International comparisons (health, drugs, education, justice) |
+| Referendum | `/referendum` | Direct democracy voting with World ID verification |
+| Scoreboard | `/scoreboard` | Politician rankings by alignment score |
+| Outcome Studies | `/outcomes` | Pair studies with Bradford Hill causal scores |
+| Discoveries | `/discoveries` | Population-level health insights |
+| Misconceptions | `/misconceptions` | Data-driven myth vs. reality database |
+| Money / $WISH | `/money` | $WISH token mechanics, UBI dashboard, transaction tax |
+| IABs | `/iab` | Phase 2 Incentive Alignment Bonds (not yet deployed) |
+| Department of War | `/department-of-war` | Military spending analysis and 1% Treaty case |
+| Federal Reserve | `/federal-reserve` | Monetary policy critique and historical failures |
+| Transparency | `/transparency` | Full pipeline: IPFS snapshots, Hypercerts, smart contracts |
+| Profile | `/profile` | Personal dashboard, census, daily check-ins |
+
+Auth: Google OAuth, magic-link email, World ID. Referral system with VOTE token rewards.
+
+---
+
 ## Packages
 
 | Package | Why it matters | Current state |
@@ -121,9 +177,13 @@ pnpm --filter @optomitron/examples generate:health
 | [`@optomitron/wishocracy`](packages/wishocracy/) | Pairwise preference aggregation, convergence analysis, preference gaps, and politician alignment scoring | Live in the web app |
 | [`@optomitron/opg`](packages/opg/) | Turns policy evidence into enact/replace/repeal/maintain recommendations with explicit confidence scoring | Used by report generators |
 | [`@optomitron/obg`](packages/obg/) | Finds minimum-effective and optimal spending levels, overspend ratios, and budget reallocation targets | Used by budget analyses |
+| [`@optomitron/treasury-prize`](packages/treasury-prize/) | VoteToken + VoterPrizeTreasury — Phase 1 referendum dominant assurance contract | Deployed on Base Sepolia |
+| [`@optomitron/treasury-iab`](packages/treasury-iab/) | IABVault + IABSplitter + PublicGoodsPool + AlignmentScoreOracle + PoliticalIncentiveAllocator | Contracts written, not yet deployed |
+| [`@optomitron/treasury-wish`](packages/treasury-wish/) | WishToken + WishocraticTreasury + UBIDistributor — monetary reform and UBI | Contracts written |
+| [`@optomitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces, mocks, and deployed contract addresses for all treasury packages | Shared treasury foundation |
 | [`@optomitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
-| [`@optomitron/db`](packages/db/) | Prisma schema, governance models, auth/session/referral data, and Zod validators | Production schema layer, not a stub |
-| [`@optomitron/web`](packages/web/) | Live Next.js app for auth, voting, alignment reports, referrals, World ID, and daily tracking | Active product surface |
+| [`@optomitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
+| [`@optomitron/web`](packages/web/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, World ID, daily tracking | Active product surface |
 | [`@optomitron/chat-ui`](packages/chat-ui/) | Reusable conversational UI components plus text-to-measurement parsing for personal tracking flows | Reusable UI package |
 | [`@optomitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
 | [`@optomitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optomitron outputs | Verifiable publication layer |
@@ -190,15 +250,44 @@ console.log(result.evidenceGrade);  // "B"
 
 Your governments currently make decisions the way a blindfolded person throws darts — occasionally they hit something useful and then take credit for it. Optomitron is alignment software for these misaligned superintelligences. Deploy it for any jurisdiction as a reproducible analysis and accountability stack. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
 
-- **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/vote` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
-- **Budget optimization**: `@optomitron/obg` and the examples package generate reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports.
+- **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/wishocracy` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
+- **Budget optimization**: `@optomitron/obg` and the examples package generate reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
 - **Policy scoring**: `@optomitron/opg` evaluates policies with Bradford Hill-style causal confidence scoring instead of ideology-first labeling.
-- **Legislative classification**: bills are automatically classified into budget categories via keyword and policy-area matching, with generated cost-benefit analyses for informed citizen voting.
-- **Political accountability**: personal alignment reports show which benchmark politicians best match a citizen's stated priorities, with public share URLs for distribution.
+- **Legislative classification**: bills are automatically classified into budget categories via keyword and policy-area matching, with generated cost-benefit analyses for informed citizen voting at `/civic`.
+- **Political accountability**: personal alignment reports at `/alignment` show which benchmark politicians best match a citizen's stated priorities, with public share URLs for distribution. The `/scoreboard` ranks all politicians by alignment score.
 - **Legislative provenance**: the web app syncs current federal identities from Congress.gov and increasingly derives profiles from recent classified roll calls instead of only curated priors.
-- **Cross-jurisdiction analysis**: the examples package already runs international comparisons for health, education, drug policy, criminal justice, and federal spending questions.
+- **Referendum infrastructure**: citizens vote directly on policy proposals at `/referendum` with World ID verification for sybil resistance.
+- **Cross-jurisdiction analysis**: the `/compare` page and examples package run international comparisons for health, education, drug policy, criminal justice, and federal spending questions.
 
 The database is multi-tenant: every jurisdiction is a tenant with its own priorities, officials, and data.
+
+---
+
+## Economic Instruments
+
+Three separate mechanisms, three separate contract families, three separate pages. On my planet, we would combine them. But your species has a talent for confusing things that are next to each other, so I kept them apart.
+
+### Phase 1: Earth Optimization Prize — `/prize`
+
+A dominant assurance contract funding the global referendum campaign. Deposit USDC → Aave V3 yield accrues → recruit World ID-verified voters. If the plan fails, depositors get ~4.2x their money back. If it succeeds, VOTE token holders claim the prize. Break-even probability: 0.0067%.
+
+**Contracts**: `VoterPrizeTreasury` + `VoteToken` (deployed on Base Sepolia)
+
+Start here. Everything else depends on proving demand first.
+
+### Phase 2: Incentive Alignment Bonds — `/iab`
+
+After the referendum proves demand, IABs raise ~$1B to lobby for the 1% Treaty. Same dominant assurance structure — plan fails, bondholders get ~4.2x back. Plan succeeds, treaty revenue ($27B/yr) splits 80/10/10: 80% to pragmatic clinical trials, 10% to bondholder returns (perpetual), 10% to aligned politician campaigns.
+
+**Contracts**: `IABVault` + `IABSplitter` + `PublicGoodsPool` + `AlignmentScoreOracle` + `PoliticalIncentiveAllocator` (not yet deployed — Phase 1 first)
+
+### Phase 3: $WISH Token — `/money`
+
+Independent from Prize and IABs. Different contracts, different purpose. A programmable currency with governance built into the protocol: 0.5% transaction tax replaces the IRS, Universal Basic Income replaces welfare bureaucracy, and Wishocratic allocation lets 8 billion citizens decide where the revenue goes via pairwise comparisons.
+
+**Contracts**: `WishToken` + `WishocraticTreasury` + `UBIDistributor`
+
+All treasury contracts are Solidity 0.8.24, Hardhat 2.22, OpenZeppelin 5.1.
 
 ---
 
@@ -223,9 +312,7 @@ I know some of you won't care about saving lives or fixing governments, but you 
 |--------|--------------|-------------|----------|
 | Marketing | Ad spend | Revenue | "What's the optimal weekly ad budget?" |
 | Pricing | Price point | Conversion rate | "What price maximizes revenue?" |
-| Product | Feature release | User retention | "Did this feature improve retention?" |
 | Manufacturing | Temperature | Defect rate | "What setting minimizes defects?" |
-| Agriculture | Fertilizer | Crop yield | "What's the optimal fertilizer level?" |
 
 All use the same pipeline: **Temporal alignment → Bradford Hill → Predictor Impact Score → Optimal value.**
 
@@ -260,12 +347,17 @@ The architecture is clean, modular, and dependency-free at the core. It took me 
         ┌──────────┐ ┌────────────┐ ┌─────────┐
         │ storage  │ │ hypercerts │ │ agent   │
         └──────────┘ └────────────┘ └─────────┘
+
+  ┌────────────────┐ ┌──────────────┐ ┌──────────────┐ ┌─────────────────┐
+  │ treasury-prize │ │ treasury-iab │ │ treasury-wish│ │ treasury-shared │
+  └────────────────┘ └──────────────┘ └──────────────┘ └─────────────────┘
 ```
 
 **Hard rules:**
 - `@optomitron/optimizer` depends on **nothing** — it's the foundation
 - Library packages are **pure TypeScript** — no server, no database
 - `@optomitron/optimizer` is **domain-agnostic** — no references to "drugs", "policies", or "budgets"
+- Treasury packages are **three independent contract families** — Prize, IAB, and $WISH never share state
 - No circular dependencies
 
 ---
@@ -313,7 +405,7 @@ Every algorithm is defined in a published paper with exact formulas, worked exam
 | **Optimal Policy Generator** | `@optomitron/opg` — Policy Impact Score, Causal Confidence Score, method weights | [opg.warondisease.org](https://opg.warondisease.org) |
 | **Optimal Budget Generator** | `@optomitron/obg` — Diminishing returns, Optimal Spending Level, Budget Impact Score | [obg.warondisease.org](https://obg.warondisease.org) |
 | **Optimocracy** | Two-metric welfare function (shared by OPG + OBG) | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
-| **Incentive Alignment Bonds** | `@optomitron/treasury` — IAB mechanism, smart contract campaign funding | [iab.warondisease.org](https://iab.warondisease.org) |
+| **Incentive Alignment Bonds** | `@optomitron/treasury-*` — Prize, IAB, and $WISH mechanisms (Solidity 0.8.24, four packages) | [iab.warondisease.org](https://iab.warondisease.org) |
 
 ### Motivation & Impact Papers
 
