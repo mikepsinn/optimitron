@@ -66,8 +66,10 @@ The [Earth Optimization Prize](https://iab.warondisease.org) is a **dominant ass
 | Scenario | What happens |
 |----------|-------------|
 | **Plan fails** (thresholds not met after 15 years) | Depositors get principal back + Aave V3 yield — roughly **~4.2x return** ($100 → ~$418) |
-| **Plan succeeds** (health/income thresholds met) | VOTE token holders claim proportional share of the prize pool |
+| **Plan succeeds** (health/income thresholds met) | **$14.9M per-capita lifetime income gain**, 10.7 billion lives saved, treatment queue drops from 443 years to 36 years. VOTE holders claim the prize pool. |
 | **Break-even probability** | **0.0067%** — depositing is positive-EV if you believe there's even a 1-in-15,000 chance this works |
+
+The success scenario isn't hypothetical. The 1% Treaty redirects $27.2B/yr from military spending into pragmatic clinical trials — the same trial design that found life-saving COVID treatments in 3 months for $30 per patient. At scale, that's a 12.3x acceleration in treatment discovery, global healthy lifespan rising from 63.3 to 79 years, and median income reaching $504K by year 15. The cost per disability-adjusted life year saved: $0.002. Your species currently spends more than that on a single paper clip.
 
 ### Two paths
 
@@ -277,13 +279,26 @@ Start here. Everything else depends on proving demand first.
 
 ### Phase 2: Incentive Alignment Bonds — `/iab`
 
-After the referendum proves demand, IABs raise ~$1B to lobby for the 1% Treaty. Same dominant assurance structure — plan fails, bondholders get ~4.2x back. Plan succeeds, treaty revenue ($27B/yr) splits 80/10/10: 80% to pragmatic clinical trials, 10% to bondholder returns (perpetual), 10% to aligned politician campaigns.
+After the referendum proves demand, IABs raise ~$1B to lobby for the 1% Treaty. Same dominant assurance structure — plan fails, bondholders get ~4.2x back. Plan succeeds, treaty revenue ($27B/yr) splits 80/10/10: 80% to pragmatic clinical trials, 10% to bondholder returns (perpetual — 272% annual return on the ~$1B raised), 10% to aligned politician campaigns.
+
+The treaty unlocks an **$11.75T annual peace dividend**: $1.35T from military reallocation, $3.5T from health-driven economic growth, $2.8T from healthcare cost reduction, and $4.1T from productivity gains as people stop dying of things you already know how to treat. That's $101T in political dysfunction tax, and this eliminates the largest chunks of it.
 
 **Contracts**: `IABVault` + `IABSplitter` + `PublicGoodsPool` + `AlignmentScoreOracle` + `PoliticalIncentiveAllocator` (not yet deployed — Phase 1 first)
 
 ### Phase 3: $WISH Token — `/money`
 
-Independent from Prize and IABs. Different contracts, different purpose. A programmable currency with governance built into the protocol: 0.5% transaction tax replaces the IRS, Universal Basic Income replaces welfare bureaucracy, and Wishocratic allocation lets 8 billion citizens decide where the revenue goes via pairwise comparisons.
+Independent from Prize and IABs. Different contracts, different purpose. The endgame: a programmable currency with governance built into the protocol.
+
+| Reform | What it replaces | Annual savings |
+|--------|-----------------|----------------|
+| 0.5% transaction tax | 80,000 IRS employees interpreting a 74,000-page tax code | $546B compliance costs |
+| Universal Basic Income | 27+ overlapping welfare bureaucracies | $1.1T administration waste |
+| Wishocratic allocation | Politicians deciding budgets via lobbying | $4.4B lobbying industry + $181B corporate welfare |
+| Algorithmic 0% inflation | Federal Reserve's 2% "stealth taxation" | 8% of GDP in financial sector extraction |
+
+Citizens do 5 minutes of pairwise comparisons → eigenvector decomposition produces stable budget weights → $WISH transaction taxes are allocated automatically. No politicians. No lobbyists. No 74,000-page tax code. Full trajectory: **$1.16M average income by year 20** (vs. $20.5K status quo), **150+ year healthy lifespan** within the first generation, and a **45x cumulative lifetime income multiplier**.
+
+On my planet, this is called "basic infrastructure." On yours, it would be the largest quality-of-life improvement in the history of your species. By a factor of about fifty.
 
 **Contracts**: `WishToken` + `WishocraticTreasury` + `UBIDistributor`
 
