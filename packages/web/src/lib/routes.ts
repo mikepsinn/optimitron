@@ -25,6 +25,7 @@ export const ROUTES = {
   contribute: "/contribute",
   referendum: "/referendum",
   scoreboard: "/scoreboard",
+  dashboard: "/dashboard",
   signIn: "/auth/signin",
 } as const;
 
@@ -177,6 +178,13 @@ export const trackLink: NavItem = {
   description: "Planetary debugging for your health, habits, and everyday tradeoffs",
 };
 
+export const dashboardLink: NavItem = {
+  href: ROUTES.dashboard,
+  label: "Dashboard",
+  emoji: "📊",
+  description: "Track your impact, manage preferences, and coordinate with organisations",
+};
+
 export const profileLink: NavItem = {
   href: ROUTES.profile,
   label: "Profile",
@@ -246,10 +254,24 @@ export const topLinks: NavItem[] = [
   aboutLink,
 ];
 
+export interface NavSection {
+  id: string;
+  label: string;
+  items: NavItem[];
+}
+
+export const navSections: NavSection[] = [
+  { id: "participate", label: "Participate", items: [wishocracyLink, alignmentLink, referendumLink] },
+  { id: "explore", label: "Explore", items: [studiesLink, compareLink, policiesLink, budgetLink, misconceptionsLink, discoveriesLink] },
+  { id: "fund", label: "Fund", items: [prizeLink, iabLink, moneyLink] },
+  { id: "system", label: "System", items: [transparencyLink, federalReserveLink, departmentOfWarLink, aboutLink] },
+];
+
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
   wishocracyLink,
   alignmentLink,
+  dashboardLink,
   profileLink,
   trackLink,
   aboutLink,

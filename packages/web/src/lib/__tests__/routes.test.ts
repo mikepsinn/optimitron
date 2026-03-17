@@ -41,6 +41,7 @@ describe("navigation routes", () => {
       expect.arrayContaining([
         ROUTES.wishocracy,
         ROUTES.alignment,
+        ROUTES.dashboard,
         ROUTES.profile,
         ROUTES.wishonia,
         ROUTES.about,
