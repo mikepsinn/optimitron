@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Modality } from '@google/genai';
 import {
   VOICE_MODEL,
   WISHONIA_VOICE_SYSTEM_PROMPT,
@@ -23,22 +23,30 @@ export async function POST() {
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: { apiVersion: 'v1alpha' },
+    });
 
-    const token = await ai.tokens.create({
-      model: VOICE_MODEL,
+    const token = await ai.authTokens.create({
       config: {
-        responseModalities: ['AUDIO', 'TEXT'],
-        systemInstruction: WISHONIA_VOICE_SYSTEM_PROMPT,
-        tools: [
-          {
-            functionDeclarations: [RETRIEVE_CONTEXT_DECLARATION],
-          },
-        ],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: {
-              voiceName: 'Kore',
+        uses: 1,
+        liveConnectConstraints: {
+          model: VOICE_MODEL,
+          config: {
+            responseModalities: [Modality.AUDIO, Modality.TEXT],
+            systemInstruction: WISHONIA_VOICE_SYSTEM_PROMPT,
+            tools: [
+              {
+                functionDeclarations: [RETRIEVE_CONTEXT_DECLARATION],
+              },
+            ],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: {
+                  voiceName: 'Kore',
+                },
+              },
             },
           },
         },
@@ -46,9 +54,8 @@ export async function POST() {
     });
 
     return NextResponse.json({
-      token: token.token,
+      token: token.name,
       model: VOICE_MODEL,
-      expiresAt: token.expiresAt,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to create ephemeral token';

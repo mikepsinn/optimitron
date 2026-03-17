@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import { getDashboardData } from "@/lib/dashboard.server";
+import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { getSignInPath, ROUTES } from "@/lib/routes";
 
@@ -20,7 +20,12 @@ export default async function DashboardPage() {
     redirect(getSignInPath(ROUTES.dashboard));
   }
 
-  const initialData = await getDashboardData(userId);
+  const [initialData, leaderboard] = await Promise.all([
+    getDashboardData(userId),
+    getTopReferrers(),
+  ]);
 
-  return <DashboardClient initialData={initialData} />;
+  return (
+    <DashboardClient initialData={initialData} leaderboard={leaderboard} />
+  );
 }

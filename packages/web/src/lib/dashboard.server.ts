@@ -6,6 +6,9 @@ import {
   getBadgeName,
   getBadgeDescription,
 } from "@/lib/activity-descriptions";
+import {
+  GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
+} from "@/lib/parameters-calculations-citations";
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard";
 
 function formatTimeAgo(date: Date): string {
@@ -78,6 +81,14 @@ export async function getDashboardData(
   });
   const rank = usersAhead + 1;
 
+  // Global progress: total referendum votes as % of global population
+  const totalReferendumVotes = await prisma.referendumVote.count();
+  const WORLD_POPULATION = 8_000_000_000;
+  const globalProgressPct =
+    (totalReferendumVotes / WORLD_POPULATION) * 100;
+  const targetPct =
+    GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT.value * 100;
+
   return {
     user: {
       id: user.id,
@@ -138,6 +149,10 @@ export async function getDashboardData(
       channel: pref.channel,
       enabled: pref.enabled,
     })),
+    globalProgress: {
+      current: globalProgressPct,
+      target: targetPct,
+    },
   };
 }
 

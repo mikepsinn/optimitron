@@ -4,6 +4,9 @@
  * This config is locked into ephemeral tokens — the browser cannot override it.
  */
 
+import { Type } from '@google/genai';
+import type { FunctionDeclaration } from '@google/genai';
+
 export const VOICE_MODEL = 'gemini-2.5-flash-native-audio';
 export const RAG_MODEL = 'gemini-2.5-flash';
 
@@ -39,15 +42,15 @@ Keep responses conversational and concise — this is voice, not a lecture. 2-4 
  * Function declaration for the retrieveContext tool.
  * The model calls this when it needs grounding from the manual.
  */
-export const RETRIEVE_CONTEXT_DECLARATION = {
+export const RETRIEVE_CONTEXT_DECLARATION: FunctionDeclaration = {
   name: 'retrieveContext',
   description:
     'Retrieve relevant context from the Optomitron manual, disease eradication plan, and related documentation to ground your response with accurate data and citations.',
   parameters: {
-    type: 'object' as const,
+    type: Type.OBJECT,
     properties: {
       query: {
-        type: 'string' as const,
+        type: Type.STRING,
         description:
           'A search query describing what information is needed. Be specific — e.g., "FDA approval timeline statistics" or "RAPPA preference aggregation algorithm".',
       },

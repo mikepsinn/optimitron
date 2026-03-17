@@ -1,4 +1,8 @@
-import { GoogleGenAI, type Session } from '@google/genai';
+import {
+  GoogleGenAI,
+  type Session,
+  type LiveServerMessage,
+} from '@google/genai';
 import type { VoiceState } from '@optomitron/chat-ui';
 import { VOICE_MODEL } from './voice-config';
 import { API_ROUTES } from './api-routes';
@@ -19,7 +23,6 @@ export interface VoiceSessionCallbacks {
 interface TokenResponse {
   token: string;
   model: string;
-  expiresAt?: string;
 }
 
 interface RAGResponse {
@@ -65,7 +68,10 @@ export class VoiceSession {
       const { token } = (await tokenRes.json()) as TokenResponse;
 
       // Connect to Gemini Live API with the ephemeral token
-      const ai = new GoogleGenAI({ apiKey: token });
+      const ai = new GoogleGenAI({
+        apiKey: token,
+        httpOptions: { apiVersion: 'v1alpha' },
+      });
 
       this.session = await ai.live.connect({
         model: VOICE_MODEL,
@@ -74,13 +80,11 @@ export class VoiceSession {
             this.isConnected = true;
             this.callbacks.onStateChange('listening');
           },
-          onmessage: (message) => {
+          onmessage: (message: LiveServerMessage) => {
             void this.handleMessage(message);
           },
-          onerror: (error) => {
-            this.callbacks.onError(
-              error instanceof Error ? error.message : 'Live API connection error',
-            );
+          onerror: (error: ErrorEvent) => {
+            this.callbacks.onError(error.message ?? 'Live API connection error');
             this.callbacks.onStateChange('error');
           },
           onclose: () => {
@@ -138,33 +142,26 @@ export class VoiceSession {
   /**
    * Handle incoming messages from the Live API.
    */
-  private async handleMessage(message: unknown): Promise<void> {
-    const msg = message as Record<string, unknown>;
-
+  private async handleMessage(message: LiveServerMessage): Promise<void> {
     // Handle tool calls (RAG)
-    if (msg.toolCall) {
-      const toolCall = msg.toolCall as {
-        functionCalls?: Array<{ id: string; name: string; args: Record<string, string> }>;
-      };
+    if (message.toolCall?.functionCalls) {
+      this.callbacks.onStateChange('thinking');
 
-      if (toolCall.functionCalls) {
-        this.callbacks.onStateChange('thinking');
+      for (const call of message.toolCall.functionCalls) {
+        if (call.name === 'retrieveContext') {
+          const args = call.args as Record<string, string> | undefined;
+          const ragResult = await this.handleRAG(args?.query ?? '');
 
-        for (const call of toolCall.functionCalls) {
-          if (call.name === 'retrieveContext') {
-            const ragResult = await this.handleRAG(call.args.query ?? '');
-
-            if (this.session) {
-              void this.session.sendToolResponse({
-                functionResponses: [
-                  {
-                    id: call.id,
-                    name: call.name,
-                    response: { context: ragResult.context },
-                  },
-                ],
-              });
-            }
+          if (this.session) {
+            void this.session.sendToolResponse({
+              functionResponses: [
+                {
+                  id: call.id ?? '',
+                  name: call.name ?? 'retrieveContext',
+                  response: { context: ragResult.context },
+                },
+              ],
+            });
           }
         }
       }
@@ -172,26 +169,21 @@ export class VoiceSession {
     }
 
     // Handle server content (audio + text)
-    if (msg.serverContent) {
-      const content = msg.serverContent as {
-        modelTurn?: {
-          parts?: Array<{
-            text?: string;
-            inlineData?: { data: string; mimeType: string };
-          }>;
-        };
-        turnComplete?: boolean;
-      };
+    if (message.serverContent) {
+      const content = message.serverContent;
 
       if (content.modelTurn?.parts) {
         for (const part of content.modelTurn.parts) {
           // Audio response
-          if (part.inlineData?.mimeType.startsWith('audio/')) {
+          if (part.inlineData?.mimeType?.startsWith('audio/')) {
             this.callbacks.onStateChange('speaking');
-            const audioBytes = Uint8Array.from(atob(part.inlineData.data), (c) =>
-              c.charCodeAt(0),
-            );
-            this.callbacks.onAudioChunk(audioBytes.buffer);
+            const data = part.inlineData.data;
+            if (data) {
+              const audioBytes = Uint8Array.from(atob(data), (c) =>
+                c.charCodeAt(0),
+              );
+              this.callbacks.onAudioChunk(audioBytes.buffer);
+            }
           }
 
           // Text transcript
@@ -219,30 +211,6 @@ export class VoiceSession {
         }
         this.callbacks.onTranscript([...this.transcriptEntries]);
         this.callbacks.onStateChange('listening');
-      }
-    }
-
-    // Handle user transcript (speech-to-text from Live API)
-    if (msg.clientContent) {
-      const content = msg.clientContent as {
-        turns?: Array<{ parts?: Array<{ text?: string }> }>;
-        turnComplete?: boolean;
-      };
-
-      if (content.turns) {
-        for (const turn of content.turns) {
-          if (turn.parts) {
-            for (const part of turn.parts) {
-              if (part.text) {
-                this.transcriptEntries.push({
-                  role: 'user',
-                  text: part.text,
-                });
-                this.callbacks.onTranscript([...this.transcriptEntries]);
-              }
-            }
-          }
-        }
       }
     }
   }

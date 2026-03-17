@@ -10,6 +10,9 @@ vi.mock("@/lib/prisma", () => ({
     activity: {
       count: vi.fn(),
     },
+    referendumVote: {
+      count: vi.fn(),
+    },
   },
 }));
 
@@ -99,6 +102,7 @@ describe("getDashboardData", () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValueOnce(mockUser as any);
     vi.mocked(prisma.activity.count).mockResolvedValueOnce(3);
     vi.mocked(prisma.user.count).mockResolvedValueOnce(0);
+    vi.mocked(prisma.referendumVote.count).mockResolvedValueOnce(42);
 
     const result = await getDashboardData("user-1");
 
@@ -115,5 +119,7 @@ describe("getDashboardData", () => {
     expect(result.organizations.created).toHaveLength(1);
     expect(result.organizations.created[0]?.memberCount).toBe(5);
     expect(result.notificationPreferences).toHaveLength(1);
+    expect(result.globalProgress).toBeDefined();
+    expect(result.globalProgress.current).toBeGreaterThanOrEqual(0);
   });
 });

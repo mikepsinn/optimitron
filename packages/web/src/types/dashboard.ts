@@ -61,6 +61,11 @@ export interface DashboardNotificationPreference {
   enabled: boolean;
 }
 
+export interface DashboardProgress {
+  current: number;
+  target: number;
+}
+
 export interface DashboardData {
   user: DashboardUser;
   stats: DashboardStats;
@@ -71,6 +76,7 @@ export interface DashboardData {
     created: DashboardOrganization[];
   };
   notificationPreferences: DashboardNotificationPreference[];
+  globalProgress: DashboardProgress;
 }
 
 export interface LeaderboardEntry {
