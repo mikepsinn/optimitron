@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
+import { TreasuryDashboard } from "@/app/treasury/TreasuryDashboard";
 import {
   wishocracyLink,
   prizeLink,
   aboutLink,
 } from "@/lib/routes";
-
-const TreasuryDashboard = dynamic(
-  () => import("@/app/treasury/TreasuryDashboard").then((m) => m.TreasuryDashboard),
-  { ssr: false },
-);
 
 export const metadata: Metadata = {
   title: "How Money Should Work | Optomitron",
