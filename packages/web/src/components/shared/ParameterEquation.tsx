@@ -3,6 +3,7 @@
 import React from "react"
 import type { Parameter } from "@/lib/parameters-calculations-citations"
 import { cn } from "@/lib/utils"
+import { Latex } from "@/components/ui/latex"
 
 export interface ParameterEquationProps {
   /** The parameter object containing latex or formula */
@@ -16,8 +17,8 @@ export interface ParameterEquationProps {
 }
 
 /**
- * Renders a parameter's equation as code.
- * Uses formula field only (no LaTeX dependency).
+ * Renders a parameter's equation.
+ * Prefers LaTeX rendering via KaTeX when available, falls back to code display.
  */
 export function ParameterEquation({
   param,
@@ -25,6 +26,14 @@ export function ParameterEquation({
   className = "",
   showFallback = true,
 }: ParameterEquationProps) {
+  if (param.latex) {
+    return (
+      <Latex block={block} className={className}>
+        {param.latex}
+      </Latex>
+    )
+  }
+
   if (showFallback && param.formula) {
     return (
       <code

@@ -9,8 +9,11 @@ interface RAGRequestBody {
 /**
  * POST /api/voice/rag
  *
- * Retrieves context from the Gemini FileSearchStore for RAG grounding.
+ * Retrieves context grounded in the uploaded manual file.
  * Called by the client when the Live API model invokes the retrieveContext tool.
+ *
+ * If GEMINI_FILE_SEARCH_STORE_ID is set, the uploaded file is included as
+ * context in the request (fileData part). Otherwise falls back to plain generation.
  */
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -21,7 +24,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const storeId = process.env.GEMINI_FILE_SEARCH_STORE_ID;
+  const fileId = process.env.GEMINI_FILE_SEARCH_STORE_ID;
 
   let body: RAGRequestBody;
   try {
@@ -37,36 +40,35 @@ export async function POST(request: NextRequest) {
   try {
     const ai = new GoogleGenAI({ apiKey });
 
-    // If a FileSearchStore is configured, use it for grounding
-    if (storeId) {
+    // If a file was uploaded, include it as context via fileData part
+    if (fileId) {
       const response = await ai.models.generateContent({
         model: RAG_MODEL,
         contents: [
           {
             role: 'user',
-            parts: [{ text: body.query }],
-          },
-        ],
-        config: {
-          tools: [
-            {
-              retrieval: {
-                vertexRagStore: {
-                  ragCorpora: [storeId],
+            parts: [
+              {
+                fileData: {
+                  fileUri: `https://generativelanguage.googleapis.com/v1beta/${fileId}`,
+                  mimeType: 'text/plain',
                 },
               },
-            },
-          ],
-        },
+              {
+                text: `Using the document above as your source of truth, answer this query concisely with specific data:\n\n${body.query}`,
+              },
+            ],
+          },
+        ],
       });
 
-      const text = response.text ?? '';
-      const citations = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
-
-      return NextResponse.json({ context: text, citations });
+      return NextResponse.json({
+        context: response.text ?? '',
+        citations: [],
+      });
     }
 
-    // Fallback: no FileSearchStore configured — use plain generation
+    // Fallback: no file configured — use plain generation
     const response = await ai.models.generateContent({
       model: RAG_MODEL,
       contents: [

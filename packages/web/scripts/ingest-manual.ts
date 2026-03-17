@@ -3,11 +3,17 @@
  * uploads to Gemini FileSearchStore, and outputs the store ID.
  *
  * Usage:
- *   GOOGLE_GENERATIVE_AI_API_KEY=... npx tsx scripts/ingest-manual.ts
+ *   npx tsx scripts/ingest-manual.ts
  *
  * After running, set GEMINI_FILE_SEARCH_STORE_ID in your .env file.
  */
 
+import dotenv from 'dotenv';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
 import { GoogleGenAI } from '@google/genai';
 
 const MANUAL_PAGES = [
