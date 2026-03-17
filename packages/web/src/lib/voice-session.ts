@@ -18,6 +18,7 @@ export interface VoiceSessionCallbacks {
   onAudioChunk: (pcmData: ArrayBuffer) => void;
   onTranscript: (entries: TranscriptEntry[]) => void;
   onError: (error: string) => void;
+  onInterrupted: () => void;
 }
 
 interface TokenResponse {
@@ -29,6 +30,10 @@ interface RAGResponse {
   context: string;
   citations: unknown[];
 }
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+const BASE_RECONNECT_DELAY_MS = 1000;
+const MAX_RECONNECT_DELAY_MS = 30000;
 
 /**
  * Core orchestrator for Gemini Live API voice sessions.
@@ -47,6 +52,15 @@ export class VoiceSession {
   private transcriptEntries: TranscriptEntry[] = [];
   private isConnected = false;
 
+  // Session resumption
+  private resumeHandle: string | null = null;
+  private cachedToken: string | null = null;
+
+  // Auto-reconnect
+  private reconnectAttempts = 0;
+  private shouldReconnect = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(callbacks: VoiceSessionCallbacks) {
     this.callbacks = callbacks;
   }
@@ -56,16 +70,12 @@ export class VoiceSession {
    */
   async connect(): Promise<void> {
     this.callbacks.onStateChange('connecting');
+    this.shouldReconnect = true;
 
     try {
-      // Fetch ephemeral token from our API
-      const tokenRes = await fetch(API_ROUTES.voice.token, { method: 'POST' });
-      if (!tokenRes.ok) {
-        const err = (await tokenRes.json()) as { error?: string };
-        throw new Error(err.error ?? `Token request failed: ${tokenRes.status}`);
-      }
-
-      const { token } = (await tokenRes.json()) as TokenResponse;
+      // Fetch ephemeral token (reuse cached token for reconnection)
+      const token = this.cachedToken ?? await this.fetchToken();
+      this.cachedToken = token;
 
       // Connect to Gemini Live API with the ephemeral token
       const ai = new GoogleGenAI({
@@ -73,11 +83,18 @@ export class VoiceSession {
         httpOptions: { apiVersion: 'v1alpha' },
       });
 
+      const connectConfig: Record<string, unknown> = {};
+      if (this.resumeHandle) {
+        connectConfig.sessionResumption = { handle: this.resumeHandle };
+      }
+
       this.session = await ai.live.connect({
         model: VOICE_MODEL,
+        config: connectConfig,
         callbacks: {
           onopen: () => {
             this.isConnected = true;
+            this.reconnectAttempts = 0;
             this.callbacks.onStateChange('listening');
           },
           onmessage: (message: LiveServerMessage) => {
@@ -89,14 +106,23 @@ export class VoiceSession {
           },
           onclose: () => {
             this.isConnected = false;
-            this.callbacks.onStateChange('idle');
+            if (this.shouldReconnect && this.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+              this.scheduleReconnect();
+            } else {
+              this.callbacks.onStateChange('idle');
+            }
           },
         },
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to connect';
       this.callbacks.onError(msg);
-      this.callbacks.onStateChange('error');
+
+      if (this.shouldReconnect && this.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        this.scheduleReconnect();
+      } else {
+        this.callbacks.onStateChange('error');
+      }
     }
   }
 
@@ -123,15 +149,23 @@ export class VoiceSession {
   }
 
   /**
-   * Disconnect the session and clean up.
+   * Disconnect the session and clean up. Prevents auto-reconnect.
    */
   disconnect(): void {
+    this.shouldReconnect = false;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     if (this.session) {
       this.session.close();
       this.session = null;
     }
     this.isConnected = false;
     this.transcriptEntries = [];
+    this.resumeHandle = null;
+    this.cachedToken = null;
+    this.reconnectAttempts = 0;
     this.callbacks.onStateChange('idle');
   }
 
@@ -143,6 +177,11 @@ export class VoiceSession {
    * Handle incoming messages from the Live API.
    */
   private async handleMessage(message: LiveServerMessage): Promise<void> {
+    // Session resumption handle updates
+    if (message.sessionResumptionUpdate?.newHandle) {
+      this.resumeHandle = message.sessionResumptionUpdate.newHandle;
+    }
+
     // Handle tool calls (RAG)
     if (message.toolCall?.functionCalls) {
       this.callbacks.onStateChange('thinking');
@@ -168,9 +207,56 @@ export class VoiceSession {
       return;
     }
 
-    // Handle server content (audio + text)
+    // Handle server content (audio + text + transcription)
     if (message.serverContent) {
       const content = message.serverContent;
+
+      // Barge-in: server signals the model was interrupted
+      if (content.interrupted) {
+        this.callbacks.onInterrupted();
+        this.callbacks.onStateChange('listening');
+        return;
+      }
+
+      // Input transcription (user's speech)
+      if (content.inputTranscription?.text) {
+        const inputText = content.inputTranscription.text;
+        const inputFinished = content.inputTranscription.finished ?? false;
+        const lastEntry = this.transcriptEntries[this.transcriptEntries.length - 1];
+        if (lastEntry?.role === 'user' && lastEntry.partial) {
+          lastEntry.text = inputText;
+          if (inputFinished) {
+            lastEntry.partial = false;
+          }
+        } else {
+          this.transcriptEntries.push({
+            role: 'user',
+            text: inputText,
+            partial: !inputFinished,
+          });
+        }
+        this.callbacks.onTranscript([...this.transcriptEntries]);
+      }
+
+      // Output transcription (model's spoken words)
+      if (content.outputTranscription?.text) {
+        const outputText = content.outputTranscription.text;
+        const outputFinished = content.outputTranscription.finished ?? false;
+        const lastEntry = this.transcriptEntries[this.transcriptEntries.length - 1];
+        if (lastEntry?.role === 'assistant' && lastEntry.partial) {
+          lastEntry.text = outputText;
+          if (outputFinished) {
+            lastEntry.partial = false;
+          }
+        } else {
+          this.transcriptEntries.push({
+            role: 'assistant',
+            text: outputText,
+            partial: !outputFinished,
+          });
+        }
+        this.callbacks.onTranscript([...this.transcriptEntries]);
+      }
 
       if (content.modelTurn?.parts) {
         for (const part of content.modelTurn.parts) {
@@ -186,8 +272,8 @@ export class VoiceSession {
             }
           }
 
-          // Text transcript
-          if (part.text) {
+          // Text from modelTurn (thinking text — only use if no outputTranscription)
+          if (part.text && !content.outputTranscription?.text) {
             const lastEntry = this.transcriptEntries[this.transcriptEntries.length - 1];
             if (lastEntry?.role === 'assistant' && lastEntry.partial) {
               lastEntry.text += part.text;
@@ -213,6 +299,37 @@ export class VoiceSession {
         this.callbacks.onStateChange('listening');
       }
     }
+  }
+
+  /**
+   * Fetch an ephemeral token from the server.
+   */
+  private async fetchToken(): Promise<string> {
+    const tokenRes = await fetch(API_ROUTES.voice.token, { method: 'POST' });
+    if (!tokenRes.ok) {
+      const err = (await tokenRes.json()) as { error?: string };
+      throw new Error(err.error ?? `Token request failed: ${tokenRes.status}`);
+    }
+    const { token } = (await tokenRes.json()) as TokenResponse;
+    return token;
+  }
+
+  /**
+   * Schedule an auto-reconnect with exponential backoff.
+   */
+  private scheduleReconnect(): void {
+    const delay = Math.min(
+      BASE_RECONNECT_DELAY_MS * 2 ** this.reconnectAttempts,
+      MAX_RECONNECT_DELAY_MS,
+    );
+    this.reconnectAttempts++;
+    this.callbacks.onStateChange('connecting');
+    this.callbacks.onError(`Connection lost. Reconnecting in ${Math.round(delay / 1000)}s...`);
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      void this.connect();
+    }, delay);
   }
 
   /**

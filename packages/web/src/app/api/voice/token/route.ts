@@ -4,6 +4,9 @@ import {
   VOICE_MODEL,
   WISHONIA_VOICE_SYSTEM_PROMPT,
   RETRIEVE_CONTEXT_DECLARATION,
+  StartSensitivity,
+  EndSensitivity,
+  ActivityHandling,
 } from '@/lib/voice-config';
 
 /**
@@ -30,7 +33,7 @@ export async function POST() {
 
     const token = await ai.authTokens.create({
       config: {
-        uses: 1,
+        uses: 3, // Allow reconnection reuse
         liveConnectConstraints: {
           model: VOICE_MODEL,
           config: {
@@ -48,6 +51,21 @@ export async function POST() {
                 },
               },
             },
+            inputAudioTranscription: {},
+            outputAudioTranscription: {},
+            realtimeInputConfig: {
+              automaticActivityDetection: {
+                startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
+                endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
+                silenceDurationMs: 1000,
+              },
+              activityHandling: ActivityHandling.START_OF_ACTIVITY_INTERRUPTS,
+            },
+            sessionResumption: { transparent: true },
+            contextWindowCompression: {
+              slidingWindow: { targetTokens: '20000' },
+            },
+            enableAffectiveDialog: true,
           },
         },
       },

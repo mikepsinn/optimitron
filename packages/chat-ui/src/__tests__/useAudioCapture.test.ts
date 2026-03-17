@@ -118,6 +118,37 @@ describe('useAudioCapture', () => {
     expect(mockTrack.stop).toHaveBeenCalled();
   });
 
+  it('throws descriptive error on mic permission denied', async () => {
+    const notAllowedError = new DOMException('Permission denied', 'NotAllowedError');
+    (navigator.mediaDevices.getUserMedia as ReturnType<typeof vi.fn>).mockRejectedValueOnce(notAllowedError);
+
+    const { result } = renderHook(() =>
+      useAudioCapture({ onAudioChunk: vi.fn() }),
+    );
+
+    await expect(
+      act(async () => {
+        await result.current.start();
+      }),
+    ).rejects.toThrow('Microphone access denied');
+    expect(result.current.isCapturing).toBe(false);
+  });
+
+  it('re-throws non-permission errors unchanged', async () => {
+    const otherError = new Error('Device not found');
+    (navigator.mediaDevices.getUserMedia as ReturnType<typeof vi.fn>).mockRejectedValueOnce(otherError);
+
+    const { result } = renderHook(() =>
+      useAudioCapture({ onAudioChunk: vi.fn() }),
+    );
+
+    await expect(
+      act(async () => {
+        await result.current.start();
+      }),
+    ).rejects.toThrow('Device not found');
+  });
+
   it('does not start twice if already capturing', async () => {
     const { result } = renderHook(() =>
       useAudioCapture({ onAudioChunk: vi.fn() }),

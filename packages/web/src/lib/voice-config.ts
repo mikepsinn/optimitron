@@ -4,8 +4,15 @@
  * This config is locked into ephemeral tokens — the browser cannot override it.
  */
 
-import { Type } from '@google/genai';
+import {
+  Type,
+  StartSensitivity,
+  EndSensitivity,
+  ActivityHandling,
+} from '@google/genai';
 import type { FunctionDeclaration } from '@google/genai';
+
+export { StartSensitivity, EndSensitivity, ActivityHandling };
 
 export const VOICE_MODEL = 'gemini-2.5-flash-native-audio-latest';
 export const RAG_MODEL = 'gemini-2.5-flash';

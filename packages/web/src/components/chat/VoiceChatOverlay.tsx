@@ -30,6 +30,11 @@ export default function VoiceChatOverlay({ onClose }: { onClose: () => void }) {
   const { enqueueAudio, isPlaying, analyserNode: playbackAnalyser, stop: stopPlayback } =
     useAudioPlayback();
 
+  const stopPlaybackRef = useRef(stopPlayback);
+  useEffect(() => {
+    stopPlaybackRef.current = stopPlayback;
+  }, [stopPlayback]);
+
   const handleAudioChunk = useCallback(
     (chunk: ArrayBuffer) => {
       sessionRef.current?.sendAudio(chunk);
@@ -47,6 +52,9 @@ export default function VoiceChatOverlay({ onClose }: { onClose: () => void }) {
       onAudioChunk: enqueueAudio,
       onTranscript: setTranscript,
       onError: setError,
+      onInterrupted: () => {
+        stopPlaybackRef.current();
+      },
     });
     sessionRef.current = session;
 
@@ -82,6 +90,7 @@ export default function VoiceChatOverlay({ onClose }: { onClose: () => void }) {
 
   // Show the active analyser based on state
   const activeAnalyser = isPlaying ? playbackAnalyser : isCapturing ? captureAnalyser : null;
+  const isReconnecting = voiceState === "connecting" && (error?.includes("Reconnecting") ?? false);
 
   return (
     <div className="opto-voice-overlay">
@@ -113,7 +122,13 @@ export default function VoiceChatOverlay({ onClose }: { onClose: () => void }) {
             onClick={() => void handleMicClick()}
           />
 
-          {error && (
+          {isReconnecting && (
+            <div className="opto-voice-overlay__reconnecting" role="status">
+              Reconnecting...
+            </div>
+          )}
+
+          {error && !isReconnecting && (
             <div className="opto-voice-overlay__error" role="alert">
               {error}
             </div>
