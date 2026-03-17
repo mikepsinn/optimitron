@@ -8,6 +8,8 @@ import {
 import {
   alignmentLink,
   communityLinks,
+  iabLink,
+  moneyLink,
   paperLinks,
   prizeLink,
   studiesLink,
@@ -228,39 +230,56 @@ export default function AboutPage() {
         <h2 className="section-title">The Economic System</h2>
         <p className="text-sm text-black/60 mb-6 font-medium max-w-3xl">
           Diagnosing the problem is step one. Funding the solution is step two.
-          Your species has historically struggled with step two because you keep
-          inventing middlemen. Here&apos;s how it works without them.
+          Three separate mechanisms, three separate phases. Don&apos;t mix them up.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="card bg-brutal-cyan border-black">
-            <div className="text-2xl mb-2">🏦</div>
-            <h3 className="font-black text-black mb-2">FairTax</h3>
-            <p className="text-sm text-black/60 font-medium leading-relaxed">
-              $WISH is an ERC-20 token with a 0.5% transaction tax built into
-              every transfer. This replaces your income tax system entirely — no
-              filing, no audits, no IRS. Revenue collection as a one-line
-              protocol feature instead of a 74,000-page tax code.
-            </p>
-          </div>
-          <div className="card bg-brutal-cyan border-black">
-            <div className="text-2xl mb-2">🍞</div>
-            <h3 className="font-black text-black mb-2">Universal Basic Income</h3>
-            <p className="text-sm text-black/60 font-medium leading-relaxed">
-              The transaction tax funds a treasury that distributes UBI to every
-              verified citizen via World ID. No means testing. No case workers.
-              No $1.1 trillion spent administering who deserves help. Everyone
-              eats. The bureaucracy doesn&apos;t.
-            </p>
-          </div>
           <div className="card bg-brutal-pink border-black">
-            <div className="text-2xl mb-2">🎯</div>
-            <h3 className="font-black text-white mb-2">Prize Pool</h3>
+            <div className="text-2xl mb-2">🏆</div>
+            <h3 className="font-black text-white mb-2">Prize (Phase 1)</h3>
             <p className="text-sm text-white/80 font-medium leading-relaxed">
-              Want to fund specific governance reforms? Deposit into the
-              outcome-based escrow. Money stays locked until health and income
-              measurably improve. Then you vote on which implementers deserve
-              payment. Results, not promises.
+              Deposit USDC. Recruit voters for the 1% Treaty referendum. If it
+              works, you share the prize. If it doesn&apos;t, you get ~4.2x your
+              deposit back from Aave yield after 15 years. Zero downside.
             </p>
+            <NavItemLink
+              item={prizeLink}
+              variant="custom"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase text-white hover:text-brutal-yellow transition-colors"
+            >
+              Join the Prize &rarr;
+            </NavItemLink>
+          </div>
+          <div className="card bg-brutal-cyan border-black">
+            <div className="text-2xl mb-2">🤝</div>
+            <h3 className="font-black text-black mb-2">IABs (Phase 2)</h3>
+            <p className="text-sm text-black/60 font-medium leading-relaxed">
+              After the referendum proves demand, raise ~$1B to lobby for the
+              treaty. Revenue splits 80/10/10: clinical trials, investors,
+              superpacs for aligned politicians.
+            </p>
+            <NavItemLink
+              item={iabLink}
+              variant="custom"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase text-black hover:text-brutal-pink transition-colors"
+            >
+              Learn About IABs &rarr;
+            </NavItemLink>
+          </div>
+          <div className="card bg-brutal-yellow border-black">
+            <div className="text-2xl mb-2">💸</div>
+            <h3 className="font-black text-black mb-2">$WISH</h3>
+            <p className="text-sm text-black/60 font-medium leading-relaxed">
+              Programmable currency with 0.5% transaction tax. Replaces the IRS,
+              welfare bureaucracy, and lobbying with automatic UBI and
+              wishocratic public goods allocation.
+            </p>
+            <NavItemLink
+              item={moneyLink}
+              variant="custom"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase text-black hover:text-brutal-pink transition-colors"
+            >
+              How $WISH Works &rarr;
+            </NavItemLink>
           </div>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row">
@@ -269,7 +288,7 @@ export default function AboutPage() {
             variant="custom"
             className="inline-flex items-center text-sm font-black uppercase text-black hover:text-brutal-pink transition-colors"
           >
-            Donate to the Prize Pool &rarr;
+            Join the Prize &rarr;
           </NavItemLink>
           <NavItemLink
             item={transparencyLink}

@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import {
   wishocracyLink,
   prizeLink,
   aboutLink,
 } from "@/lib/routes";
+
+const TreasuryDashboard = dynamic(
+  () => import("@/app/treasury/TreasuryDashboard").then((m) => m.TreasuryDashboard),
+  { ssr: false },
+);
 
 export const metadata: Metadata = {
   title: "How Money Should Work | Optomitron",
@@ -334,6 +340,11 @@ export default function MoneyPage() {
         </div>
       </section>
 
+      {/* Treasury Dashboard */}
+      <section id="dashboard" className="mb-16">
+        <TreasuryDashboard />
+      </section>
+
       {/* CTA */}
       <section className="card bg-brutal-pink border-black text-center">
         <h2 className="text-2xl font-black text-white mb-3 uppercase">
@@ -359,7 +370,7 @@ export default function MoneyPage() {
             variant="custom"
             className="inline-flex items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-black text-black uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
-            Fund Outcomes
+            Deposit to Prize
           </NavItemLink>
           <NavItemLink
             item={aboutLink}

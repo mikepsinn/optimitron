@@ -1,7 +1,7 @@
 "use client";
 
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { moneyLink, prizeLink } from "@/lib/routes";
+import { iabLink } from "@/lib/routes";
 
 export function TreasuryHero() {
   return (
@@ -33,14 +33,7 @@ export function TreasuryHero() {
           Register for UBI
         </a>
         <NavItemLink
-          item={moneyLink}
-          variant="custom"
-          className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          How $WISH Works
-        </NavItemLink>
-        <NavItemLink
-          item={prizeLink}
+          item={iabLink}
           variant="custom"
           className="inline-flex items-center justify-center border-4 border-black bg-white px-8 py-3 text-sm font-black uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >

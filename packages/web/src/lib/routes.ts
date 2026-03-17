@@ -213,26 +213,11 @@ export const iabLink: NavItem = {
   description: "Phase 2 lobbying bonds — fund the treaty campaign, earn 10% of treaty revenue",
 };
 
-export const treasuryLink: NavItem = {
-  href: ROUTES.treasury,
-  label: "Treasury",
-  emoji: "🏦",
-  description: "$WISH treasury — transaction tax funds UBI and alignment-based politician funding",
-};
-
 export const prizeLink: NavItem = {
   href: ROUTES.prize,
   label: "Prize",
   emoji: "🏆",
   description: "Earth Optimization Prize — outcome-based escrow for governance reform",
-};
-
-export const contributeLink: NavItem = {
-  href: ROUTES.contribute,
-  label: "Earth Prize",
-  emoji: "🌍",
-  description: "Contribute to the Earth Optimization Prize — fund vote recruitment, get your money back if it doesn't work",
-  matchPrefixes: [ROUTES.contribute],
 };
 
 export const earthOptimizationPrizePaperLink: NavItem = {
@@ -256,7 +241,7 @@ export const topLinks: NavItem[] = [
   alignmentLink,
   prizeLink,
   iabLink,
-  treasuryLink,
+  moneyLink,
   transparencyLink,
   aboutLink,
 ];

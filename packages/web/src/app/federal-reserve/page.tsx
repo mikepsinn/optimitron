@@ -611,7 +611,7 @@ export default function FederalReservePage() {
             variant="custom"
             className="inline-flex items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-black text-black uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
-            Fund Outcomes
+            Deposit to Prize
           </NavItemLink>
           <NavItemLink
             item={wishocracyLink}
