@@ -14,7 +14,7 @@ export async function GET() {
   try {
     const { userId } = await requireAuth();
 
-    const prefs = await prisma.notificationPreference.findUnique({
+    const prefs = await prisma.userPreference.findUnique({
       where: { userId },
     });
 
@@ -48,7 +48,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const input = UpdatePreferencesSchema.parse(body);
 
-    await prisma.notificationPreference.upsert({
+    await prisma.userPreference.upsert({
       where: { userId },
       update: input,
       create: { userId, ...input },

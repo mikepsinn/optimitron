@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Create default notification preference if not exists
-    await prisma.notificationPreference.upsert({
+    await prisma.userPreference.upsert({
       where: { userId },
       update: {},
       create: { userId },

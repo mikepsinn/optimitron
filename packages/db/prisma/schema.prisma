@@ -186,6 +186,100 @@ enum PersonhoodVerificationStatus {
   REVOKED
 }
 
+/// Type of activity event for the audit log
+enum ActivityType {
+  VOTED_REFERENDUM
+  SUBMITTED_COMPARISON
+  DEPOSITED_PRIZE
+  RECRUITED_VOTER
+  VERIFIED_PERSONHOOD
+  TRACKED_MEASUREMENT
+  UPDATED_PROFILE
+  EARNED_BADGE
+  CREATED_SURVEY
+  COMPLETED_SURVEY
+  JOINED_ORGANIZATION
+}
+
+/// Type of in-app notification
+enum NotificationType {
+  REFERRAL_SIGNUP
+  REFERENDUM_MILESTONE
+  ALIGNMENT_SCORE_PUBLISHED
+  DEPOSIT_CONFIRMED
+  BADGE_EARNED
+  SURVEY_INVITE
+  DAILY_CHECKIN_REMINDER
+  ORGANIZATION_INVITE
+  SYSTEM_ANNOUNCEMENT
+}
+
+/// Delivery channel for notifications
+enum NotificationChannel {
+  EMAIL
+  IN_APP
+  SMS
+  PUSH
+}
+
+/// Type of organization
+enum OrgType {
+  UNIVERSITY
+  RESEARCH_CENTER
+  NONPROFIT
+  DAO
+  GOVERNMENT_AGENCY
+  HOSPITAL
+  BIOTECH
+  ADVOCACY
+}
+
+/// Approval status of an organization
+enum OrgStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Social/identity platform for linked accounts
+enum SocialPlatform {
+  TWITTER
+  GITHUB
+  ETHEREUM
+  BASE
+  DISCORD
+  TELEGRAM
+}
+
+/// Achievement badge type
+enum BadgeType {
+  FIRST_COMPARISON
+  HUNDRED_COMPARISONS
+  FIRST_RECRUIT
+  TEN_RECRUITS
+  VERIFIED_HUMAN
+  EARLY_ADOPTER
+  DEPOSITOR
+}
+
+/// Type of survey question
+enum QuestionType {
+  MULTIPLE_CHOICE
+  FREE_TEXT
+  RATING
+  BOOLEAN
+  NUMERIC
+}
+
+/// Delivery status for email log
+enum EmailLogStatus {
+  SENT
+  DELIVERED
+  OPENED
+  BOUNCED
+  FAILED
+}
+
 // ============================================================================
 // AUTH / ACCOUNT LAYER
 // ============================================================================
@@ -264,6 +358,27 @@ model User {
   /// When the census/location snapshot was last updated
   censusUpdatedAt DateTime?
 
+  /// Short bio for public profile
+  bio String?
+
+  /// One-line headline (e.g. "Data scientist at X")
+  headline String?
+
+  /// Cover/banner image URL
+  coverImage String?
+
+  /// Personal website URL
+  website String?
+
+  /// Whether this profile is publicly visible
+  isPublic Boolean @default(false)
+
+  /// Whether this user has admin privileges
+  isAdmin Boolean @default(false)
+
+  /// Phone number for SMS notifications
+  phoneNumber String?
+
   /// Number of referral-sequence emails already sent to this user
   referralEmailSequenceStep Int @default(0)
 
@@ -289,12 +404,21 @@ model User {
   wishocraticCategorySelections WishocraticCategorySelection[]  @relation("UserWishocraticCategorySelections")
   citizenBillVotes              CitizenBillVote[]               @relation("UserCitizenBillVotes")
   webPushSubscriptions          WebPushSubscription[]           @relation("UserWebPushSubscriptions")
-  notificationPreference        NotificationPreference?         @relation("UserNotificationPreference")
+  userPreference                UserPreference?                 @relation("UserPreference")
+  notificationPreferences       NotificationPreference[]        @relation("UserNotificationPreferences")
+  notifications                 Notification[]                  @relation("UserNotifications")
   encryptedAllocations          WishocraticEncryptedAllocation? @relation("UserEncryptedAllocations")
   createdReferendums            Referendum[]                    @relation("UserCreatedReferendums")
   referendumVotes               ReferendumVote[]                @relation("UserReferendumVotes")
   referendumReferrals           ReferendumVote[]                @relation("UserReferendumReferrals")
   voteTokenMints                VoteTokenMint[]                 @relation("UserVoteTokenMints")
+  activities                    Activity[]                      @relation("UserActivities")
+  createdOrganizations          Organization[]                  @relation("OrgCreator")
+  organizationMemberships       OrganizationMember[]            @relation("UserOrgMemberships")
+  badges                        Badge[]                         @relation("UserBadges")
+  socialAccounts                SocialAccount[]                 @relation("UserSocialAccounts")
+  emailLogs                     EmailLog[]                      @relation("UserEmailLogs")
+  surveyResponses               SurveyResponse[]                @relation("UserSurveyResponses")
 
   @@index([email])
   @@index([username])
@@ -1686,6 +1810,8 @@ model Jurisdiction {
   politicians     Politician[]
   aggregationRuns AggregationRun[]
   referendums     Referendum[]
+  organizations   Organization[]
+  surveys         Survey[]
 
   @@index([type])
   @@index([parentJurisdictionId])
@@ -2277,8 +2403,9 @@ model WebPushSubscription {
   @@index([userId])
 }
 
-/// User preferences for push notification timing
-model NotificationPreference {
+/// User preferences for push notification timing and quiet hours
+/// (Renamed from NotificationPreference — maps to same table for migration continuity)
+model UserPreference {
   /// Unique identifier
   id String @id @default(cuid())
 
@@ -2313,7 +2440,9 @@ model NotificationPreference {
   deletedAt DateTime?
 
   // -- Relations --
-  user User @relation("UserNotificationPreference", fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserPreference", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserPreference")
 }
 
 /// Encrypted pairwise allocations for Wishocracy (replaces plaintext per-comparison rows)
@@ -2393,6 +2522,7 @@ model Referendum {
   jurisdiction   Jurisdiction?    @relation(fields: [jurisdictionId], references: [id])
   votes          ReferendumVote[]
   voteTokenMints VoteTokenMint[]
+  surveys        Survey[]
 
   @@index([slug])
   @@index([status])
@@ -2593,4 +2723,492 @@ model WishocraticDistribution {
   deletedAt DateTime?
 
   @@index([weightsHash])
+}
+
+// ============================================================================
+// ACTIVITY LOG & NOTIFICATIONS
+// ============================================================================
+
+/// Unified audit/activity event stream for transparency and engagement history
+model Activity {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user who performed this action
+  userId String
+
+  /// Type of activity
+  type ActivityType
+
+  /// Human-readable description of the event
+  description String?
+
+  /// JSON-encoded metadata payload (context-specific)
+  metadata String?
+
+  /// Polymorphic entity type (e.g. "Referendum", "Item", "PrizeTreasuryDeposit")
+  entityType String?
+
+  /// ID of the related entity
+  entityId String?
+
+  /// When this event occurred
+  createdAt DateTime @default(now())
+
+  // -- Relations --
+  user User @relation("UserActivities", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+/// General in-app notification for a user
+model Notification {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user this notification is for
+  userId String
+
+  /// Notification category
+  type NotificationType
+
+  /// Short notification title
+  title String
+
+  /// Notification body text
+  message String
+
+  /// Optional deep link URL
+  link String?
+
+  /// Whether the user has read this notification
+  isRead Boolean @default(false)
+
+  /// When the notification was read
+  readAt DateTime?
+
+  /// When this notification was created
+  createdAt DateTime @default(now())
+
+  // -- Relations --
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([type])
+  @@index([createdAt])
+}
+
+/// Per-type, per-channel notification preference (replaces global push toggle)
+model NotificationPreference {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user this preference belongs to
+  userId String
+
+  /// Which notification type this preference controls
+  type NotificationType
+
+  /// Which delivery channel
+  channel NotificationChannel
+
+  /// Whether this type+channel combination is enabled
+  enabled Boolean @default(true)
+
+  // -- Relations --
+  user User @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, channel])
+  @@index([userId])
+}
+
+// ============================================================================
+// ORGANIZATIONS
+// ============================================================================
+
+/// An organization that participates in governance (university, DAO, advocacy group, etc.)
+model Organization {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Organization name
+  name String
+
+  /// URL-safe slug for routing
+  slug String @unique
+
+  /// Description of the organization's mission
+  description String?
+
+  /// Classification of the organization
+  type OrgType
+
+  /// Approval status
+  status OrgStatus @default(PENDING)
+
+  /// Optional jurisdiction scope
+  jurisdictionId String?
+
+  /// User who created/registered this organization
+  creatorId String?
+
+  /// Organization website URL
+  website String?
+
+  /// Logo image URL
+  logo String?
+
+  /// Contact email address
+  contactEmail String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction Jurisdiction?        @relation(fields: [jurisdictionId], references: [id])
+  creator      User?                @relation("OrgCreator", fields: [creatorId], references: [id])
+  members      OrganizationMember[]
+
+  @@index([slug])
+  @@index([type])
+  @@index([status])
+  @@index([jurisdictionId])
+  @@index([creatorId])
+}
+
+/// Membership link between a user and an organization
+model OrganizationMember {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The organization
+  organizationId String
+
+  /// The member user
+  userId String
+
+  /// Role within the organization (e.g. "admin", "member", "viewer")
+  role String @default("member")
+
+  /// When the user joined
+  joinedAt DateTime @default(now())
+
+  // -- Relations --
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserOrgMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// SURVEY SYSTEM
+// ============================================================================
+
+/// A survey for collecting structured feedback, outcome data, or knowledge assessments
+model Survey {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Survey title
+  title String
+
+  /// URL-safe slug
+  slug String @unique
+
+  /// Description of the survey's purpose
+  description String?
+
+  /// Optional jurisdiction scope
+  jurisdictionId String?
+
+  /// Optional link to a referendum
+  referendumId String?
+
+  /// Whether the survey is currently accepting responses
+  active Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  jurisdiction Jurisdiction?    @relation(fields: [jurisdictionId], references: [id])
+  referendum   Referendum?      @relation(fields: [referendumId], references: [id])
+  sections     SurveySection[]
+  responses    SurveyResponse[]
+
+  @@index([slug])
+  @@index([jurisdictionId])
+  @@index([referendumId])
+  @@index([active])
+}
+
+/// A section within a survey (groups related questions)
+model SurveySection {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent survey
+  surveyId String
+
+  /// Section title
+  title String
+
+  /// Optional description
+  description String?
+
+  /// Display order within the survey
+  sortOrder Int @default(0)
+
+  /// JSON-encoded conditional display rules (e.g. show only if Q1 = "yes")
+  conditionalLogic String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  survey    Survey           @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  questions SurveyQuestion[]
+
+  @@index([surveyId])
+}
+
+/// A single question within a survey section
+model SurveyQuestion {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent section
+  sectionId String
+
+  /// Question text
+  text String
+
+  /// Type of question
+  type QuestionType
+
+  /// Whether this question must be answered
+  required Boolean @default(false)
+
+  /// JSON-encoded options for MULTIPLE_CHOICE (e.g. ["A","B","C"])
+  options String?
+
+  /// Display order within the section
+  sortOrder Int @default(0)
+
+  /// Points awarded for correct answer (for knowledge-gated voting)
+  score Float?
+
+  /// JSON-encoded conditional display rules
+  conditionalLogic String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  section   SurveySection      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  responses QuestionResponse[]
+
+  @@index([sectionId])
+}
+
+/// A user's overall response to a survey
+model SurveyResponse {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Which survey this response is for
+  surveyId String
+
+  /// The user who submitted the response
+  userId String
+
+  /// Total score (for knowledge assessments)
+  totalScore Float?
+
+  /// When this response was submitted
+  completedAt DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  survey  Survey             @relation(fields: [surveyId], references: [id])
+  user    User               @relation("UserSurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
+  answers QuestionResponse[]
+
+  @@unique([surveyId, userId])
+  @@index([surveyId])
+  @@index([userId])
+}
+
+/// A single question answer within a survey response
+model QuestionResponse {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Parent survey response
+  surveyResponseId String
+
+  /// The question being answered
+  questionId String
+
+  /// The answer value (text for free-text, selected option for MC, number as string for numeric/rating)
+  answer String
+
+  /// Score awarded for this answer
+  score Float?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  // -- Relations --
+  surveyResponse SurveyResponse @relation(fields: [surveyResponseId], references: [id], onDelete: Cascade)
+  question       SurveyQuestion @relation(fields: [questionId], references: [id])
+
+  @@unique([surveyResponseId, questionId])
+  @@index([surveyResponseId])
+  @@index([questionId])
+}
+
+// ============================================================================
+// GAMIFICATION & SOCIAL
+// ============================================================================
+
+/// Achievement badge earned by a user
+model Badge {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user who earned this badge
+  userId String
+
+  /// Badge type
+  type BadgeType
+
+  /// When the badge was earned
+  earnedAt DateTime @default(now())
+
+  /// Optional metadata (e.g. which comparison was the 100th)
+  metadata String?
+
+  // -- Relations --
+  user User @relation("UserBadges", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@index([type])
+}
+
+/// Linked social/wallet account for a user
+model SocialAccount {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user who owns this linked account
+  userId String
+
+  /// Platform identifier
+  platform SocialPlatform
+
+  /// Platform-specific account ID
+  accountId String?
+
+  /// Platform username / handle
+  username String?
+
+  /// Wallet address (for ETHEREUM, BASE platforms)
+  walletAddress String?
+
+  /// Whether this is the user's primary account for this platform
+  isPrimary Boolean @default(false)
+
+  /// When the account was verified
+  verifiedAt DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  user User @relation("UserSocialAccounts", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@index([platform])
+  @@index([walletAddress])
+}
+
+/// Email delivery tracking log
+model EmailLog {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The user this email was sent to
+  userId String
+
+  /// Email address it was sent to
+  toAddress String
+
+  /// Email subject line
+  subject String
+
+  /// Template or category identifier (e.g. "referral_sequence_0", "referendum_milestone")
+  templateId String?
+
+  /// Delivery status
+  status EmailLogStatus @default(SENT)
+
+  /// When the email was sent
+  sentAt DateTime @default(now())
+
+  /// When it was delivered (from webhook)
+  deliveredAt DateTime?
+
+  /// When it was opened (from tracking pixel)
+  openedAt DateTime?
+
+  /// When it bounced (from webhook)
+  bouncedAt DateTime?
+
+  /// Error message if failed/bounced
+  errorMessage String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  // -- Relations --
+  user User @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([templateId])
+  @@index([status])
+  @@index([sentAt])
 }

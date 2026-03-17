@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     // 1. Have push enabled
     // 2. Haven't been sent a push recently (respecting their frequency)
     // 3. Haven't checked in today
-    const preferences = await prisma.notificationPreference.findMany({
+    const preferences = await prisma.userPreference.findMany({
       where: {
         pushEnabled: true,
       },
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
       }
 
       // Update last push sent
-      await prisma.notificationPreference.update({
+      await prisma.userPreference.update({
         where: { id: pref.id },
         data: { lastPushSentAt: now },
       });

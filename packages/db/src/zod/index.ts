@@ -84,12 +84,84 @@ export type ReferendumStatus = z.infer<typeof ReferendumStatusSchema>;
 export const VoteTokenMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
 export type VoteTokenMintStatus = z.infer<typeof VoteTokenMintStatusSchema>;
 
-// 18 enums in the schema:
-// 1. CombinationOperation  2. FillingType  3. Valence  4. MeasurementScale
-// 5. UnitCodeSystem  6. AnalysisStatus  7. StrengthLevel  8. ConfidenceLevel
-// 9. RelationshipDirection  10. EvidenceGrade  11. NotificationStatus
-// 12. JurisdictionType  13. SubjectType  14. ReferralAnswer
-// 15. PersonhoodProvider  16. PersonhoodVerificationStatus
+export const ActivityTypeSchema = z.enum([
+  'VOTED_REFERENDUM',
+  'SUBMITTED_COMPARISON',
+  'DEPOSITED_PRIZE',
+  'RECRUITED_VOTER',
+  'VERIFIED_PERSONHOOD',
+  'TRACKED_MEASUREMENT',
+  'UPDATED_PROFILE',
+  'EARNED_BADGE',
+  'CREATED_SURVEY',
+  'COMPLETED_SURVEY',
+  'JOINED_ORGANIZATION',
+]);
+export type ActivityType = z.infer<typeof ActivityTypeSchema>;
+
+export const NotificationTypeSchema = z.enum([
+  'REFERRAL_SIGNUP',
+  'REFERENDUM_MILESTONE',
+  'ALIGNMENT_SCORE_PUBLISHED',
+  'DEPOSIT_CONFIRMED',
+  'BADGE_EARNED',
+  'SURVEY_INVITE',
+  'DAILY_CHECKIN_REMINDER',
+  'ORGANIZATION_INVITE',
+  'SYSTEM_ANNOUNCEMENT',
+]);
+export type NotificationType = z.infer<typeof NotificationTypeSchema>;
+
+export const NotificationChannelSchema = z.enum(['EMAIL', 'IN_APP', 'SMS', 'PUSH']);
+export type NotificationChannel = z.infer<typeof NotificationChannelSchema>;
+
+export const OrgTypeSchema = z.enum([
+  'UNIVERSITY',
+  'RESEARCH_CENTER',
+  'NONPROFIT',
+  'DAO',
+  'GOVERNMENT_AGENCY',
+  'HOSPITAL',
+  'BIOTECH',
+  'ADVOCACY',
+]);
+export type OrgType = z.infer<typeof OrgTypeSchema>;
+
+export const OrgStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED']);
+export type OrgStatus = z.infer<typeof OrgStatusSchema>;
+
+export const SocialPlatformSchema = z.enum([
+  'TWITTER',
+  'GITHUB',
+  'ETHEREUM',
+  'BASE',
+  'DISCORD',
+  'TELEGRAM',
+]);
+export type SocialPlatform = z.infer<typeof SocialPlatformSchema>;
+
+export const BadgeTypeSchema = z.enum([
+  'FIRST_COMPARISON',
+  'HUNDRED_COMPARISONS',
+  'FIRST_RECRUIT',
+  'TEN_RECRUITS',
+  'VERIFIED_HUMAN',
+  'EARLY_ADOPTER',
+  'DEPOSITOR',
+]);
+export type BadgeType = z.infer<typeof BadgeTypeSchema>;
+
+export const QuestionTypeSchema = z.enum([
+  'MULTIPLE_CHOICE',
+  'FREE_TEXT',
+  'RATING',
+  'BOOLEAN',
+  'NUMERIC',
+]);
+export type QuestionType = z.infer<typeof QuestionTypeSchema>;
+
+export const EmailLogStatusSchema = z.enum(['SENT', 'DELIVERED', 'OPENED', 'BOUNCED', 'FAILED']);
+export type EmailLogStatus = z.infer<typeof EmailLogStatusSchema>;
 
 // ============================================================================
 // HELPER: coerce string dates to Date objects
@@ -127,6 +199,13 @@ export const UserSchema = z.object({
   genderIdentity: z.string().nullable().optional(),
   censusNotes: z.string().nullable().optional(),
   censusUpdatedAt: nullableDateSchema,
+  bio: z.string().nullable().optional(),
+  headline: z.string().nullable().optional(),
+  coverImage: z.string().nullable().optional(),
+  website: z.string().nullable().optional(),
+  isPublic: z.boolean().default(false),
+  isAdmin: z.boolean().default(false),
+  phoneNumber: z.string().nullable().optional(),
   referralEmailSequenceStep: z.number().int().default(0),
   referralEmailSequenceLastSentAt: nullableDateSchema,
   createdAt: dateSchema,
@@ -790,8 +869,8 @@ export const WebPushSubscriptionSchema = z.object({
 });
 export type WebPushSubscriptionType = z.infer<typeof WebPushSubscriptionSchema>;
 
-/** Zod schema for the NotificationPreference model */
-export const NotificationPreferenceSchema = z.object({
+/** Zod schema for the UserPreference model (renamed from NotificationPreference) */
+export const UserPreferenceSchema = z.object({
   id: z.string(),
   userId: z.string(),
   pushEnabled: z.boolean().default(true),
@@ -804,7 +883,12 @@ export const NotificationPreferenceSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type NotificationPreferenceType = z.infer<typeof NotificationPreferenceSchema>;
+export type UserPreferenceType = z.infer<typeof UserPreferenceSchema>;
+
+/** @deprecated Use UserPreferenceSchema instead */
+export const NotificationPreferenceSchema = UserPreferenceSchema;
+/** @deprecated Use UserPreferenceType instead */
+export type NotificationPreferenceType = UserPreferenceType;
 
 /** Zod schema for the WishocraticEncryptedAllocation model */
 export const WishocraticEncryptedAllocationSchema = z.object({
@@ -909,3 +993,194 @@ export const PrizeTreasuryDepositSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type PrizeTreasuryDepositType = z.infer<typeof PrizeTreasuryDepositSchema>;
+
+// ============================================================================
+// ACTIVITY LOG & NOTIFICATIONS
+// ============================================================================
+
+/** Zod schema for the Activity model */
+export const ActivitySchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: ActivityTypeSchema,
+  description: z.string().nullable().optional(),
+  metadata: z.string().nullable().optional(),
+  entityType: z.string().nullable().optional(),
+  entityId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+});
+export type ActivitySchemaType = z.infer<typeof ActivitySchema>;
+
+/** Zod schema for the Notification model */
+export const NotificationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: NotificationTypeSchema,
+  title: z.string(),
+  message: z.string(),
+  link: z.string().nullable().optional(),
+  isRead: z.boolean().default(false),
+  readAt: nullableDateSchema,
+  createdAt: dateSchema,
+});
+export type NotificationSchemaType = z.infer<typeof NotificationSchema>;
+
+/** Zod schema for the per-type/channel NotificationPreference model */
+export const NotificationPreferencePerTypeSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: NotificationTypeSchema,
+  channel: NotificationChannelSchema,
+  enabled: z.boolean().default(true),
+});
+export type NotificationPreferencePerTypeType = z.infer<typeof NotificationPreferencePerTypeSchema>;
+
+// ============================================================================
+// ORGANIZATIONS
+// ============================================================================
+
+/** Zod schema for the Organization model */
+export const OrganizationSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().nullable().optional(),
+  type: OrgTypeSchema,
+  status: OrgStatusSchema.default('PENDING'),
+  jurisdictionId: z.string().nullable().optional(),
+  creatorId: z.string().nullable().optional(),
+  website: z.string().nullable().optional(),
+  logo: z.string().nullable().optional(),
+  contactEmail: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type OrganizationType = z.infer<typeof OrganizationSchema>;
+
+/** Zod schema for the OrganizationMember model */
+export const OrganizationMemberSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  userId: z.string(),
+  role: z.string().default('member'),
+  joinedAt: dateSchema,
+});
+export type OrganizationMemberType = z.infer<typeof OrganizationMemberSchema>;
+
+// ============================================================================
+// SURVEY SYSTEM
+// ============================================================================
+
+/** Zod schema for the Survey model */
+export const SurveySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  description: z.string().nullable().optional(),
+  jurisdictionId: z.string().nullable().optional(),
+  referendumId: z.string().nullable().optional(),
+  active: z.boolean().default(true),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type SurveyType = z.infer<typeof SurveySchema>;
+
+/** Zod schema for the SurveySection model */
+export const SurveySectionSchema = z.object({
+  id: z.string(),
+  surveyId: z.string(),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  conditionalLogic: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type SurveySectionType = z.infer<typeof SurveySectionSchema>;
+
+/** Zod schema for the SurveyQuestion model */
+export const SurveyQuestionSchema = z.object({
+  id: z.string(),
+  sectionId: z.string(),
+  text: z.string(),
+  type: QuestionTypeSchema,
+  required: z.boolean().default(false),
+  options: z.string().nullable().optional(),
+  sortOrder: z.number().int().default(0),
+  score: z.number().nullable().optional(),
+  conditionalLogic: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type SurveyQuestionType = z.infer<typeof SurveyQuestionSchema>;
+
+/** Zod schema for the SurveyResponse model */
+export const SurveyResponseSchema = z.object({
+  id: z.string(),
+  surveyId: z.string(),
+  userId: z.string(),
+  totalScore: z.number().nullable().optional(),
+  completedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type SurveyResponseType = z.infer<typeof SurveyResponseSchema>;
+
+/** Zod schema for the QuestionResponse model */
+export const QuestionResponseSchema = z.object({
+  id: z.string(),
+  surveyResponseId: z.string(),
+  questionId: z.string(),
+  answer: z.string(),
+  score: z.number().nullable().optional(),
+  createdAt: dateSchema,
+});
+export type QuestionResponseType = z.infer<typeof QuestionResponseSchema>;
+
+// ============================================================================
+// GAMIFICATION & SOCIAL
+// ============================================================================
+
+/** Zod schema for the Badge model */
+export const BadgeSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: BadgeTypeSchema,
+  earnedAt: dateSchema,
+  metadata: z.string().nullable().optional(),
+});
+export type BadgeSchemaType = z.infer<typeof BadgeSchema>;
+
+/** Zod schema for the SocialAccount model */
+export const SocialAccountSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  platform: SocialPlatformSchema,
+  accountId: z.string().nullable().optional(),
+  username: z.string().nullable().optional(),
+  walletAddress: z.string().nullable().optional(),
+  isPrimary: z.boolean().default(false),
+  verifiedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type SocialAccountType = z.infer<typeof SocialAccountSchema>;
+
+/** Zod schema for the EmailLog model */
+export const EmailLogSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  toAddress: z.string(),
+  subject: z.string(),
+  templateId: z.string().nullable().optional(),
+  status: EmailLogStatusSchema.default('SENT'),
+  sentAt: dateSchema,
+  deliveredAt: nullableDateSchema,
+  openedAt: nullableDateSchema,
+  bouncedAt: nullableDateSchema,
+  errorMessage: z.string().nullable().optional(),
+  createdAt: dateSchema,
+});
+export type EmailLogType = z.infer<typeof EmailLogSchema>;

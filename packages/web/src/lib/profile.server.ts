@@ -235,7 +235,7 @@ export async function saveDailyCheckIn(userId: string, input: unknown) {
   });
 
   // Update notification preference with check-in timestamp
-  await prisma.notificationPreference.updateMany({
+  await prisma.userPreference.updateMany({
     where: { userId },
     data: { lastCheckInAt: new Date() },
   });
