@@ -120,6 +120,28 @@ export function formatConfidenceInterval(param: Parameter): string | null {
   return `${lowFormatted} – ${highFormatted}`
 }
 
+export function getParameterValue(
+  param: Parameter,
+  transform?: "round" | "floor" | "ceil" | "percentage"
+): number {
+  const { value, unit } = param
+
+  switch (transform) {
+    case "round":
+      return Math.round(value)
+    case "floor":
+      return Math.floor(value)
+    case "ceil":
+      return Math.ceil(value)
+    case "percentage":
+      return (unit === "percentage" || unit === "rate") && value <= 1
+        ? value * 100
+        : value
+    default:
+      return value
+  }
+}
+
 export function fmtRaw(value: number, figures = 3): string {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
