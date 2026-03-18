@@ -38,7 +38,7 @@ describe("VoteToken", function () {
     it("sets correct ERC20 metadata", async function () {
       const { voteToken } = await loadFixture(deployFixture);
 
-      expect(await voteToken.name()).to.equal("Optomitron Vote");
+      expect(await voteToken.name()).to.equal("Optimitron Vote");
       expect(await voteToken.symbol()).to.equal("VOTE");
       expect(await voteToken.decimals()).to.equal(18n);
     });

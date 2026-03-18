@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/treasury-prize",
+  "name": "@optimitron/treasury-prize",
   "version": "0.1.0",
   "private": true,
   "description": "Earth Optimization Prize: VoteToken and VoterPrizeTreasury contracts for Phase 1 referendum",
@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.1.0",
-    "@optomitron/treasury-shared": "workspace:*"
+    "@optimitron/treasury-shared": "workspace:*"
   }
 }

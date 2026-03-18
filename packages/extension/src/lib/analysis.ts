@@ -1,10 +1,10 @@
 /**
- * Convert extension health data to @optomitron/optimizer TimeSeries format
+ * Convert extension health data to @optimitron/optimizer TimeSeries format
  * and generate all predictor->outcome pairs for analysis.
  */
 import type { StorageSchema } from '../types/schema.js';
 
-/** Matches @optomitron/optimizer TimeSeries shape without importing it */
+/** Matches @optimitron/optimizer TimeSeries shape without importing it */
 export interface AnalysisTimeSeries {
   variableId: string;
   name: string;

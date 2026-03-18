@@ -1,5 +1,5 @@
 /**
- * Curated datasets for Optomitron
+ * Curated datasets for Optimitron
  *
  * Static, evidence-based datasets compiled from public sources.
  */

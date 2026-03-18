@@ -16,7 +16,7 @@ Create a generalized `PolicyEvaluation` pipeline that can evaluate any policy wi
 - JSON and markdown outputs for downstream web rendering
 
 ## Deliverables
-- `PolicyEvaluation` and `NaturalExperiment` types in `@optomitron/opg`
+- `PolicyEvaluation` and `NaturalExperiment` types in `@optimitron/opg`
 - Layered analysis runner and aggregation helper
 - Generated `policy-evaluations.json` and report markdown
 - Integration hooks to OBG spending/category evidence

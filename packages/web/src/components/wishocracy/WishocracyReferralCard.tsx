@@ -32,7 +32,7 @@ export function WishocracyReferralCard({
         <div className="mt-4 flex justify-center">
           <SocialShareButtons
             url={shareUrl}
-            text="I mapped my budget priorities on Optomitron. Add yours and compare the aggregate."
+            text="I mapped my budget priorities on Optimitron. Add yours and compare the aggregate."
           />
         </div>
       </div>

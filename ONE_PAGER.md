@@ -1,4 +1,4 @@
-# Optomitron — Optimize Everything
+# Optimitron — Optimize Everything
 
 ## What It Is
 
@@ -15,7 +15,7 @@ Humanity generates more data than ever but makes worse decisions than it should.
 
 ## How It Works
 
-**For individuals:** Upload your health data (Apple Health, Fitbit, etc.) → Optomitron finds what actually affects your mood, energy, sleep, and symptoms. "Your mood is 15% higher on days you take 5000 IU vitamin D with a 2-day onset delay."
+**For individuals:** Upload your health data (Apple Health, Fitbit, etc.) → Optimitron finds what actually affects your mood, energy, sleep, and symptoms. "Your mood is 15% higher on days you take 5000 IU vitamin D with a 2-day onset delay."
 
 **For governments:** Public spending and outcome data from 20+ countries → evidence-based budget and policy recommendations. "Singapore spends 4% of GDP on healthcare with the world's highest life expectancy. The US spends 17% and ranks 40th. Here's what the data says to change."
 
@@ -33,7 +33,7 @@ Humanity generates more data than ever but makes worse decisions than it should.
 
 - **~1,700 tests** across 8 packages in a TypeScript monorepo
 - **Web app** with Google login, magic-link auth, referral capture, World ID verification, profile/census tracking, and shareable alignment reports
-- **Live demo** at mikepsinn.github.io/optomitron with US budget optimization, policy rankings, and international comparisons across 20+ countries
+- **Live demo** at mikepsinn.github.io/optimitron with US budget optimization, policy rankings, and international comparisons across 20+ countries
 - **Real data**: FY2025 US federal budget, 11 years historical spending, 60+ outcome metrics, 27 evidence-based policies with academic citations
 - **9 health data importers** (Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, generic CSV)
 - **Causal inference pipeline**: temporal alignment → Bradford Hill scoring → effect size → optimal daily values → markdown reports
@@ -60,6 +60,6 @@ Mike P. Sinn — 10+ years building health data infrastructure (legacy API: 100K
 
 ## Links
 
-- **Live demo**: https://mikepsinn.github.io/optomitron/
-- **GitHub**: https://github.com/mikepsinn/optomitron
+- **Live demo**: https://mikepsinn.github.io/optimitron/
+- **GitHub**: https://github.com/mikepsinn/optimitron
 - **Papers**: dfda-spec.warondisease.org | wishocracy.warondisease.org | opg.warondisease.org | obg.warondisease.org | optimocracy.warondisease.org | iab.warondisease.org

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   loadAggregatedNOf1DrugEnforcementPanel,
   type AggregatedNOf1DrugEnforcementRow,
-} from "@optomitron/data";
+} from "@optimitron/data";
 import {
   alignTimeSeries,
   buildAdaptiveNumericBins,
@@ -17,7 +17,7 @@ import {
   type AnalysisConfig,
   type NOf1VariableRelationshipInput,
   type TimeSeries,
-} from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, "../../output");

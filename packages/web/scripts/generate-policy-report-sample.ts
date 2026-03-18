@@ -193,9 +193,9 @@ function main() {
 
   const output = {
     generatedAt: '2026-02-07T00:00:00.000Z',
-    generatedBy: '@optomitron/opg',
+    generatedBy: '@optimitron/opg',
     methodology:
-      'Sample report derived from @optomitron/optimizer FullAnalysisResult and @optomitron/opg PolicyImpactScore logic.',
+      'Sample report derived from @optimitron/optimizer FullAnalysisResult and @optimitron/opg PolicyImpactScore logic.',
     jurisdiction,
     analysisDate: '2026-02-07',
     policies: [

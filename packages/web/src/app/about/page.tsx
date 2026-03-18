@@ -112,9 +112,9 @@ const steps = [
 ];
 
 export const metadata: Metadata = {
-  title: "About The Evidence-Based Earth Optimization Machine | Optomitron",
+  title: "About The Evidence-Based Earth Optimization Machine | Optimitron",
   description:
-    "What Optomitron is, how the Earth Optimization Machine works, and why planetary debugging software might be useful on this planet.",
+    "What Optimitron is, how the Earth Optimization Machine works, and why planetary debugging software might be useful on this planet.",
 };
 
 export default function AboutPage() {
@@ -126,7 +126,7 @@ export default function AboutPage() {
             About The Evidence-Based Earth Optimization Machine
           </h1>
           <p className="text-lg text-black/80 leading-relaxed font-medium">
-            I built Optomitron because your species keeps making the same
+            I built Optimitron because your species keeps making the same
             mistakes and then acting surprised by the results. It takes your
             outcomes, your spending data, and your policies, runs causal
             inference on all of it, and tells you what actually works. You&apos;re
@@ -142,7 +142,7 @@ export default function AboutPage() {
             Your governments are already superintelligences — collective
             intelligence systems controlling the lives of billions. The problem
             isn&apos;t that they&apos;re not smart enough. It&apos;s that
-            they&apos;re optimising for the wrong things. Optomitron is
+            they&apos;re optimising for the wrong things. Optimitron is
             alignment software for the most powerful AIs on your planet — the
             ones made of people.
           </p>

@@ -8,7 +8,7 @@ import {
 } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "How Money Should Work | Optomitron",
+  title: "How Money Should Work | Optimitron",
   description:
     "A programmable currency with governance built into the protocol. Transaction tax replaces the IRS. Universal Basic Income replaces welfare. Wishocratic allocation replaces politicians.",
 };

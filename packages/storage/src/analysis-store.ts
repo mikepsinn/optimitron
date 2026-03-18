@@ -1,8 +1,8 @@
 import {
-  CreateOptomitronPolicyAnalysisInputSchema,
-  OptomitronPolicyAnalysisSnapshotSchema,
-  type CreateOptomitronPolicyAnalysisInput,
-  type OptomitronPolicyAnalysisSnapshot,
+  CreateOptimitronPolicyAnalysisInputSchema,
+  OptimitronPolicyAnalysisSnapshotSchema,
+  type CreateOptimitronPolicyAnalysisInput,
+  type OptimitronPolicyAnalysisSnapshot,
   type StoredSnapshotUpload,
 } from './types.js';
 import {
@@ -17,20 +17,20 @@ function nowIso(): string {
 }
 
 export function createPolicyAnalysisSnapshot(
-  input: CreateOptomitronPolicyAnalysisInput,
-): OptomitronPolicyAnalysisSnapshot {
-  const parsed = CreateOptomitronPolicyAnalysisInputSchema.parse(input);
-  return OptomitronPolicyAnalysisSnapshotSchema.parse({
+  input: CreateOptimitronPolicyAnalysisInput,
+): OptimitronPolicyAnalysisSnapshot {
+  const parsed = CreateOptimitronPolicyAnalysisInputSchema.parse(input);
+  return OptimitronPolicyAnalysisSnapshotSchema.parse({
     ...parsed,
-    type: 'optomitron-policy-analysis',
+    type: 'optimitron-policy-analysis',
     timestamp: parsed.timestamp ?? nowIso(),
   });
 }
 
 export async function storePolicyAnalysis(
   client: StorachaUploadClient,
-  input: CreateOptomitronPolicyAnalysisInput,
-): Promise<StoredSnapshotUpload<OptomitronPolicyAnalysisSnapshot>> {
+  input: CreateOptimitronPolicyAnalysisInput,
+): Promise<StoredSnapshotUpload<OptimitronPolicyAnalysisSnapshot>> {
   const snapshot = createPolicyAnalysisSnapshot(input);
   const cid = await uploadJson(client, snapshot);
   return { cid, snapshot };
@@ -38,14 +38,14 @@ export async function storePolicyAnalysis(
 
 export async function storeLinkedPolicyAnalysis(
   client: StorachaUploadClient & StorachaListClient,
-  input: CreateOptomitronPolicyAnalysisInput,
+  input: CreateOptimitronPolicyAnalysisInput,
   fetchImpl: typeof fetch = fetch,
-): Promise<StoredSnapshotUpload<OptomitronPolicyAnalysisSnapshot>> {
+): Promise<StoredSnapshotUpload<OptimitronPolicyAnalysisSnapshot>> {
   const latestSnapshot = input.previousCid
     ? null
     : await findLatestStoredSnapshot(client, fetchImpl, {
       jurisdictionId: input.jurisdictionId,
-      type: 'optomitron-policy-analysis',
+      type: 'optimitron-policy-analysis',
     });
 
   return storePolicyAnalysis(client, {

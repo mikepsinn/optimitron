@@ -1,11 +1,11 @@
 {
-  "name": "@optomitron/examples",
+  "name": "@optimitron/examples",
   "version": "0.1.0",
   "private": true,
   "description": "Worked examples — federal budget, causal analysis, alignment scoring",
   "type": "module",
   "scripts": {
-    "build:deps": "pnpm --filter @optomitron/examples^... build",
+    "build:deps": "pnpm --filter @optimitron/examples^... build",
     "demo:health": "pnpm run build:deps && tsx src/golden-path/health-optimization-demo.ts",
     "demo:budget": "pnpm run build:deps && tsx src/federal-budget-demo.ts",
     "demo:causal": "pnpm run build:deps && tsx src/causal-analysis-demo.ts",
@@ -29,14 +29,14 @@
     "test:integration": "pnpm run build:deps && vitest run src/integration-tests/"
   },
   "dependencies": {
-    "@optomitron/agent": "workspace:*",
-    "@optomitron/data": "workspace:*",
-    "@optomitron/hypercerts": "workspace:*",
-    "@optomitron/obg": "workspace:*",
-    "@optomitron/opg": "workspace:*",
-    "@optomitron/optimizer": "workspace:*",
-    "@optomitron/storage": "workspace:*",
-    "@optomitron/wishocracy": "workspace:*"
+    "@optimitron/agent": "workspace:*",
+    "@optimitron/data": "workspace:*",
+    "@optimitron/hypercerts": "workspace:*",
+    "@optimitron/obg": "workspace:*",
+    "@optimitron/opg": "workspace:*",
+    "@optimitron/optimizer": "workspace:*",
+    "@optimitron/storage": "workspace:*",
+    "@optimitron/wishocracy": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",

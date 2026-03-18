@@ -20,11 +20,11 @@ export async function generateMetadata({
   });
 
   if (!vote) {
-    return { title: "Vote | Optomitron" };
+    return { title: "Vote | Optimitron" };
   }
 
   return {
-    title: `Vote on ${vote.billTitle} | Optomitron`,
+    title: `Vote on ${vote.billTitle} | Optimitron`,
     description: `A citizen voted ${vote.position} on ${vote.billTitle}. See their analysis.`,
   };
 }
@@ -108,7 +108,7 @@ export default async function CivicVotePage({
           <CopyLinkButton url={shareUrl} />
           <SocialShareButtons
             url={shareUrl}
-            text={`I voted ${vote.position} on "${vote.billTitle}" — see my analysis on Optomitron.`}
+            text={`I voted ${vote.position} on "${vote.billTitle}" — see my analysis on Optimitron.`}
           />
         </div>
 

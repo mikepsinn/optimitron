@@ -12,8 +12,8 @@ describe('create-activity', () => {
       startDate: '2026-03-01T00:00:00.000Z',
       endDate: '2026-03-11T00:00:00.000Z',
       createdAt: '2026-03-11T00:00:00.000Z',
-      contributorDid: 'did:plc:optomitron',
-      sourceUrls: ['https://github.com/mikepsinn/optomitron'],
+      contributorDid: 'did:plc:optimitron',
+      sourceUrls: ['https://github.com/mikepsinn/optimitron'],
     });
 
     expect(record.$type).toBe('org.hypercerts.claim.activity');

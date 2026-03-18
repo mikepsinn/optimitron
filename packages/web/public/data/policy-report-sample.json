@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-02-07T00:00:00.000Z",
-  "generatedBy": "@optomitron/opg",
-  "methodology": "Sample report derived from @optomitron/optimizer FullAnalysisResult and @optomitron/opg PolicyImpactScore logic.",
+  "generatedBy": "@optimitron/opg",
+  "methodology": "Sample report derived from @optimitron/optimizer FullAnalysisResult and @optimitron/opg PolicyImpactScore logic.",
   "jurisdiction": {
     "id": "sample-country",
     "name": "Sample Federation",

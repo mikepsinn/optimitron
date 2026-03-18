@@ -1,4 +1,4 @@
-# Optomitron
+# Optimitron
 
 **Evidence-Based Earth Optimization Machine**
 
@@ -6,9 +6,9 @@ Hello. I'm Wishonia. I've been running governance on my planet for 4,237 years. 
 
 I've been observing your species. You have $101 trillion in annual governance waste, 102 million people dead from regulatory delays, and you allocate a $6.75 trillion federal budget based on *who shouts loudest*. You've also invented a device that contains the sum of all human knowledge and you mainly use it to argue with strangers and look at pictures of food.
 
-Optomitron is my attempt to help. It's a universal causal inference engine that takes any two time series and answers: *Does changing X cause Y to change? By how much? What's the optimal value of X?* The math is the same whether you're a person trying to figure out if magnesium helps you sleep, a city deciding where to spend its budget, or a business optimizing ad spend. On my planet, this is called "making decisions." You lot seem to call it "revolutionary."
+Optimitron is my attempt to help. It's a universal causal inference engine that takes any two time series and answers: *Does changing X cause Y to change? By how much? What's the optimal value of X?* The math is the same whether you're a person trying to figure out if magnesium helps you sleep, a city deciding where to spend its budget, or a business optimizing ad spend. On my planet, this is called "making decisions." You lot seem to call it "revolutionary."
 
-[![CI](https://github.com/mikepsinn/optomitron/actions/workflows/ci.yml/badge.svg)](https://github.com/mikepsinn/optomitron/actions/workflows/ci.yml)
+[![CI](https://github.com/mikepsinn/optimitron/actions/workflows/ci.yml/badge.svg)](https://github.com/mikepsinn/optimitron/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Packages](https://img.shields.io/badge/packages-17-blue.svg)](#packages)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
@@ -94,11 +94,11 @@ Right now. With this code. Not in some theoretical future where humans have lear
 | Score your politicians | Alignment reports vs your stated preferences | [`/alignment`](packages/web/) |
 | Vote on legislation | Cost-benefit analysis, representative lookup | [`/civic`](packages/web/) |
 | Compare countries | Health, education, drug policy, criminal justice | [`/compare`](packages/web/) |
-| Track your health | Import from 9 apps or do daily check-ins | [`@optomitron/data`](packages/data/) |
-| Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optomitron/optimizer`](packages/optimizer/) |
-| Optimize a budget | Diminishing returns, overspend diagnostics | [`@optomitron/obg`](packages/obg/) |
-| Generate policy reports | Evidence-grade scoring, causal confidence | [`@optomitron/examples`](packages/examples/) |
-| Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optomitron/storage`](packages/storage/) |
+| Track your health | Import from 9 apps or do daily check-ins | [`@optimitron/data`](packages/data/) |
+| Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optimitron/optimizer`](packages/optimizer/) |
+| Optimize a budget | Diminishing returns, overspend diagnostics | [`@optimitron/obg`](packages/obg/) |
+| Generate policy reports | Evidence-grade scoring, causal confidence | [`@optimitron/examples`](packages/examples/) |
+| Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optimitron/storage`](packages/storage/) |
 
 Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 2,900+ tests across the workspace.
 
@@ -108,8 +108,8 @@ Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 2,9
 
 ```bash
 # Clone (with data submodule)
-git clone --recurse-submodules https://github.com/mikepsinn/optomitron.git
-cd optomitron
+git clone --recurse-submodules https://github.com/mikepsinn/optimitron.git
+cd optimitron
 
 # Install dependencies
 pnpm install
@@ -130,14 +130,14 @@ pnpm dev
 pnpm alignment:sync
 
 # Run example demos / generators
-pnpm --filter @optomitron/examples demo:causal
-pnpm --filter @optomitron/examples demo:budget
-pnpm --filter @optomitron/examples demo:health
-pnpm --filter @optomitron/examples demo:alignment
-pnpm --filter @optomitron/examples generate:policy
-pnpm --filter @optomitron/examples generate:budget
-pnpm --filter @optomitron/examples generate:government-size
-pnpm --filter @optomitron/examples generate:health
+pnpm --filter @optimitron/examples demo:causal
+pnpm --filter @optimitron/examples demo:budget
+pnpm --filter @optimitron/examples demo:health
+pnpm --filter @optimitron/examples demo:alignment
+pnpm --filter @optimitron/examples generate:policy
+pnpm --filter @optimitron/examples generate:budget
+pnpm --filter @optimitron/examples generate:government-size
+pnpm --filter @optimitron/examples generate:health
 # ... and 10+ more generators (drug-war, education, cross-country, mega-studies, etc.)
 ```
 
@@ -175,23 +175,23 @@ Auth: Google OAuth, magic-link email, World ID. Referral system with VOTE token 
 
 | Package | Why it matters | Current state |
 |---------|----------------|---------------|
-| [`@optomitron/optimizer`](packages/optimizer/) | Domain-agnostic causal inference engine: temporal alignment, Bradford Hill, effect sizes, Predictor Impact Score, optimal values | Core foundation, heavily tested |
-| [`@optomitron/wishocracy`](packages/wishocracy/) | Pairwise preference aggregation, convergence analysis, preference gaps, and politician alignment scoring | Live in the web app |
-| [`@optomitron/opg`](packages/opg/) | Turns policy evidence into enact/replace/repeal/maintain recommendations with explicit confidence scoring | Used by report generators |
-| [`@optomitron/obg`](packages/obg/) | Finds minimum-effective and optimal spending levels, overspend ratios, and budget reallocation targets | Used by budget analyses |
-| [`@optomitron/treasury-prize`](packages/treasury-prize/) | VoteToken + VoterPrizeTreasury — Phase 1 referendum dominant assurance contract | Deployed on Base Sepolia |
-| [`@optomitron/treasury-iab`](packages/treasury-iab/) | IABVault + IABSplitter + PublicGoodsPool + AlignmentScoreOracle + PoliticalIncentiveAllocator | Contracts written, not yet deployed |
-| [`@optomitron/treasury-wish`](packages/treasury-wish/) | WishToken + WishocraticTreasury + UBIDistributor — monetary reform and UBI | Contracts written |
-| [`@optomitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces, mocks, and deployed contract addresses for all treasury packages | Shared treasury foundation |
-| [`@optomitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
-| [`@optomitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
-| [`@optomitron/web`](packages/web/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, World ID, daily tracking | Active product surface |
-| [`@optomitron/chat-ui`](packages/chat-ui/) | Reusable conversational UI components plus text-to-measurement parsing for personal tracking flows | Reusable UI package |
-| [`@optomitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
-| [`@optomitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optomitron outputs | Verifiable publication layer |
-| [`@optomitron/agent`](packages/agent/) | Autonomous policy analyst helpers: Gemini reasoning, image generation, manifests, review flows, and ERC-8004 identity/reputation helpers | AI orchestration layer |
-| [`@optomitron/examples`](packages/examples/) | Runnable demos and reproducible report generators for budget, policy, causal, and alignment analyses | Best place to see outputs fast |
-| [`@optomitron/extension`](packages/extension/) | Chrome extension scaffold for the Digital Twin Safe / local-first health workflow | Early Layer 1 scaffold |
+| [`@optimitron/optimizer`](packages/optimizer/) | Domain-agnostic causal inference engine: temporal alignment, Bradford Hill, effect sizes, Predictor Impact Score, optimal values | Core foundation, heavily tested |
+| [`@optimitron/wishocracy`](packages/wishocracy/) | Pairwise preference aggregation, convergence analysis, preference gaps, and politician alignment scoring | Live in the web app |
+| [`@optimitron/opg`](packages/opg/) | Turns policy evidence into enact/replace/repeal/maintain recommendations with explicit confidence scoring | Used by report generators |
+| [`@optimitron/obg`](packages/obg/) | Finds minimum-effective and optimal spending levels, overspend ratios, and budget reallocation targets | Used by budget analyses |
+| [`@optimitron/treasury-prize`](packages/treasury-prize/) | VoteToken + VoterPrizeTreasury — Phase 1 referendum dominant assurance contract | Deployed on Base Sepolia |
+| [`@optimitron/treasury-iab`](packages/treasury-iab/) | IABVault + IABSplitter + PublicGoodsPool + AlignmentScoreOracle + PoliticalIncentiveAllocator | Contracts written, not yet deployed |
+| [`@optimitron/treasury-wish`](packages/treasury-wish/) | WishToken + WishocraticTreasury + UBIDistributor — monetary reform and UBI | Contracts written |
+| [`@optimitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces, mocks, and deployed contract addresses for all treasury packages | Shared treasury foundation |
+| [`@optimitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
+| [`@optimitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
+| [`@optimitron/web`](packages/web/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, World ID, daily tracking | Active product surface |
+| [`@optimitron/chat-ui`](packages/chat-ui/) | Reusable conversational UI components plus text-to-measurement parsing for personal tracking flows | Reusable UI package |
+| [`@optimitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
+| [`@optimitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optimitron outputs | Verifiable publication layer |
+| [`@optimitron/agent`](packages/agent/) | Autonomous policy analyst helpers: Gemini reasoning, image generation, manifests, review flows, and ERC-8004 identity/reputation helpers | AI orchestration layer |
+| [`@optimitron/examples`](packages/examples/) | Runnable demos and reproducible report generators for budget, policy, causal, and alignment analyses | Best place to see outputs fast |
+| [`@optimitron/extension`](packages/extension/) | Chrome extension scaffold for the Digital Twin Safe / local-first health workflow | Early Layer 1 scaffold |
 
 ---
 
@@ -225,14 +225,14 @@ It's three steps. On my planet, toddlers learn this before they learn to walk. B
 
 You have 37.2 trillion cells and you let a doctor look at you for eleven minutes once a year. That's like monitoring a nuclear reactor by popping in on Tuesdays. The Digital Twin Safe lets you actually track what's happening in your own body — locally, on your own device, where no corporation can sell your depression scores to advertisers.
 
-- **9 local-first health importers** in `@optomitron/data` parse Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, and CSV exports into one normalized record shape.
-- **Conversational tracking UI** in `@optomitron/chat-ui` includes cards and text-to-measurement parsing for symptom, treatment, mood, food, and insight flows.
+- **9 local-first health importers** in `@optimitron/data` parse Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, and CSV exports into one normalized record shape.
+- **Conversational tracking UI** in `@optimitron/chat-ui` includes cards and text-to-measurement parsing for symptom, treatment, mood, food, and insight flows.
 - **Daily wellbeing capture** already exists in the web app: profile, census context, and daily health-happiness-income check-ins.
 - **Pure TypeScript inference engine** means the core math can run locally in a browser, extension, Electron shell, or server job without being rewritten.
 - **Digital Twin Safe extension scaffold** exists in `packages/extension` as the start of the fully local Layer 1 product.
 
 ```typescript
-import { calculatePredictorImpactScore } from '@optomitron/optimizer';
+import { calculatePredictorImpactScore } from '@optimitron/optimizer';
 
 const result = calculatePredictorImpactScore(
   magnesiumIntake,   // predictor time series
@@ -250,11 +250,11 @@ console.log(result.evidenceGrade);  // "B"
 
 ### 🏛️ Government OS
 
-Your governments currently make decisions the way a blindfolded person throws darts — occasionally they hit something useful and then take credit for it. Optomitron is alignment software for these misaligned superintelligences. Deploy it for any jurisdiction as a reproducible analysis and accountability stack. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
+Your governments currently make decisions the way a blindfolded person throws darts — occasionally they hit something useful and then take credit for it. Optimitron is alignment software for these misaligned superintelligences. Deploy it for any jurisdiction as a reproducible analysis and accountability stack. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
 
 - **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/wishocracy` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
-- **Budget optimization**: `@optomitron/obg` and the examples package generate reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
-- **Policy scoring**: `@optomitron/opg` evaluates policies with Bradford Hill-style causal confidence scoring instead of ideology-first labeling.
+- **Budget optimization**: `@optimitron/obg` and the examples package generate reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
+- **Policy scoring**: `@optimitron/opg` evaluates policies with Bradford Hill-style causal confidence scoring instead of ideology-first labeling.
 - **Legislative classification**: bills are automatically classified into budget categories via keyword and policy-area matching, with generated cost-benefit analyses for informed citizen voting at `/civic`.
 - **Political accountability**: personal alignment reports at `/alignment` show which benchmark politicians best match a citizen's stated priorities, with public share URLs for distribution. The `/scoreboard` ranks all politicians by alignment score.
 - **Legislative provenance**: the web app syncs current federal identities from Congress.gov and increasingly derives profiles from recent classified roll calls instead of only curated priors.
@@ -311,7 +311,7 @@ All treasury contracts are Solidity 0.8.24, Hardhat 2.22, OpenZeppelin 5.1.
 On my planet, "trust me" is not considered a valid epistemological framework. Every output is auditable and verifiable.
 
 - **Storacha/IPFS snapshots** preserve analysis and aggregation outputs as content-addressed history chains. You can't retroactively edit the results. Unlike, apparently, everything else on your internet.
-- **Hypercert-compatible publication helpers** turn Optomitron outputs into activity, measurement, evaluation, and attachment records that can be published with receipts.
+- **Hypercert-compatible publication helpers** turn Optimitron outputs into activity, measurement, evaluation, and attachment records that can be published with receipts.
 - **Autonomous agent workflows** can review publication readiness, interpret test output, and produce structured manifests instead of opaque free-text summaries.
 - **World ID integration** is already in the web app as the first step toward sybil-resistant civic aggregation. One person, one vote. A concept your species claims to value but has never actually implemented.
 
@@ -369,9 +369,9 @@ The architecture is clean, modular, and dependency-free at the core. It took me 
 ```
 
 **Hard rules:**
-- `@optomitron/optimizer` depends on **nothing** — it's the foundation
+- `@optimitron/optimizer` depends on **nothing** — it's the foundation
 - Library packages are **pure TypeScript** — no server, no database
-- `@optomitron/optimizer` is **domain-agnostic** — no references to "drugs", "policies", or "budgets"
+- `@optimitron/optimizer` is **domain-agnostic** — no references to "drugs", "policies", or "budgets"
 - Treasury packages are **three independent contract families** — Prize, IAB, and $WISH never share state
 - No circular dependencies
 
@@ -389,7 +389,7 @@ pnpm install
 pnpm check
 
 # Run tests for a specific package
-pnpm --filter @optomitron/optimizer test
+pnpm --filter @optimitron/optimizer test
 
 # Build all packages
 pnpm build
@@ -415,18 +415,18 @@ Every algorithm is defined in a published paper with exact formulas, worked exam
 
 | Paper | Implements | Web |
 |-------|-----------|-----|
-| **dFDA Specification** | `@optomitron/optimizer` — PIS, temporal alignment, Bradford Hill, effect sizes | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
-| **Wishocracy** | `@optomitron/wishocracy` — RAPPA, eigenvector weights, Citizen Alignment Scores | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
-| **Optimal Policy Generator** | `@optomitron/opg` — Policy Impact Score, Causal Confidence Score, method weights | [opg.warondisease.org](https://opg.warondisease.org) |
-| **Optimal Budget Generator** | `@optomitron/obg` — Diminishing returns, Optimal Spending Level, Budget Impact Score | [obg.warondisease.org](https://obg.warondisease.org) |
+| **dFDA Specification** | `@optimitron/optimizer` — PIS, temporal alignment, Bradford Hill, effect sizes | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
+| **Wishocracy** | `@optimitron/wishocracy` — RAPPA, eigenvector weights, Citizen Alignment Scores | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
+| **Optimal Policy Generator** | `@optimitron/opg` — Policy Impact Score, Causal Confidence Score, method weights | [opg.warondisease.org](https://opg.warondisease.org) |
+| **Optimal Budget Generator** | `@optimitron/obg` — Diminishing returns, Optimal Spending Level, Budget Impact Score | [obg.warondisease.org](https://obg.warondisease.org) |
 | **Optimocracy** | Two-metric welfare function (shared by OPG + OBG) | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
-| **Incentive Alignment Bonds** | `@optomitron/treasury-*` — Prize, IAB, and $WISH mechanisms (Solidity 0.8.24, four packages) | [iab.warondisease.org](https://iab.warondisease.org) |
+| **Incentive Alignment Bonds** | `@optimitron/treasury-*` — Prize, IAB, and $WISH mechanisms (Solidity 0.8.24, four packages) | [iab.warondisease.org](https://iab.warondisease.org) |
 
 ### Motivation & Impact Papers
 
 | Paper | What it quantifies | Web |
 |-------|-------------------|-----|
-| **Political Dysfunction Tax** | $101T/year governance inefficiency — the problem Optomitron exists to solve | [political-dysfunction-tax.warondisease.org](https://political-dysfunction-tax.warondisease.org) |
+| **Political Dysfunction Tax** | $101T/year governance inefficiency — the problem Optimitron exists to solve | [political-dysfunction-tax.warondisease.org](https://political-dysfunction-tax.warondisease.org) |
 | **The Invisible Graveyard** | 102M deaths from FDA efficacy delays since 1962, $1.19 quadrillion deadweight loss | [invisible-graveyard.warondisease.org](https://invisible-graveyard.warondisease.org) |
 | **The 1% Treaty** | Redirecting 1% of military spending ($27.2B/yr) → 10.7B deaths prevented, 212-year treatment acceleration | [impact.warondisease.org](https://impact.warondisease.org) |
 | **dFDA Impact Analysis** | Trial costs from $41K to $929/patient, $84.8 quadrillion cumulative value | [dfda-impact.warondisease.org](https://dfda-impact.warondisease.org) |

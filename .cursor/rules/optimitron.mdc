@@ -1,9 +1,9 @@
 ---
-description: Core rules for Optomitron development
+description: Core rules for Optimitron development
 globs: ["**/*.ts", "**/*.tsx"]
 ---
 
-# Optomitron Development Rules
+# Optimitron Development Rules
 
 Before making changes, read:
 - `AGENTS.md` — Architecture rules for all AI agents
@@ -15,8 +15,8 @@ Before making changes, read:
 
 ## Key Rules
 1. Prisma schema is the single source of truth for data models
-2. Library packages use `import type` from `@optomitron/db` (no Prisma client runtime)
-3. `@optomitron/optimizer` is domain-agnostic — no health/policy/budget terms
+2. Library packages use `import type` from `@optimitron/db` (no Prisma client runtime)
+3. `@optimitron/optimizer` is domain-agnostic — no health/policy/budget terms
 4. No code without tests
 5. Use predictor/outcome terminology (not cause/effect)
 6. FK names match target model (`globalVariableId` not `variableId`)

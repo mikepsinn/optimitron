@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { fitLogModel } from '../index.js';
 
-describe('@optomitron/obg smoke tests', () => {
+describe('@optimitron/obg smoke tests', () => {
   it('fitLogModel() fits a simple log-linear relationship', () => {
     // outcome ≈ 10 + 5 * log(spending)
     const data = [

@@ -236,7 +236,7 @@
 - LLM review integration: Gemini reviews policy evaluation outputs for reasonableness (scored 94/100 on golden path).
 - Mega study publication review functionality added in `packages/examples/src/analysis-explorer/publication-review.ts`.
 - Gemini model updated from `gemini-2.5-flash` → `gemini-3-flash-preview`.
-- `askGemini()` convenience helper added to `@optomitron/agent` for structured LLM review calls.
+- `askGemini()` convenience helper added to `@optimitron/agent` for structured LLM review calls.
 - Mega study generator updated with review workflow integration.
 - Updated golden path results timestamp and output artifacts.
 
@@ -252,7 +252,7 @@
     - `packages/examples/output/drug-war-overdose-study.md`
     - `packages/examples/output/drug-war-overdose-study.json`
 - Added dedicated generation entrypoint:
-  - `pnpm --filter @optomitron/examples generate:drug-war-overdose`
+  - `pnpm --filter @optimitron/examples generate:drug-war-overdose`
 - Added tests for the new pilot analysis module:
   - `packages/examples/src/us-federal-analysis/__tests__/drug-war-overdose-study.test.ts`
 - Added follow-up requirement to replace weak military proxy KPIs with a foreign-attack/security incident KPI source before military mission recommendations are trusted.
@@ -261,8 +261,8 @@
   - pilot report now sets MED to `$0` when higher spending shows no average improvement after selected lag/duration
   - added separate `first detected change` threshold to show where measurable adverse/beneficial shift begins
 - Wired downloaded aggregated proxy panel into a runnable cross-jurisdiction report:
-  - added loader in `@optomitron/data` for `derived-drug-war-proxy-panel.csv`
-  - added aggregated generator + report templates in `@optomitron/examples`
+  - added loader in `@optimitron/data` for `derived-drug-war-proxy-panel.csv`
+  - added aggregated generator + report templates in `@optimitron/examples`
   - new artifacts:
     - `packages/examples/output/drug-war-proxy-aggregated-study.md`
     - `packages/examples/output/drug-war-proxy-aggregated-study.json`
@@ -281,7 +281,7 @@
   - Caveat remains explicit: predictor is a budget-allocation estimate (weighted proxy), not audited direct drug-enforcement ledger totals.
 - Added side-by-side generator for trafficking vs drug-law weighted predictors.
   - New script:
-    - `pnpm --filter @optomitron/examples generate:drug-enforcement-aggregated-comparison`
+    - `pnpm --filter @optimitron/examples generate:drug-enforcement-aggregated-comparison`
   - New artifacts:
     - `packages/examples/output/drug-enforcement-aggregated-study-trafficking.md`
     - `packages/examples/output/drug-enforcement-aggregated-study-trafficking.json`

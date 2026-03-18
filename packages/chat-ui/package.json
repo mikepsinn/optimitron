@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/chat-ui",
+  "name": "@optimitron/chat-ui",
   "version": "0.1.0",
   "description": "Conversational chat UI component library for health tracking",
   "main": "dist/index.js",

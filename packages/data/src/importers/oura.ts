@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { parseOuraExport } from '@optomitron/data';
+ * import { parseOuraExport } from '@optimitron/data';
  * const records = parseOuraExport(jsonString);
  * ```
  */

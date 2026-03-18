@@ -27,7 +27,7 @@ $350k–$600k to fund a 12-month pilot team and verification layer build-out.
 2. Optional advocacy or independent expenditure entities are separate and counsel-led.
 
 ## Run the Funding Pack
-1. `pnpm --filter @optomitron/examples generate:optimocracy`
+1. `pnpm --filter @optimitron/examples generate:optimocracy`
 2. Outputs:
 3. `packages/examples/output/us-federal-optimocracy-report.md`
 4. `packages/examples/output/us-federal-optimocracy-summary.json`

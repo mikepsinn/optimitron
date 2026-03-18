@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { parseWithingsExport, parseWithingsWeightFile } from '@optomitron/data';
+ * import { parseWithingsExport, parseWithingsWeightFile } from '@optimitron/data';
  *
  * const weightRecords = parseWithingsWeightFile(csvString);
  * const allRecords = parseWithingsExport({

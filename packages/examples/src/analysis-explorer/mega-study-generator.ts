@@ -12,7 +12,7 @@ import {
   type VariableTemporalFillingType,
   type VariableRegistryEntry,
   type SparseOutcomeProfile,
-} from "@optomitron/data";
+} from "@optimitron/data";
 import {
   alignTimeSeries,
   buildAdaptiveNumericBins,
@@ -32,7 +32,7 @@ import {
   type SupportConstrainedTargetsEstimate,
   type SparseOutcomeDiagnostics,
   type TimeSeries,
-} from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, "../../output/mega-studies");

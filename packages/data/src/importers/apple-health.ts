@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { parseAppleHealthXML, summarizeAppleHealthExport } from '@optomitron/data';
+ * import { parseAppleHealthXML, summarizeAppleHealthExport } from '@optimitron/data';
  *
  * const records = parseAppleHealthXML(xmlString);
  * const summary = summarizeAppleHealthExport(records);

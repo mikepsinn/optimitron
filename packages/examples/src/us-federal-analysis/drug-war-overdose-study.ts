@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { US_DRUG_WAR_DATA, type DrugWarDataPoint } from "@optomitron/data";
+import { US_DRUG_WAR_DATA, type DrugWarDataPoint } from "@optimitron/data";
 import {
   alignTimeSeries,
   buildAdaptiveNumericBins,
@@ -13,7 +13,7 @@ import {
   type AlignedPair,
   type AnalysisConfig,
   type TimeSeries,
-} from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, "../../output");

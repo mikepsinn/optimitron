@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/opg",
+  "name": "@optimitron/opg",
   "homepage": "https://opg.warondisease.org",
   "version": "0.1.0",
   "description": "Optimal Policy Generator - policy scoring, jurisdiction analysis, Bradford Hill",
@@ -12,11 +12,11 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@optomitron/optimizer": "workspace:*",
+    "@optimitron/optimizer": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@optomitron/data": "workspace:*",
+    "@optimitron/data": "workspace:*",
     "@types/node": "^20.10.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"

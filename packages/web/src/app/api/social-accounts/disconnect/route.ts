@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
-import { ActivityType, SocialPlatform } from "@optomitron/db";
+import { ActivityType, SocialPlatform } from "@optimitron/db";
 
 export async function POST(req: NextRequest) {
   try {

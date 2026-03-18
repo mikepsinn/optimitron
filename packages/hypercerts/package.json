@@ -1,7 +1,7 @@
 {
-  "name": "@optomitron/hypercerts",
+  "name": "@optimitron/hypercerts",
   "version": "0.1.0",
-  "description": "Hypercert record builders and AT Protocol publishing helpers for Optomitron",
+  "description": "Hypercert record builders and AT Protocol publishing helpers for Optimitron",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",

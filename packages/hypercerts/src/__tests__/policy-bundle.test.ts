@@ -7,7 +7,7 @@ import {
 } from '../policy-bundle.js';
 
 describe('policy-bundle', () => {
-  it('maps an Optomitron policy recommendation into a hypercert draft', () => {
+  it('maps an Optimitron policy recommendation into a hypercert draft', () => {
     const draft = createPolicyHypercertDraft({
       policyId: 'clinical-trial-reform',
       jurisdictionId: 'us-federal',
@@ -17,7 +17,7 @@ describe('policy-bundle', () => {
       recommendation: 'enact',
       analysisSummary: 'Strong causal evidence across multiple jurisdictions.',
       rationale: 'Underfunded relative to citizen preferences and welfare impact.',
-      contributorDid: 'did:plc:optomitron',
+      contributorDid: 'did:plc:optimitron',
       participantCount: 265,
       welfareScore: 91,
       policyImpactScore: 0.78,
@@ -27,8 +27,8 @@ describe('policy-bundle', () => {
       governmentAllocationPct: 2,
       preferenceGapPct: 21,
       sourceUrls: [
-        'https://github.com/mikepsinn/optomitron',
-        'https://mikepsinn.github.io/optomitron/',
+        'https://github.com/mikepsinn/optimitron',
+        'https://mikepsinn.github.io/optimitron/',
       ],
     });
 
@@ -44,7 +44,7 @@ describe('policy-bundle', () => {
       jurisdictionId: 'us-federal',
       policyName: 'Clinical Trial Reform',
       recommendation: 'enact',
-      contributorDid: 'did:plc:optomitron',
+      contributorDid: 'did:plc:optimitron',
       participantCount: 100,
       citizenPreferenceWeight: 0.2,
       sourceUrls: ['https://example.com/report'],
@@ -120,7 +120,7 @@ describe('policy-bundle', () => {
         jurisdictionId: 'us-federal',
         policyName: 'Clinical Trial Reform',
         recommendation: 'enact',
-        contributorDid: 'did:plc:optomitron',
+        contributorDid: 'did:plc:optimitron',
         participantCount: 100,
         citizenPreferenceWeight: 0.2,
         governmentAllocationPct: 2,
@@ -166,7 +166,7 @@ describe('policy-bundle', () => {
         policyName: 'Preventive Care',
         policyDescription: 'Increase preventive care investment.',
         recommendation: 'enact',
-        contributorDid: 'did:plc:optomitron',
+        contributorDid: 'did:plc:optimitron',
         analysisSummary: 'Increase preventive care investment.',
       },
       {
@@ -174,7 +174,7 @@ describe('policy-bundle', () => {
         policyName: 'Housing Reform',
         policyDescription: 'Replace low-impact housing subsidies.',
         recommendation: 'replace',
-        contributorDid: 'did:plc:optomitron',
+        contributorDid: 'did:plc:optimitron',
         analysisSummary: 'Replace low-impact housing subsidies.',
       },
     ]);

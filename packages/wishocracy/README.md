@@ -1,4 +1,4 @@
-# @optomitron/wishocracy
+# @optimitron/wishocracy
 
 RAPPA (Randomized Aggregated Pairwise Preference Allocation) — preference aggregation via pairwise comparisons with eigenvector weighting, consistency validation, and alignment scoring.
 
@@ -24,5 +24,5 @@ RAPPA (Randomized Aggregated Pairwise Preference Allocation) — preference aggr
 162 unit tests.
 
 ```bash
-pnpm test --filter @optomitron/wishocracy
+pnpm test --filter @optimitron/wishocracy
 ```

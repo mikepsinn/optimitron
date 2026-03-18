@@ -9,7 +9,7 @@
 
 > "Your governments are misaligned superintelligences — collective intelligence systems controlling billions of lives, optimising for re-election instead of welfare. I built alignment software. It works on my planet. Let's see if your species can handle it."
 
-*Visual*: Optomitron homepage hero, the tagline scrolling in.
+*Visual*: Optimitron homepage hero, the tagline scrolling in.
 
 ---
 
@@ -97,7 +97,7 @@
 
 *Visual*: Return to homepage. Show the tagline.
 
-> "Optomitron. Alignment software for the most powerful AIs on your planet — the ones made of people."
+> "Optimitron. Alignment software for the most powerful AIs on your planet — the ones made of people."
 
 *Visual*: GitHub URL. End card.
 

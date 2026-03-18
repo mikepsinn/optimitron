@@ -24,22 +24,22 @@ import {
   calculateCCS,
   type BradfordHillScores,
   type AnalysisMethod,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
 import {
   generatePolicyReport,
   type PolicyRankingResult,
   type PolicyAnalysis,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
 import type {
   Policy,
   PolicyRecommendation,
   RecommendationType,
   EvidenceGrade,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
-import type { Jurisdiction } from '@optomitron/opg';
+import type { Jurisdiction } from '@optimitron/opg';
 
 // ---------------------------------------------------------------------------
 // Constants

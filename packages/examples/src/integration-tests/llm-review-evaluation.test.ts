@@ -12,19 +12,19 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { askGemini } from '@optomitron/agent';
-import { NATURAL_EXPERIMENTS } from '@optomitron/data';
+import { askGemini } from '@optimitron/agent';
+import { NATURAL_EXPERIMENTS } from '@optimitron/data';
 import {
   runCountryAnalysis,
   type AnnualTimeSeries,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 import {
   convertNaturalExperimentData,
   evaluatePolicy,
   buildPanelAnalysis,
   type OutcomeMetric,
   type PolicyEvaluation,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
 // ─── Config ──────────────────────────────────────────────────────────
 

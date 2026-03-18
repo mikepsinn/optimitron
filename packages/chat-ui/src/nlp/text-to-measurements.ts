@@ -9,7 +9,7 @@
 // — no SDK dependencies. Falls back to regex parsing if no API key.
 //
 // Ported from decentralized-fda's text2measurements.ts and adapted for
-// Optomitron's schema.
+// Optimitron's schema.
 // ============================================================================
 
 import {

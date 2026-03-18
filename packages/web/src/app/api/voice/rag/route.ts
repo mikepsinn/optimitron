@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           role: 'user',
           parts: [
             {
-              text: `You are a knowledge retrieval assistant for the Optomitron platform. Answer the following query concisely with specific data and citations where possible:\n\n${body.query}`,
+              text: `You are a knowledge retrieval assistant for the Optimitron platform. Answer the following query concisely with specific data and citations where possible:\n\n${body.query}`,
             },
           ],
         },

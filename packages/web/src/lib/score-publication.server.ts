@@ -2,7 +2,7 @@ import {
   createAlignmentHypercertDraft,
   publishAlignmentHypercertDraft,
   type AlignmentHypercertInput,
-} from "@optomitron/hypercerts";
+} from "@optimitron/hypercerts";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 
@@ -99,7 +99,7 @@ export async function publishAggregateScoresToHypercerts(
       let draftRef = `draft:${aggregationRunId}:${score.politicianId}`;
 
       if (process.env.ATPROTO_PASSWORD) {
-        const { createAppPasswordAgent, createAtprotoPublisher } = await import("@optomitron/hypercerts");
+        const { createAppPasswordAgent, createAtprotoPublisher } = await import("@optimitron/hypercerts");
         const agent = await createAppPasswordAgent({
           service: process.env.ATPROTO_PDS_URL ?? "https://bsky.social",
           identifier: contributorDid,

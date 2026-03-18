@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { parseGenericCsv, autoDetectCsvColumns } from '@optomitron/data';
+ * import { parseGenericCsv, autoDetectCsvColumns } from '@optimitron/data';
  *
  * // Auto-detect columns
  * const detected = autoDetectCsvColumns(csvString);

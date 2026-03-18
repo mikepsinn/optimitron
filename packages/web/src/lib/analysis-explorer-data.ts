@@ -7,7 +7,7 @@ import {
   type OutcomeMegaStudyRanking,
   type OutcomeRankingCandidate,
   type PairStudyResult,
-} from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
 
 import governmentSizeRaw from "../data/us-government-size-analysis.json";
 import optimalBudgetRaw from "../data/optimal-budget.json";

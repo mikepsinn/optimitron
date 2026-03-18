@@ -3,7 +3,7 @@ import {
   reviewAnalysisPublication,
   type AnalysisPublicationReview,
   type AnalysisPublicationReviewInput,
-} from '@optomitron/agent';
+} from '@optimitron/agent';
 import type { MegaStudyApiPayload } from './mega-study-generator.js';
 
 export interface MegaStudyPublicationReviewOptions {

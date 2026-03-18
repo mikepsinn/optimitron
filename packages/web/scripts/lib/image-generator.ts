@@ -1,5 +1,5 @@
 /**
- * Shared image generation for Optomitron.
+ * Shared image generation for Optimitron.
  *
  * Single source of truth for:
  *   1. The default visual style (1950s retro scientific illustration)
@@ -38,7 +38,7 @@ export const BRAND = {
  * The master style directive prepended to every image generation prompt.
  *
  * 1950s Popular Science / atomic age / mid-century textbook illustration.
- * This is the canonical visual style for all Optomitron-generated images.
+ * This is the canonical visual style for all Optimitron-generated images.
  */
 export const DEFAULT_STYLE = `Use a fun 1950s retro scientific illustration style.`;
 

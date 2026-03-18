@@ -3,7 +3,7 @@
   "startedAt": "2026-03-11T12:00:00.000Z",
   "completedAt": "2026-03-11T12:01:30.000Z",
   "status": "completed",
-  "manifestName": "Optomitron Policy Analyst",
+  "manifestName": "Optimitron Policy Analyst",
   "manifestVersion": "1.0.0",
   "operatorWallet": "0x0000000000000000000000000000000000000000",
   "erc8004Identity": "eip155:11155111:0x0000000000000000000000000000000000000000/0",
@@ -98,8 +98,8 @@
         "preferenceGapPct": 0.17,
         "participantCount": 412,
         "sourceUrls": [
-          "https://mikepsinn.github.io/optomitron/",
-          "https://github.com/mikepsinn/optomitron"
+          "https://mikepsinn.github.io/optimitron/",
+          "https://github.com/mikepsinn/optimitron"
         ],
         "rawMetrics": {
           "pis": 0.88,
@@ -136,15 +136,15 @@
         "rationale": "Quality checks passed and the evidence base is sufficient for publication."
       },
       "publishReceipt": {
-        "activityUri": "at://did:plc:optomitron/org.hypercerts.claim.activity/1",
-        "evaluationUri": "at://did:plc:optomitron/org.hypercerts.context.evaluation/1",
+        "activityUri": "at://did:plc:optimitron/org.hypercerts.claim.activity/1",
+        "evaluationUri": "at://did:plc:optimitron/org.hypercerts.context.evaluation/1",
         "attachmentUris": [
-          "at://did:plc:optomitron/org.hypercerts.context.attachment/1"
+          "at://did:plc:optimitron/org.hypercerts.context.attachment/1"
         ],
         "measurementUris": [
-          "at://did:plc:optomitron/org.hypercerts.context.measurement/1",
-          "at://did:plc:optomitron/org.hypercerts.context.measurement/2",
-          "at://did:plc:optomitron/org.hypercerts.context.measurement/3"
+          "at://did:plc:optimitron/org.hypercerts.context.measurement/1",
+          "at://did:plc:optimitron/org.hypercerts.context.measurement/2",
+          "at://did:plc:optimitron/org.hypercerts.context.measurement/3"
         ],
         "policyStorageCid": "bafybeigdyrsamplepolicycid",
         "aggregationStorageCid": "bafybeigdyrsampleaggregationcid",
@@ -231,7 +231,7 @@
           "name": "hypercerts.publishPolicy",
           "status": "success",
           "inputSummary": "Preventive Care Reallocation",
-          "outputSummary": "at://did:plc:optomitron/org.hypercerts.claim.activity/1",
+          "outputSummary": "at://did:plc:optimitron/org.hypercerts.claim.activity/1",
           "at": "2026-03-11T12:01:15.000Z"
         },
         {
@@ -251,7 +251,7 @@
   ],
   "outputs": {
     "activityUris": [
-      "at://did:plc:optomitron/org.hypercerts.claim.activity/1"
+      "at://did:plc:optimitron/org.hypercerts.claim.activity/1"
     ],
     "storageCids": [
       "bafybeigdyrsampleaggregationcid",

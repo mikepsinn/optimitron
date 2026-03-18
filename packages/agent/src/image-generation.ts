@@ -179,7 +179,7 @@ export async function generateRetroScientificIllustration(
   const apiKey = resolveGeminiApiKey(options.apiKey);
   const client = options.client ?? createGeminiImageClient(apiKey);
   const model = options.model
-    ?? process.env['OPTOMITRON_AGENT_IMAGE_MODEL']
+    ?? process.env['OPTIMITRON_AGENT_IMAGE_MODEL']
     ?? DEFAULT_GEMINI_IMAGE_MODEL;
   const styledPrompt = buildRetroScientificIllustrationPrompt(
     options.prompt,

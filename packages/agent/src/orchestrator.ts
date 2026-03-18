@@ -1,8 +1,8 @@
-import type { OptomitronPolicyHypercertInput, PublishedPolicyHypercertBundle } from '@optomitron/hypercerts';
+import type { OptimitronPolicyHypercertInput, PublishedPolicyHypercertBundle } from '@optimitron/hypercerts';
 import type {
-  CreateOptomitronPolicyAnalysisInput,
+  CreateOptimitronPolicyAnalysisInput,
   CreateWishocracyAggregationInput,
-} from '@optomitron/storage';
+} from '@optimitron/storage';
 import {
   AgentAnalysisArtifactSchema,
   AgentDiscoveryDecisionSchema,
@@ -100,11 +100,11 @@ export interface AgentExecutionAdapters {
     execute(target: AgentAnalysisTarget): Promise<AgentAnalysisArtifact>;
   };
   hypercerts: {
-    publishPolicy(input: OptomitronPolicyHypercertInput): Promise<PublishedPolicyHypercertBundle>;
+    publishPolicy(input: OptimitronPolicyHypercertInput): Promise<PublishedPolicyHypercertBundle>;
   };
   storage?: {
     storeAggregation(input: CreateWishocracyAggregationInput): Promise<{ cid: string }>;
-    storePolicyAnalysis(input: CreateOptomitronPolicyAnalysisInput): Promise<{ cid: string }>;
+    storePolicyAnalysis(input: CreateOptimitronPolicyAnalysisInput): Promise<{ cid: string }>;
   };
   registries?: {
     recordReputation(input: {
@@ -162,7 +162,7 @@ function finishStep(
 
 function buildDiscoveryPrompt(input: AgentRunInput, maxTargets: number): string {
   return [
-    'Select the most tractable preference gaps for autonomous Optomitron analysis.',
+    'Select the most tractable preference gaps for autonomous Optimitron analysis.',
     `Jurisdiction: ${input.jurisdictionName ?? input.jurisdictionId}.`,
     `Choose at most ${maxTargets} targets.`,
     'Prioritize large gaps with feasible public data sources and explain why they are tractable.',
@@ -181,7 +181,7 @@ function buildPlanPrompt(targets: AgentAnalysisTarget[]): string {
 
 function buildInterpretationPrompt(artifact: AgentAnalysisArtifact): string {
   return [
-    'Interpret this Optomitron policy analysis result for publication.',
+    'Interpret this Optimitron policy analysis result for publication.',
     'Return a concise plain-language summary, confidence assessment, caveats, and what additional data would strengthen the conclusion.',
     `Analysis JSON: ${JSON.stringify(artifact)}`,
   ].join('\n');
@@ -203,7 +203,7 @@ function buildHypercertInput(
   artifact: AgentAnalysisArtifact,
   interpretation: AgentInterpretation,
   manifest: AgentManifest,
-): OptomitronPolicyHypercertInput {
+): OptimitronPolicyHypercertInput {
   return {
     policyId: artifact.policyId,
     jurisdictionId: artifact.target.itemId,
@@ -233,7 +233,7 @@ function buildPolicyStorageInput(
   input: AgentRunInput,
   artifact: AgentAnalysisArtifact,
   interpretation: AgentInterpretation,
-): CreateOptomitronPolicyAnalysisInput {
+): CreateOptimitronPolicyAnalysisInput {
   return {
     jurisdictionId: input.jurisdictionId,
     policies: [

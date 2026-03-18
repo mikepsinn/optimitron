@@ -15,7 +15,7 @@ import type { DataPoint } from '../types.js';
 
 /**
  * Annual time series for one variable in one jurisdiction.
- * Structurally compatible with @optomitron/obg's AnnualTimeSeries.
+ * Structurally compatible with @optimitron/obg's AnnualTimeSeries.
  */
 export interface MonetaryPolicyTimeSeries {
   jurisdictionId: string;

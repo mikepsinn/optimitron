@@ -50,7 +50,7 @@ function getSharePrompt(referralCount: number) {
 
 function getSubject(step: number, referralCount: number) {
   if (step === 0) {
-    return "Your Optomitron referral link is ready";
+    return "Your Optimitron referral link is ready";
   }
 
   if (step === 1 && referralCount === 0) {
@@ -70,7 +70,7 @@ function getSubject(step: number, referralCount: number) {
 
 function getMainCopy(step: number, referralCount: number) {
   if (step === 0) {
-    return "You now have a personal Optomitron ballot link. Every signup through it is attributed to your account.";
+    return "You now have a personal Optimitron ballot link. Every signup through it is attributed to your account.";
   }
 
   if (step === 1 && referralCount === 0) {
@@ -89,7 +89,7 @@ function getMainCopy(step: number, referralCount: number) {
 }
 
 function buildShareMessage(shareUrl: string) {
-  return `I just mapped my budget priorities on Optomitron. Add yours here: ${shareUrl}`;
+  return `I just mapped my budget priorities on Optimitron. Add yours here: ${shareUrl}`;
 }
 
 export function getReferralSequenceAction(

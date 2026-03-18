@@ -1,15 +1,15 @@
 /**
  * Run all natural experiment datasets through the causal inference pipeline
  *
- * Uses runNaturalExperiment() from @optomitron/opg for core analysis,
+ * Uses runNaturalExperiment() from @optimitron/opg for core analysis,
  * then generates JSON + markdown reports.
  *
  * Usage: npx tsx packages/examples/src/policy-time-series-analysis/run-natural-experiments.ts
  */
 
-import { convertNaturalExperimentData, runNaturalExperiment } from '@optomitron/opg';
-import type { NaturalExperimentResult } from '@optomitron/opg';
-import { NATURAL_EXPERIMENTS } from '@optomitron/data';
+import { convertNaturalExperimentData, runNaturalExperiment } from '@optimitron/opg';
+import type { NaturalExperimentResult } from '@optimitron/opg';
+import { NATURAL_EXPERIMENTS } from '@optimitron/data';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -148,7 +148,7 @@ function main() {
   // Write JSON
   const output = {
     generatedAt: new Date().toISOString(),
-    engine: '@optomitron/opg runNaturalExperiment()',
+    engine: '@optimitron/opg runNaturalExperiment()',
     description: 'Natural experiment analyses: before/after policy interventions across jurisdictions',
     totalExperiments: scriptResults.length,
     totalOutcomes: totalOutcomes.length,
@@ -163,7 +163,7 @@ function main() {
 
   // Write markdown report
   let md = `# Natural Experiment Analysis\n\n`;
-  md += `> Generated ${new Date().toISOString()} by @optomitron/opg\n\n`;
+  md += `> Generated ${new Date().toISOString()} by @optimitron/opg\n\n`;
   md += `**${scriptResults.length} policy interventions** across ${new Set(scriptResults.map(r => r.jurisdictionCode)).size} countries.\n`;
   md += `**${correct}/${totalOutcomes.length}** outcome metrics moved in the expected direction.\n\n`;
 

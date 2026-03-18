@@ -1,4 +1,4 @@
-import { ActivityType, BadgeType } from "@optomitron/db";
+import { ActivityType, BadgeType } from "@optimitron/db";
 
 const BADGE_NAMES: Record<string, string> = {
   [BadgeType.FIRST_COMPARISON]: "First Comparison",

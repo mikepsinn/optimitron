@@ -14,7 +14,7 @@
  *
  * @example
  * ```typescript
- * import { parseStravaActivitiesCsv } from '@optomitron/data';
+ * import { parseStravaActivitiesCsv } from '@optimitron/data';
  * const records = parseStravaActivitiesCsv(csvString);
  * ```
  */

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 import type { CausalConfidenceScore } from './bradford-hill.js';
 
 export const PolicyEvidenceGradeSchema = z.enum(['A', 'B', 'C', 'D', 'F']);

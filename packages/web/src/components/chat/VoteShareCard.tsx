@@ -18,7 +18,7 @@ export function VoteShareCard({
   onSendToRep,
 }: VoteShareCardProps) {
   const shareUrl = buildCivicVoteUrl(shareIdentifier, getBaseUrl());
-  const shareText = `I voted ${position} on "${billTitle}" — see my analysis on Optomitron.`;
+  const shareText = `I voted ${position} on "${billTitle}" — see my analysis on Optimitron.`;
 
   return (
     <div className="opto-card opto-vote-share">

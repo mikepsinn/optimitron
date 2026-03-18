@@ -111,7 +111,7 @@ export async function createStorachaClient(
 
 export function buildJurisdictionSpaceName(
   jurisdictionId: string,
-  prefix = 'optomitron',
+  prefix = 'optimitron',
 ): string {
   const normalizedJurisdictionId = jurisdictionId
     .trim()

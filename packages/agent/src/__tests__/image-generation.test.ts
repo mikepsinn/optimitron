@@ -75,8 +75,8 @@ describe('image generation helpers', () => {
   });
 
   it('uses the image model override env var when present', async () => {
-    const original = process.env['OPTOMITRON_AGENT_IMAGE_MODEL'];
-    process.env['OPTOMITRON_AGENT_IMAGE_MODEL'] = 'gemini-override';
+    const original = process.env['OPTIMITRON_AGENT_IMAGE_MODEL'];
+    process.env['OPTIMITRON_AGENT_IMAGE_MODEL'] = 'gemini-override';
     const generateContent = vi.fn().mockResolvedValue({
       candidates: [
         {
@@ -110,9 +110,9 @@ describe('image generation helpers', () => {
       );
     } finally {
       if (original !== undefined) {
-        process.env['OPTOMITRON_AGENT_IMAGE_MODEL'] = original;
+        process.env['OPTIMITRON_AGENT_IMAGE_MODEL'] = original;
       } else {
-        delete process.env['OPTOMITRON_AGENT_IMAGE_MODEL'];
+        delete process.env['OPTIMITRON_AGENT_IMAGE_MODEL'];
       }
     }
   });
@@ -135,7 +135,7 @@ describe('image generation helpers', () => {
 
   it('writes generated image assets and metadata to disk', async () => {
     const directory = await mkdtemp(
-      path.join(os.tmpdir(), 'optomitron-agent-image-'),
+      path.join(os.tmpdir(), 'optimitron-agent-image-'),
     );
     const written = await writeGeneratedImageAssets({
       directory,

@@ -2,7 +2,7 @@
 
 ## Languages and Runtime
 - TypeScript (strict mode)
-- Node.js >= 18 (`@optomitron/storage` and `@optomitron/agent` target Node 22+ workflows)
+- Node.js >= 18 (`@optimitron/storage` and `@optimitron/agent` target Node 22+ workflows)
 - ESM modules across all packages
 
 ## Monorepo Tooling
@@ -12,14 +12,14 @@
 - Pre-commit hooks: secret detection + typecheck + lint + tests
 
 ## Core Libraries (ZERO database imports, pure functions only)
-- `@optomitron/optimizer` — Causal inference engine (domain-agnostic, no policy/health words)
-- `@optomitron/wishocracy` — RAPPA preference aggregation
-- `@optomitron/opg` — Optimal Policy Generator (depends on optimizer)
-- `@optomitron/obg` — Optimal Budget Generator (depends on optimizer)
-- `@optomitron/data` — Data fetchers + importers + static datasets (depends on optimizer for TimeSeries type)
-- `@optomitron/storage` — Storacha/IPFS content-addressed snapshot storage with CID history chains
-- `@optomitron/hypercerts` — Hypercerts AT Protocol record mapping (activity claims, measurements, evaluations)
-- `@optomitron/agent` — Autonomous policy analyst agent (Gemini structured reasoning + ERC-8004)
+- `@optimitron/optimizer` — Causal inference engine (domain-agnostic, no policy/health words)
+- `@optimitron/wishocracy` — RAPPA preference aggregation
+- `@optimitron/opg` — Optimal Policy Generator (depends on optimizer)
+- `@optimitron/obg` — Optimal Budget Generator (depends on optimizer)
+- `@optimitron/data` — Data fetchers + importers + static datasets (depends on optimizer for TimeSeries type)
+- `@optimitron/storage` — Storacha/IPFS content-addressed snapshot storage with CID history chains
+- `@optimitron/hypercerts` — Hypercerts AT Protocol record mapping (activity claims, measurements, evaluations)
+- `@optimitron/agent` — Autonomous policy analyst agent (Gemini structured reasoning + ERC-8004)
 
 ## Data Layer
 - Prisma schema → single source of truth for types

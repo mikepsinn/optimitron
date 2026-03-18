@@ -11,9 +11,9 @@
 - [ ] Document any simulated inputs and why they are placeholders.
 
 ## Phase 3: Schema Alignment
-- [x] Create Prisma-aligned DTOs and mapping helpers (`@optomitron/db-types`).
+- [x] Create Prisma-aligned DTOs and mapping helpers (`@optimitron/db-types`).
 - [ ] Resolve Prisma enum drift (e.g., `FillingType` coverage).
-- [ ] Add schema validation tests in `@optomitron/db`.
+- [ ] Add schema validation tests in `@optimitron/db`.
 
 ## Phase 4: Productization
 - [ ] Provide a clean, repeatable CLI for report generation.

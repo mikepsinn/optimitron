@@ -1,9 +1,9 @@
-# Decentralized-FDA Repo Audit for Optomitron
+# Decentralized-FDA Repo Audit for Optimitron
 
 > **Date:** 2026-02-06
 > **Source:** `/mnt/e/code/decentralized-fda/`
-> **Target:** `/mnt/e/code/optomitron/`
-> **Purpose:** Identify reusable code, components, and patterns for Optomitron
+> **Target:** `/mnt/e/code/optimitron/`
+> **Purpose:** Identify reusable code, components, and patterns for Optimitron
 
 ---
 
@@ -56,23 +56,23 @@ The `fdai` app is a standalone Next.js app providing an AI-powered health tracki
 
 **Target package:** `packages/chat-ui`
 
-The fdai chat architecture is directly relevant to Optomitron's health tracking goals. Key things to port:
+The fdai chat architecture is directly relevant to Optimitron's health tracking goals. Key things to port:
 
 1. **AI tool-calling pattern** — The pattern of AI tools returning `componentType` strings that the frontend renders as interactive UI components is elegant and extensible. Port the tool definitions and the `UIComponentRenderer` switch pattern.
 
-2. **System prompt construction** — The `createSystemPrompt()` function that injects user health context (goals, conditions, recent logs) is exactly what Optomitron needs. Port and extend with Optomitron's variable/measurement model.
+2. **System prompt construction** — The `createSystemPrompt()` function that injects user health context (goals, conditions, recent logs) is exactly what Optimitron needs. Port and extend with Optimitron's variable/measurement model.
 
-3. **Health tracking UI components** — SymptomTracker, MealLogger, MedicationLogger are good starting points. They'll need modification to use Optomitron's `GlobalVariable` / `Measurement` schema instead of Supabase-specific tables.
+3. **Health tracking UI components** — SymptomTracker, MealLogger, MedicationLogger are good starting points. They'll need modification to use Optimitron's `GlobalVariable` / `Measurement` schema instead of Supabase-specific tables.
 
-4. **system-prompt.md** — The static system prompt is an excellent behavioral guide. Port and customize for Optomitron (rename FDAi references, adapt data collection flow to our schema).
+4. **system-prompt.md** — The static system prompt is an excellent behavioral guide. Port and customize for Optimitron (rename FDAi references, adapt data collection flow to our schema).
 
 5. **Camera capture** — Directly reusable for food/supplement photo analysis.
 
 **Modifications needed:**
-- Replace Supabase client calls with Prisma/Optomitron DB calls
-- Replace `user_goals`/`user_conditions` Supabase tables with Optomitron's `NOf1Variable`/`Measurement` model
-- Swap AI provider config to match Optomitron's setup
-- The chat UI currently uses shadcn/ui — compatible with Optomitron's existing setup
+- Replace Supabase client calls with Prisma/Optimitron DB calls
+- Replace `user_goals`/`user_conditions` Supabase tables with Optimitron's `NOf1Variable`/`Measurement` model
+- Swap AI provider config to match Optimitron's setup
+- The chat UI currently uses shadcn/ui — compatible with Optimitron's existing setup
 
 ---
 
@@ -124,7 +124,7 @@ Uses **NextAuth** with:
 
 **Target packages:** `packages/web`, `packages/data`
 
-1. **Auth pattern** — Optomitron already has its own auth setup. The DFDA OAuth provider pattern is interesting if we want to federate with other health data platforms.
+1. **Auth pattern** — Optimitron already has its own auth setup. The DFDA OAuth provider pattern is interesting if we want to federate with other health data platforms.
 
 2. **Page structure** — Good reference architecture for:
    - Variable search/detail pages → port to `packages/web`
@@ -157,16 +157,16 @@ Uses **NextAuth** with:
 - Full OAuth2 server implementation in `oauth2.*`
 - Data sharing agreements, user consents, GDPR data exports in `core.*`
 
-### Optomitron Schema (packages/db/prisma/schema.prisma)
+### Optimitron Schema (packages/db/prisma/schema.prisma)
 
 - **PostgreSQL/Prisma**, clean two-layer architecture
 - Layer 1: Universal Measurement System (GlobalVariable, VariableCategory, Unit, NOf1Variable, Measurement, TrackingReminder, NOf1VariableRelationship, AggregateVariableRelationship)
 - Layer 2: Governance (Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight, AggregationRun, Politician, PoliticianVote, AlignmentScore)
 - Uses cuid() string IDs
 
-### Schema Gap Analysis — What Optomitron is Missing
+### Schema Gap Analysis — What Optimitron is Missing
 
-| Feature | DFDA Has | Optomitron Missing? | Priority |
+| Feature | DFDA Has | Optimitron Missing? | Priority |
 |---|---|---|---|
 | **Data source integrations** (`connectors`, `connections`, `connector_imports`) | ✅ Legacy Prisma + Supabase `integration_*` tables | ❌ No integration/connector model | **HIGH** — needed for Apple Health, wearable imports |
 | **Unit conversions** (`unit_conversions` table) | ✅ `unit_conversions` with formulas | ⚠️ Has `conversionSteps` JSON on Unit but no dedicated table | MEDIUM — JSON approach may suffice |
@@ -183,7 +183,7 @@ Uses **NextAuth** with:
 | **Measurement imports** | ✅ `measurement_imports`, `measurement_exports` | ❌ Missing | **HIGH** |
 | **Votes / community ratings** | ✅ `votes`, `correlation_causality_votes`, `correlation_usefulness_votes` | ⚠️ Has `numberOfUpVotes`/`numberOfDownVotes` on AggregateVariableRelationship | LOW |
 
-### Recommended Schema Additions for Optomitron
+### Recommended Schema Additions for Optimitron
 
 ```prisma
 // HIGH PRIORITY additions:
@@ -262,14 +262,14 @@ model TrackingReminderNotification {
 
 **Target package:** `packages/web`
 
-1. **Variable search** — The search pattern is useful but currently delegates to the external DFDA API. We'd need to implement our own search endpoint against Optomitron's `GlobalVariable` table.
+1. **Variable search** — The search pattern is useful but currently delegates to the external DFDA API. We'd need to implement our own search endpoint against Optimitron's `GlobalVariable` table.
 
-2. **Variable charts (Highcharts)** — `global-variable-charts.tsx` is a good reference for charting. It uses Highcharts with line, monthly column, and weekday column charts. **However**, Optomitron might want to use a different charting library (Recharts, Chart.js, or Tremor) since Highcharts has licensing costs for commercial use.
+2. **Variable charts (Highcharts)** — `global-variable-charts.tsx` is a good reference for charting. It uses Highcharts with line, monthly column, and weekday column charts. **However**, Optimitron might want to use a different charting library (Recharts, Chart.js, or Tremor) since Highcharts has licensing costs for commercial use.
 
 3. **Variable overview** — Currently just an iframe to `studies.dfda.earth`. We'd build our own native detail page.
 
 **Modifications needed:**
-- Replace DFDA API calls with Optomitron Prisma queries
+- Replace DFDA API calls with Optimitron Prisma queries
 - Replace or keep Highcharts (licensing consideration)
 - Build native variable detail page instead of iframe
 
@@ -307,18 +307,18 @@ model TrackingReminderNotification {
 
 1. **`measurementSchema.ts`** — Port directly. This is the Rosetta Stone for converting natural language to structured health data. The `VariableCategoryNames` and `UnitNames` arrays should go into `packages/db` or `packages/data` as shared constants.
 
-2. **`text2measurements.ts`** — Port the prompt engineering pattern. The detailed LLM prompt with inline TypeScript type definitions is clever — it teaches the LLM the exact schema. Adapt to use Optomitron's variable/unit model.
+2. **`text2measurements.ts`** — Port the prompt engineering pattern. The detailed LLM prompt with inline TypeScript type definitions is clever — it teaches the LLM the exact schema. Adapt to use Optimitron's variable/unit model.
 
-3. **`conversation2measurements.ts`** — Port the multi-turn conversational data collection flow. This is perfect for Optomitron's chat-based health tracking.
+3. **`conversation2measurements.ts`** — Port the multi-turn conversational data collection flow. This is perfect for Optimitron's chat-based health tracking.
 
-4. **`image2measurements` route** — Port the GPT-4 Vision prompt for food/supplement/medication image analysis. Update to use Optomitron's variable categories.
+4. **`image2measurements` route** — Port the GPT-4 Vision prompt for food/supplement/medication image analysis. Update to use Optimitron's variable categories.
 
 5. **Data source import UI** — Lower priority. The current implementation delegates to the DFDA API. We'd need to build our own import infrastructure (Apple Health XML parser, Fitbit OAuth, etc.).
 
 **Modifications needed:**
-- Replace DFDA API `textCompletion()` calls with Optomitron's AI provider
-- Update `VariableCategoryNames` and `UnitNames` to match Optomitron's schema
-- Replace `postMeasurements()` with Optomitron's Prisma-based measurement creation
+- Replace DFDA API `textCompletion()` calls with Optimitron's AI provider
+- Update `VariableCategoryNames` and `UnitNames` to match Optimitron's schema
+- Replace `postMeasurements()` with Optimitron's Prisma-based measurement creation
 - Build our own Apple Health parser instead of using DFDA's external API
 
 ---
@@ -356,15 +356,15 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 
 **Target package:** `packages/web`
 
-1. **Variable chart pattern** — The Highcharts pattern is good reference but consider using Recharts or Tremor for Optomitron (MIT licensed vs Highcharts commercial license).
+1. **Variable chart pattern** — The Highcharts pattern is good reference but consider using Recharts or Tremor for Optimitron (MIT licensed vs Highcharts commercial license).
 
 2. **NutritionFactsLabel** — Unique and useful component. Port directly.
 
-3. **QALY/DALY simulator** — Relevant for Optomitron's economic modeling. Port to `packages/web` or `packages/data`.
+3. **QALY/DALY simulator** — Relevant for Optimitron's economic modeling. Port to `packages/web` or `packages/data`.
 
 4. **CognitivePerformanceTest** — Nice engagement feature. Low priority but interesting for tracking cognitive outcomes.
 
-5. **Dashboard layout** — The section/card navigation pattern is simple and effective. Good reference for Optomitron's dashboard.
+5. **Dashboard layout** — The section/card navigation pattern is simple and effective. Good reference for Optimitron's dashboard.
 
 ---
 
@@ -394,7 +394,7 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 
 **Target package:** `packages/optimizer` or new `packages/modeling`
 
-1. **PopulationInterventionModel** — The abstract model framework is well-designed and directly relevant to Optomitron's policy impact modeling.
+1. **PopulationInterventionModel** — The abstract model framework is well-designed and directly relevant to Optimitron's policy impact modeling.
 
 2. **InputParameter with validation** — Useful for any model with configurable parameters. The constraints system (min/max/step/allowedValues) is production-ready.
 
@@ -403,9 +403,9 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 4. **Model metadata** — The `ModelMetadata` type (interventionType, assumptions, limitations, references) is good governance documentation.
 
 **Modifications needed:**
-- Integrate with Optomitron's `AggregateVariableRelationship` / `NOf1VariableRelationship` for real data-driven modeling
+- Integrate with Optimitron's `AggregateVariableRelationship` / `NOf1VariableRelationship` for real data-driven modeling
 - Add causal inference algorithms (the package is currently just a framework, no actual statistical methods)
-- Consider merging with or extending Optomitron's existing `packages/optimizer` package
+- Consider merging with or extending Optimitron's existing `packages/optimizer` package
 
 ---
 
@@ -438,9 +438,9 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 
 1. **system-prompt.md** — Port verbatim and customize. This is a well-tested prompt that handles edge cases (voice input, multi-item logging, time inference).
 
-2. **Dynamic context injection** — Port the `createSystemPrompt()` pattern. Replace Supabase queries with Optomitron Prisma queries to fetch user's recent measurements, tracked variables, and goals.
+2. **Dynamic context injection** — Port the `createSystemPrompt()` pattern. Replace Supabase queries with Optimitron Prisma queries to fetch user's recent measurements, tracked variables, and goals.
 
-3. **Data collection flow** — The sequential symptom→rating→treatment→meal pattern is battle-tested. Adapt to use Optomitron's variable categories.
+3. **Data collection flow** — The sequential symptom→rating→treatment→meal pattern is battle-tested. Adapt to use Optimitron's variable categories.
 
 ---
 
@@ -458,8 +458,8 @@ Plus quick action buttons (New Study, Search Trials, Import Data) and inbox prev
 | ConditionSelector | `apps/fdai/components/ui/generated/condition-selector.tsx` | **HIGH** — direct port |
 | CameraCapture | `apps/fdai/components/camera-capture.tsx` | **HIGH** — direct port |
 | TextToSpeech | `apps/fdai/components/text-to-speech.tsx` | MEDIUM — nice-to-have |
-| Auth form | `apps/fdai/components/auth/auth-form.tsx` | LOW — Optomitron has its own |
-| Full shadcn/ui library | `apps/fdai/components/ui/*.tsx` | Already using shadcn in Optomitron |
+| Auth form | `apps/fdai/components/auth/auth-form.tsx` | LOW — Optimitron has its own |
+| Full shadcn/ui library | `apps/fdai/components/ui/*.tsx` | Already using shadcn in Optimitron |
 
 ### From web app
 
@@ -524,13 +524,13 @@ Well-organized multi-schema PostgreSQL:
 
 ### **Should Port? PARTIALLY**
 
-**Target:** Optomitron's own setup
+**Target:** Optimitron's own setup
 
-1. **Supabase config** — Useful reference if Optomitron adopts Supabase. The auth rate limits and session config are well-tuned.
+1. **Supabase config** — Useful reference if Optimitron adopts Supabase. The auth rate limits and session config are well-tuned.
 
-2. **Multi-schema SQL migration** — The `core`/`reference`/`personal`/`cohort` schema organization is excellent. Optomitron's Prisma schema already covers `reference` (GlobalVariable, VariableCategory, Unit) and `personal` (NOf1Variable, Measurement) equivalents.
+2. **Multi-schema SQL migration** — The `core`/`reference`/`personal`/`cohort` schema organization is excellent. Optimitron's Prisma schema already covers `reference` (GlobalVariable, VariableCategory, Unit) and `personal` (NOf1Variable, Measurement) equivalents.
 
-3. **Missing from Optomitron that the Supabase schema has:**
+3. **Missing from Optimitron that the Supabase schema has:**
    - `core.integration_providers` / `core.integration_connections` / `core.integration_sync_logs` → **HIGH PRIORITY** to add
    - `core.user_consents` / `core.data_sharing_agreements` → **MEDIUM** for compliance
    - `reference.data_quality_rules` → **MEDIUM** for data validation
@@ -572,7 +572,7 @@ Well-organized multi-schema PostgreSQL:
 
 | What | Source | Notes |
 |---|---|---|
-| OAuth2 server implementation | `supabase/migrations/` (oauth2 schema) | Only if Optomitron needs to be an OAuth provider |
+| OAuth2 server implementation | `supabase/migrations/` (oauth2 schema) | Only if Optimitron needs to be an OAuth provider |
 | CognitivePerformanceTest | `apps/web/components/dfda/CognitivePerformanceTest.tsx` | Fun engagement feature |
 | TextToSpeech | `apps/fdai/components/text-to-speech.tsx` | Nice-to-have |
 | Article CMS pages | `apps/web/app/articles/` | Low relevance |
@@ -585,13 +585,13 @@ Well-organized multi-schema PostgreSQL:
 
 ## Key Architectural Observations
 
-1. **DFDA is split-brain:** The `web` app uses NextAuth + Prisma (MySQL) while `fdai` uses Supabase auth. The Supabase migration schema is the most modern and clean. Optomitron should learn from the Supabase schema's organization but stick with Prisma/PostgreSQL.
+1. **DFDA is split-brain:** The `web` app uses NextAuth + Prisma (MySQL) while `fdai` uses Supabase auth. The Supabase migration schema is the most modern and clean. Optimitron should learn from the Supabase schema's organization but stick with Prisma/PostgreSQL.
 
 2. **The measurement schema types are the most valuable single file** — `measurementSchema.ts` encodes years of domain knowledge about how to categorize and quantify health data from natural language.
 
 3. **The AI tool-calling → UI rendering pattern is elegant** — Having AI tools return component type strings that the frontend renders as interactive widgets is a great pattern for chat-based health tracking.
 
-4. **The DFDA API dependency is a risk** — Much of the web app delegates to `safe.dfda.earth`. Optomitron should build its own backend and only reference DFDA for the data/schema patterns.
+4. **The DFDA API dependency is a risk** — Much of the web app delegates to `safe.dfda.earth`. Optimitron should build its own backend and only reference DFDA for the data/schema patterns.
 
-5. **190 Prisma models is too many** — The legacy schema has massive WordPress/Laravel cruft. Optomitron's clean 20-model schema is the right approach. Add the missing models (integrations, notifications) surgically.
+5. **190 Prisma models is too many** — The legacy schema has massive WordPress/Laravel cruft. Optimitron's clean 20-model schema is the right approach. Add the missing models (integrations, notifications) surgically.
 

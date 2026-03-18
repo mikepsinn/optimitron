@@ -1,6 +1,6 @@
-# @optomitron/extension — Digital Twin Safe
+# @optimitron/extension — Digital Twin Safe
 
-Chrome extension for personal health tracking. **Layer 1** of the Optomitron architecture.
+Chrome extension for personal health tracking. **Layer 1** of the Optimitron architecture.
 
 All data stays on your device. Nothing is ever sent to any server.
 
@@ -10,14 +10,14 @@ All data stays on your device. Nothing is ever sent to any server.
 - **📊 Symptom & Mood Rating** — Rate symptoms 1-5, track mood with emoji scale, single-click recording
 - **🍽️ Food Logging** — Quick text entry, recent foods for one-tap re-logging
 - **⏰ Smart Reminders** — chrome.alarms-based scheduling with quiet hours
-- **📤 Data Export** — JSON backup or CSV (compatible with @optomitron/optimizer TimeSeries format)
+- **📤 Data Export** — JSON backup or CSV (compatible with @optimitron/optimizer TimeSeries format)
 
 ## Install (Development)
 
 ```bash
 # From monorepo root
 pnpm install
-pnpm --filter @optomitron/extension build
+pnpm --filter @optimitron/extension build
 ```
 
 Then in Chrome:
@@ -58,6 +58,6 @@ All data uses `chrome.storage.local` with ISO 8601 timestamps:
 
 ## Future
 
-- Direct integration with `@optomitron/optimizer` for on-device analysis
+- Direct integration with `@optimitron/optimizer` for on-device analysis
 - Health data importers (Apple Health, Fitbit, Oura)
 - Anonymous submission to Layer 3 (on-chain)

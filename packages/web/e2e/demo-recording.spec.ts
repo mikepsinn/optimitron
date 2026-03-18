@@ -5,7 +5,7 @@
  * Includes full Wishocracy pairwise comparison flow.
  *
  * Run:
- *   pnpm --filter @optomitron/web exec playwright test e2e/demo-recording.spec.ts
+ *   pnpm --filter @optimitron/web exec playwright test e2e/demo-recording.spec.ts
  *
  * Output: packages/web/test-results/ (video files)
  */

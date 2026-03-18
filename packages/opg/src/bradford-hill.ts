@@ -14,7 +14,7 @@
  * - Experiment: statistical significance composite — https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationStatisticalSignificanceProperty.php
  * 
  * This OPG module explicitly names and weights the criteria for policy evaluation.
- * The optimizer package (@optomitron/optimizer) also has Bradford Hill scoring for health data.
+ * The optimizer package (@optimitron/optimizer) also has Bradford Hill scoring for health data.
  */
 
 export interface BradfordHillScores {

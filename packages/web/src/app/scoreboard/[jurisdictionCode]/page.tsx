@@ -4,7 +4,7 @@ import { ScoreboardDashboard } from "@/components/scoreboard/ScoreboardDashboard
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Alignment Scoreboard | Optomitron",
+  title: "Alignment Scoreboard | Optimitron",
   description:
     "Public politician alignment scores based on aggregate citizen preferences. See how your representatives actually vote compared to what citizens actually want.",
 };

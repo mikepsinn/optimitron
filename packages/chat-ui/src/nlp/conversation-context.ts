@@ -6,7 +6,7 @@
 // statements like "also took some zinc" or "and my mood is better now".
 //
 // Ported from decentralized-fda's conversation2measurements.ts and adapted
-// for Optomitron's schema.
+// for Optimitron's schema.
 // ============================================================================
 
 import {

@@ -4,8 +4,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { sepolia, hardhat } from "viem/chains";
 import { requireAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
-import { getContracts } from "@optomitron/treasury-shared/addresses";
-import { ubiDistributorAbi } from "@optomitron/treasury-wish/abi";
+import { getContracts } from "@optimitron/treasury-shared/addresses";
+import { ubiDistributorAbi } from "@optimitron/treasury-wish/abi";
 
 export const runtime = "nodejs";
 

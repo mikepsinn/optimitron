@@ -3,7 +3,7 @@
  * Generate real policy and budget analysis JSON from the OPG/OBG libraries.
  * 
  * This replaces the static mock data with actual optimizer output.
- * Run: pnpm --filter @optomitron/web run generate
+ * Run: pnpm --filter @optimitron/web run generate
  */
 
 import { writeFileSync } from 'fs';
@@ -23,16 +23,16 @@ import {
   scoreSpecificity,
   calculateWelfare as calculatePolicyWelfare,
   type AnalysisMethod,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
 // OBG imports
 import {
   estimateOSL,
   type SpendingOutcomePoint,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 // Data imports
-import { US_FEDERAL_BUDGET } from '@optomitron/data';
+import { US_FEDERAL_BUDGET } from '@optimitron/data';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../src/data');
@@ -133,7 +133,7 @@ function generateBudgetAnalysis() {
     categories,
     topRecommendations,
     generatedAt: new Date().toISOString(),
-    generatedBy: '@optomitron/obg',
+    generatedBy: '@optimitron/obg',
     note: 'Generated from real US federal budget data using diminishing returns analysis. Not mock data.',
   };
 }
@@ -382,7 +382,7 @@ function generatePolicyAnalysis() {
     jurisdiction: 'United States of America',
     policies,
     generatedAt: new Date().toISOString(),
-    generatedBy: '@optomitron/opg',
+    generatedBy: '@optimitron/opg',
     note: 'Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence. Not mock data.',
   };
 }

@@ -2,7 +2,7 @@
  * CSV Loader for Gapminder-format CSVs
  *
  * Parses CSVs where rows are countries and columns are years.
- * Returns one TimeSeries per country, compatible with @optomitron/optimizer.
+ * Returns one TimeSeries per country, compatible with @optimitron/optimizer.
  *
  * Format expected:
  *   country,1800,1801,...,2100
@@ -13,7 +13,7 @@
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
-// Types (compatible with @optomitron/optimizer TimeSeries but self-contained)
+// Types (compatible with @optimitron/optimizer TimeSeries but self-contained)
 // ---------------------------------------------------------------------------
 
 export const CsvMeasurementSchema = z.object({

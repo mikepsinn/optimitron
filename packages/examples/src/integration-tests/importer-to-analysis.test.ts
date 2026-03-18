@@ -20,14 +20,14 @@ import {
   parseOuraExport,
   type ParsedHealthRecord,
   buildImportSummary,
-} from '@optomitron/data';
+} from '@optimitron/data';
 import {
   type TimeSeries,
   alignTimeSeries,
   calculatePredictorImpactScore,
   validateDataQuality,
   pearsonCorrelation,
-} from '@optomitron/optimizer';
+} from '@optimitron/optimizer';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 
 export interface PolicyImpactScore {
   score: number;

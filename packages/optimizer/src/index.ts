@@ -1,5 +1,5 @@
 /**
- * @optomitron/optimizer
+ * @optimitron/optimizer
  * 
  * Time series causal inference engine - the agnostic core.
  * 
@@ -22,7 +22,7 @@
  *   alignTimeSeries,
  *   calculatePredictorImpactScore,
  *   validateDataQuality,
- * } from '@optomitron/optimizer';
+ * } from '@optimitron/optimizer';
  * 
  * // Align time series with onset delay and duration
  * const pairs = alignTimeSeries(predictor, outcome, {

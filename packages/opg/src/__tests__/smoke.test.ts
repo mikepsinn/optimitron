@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateWelfare, WelfareMetricsSchema } from '../index.js';
 
-describe('@optomitron/opg smoke tests', () => {
+describe('@optimitron/opg smoke tests', () => {
   it('calculateWelfare() with equal weights', () => {
     const result = calculateWelfare(
       { incomeGrowth: 2.0, healthyLifeYears: 70 },

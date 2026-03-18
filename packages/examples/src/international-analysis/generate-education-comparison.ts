@@ -15,9 +15,9 @@ import { fileURLToPath } from 'node:url';
 import {
   EDUCATION_COMPARISON,
   type CountryEducationData,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
-import { getExemplarsByCategory } from '@optomitron/data';
+import { getExemplarsByCategory } from '@optimitron/data';
 
 // ---------------------------------------------------------------------------
 // Constants

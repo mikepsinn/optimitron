@@ -1,4 +1,4 @@
-import type { OrgType } from "@optomitron/db";
+import type { OrgType } from "@optimitron/db";
 
 export interface DashboardUser {
   id: string;

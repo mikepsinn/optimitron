@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Laffer Curve Analysis via Optomitron Optimizer
+ * Laffer Curve Analysis via Optimitron Optimizer
  *
  * Tests the Laffer Curve hypothesis using temporal causal inference:
  *   a. Top Marginal Tax Rate → Federal Revenue %GDP
@@ -11,8 +11,8 @@
  * Each analysis is run on both absolute levels and YoY % change.
  */
 
-import { US_LAFFER_CURVE_DATA, type LafferCurveDataPoint } from '@optomitron/data';
-import { runFullAnalysis, type TimeSeries, type FullAnalysisResult } from '@optomitron/optimizer';
+import { US_LAFFER_CURVE_DATA, type LafferCurveDataPoint } from '@optimitron/data';
+import { runFullAnalysis, type TimeSeries, type FullAnalysisResult } from '@optimitron/optimizer';
 
 // ─── Config ───────────────────────────────────────────────────────────
 
@@ -133,7 +133,7 @@ function fmt(n: number, digits = 3): string {
 }
 
 console.log('═══════════════════════════════════════════════════════════');
-console.log('  LAFFER CURVE CAUSAL ANALYSIS — Optomitron Optimizer');
+console.log('  LAFFER CURVE CAUSAL ANALYSIS — Optimitron Optimizer');
 console.log('  Data: US 1950–2023 | Onset delay: 1yr | Duration: 3yr');
 console.log('═══════════════════════════════════════════════════════════\n');
 

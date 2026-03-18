@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 import { computeEvidenceGrade, derivePolicyEvidenceGrade } from '../evidence-grade.js';
 
 const BASE_RESULT: FullAnalysisResult = {

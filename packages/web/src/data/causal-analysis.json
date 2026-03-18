@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-02-07T04:11:43.597Z",
-  "generatedBy": "@optomitron/optimizer (N-of-1 causal analysis)",
+  "generatedBy": "@optimitron/optimizer (N-of-1 causal analysis)",
   "methodology": "N-of-1 longitudinal analysis per country, aggregated across countries",
   "config": {
     "onsetDelayDays": 365,

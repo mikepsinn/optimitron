@@ -381,7 +381,7 @@ export const paperLinks: NavItem[] = [
 
 export const githubLink: NavItem = {
   label: "GitHub",
-  href: "https://github.com/mikepsinn/optomitron",
+  href: "https://github.com/mikepsinn/optimitron",
   emoji: "💻",
   description: "Source code, issues, and contributions",
   external: true,
@@ -389,7 +389,7 @@ export const githubLink: NavItem = {
 
 export const contractsSourceLink: NavItem = {
   label: "Smart Contracts",
-  href: "https://github.com/mikepsinn/optomitron/tree/main/packages",
+  href: "https://github.com/mikepsinn/optimitron/tree/main/packages",
   emoji: "📜",
   description: "treasury-prize, treasury-iab, treasury-wish, treasury-shared — all Solidity source",
   external: true,
@@ -397,7 +397,7 @@ export const contractsSourceLink: NavItem = {
 
 export const readmeLink: NavItem = {
   label: "README",
-  href: "https://github.com/mikepsinn/optomitron#readme",
+  href: "https://github.com/mikepsinn/optimitron#readme",
   emoji: "📝",
   description: "Feature overview, setup, and architecture at a glance",
   external: true,

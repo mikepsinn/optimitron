@@ -10,14 +10,14 @@ describe('VoiceTranscript', () => {
 
   it('renders user and assistant entries', () => {
     const entries: TranscriptEntry[] = [
-      { role: 'user', text: 'What is Optomitron?' },
-      { role: 'assistant', text: 'Optomitron is an AI governance platform.' },
+      { role: 'user', text: 'What is Optimitron?' },
+      { role: 'assistant', text: 'Optimitron is an AI governance platform.' },
     ];
 
     render(<VoiceTranscript entries={entries} />);
 
-    expect(screen.getByText('What is Optomitron?')).toBeDefined();
-    expect(screen.getByText('Optomitron is an AI governance platform.')).toBeDefined();
+    expect(screen.getByText('What is Optimitron?')).toBeDefined();
+    expect(screen.getByText('Optimitron is an AI governance platform.')).toBeDefined();
     expect(screen.getByText('You')).toBeDefined();
     expect(screen.getByText('Wishonia')).toBeDefined();
   });

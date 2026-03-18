@@ -1,21 +1,21 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: optomitron-postgres
+    container_name: optimitron-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: optomitron
+      POSTGRES_DB: optimitron
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
-      - optomitron-postgres-data:/var/lib/postgresql/data
+      - optimitron-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d optomitron"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d optimitron"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  optomitron-postgres-data:
+  optimitron-postgres-data:

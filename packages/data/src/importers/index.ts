@@ -5,10 +5,10 @@
  * that works across all data sources.
  *
  * Connector reference: https://github.com/mikepsinn/curedao-api/blob/main/app/DataSources/Connectors/
- * Legacy API uses live OAuth2 API connectors; Optomitron uses file-based export parsers.
+ * Legacy API uses live OAuth2 API connectors; Optimitron uses file-based export parsers.
  * Legacy base connector class: https://github.com/mikepsinn/curedao-api/blob/main/app/DataSources/OAuth2Connector.php
  *
- * Connector mapping (legacy API → Optomitron):
+ * Connector mapping (legacy API → Optimitron):
  *   FitbitConnector.php     → fitbit.ts (export parser only)
  *   OuraConnector.php       → oura.ts (export parser only)
  *   WithingsConnector.php   → withings.ts (export parser only)

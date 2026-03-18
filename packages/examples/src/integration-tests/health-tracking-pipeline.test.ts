@@ -17,7 +17,7 @@ import {
   parseAppleHealthXML,
   summarizeAppleHealthExport,
   type ParsedHealthRecord,
-} from '@optomitron/data';
+} from '@optimitron/data';
 import {
   type TimeSeries,
   alignTimeSeries,
@@ -26,7 +26,7 @@ import {
   pearsonCorrelation,
   spearmanCorrelation,
   calculateEffectSize,
-} from '@optomitron/optimizer';
+} from '@optimitron/optimizer';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

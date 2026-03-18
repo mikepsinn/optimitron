@@ -3,7 +3,7 @@
 // ============================================================================
 //
 // Ported from decentralized-fda's measurementSchema.ts and adapted to
-// Optomitron's Prisma schema (VariableCategory.name, Unit.abbreviatedName).
+// Optimitron's Prisma schema (VariableCategory.name, Unit.abbreviatedName).
 //
 // These constants are designed to be embedded in LLM prompts so the model
 // knows exactly which category and unit strings are valid.
@@ -14,7 +14,7 @@
 // ---------------------------------------------------------------------------
 
 /**
- * All valid variable category names in Optomitron's database.
+ * All valid variable category names in Optimitron's database.
  * Maps to the `VariableCategory.name` column.
  *
  * Use these when telling an LLM which category a parsed variable belongs to.
@@ -46,11 +46,11 @@ export const VariableCategoryNames = [
 export type VariableCategoryName = (typeof VariableCategoryNames)[number];
 
 // ---------------------------------------------------------------------------
-// DFDA → Optomitron category mapping (used when porting prompts)
+// DFDA → Optimitron category mapping (used when porting prompts)
 // ---------------------------------------------------------------------------
 
 /**
- * Maps DFDA's 27 variable category names to Optomitron's 15 categories.
+ * Maps DFDA's 27 variable category names to Optimitron's 15 categories.
  * Used internally when adapting DFDA-era prompts and for LLM fallback.
  */
 export const DFDA_CATEGORY_MAP: Record<string, VariableCategoryName> = {
@@ -88,7 +88,7 @@ export const DFDA_CATEGORY_MAP: Record<string, VariableCategoryName> = {
 // ---------------------------------------------------------------------------
 
 /**
- * All valid unit abbreviated names in Optomitron's database.
+ * All valid unit abbreviated names in Optimitron's database.
  * Maps to the `Unit.abbreviatedName` column.
  *
  * These are the short forms shown in UI (e.g. "mg", "IU", "1-5").
@@ -151,11 +151,11 @@ export const UnitAbbreviations = [
 export type UnitAbbreviation = (typeof UnitAbbreviations)[number];
 
 // ---------------------------------------------------------------------------
-// DFDA → Optomitron unit mapping
+// DFDA → Optimitron unit mapping
 // ---------------------------------------------------------------------------
 
 /**
- * Maps DFDA's verbose unit names to Optomitron's abbreviated unit names.
+ * Maps DFDA's verbose unit names to Optimitron's abbreviated unit names.
  * Used when adapting DFDA-era data and for LLM prompt normalization.
  */
 export const DFDA_UNIT_MAP: Record<string, UnitAbbreviation> = {
@@ -246,7 +246,7 @@ export type CombinationOperation = 'SUM' | 'MEAN';
  *
  * This interface represents the output of the text-to-measurements pipeline
  * before it's saved to the database. It uses human-readable names that map
- * to Optomitron's Prisma schema:
+ * to Optimitron's Prisma schema:
  *
  * - `variableName` → `GlobalVariable.name`
  * - `unitAbbreviation` → `Unit.abbreviatedName`

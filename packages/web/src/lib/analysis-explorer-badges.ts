@@ -2,8 +2,8 @@ import type {
   OutcomeMegaStudyRankingRow,
   PairStudyResult,
   PairStudyQualityFlag,
-} from "@optomitron/optimizer";
-import { collectPairStudyQualityFlags } from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
+import { collectPairStudyQualityFlags } from "@optimitron/optimizer";
 
 import type {
   EvidenceCertainty,

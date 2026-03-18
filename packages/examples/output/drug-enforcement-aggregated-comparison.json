@@ -702,12 +702,12 @@
   },
   "files": {
     "trafficking": {
-      "markdownPath": "E:\\code\\optomitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-trafficking.md",
-      "jsonPath": "E:\\code\\optomitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-trafficking.json"
+      "markdownPath": "E:\\code\\optimitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-trafficking.md",
+      "jsonPath": "E:\\code\\optimitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-trafficking.json"
     },
     "drugLaw": {
-      "markdownPath": "E:\\code\\optomitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-drug-law.md",
-      "jsonPath": "E:\\code\\optomitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-drug-law.json"
+      "markdownPath": "E:\\code\\optimitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-drug-law.md",
+      "jsonPath": "E:\\code\\optimitron\\packages\\examples\\output\\drug-enforcement-aggregated-study-drug-law.json"
     }
   }
 }

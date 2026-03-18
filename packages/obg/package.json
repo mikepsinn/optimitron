@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/obg",
+  "name": "@optimitron/obg",
   "homepage": "https://obg.warondisease.org",
   "version": "0.1.0",
   "description": "Optimal Budget Generator - diminishing returns, cost-effectiveness, Budget Impact Score",
@@ -12,8 +12,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@optomitron/optimizer": "workspace:*",
-    "@optomitron/opg": "workspace:*",
+    "@optimitron/optimizer": "workspace:*",
+    "@optimitron/opg": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {

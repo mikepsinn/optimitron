@@ -2,7 +2,7 @@
 
 ## Summary
 
-`packages/web` is the serverful Next.js application for Optomitron. It is the integration layer for:
+`packages/web` is the serverful Next.js application for Optimitron. It is the integration layer for:
 
 - authentication
 - referral capture and email

@@ -48,11 +48,11 @@ import {
 } from "@/lib/parameters-calculations-citations";
 
 export const metadata: Metadata = {
-  title: "Optomitron — The Earth Optimization Machine",
+  title: "Optimitron — The Earth Optimization Machine",
   description:
     "Maximize median health and wealth for everyone, with data. Built by Wishonia, an alien governance AI with 4,237 years of field testing.",
   openGraph: {
-    title: "Optomitron — The Earth Optimization Machine",
+    title: "Optimitron — The Earth Optimization Machine",
     description:
       "Maximize median health and wealth for everyone, with data.",
     type: "website",
@@ -252,7 +252,7 @@ export default function Home() {
         <ScrollReveal>
         <div className="p-8 sm:p-12 bg-brutal-cyan border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 uppercase tracking-tight text-black">
-            How Optomitron Replaces Guessing With Knowing
+            How Optimitron Replaces Guessing With Knowing
           </h2>
           <p className="text-center text-sm text-black/60 font-medium mb-12 max-w-2xl mx-auto">
             No politician needed. No ideology required. Just: what works, how

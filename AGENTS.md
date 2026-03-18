@@ -20,38 +20,38 @@ The Prisma schema (`packages/db/prisma/schema.prisma`) is the canonical source f
 
 **How types flow:**
 ```
-schema.prisma → @optomitron/db exports:
+schema.prisma → @optimitron/db exports:
   ├── Prisma client (for web/API layer ONLY)
   ├── Pure TS interfaces (for ALL packages)
   └── Zod schemas (for runtime validation)
 ```
 
 **DO:**
-- Import PLAIN TypeScript interfaces from `@optomitron/db` (type-only imports)
-- Use `import type { Measurement, GlobalVariable } from '@optomitron/db'`
+- Import PLAIN TypeScript interfaces from `@optimitron/db` (type-only imports)
+- Use `import type { Measurement, GlobalVariable } from '@optimitron/db'`
 - Keep Prisma schema as the single source of truth
 
 **DO NOT:**
 - Import `@prisma/client` in library packages (optimizer, wishocracy, opg, obg, data)
 - Define duplicate interfaces in library packages that mirror DB models
-- Create separate "db-types" packages — the types live in `@optomitron/db`
+- Create separate "db-types" packages — the types live in `@optimitron/db`
 
 ### 2. Library Package Rules
 
 These packages are **pure functions with ZERO runtime database dependencies:**
-- `@optomitron/optimizer` — Domain-agnostic causal inference
-- `@optomitron/wishocracy` — Preference aggregation (RAPPA)
-- `@optomitron/opg` — Optimal Policy Generator
-- `@optomitron/obg` — Optimal Budget Generator
-- `@optomitron/data` — Data fetchers and importers
+- `@optimitron/optimizer` — Domain-agnostic causal inference
+- `@optimitron/wishocracy` — Preference aggregation (RAPPA)
+- `@optimitron/opg` — Optimal Policy Generator
+- `@optimitron/obg` — Optimal Budget Generator
+- `@optimitron/data` — Data fetchers and importers
 
-They MAY import **type-only** exports from `@optomitron/db`.
+They MAY import **type-only** exports from `@optimitron/db`.
 They MUST NOT import Prisma client, database connections, or any runtime DB code.
 They MUST work in the browser (for PGlite/local-first).
 
 ### 3. Domain Agnosticism
 
-`@optomitron/optimizer` is **completely domain-agnostic**. NEVER reference:
+`@optimitron/optimizer` is **completely domain-agnostic**. NEVER reference:
 - ❌ "drugs", "supplements", "treatments", "patients"
 - ❌ "policies", "budgets", "politicians", "government"
 - ✅ "predictor", "outcome", "variable", "measurement", "effect size"
@@ -89,7 +89,7 @@ The web package is the integration layer where everything comes together.
 
 - **No code without tests.** Every function gets a test.
 - Pre-commit runs ALL tests. If tests fail, don't commit.
-- Use `pnpm --filter @optomitron/<package> test` to run package tests.
+- Use `pnpm --filter @optimitron/<package> test` to run package tests.
 - Integration tests that depend on multiple packages go in `packages/examples`.
 - Currently ~1,700+ tests across all packages.
 
@@ -142,7 +142,7 @@ Before implementing any algorithm, read the relevant paper:
 ## Quick Start
 
 ```bash
-cd /mnt/e/code/optomitron
+cd /mnt/e/code/optimitron
 git pull --rebase
 pnpm install
 pnpm build

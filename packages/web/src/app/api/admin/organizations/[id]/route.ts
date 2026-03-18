@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { ActivityType, OrgStatus } from "@optomitron/db";
+import { ActivityType, OrgStatus } from "@optimitron/db";
 
 async function requireAdmin() {
   const { userId, userEmail } = await requireAuth();

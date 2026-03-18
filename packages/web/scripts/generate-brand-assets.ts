@@ -10,7 +10,7 @@
  * processes icon variants — it does NOT regenerate the icon itself.
  *
  * Usage:
- *   pnpm --filter @optomitron/web run generate:assets
+ *   pnpm --filter @optimitron/web run generate:assets
  *
  * Creates:
  *   public/favicon.ico, apple-touch-icon.png, og-image.jpg, twitter-image.jpg
@@ -42,7 +42,7 @@ const ICON_SOURCE = join(ICONS_DIR, "icon-512.png");
 // ─── OG Image Prompt ────────────────────────────────────────────
 
 const OG_PROMPT = buildPrompt(
-  "Wide banner: retro control room with globe, dials, gauges, and growth charts. Text: 'OPTOMITRON' large at top, 'The Earth Optimization Machine' below. No other text.",
+  "Wide banner: retro control room with globe, dials, gauges, and growth charts. Text: 'OPTIMITRON' large at top, 'The Earth Optimization Machine' below. No other text.",
   { style: "Use a fun black and white retro scientific illustration style." },
 );
 
@@ -182,7 +182,7 @@ function patchLayoutMetadata() {
     content = content.replace(
       /type: "website",\s*\}/,
       `type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optomitron — The Earth Optimization Machine" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Earth Optimization Machine" }],
   }`,
     );
     changed = true;
@@ -225,7 +225,7 @@ function patchManifest() {
 
 async function main() {
   console.log("============================================");
-  console.log("  OPTOMITRON BRAND ASSET GENERATOR");
+  console.log("  OPTIMITRON BRAND ASSET GENERATOR");
   console.log("============================================");
 
   if (!existsSync(ICONS_DIR)) mkdirSync(ICONS_DIR, { recursive: true });

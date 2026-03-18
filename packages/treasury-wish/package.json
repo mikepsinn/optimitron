@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/treasury-wish",
+  "name": "@optimitron/treasury-wish",
   "version": "0.1.0",
   "private": true,
   "description": "WishToken, WishocraticTreasury, and UBIDistributor for monetary reform",
@@ -20,6 +20,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.1.0",
-    "@optomitron/treasury-shared": "workspace:*"
+    "@optimitron/treasury-shared": "workspace:*"
   }
 }

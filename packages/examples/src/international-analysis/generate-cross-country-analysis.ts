@@ -16,7 +16,7 @@ import {
   POLICY_EXEMPLARS,
   type CountryCriminalJustice,
   type PolicyExemplar,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 import { generateHealthComparison } from './generate-health-comparison.js';
 import { generateDrugPolicyComparison } from './generate-drug-policy-comparison.js';

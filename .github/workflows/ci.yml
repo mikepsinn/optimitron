@@ -34,13 +34,13 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build
-        run: pnpm --filter '!@optomitron/web' run build
+        run: pnpm --filter '!@optimitron/web' run build
 
       - name: Typecheck
-        run: pnpm --filter '!@optomitron/web' run typecheck
+        run: pnpm --filter '!@optimitron/web' run typecheck
 
       - name: Lint
-        run: pnpm --filter '!@optomitron/web' run lint
+        run: pnpm --filter '!@optimitron/web' run lint
 
       - name: Test
-        run: pnpm --filter '!@optomitron/web' run test
+        run: pnpm --filter '!@optimitron/web' run test

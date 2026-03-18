@@ -21,14 +21,14 @@ export async function generateMetadata({
 
   if (!owner) {
     return {
-      title: "Alignment Report | Optomitron",
+      title: "Alignment Report | Optimitron",
     };
   }
 
   return {
-    title: `${owner.displayName} Alignment Report | Optomitron`,
+    title: `${owner.displayName} Alignment Report | Optimitron`,
     description:
-      "Shared alignment report from Optomitron, the Earth Optimization Machine.",
+      "Shared alignment report from Optimitron, the Earth Optimization Machine.",
   };
 }
 

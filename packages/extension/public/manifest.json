@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Personal health tracking — treatments, symptoms, mood, and food logging. All data stays on your device.",
   "permissions": ["alarms", "storage", "notifications"],
-  "host_permissions": ["https://optomitron.org/*", "http://localhost:3001/*"],
+  "host_permissions": ["https://optimitron.org/*", "http://localhost:3001/*"],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {

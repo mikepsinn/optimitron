@@ -27,7 +27,7 @@ describe('analysis-store', () => {
       previousCid: 'bafyold',
     });
 
-    expect(snapshot.type).toBe('optomitron-policy-analysis');
+    expect(snapshot.type).toBe('optimitron-policy-analysis');
     expect(snapshot.previousCid).toBe('bafyold');
     expect(snapshot.policies[0]?.name).toBe('Singapore-Style Healthcare');
   });
@@ -50,7 +50,7 @@ describe('analysis-store', () => {
     });
 
     expect(result.cid).toBe('bafyanalysis');
-    expect(result.snapshot.type).toBe('optomitron-policy-analysis');
+    expect(result.snapshot.type).toBe('optimitron-policy-analysis');
     expect(client.uploadFile).toHaveBeenCalledTimes(1);
   });
 
@@ -73,7 +73,7 @@ describe('analysis-store', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          type: 'optomitron-policy-analysis',
+          type: 'optimitron-policy-analysis',
           timestamp: '2026-03-10T00:00:00.000Z',
           jurisdictionId: 'us-federal',
           policies: [],
@@ -82,7 +82,7 @@ describe('analysis-store', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          type: 'optomitron-policy-analysis',
+          type: 'optimitron-policy-analysis',
           timestamp: '2026-03-11T00:00:00.000Z',
           jurisdictionId: 'us-federal',
           policies: [],

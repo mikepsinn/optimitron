@@ -8,7 +8,7 @@ import {
   TimeSeriesSchema,
 } from '../index.js';
 
-describe('@optomitron/optimizer smoke tests', () => {
+describe('@optimitron/optimizer smoke tests', () => {
   it('exports a version string', () => {
     expect(VERSION).toBe('0.1.0');
   });

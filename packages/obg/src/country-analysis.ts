@@ -20,7 +20,7 @@ import {
   type AnalysisConfig,
   type TimeSeries,
   type Measurement,
-} from '@optomitron/optimizer';
+} from '@optimitron/optimizer';
 
 // ─── Types ───────────────────────────────────────────────────────────
 

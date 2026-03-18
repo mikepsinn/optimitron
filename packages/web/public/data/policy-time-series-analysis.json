@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-02-07T21:05:33.389Z",
-  "engine": "@optomitron/optimizer runFullAnalysis()",
+  "engine": "@optimitron/optimizer runFullAnalysis()",
   "description": "US policy analyses computed from real time-series data through the causal inference pipeline",
   "totalAnalyses": 14,
   "summary": {

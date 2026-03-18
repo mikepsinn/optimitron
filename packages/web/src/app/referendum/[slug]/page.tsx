@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!referendum) return { title: "Referendum Not Found" };
 
   return {
-    title: `${referendum.title} | Optomitron`,
+    title: `${referendum.title} | Optimitron`,
     description: referendum.description ?? `Vote on: ${referendum.title}`,
   };
 }

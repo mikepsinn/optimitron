@@ -159,8 +159,8 @@ export function AlignmentReport({
   const topMatch = state.report.politicians[0];
   const shareText =
     publicMode && ownerLabel
-      ? `See how ${ownerLabel} lines up against Optomitron's federal benchmark politicians.`
-      : "I compared my budget priorities against Optomitron's federal benchmark politicians. See how yours line up.";
+      ? `See how ${ownerLabel} lines up against Optimitron's federal benchmark politicians.`
+      : "I compared my budget priorities against Optimitron's federal benchmark politicians. See how yours line up.";
 
   return (
     <div className="space-y-10">

@@ -1,7 +1,7 @@
 /**
- * @optomitron/db
+ * @optimitron/db
  *
- * Database client, Prisma types, and Zod validators for Optomitron
+ * Database client, Prisma types, and Zod validators for Optimitron
  */
 
 export * from './generated/prisma/client.js';

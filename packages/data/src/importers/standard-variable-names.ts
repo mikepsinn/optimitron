@@ -17,7 +17,7 @@
  * - Prefer singular nouns where natural ("Weight" not "Weights")
  * - Include organ/type for ambiguous measurements ("Blood Pressure Systolic")
  *
- * ## Planned: @optomitron/db/types unification
+ * ## Planned: @optimitron/db/types unification
  * Currently there are two parallel measurement types:
  * - `ParsedHealthRecord` (packages/data/src/importers) — output of file/API importers
  * - `ParsedMeasurement` (packages/chat-ui/src/nlp) — output of NLP text parsing
@@ -37,7 +37,7 @@
  * | sourceName         | ✅                  | ❌                  | Only in ParsedHealthRecord   |
  * | note               | ✅ (optional)       | ✅                  | Always present in PM         |
  *
- * **Plan:** Create a unified `@optomitron/db/types` package that exports a single
+ * **Plan:** Create a unified `@optimitron/db/types` package that exports a single
  * `ParsedMeasurement` type both importers and NLP can target. Migration steps:
  * 1. Define the unified type in packages/db/src/types.ts
  * 2. Both importers and NLP output the unified type

@@ -1,4 +1,4 @@
-import type { PairStudyResult } from "@optomitron/optimizer";
+import type { PairStudyResult } from "@optimitron/optimizer";
 
 import type {
   EvidenceGrade,

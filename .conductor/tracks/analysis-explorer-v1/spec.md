@@ -36,7 +36,7 @@ Ship a web-native explorer with:
   - optimal value estimates and uncertainty bands
   - evidence metrics and data coverage diagnostics
 - Outcome hub ranking schema and renderer.
-  - Schema and ranking implementation now available in `@optomitron/optimizer/src/outcome-mega-study-ranking.ts`.
+  - Schema and ranking implementation now available in `@optimitron/optimizer/src/outcome-mega-study-ranking.ts`.
 - Study-page route and deep-linking conventions.
   - Implemented routes:
     - `/outcomes`

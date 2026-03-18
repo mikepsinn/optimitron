@@ -10,7 +10,7 @@ import {
   type PairwiseComparison,
   type PreferenceGap,
   type PreferenceWeight,
-} from "@optomitron/wishocracy";
+} from "@optimitron/wishocracy";
 import { createEmptyAverageAllocations } from "@/lib/wishocracy-community";
 import { BUDGET_CATEGORIES, type BudgetCategoryId, getActualGovernmentAllocations } from "@/lib/wishocracy-data";
 

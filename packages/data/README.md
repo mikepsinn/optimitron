@@ -1,4 +1,4 @@
-# @optomitron/data
+# @optimitron/data
 
 Data fetchers (OECD, World Bank, WHO, FRED, Congress.gov) and health data importers (Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, generic CSV).
 
@@ -19,5 +19,5 @@ All importers are file-based and local-first — parse user data exports without
 296 unit tests.
 
 ```bash
-pnpm test --filter @optomitron/data
+pnpm test --filter @optimitron/data
 ```

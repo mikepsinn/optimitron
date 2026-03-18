@@ -90,7 +90,7 @@ async function main() {
   const file = await ai.files.upload({
     file: new Blob([combinedText], { type: 'text/plain' }),
     config: {
-      displayName: 'optomitron-manual',
+      displayName: 'optimitron-manual',
       mimeType: 'text/plain',
     },
   });

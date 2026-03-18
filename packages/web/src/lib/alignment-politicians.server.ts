@@ -1,4 +1,4 @@
-import { fetchers } from "@optomitron/data";
+import { fetchers } from "@optimitron/data";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import {
@@ -137,7 +137,7 @@ function mergeSyncedPoliticianProfile(
   const sourceNote =
     derived.coverageLevel === "full"
       ? `Derived from ${derived.rollCallCount} recent classified Congress roll calls across ${derived.categoriesCovered} budget categories. This is a recent legislative support index built from bill subjects and recorded member positions, not a lifetime ideology score.`
-      : `Blends Optomitron's curated benchmark with ${derived.rollCallCount} recent classified Congress roll calls across ${derived.categoriesCovered} budget categories. Covered categories tilt toward recent legislative behavior; uncovered categories stay anchored to the curated baseline.`;
+      : `Blends Optimitron's curated benchmark with ${derived.rollCallCount} recent classified Congress roll calls across ${derived.categoriesCovered} budget categories. Covered categories tilt toward recent legislative behavior; uncovered categories stay anchored to the curated baseline.`;
 
   return {
     ...benchmark,

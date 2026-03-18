@@ -8,7 +8,7 @@ interface SocialShareButtonsProps {
 }
 
 export function SocialShareButtons({ url, text }: SocialShareButtonsProps) {
-  const shareText = text ?? "I just mapped my priorities on Optomitron. Compare yours.";
+  const shareText = text ?? "I just mapped my priorities on Optimitron. Compare yours.";
   const encodedText = encodeURIComponent(shareText);
   const encodedUrl = encodeURIComponent(url);
   const emailBody = encodeURIComponent(`${shareText}\n\n${url}`);
@@ -24,7 +24,7 @@ export function SocialShareButtons({ url, text }: SocialShareButtonsProps) {
         Share on X
       </a>
       <a
-        href={`mailto:?subject=${encodeURIComponent("Try Optomitron")}&body=${emailBody}`}
+        href={`mailto:?subject=${encodeURIComponent("Try Optimitron")}&body=${emailBody}`}
         className="inline-flex items-center justify-center gap-2 border-2 border-black bg-white px-4 py-2 font-bold transition-colors hover:bg-muted"
       >
         <Mail className="h-4 w-4" />

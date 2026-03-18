@@ -126,9 +126,9 @@ describe('measurement-schema', () => {
       expect(Object.keys(DFDA_CATEGORY_MAP)).toHaveLength(27);
     });
 
-    it('maps to valid Optomitron categories', () => {
-      for (const [, optomitronCat] of Object.entries(DFDA_CATEGORY_MAP)) {
-        expect(VariableCategoryNames).toContain(optomitronCat);
+    it('maps to valid Optimitron categories', () => {
+      for (const [, optimitronCat] of Object.entries(DFDA_CATEGORY_MAP)) {
+        expect(VariableCategoryNames).toContain(optimitronCat);
       }
     });
 

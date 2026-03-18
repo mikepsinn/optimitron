@@ -42,7 +42,7 @@ const PolicyHypercertAttachmentDraftSchema = AttachmentInputSchema.omit({
 
 type PolicyHypercertAttachmentDraft = z.infer<typeof PolicyHypercertAttachmentDraftSchema>;
 
-export const OptomitronPolicyHypercertInputSchema = z.object({
+export const OptimitronPolicyHypercertInputSchema = z.object({
   policyId: z.string().optional(),
   jurisdictionId: z.string().min(1),
   jurisdictionName: z.string().min(1).optional(),
@@ -78,7 +78,7 @@ export const OptomitronPolicyHypercertInputSchema = z.object({
   evaluationSummary: z.string().optional(),
 });
 
-export type OptomitronPolicyHypercertInput = z.infer<typeof OptomitronPolicyHypercertInputSchema>;
+export type OptimitronPolicyHypercertInput = z.infer<typeof OptimitronPolicyHypercertInputSchema>;
 
 export interface PolicyHypercertDraft {
   activity: HypercertActivityClaimRecord;
@@ -107,7 +107,7 @@ export interface PublishedPolicyHypercertBundle extends MaterializedPolicyHyperc
 }
 
 function buildDefaultAttachmentDrafts(
-  input: OptomitronPolicyHypercertInput,
+  input: OptimitronPolicyHypercertInput,
 ): PolicyHypercertAttachmentDraft[] {
   if (input.attachments?.length) {
     return input.attachments;
@@ -127,7 +127,7 @@ function buildDefaultAttachmentDrafts(
   ];
 }
 
-function buildEvaluationSummary(input: OptomitronPolicyHypercertInput): string | undefined {
+function buildEvaluationSummary(input: OptimitronPolicyHypercertInput): string | undefined {
   if (input.evaluationSummary) {
     return input.evaluationSummary;
   }
@@ -142,9 +142,9 @@ function buildEvaluationSummary(input: OptomitronPolicyHypercertInput): string |
 }
 
 export function createPolicyHypercertDraft(
-  input: OptomitronPolicyHypercertInput,
+  input: OptimitronPolicyHypercertInput,
 ): PolicyHypercertDraft {
-  const parsed = OptomitronPolicyHypercertInputSchema.parse(input);
+  const parsed = OptimitronPolicyHypercertInputSchema.parse(input);
   const rights = parsed.rights ? createRightsRecord(parsed.rights) : undefined;
 
   return {
@@ -169,13 +169,13 @@ export function createPolicyHypercertDraft(
     attachmentDrafts: buildDefaultAttachmentDrafts(parsed),
     measurementInput: PolicyMeasurementInputSchema.parse({
       subject: {
-        uri: `optomitron:pending:${parsed.policyId ?? parsed.policyName}`,
+        uri: `optimitron:pending:${parsed.policyId ?? parsed.policyName}`,
         cid: 'pending',
       },
       createdAt: parsed.createdAt,
       startDate: parsed.startDate,
       endDate: parsed.endDate,
-      methodType: parsed.methodType ?? 'optomitron-policy-analysis',
+      methodType: parsed.methodType ?? 'optimitron-policy-analysis',
       methodURI: parsed.methodURI,
       measurerDid: parsed.contributorDid,
       evidenceURI: parsed.evidenceURI ?? parsed.sourceUrls,
@@ -190,7 +190,7 @@ export function createPolicyHypercertDraft(
     }),
     evaluationInput: EvaluationInputSchema.parse({
       subject: {
-        uri: `optomitron:pending:${parsed.policyId ?? parsed.policyName}`,
+        uri: `optimitron:pending:${parsed.policyId ?? parsed.policyName}`,
         cid: 'pending',
       },
       participantCount: parsed.participantCount,
@@ -307,7 +307,7 @@ export async function publishPolicyHypercertDraft(
 }
 
 export function createPolicyHypercertDrafts(
-  inputs: OptomitronPolicyHypercertInput[],
+  inputs: OptimitronPolicyHypercertInput[],
 ): PolicyHypercertDraft[] {
   return inputs.map((input) => createPolicyHypercertDraft(input));
 }

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NOf1VariableRelationshipSchema } from '@optomitron/optimizer';
+import { NOf1VariableRelationshipSchema } from '@optimitron/optimizer';
 
 export const CidSchema = z.string().min(1);
 export type Cid = z.infer<typeof CidSchema>;
@@ -71,13 +71,13 @@ export const BudgetAnalysisSnapshotSchema = z.object({
 
 export type BudgetAnalysisSnapshot = z.infer<typeof BudgetAnalysisSnapshotSchema>;
 
-export const OptomitronPolicyAnalysisSnapshotSchema = LinkedSnapshotBaseSchema.extend({
-  type: z.literal('optomitron-policy-analysis'),
+export const OptimitronPolicyAnalysisSnapshotSchema = LinkedSnapshotBaseSchema.extend({
+  type: z.literal('optimitron-policy-analysis'),
   policies: z.array(PolicyAnalysisSummarySchema),
   budgetAnalysis: BudgetAnalysisSnapshotSchema.optional(),
 });
 
-export type OptomitronPolicyAnalysisSnapshot = z.infer<typeof OptomitronPolicyAnalysisSnapshotSchema>;
+export type OptimitronPolicyAnalysisSnapshot = z.infer<typeof OptimitronPolicyAnalysisSnapshotSchema>;
 
 export const HealthAnalysisRelationshipSchema = NOf1VariableRelationshipSchema.extend({
   predictorVariableId: z.string(),
@@ -116,7 +116,7 @@ export type EncryptedIndividualSubmissionSnapshot = z.infer<typeof EncryptedIndi
 
 export const StoredSnapshotSchema = z.discriminatedUnion('type', [
   WishocracyAggregationSnapshotSchema,
-  OptomitronPolicyAnalysisSnapshotSchema,
+  OptimitronPolicyAnalysisSnapshotSchema,
   HealthAnalysisSnapshotSchema,
   EncryptedIndividualSubmissionSnapshotSchema,
 ]);
@@ -133,15 +133,15 @@ export const CreateWishocracyAggregationInputSchema =
 
 export type CreateWishocracyAggregationInput = z.infer<typeof CreateWishocracyAggregationInputSchema>;
 
-export const CreateOptomitronPolicyAnalysisInputSchema =
-  OptomitronPolicyAnalysisSnapshotSchema.omit({
+export const CreateOptimitronPolicyAnalysisInputSchema =
+  OptimitronPolicyAnalysisSnapshotSchema.omit({
     type: true,
     timestamp: true,
   }).extend({
     timestamp: z.string().datetime().optional(),
   });
 
-export type CreateOptomitronPolicyAnalysisInput = z.infer<typeof CreateOptomitronPolicyAnalysisInputSchema>;
+export type CreateOptimitronPolicyAnalysisInput = z.infer<typeof CreateOptimitronPolicyAnalysisInputSchema>;
 
 export const CreateHealthAnalysisInputSchema =
   HealthAnalysisSnapshotSchema.omit({

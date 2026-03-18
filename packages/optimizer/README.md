@@ -1,4 +1,4 @@
-# @optomitron/optimizer
+# @optimitron/optimizer
 
 Domain-agnostic causal inference engine for time series data.
 
@@ -11,7 +11,7 @@ Implements temporal alignment, Pearson/Spearman correlation, Bradford Hill scori
 ## Usage
 
 ```typescript
-import { alignTimeSeries, calculateCorrelation, calculatePIS } from '@optomitron/optimizer';
+import { alignTimeSeries, calculateCorrelation, calculatePIS } from '@optimitron/optimizer';
 
 const pairs = alignTimeSeries(predictor, outcome, { onsetDelay: 7, durationOfAction: 14 });
 const correlation = calculateCorrelation(pairs);
@@ -23,5 +23,5 @@ const pis = calculatePIS(pairs, correlation);
 176 unit tests covering all algorithms.
 
 ```bash
-pnpm test --filter @optomitron/optimizer
+pnpm test --filter @optimitron/optimizer
 ```

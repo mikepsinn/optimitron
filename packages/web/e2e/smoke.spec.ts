@@ -2,7 +2,7 @@
  * Smoke tests: verify key pages load without errors.
  *
  * Run:
- *   pnpm --filter @optomitron/web e2e:smoke
+ *   pnpm --filter @optimitron/web e2e:smoke
  *
  * Note: Some pages require a database connection. Pages that return 500
  * are skipped gracefully — these tests validate the static/SSG pages.
@@ -11,7 +11,7 @@ import { test, expect } from "@playwright/test";
 
 /** Pages that are statically generated (no DB needed) */
 const staticPages = [
-  { path: "/", title: "Optomitron" },
+  { path: "/", title: "Optimitron" },
   { path: "/about", title: "About" },
   { path: "/misconceptions", title: "" },
   { path: "/discoveries", title: "" },

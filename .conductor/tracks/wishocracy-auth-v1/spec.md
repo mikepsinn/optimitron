@@ -1,10 +1,10 @@
 # Track Spec: Add Wishocracy Account Persistence to Web
 
 ## Background
-The Optomitron web app already includes the Wishocracy allocation UI, but the copied flow was guest-only. Users could not create an account, save allocations to the database, or get a stable referral link after participating.
+The Optimitron web app already includes the Wishocracy allocation UI, but the copied flow was guest-only. Users could not create an account, save allocations to the database, or get a stable referral link after participating.
 
 ## Objective
-Add the missing authentication and persistence pieces from Wishocracy so Optomitron users can sign in, submit allocations, resume progress, and share referral links.
+Add the missing authentication and persistence pieces from Wishocracy so Optimitron users can sign in, submit allocations, resume progress, and share referral links.
 
 ## Scope
 - Credentials-based account creation and sign-in for the web package.
@@ -17,7 +17,7 @@ Add the missing authentication and persistence pieces from Wishocracy so Optomit
 - Local guest progress sync on sign-in.
 
 ## Deliverables
-- Prisma schema additions and matching `@optomitron/db` Zod validators/tests.
+- Prisma schema additions and matching `@optimitron/db` Zod validators/tests.
 - NextAuth configuration and signup/auth API routes in `packages/web`.
 - Vote flow updates that sync guest allocations into authenticated storage.
 - Referral link helpers and completion/share UI.

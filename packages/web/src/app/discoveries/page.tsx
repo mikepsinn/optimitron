@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const metadata = {
-  title: "Discoveries | Optomitron",
+  title: "Discoveries | Optimitron",
   description:
     "Population-level health discoveries aggregated from individual contributor analyses.",
 };

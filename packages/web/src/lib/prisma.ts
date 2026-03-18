@@ -1,4 +1,4 @@
-import { PrismaClient } from "@optomitron/db";
+import { PrismaClient } from "@optimitron/db";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };

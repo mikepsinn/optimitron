@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-// Push notification service worker for Optomitron PWA
+// Push notification service worker for Optimitron PWA
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;

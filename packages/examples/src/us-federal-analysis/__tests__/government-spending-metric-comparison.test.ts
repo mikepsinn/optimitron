@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import type { DataPoint } from '@optomitron/data';
+import type { DataPoint } from '@optimitron/data';
 
 import {
   computeDerivedGovSpendingPerCapitaPpp,

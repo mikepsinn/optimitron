@@ -19,12 +19,12 @@ import {
   getCountryComparison,
   type CountryHealthData,
   type RankedCountry,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 import {
   POLICY_EXEMPLARS,
   getExemplarsByCategory,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 // ---------------------------------------------------------------------------
 // Constants

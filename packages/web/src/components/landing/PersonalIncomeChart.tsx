@@ -30,7 +30,7 @@ const scenarios = [
     label: "Full Optimization",
     rate: WISHONIA_TRAJECTORY_CAGR_YEAR_20.value,
     color: "#f472b6",
-    description: "Full Optomitron governance optimization",
+    description: "Full Optimitron governance optimization",
     lifetimeGainLabel: `${fmtParam({...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})} per capita`,
   },
 ];

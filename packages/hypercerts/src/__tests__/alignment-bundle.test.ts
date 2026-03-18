@@ -32,8 +32,8 @@ const baseInput = {
       politicianVotedPct: 8.4,
     },
   ],
-  contributorDid: 'did:plc:optomitron',
-  sourceUrls: ['https://github.com/mikepsinn/optomitron'],
+  contributorDid: 'did:plc:optimitron',
+  sourceUrls: ['https://github.com/mikepsinn/optimitron'],
 };
 
 describe('alignment-bundle', () => {
@@ -68,7 +68,7 @@ describe('alignment-bundle', () => {
       jurisdictionId: 'us-federal',
       alignmentScore: 45.0,
       votesCompared: 8,
-      contributorDid: 'did:plc:optomitron',
+      contributorDid: 'did:plc:optimitron',
     });
 
     expect(draft.activity.title).toContain('Bob Jones');

@@ -19,7 +19,7 @@ const milToTrialsRatio = Math.round(
 );
 
 export const metadata: Metadata = {
-  title: "Your Central Bank Is a Bug | Optomitron",
+  title: "Your Central Bank Is a Bug | Optimitron",
   description:
     "Twelve unelected humans control money creation with no mandate to optimize for median health or income. The fix: fixed supply, transaction tax, equal distribution. No central bank needed.",
 };

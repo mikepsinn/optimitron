@@ -1,7 +1,7 @@
 # Track Spec: Funding Readiness Pack (v1)
 
 ## Background
-Optomitron already provides core causal inference and preference aggregation libraries. Funding readiness requires a reproducible, data-sourced pilot package that external reviewers can validate without internal context.
+Optimitron already provides core causal inference and preference aggregation libraries. Funding readiness requires a reproducible, data-sourced pilot package that external reviewers can validate without internal context.
 
 ## Objectives
 - Deliver a reproducible pilot report for the US federal budget with clear data provenance.

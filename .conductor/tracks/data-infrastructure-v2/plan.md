@@ -36,12 +36,12 @@
      - no-`Dim1` fallback behavior
      - transient network retry behavior
 - Validation:
-  - `pnpm --filter @optomitron/examples generate:mega-studies` now produces 64/64 pair studies with HALE included (zero skipped pairs).
+  - `pnpm --filter @optimitron/examples generate:mega-studies` now produces 64/64 pair studies with HALE included (zero skipped pairs).
 - Added a dedicated government-spending metric comparison artifact for source transparency:
   - documents competing definitions, US context estimates, and cross-country default recommendation.
 12. [x] Publish government spending metric taxonomy + source-comparison artifact.
    - Added generator: `packages/examples/src/us-federal-analysis/generate-government-spending-metric-comparison.ts`.
-   - Added npm script: `pnpm --filter @optomitron/examples generate:government-spending-metrics`.
+   - Added npm script: `pnpm --filter @optimitron/examples generate:government-spending-metrics`.
    - Publishes:
      - `packages/examples/output/government-spending-metric-comparison.md`
      - `packages/examples/output/government-spending-metric-comparison.json`
@@ -60,7 +60,7 @@
    - Added local provenance metadata:
      - `download-manifest.json`
      - `derived-drug-war-proxy-panel.coverage.json`
-14. [x] Expose aggregated proxy panel as a typed dataset loader in `@optomitron/data`.
+14. [x] Expose aggregated proxy panel as a typed dataset loader in `@optimitron/data`.
    - Added `datasets/aggregated-nof1-drug-war-proxy.ts` with:
      - typed row interface
      - CSV parser

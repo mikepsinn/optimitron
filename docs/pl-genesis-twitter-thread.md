@@ -4,16 +4,16 @@
 - Post 2-3 days before the submission deadline, after the demo video is finished.
 - Tag `@PL__Genesis` and `@protocollabs`.
 - Include `#PLGenesis`.
-- Attach the Optomitron visualizations: spending vs life expectancy scatter plot and current vs optimal budget chart.
+- Attach the Optimitron visualizations: spending vs life expectancy scatter plot and current vs optimal budget chart.
 - Coordinate referrals and friendly replies for the first hour.
 
 ## Draft Thread
 
 **1/**
-Democracy is the system where millions of people have preferences and then a budget appears as if by weather. We built `Optomitron` to make that seem slightly less mystical. `@PL__Genesis` `@protocollabs` #PLGenesis
+Democracy is the system where millions of people have preferences and then a budget appears as if by weather. We built `Optimitron` to make that seem slightly less mystical. `@PL__Genesis` `@protocollabs` #PLGenesis
 
 **2/**
-Optomitron is an open-source evidence engine for public policy. It compares what citizens want, what governments fund, and what the data suggests actually improves outcomes. Which is awkward for vibes, but useful for governance.
+Optimitron is an open-source evidence engine for public policy. It compares what citizens want, what governments fund, and what the data suggests actually improves outcomes. Which is awkward for vibes, but useful for governance.
 
 **3/**
 The problem: budgets are usually decided by ideology, lobbying, inherited bureaucracy, and the ancient parliamentary science of "someone wrote a memo." Citizens can complain, but the spreadsheet rarely notices.
@@ -21,7 +21,7 @@ The problem: budgets are usually decided by ideology, lobbying, inherited bureau
 **4/**
 Our fix is indecently literal:
 - citizens rank priorities with Wishocracy
-- Optomitron measures the biggest preference gaps
+- Optimitron measures the biggest preference gaps
 - the analysis pipeline estimates impact, confidence, welfare, and evidence grade
 - the agent publishes receipts instead of just opinions
 
@@ -44,4 +44,4 @@ This lines up with the PL focus areas we care about most:
 - **Infrastructure & Digital Rights**: Storacha-backed public audit trails for civic decision-making
 
 **10/**
-So that is Optomitron: a way to ask what the public wants, what governments actually do, and what the evidence says should happen next. Which is a surprisingly controversial sequence of questions. `@PL__Genesis` `@protocollabs` #PLGenesis
+So that is Optimitron: a way to ask what the public wants, what governments actually do, and what the evidence says should happen next. Which is a surprisingly controversial sequence of questions. `@PL__Genesis` `@protocollabs` #PLGenesis

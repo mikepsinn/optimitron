@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { getContracts } from "@optomitron/treasury-shared/addresses";
+import { getContracts } from "@optimitron/treasury-shared/addresses";
 
 /**
  * Server-side ethers.js client for on-chain interactions.

@@ -3,7 +3,7 @@ import {
   type Session,
   type LiveServerMessage,
 } from '@google/genai';
-import type { VoiceState } from '@optomitron/chat-ui';
+import type { VoiceState } from '@optimitron/chat-ui';
 import { VOICE_MODEL } from './voice-config';
 import { API_ROUTES } from './api-routes';
 

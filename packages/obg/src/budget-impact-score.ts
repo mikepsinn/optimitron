@@ -8,9 +8,9 @@
  * @see https://obg.warondisease.org/#budget-impact-score-bis
  */
 
-import type { AnalysisMethod } from '@optomitron/opg';
-import { METHOD_WEIGHTS } from '@optomitron/opg';
-import type { EvidenceGrade } from '@optomitron/opg';
+import type { AnalysisMethod } from '@optimitron/opg';
+import { METHOD_WEIGHTS } from '@optimitron/opg';
+import type { EvidenceGrade } from '@optimitron/opg';
 
 export interface EffectEstimate {
   beta: number;           // Effect size

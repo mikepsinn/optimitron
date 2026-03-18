@@ -9,7 +9,7 @@
 import type { SpendingGap, SpendingCategory, OSLEstimate } from './budget.js';
 import type { DiminishingReturnsModel } from './diminishing-returns.js';
 import type { WESCalculationResult } from './budget-impact-score.js';
-import type { WelfareEffect } from '@optomitron/opg';
+import type { WelfareEffect } from '@optimitron/opg';
 
 // ---------------------------------------------------------------------------
 // Result types

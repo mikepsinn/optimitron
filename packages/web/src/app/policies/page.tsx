@@ -237,7 +237,7 @@ export default function PoliciesPage() {
       </div>
 
       <p className="text-xs text-black/40 mt-8 font-bold">
-        Analysis date: {data.generatedAt} · Source: Optomitron OPG (Optimal Policy Generator)
+        Analysis date: {data.generatedAt} · Source: Optimitron OPG (Optimal Policy Generator)
       </p>
 
       <div className="mt-10">

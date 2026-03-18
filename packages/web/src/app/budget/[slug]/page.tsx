@@ -663,7 +663,7 @@ export default async function BudgetCategoryPage({
           ← All Categories
         </NavItemLink>
         <p className="text-xs text-black/40 font-bold">
-          Generated {new Date(data.generatedAt).toLocaleDateString()} · Optomitron OBG
+          Generated {new Date(data.generatedAt).toLocaleDateString()} · Optimitron OBG
         </p>
       </div>
     </div>

@@ -1,16 +1,16 @@
-# Gitcoin Grants Application — Optomitron
+# Gitcoin Grants Application — Optimitron
 
 ## Project Name
-Optomitron — Open Source World Optimization Engine
+Optimitron — Open Source World Optimization Engine
 
 ## Project Description (Short)
-Optomitron is a domain-agnostic causal inference engine that optimizes anything measurable — from personal health to government budgets to business outcomes. One command finds causal relationships in time series data and generates evidence-based recommendations.
+Optimitron is a domain-agnostic causal inference engine that optimizes anything measurable — from personal health to government budgets to business outcomes. One command finds causal relationships in time series data and generates evidence-based recommendations.
 
 ## Project Description (Long)
 
-### What is Optomitron?
+### What is Optimitron?
 
-Optomitron is an open-source TypeScript monorepo that combines causal inference, preference aggregation, and policy optimization into a single platform. It implements five peer-reviewed methodologies:
+Optimitron is an open-source TypeScript monorepo that combines causal inference, preference aggregation, and policy optimization into a single platform. It implements five peer-reviewed methodologies:
 
 1. **Causal Inference Engine** — Temporal alignment, Bradford Hill scoring, effect size estimation, and optimal value detection for any predictor-outcome pair
 2. **Wishocracy (RAPPA)** — Confidence-weighted pairwise preference aggregation for democratic decision-making
@@ -20,7 +20,7 @@ Optomitron is an open-source TypeScript monorepo that combines causal inference,
 
 ### Why It Matters
 
-Every year, governments spend trillions of dollars on policies with no causal evidence of effectiveness. Meanwhile, individuals make health decisions based on anecdote rather than personal data. Optomitron applies the same rigorous causal analysis to both problems:
+Every year, governments spend trillions of dollars on policies with no causal evidence of effectiveness. Meanwhile, individuals make health decisions based on anecdote rather than personal data. Optimitron applies the same rigorous causal analysis to both problems:
 
 - **Personal**: "Does Vitamin D actually improve my mood?" → Upload your health data, get a Bradford Hill-scored answer
 - **Policy**: "Does increasing education spending improve PISA scores?" → Cross-country analysis with 20+ nations
@@ -29,7 +29,7 @@ Every year, governments spend trillions of dollars on policies with no causal ev
 ### Current State
 
 - **~1,700+ tests** across 8 packages, all passing
-- **Live website**: https://mikepsinn.github.io/optomitron/
+- **Live website**: https://mikepsinn.github.io/optimitron/
 - **Golden path demo**: One command generates synthetic health data → runs full causal pipeline → outputs markdown report
 - **Country-level analysis**: Converts WHO/World Bank data into optimizer-compatible format — same pipeline for personal health and national statistics
 - 24-model Prisma schema with Zod validators
@@ -48,7 +48,7 @@ Every year, governments spend trillions of dollars on policies with no causal ev
 2. **Public goods infrastructure**: Open source causal inference benefits all DAOs making resource allocation decisions (treasury management, grant distribution)
 3. **DeSci application**: Health data analysis pipeline enables privacy-preserving medical research without centralized data collection
 4. **ZK-ready architecture**: Designed for future ZK proof integration (anonymous preference submission, verifiable aggregation)
-5. **Retroactive public goods**: Every policy recommendation is a public good — if Optomitron improves one government budget decision, the welfare gain is billions
+5. **Retroactive public goods**: Every policy recommendation is a public good — if Optimitron improves one government budget decision, the welfare gain is billions
 
 ## Team
 
@@ -64,7 +64,7 @@ $25,000 — $50,000
 - 10% — Community: Grant application support, conference presentations, ecosystem partnerships
 
 ## Links
-- **GitHub**: https://github.com/mikepsinn/optomitron
-- **Live Demo**: https://mikepsinn.github.io/optomitron/
+- **GitHub**: https://github.com/mikepsinn/optimitron
+- **Live Demo**: https://mikepsinn.github.io/optimitron/
 - **Papers**: https://dfda-spec.warondisease.org, https://wishocracy.warondisease.org, https://opg.warondisease.org, https://obg.warondisease.org
 - **License**: MIT

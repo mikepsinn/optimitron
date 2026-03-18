@@ -10,7 +10,7 @@
  *
  * @example
  * ```typescript
- * import { parseCronometerExport } from '@optomitron/data';
+ * import { parseCronometerExport } from '@optimitron/data';
  * const records = parseCronometerExport(csvString);
  * ```
  */

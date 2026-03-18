@@ -6,7 +6,7 @@ import {
   ConversationContext,
   type ChatMessage,
   type ParsedMeasurement,
-} from "@optomitron/chat-ui";
+} from "@optimitron/chat-ui";
 import { API_ROUTES } from "@/lib/api-routes";
 import { MythBusterCard } from "./MythBusterCard";
 import { OutcomeCard } from "./OutcomeCard";

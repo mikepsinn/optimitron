@@ -18,7 +18,7 @@
  *
  * @example
  * ```typescript
- * import { parseGoogleFitExport } from '@optomitron/data';
+ * import { parseGoogleFitExport } from '@optimitron/data';
  * const records = parseGoogleFitExport({
  *   dailyActivityMetrics: [json1, json2],
  *   rawData: { steps: stepsJson, heartRate: hrJson },

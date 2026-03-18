@@ -1,4 +1,4 @@
-# Conductor Overhaul Plan (Optomitron)
+# Conductor Overhaul Plan (Optimitron)
 
 Date: 2026-02-07
 
@@ -279,7 +279,7 @@ Below, each proposed track includes:
 - Acceptance: export feeds directly into optimizer or data importers.
 
 **C. `plan.md` checklist**
-1. Add export format aligned with `@optomitron/data` importers.
+1. Add export format aligned with `@optimitron/data` importers.
 2. Add unit tests for storage schema and export formatting.
 3. Add UI for export + data summary.
 4. Add integration example in `packages/examples`.

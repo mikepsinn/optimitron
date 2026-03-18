@@ -12,17 +12,17 @@
 
 ### Gemini CLI (preferred for datasets + boilerplate)
 ```bash
-cd /mnt/e/code/optomitron
+cd /mnt/e/code/optimitron
 gemini -p "Read .conductor/workflow.md, then .conductor/tracks/<track>/spec.md and plan.md. \
 Pick the next unchecked item: <specific item>. \
 Follow the data pattern in packages/data/src/datasets/us-drug-war.ts. \
-Create the file, add export to index.ts, verify it builds with: pnpm --filter @optomitron/data run build" \
+Create the file, add export to index.ts, verify it builds with: pnpm --filter @optimitron/data run build" \
 -y --output-format text
 ```
 
 ### Codex CLI (for code changes with tests)
 ```bash
-cd /mnt/e/code/optomitron
+cd /mnt/e/code/optimitron
 codex exec "Read .conductor/tracks/<track>/spec.md and plan.md. \
 Implement <specific task>. Write tests. Run pnpm check before finishing. \
 Do NOT search the web — use your training data." --full-auto
@@ -40,7 +40,7 @@ Send results to Mike on Telegram (target: 1762827333).
 1. **One task per run** — don't combine unrelated work
 2. **Read spec.md first** — understand the goal before coding
 3. **Follow existing patterns** — look at similar files in the repo
-4. **Build must pass** — `pnpm --filter @optomitron/<pkg> run build`
+4. **Build must pass** — `pnpm --filter @optimitron/<pkg> run build`
 5. **No code without tests** (for Codex/Claude, not dataset generation)
 6. **Commit with conventional commits** — `feat(data):`, `fix(optimizer):`, etc.
 7. **Don't search the web for data** — use training knowledge, cite sources in JSDoc
@@ -68,8 +68,8 @@ export const DATASET_NAME: DataPointType[] = [
 
 ## Analysis Script Pattern
 ```typescript
-import { runFullAnalysis, TimeSeries } from '@optomitron/optimizer';
-import { DATASET_NAME } from '@optomitron/data';
+import { runFullAnalysis, TimeSeries } from '@optimitron/optimizer';
+import { DATASET_NAME } from '@optimitron/data';
 
 function toTS(data: Array<{year: number; value: number}>, id: string, name: string): TimeSeries {
   return { variableId: id, variableName: name, unitName: 'units',
@@ -84,7 +84,7 @@ function toTS(data: Array<{year: number; value: number}>, id: string, name: stri
 Before committing **analysis code or methodology changes**, run Codex as a reviewer:
 
 ```bash
-cd /mnt/e/code/optomitron
+cd /mnt/e/code/optimitron
 codex exec "You are a critical reviewer. Examine this code/output for:
 1. Methodological flaws (confounders, selection bias, ecological fallacy)
 2. Statistical errors (wrong test, violated assumptions, multiple comparisons)

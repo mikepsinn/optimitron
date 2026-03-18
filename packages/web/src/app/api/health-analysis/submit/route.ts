@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { NOf1VariableRelationshipSchema } from "@optomitron/optimizer";
+import { NOf1VariableRelationshipSchema } from "@optimitron/optimizer";
 import { prisma } from "@/lib/prisma";
 import { runAggregationForPairs } from "@/lib/aggregate-relationships.server";
 import {
@@ -8,7 +8,7 @@ import {
   CombinationOperation,
   FillingType,
   EvidenceGrade,
-} from "@optomitron/db";
+} from "@optimitron/db";
 
 const SubmissionRelationshipSchema = NOf1VariableRelationshipSchema.omit({
   subjectId: true,

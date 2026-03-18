@@ -10,9 +10,9 @@ import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
 
 export const metadata: Metadata = {
-  title: "Transparency | Optomitron",
+  title: "Transparency | Optimitron",
   description:
-    "How Optomitron uses Storacha (IPFS), Hypercerts, and smart contracts to make governance data immutable, auditable, and enforceable.",
+    "How Optimitron uses Storacha (IPFS), Hypercerts, and smart contracts to make governance data immutable, auditable, and enforceable.",
 };
 
 const pipelineSteps = [

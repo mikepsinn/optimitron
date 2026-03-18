@@ -7,7 +7,7 @@ import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { getSignInPath, ROUTES } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Optomitron",
+  title: "Dashboard | Optimitron",
   description:
     "Your Earth optimization dashboard — track impact, manage preferences, and coordinate with organisations.",
 };

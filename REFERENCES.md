@@ -1,13 +1,13 @@
-# REFERENCES.md — Optomitron Source Material & References
+# REFERENCES.md — Optimitron Source Material & References
 
-> Complete index of papers, schemas, APIs, standards, and data sources that inform the Optomitron codebase.
+> Complete index of papers, schemas, APIs, standards, and data sources that inform the Optimitron codebase.
 
 ---
 
 ## Table of Contents
 
 - [Papers (Source of All Algorithms)](#papers-source-of-all-algorithms)
-- [Optomitron Schema (Legacy Reference)](#optomitron-schema-legacy-reference)
+- [Optimitron Schema (Legacy Reference)](#optimitron-schema-legacy-reference)
 - [Data APIs](#data-apis)
 - [Health Data Standards](#health-data-standards)
 - [Proof of Personhood / Identity](#proof-of-personhood--identity)
@@ -23,12 +23,12 @@ Every algorithm in this codebase originates from one of these papers. The **loca
 
 | Paper | Package(s) | Key Concepts | Local QMD | Web |
 |-------|-----------|--------------|-----------|-----|
-| **dFDA Specification** | `@optomitron/optimizer` | PIS methodology, temporal alignment (onset delay + duration of action), Bradford Hill scoring (9 criteria with saturation functions), effect size estimation, evidence grading (A–F), optimal value analysis | `knowledge/appendix/dfda-spec-paper.qmd` | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
-| **Wishocracy** | `@optomitron/wishocracy` | RAPPA (Randomized Aggregated Pairwise Preference Allocation), eigenvector preference weights via power iteration, Citizen Alignment Scores, consistency ratio (AHP CR), Floyd-Warshall matrix completion, bootstrap convergence analysis | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
-| **Optimocracy** | `@optomitron/opg`, `@optomitron/obg` | Two-metric welfare function: W = α·IncomeGrowth + (1−α)·HealthyLifeYears | `knowledge/appendix/optimocracy-paper.qmd` | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
-| **Optimal Policy Generator** | `@optomitron/opg` | Policy Impact Score, Causal Confidence Score (CCS), Bradford Hill for policy evaluation, method quality weights (RCT=1.0 → cross-sectional=0.25), jurisdiction analysis, policy recommendations (enact/replace/repeal/maintain) | `knowledge/appendix/optimal-policy-generator-spec.qmd` | [opg.warondisease.org](https://opg.warondisease.org) |
-| **Optimal Budget Generator** | `@optomitron/obg` | Budget Impact Score (BIS), Optimal Spending Level (OSL) via log-linear and Michaelis-Menten saturation models, cost-effectiveness analysis (cost-per-QALY), diminishing returns modeling, spending gap analysis | `knowledge/appendix/optimal-budget-generator-spec.qmd` | [obg.warondisease.org](https://obg.warondisease.org) |
-| **Incentive Alignment Bonds** | `@optomitron/treasury` (Phase 5) | IAB treasury mechanism, smart contract campaign funding, alignment-score-based automatic fund distribution, data contribution tokens | `knowledge/appendix/incentive-alignment-bonds-paper.qmd` | [iab.warondisease.org](https://iab.warondisease.org) |
+| **dFDA Specification** | `@optimitron/optimizer` | PIS methodology, temporal alignment (onset delay + duration of action), Bradford Hill scoring (9 criteria with saturation functions), effect size estimation, evidence grading (A–F), optimal value analysis | `knowledge/appendix/dfda-spec-paper.qmd` | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
+| **Wishocracy** | `@optimitron/wishocracy` | RAPPA (Randomized Aggregated Pairwise Preference Allocation), eigenvector preference weights via power iteration, Citizen Alignment Scores, consistency ratio (AHP CR), Floyd-Warshall matrix completion, bootstrap convergence analysis | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
+| **Optimocracy** | `@optimitron/opg`, `@optimitron/obg` | Two-metric welfare function: W = α·IncomeGrowth + (1−α)·HealthyLifeYears | `knowledge/appendix/optimocracy-paper.qmd` | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
+| **Optimal Policy Generator** | `@optimitron/opg` | Policy Impact Score, Causal Confidence Score (CCS), Bradford Hill for policy evaluation, method quality weights (RCT=1.0 → cross-sectional=0.25), jurisdiction analysis, policy recommendations (enact/replace/repeal/maintain) | `knowledge/appendix/optimal-policy-generator-spec.qmd` | [opg.warondisease.org](https://opg.warondisease.org) |
+| **Optimal Budget Generator** | `@optimitron/obg` | Budget Impact Score (BIS), Optimal Spending Level (OSL) via log-linear and Michaelis-Menten saturation models, cost-effectiveness analysis (cost-per-QALY), diminishing returns modeling, spending gap analysis | `knowledge/appendix/optimal-budget-generator-spec.qmd` | [obg.warondisease.org](https://obg.warondisease.org) |
+| **Incentive Alignment Bonds** | `@optimitron/treasury` (Phase 5) | IAB treasury mechanism, smart contract campaign funding, alignment-score-based automatic fund distribution, data contribution tokens | `knowledge/appendix/incentive-alignment-bonds-paper.qmd` | [iab.warondisease.org](https://iab.warondisease.org) |
 
 **Local QMD source files** are in the disease-eradication-plan repo:
 ```
@@ -37,9 +37,9 @@ https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/append
 
 ---
 
-## Optomitron Schema (Legacy Reference)
+## Optimitron Schema (Legacy Reference)
 
-The Optomitron schema (`@optomitron/db`) was inspired by the legacy PostgreSQL database. We extracted and modernized the essential models for the universal measurement system from the original 115-table schema.
+The Optimitron schema (`@optimitron/db`) was inspired by the legacy PostgreSQL database. We extracted and modernized the essential models for the universal measurement system from the original 115-table schema.
 
 **Source Repository:** [mikepsinn/curedao-api](https://github.com/mikepsinn/curedao-api)
 
@@ -47,7 +47,7 @@ The Optomitron schema (`@optomitron/db`) was inspired by the legacy PostgreSQL d
 
 ### Table Mapping
 
-| Legacy DDL File | Optomitron Model | Purpose |
+| Legacy DDL File | Optimitron Model | Purpose |
 |------------------|-----------------|---------|
 | `measurements.sql` | `Measurement` | Individual data points (timestamp, value, unit, source) |
 | `variables.sql` | `GlobalVariable` | Canonical variable definitions (name, category, default unit, combination method) |
@@ -64,28 +64,28 @@ The Optomitron schema (`@optomitron/db`) was inspired by the legacy PostgreSQL d
 
 ## Data APIs
 
-External APIs used by `@optomitron/data` and planned integrations. See [DATA_SOURCES.md](./DATA_SOURCES.md) for full dataset catalog with row counts and update frequencies.
+External APIs used by `@optimitron/data` and planned integrations. See [DATA_SOURCES.md](./DATA_SOURCES.md) for full dataset catalog with row counts and update frequencies.
 
 ### Open APIs (No Key Required)
 
 | API | URL | Data Provided | Used By |
 |-----|-----|---------------|---------|
-| **OECD SDMX JSON API** | [data-explorer.oecd.org](https://data-explorer.oecd.org/) | Government spending by COFOG function, health expenditure, tax rates (38 member countries) | `@optomitron/data` — `sources/oecd.ts` |
-| **World Bank Indicators** | [API Docs](https://datahelpdesk.worldbank.org/knowledgebase/articles/889392-about-the-indicators-api-documentation) | GDP, life expectancy, mortality, education, Gini, unemployment, poverty (200+ countries, 1960–present) | `@optomitron/data` — `sources/world-bank.ts` |
-| **WHO GHO OData** | [gho-odata-api](https://www.who.int/data/gho/info/gho-odata-api) | Life expectancy, HALE, cause-of-death, healthcare spending, vaccination rates, risk factors | `@optomitron/data` (planned) |
-| **USAspending.gov** | [api.usaspending.gov](https://api.usaspending.gov/) | Federal spending by budget function (aggregated, not transaction-level) | `@optomitron/data` (planned) |
-| **openFDA** | [open.fda.gov/apis](https://open.fda.gov/apis/) | Adverse event reports (FAERS, 15M+ records), drug labels, interactions | `@optomitron/data` (planned, dFDA) |
-| **ClinicalTrials.gov** | [data-api](https://clinicaltrials.gov/data-api/api) | 400K+ clinical trial records and results | `@optomitron/data` (planned, dFDA) |
+| **OECD SDMX JSON API** | [data-explorer.oecd.org](https://data-explorer.oecd.org/) | Government spending by COFOG function, health expenditure, tax rates (38 member countries) | `@optimitron/data` — `sources/oecd.ts` |
+| **World Bank Indicators** | [API Docs](https://datahelpdesk.worldbank.org/knowledgebase/articles/889392-about-the-indicators-api-documentation) | GDP, life expectancy, mortality, education, Gini, unemployment, poverty (200+ countries, 1960–present) | `@optimitron/data` — `sources/world-bank.ts` |
+| **WHO GHO OData** | [gho-odata-api](https://www.who.int/data/gho/info/gho-odata-api) | Life expectancy, HALE, cause-of-death, healthcare spending, vaccination rates, risk factors | `@optimitron/data` (planned) |
+| **USAspending.gov** | [api.usaspending.gov](https://api.usaspending.gov/) | Federal spending by budget function (aggregated, not transaction-level) | `@optimitron/data` (planned) |
+| **openFDA** | [open.fda.gov/apis](https://open.fda.gov/apis/) | Adverse event reports (FAERS, 15M+ records), drug labels, interactions | `@optimitron/data` (planned, dFDA) |
+| **ClinicalTrials.gov** | [data-api](https://clinicaltrials.gov/data-api/api) | 400K+ clinical trial records and results | `@optimitron/data` (planned, dFDA) |
 
 ### APIs Requiring Free Keys
 
 | API | URL | Data Provided | Used By |
 |-----|-----|---------------|---------|
-| **FRED** (Federal Reserve Economic Data) | [API Docs](https://fred.stlouisfed.org/docs/api/fred/) | Median household income, CPI/inflation, employment, interest rates (US) | `@optomitron/data` (planned) |
-| **Congress.gov API** | [api.congress.gov](https://api.congress.gov/) | US Congress roll call votes, member data, bill text | `@optomitron/data` (planned, RAPPA alignment) |
-| **ProPublica Congress API** | [Docs](https://www.propublica.org/datastore/api/propublica-congress-api) | Congress votes (alternative, easier API), member profiles | `@optomitron/data` (planned, RAPPA alignment) |
-| **OpenStates** | [v3.openstates.org/docs](https://v3.openstates.org/docs) | State legislature members, votes, bills (all 50 US states) | `@optomitron/data` (planned, state-level RAPPA) |
-| **BLS** (Bureau of Labor Statistics) | [bls.gov/developers](https://www.bls.gov/developers/) | Employment, unemployment, wages (US, detailed) | `@optomitron/data` (planned) |
+| **FRED** (Federal Reserve Economic Data) | [API Docs](https://fred.stlouisfed.org/docs/api/fred/) | Median household income, CPI/inflation, employment, interest rates (US) | `@optimitron/data` (planned) |
+| **Congress.gov API** | [api.congress.gov](https://api.congress.gov/) | US Congress roll call votes, member data, bill text | `@optimitron/data` (planned, RAPPA alignment) |
+| **ProPublica Congress API** | [Docs](https://www.propublica.org/datastore/api/propublica-congress-api) | Congress votes (alternative, easier API), member profiles | `@optimitron/data` (planned, RAPPA alignment) |
+| **OpenStates** | [v3.openstates.org/docs](https://v3.openstates.org/docs) | State legislature members, votes, bills (all 50 US states) | `@optimitron/data` (planned, state-level RAPPA) |
+| **BLS** (Bureau of Labor Statistics) | [bls.gov/developers](https://www.bls.gov/developers/) | Employment, unemployment, wages (US, detailed) | `@optimitron/data` (planned) |
 
 ### API Key Status
 
@@ -106,9 +106,9 @@ External APIs used by `@optomitron/data` and planned integrations. See [DATA_SOU
 
 ## Health Data Standards
 
-Standards referenced for data import/export and interoperability. Optomitron has its own schema (see `@optomitron/db`) — inspired by a prior project but redesigned for modern TypeScript, local-first architecture, and domain-agnostic use.
+Standards referenced for data import/export and interoperability. Optimitron has its own schema (see `@optimitron/db`) — inspired by a prior project but redesigned for modern TypeScript, local-first architecture, and domain-agnostic use.
 
-| Standard | URL | Usage in Optomitron |
+| Standard | URL | Usage in Optimitron |
 |----------|-----|---------------------|
 | **FHIR R4** (HL7) | [hl7.org/fhir](https://hl7.org/fhir/) | Import/export format for clinical data (Observations, Conditions, MedicationStatements). Maps to `Measurement` model on import. Not used as internal schema. |
 | **OMOP CDM** (OHDSI) | [CommonDataModel](https://ohdsi.github.io/CommonDataModel/) | Reference for observational health research. Informs our approach to variable standardization and outcome definitions. |
@@ -170,7 +170,7 @@ https://github.com/mikepsinn/wishocracy/tree/main/contracts/
 
 **Repository:** [mikepsinn/economic-data](https://github.com/mikepsinn/economic-data)
 
-65 CSVs in Gapminder format (countries × years), ~2.6 MB total. Included in `@optomitron/data` as a git submodule at `packages/data/economic-data/`.
+65 CSVs in Gapminder format (countries × years), ~2.6 MB total. Included in `@optimitron/data` as a git submodule at `packages/data/economic-data/`.
 
 ### Dataset Categories
 

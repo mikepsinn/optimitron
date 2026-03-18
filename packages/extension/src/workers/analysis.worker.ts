@@ -1,9 +1,9 @@
 /**
- * Web Worker that runs @optomitron/optimizer analysis on time series pairs.
+ * Web Worker that runs @optimitron/optimizer analysis on time series pairs.
  * Spawned from the options page to avoid blocking the UI.
  */
-import { runFullAnalysis } from '@optomitron/optimizer';
-import type { NOf1VariableRelationship } from '@optomitron/optimizer';
+import { runFullAnalysis } from '@optimitron/optimizer';
+import type { NOf1VariableRelationship } from '@optimitron/optimizer';
 import type { AnalysisPair } from '../lib/analysis.js';
 
 export interface WorkerInput {

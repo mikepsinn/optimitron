@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@optomitron/treasury-shared/contracts/interfaces/IVoteToken.sol";
+import "@optimitron/treasury-shared/contracts/interfaces/IVoteToken.sol";
 
 /**
  * @title VoteToken — Transferable ERC-20 for verified referendum voters
@@ -30,7 +30,7 @@ contract VoteToken is ERC20, Ownable, IVoteToken {
     );
     event PrizeTreasurySet(address indexed treasury);
 
-    constructor() ERC20("Optomitron Vote", "VOTE") Ownable(msg.sender) {}
+    constructor() ERC20("Optimitron Vote", "VOTE") Ownable(msg.sender) {}
 
     /// @notice Mint VOTE tokens for a single verified voter
     function mintForVoter(

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { VotePosition } from "@optomitron/db";
+import { VotePosition } from "@optimitron/db";
 import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 
 export async function POST(

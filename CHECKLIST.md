@@ -1,4 +1,4 @@
-# Optomitron Library Checklist
+# Optimitron Library Checklist
 
 Comprehensive feature checklist for all non-UI library packages.
 Last updated: 2026-02-06.
@@ -7,19 +7,19 @@ Last updated: 2026-02-06.
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| @optomitron/optimizer | 369 | ✅ |
-| @optomitron/wishocracy | 202 | ✅ |
-| @optomitron/opg | 241 | ✅ |
-| @optomitron/obg | 175 | ✅ |
-| @optomitron/data | 546 | ✅ |
-| @optomitron/db | 60 | ⚠️ Needs schema validation tests |
-| @optomitron/chat-ui | 87 | ✅ |
-| @optomitron/examples (integration) | 78 | ✅ |
+| @optimitron/optimizer | 369 | ✅ |
+| @optimitron/wishocracy | 202 | ✅ |
+| @optimitron/opg | 241 | ✅ |
+| @optimitron/obg | 175 | ✅ |
+| @optimitron/data | 546 | ✅ |
+| @optimitron/db | 60 | ⚠️ Needs schema validation tests |
+| @optimitron/chat-ui | 87 | ✅ |
+| @optimitron/examples (integration) | 78 | ✅ |
 | **Total** | **~1,737** | |
 
 ---
 
-## @optomitron/optimizer (Causal Inference Engine)
+## @optimitron/optimizer (Causal Inference Engine)
 
 ### ✅ Implemented
 - [x] Pearson correlation coefficient (176 tests)
@@ -66,7 +66,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/wishocracy (Preference Aggregation)
+## @optimitron/wishocracy (Preference Aggregation)
 
 ### ✅ Implemented
 - [x] Pairwise comparison matrix construction (162 tests)
@@ -94,7 +94,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/opg (Optimal Policy Generator)
+## @optimitron/opg (Optimal Policy Generator)
 
 ### ✅ Implemented
 - [x] Policy welfare scoring (213 tests)
@@ -116,7 +116,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/obg (Optimal Budget Generator)
+## @optimitron/obg (Optimal Budget Generator)
 
 ### ✅ Implemented
 - [x] Diminishing returns model fitting (146 tests)
@@ -139,7 +139,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/data (Fetchers + Importers)
+## @optimitron/data (Fetchers + Importers)
 
 ### ✅ Implemented
 - [x] OECD health expenditure fetcher (296 tests)
@@ -193,7 +193,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/db (Prisma Schema)
+## @optimitron/db (Prisma Schema)
 
 ### ✅ Implemented
 - [x] 24 models, 12 enums, ~300+ documented fields
@@ -224,7 +224,7 @@ Last updated: 2026-02-06.
 
 ---
 
-## @optomitron/chat-ui (Conversational Health Tracking)
+## @optimitron/chat-ui (Conversational Health Tracking)
 
 ### ✅ Implemented
 - [x] 8 React components (87 tests)
@@ -265,37 +265,37 @@ Last updated: 2026-02-06.
 ## Priority Ordering (Libraries Only)
 
 ### P0 — Must Have for MVP
-1. Unit conversion system (@optomitron/data)
-2. Daily value aggregation pipeline (@optomitron/data)
-3. Importer normalization — wire resolveVariableName (@optomitron/data)
-4. Measurement validation (@optomitron/data)
-5. Zod validators from Prisma (@optomitron/db)
-6. Reverse + predictive Pearson (@optomitron/optimizer)
-7. Aggregate correlation pipeline (@optomitron/optimizer)
+1. Unit conversion system (@optimitron/data)
+2. Daily value aggregation pipeline (@optimitron/data)
+3. Importer normalization — wire resolveVariableName (@optimitron/data)
+4. Measurement validation (@optimitron/data)
+5. Zod validators from Prisma (@optimitron/db)
+6. Reverse + predictive Pearson (@optimitron/optimizer)
+7. Aggregate correlation pipeline (@optimitron/optimizer)
 8. End-to-end pipeline function (cross-package)
 9. Markdown report generation (cross-package)
-10. Variable category seed data with defaults (@optomitron/db)
+10. Variable category seed data with defaults (@optimitron/db)
 
 ### P1 — Important
-11. Temporal expressions in NLP (@optomitron/chat-ui)
-12. T-test p-value (@optomitron/optimizer)
-13. Interesting factor / trivial filtering (@optomitron/optimizer)
-14. User variable statistics (@optomitron/data)
-15. Global variable statistics (@optomitron/data)
-16. Variable tagging / common tags (@optomitron/db + @optomitron/data)
-17. Vote-weighted significance (@optomitron/optimizer)
-18. Budget reallocation recommendations (@optomitron/obg)
-19. Optimal spending levels (@optomitron/obg)
-20. Markdown report for OPG (@optomitron/opg)
+11. Temporal expressions in NLP (@optimitron/chat-ui)
+12. T-test p-value (@optimitron/optimizer)
+13. Interesting factor / trivial filtering (@optimitron/optimizer)
+14. User variable statistics (@optimitron/data)
+15. Global variable statistics (@optimitron/data)
+16. Variable tagging / common tags (@optimitron/db + @optimitron/data)
+17. Vote-weighted significance (@optimitron/optimizer)
+18. Budget reallocation recommendations (@optimitron/obg)
+19. Optimal spending levels (@optimitron/obg)
+20. Markdown report for OPG (@optimitron/opg)
 
 ### P2 — Nice to Have
-21. Confidence-weighted preference aggregation (@optomitron/wishocracy)
-22. Time-weighted preferences (@optomitron/wishocracy)
-23. Interpolation in temporal alignment (@optomitron/optimizer)
-24. Correlation over delays storage (@optomitron/optimizer)
-25. Multi-objective optimization (@optomitron/opg)
-26. Sensitivity analysis (@optomitron/opg)
-27. Weather / air quality fetchers (@optomitron/data)
-28. Analysis queue / scheduling (@optomitron/db)
-29. CorrelationVote models (@optomitron/db)
-30. Study model (@optomitron/db)
+21. Confidence-weighted preference aggregation (@optimitron/wishocracy)
+22. Time-weighted preferences (@optimitron/wishocracy)
+23. Interpolation in temporal alignment (@optimitron/optimizer)
+24. Correlation over delays storage (@optimitron/optimizer)
+25. Multi-objective optimization (@optimitron/opg)
+26. Sensitivity analysis (@optimitron/opg)
+27. Weather / air quality fetchers (@optimitron/data)
+28. Analysis queue / scheduling (@optimitron/db)
+29. CorrelationVote models (@optimitron/db)
+30. Study model (@optimitron/db)

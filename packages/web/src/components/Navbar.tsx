@@ -76,8 +76,8 @@ export default function Navbar() {
             href={ROUTES.home}
             className="text-xl font-black uppercase tracking-tight text-black hover:underline decoration-4"
           >
-            <span className="sm:hidden">Optomitron</span>
-            <span className="hidden sm:inline">⚡ Optomitron</span>
+            <span className="sm:hidden">Optimitron</span>
+            <span className="hidden sm:inline">⚡ Optimitron</span>
           </Link>
 
           {/* Right side: Avatar + Hamburger */}

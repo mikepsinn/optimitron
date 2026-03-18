@@ -1,17 +1,17 @@
 # Track Spec: PL Genesis Integrations (v1)
 
 ## Background
-Optomitron already has the core analysis and preference aggregation engines. This track adds decentralized infrastructure integrations: tamper-proof storage for analysis results, verifiable impact attestations via Hypercerts, and an autonomous agent that orchestrates the full pipeline.
+Optimitron already has the core analysis and preference aggregation engines. This track adds decentralized infrastructure integrations: tamper-proof storage for analysis results, verifiable impact attestations via Hypercerts, and an autonomous agent that orchestrates the full pipeline.
 
 ## Objectives
-- Add a `@optomitron/storage` package that stores analysis and aggregation snapshots as linked Storacha/IPFS JSON payloads with verifiable history chains.
-- Add a `@optomitron/hypercerts` package that maps Optomitron and Wishocracy outputs into Hypercerts-compatible AT Protocol records.
-- Add a `@optomitron/agent` package that uses Gemini structured-output reasoning to discover preference gaps, plan analyses, interpret results, verify outputs, and publish hypercerts and Storacha receipts. Includes ERC-8004 identity and reputation helper integration.
+- Add a `@optimitron/storage` package that stores analysis and aggregation snapshots as linked Storacha/IPFS JSON payloads with verifiable history chains.
+- Add a `@optimitron/hypercerts` package that maps Optimitron and Wishocracy outputs into Hypercerts-compatible AT Protocol records.
+- Add a `@optimitron/agent` package that uses Gemini structured-output reasoning to discover preference gaps, plan analyses, interpret results, verify outputs, and publish hypercerts and Storacha receipts. Includes ERC-8004 identity and reputation helper integration.
 
 ## Scope
 In scope:
 - Pure library packages with Zod schemas, mapping helpers, injected network adapters, and tests.
-- A typed Gemini orchestration layer with injected adapters wrapping the Optomitron pipeline.
+- A typed Gemini orchestration layer with injected adapters wrapping the Optimitron pipeline.
 - Agent manifest/log generation plus ERC-8004 helper wrappers for identity and reputation calls.
 
 Out of scope (v1):

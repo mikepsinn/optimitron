@@ -1,8 +1,8 @@
 {
-  "name": "@optomitron/extension",
+  "name": "@optimitron/extension",
   "version": "0.1.0",
   "private": true,
-  "description": "Chrome extension for personal health tracking (Digital Twin Safe) — Layer 1 of Optomitron",
+  "description": "Chrome extension for personal health tracking (Digital Twin Safe) — Layer 1 of Optimitron",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
@@ -10,7 +10,7 @@
     "test": "echo 'No tests yet'"
   },
   "dependencies": {
-    "@optomitron/optimizer": "workspace:*",
+    "@optimitron/optimizer": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {

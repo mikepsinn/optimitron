@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 import type { EvidenceGrade } from '../src/policy.js';
 import type { PolicyImpactScore } from '../src/policy-impact-score.js';
 import { computePolicyImpactScore } from '../src/policy-impact-score.js';

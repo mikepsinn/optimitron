@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/wishocracy",
+  "name": "@optimitron/wishocracy",
   "homepage": "https://wishocracy.warondisease.org",
   "version": "0.1.0",
   "description": "RAPPA calculation engine - pairwise aggregation, eigenvector methods, alignment scoring",

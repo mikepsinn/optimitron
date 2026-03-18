@@ -7,7 +7,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { type Address } from "viem";
-import { ubiDistributorAbi } from "@optomitron/treasury-wish/abi";
+import { ubiDistributorAbi } from "@optimitron/treasury-wish/abi";
 import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
 
 export function DistributeUBICard() {

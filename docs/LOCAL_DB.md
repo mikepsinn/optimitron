@@ -1,13 +1,13 @@
 # Local Database
 
-Optomitron uses PostgreSQL for the web/API layer. The repo includes a local Docker Compose service and committed Prisma migrations.
+Optimitron uses PostgreSQL for the web/API layer. The repo includes a local Docker Compose service and committed Prisma migrations.
 
 ## Defaults
 
 The local Postgres container listens on `localhost:5432` with:
 
 ```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/optomitron
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/optimitron
 ```
 
 This matches the root `.env.example`.

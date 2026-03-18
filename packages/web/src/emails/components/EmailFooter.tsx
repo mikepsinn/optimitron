@@ -8,7 +8,7 @@ interface EmailFooterProps {
 }
 
 export function EmailFooter({
-  reason = "you signed up at optomitron.com",
+  reason = "you signed up at optimitron.com",
 }: EmailFooterProps) {
   const { unsubscribeLink, dashboardLink } = getEmailUrls()
   return (

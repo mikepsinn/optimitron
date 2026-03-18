@@ -11,7 +11,7 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 
 const nextConfig = {
   output: isStaticExport ? 'export' : undefined,
-  basePath: isStaticExport ? '/optomitron' : '',
+  basePath: isStaticExport ? '/optimitron' : '',
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   images: {
     unoptimized: true,

@@ -5,7 +5,7 @@
  * Generated manually from packages/db/prisma/schema.prisma.
  *
  * Usage:
- *   import { MeasurementSchema, CombinationOperationSchema } from '@optomitron/db';
+ *   import { MeasurementSchema, CombinationOperationSchema } from '@optimitron/db';
  *   const result = MeasurementSchema.safeParse(data);
  */
 

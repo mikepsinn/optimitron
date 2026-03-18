@@ -2,7 +2,7 @@
 
 1. [x] Extend the Prisma schema for web auth and saved Wishocracy state.
    - Added `User`, `Vote`, `WishocraticAllocation`, `WishocraticCategorySelection`, and `VoteAnswer`.
-   - Updated `@optomitron/db` Zod validators and tests for the new models.
+   - Updated `@optimitron/db` Zod validators and tests for the new models.
 2. [x] Add server auth and signup plumbing in the web package.
    - Added `next-auth` credentials config, Prisma helpers, signup route, session typing, and referral utilities.
 3. [x] Replace guest-only vote UI with auth-aware persistence.

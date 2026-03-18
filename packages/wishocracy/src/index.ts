@@ -1,5 +1,5 @@
 /**
- * @optomitron/wishocracy
+ * @optimitron/wishocracy
  * 
  * RAPPA: Randomized Aggregated Pairwise Preference Allocation
  * 

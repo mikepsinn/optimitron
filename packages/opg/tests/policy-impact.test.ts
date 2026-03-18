@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 import { computePolicyImpactScore } from '../src/policy-impact-score.js';
 
 const BASE_RESULT: FullAnalysisResult = {

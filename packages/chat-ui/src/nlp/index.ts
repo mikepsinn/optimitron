@@ -5,7 +5,7 @@
 // Text-to-measurements NLP pipeline for converting natural language health
 // statements into structured ParsedMeasurement objects.
 //
-// Ported from decentralized-fda and adapted for Optomitron's schema.
+// Ported from decentralized-fda and adapted for Optimitron's schema.
 // ============================================================================
 
 // --- Schema types & constants ---

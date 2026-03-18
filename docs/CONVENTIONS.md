@@ -34,7 +34,7 @@ ci: Fix deploy workflow pnpm version
 
 ## Domain Agnosticism
 
-`@optomitron/optimizer` MUST be completely domain-agnostic:
+`@optimitron/optimizer` MUST be completely domain-agnostic:
 - ❌ "drugs", "supplements", "patients", "policies", "budgets", "politicians"
 - ✅ "predictor", "outcome", "variable", "measurement", "effect size", "time series"
 

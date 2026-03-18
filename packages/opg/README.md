@@ -1,4 +1,4 @@
-# @optomitron/opg
+# @optimitron/opg
 
 Optimal Policy Generator — ranks and scores policies using causal evidence, welfare functions, and Bradford Hill criteria.
 
@@ -15,5 +15,5 @@ Optimal Policy Generator — ranks and scores policies using causal evidence, we
 213 unit tests.
 
 ```bash
-pnpm test --filter @optomitron/opg
+pnpm test --filter @optimitron/opg
 ```

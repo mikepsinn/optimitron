@@ -3,7 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Referendums | Optomitron",
+  title: "Referendums | Optimitron",
   description:
     "Active referendums — vote on policy proposals and earn verified-vote rewards.",
 };

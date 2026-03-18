@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/db",
+  "name": "@optimitron/db",
   "version": "0.1.0",
   "description": "Prisma schema and database client for Wishocracy",
   "main": "dist/index.js",

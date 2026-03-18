@@ -7,7 +7,7 @@
  * 3. Outputs ffmpeg commands to combine them
  *
  * Usage:
- *   pnpm --filter @optomitron/web demo:record
+ *   pnpm --filter @optimitron/web demo:record
  *
  * Prerequisites:
  *   - GOOGLE_GENERATIVE_AI_API_KEY in root .env

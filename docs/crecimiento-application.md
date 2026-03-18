@@ -1,7 +1,7 @@
 # Crecimiento Application
 
 ## One-Sentence Pitch
-Optomitron is open-source infrastructure for evidence-based governance: it helps citizens express priorities, measures where government spending diverges from those priorities, runs reproducible causal analysis on policy options, and publishes auditable receipts for every recommendation.
+Optimitron is open-source infrastructure for evidence-based governance: it helps citizens express priorities, measures where government spending diverges from those priorities, runs reproducible causal analysis on policy options, and publishes auditable receipts for every recommendation.
 
 ## Problem
 Most governments can tell you how much they spent. Far fewer can tell you whether that spending caused better outcomes, whether citizens wanted that allocation, or whether the recommendation process can be independently audited afterward.
@@ -9,7 +9,7 @@ Most governments can tell you how much they spent. Far fewer can tell you whethe
 This is especially painful in fast-growing regions and fiscally constrained jurisdictions, where every marginal budget decision matters more and institutional trust is often lower. Leaders need a way to move from rhetoric to evidence without buying into opaque proprietary systems.
 
 ## Product
-Optomitron combines four pieces:
+Optimitron combines four pieces:
 
 1. A domain-agnostic causal inference engine that estimates impact, confidence, and optimal levels from time-series data.
 2. Wishocracy preference aggregation so citizens can express priorities through structured pairwise comparisons.
@@ -33,7 +33,7 @@ That creates a narrow window for products that combine:
 - verifiable storage and attestation
 - open-source governance tooling
 
-Optomitron is already built around that stack.
+Optimitron is already built around that stack.
 
 ## What Exists Today
 - Open-source monorepo with roughly 1,737 pre-existing tests before the PL Genesis integrations
@@ -43,7 +43,7 @@ Optomitron is already built around that stack.
 - New Storacha, Hypercerts, and autonomous agent packages integrated into the same workspace
 
 ## Why We Can Build This
-The founder has already built large-scale health-data and causal analysis infrastructure with real users. Optomitron is not an idea-stage slide deck; it is the continuation of a longer line of product and research work, now adapted to governance and public-goods coordination.
+The founder has already built large-scale health-data and causal analysis infrastructure with real users. Optimitron is not an idea-stage slide deck; it is the continuation of a longer line of product and research work, now adapted to governance and public-goods coordination.
 
 The team advantage is unusual:
 
@@ -53,7 +53,7 @@ The team advantage is unusual:
 - a strong bias toward transparent, testable systems rather than consultancy theater
 
 ## Why Crecimiento
-Crecimiento is attractive because Optomitron sits at the intersection of public infrastructure, institutional decision quality, and scalable software. The right accelerator environment would help with:
+Crecimiento is attractive because Optimitron sits at the intersection of public infrastructure, institutional decision quality, and scalable software. The right accelerator environment would help with:
 
 1. pilot design with jurisdictions or civic partners
 2. distribution into policy, research, and public-interest networks
@@ -71,8 +71,8 @@ If accepted, the next 12 months focus on turning the current stack into repeatab
 ## Long-Term Vision
 The long-term goal is not just better dashboards. It is an evidence layer for governance that can be reused across countries, cities, nonprofits, and research groups. If budgets shape human outcomes, then public reasoning about budgets should be open infrastructure.
 
-Optomitron is building that infrastructure.
+Optimitron is building that infrastructure.
 
 ## Links
-- GitHub: https://github.com/mikepsinn/optomitron
-- Live demo: https://mikepsinn.github.io/optomitron/
+- GitHub: https://github.com/mikepsinn/optimitron
+- Live demo: https://mikepsinn.github.io/optimitron/

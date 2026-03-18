@@ -1,7 +1,7 @@
 /**
- * @optomitron/data
+ * @optimitron/data
  * 
- * Data fetchers for Optomitron - OECD, World Bank, Census, WHO, etc.
+ * Data fetchers for Optimitron - OECD, World Bank, Census, WHO, etc.
  * 
  * Provides unified access to public data sources for:
  * - Government spending by category
@@ -16,7 +16,7 @@
  *   fetchWorldBankHealthData,
  *   OECD_SPENDING_CATEGORIES,
  *   WB_INDICATORS,
- * } from '@optomitron/data';
+ * } from '@optimitron/data';
  * 
  * // Fetch health spending for OECD countries
  * const spending = await fetchOECDSpending({

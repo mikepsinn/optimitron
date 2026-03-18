@@ -6,12 +6,12 @@
  * 2. Natural experiments (before/after an intervention in specific jurisdictions)
  * 3. Cross-jurisdiction panel data (OECD countries compared simultaneously)
  *
- * Each layer feeds through `runFullAnalysis()` from @optomitron/optimizer.
+ * Each layer feeds through `runFullAnalysis()` from @optimitron/optimizer.
  * Results are aggregated via weighted meta-analysis into a final evidence grade.
  */
 
-import { runFullAnalysis } from '@optomitron/optimizer';
-import type { FullAnalysisResult, TimeSeries, AnalysisConfig } from '@optomitron/optimizer';
+import { runFullAnalysis } from '@optimitron/optimizer';
+import type { FullAnalysisResult, TimeSeries, AnalysisConfig } from '@optimitron/optimizer';
 
 // ---------------------------------------------------------------------------
 // Core Types
@@ -271,7 +271,7 @@ function interpretEffect(
 }
 
 // ---------------------------------------------------------------------------
-// Adapter: NaturalExperimentData (from @optomitron/data) → NaturalExperimentDef
+// Adapter: NaturalExperimentData (from @optimitron/data) → NaturalExperimentDef
 // ---------------------------------------------------------------------------
 
 /**

@@ -61,7 +61,7 @@ describe('storage chain helpers', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          type: 'optomitron-policy-analysis',
+          type: 'optimitron-policy-analysis',
           timestamp: '2026-03-10T00:00:00.000Z',
           jurisdictionId: 'us-federal',
           policies: [],

@@ -41,7 +41,7 @@ export function WishocracyAuthPromptCard({
                 {comparisonsCount} Comparisons Saved Locally
               </h3>
               <p className="mt-3 text-sm text-muted-foreground">
-                Create an account now and Optomitron will keep your allocations, progress, and
+                Create an account now and Optimitron will keep your allocations, progress, and
                 referral link synced across sessions.
               </p>
             </div>

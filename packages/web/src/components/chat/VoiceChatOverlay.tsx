@@ -9,7 +9,7 @@ import {
   VoiceTranscript,
   type VoiceState,
   type TranscriptEntry,
-} from "@optomitron/chat-ui";
+} from "@optimitron/chat-ui";
 import { VoiceSession } from "@/lib/voice-session";
 
 /**

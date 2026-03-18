@@ -1,4 +1,4 @@
-# @optomitron/obg
+# @optimitron/obg
 
 Optimal Budget Generator — optimizes budget allocation using diminishing returns modeling, cost-effectiveness analysis, and Budget Impact Scores.
 
@@ -15,5 +15,5 @@ Optimal Budget Generator — optimizes budget allocation using diminishing retur
 146 unit tests.
 
 ```bash
-pnpm test --filter @optomitron/obg
+pnpm test --filter @optimitron/obg
 ```

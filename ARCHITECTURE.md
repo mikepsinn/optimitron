@@ -1,4 +1,4 @@
-# ARCHITECTURE.md — Optomitron System Architecture
+# ARCHITECTURE.md — Optimitron System Architecture
 
 > **AI governance platform for maximizing median health and happiness for humanity.**
 
@@ -14,7 +14,7 @@ This document describes both the **current implementation** (a TypeScript monore
   - [Layer 1 — LOCAL (Digital Twin Safe)](#layer-1--local-digital-twin-safe)
   - [Layer 2 — IDENTITY (Decentralized Proof of Personhood)](#layer-2--identity-decentralized-proof-of-personhood)
   - [Layer 3 — ANONYMOUS ON-CHAIN SUBMISSION](#layer-3--anonymous-on-chain-submission)
-  - [Layer 4 — AGGREGATION SERVER (Optomitron)](#layer-4--aggregation-server-optomitron)
+  - [Layer 4 — AGGREGATION SERVER (Optimitron)](#layer-4--aggregation-server-optimitron)
   - [Layer 5 — INCENTIVES](#layer-5--incentives)
 - [Data Flow](#data-flow)
 - [Core Algorithms](#core-algorithms)
@@ -26,7 +26,7 @@ This document describes both the **current implementation** (a TypeScript monore
 
 ## System Overview
 
-Optomitron connects four things:
+Optimitron connects four things:
 
 1. **What people want** — pairwise preference surveys via RAPPA
 2. **What's happening** — health/wealth outcome tracking via dFDA methodology
@@ -44,7 +44,7 @@ Optomitron connects four things:
 │          │                 │                      │                  │
 │          ▼                 ▼                      ▼                  │
 │   ┌────────────────────────────────────────────────────────────┐    │
-│   │            @optomitron/optimizer  (runs locally)              │    │
+│   │            @optimitron/optimizer  (runs locally)              │    │
 │   │     Temporal alignment → Bradford Hill → PIS → Optimal     │    │
 │   └──────────────────────────┬─────────────────────────────────┘    │
 │                              │                                      │
@@ -96,7 +96,7 @@ Optomitron connects four things:
 The monorepo today contains six packages. All library packages are **pure TypeScript with zero server dependency** — they can run in a browser, Electron app, or Node.js.
 
 ```
-optomitron/
+optimitron/
 ├── packages/
 │   ├── causal/       🧠  Domain-agnostic causal inference engine
 │   │   ├── src/
@@ -224,7 +224,7 @@ optomitron/
 
 ### Key Design Principle: Domain Agnosticism
 
-`@optomitron/optimizer` is **completely domain-agnostic**. It takes any two time series and answers: *Does changing X cause Y to change? By how much? What's the optimal value of X?*
+`@optimitron/optimizer` is **completely domain-agnostic**. It takes any two time series and answers: *Does changing X cause Y to change? By how much? What's the optimal value of X?*
 
 | Domain | Predictor (X) | Outcome (Y) | Question |
 |--------|--------------|-------------|----------|
@@ -258,13 +258,13 @@ The library doesn't know what it's optimizing. Domain-specific packages (`opg`, 
 **Local storage:** SQLite (Electron) or IndexedDB (browser) — data never leaves the device.
 
 **What runs locally:**
-- `@optomitron/optimizer` — the entire pipeline is pure TypeScript, zero server dependency
+- `@optimitron/optimizer` — the entire pipeline is pure TypeScript, zero server dependency
   - Temporal alignment of predictor/outcome time series
   - Bradford Hill criteria scoring via saturation functions
   - Predictor Impact Score (PIS) calculation
   - Effect size estimation with confidence intervals
   - Optimal value analysis (what dosage/level produces best outcomes)
-- `@optomitron/wishocracy` — pairwise preference surveys, eigenvector preference weights
+- `@optimitron/wishocracy` — pairwise preference surveys, eigenvector preference weights
 
 **What it generates (personal, stays local by default):**
 - Personal optimal values for every tracked predictor
@@ -323,15 +323,15 @@ The library doesn't know what it's optimizing. Domain-specific packages (`opg`, 
 - Submissions are structured as typed records (treatment ID, outcome ID, effect size, CI, grade)
 - Each submission is linked to a proof-of-personhood token, NOT a real identity
 - Data lives on a public chain (or L2/rollup) — anyone can read, aggregate, and verify
-- Optomitron (Layer 4) is one consumer of this data, not the owner
+- Optimitron (Layer 4) is one consumer of this data, not the owner
 
 **Why on-chain, not a database:**
 - **Censorship resistance:** No single entity can delete or alter submitted findings
 - **Auditability:** Anyone can verify the aggregation math
-- **Ownership:** Data belongs to the public commons, not to Optomitron Inc.
+- **Ownership:** Data belongs to the public commons, not to Optimitron Inc.
 - **Incentive compatibility:** Token rewards (Layer 5) need on-chain provenance
 
-### Layer 4 — AGGREGATION SERVER (Optomitron)
+### Layer 4 — AGGREGATION SERVER (Optimitron)
 
 **Purpose:** Read anonymous on-chain submissions and compute population-level insights. This is the "server" layer — but it's a reader/aggregator, not a data owner.
 
@@ -339,22 +339,22 @@ The library doesn't know what it's optimizing. Domain-specific packages (`opg`, 
 
 | Function | Algorithm | Package |
 |----------|-----------|---------|
-| **Meta-analysis** | Weighted average of PIS scores across submissions, adjusting for sample size and evidence quality | `@optomitron/optimizer` |
-| **Population treatment rankings** | Aggregate effect sizes + confidence intervals across all anonymous submitters | `@optomitron/optimizer` |
-| **Citizen preference weights** | Eigenvector aggregation of RAPPA submissions, with convergence analysis and matrix completion for sparse pairs | `@optomitron/wishocracy` |
-| **Policy recommendations** | OPG: enact/replace/repeal/maintain based on cross-jurisdiction quasi-experimental evidence + Bradford Hill CCS scoring | `@optomitron/opg` |
-| **Budget optimization** | OBG: diminishing returns modeling + cost-effectiveness threshold analysis → Optimal Spending Levels per category | `@optomitron/obg` |
-| **Politician alignment scores** | Citizen Alignment Score = weighted distance between citizen preference vector and politician voting record | `@optomitron/wishocracy` |
-| **Preference gap analysis** | Difference between aggregated citizen preferences and actual budget allocation | `@optomitron/wishocracy` |
+| **Meta-analysis** | Weighted average of PIS scores across submissions, adjusting for sample size and evidence quality | `@optimitron/optimizer` |
+| **Population treatment rankings** | Aggregate effect sizes + confidence intervals across all anonymous submitters | `@optimitron/optimizer` |
+| **Citizen preference weights** | Eigenvector aggregation of RAPPA submissions, with convergence analysis and matrix completion for sparse pairs | `@optimitron/wishocracy` |
+| **Policy recommendations** | OPG: enact/replace/repeal/maintain based on cross-jurisdiction quasi-experimental evidence + Bradford Hill CCS scoring | `@optimitron/opg` |
+| **Budget optimization** | OBG: diminishing returns modeling + cost-effectiveness threshold analysis → Optimal Spending Levels per category | `@optimitron/obg` |
+| **Politician alignment scores** | Citizen Alignment Score = weighted distance between citizen preference vector and politician voting record | `@optimitron/wishocracy` |
+| **Preference gap analysis** | Difference between aggregated citizen preferences and actual budget allocation | `@optimitron/wishocracy` |
 
 **Multi-tenancy (Government OS):**
-Any jurisdiction (city, county, state, country) can deploy Optomitron as its governance operating system. The database is multi-tenant — every jurisdiction is a tenant with its own items, participants, officials, and data. Cross-jurisdiction comparison ("City A spends X on education and gets Y outcomes vs. City B") is a core feature.
+Any jurisdiction (city, county, state, country) can deploy Optimitron as its governance operating system. The database is multi-tenant — every jurisdiction is a tenant with its own items, participants, officials, and data. Cross-jurisdiction comparison ("City A spends X on education and gets Y outcomes vs. City B") is a core feature.
 
 **Stack:**
 - Next.js web dashboard (Phase 3)
 - Prisma + PostgreSQL for aggregated data and survey metadata
-- `@optomitron/data` fetches public data from OECD, World Bank, FRED, WHO, Congress API
-- `@optomitron/data` includes 60+ Gapminder-format CSV datasets via `mikepsinn/economic-data` git submodule
+- `@optimitron/data` fetches public data from OECD, World Bank, FRED, WHO, Congress API
+- `@optimitron/data` includes 60+ Gapminder-format CSV datasets via `mikepsinn/economic-data` git submodule
 
 ### Layer 5 — INCENTIVES
 
@@ -465,7 +465,7 @@ Chain                        Aggregation Server (Layer 4)
 │                            │   eigenvector → citizen preference weights
 │                            │
 │                            ├─ Cross-jurisdiction analysis:
-│                            │   @optomitron/data (OECD + World Bank) +
+│                            │   @optimitron/data (OECD + World Bank) +
 │                            │   causal engine → policy impact scores
 │                            │
 │                            ├─ OPG: enact/replace/repeal/maintain
@@ -489,7 +489,7 @@ Chain                        Aggregation Server (Layer 4)
 
 ## Core Algorithms
 
-### Predictor Impact Score (PIS) — `@optomitron/optimizer`
+### Predictor Impact Score (PIS) — `@optimitron/optimizer`
 
 The PIS operationalizes Bradford Hill causality criteria into a single composite metric for automated signal detection from time series data.
 
@@ -513,7 +513,7 @@ where:
 
 **Evidence grades:** A (≥0.5) · B (≥0.3) · C (≥0.1) · D (≥0.05) · F (<0.05)
 
-### RAPPA — `@optomitron/wishocracy`
+### RAPPA — `@optimitron/wishocracy`
 
 Randomized Aggregated Pairwise Preference Allocation.
 
@@ -533,7 +533,7 @@ Score = 100 - Σ(w_i × |citizenPref_i - politicianVote_i|) / Σ(w_i)
 where w_i = citizen preference weight for item i
 ```
 
-### Causal Confidence Score (CCS) — `@optomitron/opg`
+### Causal Confidence Score (CCS) — `@optimitron/opg`
 
 Bradford Hill criteria for policy evaluation:
 
@@ -548,7 +548,7 @@ Weights: experiment=0.225, consistency=0.19, strength=0.15,
 
 Method quality weights: RCT (1.0) → regression discontinuity (0.90) → synthetic control (0.85) → DiD (0.80) → event study (0.75) → ITS (0.65) → before-after (0.40) → cross-sectional (0.25)
 
-### Optimal Spending Level (OSL) — `@optomitron/obg`
+### Optimal Spending Level (OSL) — `@optimitron/obg`
 
 Two estimation methods, take the one with better fit:
 
@@ -586,11 +586,11 @@ Two estimation methods, take the one with better fit:
 
 **Status:** 🟡 Alpha — packages exist with tests, APIs stabilizing.
 
-- [x] `@optomitron/optimizer` — temporal alignment, Bradford Hill, PIS, effect size, optimal values
-- [x] `@optomitron/wishocracy` — pairwise aggregation, eigenvector weights, alignment scores, convergence analysis, matrix completion
-- [x] `@optomitron/opg` — welfare function, jurisdiction model, policy types, Bradford Hill CCS, method weights
-- [x] `@optomitron/obg` — diminishing returns, cost-effectiveness, BIS, spending gap analysis
-- [x] `@optomitron/data` — OECD + World Bank fetchers, Gapminder CSV loader, 60+ dataset catalog
+- [x] `@optimitron/optimizer` — temporal alignment, Bradford Hill, PIS, effect size, optimal values
+- [x] `@optimitron/wishocracy` — pairwise aggregation, eigenvector weights, alignment scores, convergence analysis, matrix completion
+- [x] `@optimitron/opg` — welfare function, jurisdiction model, policy types, Bradford Hill CCS, method weights
+- [x] `@optimitron/obg` — diminishing returns, cost-effectiveness, BIS, spending gap analysis
+- [x] `@optimitron/data` — OECD + World Bank fetchers, Gapminder CSV loader, 60+ dataset catalog
 - [ ] End-to-end integration tests (feed real data through full pipeline)
 - [ ] API stabilization and documentation
 
@@ -663,11 +663,11 @@ The algorithms in this codebase are defined in the following papers. **Read the 
 
 | Paper | Implements | Local QMD | Web |
 |-------|-----------|-----------|-----|
-| **dFDA Specification** | `@optomitron/optimizer` — PIS, temporal alignment, Bradford Hill, effect size | `knowledge/appendix/dfda-spec-paper.qmd` | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
-| **Wishocracy** | `@optomitron/wishocracy` — RAPPA, eigenvector, alignment scores, convergence | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
-| **Optimal Policy Generator** | `@optomitron/opg` — Policy Impact Score, CCS, method weights, welfare function | `knowledge/appendix/optimal-policy-generator-spec.qmd` | [opg.warondisease.org](https://opg.warondisease.org) |
-| **Optimal Budget Generator** | `@optomitron/obg` — Diminishing returns, OSL, BIS, cost-effectiveness | `knowledge/appendix/optimal-budget-generator-spec.qmd` | [obg.warondisease.org](https://obg.warondisease.org) |
-| **Incentive Alignment Bonds** | `@optomitron/treasury` (Phase 5) — IAB mechanism, campaign funding | `knowledge/appendix/incentive-alignment-bonds-paper.qmd` | [iab.warondisease.org](https://iab.warondisease.org) |
+| **dFDA Specification** | `@optimitron/optimizer` — PIS, temporal alignment, Bradford Hill, effect size | `knowledge/appendix/dfda-spec-paper.qmd` | [dfda-spec.warondisease.org](https://dfda-spec.warondisease.org) |
+| **Wishocracy** | `@optimitron/wishocracy` — RAPPA, eigenvector, alignment scores, convergence | `knowledge/appendix/wishocracy-paper.qmd` | [wishocracy.warondisease.org](https://wishocracy.warondisease.org) |
+| **Optimal Policy Generator** | `@optimitron/opg` — Policy Impact Score, CCS, method weights, welfare function | `knowledge/appendix/optimal-policy-generator-spec.qmd` | [opg.warondisease.org](https://opg.warondisease.org) |
+| **Optimal Budget Generator** | `@optimitron/obg` — Diminishing returns, OSL, BIS, cost-effectiveness | `knowledge/appendix/optimal-budget-generator-spec.qmd` | [obg.warondisease.org](https://obg.warondisease.org) |
+| **Incentive Alignment Bonds** | `@optimitron/treasury` (Phase 5) — IAB mechanism, campaign funding | `knowledge/appendix/incentive-alignment-bonds-paper.qmd` | [iab.warondisease.org](https://iab.warondisease.org) |
 | **Optimocracy** | Two-metric welfare function (shared by OPG + OBG) | `knowledge/appendix/optimocracy-paper.qmd` | [optimocracy.warondisease.org](https://optimocracy.warondisease.org) |
 
 ---
@@ -686,7 +686,7 @@ The optimizer is domain-agnostic — it doesn't care if a "user" is a person or 
 
 This maps directly onto clinical trial methodology:
 
-| Clinical Trial | Optomitron |
+| Clinical Trial | Optimitron |
 |---------------|------------|
 | Treatment groups | Jurisdictions (Singapore, US, Norway) |
 | Treatment | Policy/budget (Singapore's healthcare system) |

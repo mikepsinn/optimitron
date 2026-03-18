@@ -44,7 +44,7 @@ Sincerely,
 A Concerned Constituent
 
 ---
-Generated via Optomitron Civic Engagement Platform`;
+Generated via Optimitron Civic Engagement Platform`;
 
   const contactUrl = representative.contactUrl
     ?? `https://www.congress.gov/member/${encodeURIComponent(representative.name.toLowerCase().replace(/\s+/g, "-"))}/${representative.bioguideId}`;

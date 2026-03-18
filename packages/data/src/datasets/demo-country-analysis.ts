@@ -8,7 +8,7 @@
  * personal health data can analyze country-level policy data.
  */
 
-import type { TimeSeries } from '@optomitron/optimizer';
+import type { TimeSeries } from '@optimitron/optimizer';
 import {
   healthComparisonToTimeSeries,
   getCrossCountryVariable,

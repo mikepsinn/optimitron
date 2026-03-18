@@ -4,7 +4,7 @@ import {
   parseWithRegex,
   type ChatMessage,
   type ParsedMeasurement,
-} from "@optomitron/chat-ui";
+} from "@optimitron/chat-ui";
 
 describe("chat-ui integration", () => {
   describe("NLP re-exports resolve from web package", () => {

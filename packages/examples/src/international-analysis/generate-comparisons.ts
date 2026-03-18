@@ -20,14 +20,14 @@ import {
   type CrossCountryAnalysis,
 } from './generate-cross-country-analysis.js';
 
-import { POLICY_EXEMPLARS } from '@optomitron/data';
+import { POLICY_EXEMPLARS } from '@optimitron/data';
 
 import {
   HEALTH_SYSTEM_COMPARISON,
   DRUG_POLICY_COMPARISON,
   EDUCATION_COMPARISON,
   CRIMINAL_JUSTICE_COMPARISON,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 // ---------------------------------------------------------------------------
 // Constants

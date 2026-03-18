@@ -1,14 +1,14 @@
 # Plan: Wire Library Outputs to Pages + JSON Schema (v2)
 
 1. [x] Define JSON schema for outcome hub ranking payload.
-   - Implemented in `@optomitron/optimizer/src/outcome-mega-study-ranking.ts`.
+   - Implemented in `@optimitron/optimizer/src/outcome-mega-study-ranking.ts`.
    - Includes row schema, ranking payload schema, and multiple-testing metadata.
 2. [x] Normalize relationship naming in optimizer-facing contracts.
    - `NOf1VariableRelationship` and `AggregateVariableRelationship` are canonical.
    - Runner payload fields now use `nOf1VariableRelationship` and `aggregateVariableRelationship`.
-   - `@optomitron/db` models and Zod schemas use the same canonical names.
+   - `@optimitron/db` models and Zod schemas use the same canonical names.
 3. [x] Define JSON schema for pair study payload.
-   - Implemented in `@optomitron/optimizer/src/pair-study.ts`.
+   - Implemented in `@optimitron/optimizer/src/pair-study.ts`.
    - Web adapter validates generated payloads through `validatePairStudyResult(...)`.
 4. [x] Define JSON schema for jurisdiction N-of-1 summary payload.
    - Implemented as typed explorer contract in `packages/web/src/lib/analysis-explorer-types.ts` (`ExplorerSubjectSummary`).

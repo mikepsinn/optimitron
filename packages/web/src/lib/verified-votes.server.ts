@@ -1,4 +1,4 @@
-import { PersonhoodVerificationStatus, VotePosition } from "@optomitron/db";
+import { PersonhoodVerificationStatus, VotePosition } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
 export interface VerifiedVoteStats {

@@ -17,7 +17,7 @@ import {
 describe('storage client helpers', () => {
   it('normalizes jurisdiction ids into Storacha space names', () => {
     expect(buildJurisdictionSpaceName('US Federal / Budget')).toBe(
-      'optomitron-us-federal-budget',
+      'optimitron-us-federal-budget',
     );
   });
 
@@ -86,8 +86,8 @@ describe('storage client helpers', () => {
       setCurrentSpace,
     };
 
-    await expect(createSpace(client, 'optomitron-us-federal')).resolves.toBe('did:key:space1');
-    expect(client.createSpace).toHaveBeenCalledWith('optomitron-us-federal');
+    await expect(createSpace(client, 'optimitron-us-federal')).resolves.toBe('did:key:space1');
+    expect(client.createSpace).toHaveBeenCalledWith('optimitron-us-federal');
     expect(setCurrentSpace).toHaveBeenCalledWith('did:key:space1');
   });
 
@@ -103,7 +103,7 @@ describe('storage client helpers', () => {
     await expect(createJurisdictionSpace(client, 'Cook County, IL')).resolves.toBe(
       'did:key:jurisdiction',
     );
-    expect(client.createSpace).toHaveBeenCalledWith('optomitron-cook-county-il');
+    expect(client.createSpace).toHaveBeenCalledWith('optimitron-cook-county-il');
   });
 
   it('switches to an existing space', async () => {

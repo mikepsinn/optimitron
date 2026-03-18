@@ -12,7 +12,7 @@
  *
  * @example
  * ```typescript
- * import { parseFitbitExport, parseFitbitSleepFile } from '@optomitron/data';
+ * import { parseFitbitExport, parseFitbitSleepFile } from '@optimitron/data';
  *
  * // Parse individual files
  * const sleepRecords = parseFitbitSleepFile(sleepJsonString);

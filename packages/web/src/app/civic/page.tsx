@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Civic | Optomitron",
+  title: "Civic | Optimitron",
   description:
     "Civic engagement tools — vote on bills, track legislation, and hold representatives accountable.",
 };

@@ -12,9 +12,9 @@ import {
 import { getOutcomeHubPath, getPairStudyPath } from "@/lib/analysis-explorer-routes";
 
 export const metadata: Metadata = {
-  title: "Studies | Optomitron",
+  title: "Studies | Optimitron",
   description:
-    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optomitron, the Earth Optimization Machine.",
+    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optimitron, the Earth Optimization Machine.",
 };
 
 export default function OutcomesIndexPage() {

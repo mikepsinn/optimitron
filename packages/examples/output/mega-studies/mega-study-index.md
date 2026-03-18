@@ -6,7 +6,7 @@
 - Outcomes considered: 6
 - Outcome scope: outcome.derived.after_tax_median_income_ppp, outcome.derived.after_tax_median_income_ppp_growth_yoy_pct, outcome.who.healthy_life_expectancy_years, outcome.derived.healthy_life_expectancy_growth_yoy_pct, outcome.wb.primary_completion_rate_pct, outcome.wb.battle_related_deaths
 - Data cache: enabled (168h max age)
-- Cache directory: E:\code\obsidian\websites\optomitron\packages\examples\output\.cache\mega-study-data
+- Cache directory: E:\code\obsidian\websites\optimitron\packages\examples\output\.cache\mega-study-data
 - Pair studies generated: 60
 - Pair studies skipped: 0
 - Pairs excluded from ranking by hard sufficiency gate: 12

@@ -21,34 +21,34 @@ import {
   predictOutcome,
   type SpendingOutcomePoint,
   type DiminishingReturnsModel,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 import {
   calculateWES,
   calculatePriorityScore,
   scoreToGrade,
   type EffectEstimate as WESEffectEstimate,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 import {
   generateBudgetReport,
   type BudgetOptimizationResult,
   type CategoryAnalysis,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 import {
   runCountryAnalysis,
   type AnnualTimeSeries,
   type AggregateAnalysis,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 import type {
   SpendingCategory,
   SpendingGap,
   OSLEstimate,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
-import type { EvidenceGrade } from '@optomitron/opg';
+import type { EvidenceGrade } from '@optimitron/opg';
 
 import {
   oecdBudgetPanelToSpendingOutcome,
@@ -58,7 +58,7 @@ import {
   US_OUTCOME_DATA,
   type USBudgetCategoryDataPoint,
   type USOutcomeDataPoint,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 // ---------------------------------------------------------------------------
 // Constants

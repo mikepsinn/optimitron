@@ -24,7 +24,7 @@ export interface AlignmentBenchmarkProfile {
 }
 
 export const ALIGNMENT_BENCHMARK_SOURCE_NOTE =
-  "These are real current federal politicians benchmarked against Optomitron's budget categories. When enough recent classified Congress roll calls are available, the profile is derived from legislative behavior; otherwise Optomitron falls back to a curated public-position benchmark.";
+  "These are real current federal politicians benchmarked against Optimitron's budget categories. When enough recent classified Congress roll calls are available, the profile is derived from legislative behavior; otherwise Optimitron falls back to a curated public-position benchmark.";
 
 export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
   {
@@ -40,7 +40,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID S000033. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID S000033. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 20,
       ADDICTION_TREATMENT: 16,
@@ -75,7 +75,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID W000817. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID W000817. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 17,
       ADDICTION_TREATMENT: 15,
@@ -110,7 +110,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID M001169. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID M001169. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 14,
       ADDICTION_TREATMENT: 13,
@@ -145,7 +145,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID C001035. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID C001035. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 10,
       ADDICTION_TREATMENT: 9,
@@ -180,7 +180,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID C001098. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID C001098. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 3,
       ADDICTION_TREATMENT: 2,
@@ -215,7 +215,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID H001089. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID H001089. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 4,
       ADDICTION_TREATMENT: 5,
@@ -250,7 +250,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID O000172. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID O000172. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 18,
       ADDICTION_TREATMENT: 15,
@@ -285,7 +285,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID K000389. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID K000389. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 21,
       ADDICTION_TREATMENT: 12,
@@ -320,7 +320,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID C001131. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID C001131. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 16,
       ADDICTION_TREATMENT: 15,
@@ -355,7 +355,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID A000371. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID A000371. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 13,
       ADDICTION_TREATMENT: 12,
@@ -390,7 +390,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID C001120. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID C001120. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 3,
       ADDICTION_TREATMENT: 2,
@@ -425,7 +425,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
-      "Identity keyed to Bioguide ID C001039. Budget posture is Optomitron's category coding of current public priorities.",
+      "Identity keyed to Bioguide ID C001039. Budget posture is Optimitron's category coding of current public priorities.",
     allocations: {
       PRAGMATIC_CLINICAL_TRIALS: 2,
       ADDICTION_TREATMENT: 2,

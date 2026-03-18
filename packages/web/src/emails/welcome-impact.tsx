@@ -82,7 +82,7 @@ export const WelcomeImpactEmail = ({
               margin: "0 0 30px 0",
             }}
           >
-            OPTOMITRON
+            OPTIMITRON
           </Heading>
 
           <Text
@@ -323,7 +323,7 @@ export const WelcomeImpactEmail = ({
 
           <ResourcePromoSection utmSource="welcome_email" />
 
-          <EmailFooter reason="you voted in the Optomitron referendum" />
+          <EmailFooter reason="you voted in the Optimitron referendum" />
         </Container>
       </Body>
     </Html>

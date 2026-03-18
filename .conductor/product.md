@@ -1,7 +1,7 @@
-# Optomitron Product Context
+# Optimitron Product Context
 
 ## Summary
-Optomitron is a domain-agnostic causal inference and optimization engine. It analyzes time-series data to determine what causes what, then recommends optimal values — for government budgets, health interventions, business metrics, or anything measurable.
+Optimitron is a domain-agnostic causal inference and optimization engine. It analyzes time-series data to determine what causes what, then recommends optimal values — for government budgets, health interventions, business metrics, or anything measurable.
 
 ## Vision
 "What if every dollar spent — by a government, a hospital, or a person — was backed by causal evidence of its actual impact?"
@@ -23,24 +23,24 @@ Optomitron is a domain-agnostic causal inference and optimization engine. It ana
 ## Core Packages
 | Package | Purpose | Tests |
 |---------|---------|-------|
-| `@optomitron/optimizer` | Domain-agnostic causal inference engine | 393 |
-| `@optomitron/wishocracy` | RAPPA preference aggregation | 202 |
-| `@optomitron/opg` | Optimal Policy Generator | 241 |
-| `@optomitron/obg` | Optimal Budget Generator | 247 |
-| `@optomitron/data` | Data fetchers, importers, datasets | 589+ |
-| `@optomitron/db` | Prisma schema + Zod validators | 60 |
-| `@optomitron/chat-ui` | Conversational health tracking | 87 |
-| `@optomitron/storage` | Storacha/IPFS content-addressed snapshots | 20 |
-| `@optomitron/hypercerts` | Hypercerts AT Protocol record mapping | 15 |
-| `@optomitron/agent` | Autonomous policy analyst (Gemini + ERC-8004) | 14 |
-| `@optomitron/web` | Next.js website | — |
-| `@optomitron/extension` | Chrome extension (Digital Twin Safe) | — |
-| `@optomitron/examples` | Runnable demos | 78 |
+| `@optimitron/optimizer` | Domain-agnostic causal inference engine | 393 |
+| `@optimitron/wishocracy` | RAPPA preference aggregation | 202 |
+| `@optimitron/opg` | Optimal Policy Generator | 241 |
+| `@optimitron/obg` | Optimal Budget Generator | 247 |
+| `@optimitron/data` | Data fetchers, importers, datasets | 589+ |
+| `@optimitron/db` | Prisma schema + Zod validators | 60 |
+| `@optimitron/chat-ui` | Conversational health tracking | 87 |
+| `@optimitron/storage` | Storacha/IPFS content-addressed snapshots | 20 |
+| `@optimitron/hypercerts` | Hypercerts AT Protocol record mapping | 15 |
+| `@optimitron/agent` | Autonomous policy analyst (Gemini + ERC-8004) | 14 |
+| `@optimitron/web` | Next.js website | — |
+| `@optimitron/extension` | Chrome extension (Digital Twin Safe) | — |
+| `@optimitron/examples` | Runnable demos | 78 |
 
 ## Current State (Mar 2026)
 - **~1,900+ tests** passing across all packages
 - **Web app**: auth, referrals, World ID verification, profile/census tracking, daily check-ins, and shareable alignment reports are implemented in `packages/web`
-- **Website LIVE**: https://mikepsinn.github.io/optomitron/ (legacy/static demo surface)
+- **Website LIVE**: https://mikepsinn.github.io/optimitron/ (legacy/static demo surface)
 - **Real analyses running**: US budget optimization (231 countries), Drug War, Laffer Curve, Healthcare, Minimum Wage
 - **Key finding**: US R&D should be $603B (currently $75B); Education $307B (currently $102B)
 - **Key analyses**: Drug control spending has zero effect on overdose deaths (r=0.026); US healthcare spending negatively correlates with life expectancy in YoY changes

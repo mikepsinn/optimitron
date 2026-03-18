@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { ActivityType } from "@optomitron/db";
+import { ActivityType } from "@optimitron/db";
 import {
   getActivityDescription,
   getActivityEmoji,

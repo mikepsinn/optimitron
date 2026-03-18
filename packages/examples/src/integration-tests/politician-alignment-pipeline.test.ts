@@ -24,7 +24,7 @@ import {
   calculatePreferenceGaps,
   rankPoliticians,
   type AlignmentScore,
-} from '@optomitron/wishocracy';
+} from '@optimitron/wishocracy';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

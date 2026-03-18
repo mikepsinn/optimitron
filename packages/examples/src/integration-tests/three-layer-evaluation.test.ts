@@ -10,17 +10,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { NATURAL_EXPERIMENTS } from '@optomitron/data';
+import { NATURAL_EXPERIMENTS } from '@optimitron/data';
 import {
   runCountryAnalysis,
   type AnnualTimeSeries,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 import {
   convertNaturalExperimentData,
   evaluatePolicy,
   buildPanelAnalysis,
   type OutcomeMetric,
-} from '@optomitron/opg';
+} from '@optimitron/opg';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

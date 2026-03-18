@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { AggregatedNOf1DrugEnforcementRow } from "@optomitron/data";
+import type { AggregatedNOf1DrugEnforcementRow } from "@optimitron/data";
 import {
   buildAggregatedDrugWarProxySubjects,
   renderAggregatedDrugWarProxyMarkdown,

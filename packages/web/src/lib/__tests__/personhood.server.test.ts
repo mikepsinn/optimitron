@@ -1,4 +1,4 @@
-import { PersonhoodProvider, PersonhoodVerificationStatus } from "@optomitron/db";
+import { PersonhoodProvider, PersonhoodVerificationStatus } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({

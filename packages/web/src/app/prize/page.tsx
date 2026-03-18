@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
-  title: "Earth Optimization Prize | Optomitron",
+  title: "Earth Optimization Prize | Optimitron",
   description:
     "Two ways in. Depositors: USDC → Aave yield → ~4.2x return if plan fails. Recruiters: share referral links → World ID verified voters → VOTE tokens → prize share if plan succeeds. Break-even: 0.0067%.",
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createAgentManifest, runAgent } from '@optomitron/agent';
+import { createAgentManifest, runAgent } from '@optimitron/agent';
 import {
   ACTIVITY_COLLECTION,
   ATTACHMENT_COLLECTION,
@@ -8,15 +8,15 @@ import {
   createPolicyHypercertDraft,
   publishPolicyHypercertDraft,
   type HypercertRecord,
-} from '@optomitron/hypercerts';
+} from '@optimitron/hypercerts';
 import {
   getLatest,
   storeLinkedAggregation,
   storeLinkedPolicyAnalysis,
   verifyHistoryChain,
-  type CreateOptomitronPolicyAnalysisInput,
+  type CreateOptimitronPolicyAnalysisInput,
   type CreateWishocracyAggregationInput,
-} from '@optomitron/storage';
+} from '@optimitron/storage';
 
 function createReasonerQueue(responses: unknown[]) {
   return {
@@ -217,7 +217,7 @@ describe('PL Genesis agent receipts integration', () => {
         async publishPolicy(input: Parameters<typeof createPolicyHypercertDraft>[0]) {
           return publishPolicyHypercertDraft(
             atproto.publisher,
-            'did:plc:optomitron',
+            'did:plc:optimitron',
             createPolicyHypercertDraft(input),
           );
         },
@@ -230,7 +230,7 @@ describe('PL Genesis agent receipts integration', () => {
             storacha.fetchImpl,
           );
         },
-        async storePolicyAnalysis(input: CreateOptomitronPolicyAnalysisInput) {
+        async storePolicyAnalysis(input: CreateOptimitronPolicyAnalysisInput) {
           return storeLinkedPolicyAnalysis(
             storacha.client,
             input,
@@ -311,7 +311,7 @@ describe('PL Genesis agent receipts integration', () => {
       storacha.fetchImpl,
       {
         jurisdictionId: 'us-federal',
-        type: 'optomitron-policy-analysis',
+        type: 'optimitron-policy-analysis',
       },
     );
 
@@ -339,7 +339,7 @@ describe('PL Genesis agent receipts integration', () => {
       storacha.fetchImpl,
       {
         jurisdictionId: 'us-federal',
-        type: 'optomitron-policy-analysis',
+        type: 'optimitron-policy-analysis',
       },
     );
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { OrgStatus } from "@optomitron/db";
+import { OrgStatus } from "@optimitron/db";
 
 export const dynamic = "force-dynamic";
 

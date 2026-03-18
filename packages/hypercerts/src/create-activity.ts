@@ -56,7 +56,7 @@ export function createActivityClaimRecord(
   const parsed = ActivityClaimInputSchema.parse(input);
   return HypercertActivityClaimRecordSchema.parse({
     $type: ACTIVITY_COLLECTION,
-    title: `${parsed.policyName} — Causal Analysis by Optomitron`,
+    title: `${parsed.policyName} — Causal Analysis by Optimitron`,
     shortDescription: trimText(
       parsed.shortDescription ?? buildShortDescription(parsed),
       3000,

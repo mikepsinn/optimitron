@@ -139,7 +139,7 @@ export function AuthForm({
 
     try {
       const result = await signIn("credentials", {
-        email: "demo@optomitron.org",
+        email: "demo@optimitron.org",
         password: "demo1234",
         callbackUrl,
         redirect: false,

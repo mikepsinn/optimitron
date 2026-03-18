@@ -7,10 +7,10 @@
 5. [x] Add a report-to-tests mapping table in `reports/`.
    - Added `reports/report-test-mapping.md` linking core claims/contracts to test files.
 6. [x] Add tests for adaptive binning and report output contracts.
-   - `@optomitron/optimizer`: adaptive binning unit tests.
-   - `@optomitron/examples`: assertions for low-spending `% GDP` tiers and per-capita PPP tier output.
+   - `@optimitron/optimizer`: adaptive binning unit tests.
+   - `@optimitron/examples`: assertions for low-spending `% GDP` tiers and per-capita PPP tier output.
 7. [x] Add tests for ranking stability under multiple-testing correction (FDR/Bonferroni as configured).
-   - Added in `@optomitron/optimizer/src/__tests__/outcome-mega-study-ranking.test.ts`.
+   - Added in `@optimitron/optimizer/src/__tests__/outcome-mega-study-ranking.test.ts`.
    - Covers BH and Bonferroni adjustment behavior plus deterministic ranking ties.
 8. [x] Add UI-contract tests for uncertainty/quality badges on outcome hub and pair study pages.
    - Added badge contract helper + tests:

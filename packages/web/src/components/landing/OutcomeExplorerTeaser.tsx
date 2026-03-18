@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { OutcomeMegaStudyRanking } from "@optomitron/optimizer";
+import type { OutcomeMegaStudyRanking } from "@optimitron/optimizer";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import type { ExplorerOutcome } from "@/lib/analysis-explorer-types";
 import { getOutcomeHubPath } from "@/lib/analysis-explorer-routes";

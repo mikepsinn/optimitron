@@ -1,4 +1,4 @@
-# Optomitron: Funder Targeting Memo
+# Optimitron: Funder Targeting Memo
 
 ## One-Liner
 A domain-agnostic causal inference engine that optimizes health, budget, and policy outcomes using real data — running entirely on-device.
@@ -7,19 +7,19 @@ A domain-agnostic causal inference engine that optimizes health, budget, and pol
 Governments and individuals make trillion-dollar resource allocation decisions based on ideology rather than evidence. The US spends $10,200/capita on healthcare for *worse* outcomes than countries spending $3,000. 14 of 15 popular policy beliefs are contradicted by data. There is no public tool that makes this visible.
 
 ## The Solution
-Optomitron is an open-source TypeScript library and web application that:
+Optimitron is an open-source TypeScript library and web application that:
 1. **Finds minimum effective spending** — the lowest budget level per category that achieves comparable outcomes
 2. **Ranks countries by efficiency** — outcome-per-dollar across healthcare, defense, education, R&D
 3. **Tests policy myths** — 15 common beliefs analyzed with year-over-year causal methods
 4. **Runs locally** — all computation in-browser via PGlite/WebAssembly, no data leaves the device
 
 ## Traction
-- **Live demo:** [mikepsinn.github.io/optomitron](https://mikepsinn.github.io/optomitron/)
+- **Live demo:** [mikepsinn.github.io/optimitron](https://mikepsinn.github.io/optimitron/)
 - **1,700+ tests** passing across 10 packages
 - **308 OBG tests** covering budget optimization, efficient frontier, overspend analysis
 - **15 policy misconception analyses** completed with real US data (1950–2023)
 - **9 health data importers** (Apple Health, Fitbit, Oura, etc.)
-- **Open source:** [github.com/mikepsinn/optomitron](https://github.com/mikepsinn/optomitron)
+- **Open source:** [github.com/mikepsinn/optimitron](https://github.com/mikepsinn/optimitron)
 
 ## Target Funders
 
@@ -72,4 +72,4 @@ $50K–$100K for 6 months to:
 | Sustainability | Open source + grant funding → consulting/enterprise licensing long-term |
 
 ---
-*Contact: m@thinkbynumbers.org | [GitHub](https://github.com/mikepsinn/optomitron)*
+*Contact: m@thinkbynumbers.org | [GitHub](https://github.com/mikepsinn/optimitron)*

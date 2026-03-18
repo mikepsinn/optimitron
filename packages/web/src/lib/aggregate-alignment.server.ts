@@ -2,7 +2,7 @@ import {
   calculateAlignmentScore,
   rankPoliticians,
   type AlignmentScore as WishocracyAlignmentScore,
-} from "@optomitron/wishocracy";
+} from "@optimitron/wishocracy";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import {

@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/treasury-shared",
+  "name": "@optimitron/treasury-shared",
   "version": "0.1.0",
   "private": true,
   "description": "Shared interfaces and mocks for treasury contracts",

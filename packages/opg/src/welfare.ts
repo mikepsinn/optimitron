@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * The Two-Metric Welfare Function
  * 
- * All Optomitron calculations optimize for these two metrics:
+ * All Optimitron calculations optimize for these two metrics:
  * 1. Real after-tax median income growth (pp/year)
  * 2. Median healthy life years
  * 

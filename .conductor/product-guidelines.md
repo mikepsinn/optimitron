@@ -2,7 +2,7 @@
 
 ## Messaging
 - Lead with evidence, transparency, and reproducibility.
-- Describe Optomitron as decision-support, not a replacement for legal authority.
+- Describe Optimitron as decision-support, not a replacement for legal authority.
 - Emphasize domain-agnostic capability: the same engine works for health, budgets, or business metrics.
 - Make uncertainty explicit (confidence intervals, evidence grades, sensitivity analysis).
 

@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { parseMyFitnessPalExport } from '@optomitron/data';
+ * import { parseMyFitnessPalExport } from '@optimitron/data';
  * const records = parseMyFitnessPalExport(csvString);
  * ```
  */

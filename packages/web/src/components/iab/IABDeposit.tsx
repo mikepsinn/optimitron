@@ -13,8 +13,8 @@ import {
 } from "wagmi";
 import { parseUnits, formatUnits, type Address } from "viem";
 import { sepolia } from "wagmi/chains";
-import { iabVaultAbi } from "@optomitron/treasury-iab/abi";
-import { getContracts } from "@optomitron/treasury-shared/addresses";
+import { iabVaultAbi } from "@optimitron/treasury-iab/abi";
+import { getContracts } from "@optimitron/treasury-shared/addresses";
 
 const USDC_DECIMALS = 6;
 const PRESET_AMOUNTS = ["100", "500", "1,000", "5,000"];

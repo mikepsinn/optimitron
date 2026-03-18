@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/treasury-iab",
+  "name": "@optimitron/treasury-iab",
   "version": "0.1.0",
   "private": true,
   "description": "Incentive Alignment Bonds: IABVault, PublicGoodsPool, IABSplitter for Phase 2 lobbying",
@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.1.0",
-    "@optomitron/treasury-shared": "workspace:*"
+    "@optimitron/treasury-shared": "workspace:*"
   }
 }

@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import type { FullAnalysisResult } from '@optomitron/optimizer';
+import type { FullAnalysisResult } from '@optimitron/optimizer';
 
 // We import the exported function that runs everything except file I/O
 import { runGoldenPathDemo } from '../health-optimization-demo.js';

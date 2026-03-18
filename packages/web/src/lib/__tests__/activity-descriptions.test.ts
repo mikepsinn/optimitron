@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ActivityType, BadgeType } from "@optomitron/db";
+import { ActivityType, BadgeType } from "@optimitron/db";
 import {
   getActivityDescription,
   getActivityEmoji,

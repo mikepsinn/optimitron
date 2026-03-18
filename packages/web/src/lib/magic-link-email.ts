@@ -24,7 +24,7 @@ function buildMagicLinkHtml(
     <div style="background:#f4f4f5;padding:32px 16px;font-family:Arial,sans-serif;color:#111827;">
       <div style="max-width:560px;margin:0 auto;background:#ffffff;border:3px solid #111827;padding:32px;">
         <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;">
-          Optomitron Magic Link
+          Optimitron Magic Link
         </p>
         <h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;">
           Sign in to ${escapedHost}
@@ -36,7 +36,7 @@ function buildMagicLinkHtml(
           href="${escapedUrl}"
           style="display:inline-block;background:${brandColor};color:${buttonText};padding:14px 24px;text-decoration:none;font-weight:700;border:2px solid #111827;"
         >
-          Sign in to Optomitron
+          Sign in to Optimitron
         </a>
         <p style="margin:20px 0 8px;font-size:14px;line-height:1.6;color:#3f3f46;">
           If the button does not work, paste this URL into your browser:

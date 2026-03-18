@@ -37,8 +37,8 @@ import {
   type PairStudyArtifact,
   type TwoStageGateResult,
 } from "../mega-study-generator.js";
-import type { VariableRegistryEntry, SparseOutcomeProfile } from "@optomitron/data";
-import { getVariableById } from "@optomitron/data";
+import type { VariableRegistryEntry, SparseOutcomeProfile } from "@optimitron/data";
+import { getVariableById } from "@optimitron/data";
 
 describe("mega-study-generator helpers", () => {
   it("selectLagYears prefers the smallest shared lag", () => {

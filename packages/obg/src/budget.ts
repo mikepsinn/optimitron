@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EvidenceGradeSchema, WelfareEffectSchema } from '@optomitron/opg';
+import { EvidenceGradeSchema, WelfareEffectSchema } from '@optimitron/opg';
 
 /**
  * Budget types and schemas for the Optimal Budget Generator (OBG)

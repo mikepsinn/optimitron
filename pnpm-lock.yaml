@@ -32,25 +32,25 @@ importers:
       '@google/genai':
         specifier: ^1.30.0
         version: 1.44.0
-      '@optomitron/data':
+      '@optimitron/data':
         specifier: workspace:*
         version: link:../data
-      '@optomitron/hypercerts':
+      '@optimitron/hypercerts':
         specifier: workspace:*
         version: link:../hypercerts
-      '@optomitron/obg':
+      '@optimitron/obg':
         specifier: workspace:*
         version: link:../obg
-      '@optomitron/opg':
+      '@optimitron/opg':
         specifier: workspace:*
         version: link:../opg
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
-      '@optomitron/storage':
+      '@optimitron/storage':
         specifier: workspace:*
         version: link:../storage
-      '@optomitron/wishocracy':
+      '@optimitron/wishocracy':
         specifier: workspace:*
         version: link:../wishocracy
       ethers:
@@ -105,7 +105,7 @@ importers:
 
   packages/data:
     dependencies:
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
       zod:
@@ -152,28 +152,28 @@ importers:
 
   packages/examples:
     dependencies:
-      '@optomitron/agent':
+      '@optimitron/agent':
         specifier: workspace:*
         version: link:../agent
-      '@optomitron/data':
+      '@optimitron/data':
         specifier: workspace:*
         version: link:../data
-      '@optomitron/hypercerts':
+      '@optimitron/hypercerts':
         specifier: workspace:*
         version: link:../hypercerts
-      '@optomitron/obg':
+      '@optimitron/obg':
         specifier: workspace:*
         version: link:../obg
-      '@optomitron/opg':
+      '@optimitron/opg':
         specifier: workspace:*
         version: link:../opg
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
-      '@optomitron/storage':
+      '@optimitron/storage':
         specifier: workspace:*
         version: link:../storage
-      '@optomitron/wishocracy':
+      '@optimitron/wishocracy':
         specifier: workspace:*
         version: link:../wishocracy
     devDependencies:
@@ -192,7 +192,7 @@ importers:
 
   packages/extension:
     dependencies:
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
       zod:
@@ -236,10 +236,10 @@ importers:
 
   packages/obg:
     dependencies:
-      '@optomitron/opg':
+      '@optimitron/opg':
         specifier: workspace:*
         version: link:../opg
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
       zod:
@@ -258,14 +258,14 @@ importers:
 
   packages/opg:
     dependencies:
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
       zod:
         specifier: ^3.22.4
         version: 3.25.76
     devDependencies:
-      '@optomitron/data':
+      '@optimitron/data':
         specifier: workspace:*
         version: link:../data
       '@types/node':
@@ -296,7 +296,7 @@ importers:
 
   packages/storage:
     dependencies:
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:*
         version: link:../optimizer
       '@storacha/client':
@@ -321,7 +321,7 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.1.0
         version: 5.6.1
-      '@optomitron/treasury-shared':
+      '@optimitron/treasury-shared':
         specifier: workspace:*
         version: link:../treasury-shared
     devDependencies:
@@ -343,7 +343,7 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.1.0
         version: 5.6.1
-      '@optomitron/treasury-shared':
+      '@optimitron/treasury-shared':
         specifier: workspace:*
         version: link:../treasury-shared
     devDependencies:
@@ -387,7 +387,7 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.1.0
         version: 5.6.1
-      '@optomitron/treasury-shared':
+      '@optimitron/treasury-shared':
         specifier: workspace:*
         version: link:../treasury-shared
     devDependencies:
@@ -412,43 +412,43 @@ importers:
       '@next-auth/prisma-adapter':
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@7.5.0)(next-auth@4.24.13)
-      '@optomitron/chat-ui':
+      '@optimitron/chat-ui':
         specifier: workspace:^
         version: link:../chat-ui
-      '@optomitron/data':
+      '@optimitron/data':
         specifier: workspace:^
         version: link:../data
-      '@optomitron/db':
+      '@optimitron/db':
         specifier: workspace:^
         version: link:../db
-      '@optomitron/hypercerts':
+      '@optimitron/hypercerts':
         specifier: workspace:^
         version: link:../hypercerts
-      '@optomitron/obg':
+      '@optimitron/obg':
         specifier: workspace:^
         version: link:../obg
-      '@optomitron/opg':
+      '@optimitron/opg':
         specifier: workspace:^
         version: link:../opg
-      '@optomitron/optimizer':
+      '@optimitron/optimizer':
         specifier: workspace:^
         version: link:../optimizer
-      '@optomitron/storage':
+      '@optimitron/storage':
         specifier: workspace:^
         version: link:../storage
-      '@optomitron/treasury-iab':
+      '@optimitron/treasury-iab':
         specifier: workspace:*
         version: link:../treasury-iab
-      '@optomitron/treasury-prize':
+      '@optimitron/treasury-prize':
         specifier: workspace:*
         version: link:../treasury-prize
-      '@optomitron/treasury-shared':
+      '@optimitron/treasury-shared':
         specifier: workspace:*
         version: link:../treasury-shared
-      '@optomitron/treasury-wish':
+      '@optimitron/treasury-wish':
         specifier: workspace:*
         version: link:../treasury-wish
-      '@optomitron/wishocracy':
+      '@optimitron/wishocracy':
         specifier: workspace:^
         version: link:../wishocracy
       '@prisma/adapter-pg':

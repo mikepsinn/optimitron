@@ -1,5 +1,5 @@
 // ============================================================================
-// Optomitron Database Schema
+// Optimitron Database Schema
 // ============================================================================
 //
 // Two-layer architecture:
@@ -12,7 +12,7 @@
 //   These models form a general-purpose quantified-self / data collection
 //   platform. Any variable (health, economic, environmental, policy outcome)
 //   can be tracked, aggregated, and analyzed for causal relationships.
-//   Inspired by the legacy API open-source API. This is the Optomitron schema.
+//   Inspired by the legacy API open-source API. This is the Optimitron schema.
 //
 // LAYER 2 — Domain-Specific Governance
 //   Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight,
@@ -284,7 +284,7 @@ enum EmailLogStatus {
 // AUTH / ACCOUNT LAYER
 // ============================================================================
 
-/// Application user account used for Optomitron and Wishocracy sign-in
+/// Application user account used for Optimitron and Wishocracy sign-in
 model User {
   /// Unique identifier for this user
   id String @id @default(cuid())

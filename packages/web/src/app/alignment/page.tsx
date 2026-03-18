@@ -7,9 +7,9 @@ import { getSignInPath, ROUTES } from "@/lib/routes";
 import { buildUserAlignmentUrl, getBaseUrl } from "@/lib/url";
 
 export const metadata = {
-  title: "Alignment Report | Optomitron",
+  title: "Alignment Report | Optimitron",
   description:
-    "See which politicians match your priorities with Optomitron, the Earth Optimization Machine.",
+    "See which politicians match your priorities with Optimitron, the Earth Optimization Machine.",
 };
 
 export default async function AlignmentPage() {

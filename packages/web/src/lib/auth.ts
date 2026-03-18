@@ -1,5 +1,5 @@
 import "@/lib/server-env";
-import { PersonhoodVerificationStatus } from "@optomitron/db";
+import { PersonhoodVerificationStatus } from "@optimitron/db";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";

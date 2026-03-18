@@ -1,5 +1,5 @@
 // ============================================================================
-// Prisma Seed Script — Optomitron
+// Prisma Seed Script — Optimitron
 // ============================================================================
 // Seeds: Units, VariableCategories, GlobalVariables, Jurisdictions, Items
 // Run: npx prisma db seed (or: npx tsx prisma/seed.ts)
@@ -607,9 +607,9 @@ async function seedJurisdictions() {
 // ============================================================================
 
 async function seedBudgetItems(usJurisdictionId: string) {
-  console.log("💰 Seeding Optomitron budget categories...");
+  console.log("💰 Seeding Optimitron budget categories...");
 
-  // Optomitron budget categories — these are the items citizens compare in
+  // Optimitron budget categories — these are the items citizens compare in
   // pairwise RAPPA surveys. IDs match BudgetCategoryId in wishocracy-data.ts
   // so WishocraticAllocation.itemAId/itemBId map directly to Item.id.
   const categories: {
@@ -665,7 +665,7 @@ async function seedBudgetItems(usJurisdictionId: string) {
     });
   }
 
-  console.log(`  ✅ ${categories.length} Optomitron budget categories`);
+  console.log(`  ✅ ${categories.length} Optimitron budget categories`);
 }
 
 // ============================================================================
@@ -692,7 +692,7 @@ async function seedReferendums() {
 }
 
 export async function seedDatabase() {
-  console.log("🌱 Starting Optomitron seed...\n");
+  console.log("🌱 Starting Optimitron seed...\n");
 
   const unitMap = await seedUnits();
   const catMap = await seedVariableCategories(unitMap);
@@ -708,7 +708,7 @@ export async function seedDatabase() {
 // ---------------------------------------------------------------------------
 // Demo User — for hackathon judges and demo recordings
 // ---------------------------------------------------------------------------
-// Email: demo@optomitron.org  Password: demo1234
+// Email: demo@optimitron.org  Password: demo1234
 
 async function seedDemoUser() {
   console.log("👤 Seeding demo user...");
@@ -719,7 +719,7 @@ async function seedDemoUser() {
 
   try {
     await prisma.user.upsert({
-      where: { email: "demo@optomitron.org" },
+      where: { email: "demo@optimitron.org" },
       update: {
         name: "Demo User",
         password: DEMO_PASSWORD_HASH,
@@ -727,7 +727,7 @@ async function seedDemoUser() {
         emailVerified: new Date(),
       },
       create: {
-        email: "demo@optomitron.org",
+        email: "demo@optimitron.org",
         name: "Demo User",
         password: DEMO_PASSWORD_HASH,
         username: "demo",
@@ -735,20 +735,20 @@ async function seedDemoUser() {
         referralCode: "DEMO",
       },
     });
-    console.log("  ✓ demo@optomitron.org / demo1234");
+    console.log("  ✓ demo@optimitron.org / demo1234");
   } catch (err) {
     // If schema is out of sync, try raw SQL fallback
     console.log("  ⚠ upsert failed, trying raw SQL...");
     await prisma.$executeRawUnsafe(`
       INSERT INTO "User" (id, email, name, password, "referralCode", "emailVerified", "createdAt", "updatedAt")
-      VALUES ('demo-user-id', 'demo@optomitron.org', 'Demo User', $1, 'DEMO', NOW(), NOW(), NOW())
+      VALUES ('demo-user-id', 'demo@optimitron.org', 'Demo User', $1, 'DEMO', NOW(), NOW(), NOW())
       ON CONFLICT (email) DO UPDATE SET
         name = 'Demo User',
         password = $1,
         "emailVerified" = NOW(),
         "updatedAt" = NOW()
     `, DEMO_PASSWORD_HASH);
-    console.log("  ✓ demo@optomitron.org / demo1234 (via raw SQL)");
+    console.log("  ✓ demo@optimitron.org / demo1234 (via raw SQL)");
   }
 }
 

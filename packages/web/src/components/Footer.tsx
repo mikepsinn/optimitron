@@ -17,7 +17,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href={ROUTES.home} className="text-xl font-black uppercase text-black">
-              ⚡ Optomitron
+              ⚡ Optimitron
             </Link>
             <p className="text-sm text-black/70 mt-3 leading-relaxed font-medium">
               Planetary debugging software. Because your species keeps ignoring
@@ -84,7 +84,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t-2 border-black/20 text-center text-sm text-black/70 font-medium">
           <p>
-            © {new Date().getFullYear()} Optomitron —{" "}
+            © {new Date().getFullYear()} Optimitron —{" "}
             <NavItemLink
               item={githubLink}
               variant="custom"

@@ -10,7 +10,7 @@
  */
 
 import type { DataPoint } from '../types.js';
-import type { TimeSeries, Measurement } from '@optomitron/optimizer';
+import type { TimeSeries, Measurement } from '@optimitron/optimizer';
 import {
   fetchLifeExpectancy, fetchGdpPerCapita, fetchHealthExpenditure,
   fetchGovHealthExpenditure, fetchPrivateHealthExpenditure, fetchOutOfPocketHealth,
@@ -391,7 +391,7 @@ export function datasetFromJSON(json: any): FetchedDataset {
   const countries = new Map<string, CountryTimeSeries>();
   for (const c of json.countries) {
     const vars = new Map<string, TimeSeries>();
-    for (const [varId, points] of Object.entries(c.variables) as [string, any[]][]) {
+    for (const [varId, points] of Object.entries(c.variables)) {
       vars.set(varId, {
         variableId: `${c.iso3}:${varId}`,
         name: `${c.iso3} — ${varId}`,

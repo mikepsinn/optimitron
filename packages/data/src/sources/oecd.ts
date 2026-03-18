@@ -215,7 +215,7 @@ function parseOECDHealthResponse(_data: OECDApiResponse): SpendingData[] {
   // know it's not silently returning empty.
   throw new Error(
     'OECD health expenditure parsing not yet implemented. ' +
-    'Use @optomitron/data datasets (US_FEDERAL_BUDGET, HEALTH_SYSTEM_COMPARISON) for pre-curated data.',
+    'Use @optimitron/data datasets (US_FEDERAL_BUDGET, HEALTH_SYSTEM_COMPARISON) for pre-curated data.',
   );
 }
 

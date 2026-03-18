@@ -1,7 +1,7 @@
 import {
   aggregateNOf1VariableRelationships,
   type NOf1VariableRelationship,
-} from "@optomitron/optimizer";
+} from "@optimitron/optimizer";
 import { prisma } from "@/lib/prisma";
 import { median } from "@/lib/numeric-utils";
 

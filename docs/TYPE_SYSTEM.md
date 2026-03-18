@@ -41,8 +41,8 @@ Minimal interfaces for pure computation. No DB concerns.
 The **web/API layer** converts between them:
 ```typescript
 // In packages/web or API routes:
-import type { Measurement as DbMeasurement } from '@optomitron/db';
-import type { Measurement as OptimizerMeasurement } from '@optomitron/optimizer';
+import type { Measurement as DbMeasurement } from '@optimitron/db';
+import type { Measurement as OptimizerMeasurement } from '@optimitron/optimizer';
 
 function toOptimizerMeasurement(db: DbMeasurement): OptimizerMeasurement {
   return {
@@ -83,7 +83,7 @@ This separation is **intentional**:
 ## Enum Handling
 
 Prisma enums use UPPER_CASE (`ZERO`, `VALUE`). TypeScript code uses lowercase (`'zero'`, `'value'`).
-Conversion utilities live in `@optomitron/db`:
+Conversion utilities live in `@optimitron/db`:
 - `fillingTypeToPrisma(optimizerType)` → Prisma enum
 - `fillingTypeFromPrisma(prismaType)` → optimizer string
 

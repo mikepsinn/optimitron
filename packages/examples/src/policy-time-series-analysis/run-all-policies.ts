@@ -8,22 +8,22 @@
  * Usage: npx tsx packages/examples/src/policy-time-series-analysis/run-all-policies.ts
  */
 
-import { runFullAnalysis } from '@optomitron/optimizer';
-import type { TimeSeries, Measurement } from '@optomitron/optimizer';
-import type { AnalysisConfig, FullAnalysisResult } from '@optomitron/optimizer';
-import { US_HEALTHCARE_SPENDING_DATA } from '@optomitron/data';
-import { US_DRUG_WAR_DATA } from '@optomitron/data';
-import { US_INCARCERATION_DATA } from '@optomitron/data';
-import { US_POLICE_SPENDING_DATA } from '@optomitron/data';
-import { US_GUN_DATA } from '@optomitron/data';
-import { US_DEATH_PENALTY_DATA } from '@optomitron/data';
-import { US_CLIMATE_SPENDING_DATA } from '@optomitron/data';
-import { US_MINIMUM_WAGE_DATA } from '@optomitron/data';
-import { US_FOREIGN_AID_DATA } from '@optomitron/data';
-import { US_IMMIGRATION_DATA, US_TARIFF_DATA } from '@optomitron/data';
-import { US_LAFFER_CURVE_DATA } from '@optomitron/data';
-import { US_ABSTINENCE_EDUCATION_DATA } from '@optomitron/data';
-import { US_REGULATION_DATA } from '@optomitron/data';
+import { runFullAnalysis } from '@optimitron/optimizer';
+import type { TimeSeries, Measurement } from '@optimitron/optimizer';
+import type { AnalysisConfig, FullAnalysisResult } from '@optimitron/optimizer';
+import { US_HEALTHCARE_SPENDING_DATA } from '@optimitron/data';
+import { US_DRUG_WAR_DATA } from '@optimitron/data';
+import { US_INCARCERATION_DATA } from '@optimitron/data';
+import { US_POLICE_SPENDING_DATA } from '@optimitron/data';
+import { US_GUN_DATA } from '@optimitron/data';
+import { US_DEATH_PENALTY_DATA } from '@optimitron/data';
+import { US_CLIMATE_SPENDING_DATA } from '@optimitron/data';
+import { US_MINIMUM_WAGE_DATA } from '@optimitron/data';
+import { US_FOREIGN_AID_DATA } from '@optimitron/data';
+import { US_IMMIGRATION_DATA, US_TARIFF_DATA } from '@optimitron/data';
+import { US_LAFFER_CURVE_DATA } from '@optimitron/data';
+import { US_ABSTINENCE_EDUCATION_DATA } from '@optimitron/data';
+import { US_REGULATION_DATA } from '@optimitron/data';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -553,7 +553,7 @@ function main() {
   // Write JSON output
   const output = {
     generatedAt: new Date().toISOString(),
-    engine: '@optomitron/optimizer runFullAnalysis()',
+    engine: '@optimitron/optimizer runFullAnalysis()',
     description: 'US policy analyses computed from real time-series data through the causal inference pipeline',
     totalAnalyses: results.length,
     summary: {
@@ -570,7 +570,7 @@ function main() {
   
   // Also write markdown report
   let md = `# US Policy Time-Series Analysis\n\n`;
-  md += `> Generated ${new Date().toISOString()} by @optomitron/optimizer\n\n`;
+  md += `> Generated ${new Date().toISOString()} by @optimitron/optimizer\n\n`;
   md += `**Engine:** Every analysis below was computed by running real US government time-series data `;
   md += `through \`runFullAnalysis()\` — temporal alignment, Pearson/Spearman correlation, `;
   md += `reverse Pearson, baseline/followup, Bradford Hill scores, and Predictor Impact Score.\n\n`;

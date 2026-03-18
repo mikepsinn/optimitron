@@ -88,12 +88,12 @@ describe('orchestrator', () => {
     const publishPolicy = vi.fn().mockResolvedValue({
       refs: {
         activity: {
-          uri: 'at://did:plc:optomitron/org.hypercerts.claim.activity/1',
+          uri: 'at://did:plc:optimitron/org.hypercerts.claim.activity/1',
           cid: 'cid-activity',
         },
         attachments: [],
         evaluation: {
-          uri: 'at://did:plc:optomitron/org.hypercerts.context.evaluation/1',
+          uri: 'at://did:plc:optimitron/org.hypercerts.context.evaluation/1',
           cid: 'cid-evaluation',
         },
         measurements: [],
@@ -162,7 +162,7 @@ describe('orchestrator', () => {
 
     expect(log.status).toBe('completed');
     expect(log.outputs.activityUris).toEqual([
-      'at://did:plc:optomitron/org.hypercerts.claim.activity/1',
+      'at://did:plc:optimitron/org.hypercerts.claim.activity/1',
     ]);
     expect(log.outputs.storageCids).toEqual([
       'bafyaggregation',
@@ -190,7 +190,7 @@ describe('orchestrator', () => {
     });
     expect(log.targetExecutions[0]?.publishReceipt).toMatchObject({
       activityUri:
-        'at://did:plc:optomitron/org.hypercerts.claim.activity/1',
+        'at://did:plc:optimitron/org.hypercerts.claim.activity/1',
       policyStorageCid: 'bafypolicy',
       aggregationStorageCid: 'bafyaggregation',
     });
@@ -308,12 +308,12 @@ describe('orchestrator', () => {
     const publishPolicy = vi.fn().mockResolvedValue({
       refs: {
         activity: {
-          uri: 'at://did:plc:optomitron/org.hypercerts.claim.activity/2',
+          uri: 'at://did:plc:optimitron/org.hypercerts.claim.activity/2',
           cid: 'cid-activity-2',
         },
         attachments: [],
         evaluation: {
-          uri: 'at://did:plc:optomitron/org.hypercerts.context.evaluation/2',
+          uri: 'at://did:plc:optimitron/org.hypercerts.context.evaluation/2',
           cid: 'cid-evaluation-2',
         },
         measurements: [],

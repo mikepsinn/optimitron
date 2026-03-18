@@ -1,4 +1,4 @@
-import type { PreferenceGap } from "@optomitron/wishocracy";
+import type { PreferenceGap } from "@optimitron/wishocracy";
 import type {
   AlignmentBenchmarkProfile,
   AlignmentBenchmarkSourceType,

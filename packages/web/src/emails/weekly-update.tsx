@@ -48,7 +48,7 @@ export const WeeklyUpdateEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your Weekly Optomitron Update - {stats.newReferrals > 0 ? `+${stats.newReferrals} new recruits!` : "Keep recruiting!"}
+        Your Weekly Optimitron Update - {stats.newReferrals > 0 ? `+${stats.newReferrals} new recruits!` : "Keep recruiting!"}
       </Preview>
       <Body
         style={{

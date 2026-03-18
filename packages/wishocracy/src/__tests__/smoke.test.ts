@@ -5,7 +5,7 @@ import {
   PairwiseComparisonSchema,
 } from '../index.js';
 
-describe('@optomitron/wishocracy smoke tests', () => {
+describe('@optimitron/wishocracy smoke tests', () => {
   it('exports a version string', () => {
     expect(VERSION).toBe('0.1.0');
   });

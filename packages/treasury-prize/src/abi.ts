@@ -1,5 +1,5 @@
 /**
- * VoteToken ABI — Optomitron Vote (VOTE)
+ * VoteToken ABI — Optimitron Vote (VOTE)
  * ERC20 token minted 1:1 for verified referendum voters.
  * Redeemable for proportional share of VoterPrizeTreasury if outcome thresholds met.
  */

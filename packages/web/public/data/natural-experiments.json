@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-02-07T21:05:39.059Z",
-  "engine": "@optomitron/optimizer runFullAnalysis()",
+  "engine": "@optimitron/optimizer runFullAnalysis()",
   "description": "Natural experiment analyses: before/after policy interventions across jurisdictions",
   "totalExperiments": 11,
   "totalOutcomes": 23,

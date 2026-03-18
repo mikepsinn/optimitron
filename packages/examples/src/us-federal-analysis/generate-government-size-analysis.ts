@@ -23,19 +23,19 @@ import {
   runCountryAnalysis,
   scoreToGrade,
   type AnnualTimeSeries,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 import {
   buildAdaptiveNumericBins,
   partialCorrelation,
   pearsonCorrelation,
   type NumericBin,
-} from '@optomitron/optimizer';
+} from '@optimitron/optimizer';
 
 import {
   fetchers,
   TOP_COUNTRIES,
   type DataPoint,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../../output');

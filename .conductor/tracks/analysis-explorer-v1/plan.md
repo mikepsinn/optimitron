@@ -9,21 +9,21 @@
    - Updated Prisma models and Zod schemas to `NOf1VariableRelationship` / `AggregateVariableRelationship`.
    - Renamed aggregate count field `numberOfUsers` -> `numberOfUnits`.
 2. [x] Define `VariableRegistry` contract for predictors/outcomes.
-   - Implemented in `@optomitron/data` via `src/variable-registry.ts` + tests.
+   - Implemented in `@optimitron/data` via `src/variable-registry.ts` + tests.
    - Includes canonical ID, unit, welfare direction (for outcomes), transform defaults, lag defaults, and coverage metadata.
 3. [x] Define generic `PairStudyResult` schema for predictor/outcome pairs.
-   - Implemented in `@optomitron/optimizer` via `src/pair-study.ts` + `src/__tests__/pair-study.test.ts`.
+   - Implemented in `@optimitron/optimizer` via `src/pair-study.ts` + `src/__tests__/pair-study.test.ts`.
    - Includes adaptive bin tables, optimal values, evidence metrics, quality flags, and data-flow diagnostics.
    - Explicitly treated as a presentation/report adapter over unit/aggregate relationship semantics (not a separate inference path).
 4. [x] Build a reusable pair-analysis runner (aggregate + jurisdiction support).
-   - Implemented in `@optomitron/optimizer` via `src/variable-relationship-runner.ts` + tests.
+   - Implemented in `@optimitron/optimizer` via `src/variable-relationship-runner.ts` + tests.
    - Produces unit-level `NOf1VariableRelationship` summaries + aggregate `AggregateVariableRelationship`.
 5. [x] Define and implement outcome "mega study" ranking method.
-   - Implemented in `@optomitron/optimizer` via `src/outcome-mega-study-ranking.ts` + tests.
+   - Implemented in `@optimitron/optimizer` via `src/outcome-mega-study-ranking.ts` + tests.
    - Includes configurable multiple-testing correction (`benjamini_hochberg`, `bonferroni`, `none`), confidence scoring, deterministic tie-breaking, and per-outcome grouped rankings.
 6. [x] Build outcome hub pages (`/outcomes/:outcomeId`) with sortable predictor rankings.
    - Implemented in `packages/web/src/app/outcomes/page.tsx` and `packages/web/src/app/outcomes/[outcomeId]/page.tsx`.
-   - Uses `@optomitron/optimizer` ranking output via shared adapter in `packages/web/src/lib/analysis-explorer-data.ts`.
+   - Uses `@optimitron/optimizer` ranking output via shared adapter in `packages/web/src/lib/analysis-explorer-data.ts`.
 7. [x] Build pair study pages (`/studies/:outcomeId/:predictorId`) with:
    - summary report
    - adaptive binning table(s)
@@ -85,7 +85,7 @@
 18. [x] Add bulk markdown artifact generation for registry-wide mega studies.
    - Added generator: `packages/examples/src/analysis-explorer/mega-study-generator.ts`.
    - Added CLI entry: `packages/examples/src/analysis-explorer/generate-mega-studies.ts`.
-   - Added npm script: `pnpm --filter @optomitron/examples generate:mega-studies`.
+   - Added npm script: `pnpm --filter @optimitron/examples generate:mega-studies`.
    - Generates:
      - per-outcome mega-study markdown reports (ranked predictors + optimal values)
      - per predictor/outcome pair-study markdown reports

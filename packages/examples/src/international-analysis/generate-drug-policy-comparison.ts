@@ -16,9 +16,9 @@ import {
   DRUG_POLICY_COMPARISON,
   type CountryDrugPolicy,
   type DrugPolicyApproach,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
-import { getExemplarsByCategory } from '@optomitron/data';
+import { getExemplarsByCategory } from '@optimitron/data';
 
 // ---------------------------------------------------------------------------
 // Constants

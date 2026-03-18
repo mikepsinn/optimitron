@@ -17,7 +17,7 @@ import {
 import { IABCalculator } from "@/components/landing/IABCalculator";
 
 export const metadata: Metadata = {
-  title: "Incentive Alignment Bonds | Optomitron",
+  title: "Incentive Alignment Bonds | Optimitron",
   description:
     "Phase 2: After the referendum proves demand, raise ~$1B to lobby for the 1% Treaty. 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds aligned politicians. Dominant assurance: ~4.2x return if treaty fails.",
 };

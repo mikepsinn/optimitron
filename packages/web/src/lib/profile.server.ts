@@ -5,7 +5,7 @@ import {
   SubjectType,
   Valence,
   type Prisma,
-} from "@optomitron/db";
+} from "@optimitron/db";
 import {
   ANNUAL_HOUSEHOLD_INCOME_VARIABLE_NAME,
   HEALTH_VARIABLE_NAME,
@@ -448,11 +448,11 @@ async function ensureSubject(
   return tx.subject.upsert({
     where: { externalId: user.id },
     update: {
-      displayName: user.name ?? user.email ?? "Optomitron User",
+      displayName: user.name ?? user.email ?? "Optimitron User",
       subjectType: SubjectType.USER,
     },
     create: {
-      displayName: user.name ?? user.email ?? "Optomitron User",
+      displayName: user.name ?? user.email ?? "Optimitron User",
       externalId: user.id,
       subjectType: SubjectType.USER,
     },

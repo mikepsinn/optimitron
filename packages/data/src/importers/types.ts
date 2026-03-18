@@ -2,7 +2,7 @@
  * Shared types for all health data importers.
  *
  * Every importer produces `ParsedHealthRecord[]` — a flat, uniform format
- * that the rest of Optomitron can consume without knowing the data source.
+ * that the rest of Optimitron can consume without knowing the data source.
  *
  * legacy API equivalent: MeasurementSet / Measurement model
  * Reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Slim/Model/Measurement/MeasurementSet.php

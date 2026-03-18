@@ -1,4 +1,4 @@
-# Optomitron Data Sources Catalog
+# Optimitron Data Sources Catalog
 
 Complete directory of data needed across all packages, with sources, APIs, and estimated sizes.
 
@@ -45,7 +45,7 @@ Complete directory of data needed across all packages, with sources, APIs, and e
 | FDA adverse event reports | [openFDA](https://open.fda.gov/apis/) | ✅ Free | Huge (>15M) | Continuous | FAERS database |
 | Drug labels / interactions | [openFDA](https://open.fda.gov/apis/) | ✅ Free | ~100K drugs | As updated | SPL labels |
 | Clinical trial results | [ClinicalTrials.gov](https://clinicaltrials.gov/data-api/api) | ✅ Free | ~400K trials | Continuous | |
-| Patient-reported outcomes | User-submitted | Custom | Varies | Continuous | Future: via Optomitron web app |
+| Patient-reported outcomes | User-submitted | Custom | Varies | Continuous | Future: via Optimitron web app |
 | Wearable/app health data | Various APIs | Varies | Varies | Continuous | Apple Health, Fitbit, etc. |
 
 ## 🗳️ Political / Governance (RAPPA)

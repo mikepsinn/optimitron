@@ -3,13 +3,13 @@ import { config as loadEnv } from "dotenv";
 
 declare global {
   // eslint-disable-next-line no-var
-  var __optomitronServerEnvLoaded: boolean | undefined;
+  var __optimitronServerEnvLoaded: boolean | undefined;
 }
 
-if (typeof window === "undefined" && !globalThis.__optomitronServerEnvLoaded) {
+if (typeof window === "undefined" && !globalThis.__optimitronServerEnvLoaded) {
   loadEnv({ path: resolve(process.cwd(), "../../.env") });
   loadEnv({ path: resolve(process.cwd(), ".env"), override: true });
-  globalThis.__optomitronServerEnvLoaded = true;
+  globalThis.__optimitronServerEnvLoaded = true;
 }
 
 export {};

@@ -76,7 +76,7 @@ export function scoreConsistency(subjectCount: number): number {
  * 
  * legacy API equivalent: predictivePearsonCorrelationCoefficient = forward - reverse
  * Reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Properties/Correlation/CorrelationPredictivePearsonCorrelationCoefficientProperty.php
- * Legacy API uses subtraction; Optomitron uses ratio. Both penalize reverse causation.
+ * Legacy API uses subtraction; Optimitron uses ratio. Both penalize reverse causation.
  */
 export function scoreTemporality(
   forwardCorrelation: number,

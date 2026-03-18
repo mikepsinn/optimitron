@@ -2,7 +2,7 @@ import {
   PersonhoodProvider,
   PersonhoodVerificationStatus,
   type Prisma,
-} from "@optomitron/db";
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
 type PersonhoodVerificationSummaryRecord = {

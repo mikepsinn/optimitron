@@ -191,7 +191,7 @@ export function createAlignmentHypercertDraft(
     : undefined;
 
   const pendingRef = {
-    uri: `optomitron:pending:alignment:${parsed.politicianId}`,
+    uri: `optimitron:pending:alignment:${parsed.politicianId}`,
     cid: 'pending',
   };
 

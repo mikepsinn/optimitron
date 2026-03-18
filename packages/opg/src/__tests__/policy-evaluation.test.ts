@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NATURAL_EXPERIMENTS } from '@optomitron/data';
+import { NATURAL_EXPERIMENTS } from '@optimitron/data';
 import {
   convertNaturalExperimentData,
   runNaturalExperiment,

@@ -1,6 +1,6 @@
 /**
  * Export data as JSON or CSV.
- * CSV format is compatible with @optomitron/optimizer TimeSeries:
+ * CSV format is compatible with @optimitron/optimizer TimeSeries:
  *   { timestamp, variableId, value, unit?, source? }
  */
 

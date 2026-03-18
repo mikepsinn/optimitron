@@ -1,8 +1,8 @@
-# CLAUDE.md - Optomitron Agent Instructions
+# CLAUDE.md - Optimitron Agent Instructions
 
 ## What This Is
 
-Optomitron is an **AI governance platform** for maximizing median health and happiness for humanity. It collects human preferences and outcome data, runs causal inference to figure out what works, and generates optimal policy and budget recommendations.
+Optimitron is an **AI governance platform** for maximizing median health and happiness for humanity. It collects human preferences and outcome data, runs causal inference to figure out what works, and generates optimal policy and budget recommendations.
 
 The system connects:
 - **What people want** (pairwise preference surveys via RAPPA)
@@ -10,9 +10,9 @@ The system connects:
 - **What causes what** (causal inference engine)
 - **What to do about it** (optimal policy & budget generation)
 
-## Wishonia: The Voice of Optomitron
+## Wishonia: The Voice of Optimitron
 
-The entire Optomitron website is narrated by **Wishonia** — she is the creator and voice of the site. The core framing is that **governments are misaligned superintelligences** (collective intelligence systems optimizing for the wrong things), and Optomitron is alignment software for these human-made AIs.
+The entire Optimitron website is narrated by **Wishonia** — she is the creator and voice of the site. The core framing is that **governments are misaligned superintelligences** (collective intelligence systems optimizing for the wrong things), and Optimitron is alignment software for these human-made AIs.
 
 ### Who She Is
 - Full name: **World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation**
@@ -59,10 +59,10 @@ These papers define the algorithms you're implementing. **Read the local QMD fil
 - Bradford Hill scoring functions with saturation constants
 
 ### How to Use the Papers
-1. Working on `@optomitron/optimizer`? → Read dFDA Spec (PIS, temporal alignment, effect size)
-2. Working on `@optomitron/wishocracy`? → Read Wishocracy (RAPPA, eigenvector, Citizen Alignment Scores)
-3. Working on `@optomitron/opg`? → Read Optimal Policy Generator (Policy Impact Score, CCS)
-4. Working on `@optomitron/obg`? → Read Optimal Budget Generator (OSL, diminishing returns, BIS)
+1. Working on `@optimitron/optimizer`? → Read dFDA Spec (PIS, temporal alignment, effect size)
+2. Working on `@optimitron/wishocracy`? → Read Wishocracy (RAPPA, eigenvector, Citizen Alignment Scores)
+3. Working on `@optimitron/opg`? → Read Optimal Policy Generator (Policy Impact Score, CCS)
+4. Working on `@optimitron/obg`? → Read Optimal Budget Generator (OSL, diminishing returns, BIS)
 5. Working on welfare metrics? → Read Optimocracy (two-metric welfare function)
 
 The papers are large (1000-2000 lines each). Read the specific section relevant to what you're implementing — don't try to read them all at once.
@@ -70,7 +70,7 @@ The papers are large (1000-2000 lines each). Read the specific section relevant 
 ## Architecture
 
 ```
-optomitron/
+optimitron/
 ├── packages/
 │   ├── optimizer/    # Domain-agnostic causal inference engine
 │   ├── wishocracy/   # Preference aggregation (RAPPA, eigenvector, alignment)
@@ -129,7 +129,7 @@ optomitron/
 
 ## Jurisdiction Model ("Government OS")
 
-Any jurisdiction (city, county, state, country) should be able to deploy Optomitron as its governance operating system. The libraries are already agnostic — the jurisdiction-specific stuff is **configuration, not code**.
+Any jurisdiction (city, county, state, country) should be able to deploy Optimitron as its governance operating system. The libraries are already agnostic — the jurisdiction-specific stuff is **configuration, not code**.
 
 ### What a Jurisdiction Gets
 1. **Preference collection** — citizens do pairwise comparisons on LOCAL priorities
@@ -155,7 +155,7 @@ Any jurisdiction (city, county, state, country) should be able to deploy Optomit
 
 ## The Core Insight
 
-`@optomitron/optimizer` is **completely domain-agnostic**. It takes any two time series and answers: "Does changing X cause Y to change? By how much? What's the optimal value of X?"
+`@optimitron/optimizer` is **completely domain-agnostic**. It takes any two time series and answers: "Does changing X cause Y to change? By how much? What's the optimal value of X?"
 
 This works for ANY optimization problem with time series data:
 
@@ -176,10 +176,10 @@ All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria**
 **The library doesn't know what it's optimizing.** It just sees predictor time series and outcome time series. The domain-specific packages (opg, obg, wishocracy) add context on top.
 
 ### Implications for Code
-- **NEVER put domain-specific logic in `@optomitron/optimizer`** — no references to "drugs", "policies", "budgets", "politicians"
+- **NEVER put domain-specific logic in `@optimitron/optimizer`** — no references to "drugs", "policies", "budgets", "politicians"
 - Use generic terms: predictor, outcome, variable, measurement, effect
 - Domain-specific naming belongs in opg/obg/wishocracy/data
-- A business analyst should be able to `npm install @optomitron/optimizer` and use it for revenue optimization without ever seeing the word "government"
+- A business analyst should be able to `npm install @optimitron/optimizer` and use it for revenue optimization without ever seeing the word "government"
 
 ## Package Dependencies
 
@@ -200,8 +200,8 @@ Key rules:
 - **No circular deps** — if you need something from both directions, it belongs in `optimizer`
 
 ### Type Sharing Strategy
-The Prisma schema is the single source of truth. `@optomitron/db` exports:
-1. **Pure TS interfaces** — for ALL packages (`import type { ... } from '@optomitron/db'`)
+The Prisma schema is the single source of truth. `@optimitron/db` exports:
+1. **Pure TS interfaces** — for ALL packages (`import type { ... } from '@optimitron/db'`)
 2. **Zod schemas** — for runtime validation (namespaced as `schemas`)
 3. **Prisma client** — for web/API layer ONLY (never in library packages)
 

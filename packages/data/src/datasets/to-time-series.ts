@@ -10,7 +10,7 @@
  * @see https://opg.warondisease.org — Optimal Policy Generator
  */
 
-import type { TimeSeries, Measurement } from '@optomitron/optimizer';
+import type { TimeSeries, Measurement } from '@optimitron/optimizer';
 import {
   HEALTH_SYSTEM_COMPARISON,
   DRUG_POLICY_COMPARISON,

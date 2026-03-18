@@ -55,7 +55,7 @@ const narrationSegments = [
   },
   {
     id: "08-close",
-    text: `Storacha makes governance data immutable. Hypercerts make it auditable. Smart contracts make it enforceable. Your species has had these tools for years. You just keep not using them. Optomitron. Alignment software for the most powerful AIs on your planet — the ones made of people.`,
+    text: `Storacha makes governance data immutable. Hypercerts make it auditable. Smart contracts make it enforceable. Your species has had these tools for years. You just keep not using them. Optimitron. Alignment software for the most powerful AIs on your planet — the ones made of people.`,
   },
 ];
 

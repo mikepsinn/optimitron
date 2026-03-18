@@ -23,12 +23,12 @@ import {
   principalEigenvector,
   consistencyRatio,
   calculatePreferenceGaps,
-} from '@optomitron/wishocracy';
+} from '@optimitron/wishocracy';
 import {
   calculateWES,
   type EffectEstimate,
   calculatePriorityScore,
-} from '@optomitron/obg';
+} from '@optimitron/obg';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

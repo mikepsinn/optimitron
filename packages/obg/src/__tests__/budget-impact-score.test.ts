@@ -9,7 +9,7 @@ import {
   type EffectEstimate,
 } from '../budget-impact-score.js';
 
-// Method weights from @optomitron/opg
+// Method weights from @optimitron/opg
 // rct: 1.00, diff-in-diff: 0.80, cross_sectional: 0.25, etc.
 
 // =========================== qualityWeight =================================

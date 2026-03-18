@@ -1,5 +1,5 @@
 {
-  "name": "@optomitron/optimizer",
+  "name": "@optimitron/optimizer",
   "homepage": "https://dfda-spec.warondisease.org",
   "version": "0.1.0",
   "description": "Time series causal inference engine - agnostic core for dFDA, OPG, OBG",

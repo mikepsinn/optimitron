@@ -1,6 +1,6 @@
 {
-  "name": "Optomitron",
-  "short_name": "Optomitron",
+  "name": "Optimitron",
+  "short_name": "Optimitron",
   "description": "The Evidence-Based Earth Optimization Machine — planetary debugging software for budgets, policies, and governance.",
   "start_url": "/",
   "display": "standalone",

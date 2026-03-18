@@ -1,4 +1,4 @@
-# Optomitron Agent Tasks
+# Optimitron Agent Tasks
 
 Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 
@@ -22,16 +22,16 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 4 | Tests for `@optomitron/optimizer` temporal alignment | done | dFDA paper examples |
-| 5 | Tests for `@optomitron/optimizer` Bradford Hill scoring | done | |
-| 6 | Tests for `@optomitron/optimizer` PIS calculation | done | |
-| 7 | Tests for `@optomitron/wishocracy` aggregateComparisons() | done | Wishocracy paper's Alice scenario |
-| 8 | Tests for `@optomitron/wishocracy` principalEigenvector() | done | Verified against known AHP examples |
-| 9 | Tests for `@optomitron/wishocracy` consistencyRatio() | done | CR < 0.1 for consistent matrices |
-| 10 | Tests for `@optomitron/wishocracy` alignment scoring | done | |
-| 11 | Tests for `@optomitron/opg` Bradford Hill | done | 213 tests: bradford-hill, welfare, policy, jurisdiction, budget, integration |
-| 12 | Tests for `@optomitron/obg` diminishing returns | done | 36 tests: fitLogModel, fitSaturationModel, marginalReturn, findOSL, estimateOSL + edge cases |
-| 13 | Tests for `@optomitron/obg` cost-effectiveness | done | 107 additional tests: cost-effectiveness (32), BIS (37), welfare (17), budget schemas (18), smoke (3) |
+| 4 | Tests for `@optimitron/optimizer` temporal alignment | done | dFDA paper examples |
+| 5 | Tests for `@optimitron/optimizer` Bradford Hill scoring | done | |
+| 6 | Tests for `@optimitron/optimizer` PIS calculation | done | |
+| 7 | Tests for `@optimitron/wishocracy` aggregateComparisons() | done | Wishocracy paper's Alice scenario |
+| 8 | Tests for `@optimitron/wishocracy` principalEigenvector() | done | Verified against known AHP examples |
+| 9 | Tests for `@optimitron/wishocracy` consistencyRatio() | done | CR < 0.1 for consistent matrices |
+| 10 | Tests for `@optimitron/wishocracy` alignment scoring | done | |
+| 11 | Tests for `@optimitron/opg` Bradford Hill | done | 213 tests: bradford-hill, welfare, policy, jurisdiction, budget, integration |
+| 12 | Tests for `@optimitron/obg` diminishing returns | done | 36 tests: fitLogModel, fitSaturationModel, marginalReturn, findOSL, estimateOSL + edge cases |
+| 13 | Tests for `@optimitron/obg` cost-effectiveness | done | 107 additional tests: cost-effectiveness (32), BIS (37), welfare (17), budget schemas (18), smoke (3) |
 
 ## P2: RAPPA Math (Wishocracy)
 
@@ -127,7 +127,7 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 53 | Autonomous agent package | done | `packages/agent` implements a Gemini-driven `discover → plan → execute → interpret → verify → publish` orchestration layer over the existing Optomitron pipeline with injected adapters and end-to-end tests. |
+| 53 | Autonomous agent package | done | `packages/agent` implements a Gemini-driven `discover → plan → execute → interpret → verify → publish` orchestration layer over the existing Optimitron pipeline with injected adapters and end-to-end tests. |
 | 54 | Gemini reasoning via structured tool decisions | done | Gemini structured-output calls now drive discover/plan/interpret/verify/publish decisions programmatically; `agent_log.json` captures the reasoning chain. |
 | 55 | ERC-8004 on-chain identity | blocked | `packages/agent/src/erc8004.ts` includes identity/reputation registry helpers, but live Sepolia registration and reputation writes still require a funded wallet, deployed registry addresses, and a real transaction. |
 | 56 | Agent manifest and logging | done | `packages/agent/agent.json` and `packages/agent/agent_log.json` exist and are validated in tests; manifest placeholders remain until Task 55 is executed live. |
@@ -140,4 +140,4 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 58 | Three-layer policy evaluation pipeline | done | `evaluatePolicy()`, `runNaturalExperiment()`, `buildPanelAnalysis()`, `aggregateEffectSizes()` in `packages/opg/src/policy-evaluation.ts`. `PolicyEvaluation` and `NaturalExperimentDef` types. Portugal natural experiment dataset in `packages/data/src/datasets/natural-experiments.ts`. |
 | 59 | LLM review evaluation with Gemini | done | Gemini sanity-checks policy evaluation outputs for reasonableness. Scored 94/100 on golden path test. Tests in `packages/agent/src/__tests__/analysis-publication-review.test.ts` and `packages/examples/src/analysis-explorer/__tests__/publication-review.test.ts`. |
 | 60 | Mega study publication review | done | Review workflow for mega study outputs. `packages/examples/src/analysis-explorer/publication-review.ts` + `mega-study-generator.ts` updates. Output in `packages/examples/output/mega-studies/mega-study-publication-review.json`. |
-| 61 | Gemini model update + `askGemini()` helper | done | Updated from `gemini-2.5-flash` to `gemini-3-flash-preview`. Added `askGemini()` convenience helper to `@optomitron/agent` (`packages/agent/src/analysis-publication-review.ts`). |
+| 61 | Gemini model update + `askGemini()` helper | done | Updated from `gemini-2.5-flash` to `gemini-3-flash-preview`. Added `askGemini()` convenience helper to `@optimitron/agent` (`packages/agent/src/analysis-publication-review.ts`). |

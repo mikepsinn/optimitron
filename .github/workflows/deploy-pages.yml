@@ -32,7 +32,7 @@ jobs:
       - run: pnpm install --no-frozen-lockfile
 
       - name: Build website
-        run: pnpm --filter @optomitron/web run build
+        run: pnpm --filter @optimitron/web run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

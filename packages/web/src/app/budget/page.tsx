@@ -386,7 +386,7 @@ export default function BudgetPage() {
       </section>
 
       <p className="text-xs text-black/40 mt-8 font-bold">
-        Generated {new Date(data.generatedAt).toLocaleDateString()} · Source: Optomitron OBG (Optimal Budget Generator)
+        Generated {new Date(data.generatedAt).toLocaleDateString()} · Source: Optimitron OBG (Optimal Budget Generator)
       </p>
 
       <div className="mt-10">

@@ -403,7 +403,7 @@ export default async function PolicyDetailPage({
           ← All Policies
         </NavItemLink>
         <p className="text-xs text-black/40 font-bold">
-          Analysis: {data.analysisDate} · Optomitron OPG
+          Analysis: {data.analysisDate} · Optimitron OPG
         </p>
       </div>
     </div>

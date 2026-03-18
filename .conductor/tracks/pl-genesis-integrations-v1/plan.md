@@ -5,7 +5,7 @@
 - [x] Add track metadata/spec/plan for reproducibility.
 
 ## Phase 2: Storacha Storage (done)
-- [x] Add linked snapshot schemas for Wishocracy and Optomitron payloads.
+- [x] Add linked snapshot schemas for Wishocracy and Optimitron payloads.
 - [x] Add Storacha client wrapper and chain/history helpers.
 - [x] Add package tests for upload/retrieve/history behavior.
 

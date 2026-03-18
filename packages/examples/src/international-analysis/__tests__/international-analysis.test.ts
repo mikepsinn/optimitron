@@ -39,7 +39,7 @@ import {
   getTopPerformers,
   getCountryComparison,
   getFullCountryComparison,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 import {
   POLICY_EXEMPLARS,
@@ -47,7 +47,7 @@ import {
   getExemplarsByTransferability,
   getExemplarCategories,
   getTotalOutcomeCount,
-} from '@optomitron/data';
+} from '@optimitron/data';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../../../output');
@@ -428,7 +428,7 @@ describe('Cross-Country Markdown Report', () => {
 // 8. Data Utility Functions
 // =========================================================================
 
-describe('Data utility functions (from @optomitron/data)', () => {
+describe('Data utility functions (from @optimitron/data)', () => {
   it('rankCountries should rank health data by life expectancy', () => {
     const ranked = rankCountries(HEALTH_SYSTEM_COMPARISON, 'lifeExpectancy', false);
     expect(ranked.length).toBe(HEALTH_SYSTEM_COMPARISON.length);

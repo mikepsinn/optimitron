@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { NOf1VariableRelationship } from "@optomitron/optimizer";
+import type { NOf1VariableRelationship } from "@optimitron/optimizer";
 
 // Mock prisma before importing the module under test
 vi.mock("@/lib/prisma", () => ({
@@ -14,8 +14,8 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 // Mock the optimizer's aggregate function so we can verify mapping
-vi.mock("@optomitron/optimizer", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@optomitron/optimizer")>();
+vi.mock("@optimitron/optimizer", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@optimitron/optimizer")>();
   return {
     ...actual,
     aggregateNOf1VariableRelationships: vi.fn(
@@ -26,7 +26,7 @@ vi.mock("@optomitron/optimizer", async (importOriginal) => {
 
 import { prisma } from "@/lib/prisma";
 import { runAggregation, runAggregationForPairs } from "../aggregate-relationships.server";
-import { aggregateNOf1VariableRelationships } from "@optomitron/optimizer";
+import { aggregateNOf1VariableRelationships } from "@optimitron/optimizer";
 
 const mockPrisma = prisma as unknown as {
   nOf1VariableRelationship: { findMany: ReturnType<typeof vi.fn> };
