@@ -391,11 +391,12 @@ export function datasetFromJSON(json: any): FetchedDataset {
   const countries = new Map<string, CountryTimeSeries>();
   for (const c of json.countries) {
     const vars = new Map<string, TimeSeries>();
-    for (const [varId, points] of Object.entries(c.variables)) {
+    for (const [varId, rawPoints] of Object.entries(c.variables)) {
+      const points: Array<{ year: number; value: number; unit: string; source: string }> = rawPoints as Array<{ year: number; value: number; unit: string; source: string }>;
       vars.set(varId, {
         variableId: `${c.iso3}:${varId}`,
         name: `${c.iso3} — ${varId}`,
-        measurements: points.map((p: any) => ({
+        measurements: points.map((p) => ({
           timestamp: new Date(`${p.year}-07-01`).getTime(),
           value: p.value,
           unit: p.unit,
