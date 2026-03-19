@@ -2,24 +2,29 @@
    Neobrutalist theme overrides for @optimitron/chat-ui BEM classes
    ========================================================================== */
 
-/* --- Chat container layout --- */
+/* --- Chat container layout (full-screen, covers navbar/footer) --- */
 .opto-chat {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 8rem);
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: 1rem;
+  margin: 0;
+  padding: 0;
+  background: var(--background, #fff);
 }
 
-/* --- Message list (scrollable) --- */
+/* --- Message list (scrollable, centered) --- */
 .opto-chat__messages {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 0;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-width: 48rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .opto-chat__message-wrapper {
@@ -55,12 +60,15 @@
   color: black;
 }
 
-/* --- Input bar --- */
+/* --- Input bar (centered) --- */
 .opto-chat__input-bar {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem 0;
+  padding: 0.75rem 1rem;
   border-top: 3px solid black;
+  max-width: 48rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .opto-chat__input {
@@ -1885,4 +1893,76 @@
 .opto-voice-transcript__text--partial {
   opacity: 0.7;
   border-style: dashed;
+}
+
+.opto-voice-overlay__reconnecting {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brutal-yellow);
+  background: black;
+  padding: 0.4rem 0.75rem;
+  border: 2px solid black;
+}
+
+/* ==========================================================================
+   Auth gate (shown when not logged in)
+   ========================================================================== */
+
+.opto-chat-auth {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background, #fff);
+}
+
+.opto-chat-auth__card {
+  border: 3px solid black;
+  box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 1);
+  padding: 2.5rem 2rem;
+  max-width: 24rem;
+  width: 90%;
+  text-align: center;
+  background: white;
+}
+
+.opto-chat-auth__title {
+  font-weight: 900;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem;
+}
+
+.opto-chat-auth__text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.opto-chat-auth__btn {
+  padding: 0.75rem 2rem;
+  background: var(--brutal-yellow);
+  color: black;
+  border: 3px solid black;
+  font-weight: 900;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.opto-chat-auth__btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 1);
+}
+
+.opto-chat-auth__btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1);
 }

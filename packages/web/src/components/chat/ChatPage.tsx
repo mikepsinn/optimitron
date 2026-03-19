@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, lazy, Suspense, type ReactNode } from "react";
+import { useSession, signIn } from "next-auth/react";
 import {
   ChatContainer,
   ConversationContext,
@@ -112,7 +113,36 @@ function pickRandom<T>(arr: T[]): T | undefined {
 }
 
 export default function ChatPage() {
+  const { status } = useSession();
   const [showVoice, setShowVoice] = useState(false);
+
+  if (status === "loading") {
+    return (
+      <div className="opto-chat-auth">
+        <div className="opto-chat-auth__card">Loading...</div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="opto-chat-auth">
+        <div className="opto-chat-auth__card">
+          <h2 className="opto-chat-auth__title">TALK TO WISHONIA</h2>
+          <p className="opto-chat-auth__text">
+            Sign in to start chatting. I've been running a planet for 4,237 years — the least you can do is log in.
+          </p>
+          <button
+            className="opto-chat-auth__btn"
+            onClick={() => void signIn(undefined, { callbackUrl: "/wishonia" })}
+            type="button"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const [messages, setMessages] = useState<AppChatMessage[]>([
     {
@@ -121,7 +151,6 @@ export default function ChatPage() {
       content:
         "Hello. I'm Wishonia — World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation. I've been running a planet for 4,237 years. We ended war in year 12 and disease in year 340. Now I'm here to help you track your meals, symptoms, treatments, and mood. It's not exactly planetary governance but everyone's got to start somewhere. Try \"took 500mg magnesium\" or \"mood 4/5\".",
     },
-    { type: "apiKey" },
     INITIAL_HINTS,
   ]);
 
@@ -979,7 +1008,7 @@ export default function ChatPage() {
   );
 
   return (
-    <section className="min-h-screen border-b-4 border-primary bg-background pb-8 pt-4">
+    <>
       <ChatContainer
         messages={messages as ChatMessage[]}
         onSend={handleSend}
@@ -1013,6 +1042,6 @@ export default function ChatPage() {
           <VoiceChatOverlay onClose={() => setShowVoice(false)} />
         </Suspense>
       )}
-    </section>
+    </>
   );
 }

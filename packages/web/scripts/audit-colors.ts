@@ -105,6 +105,13 @@ const RULES: Rule[] = [
     suggestion:
       "Use `bg-foreground` / `text-foreground` for dark-mode compatibility",
   },
+  {
+    id: "brutal-text-without-foreground",
+    label: "text-brutal-* without -foreground (likely invisible on matching bg)",
+    pattern: /\btext-brutal-(?:pink|cyan|yellow|red|green)\b(?!-foreground)/g,
+    suggestion:
+      "Use `text-brutal-*-foreground` variant or `text-foreground`. Raw brutal tokens as text color will be invisible on a matching brutal background.",
+  },
 ];
 
 // ---------------------------------------------------------------------------
