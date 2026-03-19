@@ -36,7 +36,7 @@ function ComparisonSideDisplay({ value, label, subtitle, color = "default" }: Co
       </div>
       <div className="font-black uppercase text-sm mb-2">{label}</div>
       {subtitle && (
-        <div className="text-sm text-foreground/70">{subtitle}</div>
+        <div className="text-sm text-muted-foreground">{subtitle}</div>
       )}
     </div>
   )

@@ -106,11 +106,26 @@ const RULES: Rule[] = [
       "Use `bg-foreground` / `text-foreground` for dark-mode compatibility",
   },
   {
-    id: "brutal-text-without-foreground",
-    label: "text-brutal-* without -foreground (likely invisible on matching bg)",
-    pattern: /\btext-brutal-(?:pink|cyan|yellow|red|green)\b(?!-foreground)/g,
+    id: "same-color-text-bg",
+    label: "Same brutal token used for both text and background (invisible text)",
+    pattern: /\b(?:bg-brutal-(pink|cyan|yellow|red|green)\b.*\btext-brutal-\1\b(?!-foreground)|\btext-brutal-(pink|cyan|yellow|red|green)\b(?!-foreground).*\bbg-brutal-\2\b)/g,
+    // Allow hover state swaps (hover:text-brutal-pink on bg-brutal-pink is intentional color swap)
+    filter: (_m, line) => /hover:(?:text|bg)-brutal-/.test(line),
     suggestion:
-      "Use `text-brutal-*-foreground` variant or `text-foreground`. Raw brutal tokens as text color will be invisible on a matching brutal background.",
+      "Use `text-brutal-*-foreground` variant when text sits on a matching brutal background.",
+  },
+  {
+    id: "foreground-opacity",
+    label: "Opacity modifier on foreground/background token",
+    pattern: /\b(?:text|bg)-(?:foreground|background)\/\d+/g,
+    // Allow hover opacity (hover:bg-foreground/80 is interactive darkening, not a static style)
+    filter: (m, line) => {
+      const idx = line.indexOf(m);
+      if (idx > 0 && line.slice(Math.max(0, idx - 10), idx).includes("hover:")) return true;
+      return false;
+    },
+    suggestion:
+      "Use `text-muted-foreground` or `bg-muted` instead of opacity modifiers on foreground/background.",
   },
 ];
 

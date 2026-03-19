@@ -49,10 +49,10 @@ function confidenceLabel(units: number): {
   color: string;
 } {
   if (units >= 50)
-    return { label: "High", color: "bg-brutal-cyan text-brutal-cyan" };
+    return { label: "High", color: "bg-brutal-cyan text-brutal-cyan-foreground" };
   if (units >= 10)
-    return { label: "Medium", color: "bg-brutal-yellow text-brutal-yellow" };
-  return { label: "Low", color: "bg-brutal-red text-brutal-red" };
+    return { label: "Medium", color: "bg-brutal-yellow text-brutal-yellow-foreground" };
+  return { label: "Low", color: "bg-brutal-red text-brutal-red-foreground" };
 }
 
 function formatNumber(n: number | null, decimals = 2): string {

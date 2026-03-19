@@ -160,7 +160,7 @@ export default function NPVAnalysisSection() {
           {showTable && (
             <Card className="bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <h3 className="text-2xl font-black uppercase mb-6 text-center">YEAR-BY-YEAR CASH FLOW</h3>
-              <p className="text-center text-sm mb-6 text-foreground/70">
+              <p className="text-center text-sm mb-6 text-muted-foreground">
                 This table shows how savings accumulate over time, accounting for gradual adoption and the time value of money.
               </p>
               <div className="overflow-x-auto">
@@ -269,7 +269,7 @@ export default function NPVAnalysisSection() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-center mt-6 text-foreground/70">
+          <p className="text-xs text-center mt-6 text-muted-foreground">
             This conservative assumption models gradual market penetration. Reality: RECOVERY trial scaled to 40,000+
             patients in months.
           </p>

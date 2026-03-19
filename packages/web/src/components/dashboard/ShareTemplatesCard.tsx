@@ -96,7 +96,7 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
                   )}
                 </Button>
               </div>
-              <p className="text-sm text-foreground/80">{template.text}</p>
+              <p className="text-sm text-muted-foreground">{template.text}</p>
             </div>
           ))}
         </div>

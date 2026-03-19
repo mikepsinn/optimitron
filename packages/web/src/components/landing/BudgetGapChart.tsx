@@ -97,8 +97,8 @@ export function BudgetGapChart() {
                       <span
                         className={`text-xs font-black px-1.5 py-0.5 border border-primary ${
                           isOverInvested
-                            ? "bg-brutal-red text-brutal-red"
-                            : "bg-brutal-cyan text-brutal-cyan"
+                            ? "bg-brutal-red text-brutal-red-foreground"
+                            : "bg-brutal-cyan text-brutal-cyan-foreground"
                         }`}
                       >
                         {cat.investmentStatus}

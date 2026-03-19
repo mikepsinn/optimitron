@@ -107,7 +107,7 @@ export function LiveDeathTicker({ className = "" }: { className?: string }) {
           <p className="text-[10px] sm:text-xs font-bold text-muted-foreground mt-2 uppercase tracking-wider max-w-xs mx-auto">
             {c.label}
           </p>
-          <p className="text-[10px] text-background/25 mt-1 italic max-w-xs mx-auto">
+          <p className="text-[10px] text-muted-foreground mt-1 italic max-w-xs mx-auto">
             {c.quip}
           </p>
         </div>

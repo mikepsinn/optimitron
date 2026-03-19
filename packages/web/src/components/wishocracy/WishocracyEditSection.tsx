@@ -165,7 +165,7 @@ export function WishocracyEditSection({
                     <AlertTriangle className="w-5 h-5 text-foreground mt-0.5" />
                     <div>
                       <p className="font-bold text-foreground">Warning: Category Deselection</p>
-                      <p className="text-sm text-foreground/80 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Deselecting a category will permanently delete all comparisons involving that category.
                         You'll need to re-do those comparisons if you change your mind.
                       </p>

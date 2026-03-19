@@ -81,7 +81,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
   return (
     <div ref={timelineRef} className="relative">
-      <p className="text-sm sm:text-base text-foreground/80 text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
+      <p className="text-sm sm:text-base text-muted-foreground text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
         This timeline shows how soon we could optimize policy for all {diseasesUntreated.toLocaleString()} misaligned budget categories.
         Under the status quo, it takes <span className="font-black text-foreground">{queueYears} years</span>.
         With evidence-based optimization, we can stop doing the stupid version and start doing the version that works.
@@ -181,7 +181,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
               Due to evidence-based optimization ({dfdaQueueYears} years)
             </div>
             <div className="text-2xl">&darr;</div>
-            <div className="text-[9px] font-bold text-foreground/80">
+            <div className="text-[9px] font-bold text-muted-foreground">
               Now see the opportunity cost of the status quo timeline below
             </div>
           </div>

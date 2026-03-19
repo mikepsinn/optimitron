@@ -54,7 +54,7 @@ export function FeatureList({
             <div>
               <span className={cn("font-bold", sizes.text)}>{item.text}</span>
               {item.description && (
-                <p className={cn("text-foreground/70", sizes.description)}>{item.description}</p>
+                <p className={cn("text-muted-foreground", sizes.description)}>{item.description}</p>
               )}
             </div>
           </li>

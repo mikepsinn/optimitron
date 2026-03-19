@@ -94,7 +94,7 @@ function ParameterTooltipContent({
       )}
 
       {param.description && (
-        <p className="text-xs text-foreground/80">{param.description}</p>
+        <p className="text-xs text-muted-foreground">{param.description}</p>
       )}
 
       {confidenceInterval && (
@@ -165,7 +165,7 @@ function SourceLink({ sourceRef }: { sourceRef: string }) {
   }
 
   return (
-    <span className="text-[10px] text-foreground/60 flex items-center gap-1">
+    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
       <Info className="h-3 w-3" />
       {sourceRef}
     </span>
