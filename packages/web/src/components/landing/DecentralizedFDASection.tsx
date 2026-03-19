@@ -60,7 +60,7 @@ export function DecentralizedFDASection() {
             Your Decentralized FDA
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            Your FDA makes treatments wait <Stat param={EFFICACY_LAG_YEARS} /> AFTER they&apos;ve been proven safe. This replaces the theatre with infrastructure.
+            Your FDA makes treatments wait <Stat param={EFFICACY_LAG_YEARS} /> AFTER they&apos;ve been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths.
           </p>
         </motion.div>
 

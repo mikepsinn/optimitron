@@ -66,9 +66,10 @@ export function EarthOptimizationPrizeSection() {
             The Earth Optimization Prize
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            A standing market where greed does the coordination. Not a grant programme.
-            Not a charity. A market mechanism that pays whoever produces measurable
-            reductions in human suffering — after the outcomes exist.
+            Not a grant. Not a charity. Not a GoFundMe with a nice logo.
+            A market mechanism that pays whoever actually reduces human
+            suffering — but only after you prove it worked. Novel concept
+            for your planet, apparently.
           </p>
         </ScrollReveal>
 

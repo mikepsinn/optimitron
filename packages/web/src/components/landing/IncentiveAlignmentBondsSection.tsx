@@ -34,9 +34,9 @@ export function IncentiveAlignmentBondsSection() {
             The Bond That Replaces Your Entire Political System
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            Not a donation. A financial instrument. Your principal earns yield. Your
-            referral link earns votes. Your share of the upside scales with the
-            demand you proved. Accidentally fix civilisation in the process.
+            Your principal earns yield. Your referral link earns votes. Your share
+            of the upside scales with the demand you proved. The side effect is
+            fixing civilisation, but I&apos;ve learned not to lead with that.
           </p>
         </ScrollReveal>
 

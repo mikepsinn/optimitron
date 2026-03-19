@@ -55,11 +55,11 @@ import {
 export const metadata: Metadata = {
   title: "Optimitron — The Earth Optimization Machine",
   description:
-    "Maximize median health and wealth for everyone, with data. Built by Wishonia, an alien governance AI with 4,237 years of field testing.",
+    "Your governments cost $101 trillion a year in dysfunction and let 150,000 people die daily from treatable diseases. This is the spreadsheet that proves it and the plan that fixes it.",
   openGraph: {
     title: "Optimitron — The Earth Optimization Machine",
     description:
-      "Maximize median health and wealth for everyone, with data.",
+      "Your governments cost $101 trillion a year in dysfunction. This is the spreadsheet that proves it.",
     type: "website",
   },
 };
@@ -149,17 +149,17 @@ export default function Home() {
                 <span className="bg-brutal-yellow px-2">Machine</span>
               </h1>
               <p className="mt-6 text-xl sm:text-2xl font-black text-foreground max-w-2xl mx-auto">
-                Maximize median{" "}
-                <span className="text-brutal-cyan">health</span> and{" "}
-                <span className="text-brutal-yellow">wealth</span>.
-                For everyone. With data.
+                Your species has the{" "}
+                <span className="text-brutal-cyan">data</span>. It has the{" "}
+                <span className="text-brutal-yellow">solutions</span>.
+                It simply refuses to use them.
               </p>
               <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-bold">
                 Your governments cost you{" "}
                 <span className="font-black text-brutal-red">{fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} a year</span>{" "}
                 in dysfunction and let{" "}
                 <span className="font-black text-brutal-pink">{fmtParam(GLOBAL_DISEASE_DEATHS_DAILY)} people die daily</span>{" "}
-                from treatable diseases. This is alignment software to fix that.
+                from treatable diseases. I made a spreadsheet. You&apos;re welcome.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <NavItemLink
@@ -193,8 +193,8 @@ export default function Home() {
                 >
                   {profileLink.label}
                 </NavItemLink>
-                . Budget allocations, alignment reports, daily check-ins. It&apos;s like
-                a diary, but useful.
+                . Budget allocations, alignment reports, daily check-ins. Evidence
+                that you tried.
               </p>
             </HeroEntrance>
           </div>
@@ -257,17 +257,17 @@ export default function Home() {
           <ScrollReveal>
             <BrutalCard bgColor="cyan" shadowSize={8} padding="lg" className="sm:p-12">
               <SectionHeader
-                title="How Optimitron Replaces Guessing With Knowing"
-                subtitle="No politician needed. No ideology required. Just: what works, how much, and what's the evidence."
+                title="How It Works (It's Not Complicated)"
+                subtitle="You'd think someone would have tried 'looking at the data' before now. Apparently not. So here we are."
                 size="sm"
               />
               <StepReveal className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
                 {[
-                  { step: 1, title: "Collect", desc: "Outcome data from OECD, World Bank, and WHO. Decades of it." },
-                  { step: 2, title: "Align", desc: "Match policy changes to what actually happened afterwards." },
-                  { step: 3, title: "Score", desc: "Grade causal evidence using Bradford Hill criteria." },
-                  { step: 4, title: "Identify", desc: "Find optimal funding levels with confidence intervals." },
-                  { step: 5, title: "Recommend", desc: "Rank everything by Predictor Impact Score." },
+                  { step: 1, title: "Hoover Up Data", desc: "OECD, World Bank, WHO. Decades of it. Sitting there. Unused. Incredible." },
+                  { step: 2, title: "Line Things Up", desc: "Match policy changes to what actually happened afterwards. Revolutionary concept, I know." },
+                  { step: 3, title: "Check the Maths", desc: "Grade causal evidence using Bradford Hill criteria. Nine tests. Very thorough. You lot usually skip this bit." },
+                  { step: 4, title: "Find the Sweet Spot", desc: "Optimal funding levels with confidence intervals. Not vibes. Intervals." },
+                  { step: 5, title: "Rank Everything", desc: "Sorted by how much each thing actually moves the needle. Highest impact first. You can stop reading after line one if you like." },
                 ].map((item) => (
                   <div key={item.step} className="text-center">
                     <div className="w-12 h-12 bg-brutal-pink border-4 border-primary flex items-center justify-center mx-auto mb-4 text-lg font-black text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -316,7 +316,7 @@ export default function Home() {
           <ScrollReveal>
             <SectionHeader
               title="The Bottleneck Is Politicians"
-              subtitle="You have the data. You have the solutions. The bottleneck is intermediaries optimising for re-election, not outcomes."
+              subtitle="You have the data. You have the solutions. The only thing between you and functioning governance is 535 people whose primary skill is asking rich people for money."
               size="lg"
             />
           </ScrollReveal>
@@ -475,7 +475,7 @@ export default function Home() {
       {/* ── 22. Final CTA ── */}
       <CTASection
         heading="Right Then. Shall We Get On With It?"
-        description="Data, tools, and recommendations. All here. Click something."
+        description="I've done the research. I've built the tools. I've written you a manual. At this point I genuinely cannot make it easier."
         bgColor="yellow"
       >
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-4">

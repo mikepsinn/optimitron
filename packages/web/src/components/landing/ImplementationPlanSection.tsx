@@ -49,10 +49,9 @@ export function ImplementationPlanSection() {
           Five Steps. No Altruism Required.
         </h2>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-          Every step is driven by self-interest. That&apos;s the point. Systems that
-          require everyone to be nice don&apos;t scale. Systems that make selfishness
-          productive do. Ask any economist. Or any alien who&apos;s been running a
-          planet for four millennia.
+          Every step runs on self-interest. I&apos;ve been governing for four
+          millennia. &ldquo;Be nice&rdquo; has never once been a load-bearing
+          policy. Greed, though? Greed scales beautifully.
         </p>
       </ScrollReveal>
 

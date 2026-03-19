@@ -59,8 +59,9 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
       </div>
       <div className="text-center mt-4 p-4 bg-brutal-cyan/20 border border-primary rounded max-w-2xl mx-auto">
         <p className="text-sm text-muted-foreground font-bold">
-          Every recommendation is gated by direct mission KPI evidence.
-          No vibes. No &ldquo;well it feels like it should work.&rdquo; Just data.
+          Every recommendation comes with receipts. No vibes. No &ldquo;well
+          it feels like it should work.&rdquo; If the data doesn&apos;t support
+          it, it doesn&apos;t appear. I realise this is an alien concept.
         </p>
       </div>
       <div className="text-center mt-8">
