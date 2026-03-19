@@ -95,10 +95,10 @@ export default function VoteImpactSection() {
         {/* Bottom CTA */}
         <BrutalCard bgColor="background" padding="lg" className="text-center">
           <p className="text-xl sm:text-2xl md:text-3xl font-black uppercase mb-4">
-            Highest ROI Action in History
+            The Best Use of 30 Seconds in Human History
           </p>
           <p className="text-base sm:text-lg font-bold max-w-2xl mx-auto">
-            In 30 seconds, you can save more lives than most people save in a lifetime.
+            Thirty seconds. That&apos;s it. You&apos;ll spend longer choosing what to have for lunch, and lunch has never saved anyone&apos;s life.
           </p>
         </BrutalCard>
       </Container>

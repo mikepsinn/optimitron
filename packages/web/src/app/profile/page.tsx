@@ -9,7 +9,7 @@ import { getSignInPath, ROUTES } from "@/lib/routes";
 export const metadata: Metadata = {
   title: "Profile | Optimitron",
   description:
-    "Your Earth optimization profile for saved budgets, alignment reports, and daily tracking.",
+    "Your saved budgets, alignment reports, and daily check-ins. A permanent record that you cared.",
 };
 
 export default async function ProfilePage() {

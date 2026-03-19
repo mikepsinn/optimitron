@@ -16,23 +16,23 @@ export function OrganizationShareTemplatesCard({ surveyLink, organizationName }:
   const templates = [
     {
       label: "Impact-Focused",
-      text: `${organizationName} invites you to rank your budget priorities. Help us prove what citizens actually want so we can hold officials accountable with data: ${surveyLink}`,
+      text: `${organizationName} wants to know what you'd spend money on. 30 seconds. Anonymous. The maths does the rest: ${surveyLink}`,
     },
     {
-      label: "Short & Compelling",
-      text: `Take ${organizationName}'s 30-second priority survey. Help optimize governance with evidence instead of ideology: ${surveyLink}`,
+      label: "Short & Direct",
+      text: `${organizationName} is collecting budget preferences from actual humans. Takes 30 seconds. Shorter than your last complaint about politicians: ${surveyLink}`,
     },
     {
       label: "Data-Driven",
-      text: `${organizationName} is gathering citizen preferences to build an evidence-based optimal budget. Your rankings directly influence policy recommendations: ${surveyLink}`,
+      text: `${organizationName} is building a budget based on what people actually want instead of what lobbyists want. Revolutionary concept. 30 seconds: ${surveyLink}`,
     },
     {
       label: "Mission-Oriented",
-      text: `Help ${organizationName} demonstrate what citizens actually want from their government. Your voice matters in aligning policy with public priorities: ${surveyLink}`,
+      text: `Nobody asked you how to spend your government's budget. ${organizationName} is fixing that. 30-second survey, real impact: ${surveyLink}`,
     },
     {
       label: "Personal Appeal",
-      text: `${organizationName} needs your input! Quick 30-second survey ranking your budget priorities. Together we can make governance accountable to the people it serves: ${surveyLink}`,
+      text: `${organizationName} needs 30 seconds of your time to rank budget priorities. Less time than you spent on your last social media argument, more impact: ${surveyLink}`,
     },
   ]
 

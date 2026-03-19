@@ -140,7 +140,7 @@ export default function BudgetPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-foreground mb-2">
-          The US Federal Budget, Annotated
+          The US Federal Budget, Diagnosed
         </h1>
         <p className="text-muted-foreground font-bold">
           Your government&apos;s {fmt(data.totalBudget)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. Most of them wrong.

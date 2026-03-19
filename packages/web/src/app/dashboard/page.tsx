@@ -9,7 +9,7 @@ import { getSignInPath, ROUTES } from "@/lib/routes";
 export const metadata: Metadata = {
   title: "Dashboard | Optimitron",
   description:
-    "Your Earth optimization dashboard — track impact, manage preferences, and coordinate with organisations.",
+    "Your contribution record. Budget preferences, alignment reports, referrals, and evidence that you tried.",
 };
 
 export default async function DashboardPage() {

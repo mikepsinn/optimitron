@@ -5,7 +5,7 @@ import { ROUTES } from "@/lib/routes";
 export const metadata: Metadata = {
   title: "Civic | Optimitron",
   description:
-    "Civic engagement tools — vote on bills, track legislation, and hold representatives accountable.",
+    "Vote on bills, track legislation, and discover how little your representatives agree with you.",
 };
 
 export default function CivicIndexPage() {
@@ -16,11 +16,11 @@ export default function CivicIndexPage() {
           Civic Engagement
         </p>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground mb-4">
-          Your Government, Your Data
+          Your Government, Audited
         </h1>
         <p className="text-lg text-foreground leading-relaxed font-bold max-w-2xl">
-          Vote on real legislation, compare your positions with your
-          representatives, and share your civic record.
+          Vote on actual legislation. Compare what your representatives
+          say with what they do. Share the receipts.
         </p>
       </section>
 
@@ -33,8 +33,8 @@ export default function CivicIndexPage() {
             Vote on Bills
           </h2>
           <p className="text-sm font-bold text-foreground">
-            Chat with Wishonia to review current legislation, get a
-            cost-benefit analysis, and cast your citizen vote.
+            I&apos;ll read the bills so you don&apos;t have to. Then I&apos;ll
+            tell you what they actually cost. Then you vote.
           </p>
         </Link>
 
@@ -46,8 +46,8 @@ export default function CivicIndexPage() {
             Alignment Scores
           </h2>
           <p className="text-sm font-bold text-foreground">
-            See how your representatives&apos; voting records compare to what
-            citizens actually want.
+            Find out how often your representatives vote the way you&apos;d
+            vote. Spoiler: less often than they claim.
           </p>
         </Link>
 
@@ -59,7 +59,8 @@ export default function CivicIndexPage() {
             Referendums
           </h2>
           <p className="text-sm font-bold text-foreground">
-            Vote on policy proposals directly and earn verified-vote rewards.
+            Vote on proposals. Get verified. Skip the middleman who was
+            going to ignore you anyway.
           </p>
         </Link>
       </div>

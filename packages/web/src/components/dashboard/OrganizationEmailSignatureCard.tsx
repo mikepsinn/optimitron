@@ -64,7 +64,7 @@ export function OrganizationEmailSignatureCard({ surveyLink, organizationName, u
           Email Signature Generator
         </CardTitle>
         <CardDescription className="font-bold">
-          Add to every email you send - passive sharing, zero effort
+          Paste this into your email signature. Every email becomes a tiny act of civilisation repair
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -14,7 +14,7 @@ import { getOutcomeHubPath, getPairStudyPath } from "@/lib/analysis-explorer-rou
 export const metadata: Metadata = {
   title: "Studies | Optimitron",
   description:
-    "Browse outcome hubs, pair studies, and jurisdiction drilldowns in Optimitron, the Earth Optimization Machine.",
+    "Every outcome your species measures, ranked by what actually causes it to move. No opinions. Just maths.",
 };
 
 export default function OutcomesIndexPage() {

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 export const metadata = {
   title: "Discoveries | Optimitron",
   description:
-    "Population-level health discoveries aggregated from individual contributor analyses.",
+    "Health patterns your species discovered by accident, aggregated from people who bothered to track their data.",
 };
 
 interface AggregateRow {
@@ -79,9 +79,9 @@ export default async function DiscoveriesPage() {
           Health Discoveries
         </h1>
         <p className="max-w-3xl text-base font-bold text-foreground">
-          Aggregated from individual contributor analyses. Each row represents a
-          predictor-outcome relationship discovered across multiple people. More
-          contributors = higher confidence.
+          These patterns emerged from real people tracking real data. Each row
+          is a relationship the population discovered by accident. More
+          contributors means the signal gets louder.
         </p>
       </section>
 
@@ -91,8 +91,8 @@ export default async function DiscoveriesPage() {
             No discoveries yet.
           </p>
           <p className="text-sm text-muted-foreground mt-2">
-            Discoveries appear here once contributors submit health analyses via
-            the browser extension.
+            Nothing here yet. Install the extension, track your data, and the
+            patterns will find themselves.
           </p>
         </div>
       ) : (

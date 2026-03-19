@@ -84,7 +84,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
       <p className="text-sm sm:text-base text-foreground/80 text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
         This timeline shows how soon we could optimize policy for all {diseasesUntreated.toLocaleString()} misaligned budget categories.
         Under the status quo, it takes <span className="font-black text-foreground">{queueYears} years</span>.
-        With evidence-based optimization, we can accelerate dramatically.
+        With evidence-based optimization, we can stop doing the stupid version and start doing the version that works.
       </p>
 
       {/* Warp Effect Overlay */}
@@ -143,7 +143,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
       <div className="flex justify-center mb-4 sm:mb-8">
         <div className="bg-brutal-yellow border-4 border-primary px-4 sm:px-6 py-2 sm:py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-base sm:text-xl font-black uppercase text-center">You Are Here</div>
-          <div className="text-[10px] sm:text-xs font-bold text-center mt-1">Year 0 - Choose Your Destiny</div>
+          <div className="text-[10px] sm:text-xs font-bold text-center mt-1">Year 0 — Stop Choosing Badly</div>
         </div>
       </div>
 

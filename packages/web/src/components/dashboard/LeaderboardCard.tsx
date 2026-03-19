@@ -35,7 +35,7 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
       <CardHeader>
         <CardTitle className="text-2xl font-black uppercase">LEADERBOARD</CardTitle>
         <CardDescription className="font-bold">
-          Top contributors to Earth optimization
+          Humans who have done the most to fix their planet. The bar is low
         </CardDescription>
       </CardHeader>
       <CardContent>

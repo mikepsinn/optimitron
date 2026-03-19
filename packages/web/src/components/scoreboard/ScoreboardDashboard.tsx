@@ -18,7 +18,7 @@ export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
           Public Scoreboard
         </p>
         <h1 className="text-4xl font-black uppercase tracking-tight text-foreground">
-          How Your Representatives Actually Vote
+          How Your Representatives Actually Vote (vs. What They Told You)
         </h1>
         <p className="max-w-3xl text-base font-bold text-foreground">
           On my planet, officials who ignore citizen preferences get replaced in
@@ -72,8 +72,9 @@ export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
           What Citizens Actually Want
         </h2>
         <p className="mt-2 text-sm font-bold text-muted-foreground">
-          Aggregate preference weights derived from pairwise comparisons. Higher
-          weight means citizens consistently chose this category over others.
+          These weights come from citizens comparing priorities in pairs. Higher
+          weight = more humans chose this over the alternatives. Direct democracy
+          in four minutes.
         </p>
         <div className="mt-6">
           <CitizenPrioritiesChart priorities={data.citizenPriorities} />
@@ -104,9 +105,9 @@ export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
           {data.aggregationRun.participantCount} participants
         </p>
         <p className="mt-2 text-xs font-bold text-muted-foreground">
-          Scores update when new citizen comparisons are aggregated. More
-          participants means more representative weights. Politicians are scored
-          against the aggregate, not any individual citizen&apos;s preferences.
+          Scores update as more citizens vote. More participants = more accurate
+          weights. Politicians are scored against what everyone wants, not what
+          any one person wants. Democracy, basically.
         </p>
       </section>
 

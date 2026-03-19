@@ -30,7 +30,7 @@ export default function SensitivityAnalysisSection() {
           IS THE <span className="text-foreground"><ParameterValue param={DFDA_ROI_RD_ONLY} /></span> ROI REAL?
         </h2>
         <p className="text-center text-lg font-bold mb-12 max-w-3xl mx-auto">
-          What if our assumptions are wrong? We tested every scenario.
+          Your species loves asking &ldquo;but what if you&apos;re wrong?&rdquo; So we tested that.
         </p>
 
         {/* The Main Message */}
@@ -77,7 +77,7 @@ export default function SensitivityAnalysisSection() {
               <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} />/patient vs. <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />/patient. Our baseline uses proven methodology.
             </p>
             <p>
-              <span className="font-black text-brutal-pink">This isn&apos;t a moonshot:</span> It&apos;s a mathematically robust investment with a proven model and massive upside.
+              <span className="font-black text-brutal-pink">This isn&apos;t a moonshot:</span> The maths works even when you assume we&apos;re wrong about almost everything. Which, given your track record, seemed worth checking.
             </p>
           </div>
         </Card>

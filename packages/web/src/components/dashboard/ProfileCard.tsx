@@ -108,7 +108,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
     <Card className="border-4 border-primary">
       <CardHeader>
         <CardTitle className="text-2xl font-black uppercase">YOUR PROFILE</CardTitle>
-        <CardDescription className="font-bold">Manage your public presence</CardDescription>
+        <CardDescription className="font-bold">Your public record on this planet</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
@@ -147,7 +147,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
               value={editForm.headline}
               onChange={(e) => setEditForm({ ...editForm, headline: e.target.value })}
               className="border-4 border-primary bg-background"
-              placeholder="Software Engineer | AI Enthusiast"
+              placeholder="Concerned citizen | Spreadsheet appreciator"
             />
             <p className="text-xs text-muted-foreground mt-1">
               Short professional tagline (shown on your profile)

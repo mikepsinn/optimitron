@@ -74,7 +74,7 @@ export function EmailSignatureCard({ referralLink, userName }: EmailSignatureCar
           Email Signature Generator
         </CardTitle>
         <CardDescription className="font-bold">
-          Add to every email you send — passive sharing, zero effort
+          Paste this into your email signature. Every email becomes a tiny act of civilisation repair. Zero effort on your part, which I&apos;ve learned is important
         </CardDescription>
       </CardHeader>
       <CardContent>

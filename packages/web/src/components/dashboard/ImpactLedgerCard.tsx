@@ -57,7 +57,7 @@ export function ImpactLedgerCard({ votesLogged }: ImpactLedgerCardProps) {
           <ImpactExplainer className="ml-1 h-7 w-7" />
         </CardTitle>
         <CardDescription className="font-bold">
-          Every referral updates your Earth optimization ledger. Healthy years priced at $150K each (DALY/QALY standard).
+          Every person you recruit adds to your ledger. We price a healthy year at $150K, which is the standard your own economists use and then ignore.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

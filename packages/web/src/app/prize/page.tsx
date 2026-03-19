@@ -195,7 +195,7 @@ export default function PrizePage() {
             Earth Optimization Prize
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
-            A Bet You Can&apos;t Lose. A World You Can Fix.
+            A Bet You Can&apos;t Lose. A Species That Desperately Needs Fixing.
           </h1>
           <p className="text-lg text-foreground leading-relaxed font-bold">
             This is a dominant assurance contract. Depositors cannot lose.
@@ -233,9 +233,9 @@ export default function PrizePage() {
                 {fmtParam({...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}+ Income Gain
               </div>
               <p className="text-xs font-bold text-muted-foreground mt-1">
-                Per-capita lifetime income gains from optimized resource
-                allocation. Recruiters claim prize share via VOTE tokens.
-                Depositors benefit from the GDP growth that follows.
+                Everyone gets richer. Not metaphorically. The maths is very
+                clear on this point. Recruiters also get a cut, because
+                apparently your species needs personal incentives to save itself.
               </p>
             </div>
           </div>

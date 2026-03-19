@@ -89,7 +89,7 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
       <CardHeader>
         <CardTitle className="text-2xl font-black uppercase">CONNECTED ACCOUNTS</CardTitle>
         <CardDescription className="font-bold">
-          Link accounts for identity verification and cross-platform coordination
+          Link your accounts. Helps me verify you&apos;re real and not three bots in a trenchcoat
         </CardDescription>
       </CardHeader>
       <CardContent>

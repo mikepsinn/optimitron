@@ -17,9 +17,10 @@ export function ReferendumStatusBox() {
             <span className="text-brutal-pink">STATUS:</span> REFERENDUM IN PROGRESS
           </h2>
           <p className="font-bold text-sm md:text-base leading-relaxed">
-            The 1% Treaty referendum hasn&apos;t reached the tipping point yet.
-            We need enough verified voters to demonstrate global demand for
-            evidence-based governance. Help us get there.
+            The referendum hasn&apos;t tipped yet. We need more verified humans
+            to prove this isn&apos;t just a nice idea everyone secretly agrees
+            with but nobody acts on. Which is literally what pluralistic
+            ignorance means.
           </p>
         </div>
         <div className="flex-shrink-0 w-full md:w-auto">

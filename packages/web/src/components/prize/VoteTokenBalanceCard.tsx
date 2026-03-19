@@ -79,8 +79,8 @@ export function VoteTokenBalanceCard() {
           Sign In to View VOTE Balance
         </h3>
         <p className="text-sm font-bold text-foreground">
-          Vote on referendums with a verified World ID to earn VOTE tokens.
-          Each verified vote = 1 VOTE.
+          Vote on referendums. Prove you&apos;re human via World ID. Each
+          verified vote = 1 VOTE token. Simple enough even for your species.
         </p>
         <Link
           href="/auth/signin?callbackUrl=/contribute"

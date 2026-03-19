@@ -38,7 +38,7 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-8 col-span-3">No badges earned yet. Keep contributing!</p>
+            <p className="text-center text-muted-foreground py-8 col-span-3">No badges yet. On my planet we&apos;d call this &ldquo;a blank record.&rdquo; Yours is showing.</p>
           )}
         </div>
       </CardContent>

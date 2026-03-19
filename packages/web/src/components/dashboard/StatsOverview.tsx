@@ -55,7 +55,7 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
             </TooltipTrigger>
             <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
               <p className="font-bold text-sm">
-                Badges earned through contributions — comparisons, referrals, deposits, and verification.
+                Proof you did something. Comparisons, referrals, deposits, and not being a bot.
               </p>
             </TooltipContent>
           </Tooltip>

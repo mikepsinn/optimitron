@@ -9,7 +9,7 @@ import { buildUserAlignmentUrl, getBaseUrl } from "@/lib/url";
 export const metadata = {
   title: "Alignment Report | Optimitron",
   description:
-    "See which politicians match your priorities with Optimitron, the Earth Optimization Machine.",
+    "Find out which politicians actually vote the way you'd want. Most people are surprised. Not pleasantly.",
 };
 
 export default async function AlignmentPage() {
@@ -26,9 +26,9 @@ export default async function AlignmentPage() {
           Which Politicians Match Your Priorities?
         </h1>
         <p className="text-lg text-foreground font-bold mb-8 max-w-xl mx-auto">
-          Complete the Wishocracy budget exercise first, then see how your
-          elected officials&apos; voting records align with what you actually
-          want.
+          Tell me what you&apos;d spend money on. I&apos;ll check whether your
+          elected officials have ever agreed with you. It takes two minutes
+          and the results are usually disappointing.
         </p>
         <Link
           href={getSignInPath(ROUTES.alignment)}

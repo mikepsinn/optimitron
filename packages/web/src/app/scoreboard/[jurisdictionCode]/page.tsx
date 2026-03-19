@@ -6,7 +6,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Alignment Scoreboard | Optimitron",
   description:
-    "Public politician alignment scores based on aggregate citizen preferences. See how your representatives actually vote compared to what citizens actually want.",
+    "Public scoreboard showing how often your politicians vote the way citizens want. Updated automatically. Excuses not included.",
 };
 
 interface ScoreboardPageProps {
@@ -39,8 +39,8 @@ export default async function ScoreboardJurisdictionPage({
             to generate data.
           </p>
           <p className="mt-3 text-sm font-bold text-muted-foreground">
-            Once enough citizens have compared budget priorities, aggregate
-            alignment scores will appear here automatically.
+            Not enough humans have voted yet. Tell your friends. Or your
+            enemies. Both count.
           </p>
         </div>
       </div>

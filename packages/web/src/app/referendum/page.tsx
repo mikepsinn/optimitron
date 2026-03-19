@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export const metadata: Metadata = {
   title: "Referendums | Optimitron",
   description:
-    "Active referendums — vote on policy proposals and earn verified-vote rewards.",
+    "Active referendums. Vote on proposals. Prove you're human. Get credit for caring.",
 };
 
 export default async function ReferendumsIndexPage() {
@@ -32,8 +32,8 @@ export default async function ReferendumsIndexPage() {
           Active Referendums
         </h1>
         <p className="text-lg text-foreground leading-relaxed font-bold max-w-2xl">
-          Vote on proposals, verify with World ID, and share your referral link.
-          Every verified vote counts.
+          Vote. Prove you&apos;re real. Share the link. Every verified human
+          moves the needle. Bots need not apply.
         </p>
       </section>
 
@@ -43,7 +43,7 @@ export default async function ReferendumsIndexPage() {
             No active referendums right now.
           </p>
           <p className="text-sm font-bold text-muted-foreground mt-2">
-            Check back soon — new proposals are added regularly.
+            Check back. I&apos;m working on it. Running a planet takes time, even for me.
           </p>
         </div>
       ) : (

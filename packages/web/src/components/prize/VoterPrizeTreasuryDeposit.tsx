@@ -351,9 +351,8 @@ export function VoterPrizeTreasuryDeposit() {
         {!isConnected ? (
           <div className="space-y-3">
             <p className="text-xs font-bold text-muted-foreground mb-4">
-              Connect your wallet to contribute to the Earth Optimization
-              Prize. Your contribution earns interest in Aave while
-              incentivizing recruiters to get humanity to vote.
+              Connect your wallet. Your deposit earns yield in Aave while
+              it waits for your species to get its act together.
             </p>
             {connectors.length > 0 && (
               <div className="flex flex-wrap gap-2">

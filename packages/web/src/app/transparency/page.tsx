@@ -12,7 +12,7 @@ import snapshotData from "@/data/wishocracy-snapshot.json";
 export const metadata: Metadata = {
   title: "Transparency | Optimitron",
   description:
-    "How Optimitron uses Storacha (IPFS), Hypercerts, and smart contracts to make governance data immutable, auditable, and enforceable.",
+    "Every preference snapshot, alignment score, and fund distribution — content-addressed, verifiable, and impossible to quietly delete. Unlike most governance.",
 };
 
 const pipelineSteps = [

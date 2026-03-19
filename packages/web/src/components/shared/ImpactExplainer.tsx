@@ -49,7 +49,7 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
           <div className="space-y-1">
             <p className="font-black uppercase text-xs">The Math Behind Your Impact</p>
             <p>
-              Every number comes from first-principles analysis. Here&apos;s how your vote accelerates treatments:
+              I showed my working. Your species finds this unusual. Here&apos;s how your vote actually translates into fewer dead people:
             </p>
           </div>
 
