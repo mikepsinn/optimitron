@@ -582,7 +582,7 @@ export const AggregateVariableRelationshipSchema = z.object({
   predictorIsControllable: z.boolean().nullable().optional(),
   plausiblyCausal: z.boolean().nullable().optional(),
   optimalValue: z.number().nullable().optional(),
-  numberOfUnits: z.number().int(),
+  numberOfSubjects: z.number().int(),
   aggregateQmScore: z.number().nullable().optional(),
   numberOfUpVotes: z.number().int().nullable().optional(),
   numberOfDownVotes: z.number().int().nullable().optional(),
@@ -670,8 +670,8 @@ export const JurisdictionSchema = z.object({
 });
 export type JurisdictionType_ = z.infer<typeof JurisdictionSchema>;
 
-/** Zod schema for the Item model */
-export const ItemSchema = z.object({
+/** Zod schema for the WishocraticItem model */
+export const WishocraticItemSchema = z.object({
   id: z.string(),
   jurisdictionId: z.string(),
   name: z.string(),
@@ -685,20 +685,13 @@ export const ItemSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type ItemType = z.infer<typeof ItemSchema>;
+export type WishocraticItemType = z.infer<typeof WishocraticItemSchema>;
 
-/** Zod schema for the Participant model */
-export const ParticipantSchema = z.object({
-  id: z.string(),
-  jurisdictionId: z.string(),
-  externalId: z.string().nullable().optional(),
-  ageRange: z.string().nullable().optional(),
-  region: z.string().nullable().optional(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
-  deletedAt: nullableDateSchema,
-});
-export type ParticipantType = z.infer<typeof ParticipantSchema>;
+/** @deprecated Use WishocraticItemSchema instead */
+export const ItemSchema = WishocraticItemSchema;
+/** @deprecated Use WishocraticItemType instead */
+export type ItemType = WishocraticItemType;
+
 
 /** Zod schema for the Referral model */
 export const ReferralSchema = z.object({
@@ -740,20 +733,6 @@ export type WishocraticCategorySelectionType = z.infer<
   typeof WishocraticCategorySelectionSchema
 >;
 
-/** Zod schema for the PairwiseComparison model */
-export const PairwiseComparisonSchema = z.object({
-  id: z.string(),
-  participantId: z.string(),
-  itemAId: z.string(),
-  itemBId: z.string(),
-  allocationA: z.number().int(),
-  responseTimeMs: z.number().int().nullable().optional(),
-  sessionId: z.string().nullable().optional(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
-  deletedAt: nullableDateSchema,
-});
-export type PairwiseComparisonType = z.infer<typeof PairwiseComparisonSchema>;
 
 /** Zod schema for the PreferenceWeight model */
 export const PreferenceWeightSchema = z.object({

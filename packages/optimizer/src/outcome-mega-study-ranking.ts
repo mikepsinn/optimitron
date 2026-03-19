@@ -39,7 +39,7 @@ export const OutcomeMegaStudyRankingRowSchema = z.object({
   aggregateEffectSize: z.number(),
   aggregatePredictivePearson: z.number(),
   aggregateForwardPearson: z.number(),
-  numberOfUnits: z.number().int().min(0),
+  numberOfSubjects: z.number().int().min(0),
   totalPairs: z.number().int().min(0),
 });
 export type OutcomeMegaStudyRankingRow = z.infer<typeof OutcomeMegaStudyRankingRowSchema>;
@@ -99,7 +99,7 @@ function inferRawPValue(candidate: OutcomeRankingCandidate): number {
 
 function inferConfidence(candidate: OutcomeRankingCandidate, rawPValue: number): number {
   const significance = clamp01(1 - rawPValue);
-  const units = 1 - Math.exp(-candidate.aggregateVariableRelationship.numberOfUnits / 20);
+  const units = 1 - Math.exp(-candidate.aggregateVariableRelationship.numberOfSubjects / 20);
   const pairs = 1 - Math.exp(-candidate.aggregateVariableRelationship.totalPairs / 300);
   const directional = clamp01(
     Math.abs(candidate.aggregateVariableRelationship.aggregatePredictivePearson),
@@ -217,7 +217,7 @@ export function rankPredictorsForOutcome(
         candidate.aggregateVariableRelationship.aggregatePredictivePearson,
       aggregateForwardPearson:
         candidate.aggregateVariableRelationship.aggregateForwardPearson,
-      numberOfUnits: candidate.aggregateVariableRelationship.numberOfUnits,
+      numberOfSubjects: candidate.aggregateVariableRelationship.numberOfSubjects,
       totalPairs: candidate.aggregateVariableRelationship.totalPairs,
     } satisfies OutcomeMegaStudyRankingRow;
   });

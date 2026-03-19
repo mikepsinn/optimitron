@@ -356,7 +356,7 @@ function buildGovernmentSizePair(outcome: GovernmentOutcome): {
   const aggregatePredictive = average(subjects.map(subject => subject.predictivePearson));
 
   const aggregateVariableRelationship: AggregateVariableRelationship = {
-    numberOfUnits: Math.max(0, outcome.jurisdictionsAnalyzed),
+    numberOfSubjects: Math.max(0, outcome.jurisdictionsAnalyzed),
     aggregateForwardPearson: outcome.meanForwardPearson,
     aggregateReversePearson: average(subjects.map(subject => subject.forwardPearson)) - aggregatePredictive,
     aggregatePredictivePearson: aggregatePredictive,
@@ -690,7 +690,7 @@ function buildOptimalBudgetPair(category: OptimalBudgetCategory): {
   );
 
   const aggregateVariableRelationship: AggregateVariableRelationship = {
-    numberOfUnits: summaries.length,
+    numberOfSubjects: summaries.length,
     aggregateForwardPearson: Number.isFinite(forwardMean) ? forwardMean : category.meanForwardPearson,
     aggregateReversePearson: reverseMean,
     aggregatePredictivePearson: predictiveMean,

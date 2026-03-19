@@ -78,7 +78,7 @@ describe('runVariableRelationshipAnalysis', () => {
 
     expect(result.subjectResults).toHaveLength(2);
     expect(result.skippedSubjects).toHaveLength(0);
-    expect(result.aggregateVariableRelationship.numberOfUnits).toBe(2);
+    expect(result.aggregateVariableRelationship.numberOfSubjects).toBe(2);
     expect(result.aggregateVariableRelationship.totalPairs).toBeGreaterThan(0);
   });
 
@@ -102,7 +102,7 @@ describe('runVariableRelationshipAnalysis', () => {
     expect(result.subjectResults).toHaveLength(1);
     expect(result.skippedSubjects).toHaveLength(1);
     expect(result.skippedSubjects[0]?.subjectId).toBe('too_short');
-    expect(result.aggregateVariableRelationship.numberOfUnits).toBe(1);
+    expect(result.aggregateVariableRelationship.numberOfSubjects).toBe(1);
   });
 
   it('throws when configured with onSubjectError=throw', () => {

@@ -15,13 +15,13 @@
 //   Inspired by the legacy API open-source API. This is the Optimitron schema.
 //
 // LAYER 2 — Domain-Specific Governance
-//   Jurisdiction, Item, Participant, PairwiseComparison, PreferenceWeight,
+//   Jurisdiction, WishocraticItem, PreferenceWeight,
 //   AggregationRun, Politician, PoliticianVote, AlignmentScore
 //   These models implement the governance preference-elicitation system:
 //   pairwise budget comparisons, eigenvector aggregation, and politician
 //   alignment scoring. They are scoped to jurisdictions (multi-tenant).
 //
-// The two layers can interoperate: governance Items can reference
+// The two layers can interoperate: governance WishocraticItems can reference
 // GlobalVariables as outcome metrics, and NOf1VariableRelationship /
 // AggregateVariableRelationship can link policy variables to health/economic outcomes.
 // ============================================================================
@@ -907,7 +907,7 @@ model Subject {
   @@index([subjectType])
 }
 
-/// Per-unit instance of a GlobalVariable with personal overrides and running stats.
+/// Per-subject instance of a GlobalVariable with personal overrides and running stats.
 /// Created automatically when a user first tracks a variable.
 /// legacy API reference: https://github.com/mikepsinn/curedao-api/blob/main/app/Models/UserVariable.php
 /// legacy API analysis: https://github.com/mikepsinn/curedao-api/blob/main/app/Variables/QMUserVariable.php
@@ -1572,15 +1572,15 @@ model AggregateVariableRelationship {
   // -- Aggregate-specific fields --
 
   /// Number of subjects whose data contributed to this analysis
-  numberOfUnits Int
+  numberOfSubjects Int
 
   /// Overall quality/importance score aggregated across subjects (QM score)
   aggregateQmScore Float?
 
-  /// Community votes: how many units found this relationship useful
+  /// Community votes: how many users found this relationship useful
   numberOfUpVotes Int?
 
-  /// Community votes: how many units found this relationship not useful
+  /// Community votes: how many users found this relationship not useful
   numberOfDownVotes Int?
 
   /// When this analysis was last computed
@@ -1599,7 +1599,7 @@ model AggregateVariableRelationship {
   @@index([predictorGlobalVariableId])
   @@index([outcomeGlobalVariableId])
   @@index([analyzedAt])
-  @@index([numberOfUnits])
+  @@index([numberOfSubjects])
 }
 
 /// Metadata about an external data source / integration (e.g. Fitbit, Apple Health, Oura).
@@ -1805,8 +1805,7 @@ model Jurisdiction {
   deletedAt DateTime?
 
   // -- Relations --
-  items           Item[]
-  participants    Participant[]
+  items           WishocraticItem[]
   politicians     Politician[]
   aggregationRuns AggregationRun[]
   referendums     Referendum[]
@@ -1818,7 +1817,7 @@ model Jurisdiction {
 }
 
 /// A priority/wish/budget item that can be compared in pairwise evaluations
-model Item {
+model WishocraticItem {
   /// Unique identifier for this item
   id String @id @default(cuid())
 
@@ -1859,8 +1858,6 @@ model Item {
   deletedAt DateTime?
 
   // -- Relations --
-  comparisonsAsA          PairwiseComparison[]           @relation("itemA")
-  comparisonsAsB          PairwiseComparison[]           @relation("itemB")
   weights                 PreferenceWeight[]
   wishAllocationsAsA      WishocraticAllocation[]        @relation("wishItemA")
   wishAllocationsAsB      WishocraticAllocation[]        @relation("wishItemB")
@@ -1873,42 +1870,7 @@ model Item {
   @@index([jurisdictionId])
   @@index([category])
   @@index([active])
-}
-
-/// A participant who makes pairwise comparisons (anonymous by design)
-model Participant {
-  /// Unique identifier for this participant
-  id String @id @default(cuid())
-
-  /// Jurisdiction this participant is associated with
-  jurisdictionId String
-
-  /// Relation to the Jurisdiction
-  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
-
-  /// Anonymous external ID (no PII stored)
-  externalId String? @unique
-
-  /// Optional age range for demographic analysis (e.g. "25-34")
-  ageRange String?
-
-  /// Optional region for geographic analysis (e.g. "US-CA")
-  region String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp; non-null means this record is logically deleted
-  deletedAt DateTime?
-
-  // -- Relations --
-  comparisons PairwiseComparison[]
-
-  @@index([jurisdictionId])
-  @@index([region])
+  @@map("Item")
 }
 
 /// Referral/signup record for tracking who brought in a user
@@ -1942,7 +1904,6 @@ model Referral {
   @@index([referredByUserId])
   @@index([createdAt])
   @@index([deletedAt])
-  @@map("Vote")
 }
 
 /// Saved pairwise allocations for authenticated Wishocracy users
@@ -1953,10 +1914,10 @@ model WishocraticAllocation {
   /// The user who made this pairwise allocation
   userId String
 
-  /// First item in the normalized pair (FK to Item — budget category)
+  /// First item in the normalized pair (FK to WishocraticItem — budget category)
   itemAId String
 
-  /// Second item in the normalized pair (FK to Item — budget category)
+  /// Second item in the normalized pair (FK to WishocraticItem — budget category)
   itemBId String
 
   /// Allocation to item A (0-100, represents share of hypothetical $100)
@@ -1975,9 +1936,9 @@ model WishocraticAllocation {
   deletedAt DateTime?
 
   // -- Relations --
-  user  User @relation("UserWishocraticAllocations", fields: [userId], references: [id], onDelete: Cascade)
-  itemA Item @relation("wishItemA", fields: [itemAId], references: [id])
-  itemB Item @relation("wishItemB", fields: [itemBId], references: [id])
+  user  User            @relation("UserWishocraticAllocations", fields: [userId], references: [id], onDelete: Cascade)
+  itemA WishocraticItem @relation("wishItemA", fields: [itemAId], references: [id])
+  itemB WishocraticItem @relation("wishItemB", fields: [itemBId], references: [id])
 
   @@unique([userId, itemAId, itemBId])
   @@index([userId])
@@ -1995,7 +1956,7 @@ model WishocraticCategorySelection {
   /// The user who made this choice
   userId String
 
-  /// Budget category item (FK to Item)
+  /// Budget category item (FK to WishocraticItem)
   itemId String
 
   /// Whether the category is included in the user's run
@@ -2011,8 +1972,8 @@ model WishocraticCategorySelection {
   deletedAt DateTime?
 
   // -- Relations --
-  user User @relation("UserWishocraticCategorySelections", fields: [userId], references: [id], onDelete: Cascade)
-  item Item @relation(fields: [itemId], references: [id])
+  user User            @relation("UserWishocraticCategorySelections", fields: [userId], references: [id], onDelete: Cascade)
+  item WishocraticItem @relation(fields: [itemId], references: [id])
 
   @@unique([userId, itemId])
   @@index([userId])
@@ -2020,53 +1981,6 @@ model WishocraticCategorySelection {
   @@index([selected])
   @@index([createdAt])
   @@index([deletedAt])
-}
-
-/// A single pairwise comparison: "Given $100, how would you split it between A and B?"
-model PairwiseComparison {
-  /// Unique identifier for this comparison
-  id String @id @default(cuid())
-
-  /// The participant who made this comparison
-  participantId String
-
-  /// Relation to the Participant
-  participant Participant @relation(fields: [participantId], references: [id])
-
-  /// First item in the comparison pair
-  itemAId String
-
-  /// Relation to the first Item
-  itemA Item @relation("itemA", fields: [itemAId], references: [id])
-
-  /// Second item in the comparison pair
-  itemBId String
-
-  /// Relation to the second Item
-  itemB Item @relation("itemB", fields: [itemBId], references: [id])
-
-  /// Allocation to item A (0-100). Item B gets (100 - allocationA).
-  allocationA Int
-
-  /// Response time in milliseconds (engagement quality signal)
-  responseTimeMs Int?
-
-  /// Session ID to group comparisons from the same sitting
-  sessionId String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp; non-null means this record is logically deleted
-  deletedAt DateTime?
-
-  @@unique([participantId, itemAId, itemBId])
-  @@index([itemAId, itemBId])
-  @@index([participantId])
-  @@index([sessionId])
 }
 
 /// Aggregated preference weights (output of eigenvector calculation)
@@ -2083,8 +1997,8 @@ model PreferenceWeight {
   /// The item this weight applies to
   itemId String
 
-  /// Relation to the Item
-  item Item @relation(fields: [itemId], references: [id])
+  /// Relation to the WishocraticItem
+  item WishocraticItem @relation(fields: [itemId], references: [id])
 
   /// Normalized weight (0-1, all weights in a run sum to 1)
   weight Float
@@ -2211,11 +2125,11 @@ model PoliticianVote {
   /// Relation to the Politician
   politician Politician @relation(fields: [politicianId], references: [id])
 
-  /// Budget item this vote applies to (FK to Item)
+  /// Budget item this vote applies to (FK to WishocraticItem)
   itemId String
 
-  /// Relation to the Item
-  item Item @relation(fields: [itemId], references: [id])
+  /// Relation to the WishocraticItem
+  item WishocraticItem @relation(fields: [itemId], references: [id])
 
   /// Their allocated/voted percentage
   allocationPct Float
@@ -2298,11 +2212,11 @@ model CategoryAlignmentScore {
   /// Relation to the AlignmentScore
   alignmentScore AlignmentScore @relation(fields: [alignmentScoreId], references: [id], onDelete: Cascade)
 
-  /// Budget category item (FK to Item)
+  /// Budget category item (FK to WishocraticItem)
   itemId String
 
-  /// Relation to the Item
-  item Item @relation(fields: [itemId], references: [id])
+  /// Relation to the WishocraticItem
+  item WishocraticItem @relation(fields: [itemId], references: [id])
 
   /// Alignment score for this category (0-100%)
   score Float
@@ -2671,11 +2585,11 @@ model PublicGoodsRecipient {
   /// Unique identifier
   id String @id @default(cuid())
 
-  /// Budget category item (FK to Item — e.g., "UNIVERSAL_BASIC_INCOME")
+  /// Budget category item (FK to WishocraticItem — e.g., "UNIVERSAL_BASIC_INCOME")
   itemId String @unique
 
-  /// Relation to the Item
-  item Item @relation("publicGoodsItem", fields: [itemId], references: [id])
+  /// Relation to the WishocraticItem
+  item WishocraticItem @relation("publicGoodsItem", fields: [itemId], references: [id])
 
   /// Human-readable name
   name String

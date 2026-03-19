@@ -156,7 +156,7 @@ describe("runAggregation", () => {
           },
         },
         update: expect.objectContaining({
-          numberOfUnits: 1,
+          numberOfSubjects: 1,
           numberOfPairs: 100,
           predictorImpactScore: expect.any(Number) as number,
           forwardPearsonCorrelation: expect.any(Number) as number,
@@ -166,7 +166,7 @@ describe("runAggregation", () => {
         create: expect.objectContaining({
           predictorGlobalVariableId: "pred-1",
           outcomeGlobalVariableId: "out-1",
-          numberOfUnits: 1,
+          numberOfSubjects: 1,
         }),
       }),
     );

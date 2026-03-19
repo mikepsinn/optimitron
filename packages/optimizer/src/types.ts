@@ -300,15 +300,15 @@ export const NOf1VariableRelationshipSchema = z.object({
 export type NOf1VariableRelationship = z.infer<typeof NOf1VariableRelationshipSchema>;
 
 /**
- * Population-level aggregate variable relationship across multiple units.
+ * Population-level aggregate variable relationship across multiple subjects.
  * All numeric fields are weighted averages (by statistical significance).
  *
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Correlations/QMAggregateCorrelation.php
  * @see https://github.com/mikepsinn/curedao-api/blob/main/app/Traits/HasMany/HasManyCorrelations.php
  */
 export const AggregateVariableRelationshipSchema = z.object({
-  /** Number of units contributing to this aggregate */
-  numberOfUnits: z.number(),
+  /** Number of subjects (people) contributing to this aggregate */
+  numberOfSubjects: z.number(),
   /** Weighted average forward Pearson correlation */
   aggregateForwardPearson: z.number(),
   /** Weighted average reverse Pearson correlation */
@@ -329,7 +329,7 @@ export const AggregateVariableRelationshipSchema = z.object({
   aggregateOutcomeFollowUpPercentChangeFromBaseline: z.number().nullable(),
   /** Weighted average Predictor Impact Score (PIS) */
   weightedAveragePIS: z.number(),
-  /** Total number of aligned pairs across all units */
+  /** Total number of aligned pairs across all subjects */
   totalPairs: z.number(),
 });
 

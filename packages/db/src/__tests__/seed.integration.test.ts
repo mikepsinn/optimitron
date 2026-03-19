@@ -22,7 +22,7 @@ describeIfDatabase("seedDatabase", () => {
       variableCategories: await prisma.variableCategory.count(),
       globalVariables: await prisma.globalVariable.count(),
       jurisdictions: await prisma.jurisdiction.count(),
-      items: await prisma.item.count(),
+      items: await prisma.wishocraticItem.count(),
     };
 
     expect(firstCounts.units).toBeGreaterThanOrEqual(40);
@@ -38,7 +38,7 @@ describeIfDatabase("seedDatabase", () => {
       prisma.unit.findUnique({ where: { name: "Milligrams" } }),
     ).resolves.toBeTruthy();
     await expect(
-      prisma.item.findUnique({ where: { id: "budget-national-defense" } }),
+      prisma.wishocraticItem.findUnique({ where: { id: "budget-national-defense" } }),
     ).resolves.toMatchObject({ name: "National Defense" });
 
     await seedDatabase();
@@ -48,7 +48,7 @@ describeIfDatabase("seedDatabase", () => {
       variableCategories: await prisma.variableCategory.count(),
       globalVariables: await prisma.globalVariable.count(),
       jurisdictions: await prisma.jurisdiction.count(),
-      items: await prisma.item.count(),
+      items: await prisma.wishocraticItem.count(),
     };
 
     expect(secondCounts).toEqual(firstCounts);

@@ -12,7 +12,7 @@ function makeGlobalRelationship(
   overrides: Partial<AggregateVariableRelationship> = {},
 ): AggregateVariableRelationship {
   return {
-    numberOfUnits: 20,
+    numberOfSubjects: 20,
     aggregateForwardPearson: 0.2,
     aggregateReversePearson: 0.05,
     aggregatePredictivePearson: 0.15,

@@ -25,7 +25,7 @@ describe('aggregateNOf1VariableRelationships', () => {
   // ─── Empty array ───────────────────────────────────────
   it('should return sensible defaults for empty array', () => {
     const result = aggregateNOf1VariableRelationships([]);
-    expect(result.numberOfUnits).toBe(0);
+    expect(result.numberOfSubjects).toBe(0);
     expect(result.aggregateForwardPearson).toBe(0);
     expect(result.aggregateReversePearson).toBe(0);
     expect(result.aggregatePredictivePearson).toBe(0);
@@ -56,7 +56,7 @@ describe('aggregateNOf1VariableRelationships', () => {
     });
     const result = aggregateNOf1VariableRelationships([unit]);
 
-    expect(result.numberOfUnits).toBe(1);
+    expect(result.numberOfSubjects).toBe(1);
     expect(result.aggregateForwardPearson).toBeCloseTo(0.7, 5);
     expect(result.aggregateReversePearson).toBeCloseTo(0.4, 5);
     expect(result.aggregatePredictivePearson).toBeCloseTo(0.3, 5);
@@ -77,7 +77,7 @@ describe('aggregateNOf1VariableRelationships', () => {
     ];
     const result = aggregateNOf1VariableRelationships(units);
 
-    expect(result.numberOfUnits).toBe(2);
+    expect(result.numberOfSubjects).toBe(2);
     expect(result.aggregateForwardPearson).toBeCloseTo(0.625, 1);
     expect(result.aggregateReversePearson).toBeCloseTo(0.31, 1);
     expect(result.aggregateEffectSize).toBeCloseTo(12.5, 0);
@@ -95,7 +95,7 @@ describe('aggregateNOf1VariableRelationships', () => {
     ];
     const result = aggregateNOf1VariableRelationships(units);
 
-    expect(result.numberOfUnits).toBe(5);
+    expect(result.numberOfSubjects).toBe(5);
     // High significance units (u1, u5) should pull the aggregate up
     expect(result.aggregateForwardPearson).toBeGreaterThan(0.4);
     expect(result.totalPairs).toBe(1080);
@@ -264,7 +264,7 @@ describe('aggregateNOf1VariableRelationships', () => {
     }));
     const result = aggregateNOf1VariableRelationships(units);
 
-    expect(result.numberOfUnits).toBe(100);
+    expect(result.numberOfSubjects).toBe(100);
     expect(result.totalPairs).toBeGreaterThan(5000);
     expect(result.aggregateForwardPearson).toBeGreaterThan(0);
     expect(result.aggregateForwardPearson).toBeLessThan(1);

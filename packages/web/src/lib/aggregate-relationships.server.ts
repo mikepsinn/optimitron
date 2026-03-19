@@ -120,7 +120,7 @@ export async function runAggregation(): Promise<AggregationResult> {
           outcomeFollowUpPercentChangeFromBaseline:
             result.aggregateOutcomeFollowUpPercentChangeFromBaseline,
           predictorImpactScore: result.weightedAveragePIS,
-          numberOfUnits: result.numberOfUnits,
+          numberOfSubjects: result.numberOfSubjects,
           numberOfPairs: result.totalPairs,
           onsetDelay: medianOnsetDelay,
           durationOfAction: medianDuration,
@@ -140,7 +140,7 @@ export async function runAggregation(): Promise<AggregationResult> {
           outcomeFollowUpPercentChangeFromBaseline:
             result.aggregateOutcomeFollowUpPercentChangeFromBaseline,
           predictorImpactScore: result.weightedAveragePIS,
-          numberOfUnits: result.numberOfUnits,
+          numberOfSubjects: result.numberOfSubjects,
           numberOfPairs: result.totalPairs,
           onsetDelay: medianOnsetDelay,
           durationOfAction: medianDuration,
@@ -226,7 +226,7 @@ export async function runAggregationForPairs(
           outcomeFollowUpPercentChangeFromBaseline:
             result.aggregateOutcomeFollowUpPercentChangeFromBaseline,
           predictorImpactScore: result.weightedAveragePIS,
-          numberOfUnits: result.numberOfUnits,
+          numberOfSubjects: result.numberOfSubjects,
           numberOfPairs: result.totalPairs,
           onsetDelay: medianOnsetDelay,
           durationOfAction: medianDuration,
@@ -246,7 +246,7 @@ export async function runAggregationForPairs(
           outcomeFollowUpPercentChangeFromBaseline:
             result.aggregateOutcomeFollowUpPercentChangeFromBaseline,
           predictorImpactScore: result.weightedAveragePIS,
-          numberOfUnits: result.numberOfUnits,
+          numberOfSubjects: result.numberOfSubjects,
           numberOfPairs: result.totalPairs,
           onsetDelay: medianOnsetDelay,
           durationOfAction: medianDuration,

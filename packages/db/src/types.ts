@@ -10,8 +10,7 @@ import type {
   FillingType,
   Jurisdiction,
   JurisdictionType,
-  Item,
-  PairwiseComparison,
+  WishocraticItem,
   PreferenceWeight,
 } from './generated/prisma/client.js';
 
@@ -20,8 +19,7 @@ export type DbFillingType = FillingType;
 export type DbJurisdictionType = JurisdictionType;
 
 export type DbJurisdiction = Jurisdiction;
-export type DbItem = Item;
-export type DbPairwiseComparison = PairwiseComparison;
+export type DbWishocraticItem = WishocraticItem;
 export type DbPreferenceWeight = PreferenceWeight;
 
 /**

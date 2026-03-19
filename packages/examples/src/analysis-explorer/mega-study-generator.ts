@@ -3304,7 +3304,7 @@ function buildOutcomeMarkdown(
     const qualityTier = pair?.qualityTier == null ? "N/A" : toSimpleQualityTierLabel(pair.qualityTier);
     const direction = pair?.direction ?? "n/a";
     const directionalScore = pair ? pair.aggregatePredictivePearson.toFixed(4) : row.aggregatePredictivePearson.toFixed(4);
-    lines.push(`| ${row.rank} | ${row.predictorLabel ?? row.predictorId} | ${row.score.toFixed(4)} | ${row.confidence.toFixed(4)} | ${row.adjustedPValue.toFixed(4)} | ${evidenceLabel} | ${qualityTier} | ${direction} | ${directionalScore} | ${row.numberOfUnits} | ${row.totalPairs} | ${optimalHigh} | ${optimalLow} | ${optimalDaily} | ${reportFile} |`);
+    lines.push(`| ${row.rank} | ${row.predictorLabel ?? row.predictorId} | ${row.score.toFixed(4)} | ${row.confidence.toFixed(4)} | ${row.adjustedPValue.toFixed(4)} | ${evidenceLabel} | ${qualityTier} | ${direction} | ${directionalScore} | ${row.numberOfSubjects} | ${row.totalPairs} | ${optimalHigh} | ${optimalLow} | ${optimalDaily} | ${reportFile} |`);
   }
   lines.push("");
   return lines.join("\n");
@@ -4052,7 +4052,7 @@ export async function generateMegaStudyArtifacts(
           predictorId: predictor.id,
           predictorLabel: predictor.label,
           aggregateVariableRelationship: {
-            numberOfUnits: nonNegativeInt(aggregate.numberOfUnits),
+            numberOfSubjects: nonNegativeInt(aggregate.numberOfSubjects),
             aggregateForwardPearson,
             aggregateReversePearson,
             aggregatePredictivePearson,

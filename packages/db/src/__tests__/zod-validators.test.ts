@@ -37,10 +37,8 @@ import {
   PoliticianSchema,
   PoliticianVoteSchema,
   AlignmentScoreSchema,
-  PairwiseComparisonSchema,
   PreferenceWeightSchema,
-  ItemSchema,
-  ParticipantSchema,
+  WishocraticItemSchema,
   ReferralSchema,
   WishocraticAllocationSchema,
   WishocraticCategorySelectionSchema,
@@ -615,7 +613,7 @@ describe('AggregateVariableRelationshipSchema', () => {
       numberOfPairs: 500,
       onsetDelay: 7200,
       durationOfAction: 172800,
-      numberOfUnits: 25,
+      numberOfSubjects: 25,
       analyzedAt: now,
       createdAt: now,
       updatedAt: now,
@@ -623,7 +621,7 @@ describe('AggregateVariableRelationshipSchema', () => {
     expect(AggregateVariableRelationshipSchema.safeParse(data).success).toBe(true);
   });
 
-  it('39. fails when numberOfUnits is missing', () => {
+  it('39. fails when numberOfSubjects is missing', () => {
     const data = {
       id: 'gvr_1',
       predictorGlobalVariableId: 'gv_1',
@@ -698,36 +696,10 @@ describe('Governance models', () => {
 });
 
 // ============================================================================
-// MODEL TESTS — PairwiseComparison, PreferenceWeight
+// MODEL TESTS — PreferenceWeight
 // ============================================================================
 
 describe('Preference elicitation models', () => {
-  it('44. validates a PairwiseComparison', () => {
-    const data = {
-      id: 'pc_1',
-      participantId: 'part_1',
-      itemAId: 'item_1',
-      itemBId: 'item_2',
-      allocationA: 60,
-      responseTimeMs: 3200,
-      createdAt: now,
-      updatedAt: now,
-    };
-    expect(PairwiseComparisonSchema.safeParse(data).success).toBe(true);
-  });
-
-  it('45. PairwiseComparison fails when allocationA is missing', () => {
-    const data = {
-      id: 'pc_1',
-      participantId: 'part_1',
-      itemAId: 'item_1',
-      itemBId: 'item_2',
-      createdAt: now,
-      updatedAt: now,
-    };
-    expect(PairwiseComparisonSchema.safeParse(data).success).toBe(false);
-  });
-
   it('46. validates a PreferenceWeight', () => {
     const data = {
       id: 'pw_1',
@@ -832,7 +804,7 @@ describe('Additional models', () => {
     }
   });
 
-  it('53. validates an Item', () => {
+  it('53. validates a WishocraticItem', () => {
     const data = {
       id: 'item_1',
       jurisdictionId: 'jur_1',
@@ -842,20 +814,7 @@ describe('Additional models', () => {
       createdAt: now,
       updatedAt: now,
     };
-    expect(ItemSchema.safeParse(data).success).toBe(true);
-  });
-
-  it('54. validates a Participant', () => {
-    const data = {
-      id: 'part_1',
-      jurisdictionId: 'jur_1',
-      externalId: 'anon_xyz',
-      ageRange: '25-34',
-      region: 'US-CA',
-      createdAt: now,
-      updatedAt: now,
-    };
-    expect(ParticipantSchema.safeParse(data).success).toBe(true);
+    expect(WishocraticItemSchema.safeParse(data).success).toBe(true);
   });
 
   it('55. validates an AggregationRun', () => {

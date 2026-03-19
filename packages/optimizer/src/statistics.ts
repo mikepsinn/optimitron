@@ -431,7 +431,7 @@ export function aggregateNOf1VariableRelationships(
   // Edge case: no units
   if (nOf1VariableRelationships.length === 0) {
     return {
-      numberOfUnits: 0,
+      numberOfSubjects: 0,
       aggregateForwardPearson: 0,
       aggregateReversePearson: 0,
       aggregatePredictivePearson: 0,
@@ -503,7 +503,7 @@ export function aggregateNOf1VariableRelationships(
   const totalPairs = nOf1VariableRelationships.reduce((sum, u) => sum + u.numberOfPairs, 0);
 
   return {
-    numberOfUnits: n,
+    numberOfSubjects: n,
     aggregateForwardPearson: weightedAvg(nOf1VariableRelationships.map(u => u.forwardPearson)),
     aggregateReversePearson: weightedAvg(nOf1VariableRelationships.map(u => u.reversePearson)),
     aggregatePredictivePearson: weightedAvg(nOf1VariableRelationships.map(u => u.predictivePearson)),

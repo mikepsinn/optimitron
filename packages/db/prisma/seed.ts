@@ -606,7 +606,7 @@ async function seedJurisdictions() {
 // E) ITEMS — Federal Budget Categories (FY2025 approximate)
 // ============================================================================
 
-async function seedBudgetItems(usJurisdictionId: string) {
+async function seedWishocraticItems(usJurisdictionId: string) {
   console.log("💰 Seeding Optimitron budget categories...");
 
   // Optimitron budget categories — these are the items citizens compare in
@@ -643,7 +643,7 @@ async function seedBudgetItems(usJurisdictionId: string) {
 
   for (const cat of categories) {
     const pct = totalBudgetB > 0 ? (cat.annualBudgetB / totalBudgetB) * 100 : 0;
-    await prisma.item.upsert({
+    await prisma.wishocraticItem.upsert({
       where: { id: cat.id },
       update: {
         name: cat.name,
@@ -698,7 +698,7 @@ export async function seedDatabase() {
   const catMap = await seedVariableCategories(unitMap);
   await seedGlobalVariables(unitMap, catMap);
   const usId = await seedJurisdictions();
-  await seedBudgetItems(usId);
+  await seedWishocraticItems(usId);
   await seedDemoUser();
   await seedReferendums();
 
