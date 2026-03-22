@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   VOTE_TOKEN_POTENTIAL_VALUE,
   VOTE_2_CLAIMS_PAYOUT,
@@ -13,11 +13,11 @@ import { fmtParam } from "@/lib/format-parameter";
 /**
  * Interactive Prize return calculator.
  *
- * Fail scenario:  deposit × PRIZE_POOL_15YR_MULTIPLE (~11.1x over 15 years)
+ * Fail scenario:  deposit × PRIZE_POOL_HORIZON_MULTIPLE (~11.1x over 15 years)
  * Success scenario: VOTE points × pro-rata share of pool (~$194K per VOTE if canonical pool size)
  */
 
-const FAIL_MULTIPLIER = PRIZE_POOL_15YR_MULTIPLE.value;
+const FAIL_MULTIPLIER = PRIZE_POOL_HORIZON_MULTIPLE.value;
 const VOTE_VALUE = VOTE_TOKEN_POTENTIAL_VALUE.value;
 
 const PRESET_AMOUNTS = [100, 1_000, 10_000, 100_000];
@@ -136,14 +136,14 @@ export function PrizeCalculator() {
             {formatUSD(failReturn)}
           </div>
           <div className="text-sm font-bold text-muted-foreground mb-3">
-            +{formatUSD(failProfit)} profit ({fmtParam(PRIZE_POOL_15YR_MULTIPLE)} your deposit)
+            +{formatUSD(failProfit)} profit ({fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your deposit)
           </div>
           <div className="text-xs text-muted-foreground font-bold space-y-1">
             <p>
               {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} annual Wishocratic fund return × 15 years.
             </p>
             <p className="font-bold text-muted-foreground pt-1">
-              Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} your money.
+              Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money.
             </p>
           </div>
         </motion.div>

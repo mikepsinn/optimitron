@@ -7,7 +7,7 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   EFFICACY_LAG_YEARS,
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "Phase 2: After the referendum proves demand, raise ~$1B to lobby for the 1% Treaty. 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds aligned politicians. Dominant assurance return if treaty fails.",
 };
 
-const poolMultiple = fmtParam(PRIZE_POOL_15YR_MULTIPLE);
+const poolMultiple = fmtParam(PRIZE_POOL_HORIZON_MULTIPLE);
 const poolReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
 const dysfunctionTaxFormatted = fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);
 

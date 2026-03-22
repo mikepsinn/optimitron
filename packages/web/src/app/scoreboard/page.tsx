@@ -7,10 +7,12 @@ import {
   TREATY_HALE_GAIN_YEAR_15,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@/lib/parameters-calculations-citations";
 import { prizeLink, wishocracyLink, politicianLeaderboardLink } from "@/lib/routes";
+import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
+import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 
 export const metadata: Metadata = {
   title: "Scoreboard | The Earth Optimization Game",
@@ -102,6 +104,22 @@ export default function ScoreboardPage() {
         </div>
       </section>
 
+      {/* GDP Trajectory Chart */}
+      <section className="mb-12">
+        <div className="border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="text-xl font-black font-mono uppercase tracking-tight text-foreground mb-2 text-center">
+            Why There&apos;s a Timer
+          </h2>
+          <p className="text-sm font-bold text-muted-foreground text-center mb-4 max-w-2xl mx-auto">
+            The destructive economy (military + cybercrime) is growing at 15%/yr.
+            Productive GDP grows at 3%/yr. At current rates, destruction hits 50%
+            of GDP and the game is over. The treaty and optimal governance
+            trajectories show what happens when you redirect resources.
+          </p>
+          <GdpTrajectoryChart />
+        </div>
+      </section>
+
       {/* Live Game Stats */}
       <section className="mb-12">
         <h2 className="text-xl font-black font-mono uppercase tracking-tight text-foreground mb-6 text-center">
@@ -116,7 +134,7 @@ export default function ScoreboardPage() {
               $0
             </div>
             <div className="text-[10px] font-bold text-muted-foreground">
-              grows at {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} over 15yr
+              grows at {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15yr
             </div>
           </div>
           <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
@@ -142,15 +160,10 @@ export default function ScoreboardPage() {
             </div>
           </div>
           <div className="border-4 border-primary bg-background p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-xs font-black uppercase text-muted-foreground">
+            <div className="text-xs font-black uppercase text-muted-foreground mb-2">
               Time Remaining
             </div>
-            <div className="mt-2 text-2xl font-black text-foreground">
-              15 years
-            </div>
-            <div className="text-[10px] font-bold text-muted-foreground">
-              until metrics are evaluated
-            </div>
+            <CollapseCountdownTimer size="sm" showLabel={false} />
           </div>
         </div>
       </section>
@@ -171,7 +184,7 @@ export default function ScoreboardPage() {
               </h3>
               <p className="text-sm font-bold text-background">
                 Put USDC into the prize pool. Get PRIZE shares. Your money grows
-                at {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} over 15 years regardless
+                at {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years regardless
                 of outcome.
               </p>
             </div>
@@ -196,7 +209,7 @@ export default function ScoreboardPage() {
               </h3>
               <p className="text-sm font-bold text-foreground">
                 15 years later: metrics hit targets → VOTE holders split the
-                pool. Metrics miss → depositors get ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} back.
+                pool. Metrics miss → depositors get ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back.
                 Nobody loses.
               </p>
             </div>

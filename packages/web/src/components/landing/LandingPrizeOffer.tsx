@@ -7,7 +7,7 @@ import { PrizeCalculator } from "@/components/prize/PrizeCalculator";
 import { prizeLink, earthOptimizationPrizePaperLink } from "@/lib/routes";
 import { fmtParam } from "@/lib/format-parameter";
 import {
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   CONVENTIONAL_RETIREMENT_RETURN,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -45,7 +45,7 @@ export function LandingPrizeOffer() {
                 If the Plan Fails
               </div>
               <div className="text-4xl font-black text-foreground">
-                ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} Back
+                ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} Back
               </div>
               <p className="mt-3 text-sm font-bold text-foreground">
                 Your principal grows at{" "}
@@ -108,7 +108,7 @@ export function LandingPrizeOffer() {
                 <p className="text-sm font-bold text-background">
                   Deposit USDC → Get PRIZE shares → Fund earns{" "}
                   {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} → Floor of ~
-                  {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} if plan fails. Also get a
+                  {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} if plan fails. Also get a
                   referral link for success-side upside.
                 </p>
               </div>
@@ -147,7 +147,7 @@ export function LandingPrizeOffer() {
               1 in 15,000. You need to believe there&apos;s a 1-in-15,000
               chance this works for the expected value to be positive. And if
               it doesn&apos;t work, you still get ~
-              {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} back. On my planet, this took
+              {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back. On my planet, this took
               about twelve seconds to explain.
             </p>
           </div>

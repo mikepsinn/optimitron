@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { fmtParam } from "@/lib/format-parameter";
 import {
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@/lib/parameters-calculations-citations";
 
@@ -26,7 +26,7 @@ const objections = [
   {
     id: "fails",
     question: "What if the plan fails?",
-    answer: `That's the entire point of dominant assurance. If the plan fails after 15 years, depositors claim their principal plus ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} in Wishocratic fund growth. You're not donating. You're making a bet where the worst case is multiplying your money. The plan failing is the scenario designed to make you rich.`,
+    answer: `That's the entire point of dominant assurance. If the plan fails after 15 years, depositors claim their principal plus ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} in Wishocratic fund growth. You're not donating. You're making a bet where the worst case is multiplying your money. The plan failing is the scenario designed to make you rich.`,
   },
   {
     id: "trust",

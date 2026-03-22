@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import Link from "next/link"
-import { PRIZE_POOL_15YR_MULTIPLE } from "@/lib/parameters-calculations-citations"
+import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations"
 import { fmtParam } from "@/lib/format-parameter"
 
 export default function ActionOptionsSection() {
@@ -28,7 +28,7 @@ export default function ActionOptionsSection() {
     {
       option: "OPTION 3: FUND",
       action: "BACK THE PRIZE",
-      description: `Zero-downside pool. Get ${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} yield if it fails. Play the game.`,
+      description: `Zero-downside pool. Get ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} yield if it fails. Play the game.`,
       color: "bg-background",
       textColor: "text-foreground",
       accentColor: "text-brutal-pink",

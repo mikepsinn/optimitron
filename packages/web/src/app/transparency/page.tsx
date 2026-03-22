@@ -6,7 +6,7 @@ import {
   githubLink,
   prizeLink,
 } from "@/lib/routes";
-import { PRIZE_POOL_15YR_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
@@ -299,13 +299,13 @@ export default function TransparencyPage() {
             earns the recruiter 1 VOTE point. When health and income metrics
             cross thresholds, VOTE holders claim proportional prize share.
             If thresholds aren&apos;t met after 15 years, depositors reclaim
-            principal + ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} yield. All on-chain. No committee.
+            principal + ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} yield. All on-chain. No committee.
           </p>
           <div className="grid gap-4 md:grid-cols-3 mb-4">
             <div className="border-4 border-primary bg-background p-3">
               <div className="text-xs font-black uppercase text-muted-foreground">Depositors</div>
               <div className="text-sm font-black mt-1">PRIZE Shares</div>
-              <div className="text-xs text-muted-foreground mt-1">USDC → Wishocratic fund yield. ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} floor if plan fails. Sybil-resistant via capital commitment.</div>
+              <div className="text-xs text-muted-foreground mt-1">USDC → Wishocratic fund yield. ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} floor if plan fails. Sybil-resistant via capital commitment.</div>
             </div>
             <div className="border-4 border-primary bg-background p-3">
               <div className="text-xs font-black uppercase text-muted-foreground">Recruiters</div>

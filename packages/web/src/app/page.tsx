@@ -246,8 +246,8 @@ export default function Home() {
         <Container>
           <ScrollReveal>
             <SectionHeader
-              title="Things You Can Do Right Now Instead of Arguing Online"
-              subtitle="On my planet, governance takes four minutes a week. Try one of these."
+              title="Select Mode"
+              subtitle="On my planet, governance takes four minutes a week. Pick a mode."
               size="lg"
             />
           </ScrollReveal>

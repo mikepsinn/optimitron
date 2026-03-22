@@ -6,23 +6,22 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
-  PRIZE_POOL_RESOLUTION_YEARS,
 } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
 /**
  * Interactive return calculator for the Prize/IAB mechanism.
  *
- * Fail scenario:  principal × PRIZE_POOL_15YR_MULTIPLE (Wishocratic fund, 15-year resolution)
+ * Fail scenario:  principal × PRIZE_POOL_HORIZON_MULTIPLE (Wishocratic fund, 15-year resolution)
  * Succeed scenario: vote-proportional revenue share + per-capita lifetime income gain
  * Break-even: probability shift per $1K (treaty floor)
  */
 
-const FAIL_MULTIPLIER = PRIZE_POOL_15YR_MULTIPLE.value;
+const FAIL_MULTIPLIER = PRIZE_POOL_HORIZON_MULTIPLE.value;
 const POOL_RETURN_DISPLAY = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
-const POOL_YEARS = PRIZE_POOL_RESOLUTION_YEARS.value;
+const POOL_YEARS = 15;
 
 const ANNUAL_RETURN_RATE = VICTORY_BOND_ANNUAL_RETURN_PCT.value; // base annual revenue share
 
@@ -136,7 +135,7 @@ export function IABCalculator() {
               Returned with growth if threshold not met.
             </p>
             <p className="font-bold text-muted-foreground pt-1">
-              Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_15YR_MULTIPLE)} your money.
+              Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money.
             </p>
           </div>
         </motion.div>

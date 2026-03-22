@@ -6,7 +6,7 @@ import {
   VOTER_SUFFERING_HOURS_PREVENTED,
   EFFICACY_LAG_YEARS,
   GLOBAL_DISEASE_DEATHS_DAILY,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
 } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
@@ -36,7 +36,7 @@ const TEMPLATES = [
     label: "The Math",
     color: "text-brutal-pink",
     text: (url: string) =>
-      `The break-even probability shift for an Incentive Alignment Bond is 0.0067%. ${DEATHS_DAILY} people die daily from preventable causes. A bond that funds pragmatic clinical trials needs a 0.0067% chance of working to be positive EV. Worst case: ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} from the Wishocratic fund. ${url}`,
+      `The break-even probability shift for an Incentive Alignment Bond is 0.0067%. ${DEATHS_DAILY} people die daily from preventable causes. A bond that funds pragmatic clinical trials needs a 0.0067% chance of working to be positive EV. Worst case: ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} from the Wishocratic fund. ${url}`,
   },
   {
     label: "Personal",

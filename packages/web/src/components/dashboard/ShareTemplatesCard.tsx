@@ -8,7 +8,7 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
   EFFICACY_LAG_YEARS,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
 } from "@/lib/parameters-calculations-citations"
 import { fmtParam } from "@/lib/format-parameter"
 
@@ -33,7 +33,7 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
     },
     {
       label: "The Math",
-      text: `The break-even probability for the Earth Optimization Prize is 0.0067%. Worst case: ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} from the Wishocratic fund. Best case: we end preventable disease. ${referralLink}`,
+      text: `The break-even probability for the Earth Optimization Prize is 0.0067%. Worst case: ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} from the Wishocratic fund. Best case: we end preventable disease. ${referralLink}`,
     },
     {
       label: "Personal",

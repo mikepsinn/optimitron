@@ -2,7 +2,7 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { StepReveal } from "@/components/animations/StepReveal";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { fullManualPaperLink } from "@/lib/routes";
-import { PRIZE_POOL_15YR_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
 const steps = [
@@ -10,7 +10,7 @@ const steps = [
     step: 1,
     title: "Prove Demand",
     description:
-      `Depositors fund the Earth Optimization Prize. Recruiters share referral links and get people to verify support for the 1% Treaty via World ID. Every verified voter earns the recruiter a VOTE point. Depositors get ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} their money back if the plan fails. Recruiters get prize share if it succeeds. Pluralistic ignorance collapses.`,
+      `Depositors fund the Earth Optimization Prize. Recruiters share referral links and get people to verify support for the 1% Treaty via World ID. Every verified voter earns the recruiter a VOTE point. Depositors get ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} their money back if the plan fails. Recruiters get prize share if it succeeds. Pluralistic ignorance collapses.`,
     why: "Depositors get a yield floor. Recruiters earn VOTE points. Self-interest does the coordination.",
   },
   {
@@ -25,7 +25,7 @@ const steps = [
     title: "Lobby for the Treaty",
     description:
       "Demand is proven. Now sell Incentive Alignment Bonds to raise ~$1B for the lobbying campaign. Treaty revenue splits 80/10/10 by smart contract: 80% funds pragmatic clinical trials, 10% returns to bondholders, 10% funds a SuperPAC for aligned politicians. Self-reinforcing loop: diseases cured → GDP rises → everyone lobbies for expansion.",
-    why: `Attractive return profile. Fail? ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} back. Succeed? Perpetual 10% of treaty revenue.`,
+    why: `Attractive return profile. Fail? ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back. Succeed? Perpetual 10% of treaty revenue.`,
   },
   {
     step: 4,

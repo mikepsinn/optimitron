@@ -24,6 +24,9 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <p className="font-mono text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-4">
+        Player Profile
+      </p>
       <ProfileHub initialData={initialData} />
     </div>
   );

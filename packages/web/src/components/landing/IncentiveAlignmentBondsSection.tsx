@@ -17,7 +17,7 @@ import {
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
 } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
@@ -50,7 +50,7 @@ export function IncentiveAlignmentBondsSection() {
                 Your Downside (Plan Fails)
               </div>
               <h3 className="text-2xl font-black text-foreground mb-2">
-                ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} Your Money Back
+                ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} Your Money Back
               </h3>
               <p className="text-sm text-foreground leading-relaxed font-bold mb-3">
                 Dominant assurance contract. If outcome thresholds aren&apos;t met,
@@ -111,7 +111,7 @@ export function IncentiveAlignmentBondsSection() {
                 className="h-full bg-brutal-yellow border-4 border-primary flex items-center justify-center px-3 w-1/4"
               >
                 <span className="text-xs font-black text-foreground whitespace-nowrap">
-                  Fails → ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)}
+                  Fails → ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)}
                 </span>
               </motion.div>
 

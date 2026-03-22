@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { PRIZE_POOL_15YR_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
 const variantStyles = {
@@ -70,7 +70,7 @@ export function PrizeCTA({ headline, body, variant = "pink" }: PrizeCTAProps) {
         <div className="flex flex-wrap gap-4 mb-5">
           <div className={`border-2 ${s.stat} px-3 py-1.5`}>
             <div className={`text-[10px] font-black uppercase ${s.statLabel}`}>Plan fails</div>
-            <div className="text-sm font-black">~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} back</div>
+            <div className="text-sm font-black">~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back</div>
           </div>
           <div className={`border-2 ${s.stat} px-3 py-1.5`}>
             <div className={`text-[10px] font-black uppercase ${s.statLabel}`}>Plan succeeds</div>

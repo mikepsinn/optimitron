@@ -8,7 +8,7 @@ import {
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   GLOBAL_DISEASE_DEATHS_DAILY,
-  PRIZE_POOL_15YR_MULTIPLE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   TREATY_HALE_GAIN_YEAR_15,
 } from "@/lib/parameters-calculations-citations";
@@ -27,6 +27,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
 
 export const metadata: Metadata = {
   title: "The Earth Optimization Game | Optimitron",
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
     "The only arcade game where you get your coins back 11x if you lose. Insert coin. Play the game. Redirect Earth's resources from what makes you deadest to what makes you healthiest.",
 };
 
-const poolMultiple = fmtParam(PRIZE_POOL_15YR_MULTIPLE);
+const poolMultiple = fmtParam(PRIZE_POOL_HORIZON_MULTIPLE);
 const poolReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
 const incomeGain = fmtParam({...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"});
 const haleGain = fmtParam(TREATY_HALE_GAIN_YEAR_15);
@@ -422,9 +423,8 @@ export default function PrizePage() {
             <div className="font-mono text-xs font-black uppercase text-muted-foreground">
               Time
             </div>
-            <div className="font-mono mt-2 text-2xl font-black text-foreground">15 YRS</div>
-            <div className="text-[10px] font-bold text-muted-foreground">
-              until game over
+            <div className="font-mono mt-2 text-2xl font-black text-brutal-red">
+              <CollapseCountdownTimer size="sm" showLabel={false} />
             </div>
           </div>
         </div>

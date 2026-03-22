@@ -2,14 +2,14 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { earthOptimizationPrizePaperLink } from "@/lib/routes";
-import { PRIZE_POOL_15YR_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
 const coreCards = [
   {
     title: "Dominant Assurance",
     description:
-      `Deposit USDC into the Wishocratic fund. Plan fails after 15 years? ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} your money back. Plan succeeds? Everyone benefits from higher GDP. You literally cannot lose money. The worst case is getting richer.`,
+      `Deposit USDC into the Wishocratic fund. Plan fails after 15 years? ~${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money back. Plan succeeds? Everyone benefits from higher GDP. You literally cannot lose money. The worst case is getting richer.`,
     color: "bg-brutal-pink",
     textColor: "text-brutal-pink-foreground",
   },
