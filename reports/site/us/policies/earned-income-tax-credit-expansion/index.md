@@ -7,12 +7,12 @@ layout: layout.njk
 
 # Earned Income Tax Credit Expansion
 
-> Expand EITC for childless workers and increase phase-out thresholds.
+> Expand EITC for childless workers. Directly increases after-tax income for low-income workers.
 
 | Metric | Value |
 |--------|-------|
-| Income impact | **+$14,885/yr** (25% of median) |
-| Health impact | **+10 months** HALE |
+| Income impact | **+$1,786/yr** (3% of median) |
+| Health impact | **+7 months** HALE |
 | Evidence grade | **B** |
 | Causal confidence | 71% |
 | Action | implement |
@@ -24,7 +24,7 @@ layout: layout.njk
 
 ## Evidence
 
-EITC lifts ~6M people out of poverty annually. Research shows improved infant health, better school performance, and increased labor force participation. Bipartisan support historically.
+EITC lifts ~6M people out of poverty annually. Research shows improved infant health, better school performance, and increased labor force participation. Effect on median income is modest (~1-3%) since it targets below-median workers.
 
 ## Bradford Hill Scores
 

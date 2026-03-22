@@ -5,7 +5,7 @@
       "name": "Universal Pre-K (Ages 3-4)",
       "type": "budget_allocation",
       "category": "education",
-      "description": "Federally funded universal pre-K based on Perry Preschool and European models.",
+      "description": "Federally funded universal pre-K. Perry Preschool RCT shows $7-12 ROI per dollar over 40 years.",
       "recommendationType": "reallocate",
       "evidenceGrade": "A",
       "causalConfidenceScore": 0.884,
@@ -24,7 +24,7 @@
         "analogy": 0.85,
         "specificity": 0.358
       },
-      "rationale": "Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. France, Denmark, Finland all have universal pre-K with better educational outcomes.",
+      "rationale": "Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. Participants had 15% higher income, 20% less likely to be arrested, healthier outcomes. France, Denmark, Finland all have universal pre-K with better PISA scores.",
       "currentStatus": "Only 34% of US 3-year-olds enrolled; varies wildly by state",
       "recommendedTarget": "Federal funding for universal enrollment by age 3",
       "blockingFactors": [
@@ -35,7 +35,7 @@
       "name": "Pragmatic Clinical Trial Funding Reform",
       "type": "regulation",
       "category": "health_research",
-      "description": "Redirect NIH funding from basic research overhead to pragmatic real-world clinical trials with mandatory data sharing.",
+      "description": "Redirect NIH funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost.",
       "recommendationType": "implement",
       "evidenceGrade": "A",
       "causalConfidenceScore": 0.801,
@@ -54,7 +54,7 @@
         "analogy": 0.85,
         "specificity": 0.419
       },
-      "rationale": "NIH spends $48B/yr but 70%+ goes to indirect costs and basic research with low translation rates. UK NIHR model: pragmatic trials embedded in NHS produce actionable evidence at 1/10th the cost. PCORIs pragmatic trials show 3x faster clinical adoption.",
+      "rationale": "NIH spends $48B/yr but 70%+ goes to indirect costs. 85% of findings fail to replicate. UK NIHR model: pragmatic trials embedded in NHS produce actionable evidence at 1/10th the cost. PCORI pragmatic trials show 3x faster clinical adoption.",
       "currentStatus": "NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate",
       "recommendedTarget": "Mandate 30%+ of NIH budget for pragmatic trials with open data requirements",
       "blockingFactors": [
@@ -63,62 +63,62 @@
       ]
     },
     {
-      "name": "National Paid Family Leave (12 weeks)",
+      "name": "Singapore-Style Healthcare (Universal + Competition)",
       "type": "regulation",
-      "category": "labor",
-      "description": "12 weeks paid family leave at 66% wage replacement. US is the only OECD country without it.",
+      "category": "health",
+      "description": "Mandatory health savings (Medisave) + catastrophic insurance (MediShield) + price transparency + hospital competition. South Korea achieves LE 83.6 at $3,588/cap; US gets LE 76.9 at $10,333/cap.",
       "recommendationType": "implement",
       "evidenceGrade": "B",
-      "causalConfidenceScore": 0.715,
-      "policyImpactScore": 0.582,
-      "welfareScore": 38,
-      "incomeEffect": 0.05,
-      "healthEffect": 0.15,
+      "causalConfidenceScore": 0.73,
+      "policyImpactScore": 0.597,
+      "welfareScore": 40,
+      "incomeEffect": 0.29,
+      "healthEffect": 0.4,
       "bradfordHillScores": {
-        "strength": 0.865,
-        "consistency": 0.97,
+        "strength": 0.993,
+        "consistency": 0.939,
         "temporality": 1,
         "gradient": 0.662,
         "experiment": 0.25,
         "plausibility": 1,
-        "coherence": 0.999,
+        "coherence": 0.996,
         "analogy": 0.85,
-        "specificity": 0.358
+        "specificity": 0.383
       },
-      "rationale": "Every other OECD country has paid leave. California's program: 18% reduction in nursing home use by new parents, higher breastfeeding rates, no negative employment effects.",
-      "currentStatus": "US is only OECD country with 0 weeks mandated paid family leave",
-      "recommendedTarget": "12 weeks at 66% wage replacement, funded by 0.4% payroll tax",
+      "rationale": "OECD cheapest-high-performer analysis: South Korea achieves LE 83.6 at $3,588/cap. Japan achieves LE 84.5 at $4,095/cap. US achieves LE 76.9 at $10,333/cap (2.9x overspend). Singapore model: mandatory savings + catastrophic coverage + market competition achieves LE 83.9 at $4,300/cap. Savings: $2.3T/yr.",
+      "currentStatus": "US spends $10,333/cap, ranks 28/28 among panel countries. LE 76.9.",
+      "recommendedTarget": "South Korea model ($3,588/cap floor). $2.3T/yr savings → Universal Dividend.",
       "blockingFactors": [
         "political_opposition",
-        "budget_constraint"
+        "industry_resistance"
       ]
     },
     {
-      "name": "Military Spending Reduction to OECD Floor",
+      "name": "Military Spending Reduction to High-Performer Floor",
       "type": "budget_allocation",
       "category": "defense",
-      "description": "Reduce military spending from $2,052/cap to OECD efficient floor of $279/cap (7.4x overspend). OECD data: US ranks 23/23 in military spending efficiency. Ireland achieves life expectancy 82 at $226/cap. Redirect $601B/yr savings to Universal Dividend.",
+      "description": "Reduce military spending to the level of the cheapest country with top-quartile life expectancy. Switzerland achieves LE 83.4 at $389/cap; US gets LE 76.9 at $2,052/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
-      "causalConfidenceScore": 0.718,
-      "policyImpactScore": 0.582,
+      "causalConfidenceScore": 0.726,
+      "policyImpactScore": 0.587,
       "welfareScore": 38,
-      "incomeEffect": 0.076,
+      "incomeEffect": 0.071,
       "healthEffect": 0.05,
       "bradfordHillScores": {
         "strength": 0.931,
-        "consistency": 0.9,
+        "consistency": 0.939,
         "temporality": 1,
         "gradient": 0.662,
         "experiment": 0.25,
         "plausibility": 1,
-        "coherence": 0.99,
+        "coherence": 0.996,
         "analogy": 0.85,
         "specificity": 0.477
       },
-      "rationale": "OECD efficiency analysis: US ranks dead last (23/23) in military spending efficiency. Ireland spends $226/cap with life expectancy 82; Spain $331/cap with 82.87; Austria $339/cap with 81.3. US spends $2,052/cap with life expectancy 76.93. Military spending has R²=0.006 correlation with life expectancy — zero relationship. $601B/yr savings → $4,519/household/yr as Universal Dividend.",
-      "currentStatus": "US spends $886B/yr (7.4x OECD efficient floor), ranks 23/23 in efficiency",
-      "recommendedTarget": "Phased reduction to $279/cap ($95B total). $601B/yr savings → Universal Dividend Pool",
+      "rationale": "OECD cheapest-high-performer analysis: Switzerland achieves LE 83.4 at $389/cap military spending. Japan achieves LE 84.5 at $400/cap. US achieves LE 76.9 at $2,052/cap (5.3x overspend). Military spending has R²=0.012 correlation with life expectancy — essentially zero. $564B/yr savings → $4,241/household/yr as Universal Dividend.",
+      "currentStatus": "US spends $2,052/cap, ranks 27/28. 5.3x overspend vs cheapest high performer.",
+      "recommendedTarget": "Phased reduction to $389/cap (Switzerland floor). $564B/yr savings → Universal Dividend.",
       "blockingFactors": [
         "political_opposition",
         "institutional_resistance"
@@ -128,14 +128,14 @@
       "name": "Earned Income Tax Credit Expansion",
       "type": "tax_policy",
       "category": "income_security",
-      "description": "Expand EITC for childless workers and increase phase-out thresholds.",
+      "description": "Expand EITC for childless workers. Directly increases after-tax income for low-income workers.",
       "recommendationType": "implement",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.713,
-      "policyImpactScore": 0.58,
+      "policyImpactScore": 0.579,
       "welfareScore": 38,
-      "incomeEffect": 0.25,
-      "healthEffect": 0.08,
+      "incomeEffect": 0.03,
+      "healthEffect": 0.06,
       "bradfordHillScores": {
         "strength": 0.865,
         "consistency": 0.95,
@@ -147,7 +147,7 @@
         "analogy": 0.85,
         "specificity": 0.383
       },
-      "rationale": "EITC lifts ~6M people out of poverty annually. Research shows improved infant health, better school performance, and increased labor force participation. Bipartisan support historically.",
+      "rationale": "EITC lifts ~6M people out of poverty annually. Research shows improved infant health, better school performance, and increased labor force participation. Effect on median income is modest (~1-3%) since it targets below-median workers.",
       "currentStatus": "$63B annual cost; benefits phase out at $59K for families",
       "recommendedTarget": "Double benefit for childless workers ($1,500→$3,000); raise income cap",
       "blockingFactors": [
@@ -158,7 +158,7 @@
       "name": "Shift Drug Policy from Criminal to Health Approach",
       "type": "regulation",
       "category": "health",
-      "description": "Decriminalize personal drug use, fund treatment and harm reduction. Based on Portugal model (2001).",
+      "description": "Decriminalize personal drug use, redirect enforcement budget to treatment. Based on Portugal (2001).",
       "recommendationType": "implement",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.695,
@@ -177,9 +177,9 @@
         "analogy": 0.85,
         "specificity": 0.419
       },
-      "rationale": "Portugal decriminalized in 2001: drug deaths dropped 80%, HIV among users dropped 90%, treatment uptake tripled. Czech Republic, Switzerland, and Netherlands show similar results.",
-      "currentStatus": "US spends $40B/yr on drug enforcement; 1.5M arrests annually",
-      "recommendedTarget": "Decriminalize personal use, redirect enforcement budget to treatment",
+      "rationale": "Portugal decriminalized in 2001: drug deaths dropped 80%, HIV among users dropped 90%, treatment uptake tripled. US spends $40B/yr on drug enforcement with zero measurable reduction in drug deaths (r=0.026). Czech Republic, Switzerland, Netherlands show similar results.",
+      "currentStatus": "US spends $40B/yr on enforcement; 1.5M arrests/yr; overdose deaths at record highs",
+      "recommendedTarget": "Decriminalize personal use, redirect $40B/yr enforcement budget to treatment",
       "blockingFactors": [
         "political_opposition"
       ]
@@ -188,14 +188,14 @@
       "name": "Federal Incentives for Zoning Reform",
       "type": "regulation",
       "category": "housing",
-      "description": "Federal grants conditioned on local upzoning, elimination of single-family-only zoning.",
+      "description": "Federal grants conditioned on local upzoning. Tokyo, Minneapolis, Oregon show reduced housing cost growth.",
       "recommendationType": "implement",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.683,
-      "policyImpactScore": 0.562,
+      "policyImpactScore": 0.561,
       "welfareScore": 38,
-      "incomeEffect": 0.15,
-      "healthEffect": 0.05,
+      "incomeEffect": 0.05,
+      "healthEffect": 0.03,
       "bradfordHillScores": {
         "strength": 0.903,
         "consistency": 0.777,
@@ -207,7 +207,7 @@
         "analogy": 0.85,
         "specificity": 0.419
       },
-      "rationale": "Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Restrictive zoning costs the US economy $1.6T/yr in lost GDP.",
+      "rationale": "Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning, though median income effect is smaller.",
       "currentStatus": "75% of US residential land zoned single-family only",
       "recommendedTarget": "Condition federal transportation/HUD grants on local zoning reform",
       "blockingFactors": [
@@ -215,47 +215,17 @@
       ]
     },
     {
-      "name": "Occupational Licensing Reform",
-      "type": "regulation",
-      "category": "economy",
-      "description": "Reduce unnecessary licensing requirements that affect 25% of US workers.",
-      "recommendationType": "implement",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.678,
-      "policyImpactScore": 0.557,
-      "welfareScore": 38,
-      "incomeEffect": 0.08,
-      "healthEffect": 0.01,
-      "bradfordHillScores": {
-        "strength": 0.736,
-        "consistency": 0.865,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.982,
-        "analogy": 0.85,
-        "specificity": 0.419
-      },
-      "rationale": "Licensed occupations grew from 5% to 25% of workforce since 1950s. States with less licensing have no difference in service quality but 10-15% lower consumer prices. Interior designers need a license in some states; paramedics don't in others.",
-      "currentStatus": "25% of US workers need government license; varies wildly by state",
-      "recommendedTarget": "Federal mutual recognition framework; sunset reviews for all licenses",
-      "blockingFactors": [
-        "industry_resistance"
-      ]
-    },
-    {
       "name": "Permanent Expanded Child Tax Credit",
       "type": "tax_policy",
       "category": "income_security",
-      "description": "Make the 2021 expanded CTC ($3,600/child) permanent and fully refundable.",
+      "description": "Make the 2021 expanded CTC permanent and fully refundable. Cut child poverty 46% in 6 months.",
       "recommendationType": "implement",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.666,
-      "policyImpactScore": 0.553,
+      "policyImpactScore": 0.552,
       "welfareScore": 38,
-      "incomeEffect": 0.2,
-      "healthEffect": 0.12,
+      "incomeEffect": 0.05,
+      "healthEffect": 0.1,
       "bradfordHillScores": {
         "strength": 0.931,
         "consistency": 0.699,
@@ -267,107 +237,15 @@
         "analogy": 0.85,
         "specificity": 0.383
       },
-      "rationale": "2021 expanded CTC cut child poverty by 46% in 6 months — largest single-year reduction ever. Canada's similar program reduced child poverty by 30%. Cost: ~$100B/yr.",
+      "rationale": "2021 expanded CTC cut child poverty by 46% in 6 months — largest single-year reduction ever. Canada's similar program reduced child poverty by 30%. Improved childhood nutrition and health outcomes. Cost: ~$100B/yr.",
       "currentStatus": "Reverted to $2,000/child, not fully refundable (excludes poorest families)",
       "recommendedTarget": "$3,600/child under 6, $3,000 ages 6-17, fully refundable",
       "blockingFactors": [
         "budget_constraint"
       ]
-    },
-    {
-      "name": "Carbon Fee-and-Dividend",
-      "type": "tax_policy",
-      "category": "environment",
-      "description": "Tax carbon emissions, return 100% of revenue as equal citizen dividend. Based on British Columbia model.",
-      "recommendationType": "implement",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.662,
-      "policyImpactScore": 0.55,
-      "welfareScore": 38,
-      "incomeEffect": -0.02,
-      "healthEffect": 0.15,
-      "bradfordHillScores": {
-        "strength": 0.903,
-        "consistency": 0.699,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.909,
-        "analogy": 0.85,
-        "specificity": 0.383
-      },
-      "rationale": "British Columbia: emissions down 5-15% vs control, GDP growth maintained. Switzerland carbon tax reduced emissions 20%. Dividend protects low-income households.",
-      "currentStatus": "No federal carbon price; 12 states have cap-and-trade or carbon tax",
-      "recommendedTarget": "$50/ton starting price, rising $10/yr, 100% returned as dividend",
-      "blockingFactors": [
-        "political_opposition",
-        "industry_resistance"
-      ]
-    },
-    {
-      "name": "Singapore-Style Healthcare (Universal + Competition)",
-      "type": "regulation",
-      "category": "health",
-      "description": "Mandatory health savings + catastrophic insurance + price transparency. Singapore spends 4% GDP with better outcomes than US at 17%. OECD data: US ranks 23/23 in health spending efficiency at $10,333/cap vs floor of $3,142/cap (3.3x overspend). Savings: $2.4T/yr.",
-      "recommendationType": "implement",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.636,
-      "policyImpactScore": 0.541,
-      "welfareScore": 40,
-      "incomeEffect": 0.31,
-      "healthEffect": 0.4,
-      "bradfordHillScores": {
-        "strength": 0.993,
-        "consistency": 0.551,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.798,
-        "analogy": 0.85,
-        "specificity": 0.383
-      },
-      "rationale": "Singapore: life expectancy 84 (US: 77), infant mortality 1.7 (US: 5.4), healthcare spending 4% GDP (US: 17%). OECD efficiency analysis: US ranks dead last (23/23) at $10,333/cap. Portugal achieves life expectancy 81.4 at $2,924/cap. Floor spending: $3,142/cap. Potential savings: $2.4T/yr → $18,329/household/yr as dividend.",
-      "currentStatus": "US spends $4.3T/yr (17% GDP), ranks 23/23 in OECD health efficiency",
-      "recommendedTarget": "Singapore 3M model: mandatory HSAs + catastrophic insurance + price transparency. Target: $3,142/cap (OECD floor)",
-      "blockingFactors": [
-        "political_opposition",
-        "industry_resistance"
-      ]
-    },
-    {
-      "name": "NEPA & Permitting Reform",
-      "type": "regulation",
-      "category": "infrastructure",
-      "description": "Streamline environmental review timelines from 4.5 years to 2 years for infrastructure projects.",
-      "recommendationType": "implement",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.584,
-      "policyImpactScore": 0.501,
-      "welfareScore": 38,
-      "incomeEffect": 0.1,
-      "healthEffect": 0.02,
-      "bradfordHillScores": {
-        "strength": 0.811,
-        "consistency": 0.632,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.865,
-        "analogy": 0.85,
-        "specificity": 0.419
-      },
-      "rationale": "Average NEPA review takes 4.5 years. Canada and EU complete equivalent reviews in 2 years. Delays cost $3.7T in deferred infrastructure investment.",
-      "currentStatus": "Average environmental review: 4.5 years; 40,000+ pages of regulation",
-      "recommendedTarget": "2-year maximum review with categorical exclusions for clean energy",
-      "blockingFactors": [
-        "political_opposition"
-      ]
     }
   ],
-  "generatedAt": "2026-03-22T21:36:22.996Z",
+  "generatedAt": "2026-03-22T22:02:36.504Z",
   "generatedBy": "@optimitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 }

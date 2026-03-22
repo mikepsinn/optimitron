@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Universal Pre-K (Ages 3-4)
 
-> Federally funded universal pre-K based on Perry Preschool and European models.
+> Federally funded universal pre-K. Perry Preschool RCT shows $7-12 ROI per dollar over 40 years.
 
 | Metric | Value |
 |--------|-------|
@@ -24,7 +24,7 @@ layout: layout.njk
 
 ## Evidence
 
-Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. France, Denmark, Finland all have universal pre-K with better educational outcomes.
+Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. Participants had 15% higher income, 20% less likely to be arrested, healthier outcomes. France, Denmark, Finland all have universal pre-K with better PISA scores.
 
 ## Bradford Hill Scores
 

@@ -7,12 +7,12 @@ layout: layout.njk
 
 # Federal Incentives for Zoning Reform
 
-> Federal grants conditioned on local upzoning, elimination of single-family-only zoning.
+> Federal grants conditioned on local upzoning. Tokyo, Minneapolis, Oregon show reduced housing cost growth.
 
 | Metric | Value |
 |--------|-------|
-| Income impact | **+$8,931/yr** (15% of median) |
-| Health impact | **+6 months** HALE |
+| Income impact | **+$2,977/yr** (5% of median) |
+| Health impact | **+4 months** HALE |
 | Evidence grade | **B** |
 | Causal confidence | 68% |
 | Action | implement |
@@ -24,7 +24,7 @@ layout: layout.njk
 
 ## Evidence
 
-Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Restrictive zoning costs the US economy $1.6T/yr in lost GDP.
+Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning, though median income effect is smaller.
 
 ## Bradford Hill Scores
 
