@@ -27,12 +27,12 @@ export function LandingPrizeOffer() {
       <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <ScrollReveal className="mb-16 text-center">
           <h2 className="text-3xl font-black uppercase tracking-tight text-brutal-pink-foreground sm:text-4xl md:text-5xl">
-            Win Either Way
+            The Earth Optimization Game
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-background">
-            The Earth Optimization Prize is a dominant assurance contract. There
-            is no scenario where you &ldquo;just lose your money.&rdquo; The
-            greedy move and the good move are identical.
+            The objective: redirect Earth&apos;s resources from the things making
+            you poorest and deadest to the things that make you healthiest and
+            wealthiest. The only way to lose is to not play.
           </p>
         </ScrollReveal>
 
@@ -74,7 +74,7 @@ export function LandingPrizeOffer() {
                 + Per Capita
               </div>
               <p className="mt-3 text-sm font-bold text-foreground">
-                Everyone gets richer. VOTE token holders claim proportional
+                Everyone gets richer. VOTE point holders claim proportional
                 shares of the prize pool. Recruiters who brought in verified
                 voters get the biggest share. Everyone else benefits from higher
                 GDP up to{" "}
@@ -117,7 +117,7 @@ export function LandingPrizeOffer() {
                 </div>
                 <p className="text-sm font-bold text-foreground">
                   Share referral link → Recruit verified voters (World ID) →
-                  Earn 1 VOTE token per voter → Prize share if plan succeeds.
+                  Earn 1 VOTE point per voter → Prize share if plan succeeds.
                   No deposit required.
                 </p>
               </div>

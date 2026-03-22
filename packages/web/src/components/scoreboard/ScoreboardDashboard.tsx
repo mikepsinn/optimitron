@@ -114,7 +114,7 @@ export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
       <section className="mt-10">
         <PrizeCTA
           headline="The gap between citizens and politicians is the problem. The referendum is the fix."
-          body="The misalignment above exists because nobody has proven demand for change. Deposit USDC, recruit verified voters for the 1% Treaty referendum, earn VOTE tokens for every person you bring in."
+          body="The misalignment above exists because nobody has proven demand for change. Deposit USDC, recruit verified voters for the 1% Treaty referendum, earn VOTE points for every person you bring in."
           variant="pink"
         />
       </section>

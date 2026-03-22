@@ -261,7 +261,7 @@ export const WelcomeImpactEmail = ({
                 lineHeight: "1.6",
               }}
             >
-              Each verified voter you recruit earns you a VOTE token and multiplies your impact.
+              Each verified voter you recruit earns you a VOTE point and multiplies your impact.
             </Text>
             <Text
               style={{

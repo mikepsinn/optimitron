@@ -437,7 +437,7 @@ export function VoterPrizeTreasuryDeposit() {
               </div>
               <div className="border-4 border-primary bg-brutal-yellow p-2">
                 <div className="text-[10px] font-black uppercase text-muted-foreground">
-                  VOTE Tokens
+                  VOTE Points
                 </div>
                 <div className="text-sm font-black">
                   {voteBalance !== undefined
@@ -550,14 +550,14 @@ export function VoterPrizeTreasuryDeposit() {
         </div>
       </div>
 
-      {/* Redeem VOTE Tokens (success path) */}
+      {/* Redeem VOTE Points (success path) */}
       {isDeployed && isConnected && canRedeemVotes && (
         <div className="border-4 border-primary bg-brutal-cyan p-6">
           <h3 className="font-black uppercase text-foreground mb-3">
-            Redeem Your VOTE Tokens
+            Redeem Your VOTE Points
           </h3>
           <p className="text-xs font-bold text-muted-foreground mb-4">
-            Outcome thresholds have been met. Your VOTE tokens from verified
+            Outcome thresholds have been met. Your VOTE points from verified
             referendum votes entitle you to a proportional share of the prize
             treasury.
           </p>

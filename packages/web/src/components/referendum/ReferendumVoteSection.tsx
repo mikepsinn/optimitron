@@ -124,14 +124,14 @@ export function ReferendumVoteSection({
           </p>
         </div>
 
-        {/* VOTE token earning info */}
+        {/* VOTE point earning info */}
         {mintQueued ? (
           <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-lg font-black uppercase text-foreground mb-2">
-              1 VOTE Token Queued
+              1 VOTE Point Queued
             </h3>
             <p className="text-sm font-bold text-foreground">
-              Your verified vote earned 1 VOTE token. It will be minted
+              Your verified vote earned 1 VOTE point. It will be minted
               on-chain in the next batch.{" "}
               <Link
                 href="/contribute"
@@ -144,11 +144,11 @@ export function ReferendumVoteSection({
         ) : (
           <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="text-lg font-black uppercase text-foreground mb-2">
-              Earn VOTE Tokens
+              Earn VOTE Points
             </h3>
             <p className="text-sm font-bold text-foreground">
-              Verify with World ID below{address ? "" : " and connect a wallet"} to earn 1 VOTE token for this
-              vote. VOTE tokens are redeemable for a share of the{" "}
+              Verify with World ID below{address ? "" : " and connect a wallet"} to earn 1 VOTE point for this
+              vote. VOTE points are redeemable for a share of the{" "}
               <Link
                 href="/contribute"
                 className="font-black text-brutal-pink underline hover:text-foreground"

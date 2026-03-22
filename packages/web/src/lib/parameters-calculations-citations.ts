@@ -5133,7 +5133,7 @@ export const VOTE_2_CLAIMS_PAYOUT: Parameter = {
 export const VOTE_TOKEN_POTENTIAL_VALUE: Parameter = {
   value: 193619.7372131118,
   unit: "USD",
-  displayName: "VOTE Token Potential Value",
+  displayName: "VOTE Point Potential Value",
   description: "Potential value of a single VOTE claim if the PRIZE pool reaches its canonical potential max size. Denominator is the modeled global coordination target, not the lower forecast participation path.",
   sourceType: "calculated",
   confidence: "high",

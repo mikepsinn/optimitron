@@ -296,7 +296,7 @@ export default function TransparencyPage() {
             The Prize is a dominant assurance contract (VoterPrizeTreasury).
             Depositors fund the pool with USDC, which earns Wishocratic fund yield.
             Recruiters share referral links — each verified voter (World ID)
-            earns the recruiter 1 VOTE token. When health and income metrics
+            earns the recruiter 1 VOTE point. When health and income metrics
             cross thresholds, VOTE holders claim proportional prize share.
             If thresholds aren&apos;t met after 15 years, depositors reclaim
             principal + ~{fmtParam(PRIZE_POOL_15YR_MULTIPLE)} yield. All on-chain. No committee.
@@ -309,7 +309,7 @@ export default function TransparencyPage() {
             </div>
             <div className="border-4 border-primary bg-background p-3">
               <div className="text-xs font-black uppercase text-muted-foreground">Recruiters</div>
-              <div className="text-sm font-black mt-1">VOTE Tokens</div>
+              <div className="text-sm font-black mt-1">VOTE Points</div>
               <div className="text-xs text-muted-foreground mt-1">1 VOTE per verified voter recruited via referral link. World ID prevents duplicates.</div>
             </div>
             <div className="border-4 border-primary bg-background p-3">

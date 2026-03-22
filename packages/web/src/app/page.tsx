@@ -25,6 +25,7 @@ import {
   trackLink,
   wishocracyLink,
   misconceptionsLink,
+  scoreboardLink,
 } from "@/lib/routes";
 import misconceptionData from "../../public/data/misconceptions.json";
 import budgetData from "../data/us-budget-analysis.json";
@@ -49,12 +50,21 @@ export const metadata: Metadata = {
 const productWorkflows = [
   {
     item: prizeLink,
-    label: "Prize",
-    title: "Fund the referendum",
+    label: "Game",
+    title: "Play the Earth Optimization Game",
     description:
-      "Deposit USDC. Get PRIZE shares. Earn yield. Recruit verified voters. Win either way. The most important thing on this site.",
-    cta: "Deposit Now",
+      "Deposit USDC. Recruit verified voters. Earn VOTE points. The only way to lose is to not play.",
+    cta: "Join the Game",
     color: "bg-brutal-pink",
+  },
+  {
+    item: scoreboardLink,
+    label: "Scoreboard",
+    title: "Humanity's Scoreboard",
+    description:
+      "Live game metrics: health, income, pool size, verified participants. The coalition size, visible to everyone.",
+    cta: "View Scoreboard",
+    color: "bg-brutal-cyan",
   },
   {
     item: wishocracyLink,

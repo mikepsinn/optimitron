@@ -23,7 +23,7 @@ const coreCards = [
   {
     title: "Referral Recruitment",
     description:
-      "Share your referral link. Every person who verifies support for the 1% Treaty via World ID earns you 1 VOTE token. Metrics hit targets after 15 years? VOTE holders split the pool pro-rata. No deposit required to recruit.",
+      "Share your referral link. Every person who verifies support for the 1% Treaty via World ID earns you 1 VOTE point. Metrics hit targets after 15 years? VOTE holders split the pool pro-rata. No deposit required to recruit.",
     color: "bg-brutal-cyan",
     textColor: "text-foreground",
   },

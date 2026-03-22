@@ -53,7 +53,7 @@ export function VoteTokenBalanceCard() {
         const json = (await res.json()) as BalanceResponse;
         setData(json);
       } catch {
-        setError("Failed to load VOTE token balance");
+        setError("Failed to load VOTE point balance");
       } finally {
         setLoading(false);
       }
@@ -80,7 +80,7 @@ export function VoteTokenBalanceCard() {
         </h3>
         <p className="text-sm font-bold text-foreground">
           Vote on referendums. Prove you&apos;re human via World ID. Each
-          verified vote = 1 VOTE token. Simple enough even for your species.
+          verified vote = 1 VOTE point. Simple enough even for your species.
         </p>
         <Link
           href="/auth/signin?callbackUrl=/contribute"
@@ -107,7 +107,7 @@ export function VoteTokenBalanceCard() {
       {/* Balance Summary */}
       <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="font-black uppercase text-foreground mb-4">
-          Your VOTE Tokens
+          Your VOTE Points
         </h3>
         <div className="grid gap-4 grid-cols-2">
           <div className="border-4 border-primary bg-brutal-cyan p-4">
@@ -131,7 +131,7 @@ export function VoteTokenBalanceCard() {
         {data.totalVotes === 0 && (
           <div className="mt-4 border-4 border-primary bg-brutal-yellow p-3">
             <p className="text-xs font-bold text-muted-foreground">
-              You don&apos;t have any VOTE tokens yet. Vote on a{" "}
+              You don&apos;t have any VOTE points yet. Vote on a{" "}
               <Link
                 href="/referendum"
                 className="font-black text-brutal-pink underline hover:text-foreground"

@@ -24,7 +24,9 @@ export const ROUTES = {
   iab: "/iab",
   contribute: "/contribute",
   referendum: "/referendum",
+  politicians: "/politicians",
   scoreboard: "/scoreboard",
+  tools: "/tools",
   dashboard: "/dashboard",
   signIn: "/auth/signin",
 } as const;
@@ -206,11 +208,27 @@ export const transparencyLink: NavItem = {
   description: "Verifiable attestations, IPFS storage, and the full governance pipeline",
 };
 
+export const toolsLink: NavItem = {
+  href: ROUTES.tools,
+  label: "Tools",
+  emoji: "🧰",
+  description: "Every tool available to help win the Earth Optimization Game",
+  matchPrefixes: [ROUTES.tools],
+};
+
+export const politicianLeaderboardLink: NavItem = {
+  href: ROUTES.politicians,
+  label: "Politician Leaderboard",
+  emoji: "🏛️",
+  description: "How your representatives actually vote vs what citizens want",
+  matchPrefixes: [ROUTES.politicians],
+};
+
 export const scoreboardLink: NavItem = {
   href: ROUTES.scoreboard,
   label: "Scoreboard",
   emoji: "📊",
-  description: "Public politician alignment scores — how your representatives vote vs what citizens want",
+  description: "Humanity's Scoreboard — live game metrics: health, income, pool size, participants",
   matchPrefixes: [ROUTES.scoreboard],
 };
 
@@ -263,8 +281,8 @@ export interface NavSection {
 export const navSections: NavSection[] = [
   { id: "participate", label: "Participate", items: [wishocracyLink, alignmentLink, referendumLink] },
   { id: "explore", label: "Explore", items: [studiesLink, compareLink, policiesLink, budgetLink, misconceptionsLink, discoveriesLink] },
-  { id: "fund", label: "Fund", items: [prizeLink, iabLink, moneyLink] },
-  { id: "system", label: "System", items: [transparencyLink, federalReserveLink, departmentOfWarLink, aboutLink] },
+  { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink, moneyLink] },
+  { id: "system", label: "System", items: [politicianLeaderboardLink, transparencyLink, federalReserveLink, departmentOfWarLink, aboutLink] },
 ];
 
 /** Footer-only internal links */

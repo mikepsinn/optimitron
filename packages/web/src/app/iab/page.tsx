@@ -246,7 +246,7 @@ export default function IABPage() {
               </li>
               <li className="flex gap-2">
                 <span className="text-brutal-cyan font-black shrink-0">2.</span>
-                <span>Recruit verified voters → earn VOTE tokens</span>
+                <span>Recruit verified voters → earn VOTE points</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-brutal-cyan font-black shrink-0">3.</span>

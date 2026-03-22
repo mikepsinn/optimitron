@@ -15,6 +15,7 @@ import {
   earthOptimizationPrizePaperLink,
   contractsSourceLink,
   wishocracyLink,
+  scoreboardLink,
 } from "@/lib/routes";
 import { VoterPrizeTreasuryDeposit } from "@/components/prize/VoterPrizeTreasuryDeposit";
 import { CitizenDashboardWrapper } from "@/components/prize/CitizenDashboardWrapper";
@@ -26,9 +27,9 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
-  title: "Earth Optimization Prize | Optimitron",
+  title: "The Earth Optimization Game | Optimitron",
   description:
-    "Two ways in. Depositors: USDC → Wishocratic fund yield → ~11x return if plan fails. Recruiters: share referral links → World ID verified voters → VOTE tokens → prize share if plan succeeds.",
+    "Redirect Earth's resources from the things making you poorest and deadest to the things that make you healthiest and wealthiest. The only way to lose is to not play.",
 };
 
 const dysfunctionTaxFormatted = fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);
@@ -50,7 +51,7 @@ const mechanismSteps = [
     label: "Depositors Fund the Pool",
     description:
       `Deposit USDC into the VoterPrizeTreasury smart contract. Your principal goes into the Wishocratic fund (${poolReturn} annually). You get PRIZE shares — your claim on the pool. If the plan fails after 15 years, you claim principal + ~${poolMultiple} growth. Zero downside.`,
-    detail: `Depositors also get a referral link. If they recruit voters, they earn VOTE tokens too — upside in BOTH outcomes. But depositing alone guarantees the ~${poolMultiple} floor.`,
+    detail: `Depositors also get a referral link. If they recruit voters, they earn VOTE points too — upside in BOTH outcomes. But depositing alone guarantees the ~${poolMultiple} floor.`,
     color: "bg-brutal-pink",
     textColor: "text-brutal-pink-foreground",
     subTextColor: "text-background",
@@ -60,7 +61,7 @@ const mechanismSteps = [
     number: 2,
     label: "Recruiters Prove Demand",
     description:
-      "Anyone with a referral link can recruit. Share the link. Every person who verifies their support for the 1% Treaty through World ID is a verified vote attributed to you. You earn 1 VOTE token per verified voter. No deposit required.",
+      "Anyone with a referral link can recruit. Share the link. Every person who verifies their support for the 1% Treaty through World ID is a verified vote attributed to you. You earn 1 VOTE point per verified voter. No deposit required.",
     detail: "World ID prevents duplicate votes. Each verified preference is on-chain. You're not selling anything — you're proving demand that already exists. The referral link attributes that proof to you.",
     color: "bg-brutal-yellow",
     textColor: "text-foreground",
@@ -84,7 +85,7 @@ const contractDetails = [
   {
     label: "Contract",
     value: "VoterPrizeTreasury.sol",
-    detail: "Dominant assurance pool with Wishocratic fund yield and VOTE token rewards",
+    detail: "Dominant assurance pool with Wishocratic fund yield and VOTE point rewards",
   },
   {
     label: "Health Metric",
@@ -99,7 +100,7 @@ const contractDetails = [
   {
     label: "Sybil Resistance",
     value: "World ID + Referral Links",
-    detail: "One verified vote per person. VOTE tokens go to the referrer.",
+    detail: "One verified vote per person. VOTE points go to the referrer.",
   },
   {
     label: "Fail-Safe",
@@ -115,23 +116,26 @@ export default function PrizePage() {
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
           <p className="text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
-            Earth Optimization Prize
+            The Earth Optimization Game
           </p>
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground">
-            A Bet You Can&apos;t Lose. A Species That Desperately Needs Fixing.
+            The Only Way to Lose Is to Not Play.
           </h1>
           <p className="text-lg text-foreground leading-relaxed font-bold">
-            This is a dominant assurance contract. Depositors cannot lose.
-            Plan fails? You get your principal back plus ~{poolMultiple}
-            from 15 years of Wishocratic fund returns ({poolReturn} annually). Plan succeeds?
-            The 1% Treaty produces {`${fmtParam({...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}–${fmtParam({...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}`}{" "}
-            in per-capita lifetime income gains from optimized resource allocation.
+            The objective: redirect Earth&apos;s resources from the things making
+            you poorest and deadest to the things that make you healthiest and
+            wealthiest. This is a dominant assurance contract — depositors
+            cannot lose. Plan fails? ~{poolMultiple} back from {poolReturn} annual
+            growth. Plan succeeds? VOTE point holders split the pool. Everyone&apos;s
+            income increases by{" "}
+            {`${fmtParam({...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}–${fmtParam({...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}`}{" "}
+            per capita lifetime.
           </p>
           <p className="text-muted-foreground font-bold leading-relaxed mt-3">
             Two ways in. <strong>Have capital?</strong> Deposit USDC, get PRIZE
             shares, earn the yield floor. <strong>Have a network?</strong>{" "}
             Share a referral link, recruit verified voters for the 1% Treaty,
-            earn VOTE tokens — one per verified voter. Prize share proportional
+            earn VOTE points — one per verified voter. Prize share proportional
             to voters you brought in. No deposit required.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -206,7 +210,7 @@ export default function PrizePage() {
             Your deposit goes into the Wishocratic fund ({poolReturn} annually). You get PRIZE shares —
             your claim on the pool. Plan fails? ~{poolMultiple} back.
             You also get a referral link — recruit verified voters to earn
-            VOTE tokens for success-scenario upside too.
+            VOTE points for success-scenario upside too.
           </p>
           <VoterPrizeTreasuryDeposit />
         </div>
@@ -372,7 +376,7 @@ export default function PrizePage() {
           <div className="border-4 border-primary bg-brutal-cyan p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-xs font-black uppercase text-muted-foreground mb-1">Recruiter Path</p>
             <p className="text-sm font-bold text-foreground">
-              Get referral link → Recruit voters → World ID verify → VOTE tokens → Prize share if plan succeeds
+              Get referral link → Recruit voters → World ID verify → VOTE points → Prize share if plan succeeds
             </p>
           </div>
         </div>

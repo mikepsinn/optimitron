@@ -14,7 +14,7 @@ import { fmtParam } from "@/lib/format-parameter";
  * Interactive Prize return calculator.
  *
  * Fail scenario:  deposit × PRIZE_POOL_15YR_MULTIPLE (~11.1x over 15 years)
- * Success scenario: VOTE tokens × pro-rata share of pool (~$194K per VOTE if canonical pool size)
+ * Success scenario: VOTE points × pro-rata share of pool (~$194K per VOTE if canonical pool size)
  */
 
 const FAIL_MULTIPLIER = PRIZE_POOL_15YR_MULTIPLE.value;
@@ -97,7 +97,7 @@ export function PrizeCalculator() {
         />
       </div>
 
-      {/* VOTE tokens input */}
+      {/* VOTE points input */}
       <div className="mb-6">
         <label className="block text-xs font-black uppercase text-muted-foreground mb-2">
           Verified Voters You Recruit
@@ -163,11 +163,11 @@ export function PrizeCalculator() {
             {formatUSD(successPayout)}
           </div>
           <div className="text-sm font-bold text-muted-foreground mb-3">
-            {voteCount} VOTE token{voteCount > 1 ? "s" : ""} × {formatUSD(VOTE_VALUE)} each
+            {voteCount} VOTE point{voteCount > 1 ? "s" : ""} × {formatUSD(VOTE_VALUE)} each
           </div>
           <div className="text-xs text-muted-foreground font-bold space-y-1">
             <p>
-              VOTE holders split the pool pro-rata. Each VOTE token
+              VOTE holders split the pool pro-rata. Each VOTE point
               is worth ~{fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)} if the canonical pool
               size materializes. You earned {voteCount} by recruiting {voteCount} verified voter{voteCount > 1 ? "s" : ""}.
             </p>

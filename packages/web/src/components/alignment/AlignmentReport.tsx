@@ -434,7 +434,7 @@ export function AlignmentReport({
       <section className="mb-10">
         <PrizeCTA
           headline="Prove that voters want representatives who actually represent them."
-          body="The alignment scores above show the gap. The 1% Treaty referendum collapses pluralistic ignorance — everyone wants this, nobody knows everyone else does. Deposit USDC, recruit verified voters, earn VOTE tokens."
+          body="The alignment scores above show the gap. The 1% Treaty referendum collapses pluralistic ignorance — everyone wants this, nobody knows everyone else does. Deposit USDC, recruit verified voters, earn VOTE points."
           variant="cyan"
         />
       </section>

@@ -395,7 +395,7 @@ export default function BudgetPage() {
       <div className="mt-10">
         <PrizeCTA
           headline="The gap between current and optimal won't close itself."
-          body="Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit USDC, recruit verified voters, earn VOTE tokens."
+          body="Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit USDC, recruit verified voters, earn VOTE points."
           variant="dark"
         />
       </div>

@@ -21,7 +21,7 @@ export function ReferralLinkCard({
       id={id}
     >
       <p className="font-bold text-base sm:text-lg text-center mb-2">
-        Share this link. Every verified voter you recruit earns you a VOTE token.
+        Share this link. Every verified voter you recruit earns you a VOTE point.
       </p>
 
       <div className="mb-2">

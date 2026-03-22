@@ -243,7 +243,7 @@ export default function PoliciesPage() {
       <div className="mt-10">
         <PrizeCTA
           headline="These recommendations need political will to implement."
-          body="The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. Deposit USDC, recruit verified voters for the 1% Treaty referendum, earn VOTE tokens."
+          body="The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. Deposit USDC, recruit verified voters for the 1% Treaty referendum, earn VOTE points."
           variant="yellow"
         />
       </div>

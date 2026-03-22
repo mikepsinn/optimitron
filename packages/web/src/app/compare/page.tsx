@@ -127,7 +127,7 @@ export default function ComparePage() {
       <div className="mt-10">
         <PrizeCTA
           headline="Other countries prove this works. Now prove the demand."
-          body="The data above shows what evidence-based governance produces. The 1% Treaty referendum collapses pluralistic ignorance. Deposit USDC, recruit verified voters, earn VOTE tokens."
+          body="The data above shows what evidence-based governance produces. The 1% Treaty referendum collapses pluralistic ignorance. Deposit USDC, recruit verified voters, earn VOTE points."
           variant="cyan"
         />
       </div>

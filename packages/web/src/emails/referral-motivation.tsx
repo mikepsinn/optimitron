@@ -364,7 +364,7 @@ export const ReferralMotivationEmail = ({
                 margin: "0 0 20px 0",
               }}
             >
-              Share this everywhere. Every verified voter earns you a VOTE token.
+              Share this everywhere. Every verified voter earns you a VOTE point.
             </Text>
 
             <SocialShareButtons

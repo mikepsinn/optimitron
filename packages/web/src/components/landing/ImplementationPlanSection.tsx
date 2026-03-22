@@ -10,8 +10,8 @@ const steps = [
     step: 1,
     title: "Prove Demand",
     description:
-      `Depositors fund the Earth Optimization Prize. Recruiters share referral links and get people to verify support for the 1% Treaty via World ID. Every verified voter earns the recruiter a VOTE token. Depositors get ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} their money back if the plan fails. Recruiters get prize share if it succeeds. Pluralistic ignorance collapses.`,
-    why: "Depositors get a yield floor. Recruiters earn VOTE tokens. Self-interest does the coordination.",
+      `Depositors fund the Earth Optimization Prize. Recruiters share referral links and get people to verify support for the 1% Treaty via World ID. Every verified voter earns the recruiter a VOTE point. Depositors get ~${fmtParam(PRIZE_POOL_15YR_MULTIPLE)} their money back if the plan fails. Recruiters get prize share if it succeeds. Pluralistic ignorance collapses.`,
+    why: "Depositors get a yield floor. Recruiters earn VOTE points. Self-interest does the coordination.",
   },
   {
     step: 2,
