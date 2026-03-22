@@ -154,7 +154,7 @@ export default function Home() {
                 </span>{" "}
                 in dysfunction and let{" "}
                 <span className="font-black text-brutal-pink">
-                  {fmtParam(GLOBAL_DISEASE_DEATHS_DAILY)} people die daily
+                  {fmtParam({...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""})} people die daily
                 </span>{" "}
                 from treatable diseases. I made a spreadsheet. You&apos;re welcome.
               </p>

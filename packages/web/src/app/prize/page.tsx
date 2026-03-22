@@ -283,7 +283,7 @@ export default function PrizePage() {
             </div>
             <ul className="space-y-3">
               <li className="text-sm font-bold text-brutal-red-foreground">
-                <span className="font-black">{dysfunctionTaxFormatted}/person/year</span>{" "}
+                <span className="font-black">{dysfunctionTaxFormatted}/person</span>{" "}
                 — political dysfunction tax you&apos;re already paying
               </li>
               <li className="text-sm font-bold text-brutal-red-foreground">
@@ -291,7 +291,7 @@ export default function PrizePage() {
                 — global waste from misaligned governance
               </li>
               <li className="text-sm font-bold text-brutal-red-foreground">
-                <span className="font-black">{deathsPerDayFormatted} deaths/day</span>{" "}
+                <span className="font-black">{deathsPerDayFormatted}</span>{" "}
                 — preventable, if anyone was paying attention
               </li>
             </ul>
@@ -323,7 +323,7 @@ export default function PrizePage() {
         <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm text-foreground font-bold leading-relaxed">
             On my planet, this took about twelve seconds to explain. You are
-            currently paying {dysfunctionTaxFormatted} per year for the privilege
+            currently paying {dysfunctionTaxFormatted} for the privilege
             of your government being terrible. The break-even requires a 0.0067%
             chance of that changing. You don&apos;t need to believe the plan will
             work. You just need to believe it&apos;s not literally impossible. The

@@ -76,7 +76,7 @@ export function LandingProblemSection() {
                 <div>
                   <div className="text-2xl font-black text-brutal-yellow">
                     {fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL)}
-                    /person/year
+                    /person
                   </div>
                   <p className="mt-1 text-sm font-bold text-muted-foreground">
                     That&apos;s your share. You are paying this whether you know
@@ -131,7 +131,7 @@ export function LandingProblemSection() {
           <div className="border-4 border-brutal-yellow bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-center text-sm font-bold text-foreground">
               On my planet, when a system kills{" "}
-              {fmtParam(GLOBAL_DISEASE_DEATHS_DAILY)} people a day and costs{" "}
+              {fmtParam({...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""})} people a day and costs{" "}
               {fmtParam({
                 ...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
                 unit: "USD",
