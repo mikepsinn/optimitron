@@ -42,81 +42,22 @@ import {
   toRealPerCapita,
   historicalToRealPerCapita,
   oecdBudgetPanelToSpendingOutcome,
+  OECD_CATEGORY_MAPPINGS,
+  NON_DISCRETIONARY_CATEGORIES,
+  COUNTRY_NAMES,
+  type OECDCategoryMapping,
 } from '@optimitron/data';
 import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataDir = resolve(__dirname, '../src/data');
+const dataDir = resolve(__dirname, '../../web/src/data');
 
 const US_POPULATION = 339_000_000; // 2025 estimate
 
-const COUNTRY_NAMES: Record<string, string> = {
-  USA: 'United States', GBR: 'United Kingdom', FRA: 'France',
-  DEU: 'Germany', JPN: 'Japan', CAN: 'Canada', ITA: 'Italy',
-  AUS: 'Australia', NLD: 'Netherlands', BEL: 'Belgium',
-  SWE: 'Sweden', NOR: 'Norway', DNK: 'Denmark', FIN: 'Finland',
-  AUT: 'Austria', CHE: 'Switzerland', ESP: 'Spain', PRT: 'Portugal',
-  IRL: 'Ireland', NZL: 'New Zealand', KOR: 'South Korea',
-  ISR: 'Israel', CZE: 'Czech Republic',
-  SGP: 'Singapore', EST: 'Estonia', VNM: 'Vietnam',
-  TWN: 'Taiwan', POL: 'Poland',
-};
-
-// ─── OECD Category Mappings ─────────────────────────────────────────
-// Maps US federal budget category names to OECD panel spending/outcome fields.
-// Categories with a mapping get real cross-country OSL estimation.
-
-type OECDSpendingField = 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
-type OECDOutcomeField = 'lifeExpectancyYears' | 'infantMortalityPer1000' | 'giniIndex' | 'pisaMathScore' | 'afterTaxMedianIncomePpp';
-
-interface OECDMapping {
-  spendingField: OECDSpendingField;
-  outcomeField: OECDOutcomeField;
-  /** Negate outcome so higher = better (e.g., infant mortality) */
-  negateOutcome?: boolean;
-  outcomeName: string;
-}
-
-// Only map DISCRETIONARY categories with valid OECD comparisons.
-// Non-discretionary (Medicare, Social Security, Interest) are excluded entirely.
-// Healthcare: only the discretionary "Health" line gets OECD analysis. Medicare/Medicaid
-// are mandatory entitlements and their savings can't be reallocated by appropriations.
-//
-// NOTE: OECD spending = total government (federal + state + local).
-// For education, the federal budget line ($102B) is only ~12% of total US government
-// education spending (~$850B). The OECD comparison reflects the total system.
-const OECD_MAPPINGS: Record<string, OECDMapping> = {
-  'Military': {
-    spendingField: 'militarySpendingPerCapitaPpp',
-    outcomeField: 'lifeExpectancyYears',
-    outcomeName: 'Life Expectancy',
-  },
-  'Education': {
-    spendingField: 'educationSpendingPerCapitaPpp',
-    outcomeField: 'pisaMathScore',
-    outcomeName: 'PISA Math Score',
-  },
-  'Science / NASA': {
-    spendingField: 'rdSpendingPerCapitaPpp',
-    outcomeField: 'afterTaxMedianIncomePpp',
-    outcomeName: 'After-Tax Median Income (PPP)',
-  },
-  'Health (non-Medicare/Medicaid)': {
-    spendingField: 'healthSpendingPerCapitaPpp',
-    outcomeField: 'lifeExpectancyYears',
-    outcomeName: 'Life Expectancy',
-  },
-};
-
-// Non-discretionary categories: Congress cannot reallocate via annual appropriations.
-// No OECD efficiency analysis, no OSL, no recommendation — just report as-is.
-const NON_DISCRETIONARY = new Set([
-  'Interest on Debt',
-  'Social Security',
-  'Medicare',
-  'Medicaid',
-  'Other Mandatory Programs',
-]);
+// Use canonical mappings from @optimitron/data (no local duplicates)
+const OECD_MAPPINGS = OECD_CATEGORY_MAPPINGS;
+const NON_DISCRETIONARY = NON_DISCRETIONARY_CATEGORIES;
+type OECDMapping = OECDCategoryMapping;
 
 // ─── Efficiency Analysis Helpers ─────────────────────────────────────
 
@@ -456,140 +397,67 @@ function generateBudgetAnalysis() {
 
 // ─── Policy Analysis (OPG) ──────────────────────────────────────────
 
-interface PolicyInput {
-  name: string;
-  type: string;
-  category: string;
-  description: string;
-  effectSize: number;
-  studyCount: number;
-  hasPredecessor: boolean;
-  doseResponseExists: boolean;
-  hasRCT: boolean;
-  mechanismKnown: boolean;
-  consistentWithTheory: boolean;
-  analogyExists: boolean;
-  outcomeCount: number;
-  incomeEffect: number;
-  healthEffect: number;
-  rationale: string;
-  currentStatus: string;
-  recommendedTarget: string;
-  blockingFactors: string[];
+import { STRUCTURAL_POLICY_REFORMS, type PolicyRecommendation } from '@optimitron/data';
+
+type PolicyInput = PolicyRecommendation;
+
+// Structural reforms from the data package (jurisdiction-agnostic, evidence-based).
+// Efficiency-derived policies ("reduce spending to cheapest high performer") are
+// auto-generated from the budget analysis — not hardcoded.
+const STRUCTURAL_REFORMS: PolicyInput[] = [...STRUCTURAL_POLICY_REFORMS];
+
+// Auto-generate efficiency-derived policy recommendations from budget analysis.
+// These are spending reallocations, not structural reforms — the "effect" is the
+// savings redirected as Universal Dividend (income) and the outcome improvement
+// from matching the high performer's level (health, if the outcome is life expectancy).
+function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): PolicyInput[] {
+  const MEDIAN_INCOME = 59_540;
+  const HOUSEHOLDS = 133_000_000;
+
+  return budgetCategories
+    .filter(c => c.efficiency && c.efficiency.overspendRatio >= 1.5)
+    .map(c => {
+      const e = c.efficiency!;
+      const savingsPerHH = Math.round(e.potentialSavingsTotal / HOUSEHOLDS);
+      const incomeEffect = savingsPerHH / MEDIAN_INCOME;
+
+      // Health effect: only claim if outcome IS life expectancy AND best country is better
+      // For non-LE outcomes (PISA, median income), health effect is 0.
+      const isLifeExpOutcome = e.outcomeName === 'Life Expectancy';
+      const leGap = isLifeExpOutcome ? (e.bestCountry.outcome - e.usData.outcome) : 0;
+      // Convert LE gap in years to a fraction of baseline HALE (~66 years)
+      // Only claim half the gap as realistic improvement (conservative)
+      const healthEffect = isLifeExpOutcome ? Math.round((leGap * 0.5 / 66) * 1000) / 1000 : 0;
+
+      return {
+        name: `${c.name}: Adopt ${e.bestCountry.name}'s Approach`,
+        type: 'budget_allocation',
+        category: c.name.toLowerCase().replace(/[^a-z]+/g, '_'),
+        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap; US gets ${e.usData.outcome} at $${e.usData.spending}/cap.`,
+        effectSize: Math.min(e.overspendRatio / 5, 1.5),
+        studyCount: e.totalCountries,
+        hasPredecessor: true, // other countries already do this
+        doseResponseExists: e.overspendRatio > 2, // clear spending-outcome gradient if big overspend
+        hasRCT: false, // cross-country comparison, not randomized
+        mechanismKnown: true, // spending less and redirecting to dividend is straightforward
+        consistentWithTheory: true,
+        analogyExists: true, // the best-performing country IS the analogy
+        outcomeCount: 1,
+        incomeEffect: Math.round(incomeEffect * 1000) / 1000,
+        healthEffect,
+        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap. US at $${e.usData.spending}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spending})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Universal Dividend.`,
+        currentStatus: `US spends $${e.usData.spending}/cap, ranks ${e.usRank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
+        recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpending}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Universal Dividend.`,
+        blockingFactors: ['political_opposition'],
+      } satisfies PolicyInput;
+    });
 }
 
-// Only policies with strong evidence of increasing real after-tax median income
-// or median healthy life years. No special interest legislation, no speculative
-// effects, no policies with negative income impact.
-const REAL_POLICIES: PolicyInput[] = [
-  {
-    name: 'Singapore-Style Healthcare (Universal + Competition)',
-    type: 'regulation', category: 'health',
-    description: 'Mandatory health savings (Medisave) + catastrophic insurance (MediShield) + price transparency + hospital competition. South Korea achieves LE 83.6 at $3,588/cap; US gets LE 76.9 at $10,333/cap.',
-    effectSize: 1.5, studyCount: 28, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 4,
-    // Income: $2.3T savings / 133M households = $17,143/yr = 28.8% of median
-    // Health: US LE 76.9 → South Korea LE 83.6 = +6.7yr, conservatively +3yr
-    incomeEffect: 0.29, healthEffect: 0.40,
-    rationale: 'OECD cheapest-high-performer analysis: South Korea achieves LE 83.6 at $3,588/cap. Japan achieves LE 84.5 at $4,095/cap. US achieves LE 76.9 at $10,333/cap (2.9x overspend). Singapore model: mandatory savings + catastrophic coverage + market competition achieves LE 83.9 at $4,300/cap. Savings: $2.3T/yr.',
-    currentStatus: 'US spends $10,333/cap, ranks 28/28 among panel countries. LE 76.9.',
-    recommendedTarget: 'South Korea model ($3,588/cap floor). $2.3T/yr savings → Universal Dividend.',
-    blockingFactors: ['political_opposition', 'industry_resistance'],
-  },
-  {
-    name: 'Military Spending Reduction to High-Performer Floor',
-    type: 'budget_allocation', category: 'defense',
-    description: 'Reduce military spending to the level of the cheapest country with top-quartile life expectancy. Switzerland achieves LE 83.4 at $389/cap; US gets LE 76.9 at $2,052/cap.',
-    effectSize: 0.8, studyCount: 28, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 2,
-    // Income: $564B savings / 133M households = $4,241/yr = 7.1% of median
-    incomeEffect: 0.071, healthEffect: 0.05,
-    rationale: 'OECD cheapest-high-performer analysis: Switzerland achieves LE 83.4 at $389/cap military spending. Japan achieves LE 84.5 at $400/cap. US achieves LE 76.9 at $2,052/cap (5.3x overspend). Military spending has R²=0.012 correlation with life expectancy — essentially zero. $564B/yr savings → $4,241/household/yr as Universal Dividend.',
-    currentStatus: 'US spends $2,052/cap, ranks 27/28. 5.3x overspend vs cheapest high performer.',
-    recommendedTarget: 'Phased reduction to $389/cap (Switzerland floor). $564B/yr savings → Universal Dividend.',
-    blockingFactors: ['political_opposition', 'institutional_resistance'],
-  },
-  {
-    name: 'Universal Pre-K (Ages 3-4)',
-    type: 'budget_allocation', category: 'education',
-    description: 'Federally funded universal pre-K. Perry Preschool RCT shows $7-12 ROI per dollar over 40 years.',
-    effectSize: 0.8, studyCount: 25, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: true, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 5,
-    // Perry Preschool: 40yr follow-up shows 15% higher income for participants
-    incomeEffect: 0.15, healthEffect: 0.10,
-    rationale: 'Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. Participants had 15% higher income, 20% less likely to be arrested, healthier outcomes. France, Denmark, Finland all have universal pre-K with better PISA scores.',
-    currentStatus: 'Only 34% of US 3-year-olds enrolled; varies wildly by state',
-    recommendedTarget: 'Federal funding for universal enrollment by age 3',
-    blockingFactors: ['budget_constraint'],
-  },
-  {
-    name: 'Shift Drug Policy from Criminal to Health Approach',
-    type: 'regulation', category: 'health',
-    description: 'Decriminalize personal drug use, redirect enforcement budget to treatment. Based on Portugal (2001).',
-    effectSize: 1.2, studyCount: 15, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 3,
-    incomeEffect: 0.05, healthEffect: 0.35,
-    rationale: 'Portugal decriminalized in 2001: drug deaths dropped 80%, HIV among users dropped 90%, treatment uptake tripled. US spends $40B/yr on drug enforcement with zero measurable reduction in drug deaths (r=0.026). Czech Republic, Switzerland, Netherlands show similar results.',
-    currentStatus: 'US spends $40B/yr on enforcement; 1.5M arrests/yr; overdose deaths at record highs',
-    recommendedTarget: 'Decriminalize personal use, redirect $40B/yr enforcement budget to treatment',
-    blockingFactors: ['political_opposition'],
-  },
-  {
-    name: 'Pragmatic Clinical Trial Funding Reform',
-    type: 'regulation', category: 'health_research',
-    description: 'Redirect NIH funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost.',
-    effectSize: 0.9, studyCount: 8, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: true, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 3,
-    incomeEffect: 0.05, healthEffect: 0.30,
-    rationale: 'NIH spends $48B/yr but 70%+ goes to indirect costs. 85% of findings fail to replicate. UK NIHR model: pragmatic trials embedded in NHS produce actionable evidence at 1/10th the cost. PCORI pragmatic trials show 3x faster clinical adoption.',
-    currentStatus: 'NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate',
-    recommendedTarget: 'Mandate 30%+ of NIH budget for pragmatic trials with open data requirements',
-    blockingFactors: ['institutional_resistance', 'industry_resistance'],
-  },
-  {
-    name: 'Earned Income Tax Credit Expansion',
-    type: 'tax_policy', category: 'income_security',
-    description: 'Expand EITC for childless workers. Directly increases after-tax income for low-income workers.',
-    effectSize: 0.6, studyCount: 30, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 4,
-    // EITC targets low-income; effect on MEDIAN is ~1-3%, not 25%
-    incomeEffect: 0.03, healthEffect: 0.06,
-    rationale: 'EITC lifts ~6M people out of poverty annually. Research shows improved infant health, better school performance, and increased labor force participation. Effect on median income is modest (~1-3%) since it targets below-median workers.',
-    currentStatus: '$63B annual cost; benefits phase out at $59K for families',
-    recommendedTarget: 'Double benefit for childless workers ($1,500→$3,000); raise income cap',
-    blockingFactors: ['budget_constraint'],
-  },
-  {
-    name: 'Permanent Expanded Child Tax Credit',
-    type: 'tax_policy', category: 'income_security',
-    description: 'Make the 2021 expanded CTC permanent and fully refundable. Cut child poverty 46% in 6 months.',
-    effectSize: 0.8, studyCount: 12, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 4,
-    // CTC: direct transfer. Effect on median is ~3-5% (targets families with children, not all adults)
-    incomeEffect: 0.05, healthEffect: 0.10,
-    rationale: '2021 expanded CTC cut child poverty by 46% in 6 months — largest single-year reduction ever. Canada\'s similar program reduced child poverty by 30%. Improved childhood nutrition and health outcomes. Cost: ~$100B/yr.',
-    currentStatus: 'Reverted to $2,000/child, not fully refundable (excludes poorest families)',
-    recommendedTarget: '$3,600/child under 6, $3,000 ages 6-17, fully refundable',
-    blockingFactors: ['budget_constraint'],
-  },
-  {
-    name: 'Federal Incentives for Zoning Reform',
-    type: 'regulation', category: 'housing',
-    description: 'Federal grants conditioned on local upzoning. Tokyo, Minneapolis, Oregon show reduced housing cost growth.',
-    effectSize: 0.7, studyCount: 15, hasPredecessor: true, doseResponseExists: true,
-    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 3,
-    // Zoning reform reduces housing costs, which is effectively income increase.
-    // Hsieh & Moretti estimate $1.6T GDP cost but median income effect is smaller: ~3-5%
-    incomeEffect: 0.05, healthEffect: 0.03,
-    rationale: 'Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning, though median income effect is smaller.',
-    currentStatus: '75% of US residential land zoned single-family only',
-    recommendedTarget: 'Condition federal transportation/HUD grants on local zoning reform',
-    blockingFactors: ['political_opposition'],
-  },
-];
+function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]) {
+  const efficiencyPolicies = generateEfficiencyPolicies(budgetCategories);
+  const allPolicies = [...efficiencyPolicies, ...STRUCTURAL_REFORMS];
 
-function generatePolicyAnalysis() {
-  const policies = REAL_POLICIES.map(p => {
+  const policies = allPolicies.map(p => {
     const method: AnalysisMethod = p.hasRCT ? 'rct' : 'cross_sectional';
     const bh = {
       strength: scoreStrength(p.effectSize),
@@ -670,7 +538,7 @@ const withRecs = budgetAnalysis.categories.filter(c => c.recommendation !== 'mai
 console.log(`  📊 ${withOSL.length} with OECD-backed OSL, ${withRecs.length} with non-maintain recommendations`);
 
 console.log('\nGenerating policy analysis...');
-const policyAnalysis = generatePolicyAnalysis();
+const policyAnalysis = generatePolicyAnalysis(budgetAnalysis.categories);
 writeFileSync(
   resolve(dataDir, 'us-policy-analysis.json'),
   JSON.stringify(policyAnalysis, null, 2)

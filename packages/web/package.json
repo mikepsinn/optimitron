@@ -15,7 +15,7 @@
     "lint": "next lint",
     "typecheck": "pnpm run build:workspace-deps && tsc --noEmit",
     "test": "pnpm exec vitest run",
-    "generate": "tsx scripts/generate-analysis.ts",
+    "generate": "pnpm --dir ../examples run generate:web-data",
     "fetch": "tsx scripts/fetch-and-generate.ts",
     "causal": "tsx scripts/generate-causal-reports.ts",
     "generate:assets": "tsx scripts/generate-brand-assets.ts",

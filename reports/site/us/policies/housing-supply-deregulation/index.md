@@ -1,13 +1,13 @@
 ---
-title: "Federal Incentives for Zoning Reform"
+title: "Housing Supply Deregulation"
 layout: layout.njk
 ---
 
 [← Policy Rankings](../)
 
-# Federal Incentives for Zoning Reform
+# Housing Supply Deregulation
 
-> Federal grants conditioned on local upzoning. Tokyo, Minneapolis, Oregon show reduced housing cost growth.
+> Remove restrictive zoning that constrains housing supply. Tokyo, Minneapolis, Oregon show reduced housing cost growth.
 
 | Metric | Value |
 |--------|-------|
@@ -20,11 +20,11 @@ layout: layout.njk
 
 **Current status:** 75% of US residential land zoned single-family only
 
-**Target:** Condition federal transportation/HUD grants on local zoning reform
+**Target:** Condition federal grants on local zoning reform
 
 ## Evidence
 
-Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning, though median income effect is smaller.
+Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning.
 
 ## Bradford Hill Scores
 

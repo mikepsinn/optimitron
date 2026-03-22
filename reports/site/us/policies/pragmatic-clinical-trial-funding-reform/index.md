@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Pragmatic Clinical Trial Funding Reform
 
-> Redirect NIH funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost.
+> Redirect research funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost.
 
 | Metric | Value |
 |--------|-------|
@@ -20,7 +20,7 @@ layout: layout.njk
 
 **Current status:** NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate
 
-**Target:** Mandate 30%+ of NIH budget for pragmatic trials with open data requirements
+**Target:** Mandate 30%+ of research budget for pragmatic trials with open data requirements
 
 ## Evidence
 

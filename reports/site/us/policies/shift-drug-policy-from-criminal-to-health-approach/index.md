@@ -20,7 +20,7 @@ layout: layout.njk
 
 **Current status:** US spends $40B/yr on enforcement; 1.5M arrests/yr; overdose deaths at record highs
 
-**Target:** Decriminalize personal use, redirect $40B/yr enforcement budget to treatment
+**Target:** Decriminalize personal use, redirect enforcement budget to treatment
 
 ## Evidence
 
