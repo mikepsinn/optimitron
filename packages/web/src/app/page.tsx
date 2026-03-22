@@ -5,7 +5,6 @@ import { LandingProblemSection } from "@/components/landing/LandingProblemSectio
 import { LandingPrizeOffer } from "@/components/landing/LandingPrizeOffer";
 import { LandingFAQSection } from "@/components/landing/LandingFAQSection";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { HeroEntrance } from "@/components/animations/HeroEntrance";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
@@ -129,7 +128,7 @@ export default function Home() {
       <SectionContainer bgColor="background" borderPosition="bottom" className="overflow-hidden">
         <Container className="py-24 sm:py-32">
           <div className="text-center">
-            <HeroEntrance>
+            <>
               <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">
                 Built by Wishonia // Alien // 4,237 years of field testing
               </p>
@@ -172,7 +171,7 @@ export default function Home() {
                 . Budget allocations, alignment reports, daily check-ins. Evidence
                 that you tried.
               </p>
-            </HeroEntrance>
+            </>
           </div>
         </Container>
       </SectionContainer>

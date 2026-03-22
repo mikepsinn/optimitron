@@ -1,4 +1,3 @@
-import { StaggerGrid } from "@/components/animations/StaggerGrid";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { earthOptimizationPrizePaperLink } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
@@ -52,7 +51,7 @@ export function EarthOptimizationPrizeSection() {
           </p>
         </div>
 
-        <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {coreCards.map((card) => (
             <div
               key={card.title}
@@ -66,7 +65,7 @@ export function EarthOptimizationPrizeSection() {
               </p>
             </div>
           ))}
-        </StaggerGrid>
+        </div>
 
         <div className="text-center">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
