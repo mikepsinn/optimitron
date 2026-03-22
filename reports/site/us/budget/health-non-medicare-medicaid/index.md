@@ -71,7 +71,7 @@ Best: **South Korea** — $3588/cap → Life Expectancy 83.57
 
 > *South Korea spends a third of what you do and their citizens live 7 years longer. It's almost like pricing and outcomes are related.*
 
-**Adopt the approach of South Korea, Japan, Australia.** These countries achieve Life Expectancy of 83.57 while spending $3588/cap vs the US at $10333/cap for Life Expectancy 76.93.
+**Adopt the approach of South Korea, Japan, Australia.** These countries achieve Life Expectancy of 83.57 while spending $3588/cap vs the United States at $10333/cap for Life Expectancy 76.93.
 
 Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent to **$8,863/yr ($739/mo)** per adult as an Optimization Dividend.
 

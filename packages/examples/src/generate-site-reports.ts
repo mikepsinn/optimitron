@@ -105,17 +105,43 @@ function generateIndex() {
   const dedupForTotal = deduplicateByOECDField(withEfficiency);
   const totalWasted = dedupForTotal.reduce((sum: number, c: any) => sum + c.efficiency.potentialSavingsTotal, 0);
 
+  const perAdult = Math.round(totalWasted / JURISDICTION.adults);
+  const perMonth = Math.round(perAdult / 12);
+
+  // Build quick dividend breakdown for the hero
+  const dividendRows = dedupForTotal
+    .sort((a: any, b: any) => b.efficiency.potentialSavingsTotal - a.efficiency.potentialSavingsTotal)
+    .map((c: any) => {
+      const e = c.efficiency;
+      const pa = Math.round(e.potentialSavingsTotal / JURISDICTION.adults);
+      const pm = Math.round(pa / 12);
+      const label = OECD_FIELD_MAP[c.name] === 'health' ? 'Healthcare' : c.name;
+      return `| ${label} | ${e.bestCountry.name} | ${e.overspendRatio}x | **$${pm.toLocaleString()}/mo** |`;
+    }).join('\n');
+
   const md = `---
 title: Home
 layout: layout.njk
 ---
 
-# Optimitron Analysis: ${JURISDICTION.name} Federal Budget
+# Your Optimization Dividend: $${perMonth.toLocaleString()}/month
 
-**${budgetData.categories.length} budget categories** analyzed against **23 OECD countries**.
-The ${JURISDICTION.name} ranks dead last in ${withEfficiency.filter((c: any) => c.efficiency.usRank === c.efficiency.totalCountries).length} of ${withEfficiency.length} categories with cross-country data.
+The ${JURISDICTION.name} overspends by **${fmt(totalWasted)}/yr** across ${dedupForTotal.length} budget categories compared to the cheapest high-performing countries. If it matched their efficiency, every adult would receive **$${perMonth.toLocaleString()}/month ($${perAdult.toLocaleString()}/yr)**.
 
-**Total waste vs OECD efficient floor: ${fmt(totalWasted)}/yr**
+| Category | Model Country | Overspend | Your Dividend |
+|----------|--------------|-----------|---------------|
+${dividendRows}
+| **TOTAL** | | | **$${perMonth.toLocaleString()}/mo** |
+
+Don't like a reform? [Redirect your dividend](./dividend/) to any program you choose.
+
+---
+
+## The Evidence
+
+${budgetData.categories.length} budget categories analyzed against ${withEfficiency.length > 0 ? withEfficiency[0].efficiency.totalCountries : 28} countries including Singapore, Japan, South Korea, and Switzerland.
+
+${budgetData.topRecommendations.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}
 
 ## Navigate
 
@@ -123,11 +149,7 @@ The ${JURISDICTION.name} ranks dead last in ${withEfficiency.filter((c: any) => 
 - [**Policy Rankings**](./policies/) — ${policyData.policies.length} evidence-based policies ranked by impact
 - [**Model Legislation**](./legislation/) — ${Object.keys(LEGISLATION_MAP).length} Gemini-drafted bills with citations
 - [**Efficiency Rankings**](./efficiency/) — OECD cross-country comparisons
-- [**Optimization Dividend**](./dividend/) — Savings breakdown per household
-
-## Top Findings
-
-${budgetData.topRecommendations.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}
+- [**Optimization Dividend**](./dividend/) — Full savings breakdown per household
 
 ---
 

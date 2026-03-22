@@ -1,5 +1,5 @@
 {
-  "jurisdiction": "United States of America",
+  "jurisdiction": "United States",
   "totalBudget": 6707000000000,
   "categories": [
     {
@@ -2240,12 +2240,12 @@
     }
   ],
   "topRecommendations": [
-    "Military: US spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Potential savings: $564B/yr",
-    "Health (non-Medicare/Medicaid): US spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential savings: $2.3T/yr",
-    "Education: US spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential savings: $579B/yr",
-    "Science / NASA: US spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
+    "Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Potential savings: $564B/yr",
+    "Health (non-Medicare/Medicaid): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential savings: $2.3T/yr",
+    "Education: United States spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential savings: $579B/yr",
+    "Science / NASA: United States spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-03-22T22:40:34.635Z",
+  "generatedAt": "2026-03-22T22:49:06.391Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

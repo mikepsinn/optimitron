@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Science / NASA: Adopt Netherlands's Approach
 
-> Reduce science / nasa spending to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; US gets 26245.67 at $1991/cap.
+> Reduce science / nasa spending to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 26245.67 at $1991/cap.
 
 | Metric | Value |
 |--------|-------|
@@ -18,13 +18,13 @@ layout: layout.njk
 | Action | reallocate |
 | Category | science_nasa |
 
-**Current status:** US spends $1991/cap, ranks 23/27. 1.9x overspend.
+**Current status:** United States spends $1991/cap, ranks 23/27. 1.9x overspend.
 
 **Target:** Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. US at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.
+Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 

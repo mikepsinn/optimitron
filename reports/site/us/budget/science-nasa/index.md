@@ -72,7 +72,7 @@ Best: **Netherlands** — $1064/cap → After-Tax Median Income (PPP) 31221.39
 
 > *Netherlands spends half as much on R&D and their median citizen earns more. Perhaps the issue isn't how much you spend.*
 
-**Adopt the approach of Netherlands, Norway, Denmark.** These countries achieve After-Tax Median Income (PPP) of 31221.39 while spending $1064/cap vs the US at $1991/cap for After-Tax Median Income (PPP) 26245.67.
+**Adopt the approach of Netherlands, Norway, Denmark.** These countries achieve After-Tax Median Income (PPP) of 31221.39 while spending $1064/cap vs the United States at $1991/cap for After-Tax Median Income (PPP) 26245.67.
 
 Reducing to the efficient floor of $1064/cap would save **$314B/yr**, equivalent to **$1,218/yr ($102/mo)** per adult as an Optimization Dividend.
 

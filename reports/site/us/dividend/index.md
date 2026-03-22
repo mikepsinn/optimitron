@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Optimization Dividend Calculator
 
-If the US matched the spending efficiency of the best OECD countries, the savings could fund an Optimization Dividend for every adult citizen.
+If the United States matched the spending efficiency of the best OECD countries, the savings could fund an Optimization Dividend for every adult citizen.
 
 > **Note:** Healthcare savings are counted once (Medicare, Medicaid, and other health programs share the same OECD health spending comparison).
 

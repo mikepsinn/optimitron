@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Military: Adopt Switzerland's Approach
 
-> Reduce military spending to the cheapest high-performer floor. Switzerland achieves Life Expectancy 83.37 at $389/cap; US gets 76.93 at $2052/cap.
+> Reduce military spending to the cheapest high-performer floor. Switzerland achieves Life Expectancy 83.37 at $389/cap; United States gets 76.93 at $2052/cap.
 
 | Metric | Value |
 |--------|-------|
@@ -18,13 +18,13 @@ layout: layout.njk
 | Action | reallocate |
 | Category | military |
 
-**Current status:** US spends $2052/cap, ranks 27/28. 5.3x overspend.
+**Current status:** United States spends $2052/cap, ranks 27/28. 5.3x overspend.
 
 **Target:** Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. US at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.
+Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 

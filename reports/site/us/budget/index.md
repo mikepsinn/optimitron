@@ -5,7 +5,7 @@ layout: layout.njk
 
 [← Home](../)
 
-# US Federal Budget: 23 Categories
+# United States Federal Budget: 23 Categories
 
 Total budget: **$6.7T**
 

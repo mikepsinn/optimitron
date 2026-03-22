@@ -7,7 +7,7 @@ layout: layout.njk
 
 # Health (non-Medicare/Medicaid): Adopt South Korea's Approach
 
-> Reduce health (non-medicare/medicaid) spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $3588/cap; US gets 76.93 at $10333/cap.
+> Reduce health (non-medicare/medicaid) spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $3588/cap; United States gets 76.93 at $10333/cap.
 
 | Metric | Value |
 |--------|-------|
@@ -18,13 +18,13 @@ layout: layout.njk
 | Action | reallocate |
 | Category | health_non_medicare_medicaid_ |
 
-**Current status:** US spends $10333/cap, ranks 28/28. 2.9x overspend.
+**Current status:** United States spends $10333/cap, ranks 28/28. 2.9x overspend.
 
 **Target:** South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. US at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.
+Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 

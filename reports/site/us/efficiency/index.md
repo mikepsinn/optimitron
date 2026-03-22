@@ -7,11 +7,11 @@ layout: layout.njk
 
 # OECD Spending Efficiency Rankings
 
-The US compared to 23 OECD countries across 4 spending categories.
+The United States compared to 23 OECD countries across 4 spending categories.
 
 **Total waste vs efficient floor: $3.7T/yr** ($14,510/adult)
 
-| Category | US $/cap | Rank | Floor | Overspend | Wasted/yr | Best Country |
+| Category | United States $/cap | Rank | Floor | Overspend | Wasted/yr | Best Country |
 |----------|----------|------|-------|-----------|-----------|--------------|
 | [Military](../budget/military/) | $2052 | 27/28 | $389 | **5.3x** | $564B | Switzerland ($389) |
 | [Health (non-Medicare/Medicaid)](../budget/health-non-medicare-medicaid/) | $10333 | 28/28 | $3588 | **2.9x** | $2.3T | South Korea ($3588) |
