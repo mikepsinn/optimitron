@@ -11,24 +11,8 @@ layout: layout.njk
 |--------|-------|
 | Current spending | $1.5T |
 | Real per-capita (2017 USD) | $3291 |
-| OECD efficiency rank | **22/23** |
-| Overspend ratio | **2x** |
-| Floor spending | $6427/cap |
-| Potential savings | **$2.2T/yr** |
 | Recommendation | **MAINTAIN** |
 | Evidence | non-discretionary (mandated) |
-| **Your dividend** | **$8,437/yr ($703/mo)** per adult |
-
-## OECD Efficiency Comparison
-
-| Country | Spending/cap | Life Expectancy | Rank |
-|---------|-------------|-----------------|------|
-| **US** | **$12848** | **76.93** | **22** |
-| South Korea | $6037 | 83.57 | 1 |
-| Israel | $6830 | 82.17 | 2 |
-| New Zealand | $6838 | 82.2 | 3 |
-
-Best: **South Korea** — $6037/cap → Life Expectancy 83.57
 
 ## Historical Spending (2015–2025)
 
@@ -58,14 +42,6 @@ Best: **South Korea** — $6037/cap → Life Expectancy 83.57
 | Beneficiaries | 67.9 | improving |
 | Average monthly retirement benefit | 1907 | improving |
 | Trust fund depletion year (projected) | 2033 | declining |
-
-## Recommendation
-
-**Adopt the approach of South Korea, Israel, New Zealand.** These countries achieve Life Expectancy of 83.57 while spending $6037/cap vs the US at $12848/cap for Life Expectancy 76.93.
-
-Reducing to the efficient floor of $6427/cap would save **$2.2T/yr**, equivalent to **$8,437/yr ($703/mo)** per adult as a Universal Dividend.
-
-**[Read the model legislation for this reform →](../legislation/social-security-reform/)**
 
 ## Related
 

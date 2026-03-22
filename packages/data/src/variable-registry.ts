@@ -823,7 +823,7 @@ const REGISTRY_SEED: VariableRegistry = [
     id: 'outcome.derived.after_tax_median_income_ppp',
     label: 'After-Tax Median Income (PPP)',
     description:
-      'Proxy series for after-tax median income, currently mapped to GNI per-capita PPP until direct global median disposable-income coverage is integrated.',
+      'Best-available real PPP median-income series, using OECD direct after-tax disposable income where available and World Bank PIP real median-income fallback elsewhere.',
     kind: 'outcome',
     category: 'economic',
     unit: 'international $',
@@ -832,22 +832,30 @@ const REGISTRY_SEED: VariableRegistry = [
     defaultTransforms: ['level', 'yoy_percent', 'log'],
     suggestedLagYears: [0, 1, 2, 3],
     source: {
-      provider: 'derived',
-      code: 'proxy(outcome.wb.gni_per_capita_ppp)',
+      provider: 'curated_dataset',
+      code: 'best_available_real_ppp_after_tax_median_income',
+      fetcher: 'fetchAfterTaxMedianIncomePpp',
+      datasetId: 'median-income-series',
     },
     coverage: {
-      profileStatus: 'unprofiled',
-      notes: 'Coverage mirrors outcome.wb.gni_per_capita_ppp in the current implementation.',
+      profileStatus: 'estimated',
+      yearMin: 1981,
+      yearMax: 2025,
+      notes:
+        'Best-available coverage currently combines OECD IDD direct after-tax disposable-income observations with generated World Bank PIP real median-income fallback data.',
     },
     isDerived: true,
-    tags: ['welfare-core', 'income', 'proxy'],
-    caveats: ['This is a proxy, not a direct after-tax median income measurement.'],
+    tags: ['welfare-core', 'income', 'best-available'],
+    caveats: [
+      'This is not a perfectly homogeneous source: OECD points are direct after-tax disposable-income observations, while non-OECD fallback points use World Bank PIP real median income and are not guaranteed to be after-tax.',
+      'Coverage and concept comparability vary by jurisdiction; inspect source metadata when strict after-tax comparability matters.',
+    ],
   },
   {
     id: 'outcome.derived.after_tax_median_income_ppp_growth_yoy_pct',
     label: 'After-Tax Median Income Growth (YoY %)',
     description:
-      'Year-over-year percent growth in the after-tax median-income PPP proxy series.',
+      'Year-over-year percent growth in the best-available after-tax median-income PPP series.',
     kind: 'outcome',
     category: 'economic',
     unit: '% YoY',
@@ -861,11 +869,15 @@ const REGISTRY_SEED: VariableRegistry = [
     },
     coverage: {
       profileStatus: 'unprofiled',
-      notes: 'Coverage is one year shorter than the underlying level proxy due to YoY derivation.',
+      notes:
+        'Coverage is one year shorter than the underlying best-available level series due to YoY derivation.',
     },
     isDerived: true,
-    tags: ['welfare-core', 'income', 'growth', 'proxy'],
-    caveats: ['Growth is derived from a proxy level series and may amplify data noise in low-coverage regions.'],
+    tags: ['welfare-core', 'income', 'growth', 'best-available'],
+    caveats: [
+      'Growth is derived from a mixed-source level series and may reflect changes in source composition as well as underlying income.',
+      'Interpret cross-jurisdiction comparisons carefully where coverage switches between OECD direct after-tax data and PIP fallback data.',
+    ],
   },
   {
     id: 'outcome.derived.healthy_life_expectancy_growth_yoy_pct',

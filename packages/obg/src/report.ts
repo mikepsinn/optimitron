@@ -10,6 +10,7 @@ import type { SpendingGap, SpendingCategory, OSLEstimate } from './budget.js';
 import type { DiminishingReturnsModel } from './diminishing-returns.js';
 import type { WESCalculationResult } from './budget-impact-score.js';
 import type { WelfareEffect } from '@optimitron/opg';
+import type { EfficiencyAnalysis } from './efficiency-analysis.js';
 
 // ---------------------------------------------------------------------------
 // Result types
@@ -24,6 +25,8 @@ export interface CategoryAnalysis {
   /** Spending elasticity: dimensionless measure. 1% spending increase → ε% outcome increase. */
   elasticity?: number;
   wesResult?: WESCalculationResult;
+  /** Cross-country efficiency analysis (rank, overspend ratio, floor, best countries) */
+  efficiency?: EfficiencyAnalysis;
 }
 
 export interface BudgetOptimizationResult {

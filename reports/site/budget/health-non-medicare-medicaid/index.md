@@ -12,14 +12,16 @@ layout: layout.njk
 | Current spending | $94B |
 | Real per-capita (2017 USD) | $212 |
 | OECD efficiency rank | **23/23** |
-| Overspend ratio | **3.3x** |
-| Floor spending | $3142/cap |
-| Potential savings | **$2.4T/yr** |
-| Recommendation | **SCALE_UP** |
+| Overspend ratio | **3.5x** |
+| Floor spending | $2924/cap |
+| Potential savings | **$2.5T/yr** |
+| Recommendation | **MAJOR_DECREASE** |
 | Evidence | OECD cross-country (529 obs, 23 countries, R²=0.11) |
-| **Your dividend** | **$9,449/yr ($787/mo)** per adult |
+| **Your dividend** | **$9,736/yr ($811/mo)** per adult |
 
 ## OECD Efficiency Comparison
+
+> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Health (non-Medicare/Medicaid)" is $94B, but the OECD comparison uses the full government system at $10333/cap.
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
@@ -69,7 +71,7 @@ Best: **Portugal** — $2924/cap → Life Expectancy 81.37
 
 **Adopt the approach of Portugal, Czech Republic, Israel.** These countries achieve Life Expectancy of 81.37 while spending $2924/cap vs the US at $10333/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $3142/cap would save **$2.4T/yr**, equivalent to **$9,449/yr ($787/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $2924/cap would save **$2.5T/yr**, equivalent to **$9,736/yr ($811/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/health-non-medicare-medicaid-reform/)**
 

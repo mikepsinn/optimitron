@@ -197,6 +197,9 @@ layout: layout.njk
     // Efficiency comparison
     if (eff) {
       md += `## OECD Efficiency Comparison\n\n`;
+      md += `> **Note:** OECD spending data reflects total government spending (federal + state + local). `;
+      md += `The US federal budget line item for "${cat.name}" is ${fmt(cat.currentSpending)}, `;
+      md += `but the OECD comparison uses the full government system at $${eff.usData.spending}/cap.\n\n`;
       md += `| Country | Spending/cap | ${eff.outcomeName} | Rank |\n`;
       md += `|---------|-------------|${'-'.repeat(eff.outcomeName.length + 2)}|------|\n`;
       md += `| **US** | **$${eff.usData.spending}** | **${eff.usData.outcome}** | **${eff.usRank}** |\n`;

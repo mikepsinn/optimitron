@@ -11,31 +11,8 @@ layout: layout.njk
 |--------|-------|
 | Current spending | $874B |
 | Real per-capita (2017 USD) | $1969 |
-| OECD efficiency rank | **23/23** |
-| Overspend ratio | **3.3x** |
-| Floor spending | $3142/cap |
-| Potential savings | **$2.4T/yr** |
-| Recommendation | **SCALE_UP** |
-| Evidence | OECD cross-country (529 obs, 23 countries, R²=0.11) |
-| **Your dividend** | **$9,449/yr ($787/mo)** per adult |
-
-## OECD Efficiency Comparison
-
-| Country | Spending/cap | Life Expectancy | Rank |
-|---------|-------------|-----------------|------|
-| **US** | **$10333** | **76.93** | **23** |
-| Portugal | $2924 | 81.37 | 1 |
-| Czech Republic | $2898 | 77.97 | 2 |
-| Israel | $3110 | 82.17 | 3 |
-
-Best: **Portugal** — $2924/cap → Life Expectancy 81.37
-
-## Diminishing Returns Model
-
-- Model: saturation
-- R²: 0.11
-- Observations: 529
-- Elasticity: 0.02 (1% spending → 0.02% Life Expectancy)
+| Recommendation | **MAINTAIN** |
+| Evidence | non-discretionary (mandated) |
 
 ## Historical Spending (2015–2025)
 
@@ -65,14 +42,6 @@ Best: **Portugal** — $2924/cap → Life Expectancy 81.37
 | Medicare beneficiaries | 67.4 | improving |
 | Hospital readmission rate (30-day) | 15.3 | improving |
 | Per-capita Medicare spending | 13050 | declining |
-
-## Recommendation
-
-**Adopt the approach of Portugal, Czech Republic, Israel.** These countries achieve Life Expectancy of 81.37 while spending $2924/cap vs the US at $10333/cap for Life Expectancy 76.93.
-
-Reducing to the efficient floor of $3142/cap would save **$2.4T/yr**, equivalent to **$9,449/yr ($787/mo)** per adult as a Universal Dividend.
-
-**[Read the model legislation for this reform →](../legislation/medicare-reform/)**
 
 ## Related
 

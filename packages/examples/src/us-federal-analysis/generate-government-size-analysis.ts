@@ -3,7 +3,7 @@
  *
  * Estimates an evidence-weighted optimal government spending share (% GDP)
  * using multi-jurisdiction N-of-1 causal analysis across four core outcomes:
- * HALE level/growth and after-tax median income proxy level/growth.
+ * HALE level/growth and best-available after-tax median income level/growth.
  *
  * Predictor:
  *   General government expenditure (% GDP)
@@ -164,7 +164,7 @@ interface TierOutcomeSummary {
   typicalRealAfterTaxMedianIncomeLevel: number | null;
   typicalRealAfterTaxMedianIncomeGrowthPct: number | null;
   lowSampleWarning: string | null;
-  proxyNotes: string[];
+  metricNotes: string[];
 }
 
 interface SpendingPctGdpTier extends TierOutcomeSummary {
@@ -427,7 +427,7 @@ const OUTCOMES: OutcomeSpec[] = [
   },
   {
     id: 'after_tax_median_income_ppp',
-    name: 'After-Tax Median Income (PPP, proxy)',
+    name: 'After-Tax Median Income (PPP)',
     sourceKey: 'afterTaxMedianIncomePpp',
     direction: 'higher_better',
     weight: 0.25,
@@ -435,7 +435,7 @@ const OUTCOMES: OutcomeSpec[] = [
   },
   {
     id: 'after_tax_median_income_growth_yoy_pct',
-    name: 'After-Tax Median Income Growth (Annualized %, proxy)',
+    name: 'After-Tax Median Income Growth (Annualized %)',
     sourceKey: 'afterTaxMedianIncomeGrowthPct',
     direction: 'higher_better',
     weight: 0.25,
@@ -687,7 +687,7 @@ function getObservationOutcomeValue(
 
 function headlineEligibilityReason(outcome: OutcomeAnalysis): string {
   if (!HEADLINE_OUTCOME_IDS.has(outcome.id)) {
-    return 'Excluded from headline because this outcome is a growth/proxy diagnostic.';
+    return 'Excluded from headline because this outcome is a growth diagnostic.';
   }
   if (outcome.meanPercentChange <= 0) {
     return 'Excluded from headline because change-from-baseline is non-positive.';
@@ -729,7 +729,7 @@ async function fetchIndicatorDataset(
     fetchers.fetchGovExpenditure(options),
     fetchers.fetchGdpPerCapita(options),
     fetchers.fetchWHOHealthyLifeExpectancy(whoOptions),
-    fetchers.fetchGniPerCapitaPpp(options),
+    fetchers.fetchAfterTaxMedianIncomePpp(options),
   ]);
 
   const jurisdictionSet = new Set(jurisdictions);
@@ -1606,11 +1606,11 @@ function summarizeTierOutcomes(
     typicalRealAfterTaxMedianIncomeGrowthPct:
       incomeGrowthValues.length > 0 ? quantile(incomeGrowthValues, 0.5) : null,
     lowSampleWarning: matches.length < minBinSize ? 'Small sample: interpret cautiously' : null,
-    proxyNotes: [
+    metricNotes: [
       'Healthy life years level: WHO Healthy Life Expectancy (HALE).',
       'Healthy life years growth: annualized percent growth of HALE.',
-      'Real after-tax median income level proxy: GNI per-capita PPP level.',
-      'Real after-tax median income growth proxy: annualized percent growth of GNI per-capita PPP.',
+      'Real after-tax median income level: OECD direct after-tax disposable income where available, with World Bank PIP real median-income fallback elsewhere.',
+      'Real after-tax median income growth: annualized percent growth of the best-available level series.',
     ],
   };
 }
@@ -1989,8 +1989,9 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('Coverage notes for metric construction:');
   lines.push('- Healthy life years level: WHO Healthy Life Expectancy (HALE) (direct).');
   lines.push('- Healthy life years growth: annualized percent growth of HALE.');
-  lines.push('- Real after-tax median income level: proxy via GNI per-capita PPP.');
-  lines.push('- Real after-tax median income growth: annualized percent growth of the GNI proxy.');
+  lines.push('- Real after-tax median income level: best available real PPP median-income series.');
+  lines.push('- Real after-tax median income growth: annualized percent growth of the best-available level series.');
+  lines.push('- Source hierarchy: OECD direct after-tax disposable income where available; World Bank PIP real median-income fallback elsewhere.');
   lines.push('');
 
   lines.push('### Spending Share (% GDP) Bins');
@@ -2002,7 +2003,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
       `rounded to ${data.spendingLevelTable.binning.roundTo}%`,
   );
   lines.push('');
-  lines.push('| Spending Level (% GDP) | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
+  lines.push('| Spending Level (% GDP) | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income | Typical Real After-Tax Median Income Growth | Notes |');
   lines.push('|------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
   for (const tier of data.spendingLevelTable.tiers) {
     const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
@@ -2044,7 +2045,7 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
       `rounded to ${formatUsd(data.spendingPerCapitaLevelTable.binning.roundTo)}`,
   );
   lines.push('');
-  lines.push('| Spending Per-Capita PPP Level | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income (proxy level) | Typical Real After-Tax Median Income Growth (proxy) | Notes |');
+  lines.push('| Spending Per-Capita PPP Level | Country-Years | Jurisdictions | Typical Healthy Life Years (HALE) | Typical Healthy Life Years Growth | Typical Real After-Tax Median Income | Typical Real After-Tax Median Income Growth | Notes |');
   lines.push('|-------------------------------|-------------:|--------------:|-----------------------------------------:|-------------------------------------------:|----------------------------------------------------:|-----------------------------------------------------:|-------|');
   for (const tier of data.spendingPerCapitaLevelTable.tiers) {
     const life = tier.typicalHealthyLifeYears == null ? 'N/A' : tier.typicalHealthyLifeYears.toFixed(1);
@@ -2116,7 +2117,8 @@ function buildMarkdown(data: GovernmentSizeAnalysisData): string {
   lines.push('- Raw cross-country % GDP medians are descriptive and not portable across countries with very different GDP per capita.');
   lines.push('- The federal composition summary is a separate model and a different budget level from the general-government size floor.');
   lines.push('- Category-level floors are a better policy object than a single total-size number.');
-  lines.push('- Real after-tax median income is currently proxied by GNI per-capita PPP (not direct median disposable income).');
+  lines.push('- Real after-tax median income now uses the best-available real PPP series: OECD direct after-tax disposable income where available, with World Bank PIP fallback elsewhere.');
+  lines.push('- Cross-country comparability is improved versus the old GNI proxy, but this is still a mixed-source series rather than a perfectly homogeneous single-source panel.');
   lines.push('- HALE growth and income-growth series are annualized derivatives and can be noisy in sparse panels.');
   lines.push('- Indicator revisions in source databases can shift historical estimates over time.');
   lines.push('');
@@ -2223,8 +2225,8 @@ export async function generateGovernmentSizeAnalysisArtifacts(
       },
       incomeGrowthMetric: {
         isDirectMetric: false,
-        metricUsed: 'Annualized growth of after-tax median income proxy (GNI per-capita PPP)',
-        note: 'Direct global after-tax median income time series is not yet integrated in this panel.',
+        metricUsed: 'Annualized growth of the best-available after-tax median-income PPP series',
+        note: 'Level series uses OECD direct after-tax disposable income where available and World Bank PIP fallback elsewhere.',
       },
       binning: {
         method: 'adaptive quantile bins with anchor constraints',

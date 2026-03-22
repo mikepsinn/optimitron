@@ -15,20 +15,19 @@ If the US matched the spending efficiency of the best OECD countries, the saving
 
 | Category | Overspend | Savings/yr | Per Adult/yr | Per Adult/mo |
 |----------|-----------|-----------|-------------|-------------|
-| [Military](../budget/military/) | 7.4x | $601B | $2,330 | $194 |
-| [Healthcare (total system)](../budget/medicaid/) | 3.5x | $2.5T | $9,753 | $813 |
+| [Military](../budget/military/) | 9.1x | $619B | $2,399 | $200 |
+| [Healthcare (total system)](../budget/health-non-medicare-medicaid/) | 3.5x | $2.5T | $9,736 | $811 |
 | [Science / NASA](../budget/science-nasa/) | 2.4x | $389B | $1,508 | $126 |
-| [Social Security](../budget/social-security/) | 2x | $2.2T | $8,437 | $703 |
-| **TOTAL** | | **$5.7T** | **$22,028** | **$1,836** |
+| **TOTAL** | | **$3.5T** | **$13,642** | **$1,137** |
 
 ## Household Projections
 
 | Adults | Monthly | Annual |
 |--------|---------|--------|
-| 1 | **$1,836/mo** | $22,028/yr |
-| 2 | **$3,672/mo** | $44,056/yr |
-| 3 | **$5,508/mo** | $66,084/yr |
-| 4 | **$7,344/mo** | $88,112/yr |
+| 1 | **$1,137/mo** | $13,642/yr |
+| 2 | **$2,274/mo** | $27,284/yr |
+| 3 | **$3,411/mo** | $40,926/yr |
+| 4 | **$4,548/mo** | $54,568/yr |
 
 ## Citizen Choice Provision
 

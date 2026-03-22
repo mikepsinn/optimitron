@@ -365,7 +365,7 @@ describe('Government Size Analysis JSON', () => {
     }
   });
 
-  it('should include spending-level table with proxy notes', () => {
+  it('should include spending-level table with income methodology notes', () => {
     expect(governmentSizeJson.spendingLevelTable).toBeDefined();
     expect(governmentSizeJson.spendingLevelTable.alignment).toBeDefined();
     expect(governmentSizeJson.spendingLevelTable.alignment.type).toBe('lag_aligned_follow_up');
@@ -374,7 +374,7 @@ describe('Government Size Analysis JSON', () => {
     expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.isDirectMetric).toBe(true);
     expect(governmentSizeJson.spendingLevelTable.healthyLifeYearsMetric.metricUsed).toContain('HALE');
     expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.isDirectMetric).toBe(false);
-    expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.metricUsed).toContain('proxy');
+    expect(governmentSizeJson.spendingLevelTable.incomeGrowthMetric.metricUsed).toContain('best-available');
     expect(governmentSizeJson.spendingLevelTable.binning).toBeDefined();
     expect(Array.isArray(governmentSizeJson.spendingLevelTable.tiers)).toBe(true);
     expect(governmentSizeJson.spendingLevelTable.tiers.length).toBeGreaterThanOrEqual(4);
@@ -468,8 +468,8 @@ describe('Government Size Report Markdown', () => {
     expect(governmentSizeMarkdown).toContain('Rows are lag-aligned for causal interpretation');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years (HALE)');
     expect(governmentSizeMarkdown).toContain('Typical Healthy Life Years Growth');
-    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income (proxy level)');
-    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income Growth (proxy)');
+    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income');
+    expect(governmentSizeMarkdown).toContain('Typical Real After-Tax Median Income Growth');
     expect(governmentSizeMarkdown).toContain('## Limitations');
   });
 });

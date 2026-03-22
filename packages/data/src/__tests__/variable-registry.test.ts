@@ -47,6 +47,20 @@ describe('variable registry', () => {
     expect(derived?.source.provider).toBe('derived');
   });
 
+  it('maps after-tax median income to the best-available median-income fetcher', () => {
+    const income = getVariableById('outcome.derived.after_tax_median_income_ppp');
+    expect(income).toBeDefined();
+    expect(income?.source.fetcher).toBe('fetchAfterTaxMedianIncomePpp');
+    expect(income?.source.provider).toBe('curated_dataset');
+    expect(income?.description).toContain('Best-available');
+    expect(income?.caveats.some((caveat) => caveat.includes('OECD'))).toBe(
+      true,
+    );
+    expect(income?.caveats.some((caveat) => caveat.includes('PIP'))).toBe(
+      true,
+    );
+  });
+
   it('returns a copy when listing all entries', () => {
     const first = getVariableRegistry();
     const second = getVariableRegistry();

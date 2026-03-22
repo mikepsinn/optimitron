@@ -15,11 +15,13 @@ layout: layout.njk
 | Overspend ratio | **2.4x** |
 | Floor spending | $843/cap |
 | Potential savings | **$389B/yr** |
-| Recommendation | **SCALE_UP** |
+| Recommendation | **DECREASE** |
 | Evidence | OECD cross-country (529 obs, 23 countries, R²=0.318) |
 | **Your dividend** | **$1,508/yr ($126/mo)** per adult |
 
 ## OECD Efficiency Comparison
+
+> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Science / NASA" is $44B, but the OECD comparison uses the full government system at $1991/cap.
 
 | Country | Spending/cap | GDP per Capita | Rank |
 |---------|-------------|----------------|------|

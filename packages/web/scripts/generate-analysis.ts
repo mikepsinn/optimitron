@@ -85,31 +85,17 @@ interface OECDMapping {
   outcomeName: string;
 }
 
+// Only map DISCRETIONARY categories with valid OECD comparisons.
+// Non-discretionary (Medicare, Social Security, Interest) are excluded entirely.
+// Healthcare: only the discretionary "Health" line gets OECD analysis. Medicare/Medicaid
+// are mandatory entitlements and their savings can't be reallocated by appropriations.
+//
+// NOTE: OECD spending = total government (federal + state + local).
+// For education, the federal budget line ($102B) is only ~12% of total US government
+// education spending (~$850B). The OECD comparison reflects the total system.
 const OECD_MAPPINGS: Record<string, OECDMapping> = {
-  // NOTE: OECD health/education/social spending = total government (federal + state + local).
-  // US federal budget categories are federal-only. For categories where federal is a minority
-  // of total government spending (e.g., Education is ~10% federal, ~90% state/local), the
-  // OSL comparison is against total government — the gap reflects the overall system, not just
-  // the federal share. This is intentional: federal policy should consider total government
-  // spending, not just its own slice.
-  'Medicare': {
-    spendingField: 'healthSpendingPerCapitaPpp',
-    outcomeField: 'lifeExpectancyYears',
-    outcomeName: 'Life Expectancy',
-  },
-  'Medicaid': {
-    spendingField: 'healthSpendingPerCapitaPpp',
-    outcomeField: 'infantMortalityPer1000',
-    negateOutcome: true,
-    outcomeName: 'Infant Survival (inverted mortality)',
-  },
   'Military': {
     spendingField: 'militarySpendingPerCapitaPpp',
-    outcomeField: 'lifeExpectancyYears',
-    outcomeName: 'Life Expectancy',
-  },
-  'Social Security': {
-    spendingField: 'socialSpendingPerCapitaPpp',
     outcomeField: 'lifeExpectancyYears',
     outcomeName: 'Life Expectancy',
   },
@@ -130,12 +116,13 @@ const OECD_MAPPINGS: Record<string, OECDMapping> = {
   },
 };
 
-// Non-discretionary categories: skip OSL — these are mandated obligations
-// that Congress cannot simply reallocate via annual appropriations.
-// Military IS discretionary despite being large. Medicaid has discretionary components.
+// Non-discretionary categories: Congress cannot reallocate via annual appropriations.
+// No OECD efficiency analysis, no OSL, no recommendation — just report as-is.
 const NON_DISCRETIONARY = new Set([
   'Interest on Debt',
   'Social Security',
+  'Medicare',
+  'Medicaid',
   'Other Mandatory Programs',
 ]);
 
@@ -433,23 +420,33 @@ function generateBudgetAnalysis() {
           outcomeName: mapping.outcomeName,
         };
 
-        if (result.model.r2 < 0.01) {
-          // No meaningful relationship found
-          evidenceSource = `OECD cross-country: no significant relationship (R²=${drInfo.r2}, ${result.data.length} obs, ${nCountries} countries)`;
-          recommendation = 'maintain';
-        } else {
+        evidenceSource = `OECD cross-country (${result.data.length} obs, ${nCountries} countries, R²=${drInfo.r2})`;
+
+        if (result.model.r2 >= 0.01) {
+          // Meaningful diminishing returns relationship — use OSL for gap
           optimalPerCapita = result.oslPerCapita;
           optimalNominal = result.oslPerCapita * US_POPULATION;
           gap = optimalNominal - currentUsd;
           gapPercent = currentUsd > 0 ? (gap / currentUsd) * 100 : 0;
-          evidenceSource = `OECD cross-country (${result.data.length} obs, ${nCountries} countries, R²=${drInfo.r2})`;
+        }
 
-          // Recommendation from gap
-          if (gapPercent > 50) recommendation = 'scale_up';
-          else if (gapPercent > 10) recommendation = 'increase';
-          else if (gapPercent > -10) recommendation = 'maintain';
-          else if (gapPercent > -50) recommendation = 'decrease';
-          else recommendation = 'major_decrease';
+        // Recommendation comes from EFFICIENCY analysis (overspend ratio),
+        // NOT from R² of the curve fit. A low R² means the curve doesn't fit —
+        // but the efficiency ranking still shows peers getting better results for less.
+        if (efficiencyInfo && efficiencyInfo.overspendRatio >= 3) {
+          recommendation = 'major_decrease';
+        } else if (efficiencyInfo && efficiencyInfo.overspendRatio >= 1.5) {
+          recommendation = 'decrease';
+        } else if (gapPercent > 50) {
+          recommendation = 'scale_up';
+        } else if (gapPercent > 10) {
+          recommendation = 'increase';
+        } else if (gapPercent > -10) {
+          recommendation = 'maintain';
+        } else if (gapPercent > -50) {
+          recommendation = 'decrease';
+        } else {
+          recommendation = 'major_decrease';
         }
       } else {
         evidenceSource = 'OECD mapping available but insufficient data';

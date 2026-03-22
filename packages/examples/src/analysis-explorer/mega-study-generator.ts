@@ -2422,20 +2422,6 @@ export function buildDerivedDifferencePerCapitaPpp(
   return rows;
 }
 
-export function buildDerivedAfterTaxMedianIncomePpp(raw: Map<string, DataPoint[]>): DataPoint[] {
-  const gniPerCapitaPpp = raw.get("outcome.wb.gni_per_capita_ppp") ?? [];
-  return gniPerCapitaPpp
-    .filter((row) => Number.isFinite(row.value))
-    .map((row) => ({
-      jurisdictionIso3: row.jurisdictionIso3,
-      year: row.year,
-      value: row.value,
-      unit: "international $",
-      source: "Derived proxy (mapped from World Bank GNI per-capita PPP)",
-      sourceUrl: row.sourceUrl,
-    }));
-}
-
 export function buildDerivedYoYPercent(points: DataPoint[], sourceLabel: string): DataPoint[] {
   const byJurisdiction = new Map<string, DataPoint[]>();
   for (const point of points) {
@@ -2915,7 +2901,7 @@ function buildOutcomeMarkdown(
     outcomeId === "outcome.derived.after_tax_median_income_ppp" ||
     outcomeId === "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct"
   ) {
-    lines.push("- Note: After-tax median income is currently proxied by World Bank GNI per-capita PPP in this report set.");
+    lines.push("- Note: After-tax median income uses OECD direct after-tax disposable-income observations where available, with World Bank PIP real median-income fallback elsewhere.");
   }
   lines.push("");
   lines.push("## Quick Meanings");
@@ -3626,18 +3612,12 @@ export async function generateMegaStudyArtifacts(
       ),
     );
   }
-  if (registry.some((entry) => entry.id === "outcome.derived.after_tax_median_income_ppp")) {
-    rawByVariable.set(
-      "outcome.derived.after_tax_median_income_ppp",
-      buildDerivedAfterTaxMedianIncomePpp(rawByVariable),
-    );
-  }
   if (registry.some((entry) => entry.id === "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct")) {
     rawByVariable.set(
       "outcome.derived.after_tax_median_income_ppp_growth_yoy_pct",
       buildDerivedYoYPercent(
         rawByVariable.get("outcome.derived.after_tax_median_income_ppp") ?? [],
-        "Derived YoY growth (after-tax median-income PPP proxy)",
+        "Derived YoY growth (best-available after-tax median-income PPP)",
       ),
     );
   }

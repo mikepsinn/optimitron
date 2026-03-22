@@ -12,14 +12,16 @@ layout: layout.njk
 | Current spending | $886B |
 | Real per-capita (2017 USD) | $1996 |
 | OECD efficiency rank | **23/23** |
-| Overspend ratio | **7.4x** |
-| Floor spending | $279/cap |
-| Potential savings | **$601B/yr** |
-| Recommendation | **MAINTAIN** |
-| Evidence | OECD cross-country: no significant relationship (R²=0.006, 529 obs, 23 countries) |
-| **Your dividend** | **$2,330/yr ($194/mo)** per adult |
+| Overspend ratio | **9.1x** |
+| Floor spending | $226/cap |
+| Potential savings | **$619B/yr** |
+| Recommendation | **MAJOR_DECREASE** |
+| Evidence | OECD cross-country (529 obs, 23 countries, R²=0.006) |
+| **Your dividend** | **$2,399/yr ($200/mo)** per adult |
 
 ## OECD Efficiency Comparison
+
+> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Military" is $886B, but the OECD comparison uses the full government system at $2052/cap.
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
@@ -70,7 +72,7 @@ Best: **Ireland** — $226/cap → Life Expectancy 82
 
 **Adopt the approach of Ireland, Spain, Austria.** These countries achieve Life Expectancy of 82 while spending $226/cap vs the US at $2052/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $279/cap would save **$601B/yr**, equivalent to **$2,330/yr ($194/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $226/cap would save **$619B/yr**, equivalent to **$2,399/yr ($200/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/military-reform/)**
 

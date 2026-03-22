@@ -13,13 +13,15 @@ layout: layout.njk
 | Real per-capita (2017 USD) | $230 |
 | OECD efficiency rank | **8/23** |
 | Overspend ratio | **1.1x** |
-| Floor spending | $2572/cap |
-| Potential savings | **$111B/yr** |
+| Floor spending | $2560/cap |
+| Potential savings | **$115B/yr** |
 | Recommendation | **SCALE_UP** |
 | Evidence | OECD cross-country (529 obs, 23 countries, R²=0.526) |
-| **Your dividend** | **$428/yr ($36/mo)** per adult |
+| **Your dividend** | **$444/yr ($37/mo)** per adult |
 
 ## OECD Efficiency Comparison
+
+> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Education" is $102B, but the OECD comparison uses the full government system at $2898/cap.
 
 | Country | Spending/cap | GDP per Capita | Rank |
 |---------|-------------|----------------|------|

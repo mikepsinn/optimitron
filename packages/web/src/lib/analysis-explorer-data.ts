@@ -383,8 +383,8 @@ function buildGovernmentSizePair(outcome: GovernmentOutcome): {
   if (!governmentSizeData.spendingLevelTable.incomeGrowthMetric.isDirectMetric) {
     qualityFlags.push({
       severity: "info",
-      code: "metric.proxy_income_growth",
-      message: `Real after-tax median income growth uses proxy: ${governmentSizeData.spendingLevelTable.incomeGrowthMetric.metricUsed}.`,
+      code: "metric.derived_income_growth",
+      message: `Real after-tax median income growth is derived from: ${governmentSizeData.spendingLevelTable.incomeGrowthMetric.metricUsed}.`,
     });
   }
 
@@ -534,10 +534,10 @@ function buildGovernmentSizePair(outcome: GovernmentOutcome): {
         tableLabel: "Government Spending Share (% GDP)",
         predictorUnit: "% GDP",
         metricDefinitions: [
-          { id: "healthy_life_years_level", label: "Typical Healthy Life Years (proxy)", unit: "years", direction: "higher_better" },
-          { id: "healthy_life_years_growth_per_year", label: "Typical Healthy Life Years Growth (proxy)", unit: "years/year", direction: "higher_better" },
-          { id: "real_after_tax_median_income_level", label: "Typical Real After-Tax Median Income (proxy)", unit: "PPP intl-$", direction: "higher_better" },
-          { id: "real_after_tax_median_income_growth_pct", label: "Typical Real After-Tax Median Income Growth (proxy)", unit: "%", direction: "higher_better" },
+          { id: "healthy_life_years_level", label: "Typical Healthy Life Years", unit: "years", direction: "higher_better" },
+          { id: "healthy_life_years_growth_per_year", label: "Typical Healthy Life Years Growth", unit: "years/year", direction: "higher_better" },
+          { id: "real_after_tax_median_income_level", label: "Typical Real After-Tax Median Income", unit: "PPP intl-$", direction: "higher_better" },
+          { id: "real_after_tax_median_income_growth_pct", label: "Typical Real After-Tax Median Income Growth", unit: "%", direction: "higher_better" },
         ],
         binning: governmentSizeData.spendingLevelTable.binning,
         rows: pctRows,
@@ -547,10 +547,10 @@ function buildGovernmentSizePair(outcome: GovernmentOutcome): {
         tableLabel: "Derived Spending Per-Capita (PPP)",
         predictorUnit: "PPP intl-$ per person",
         metricDefinitions: [
-          { id: "healthy_life_years_level", label: "Typical Healthy Life Years (proxy)", unit: "years", direction: "higher_better" },
-          { id: "healthy_life_years_growth_per_year", label: "Typical Healthy Life Years Growth (proxy)", unit: "years/year", direction: "higher_better" },
-          { id: "real_after_tax_median_income_level", label: "Typical Real After-Tax Median Income (proxy)", unit: "PPP intl-$", direction: "higher_better" },
-          { id: "real_after_tax_median_income_growth_pct", label: "Typical Real After-Tax Median Income Growth (proxy)", unit: "%", direction: "higher_better" },
+          { id: "healthy_life_years_level", label: "Typical Healthy Life Years", unit: "years", direction: "higher_better" },
+          { id: "healthy_life_years_growth_per_year", label: "Typical Healthy Life Years Growth", unit: "years/year", direction: "higher_better" },
+          { id: "real_after_tax_median_income_level", label: "Typical Real After-Tax Median Income", unit: "PPP intl-$", direction: "higher_better" },
+          { id: "real_after_tax_median_income_growth_pct", label: "Typical Real After-Tax Median Income Growth", unit: "%", direction: "higher_better" },
         ],
         binning: governmentSizeData.spendingPerCapitaLevelTable.binning,
         rows: perCapitaRows,

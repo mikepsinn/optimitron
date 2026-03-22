@@ -298,7 +298,7 @@ export async function fetchAllCountryData(
     console.log(`     ✅ ${imData.length} data points`);
   } catch (e) { console.log(`     ⚠️ Failed: ${e}`); }
 
-  // 16. GNI per capita (proxy for disposable income)
+  // 16. GNI per capita
   try {
     console.log('  📊 World Bank: GNI per capita...');
     const gniData = await fetchGniPerCapita(options);
