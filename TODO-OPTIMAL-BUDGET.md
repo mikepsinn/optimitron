@@ -52,37 +52,47 @@ For any jurisdiction, answer: "Given $X total budget, how should it be allocated
 ## 📊 Misconception Analyses (Priority Order)
 
 ### Tier 1: Data Ready NOW
-- [ ] **"Tax cuts pay for themselves" (Laffer Curve)** — tax revenue %GDP vs GDP growth; 52 years US data
-- [ ] **"Welfare creates dependency"** — social spending vs labor force participation (already partially done: r=-0.797)
-- [ ] **"More police = less crime"** — police spending (need from FRED/BJS) vs FBI crime rates
-- [ ] **"Universal healthcare is unaffordable"** — gov health share vs total health spend vs outcomes; 231 countries
-- [ ] **"Minimum wage kills jobs"** — federal minimum wage (FRED) vs unemployment rate; since 1938
+- [x] **"Tax cuts pay for themselves" (Laffer Curve)** — ✅ in misconceptions.json: top tax rate 91%→37% had no effect on revenue share (15-20% GDP)
+- [ ] **"Welfare creates dependency"** — social spending vs labor force participation (partially done: r=-0.797, not in misconceptions.json yet)
+- [x] **"More police = less crime"** — ✅ in misconceptions.json: crime goes up first, police budgets respond (reverse causation)
+- [x] **"Universal healthcare is unaffordable"** — ✅ in misconceptions.json: US spends 2x OECD avg, lives 2.4 fewer years
+- [x] **"Minimum wage kills jobs"** — ✅ in misconceptions.json: no measurable effect on unemployment (r=0.01)
 
 ### Tier 2: Need Small Datasets (1-2 hours each)
-- [ ] **"Incarceration reduces crime"** — BJS incarceration rate vs crime rate; US has 25% of world's prisoners
-- [ ] **"Death penalty deters murder"** — execution counts vs homicide rate
-- [ ] **"Foreign aid is wasted"** — ODA spending vs conflict/migration outcomes
-- [ ] **"Gun ownership = safety"** — NICS background checks (FRED) vs homicide/violent crime
-- [ ] **"Abstinence education works"** — state-level teen pregnancy vs sex ed policy type
+- [x] **"Incarceration reduces crime"** — ✅ in misconceptions.json: US 5x OECD rate, no meaningful crime reduction
+- [x] **"Death penalty deters murder"** — ✅ in misconceptions.json: both declined (fake correlation), YoY r=-0.013
+- [x] **"Foreign aid is wasted"** — ✅ in misconceptions.json: aid responds to crises, reverse causation
+- [x] **"Gun ownership = safety"** — ✅ in misconceptions.json: no YoY link (r=0.02), poverty/urbanization stronger
+- [x] **"Abstinence education works"** — ✅ in misconceptions.json: more abstinence spending = higher teen pregnancy (r=0.713)
 
 ### Tier 3: Contrarian & Fascinating
-- [ ] **"Regulation kills growth"** — Ease of Doing Business vs GDP growth (World Bank has both)
+- [x] **"Regulation kills growth"** — ✅ in misconceptions.json: no measurable relationship (r=0.0)
 - [ ] **"Rent control helps affordability"** — city-level rent control vs housing costs
 - [ ] **"Privatization improves efficiency"** — private vs public healthcare costs cross-country
-- [ ] **"Climate spending hurts economy"** — renewable energy investment vs GDP growth
+- [x] **"Climate spending hurts economy"** — ✅ in misconceptions.json: no GDP harm, CO₂ dropped (r=-0.96)
 - [ ] **"College is always worth it"** — education spending vs student debt vs income growth
 
-### Already Done ✅
+### Already Done ✅ (15 published in misconceptions.json + 5 additional analyses)
 - [x] **Drug war spending → overdose deaths** (r=0.026, Direction=-0.577 REVERSE)
 - [x] **Drug war spending → violent crime** (r=-0.025, Direction=-0.834 REVERSE)
 - [x] **Immigration enforcement → income** (r=-0.812, Direction=-0.903 REVERSE)
 - [x] **Immigration enforcement → net migration** (Direction=+0.533 but POSITIVE — doesn't reduce it!)
-- [x] **Tariffs → income** (r=0.253, Direction unclear)
-- [x] **Tariffs → inflation** (r=0.283, Direction=+0.450 FORWARD — tariffs cause inflation)
+- [x] **Tariffs → income / inflation** (r=0.283, Direction=+0.450 FORWARD — tariffs cause inflation)
 - [x] **Education spending → various** (forward for infant mortality, reverse for GDP)
 - [x] **Military spending → life expectancy** (zero effect)
 - [x] **Government spending → labor participation** (r=-0.797 in US)
 - [x] **Tax burden → life expectancy** (r=-0.398 in US)
+- [x] **Laffer Curve** — top rate 91%→37%, revenue stayed 15-20% GDP
+- [x] **More police ≠ less crime** — reverse causation (crime up → budgets up)
+- [x] **Healthcare overspending** — US 2x OECD avg, 2.4 fewer life years
+- [x] **Minimum wage ≠ unemployment** — no measurable effect (r=0.01)
+- [x] **Mass incarceration ≠ less crime** — US 5x OECD rate, no effect
+- [x] **Death penalty ≠ deterrence** — fake correlation from co-declining trends
+- [x] **Foreign aid → conflict** — reverse causation, aid responds to crises
+- [x] **Gun ownership ≠ safety** — no YoY link, poverty/urbanization dominate
+- [x] **Abstinence education → more teen pregnancy** (r=0.713)
+- [x] **Regulation ≠ growth killer** — no measurable relationship (r=0.0)
+- [x] **Climate spending ≠ economic harm** — no GDP harm, CO₂ dropped (r=-0.96)
 
 ---
 
