@@ -28,13 +28,10 @@ import {
   type AnalysisMethod,
 } from '@optimitron/opg';
 
-// OBG imports — efficiency frontier only (OSL removed, produced contradictory results)
+// OBG imports — diminishing returns model for supplementary context only
 import {
-  efficientFrontier,
-  findMinimumEffectiveSpending,
   fitLogModel,
   fitSaturationModel,
-  type SpendingOutcomePoint,
   type DiminishingReturnsModel,
 } from '@optimitron/obg';
 
@@ -61,6 +58,8 @@ const COUNTRY_NAMES: Record<string, string> = {
   AUT: 'Austria', CHE: 'Switzerland', ESP: 'Spain', PRT: 'Portugal',
   IRL: 'Ireland', NZL: 'New Zealand', KOR: 'South Korea',
   ISR: 'Israel', CZE: 'Czech Republic',
+  SGP: 'Singapore', EST: 'Estonia', VNM: 'Vietnam',
+  TWN: 'Taiwan', POL: 'Poland',
 };
 
 // ─── OECD Category Mappings ─────────────────────────────────────────
@@ -68,7 +67,7 @@ const COUNTRY_NAMES: Record<string, string> = {
 // Categories with a mapping get real cross-country OSL estimation.
 
 type OECDSpendingField = 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
-type OECDOutcomeField = 'lifeExpectancyYears' | 'gdpPerCapitaPpp' | 'infantMortalityPer1000' | 'giniIndex';
+type OECDOutcomeField = 'lifeExpectancyYears' | 'gdpPerCapitaPpp' | 'infantMortalityPer1000' | 'giniIndex' | 'pisaMathScore' | 'afterTaxMedianIncomePpp';
 
 interface OECDMapping {
   spendingField: OECDSpendingField;
@@ -94,13 +93,13 @@ const OECD_MAPPINGS: Record<string, OECDMapping> = {
   },
   'Education': {
     spendingField: 'educationSpendingPerCapitaPpp',
-    outcomeField: 'gdpPerCapitaPpp',
-    outcomeName: 'GDP per Capita',
+    outcomeField: 'pisaMathScore',
+    outcomeName: 'PISA Math Score',
   },
   'Science / NASA': {
     spendingField: 'rdSpendingPerCapitaPpp',
-    outcomeField: 'gdpPerCapitaPpp',
-    outcomeName: 'GDP per Capita',
+    outcomeField: 'afterTaxMedianIncomePpp',
+    outcomeName: 'After-Tax Median Income (PPP)',
   },
   'Health (non-Medicare/Medicaid)': {
     spendingField: 'healthSpendingPerCapitaPpp',
@@ -151,23 +150,6 @@ function latestCountryAverages(
   }).filter(c => c.spending > 0);
 }
 
-/** Build spending deciles from country averages */
-function buildDeciles(countries: Array<{ spending: number; outcome: number }>): Array<{ decile: number; avgSpending: number; outcome: number }> {
-  const sorted = [...countries].sort((a, b) => a.spending - b.spending);
-  const decileSize = Math.max(1, Math.floor(sorted.length / 10));
-  const deciles: Array<{ decile: number; avgSpending: number; outcome: number }> = [];
-
-  for (let d = 0; d < 10; d++) {
-    const start = d * decileSize;
-    const end = d === 9 ? sorted.length : start + decileSize;
-    const slice = sorted.slice(start, end);
-    if (slice.length === 0) continue;
-    const avgSpending = slice.reduce((s, c) => s + c.spending, 0) / slice.length;
-    const avgOutcome = slice.reduce((s, c) => s + c.outcome, 0) / slice.length;
-    deciles.push({ decile: d + 1, avgSpending, outcome: avgOutcome });
-  }
-  return deciles;
-}
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
@@ -217,7 +199,21 @@ interface BudgetCategoryOutput {
   efficiency: EfficiencyInfo | null;
 }
 
-function runEfficiencyAnalysis(mapping: OECDMapping): EfficiencyInfo | null {
+/**
+ * "Cheapest High Performer" algorithm.
+ *
+ * 1. Get all countries' latest spending + outcome averages
+ * 2. Compute the 75th percentile outcome (the "high performer" threshold)
+ * 3. Filter to countries at or above that threshold
+ * 4. Rank high performers by spending (lowest first)
+ * 5. "Best value" = cheapest high performer
+ * 6. "Floor" = best value country's spending
+ * 7. Overspend ratio = target jurisdiction / floor
+ *
+ * No GDP filters, no US-centric logic, no clamping.
+ * Works for any jurisdiction as the target.
+ */
+function runEfficiencyAnalysis(mapping: OECDMapping, targetCode: string = 'USA'): EfficiencyInfo | null {
   const countries = latestCountryAverages(
     mapping.spendingField as keyof OECDBudgetPanelDataPoint,
     mapping.outcomeField as keyof OECDBudgetPanelDataPoint,
@@ -226,77 +222,57 @@ function runEfficiencyAnalysis(mapping: OECDMapping): EfficiencyInfo | null {
 
   if (countries.length < 5) return null;
 
-  const usData = countries.find(c => c.code === 'USA');
-  if (!usData) return null;
+  const target = countries.find(c => c.code === targetCode);
+  if (!target) return null;
 
-  // 1. Efficient frontier — rank countries by outcome-per-dollar
-  const direction = mapping.negateOutcome ? 'higher' : 'higher'; // after negation, higher is always better
-  const frontierResult = efficientFrontier([{
-    categoryId: mapping.spendingField,
-    categoryName: mapping.outcomeName,
-    outcomeDirection: direction,
-    countries: countries.map(c => ({
-      countryCode: c.code,
-      countryName: c.name,
-      spending: c.spending,
-      outcome: c.outcome,
-    })),
-  }]);
+  // 1. Compute 75th percentile outcome — the "high performer" threshold
+  const sortedOutcomes = countries.map(c => c.outcome).sort((a, b) => a - b);
+  const p75Index = Math.floor(sortedOutcomes.length * 0.75);
+  const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1]!;
 
-  const rankings = frontierResult[0]?.rankings ?? [];
-  const usRanking = rankings.find(r => r.countryCode === 'USA');
-  if (!usRanking) return null;
+  // 2. High performers: countries at or above the 75th percentile
+  const highPerformers = countries
+    .filter(c => c.outcome >= p75)
+    .sort((a, b) => a.spending - b.spending); // cheapest first
 
-  // 2. Minimum effective spending — find the floor
-  const deciles = buildDeciles(countries);
-  const floorResult = findMinimumEffectiveSpending([{
-    categoryId: mapping.spendingField,
-    categoryName: mapping.outcomeName,
-    deciles,
-  }], {
-    outcomeTolerance: mapping.negateOutcome ? 2 : 1, // wider tolerance for inverted metrics
-    outcomeDirection: 'higher',
-  });
+  if (highPerformers.length === 0) return null;
 
-  const floor = floorResult[0];
-  let floorSpending = floor?.floorSpending ?? usData.spending;
-  const floorOutcome = floor?.floorOutcome ?? usData.outcome;
+  // 3. Best value = cheapest high performer
+  const bestValue = highPerformers[0]!;
 
-  // Clamp floor: can't exceed best country's spending (decile averages can be higher
-  // than the single best performer, which is logically wrong)
-  const bestCountrySpending = rankings[0]?.spending ?? floorSpending;
-  floorSpending = Math.min(floorSpending, bestCountrySpending);
+  // 4. Floor = best value's spending. Overspend = target / floor.
+  const floorSpending = bestValue.spending;
+  const ratio = floorSpending > 0 ? target.spending / floorSpending : 1;
+  const savingsPerCapita = Math.max(0, target.spending - floorSpending);
 
-  // 3. Overspend ratio for US
-  const ratio = floorSpending > 0 ? usData.spending / floorSpending : 1;
-  const savingsPerCapita = Math.max(0, usData.spending - floorSpending);
-
-  // Top 3 most efficient
-  const topEfficient = rankings.slice(0, 3).map(r => ({
-    name: COUNTRY_NAMES[r.countryCode] ?? r.countryCode,
-    spending: Math.round(r.spending),
-    outcome: Math.round(r.outcome * 100) / 100,
-    rank: r.rank,
+  // 5. Top 3 high performers (cheapest first)
+  const topEfficient = highPerformers.slice(0, 3).map((c, i) => ({
+    name: COUNTRY_NAMES[c.code] ?? c.code,
+    spending: Math.round(c.spending),
+    outcome: Math.round(c.outcome * 100) / 100,
+    rank: i + 1,
   }));
 
-  // Best country (rank 1)
-  const best = rankings[0]!;
+  // 6. Rank the target among all countries by outcome/spending ratio
+  const allByRatio = [...countries]
+    .sort((a, b) => (b.outcome / b.spending) - (a.outcome / a.spending));
+  const targetRank = allByRatio.findIndex(c => c.code === targetCode) + 1;
 
   return {
-    usRank: usRanking.rank,
-    totalCountries: rankings.length,
+    usRank: targetRank,
+    totalCountries: countries.length,
     bestCountry: {
-      code: best.countryCode,
-      name: COUNTRY_NAMES[best.countryCode] ?? best.countryCode,
-      spending: Math.round(best.spending),
-      outcome: Math.round(best.outcome * 100) / 100,
+      code: bestValue.code,
+      name: COUNTRY_NAMES[bestValue.code] ?? bestValue.code,
+      spending: Math.round(bestValue.spending),
+      outcome: Math.round(bestValue.outcome * 100) / 100,
     },
     usData: {
-      spending: Math.round(usData.spending),
-      outcome: Math.round(usData.outcome * 100) / 100,
+      spending: Math.round(target.spending),
+      outcome: Math.round(target.outcome * 100) / 100,
     },
     floorSpending: Math.round(floorSpending),
-    floorOutcome: Math.round(floorOutcome * 100) / 100,
+    floorOutcome: Math.round(bestValue.outcome * 100) / 100,
     overspendRatio: Math.round(ratio * 10) / 10,
     potentialSavingsPerCapita: Math.round(savingsPerCapita),
     potentialSavingsTotal: Math.round(savingsPerCapita * US_POPULATION),

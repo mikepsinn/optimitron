@@ -84,14 +84,25 @@ export interface OECDBudgetPanelDataPoint {
   infantMortalityPer1000: number | null;
   /** Gini index (World Bank estimate, 0 = perfect equality, 100 = max inequality) */
   giniIndex: number | null;
+
+  // ── Education outcome (added to fix GDP-as-proxy problem) ─────────
+  /** PISA Math score (OECD PISA assessment, ~3yr cycle: 2003,2006,2009,2012,2015,2018,2022) */
+  pisaMathScore: number | null;
+
+  // ── Welfare outcome (the actual Optimocracy metric) ───────────────
+  /** Real after-tax median disposable income, PPP-adjusted (constant intl $, per equivalised person) */
+  afterTaxMedianIncomePpp: number | null;
 }
 
 // ─── Country codes ────────────────────────────────────────────────────
 
+// Extended panel: 23 OECD core + 5 high-performing non-OECD countries
+// Added: SGP (Singapore), EST (Estonia), VNM (Vietnam), TWN (Taiwan), POL (Poland)
 export const OECD_PANEL_COUNTRIES = [
   'USA', 'GBR', 'FRA', 'DEU', 'JPN', 'CAN', 'ITA', 'AUS',
   'NLD', 'BEL', 'SWE', 'NOR', 'DNK', 'FIN', 'AUT', 'CHE',
   'ESP', 'PRT', 'IRL', 'NZL', 'KOR', 'ISR', 'CZE',
+  'SGP', 'EST', 'VNM', 'TWN', 'POL',
 ] as const;
 
 export const OECD_PANEL_YEARS = Array.from({ length: 23 }, (_, i) => 2000 + i);
@@ -115,6 +126,7 @@ function row(
   gdpPc: number | null,
   infantMort: number | null,
   gini: number | null,
+  pisa: number | null = null,
 ): OECDBudgetPanelDataPoint {
   return {
     jurisdictionIso3,
@@ -133,6 +145,8 @@ function row(
     gdpPerCapitaPpp: gdpPc,
     infantMortalityPer1000: infantMort,
     giniIndex: gini,
+    pisaMathScore: pisa,
+    afterTaxMedianIncomePpp: null, // populated at export time from median income series
   };
 }
 
@@ -168,7 +182,7 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('USA', 2019, 16.7, 5.0, 3.4, 18.7, 2.83, 78.8, 56300, 5.2, 41.5),
   row('USA', 2020, 18.8, 5.1, 3.7, 23.1, 3.45, 77.0, 54600, 5.2, 39.7),
   row('USA', 2021, 17.8, 5.0, 3.5, 22.4, 3.46, 76.3, 58250, 5.2, 39.8),
-  row('USA', 2022, 17.3, 5.0, 3.5, 21.5, 3.46, 77.5, 59920, 5.1, null),
+  row('USA', 2022, 17.3, 5.0, 3.5, 21.5, 3.46, 77.5, 59920, 5.1, null, 465),
 
   // ═══════════════════════════════════════════════════════════════════
   // GBR — United Kingdom
@@ -276,7 +290,7 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('JPN', 2019, 10.7, 3.2, 0.9, 22.3, 3.24, 84.4, 37820, 1.8, null),
   row('JPN', 2020, 10.9, 3.4, 1.0, 25.3, 3.27, 84.6, 36990, 1.8, null),
   row('JPN', 2021, 11.0, 3.4, 1.1, 24.5, 3.30, 84.5, 37510, 1.7, null),
-  row('JPN', 2022, 10.9, 3.4, 1.1, 24.0, 3.30, 84.5, 37870, 1.7, null),
+  row('JPN', 2022, 10.9, 3.4, 1.1, 24.0, 3.30, 84.5, 37870, 1.7, null, 536),
 
   // ═══════════════════════════════════════════════════════════════════
   // CAN — Canada
@@ -519,7 +533,7 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('FIN', 2019, 9.0, 5.7, 1.3, 28.1, 2.79, 81.7, 38870, 2.1, 27.4),
   row('FIN', 2020, 9.6, 6.1, 1.5, 30.7, 2.91, 81.6, 37950, 2.0, null),
   row('FIN', 2021, 9.4, 6.0, 1.5, 29.4, 2.99, 81.8, 39400, 2.0, null),
-  row('FIN', 2022, 9.2, 5.9, 1.6, 28.5, 2.95, 81.9, 39800, 2.0, null),
+  row('FIN', 2022, 9.2, 5.9, 1.6, 28.5, 2.95, 81.9, 39800, 2.0, null, 484),
 
   // ═══════════════════════════════════════════════════════════════════
   // AUT — Austria
@@ -654,7 +668,7 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('IRL', 2019, 6.7, 3.3, 0.3, 11.5, 1.23, 82.3, 64080, 2.7, null),
   row('IRL', 2020, 7.1, 3.5, 0.3, 14.5, 1.23, 82.0, 67560, 2.7, null),
   row('IRL', 2021, 6.7, 3.4, 0.3, 12.8, 1.10, 82.0, 76430, 2.7, null),
-  row('IRL', 2022, 6.1, 3.3, 0.3, 11.6, 1.10, 82.0, 82310, 2.6, null),
+  row('IRL', 2022, 6.1, 3.3, 0.3, 11.6, 1.10, 82.0, 82310, 2.6, null, 492),
 
   // ═══════════════════════════════════════════════════════════════════
   // NZL — New Zealand
@@ -708,7 +722,7 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('KOR', 2019, 8.2, 5.1, 2.7, 12.2, 4.64, 83.3, 39430, 2.4, null),
   row('KOR', 2020, 8.4, 5.3, 2.8, 14.4, 4.81, 83.5, 39430, 2.3, null),
   row('KOR', 2021, 8.8, 5.3, 2.8, 14.9, 4.93, 83.6, 41370, 2.3, null),
-  row('KOR', 2022, 9.0, 5.3, 2.7, 14.8, 4.93, 83.6, 42350, 2.3, null),
+  row('KOR', 2022, 9.0, 5.3, 2.7, 14.8, 4.93, 83.6, 42350, 2.3, null, 527),
 
   // ═══════════════════════════════════════════════════════════════════
   // ISR — Israel
@@ -762,19 +776,131 @@ const data: OECDBudgetPanelDataPoint[] = [
   row('CZE', 2019, 7.6, 4.0, 1.2, 17.8, 1.94, 79.1, 34300, 2.4, 25.3),
   row('CZE', 2020, 8.6, 4.2, 1.3, 20.8, 2.00, 78.3, 33310, 2.4, null),
   row('CZE', 2021, 8.7, 4.1, 1.4, 20.0, 2.00, 77.3, 34040, 2.4, null),
-  row('CZE', 2022, 8.2, 4.1, 1.4, 19.2, 2.00, 78.3, 34970, 2.4, null),
+  row('CZE', 2022, 8.2, 4.1, 1.4, 19.2, 2.00, 78.3, 34970, 2.4, null, 487),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // SGP — Singapore (non-OECD, world leader in health + education efficiency)
+  // Sources: World Bank WDI, OECD PISA, Singapore MOH/MOE
+  // Social spending estimated from Singapore Budget (CPF + ComCare + Workfare)
+  // ═══════════════════════════════════════════════════════════════════
+  row('SGP', 2000, 2.8, 3.4, 4.7, 5.5, 1.82, 78.0, 48690, 2.5, null),
+  row('SGP', 2003, 3.0, 3.1, 4.8, 5.8, 2.05, 78.7, 55410, 2.2, null, 562),
+  row('SGP', 2006, 2.8, 2.9, 4.3, 5.5, 2.13, 79.9, 63350, 2.0, null, 564),
+  row('SGP', 2009, 3.1, 3.0, 3.7, 6.0, 2.16, 81.0, 65180, 1.9, null, 562),
+  row('SGP', 2010, 3.1, 3.0, 3.4, 5.8, 2.01, 81.3, 72960, 1.8, null),
+  row('SGP', 2012, 3.6, 3.0, 3.3, 6.2, 2.00, 82.0, 77780, 1.7, null, 573),
+  row('SGP', 2013, 3.8, 2.9, 3.3, 6.4, 2.00, 82.3, 79120, 1.7, null),
+  row('SGP', 2014, 4.1, 2.9, 3.2, 6.5, 2.02, 82.5, 80670, 1.7, null),
+  row('SGP', 2015, 4.3, 2.9, 3.1, 7.0, 1.99, 82.7, 81960, 1.7, 46.3, 564),
+  row('SGP', 2016, 4.4, 2.8, 3.1, 7.2, 1.99, 82.8, 83250, 1.7, null),
+  row('SGP', 2017, 4.4, 2.8, 3.1, 7.3, 1.94, 83.1, 86080, 1.7, null),
+  row('SGP', 2018, 4.4, 2.9, 3.0, 7.5, 1.84, 83.5, 88540, 1.6, null, 569),
+  row('SGP', 2019, 4.4, 2.7, 3.0, 7.6, 1.89, 83.6, 89700, 1.6, null),
+  row('SGP', 2020, 5.9, 3.0, 3.1, 10.0, 1.89, 83.5, 84300, 1.6, null),
+  row('SGP', 2021, 5.5, 2.8, 3.0, 8.5, 1.93, 83.5, 90780, 1.5, null),
+  row('SGP', 2022, 4.5, 2.7, 3.0, 7.8, 1.95, 83.9, 95600, 1.5, null, 575),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // EST — Estonia (top European education at very low cost)
+  // Sources: World Bank WDI, OECD PISA
+  // ═══════════════════════════════════════════════════════════════════
+  row('EST', 2003, 4.4, 5.3, 1.5, 12.5, 0.77, 72.0, 15940, 6.6, 35.8, 531),
+  row('EST', 2006, 4.7, 4.8, 1.5, 12.0, 1.13, 72.9, 20440, 4.4, 33.4, 515),
+  row('EST', 2009, 6.0, 5.8, 1.8, 17.4, 1.41, 75.0, 19880, 3.3, 31.4, 512),
+  row('EST', 2010, 5.7, 5.7, 1.6, 17.1, 1.58, 75.8, 20300, 3.1, 31.3),
+  row('EST', 2012, 5.3, 5.2, 1.9, 15.4, 2.12, 76.5, 23030, 2.8, 33.2, 521),
+  row('EST', 2015, 5.8, 5.2, 2.0, 16.3, 1.49, 77.7, 25900, 2.3, 32.7, 520),
+  row('EST', 2018, 6.0, 5.2, 2.0, 16.5, 1.41, 78.6, 29530, 1.9, 30.4, 523),
+  row('EST', 2019, 6.1, 5.1, 2.0, 16.7, 1.63, 78.8, 30850, 1.7, 30.8),
+  row('EST', 2020, 7.0, 5.4, 2.1, 19.3, 1.79, 78.6, 30170, 1.6, null),
+  row('EST', 2021, 6.8, 5.2, 2.2, 17.8, 1.75, 77.2, 32790, 1.6, null),
+  row('EST', 2022, 6.5, 5.3, 2.3, 17.2, 1.75, 78.0, 33900, 1.6, null, 510),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // VNM — Vietnam (remarkable education at extremely low spending)
+  // Sources: World Bank WDI, OECD PISA
+  // Vietnam only participated in PISA 2012, 2015
+  // ═══════════════════════════════════════════════════════════════════
+  row('VNM', 2010, 4.3, 5.0, 2.3, null, 0.19, 75.1, 5220, 17.0, 35.6),
+  row('VNM', 2012, 4.5, 4.8, 2.2, null, 0.19, 75.5, 5660, 16.0, 35.6, 511),
+  row('VNM', 2015, 5.0, 4.2, 2.3, null, 0.44, 75.2, 6310, 16.7, 35.3, 495),
+  row('VNM', 2018, 4.5, 4.0, 2.3, null, 0.53, 75.3, 7440, 15.9, 35.7),
+  row('VNM', 2019, 4.5, 3.8, 2.3, null, 0.53, 75.3, 7900, 15.5, null),
+  row('VNM', 2020, 4.7, 4.1, 2.4, null, 0.53, 75.4, 8060, 15.2, null),
+  row('VNM', 2021, 4.8, 4.1, 2.4, null, 0.53, 75.3, 8270, 14.7, null),
+  row('VNM', 2022, 4.4, 3.9, 2.4, null, 0.53, 75.4, 8910, 14.3, null),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // TWN — Taiwan (top PISA, efficient education + healthcare)
+  // Sources: World Bank WDI, OECD PISA, Taiwan DGBAS
+  // Taiwan GDP PPP from IMF WEO (not always in World Bank)
+  // ═══════════════════════════════════════════════════════════════════
+  row('TWN', 2006, 5.7, 3.8, 2.2, null, 2.51, 77.9, 33190, 5.0, 33.6, 549),
+  row('TWN', 2009, 6.1, 4.0, 2.1, null, 2.84, 79.0, 32850, 4.2, 33.0, 543),
+  row('TWN', 2012, 6.0, 3.6, 2.1, null, 3.06, 79.5, 36640, 3.7, 33.6, 560),
+  row('TWN', 2015, 6.1, 3.5, 1.9, null, 3.05, 80.2, 38570, 3.4, 33.6, 542),
+  row('TWN', 2018, 6.1, 3.4, 1.8, null, 3.37, 80.7, 42090, 3.2, 33.8, 531),
+  row('TWN', 2019, 6.1, 3.4, 1.7, null, 3.46, 80.9, 43410, 3.1, null),
+  row('TWN', 2020, 6.6, 3.5, 1.7, null, 3.53, 81.3, 44100, 3.0, null),
+  row('TWN', 2021, 6.5, 3.4, 1.7, null, 3.57, 80.9, 47650, 2.9, null),
+  row('TWN', 2022, 6.1, 3.3, 1.7, null, 3.60, 80.4, 49600, 2.8, null),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // POL — Poland (dramatic PISA improvement, moderate spending)
+  // Sources: World Bank WDI, OECD PISA
+  // ═══════════════════════════════════════════════════════════════════
+  row('POL', 2003, 5.6, 5.4, 1.9, 21.1, 0.54, 74.7, 13160, 6.9, 35.5, 490),
+  row('POL', 2006, 5.7, 5.0, 1.8, 20.4, 0.55, 75.2, 15540, 5.8, 33.8, 495),
+  row('POL', 2009, 6.4, 5.1, 1.7, 20.6, 0.67, 75.9, 17050, 5.1, 33.2, 495),
+  row('POL', 2010, 6.3, 5.0, 1.8, 20.6, 0.72, 76.3, 17550, 4.7, 33.3),
+  row('POL', 2012, 6.1, 4.8, 1.7, 19.6, 0.88, 76.7, 19120, 4.2, 32.1, 518),
+  row('POL', 2015, 6.1, 4.8, 1.9, 19.3, 1.00, 77.6, 21260, 3.8, 31.8, 504),
+  row('POL', 2018, 6.1, 4.6, 2.0, 20.5, 1.21, 77.7, 24350, 3.4, 29.7, 516),
+  row('POL', 2019, 6.2, 4.6, 2.0, 20.8, 1.32, 77.8, 25280, 3.3, 29.7),
+  row('POL', 2020, 6.5, 4.7, 2.2, 23.1, 1.39, 75.8, 25060, 3.2, null),
+  row('POL', 2021, 6.0, 4.6, 2.2, 22.0, 1.44, 75.5, 26730, 3.0, null),
+  row('POL', 2022, 5.9, 4.5, 2.4, 21.0, 1.44, 77.0, 27810, 2.9, null),
 ];
+
+// ─── Enrich with Median Income Data ──────────────────────────────────
+
+import { getBestAvailableMedianIncomeSeries } from './median-income-series.js';
+
+/** Build a lookup: "ISO3:YEAR" → median income value (real PPP) */
+function buildMedianIncomeLookup(): Map<string, number> {
+  const records = getBestAvailableMedianIncomeSeries({
+    priceBasis: 'real',
+    purchasingPower: 'ppp',
+  });
+
+  const lookup = new Map<string, number>();
+  for (const r of records) {
+    const key = `${r.jurisdictionIso3}:${r.year}`;
+    // Only overwrite if this record has higher preference rank
+    if (!lookup.has(key)) {
+      lookup.set(key, r.value);
+    }
+  }
+  return lookup;
+}
+
+const medianIncomeLookup = buildMedianIncomeLookup();
+
+/** Enrich panel rows with median income from the generated series */
+const enrichedData = data.map(row => ({
+  ...row,
+  afterTaxMedianIncomePpp: medianIncomeLookup.get(`${row.jurisdictionIso3}:${row.year}`) ?? null,
+}));
 
 // ─── Export ───────────────────────────────────────────────────────────
 
 /**
- * OECD 23-country budget/outcome panel (2000–2022).
- * 
- * 529 country-year observations with spending (% GDP) and outcome data.
- * Suitable for cross-country diminishing-returns analysis and optimal
- * budget allocation research.
+ * Extended cross-country budget/outcome panel (28 countries, 2000–2022+).
+ *
+ * Includes 23 OECD core + 5 high-performing non-OECD countries (SGP, EST, VNM, TWN, POL).
+ * Enriched with real after-tax median disposable income from Eurostat EU-SILC + World Bank PIP.
  */
-export const OECD_BUDGET_PANEL: readonly OECDBudgetPanelDataPoint[] = Object.freeze(data);
+export const OECD_BUDGET_PANEL: readonly OECDBudgetPanelDataPoint[] = Object.freeze(enrichedData);
 
 /**
  * Metadata about the panel dataset.

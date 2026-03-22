@@ -11,33 +11,33 @@ layout: layout.njk
 |--------|-------|
 | Federal budget line item | $102B |
 | Real per-capita (2017 USD, federal) | $230 |
-| OECD total gov spending (all levels) | $2898/cap |
-| OECD efficiency rank | **8/23** |
-| Overspend ratio | **1.1x** |
-| Floor spending | $2560/cap |
-| Potential savings | **$115B/yr** |
-| Recommendation | **MAINTAIN** |
-| Evidence | OECD efficient frontier (23 countries, rank 8/23) |
-| **Your dividend** | **$444/yr ($37/mo)** per adult |
+| OECD total gov spending (all levels) | $2996/cap |
+| OECD efficiency rank | **11/11** |
+| Overspend ratio | **2.3x** |
+| Floor spending | $1288/cap |
+| Potential savings | **$579B/yr** |
+| Recommendation | **DECREASE** |
+| Evidence | OECD efficient frontier (11 countries, rank 11/11) |
+| **Your dividend** | **$2,244/yr ($187/mo)** per adult |
 
 ## OECD Efficiency Comparison
 
-> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Education" is $102B, but the OECD comparison uses the full government system at $2898/cap.
+> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Education" is $102B, but the OECD comparison uses the full government system at $2996/cap.
 
-| Country | Spending/cap | GDP per Capita | Rank |
-|---------|-------------|----------------|------|
-| **US** | **$2898** | **57590** | **8** |
-| Ireland | $2560 | 75433.33 | 1 |
-| Japan | $1274 | 37456.67 | 2 |
-| Czech Republic | $1410 | 34106.67 | 3 |
+| Country | Spending/cap | PISA Math Score | Rank |
+|---------|-------------|-----------------|------|
+| **US** | **$2996** | **465** | **11** |
+| Japan | $1288 | 536 | 1 |
+| Taiwan | $1367 | 544.33 | 2 |
+| Singapore | $2509 | 569.33 | 3 |
 
-Best: **Ireland** — $2560/cap → GDP per Capita 75433.33
+Best: **Japan** — $1288/cap → PISA Math Score 536
 
 ## Diminishing Returns Model
 
 - Model: saturation
-- R²: 0.526
-- Observations: 529
+- R²: 0.115
+- Observations: 33
 
 ## Historical Spending (2015–2025)
 
@@ -69,9 +69,11 @@ Best: **Ireland** — $2560/cap → GDP per Capita 75433.33
 | PISA reading score (US) | 504 | declining |
 | Student loan debt (total) | 1740 | declining |
 
-## Assessment
+## Recommendation
 
-US spending on Education is **near the efficient floor** (1.1x). No major reallocation recommended.
+**Adopt the approach of Japan, Taiwan, Singapore.** These countries achieve PISA Math Score of 536 while spending $1288/cap vs the US at $2996/cap for PISA Math Score 465.
+
+Reducing to the efficient floor of $1288/cap would save **$579B/yr**, equivalent to **$2,244/yr ($187/mo)** per adult as a Universal Dividend.
 
 ## Related
 

@@ -15,54 +15,54 @@ Wishonia is a composite jurisdiction that adopts **each spending category's most
 
 | Category | Model Country | US $/cap | Wishonia $/cap | Overspend | Savings/yr | Your Dividend |
 |----------|--------------|----------|----------------|-----------|-----------|---------------|
-| [Military](../us/budget/military/) | Ireland | $2,052 | $226 | 9.1x | $619B | $2,399/yr ($200/mo) · [bill](../us/legislation/military-reform/) |
-| [Healthcare (total system)](../us/budget/health-non-medicare-medicaid/) | Portugal | $10,333 | $2,924 | 3.5x | $2.5T | $9,735/yr ($811/mo) · [bill](../us/legislation/health-non-medicare-medicaid-reform/) |
-| [Science / NASA](../us/budget/science-nasa/) | Ireland | $1,991 | $843 | 2.4x | $389B | $1,508/yr ($126/mo) · [bill](../us/legislation/science-nasa-reform/) |
-| [Education](../us/budget/education/) | Ireland | $2,898 | $2,560 | 1.1x | $115B | $444/yr ($37/mo) |
-| **TOTAL** | | | | | **$3.6T** | **$14,087/yr ($1,174/mo)** |
+| [Military](../us/budget/military/) | Switzerland | $2,052 | $389 | 5.3x | $564B | $2,185/yr ($182/mo) · [bill](../us/legislation/military-reform/) |
+| [Healthcare (total system)](../us/budget/health-non-medicare-medicaid/) | South Korea | $10,333 | $3,588 | 2.9x | $2.3T | $8,863/yr ($739/mo) · [bill](../us/legislation/health-non-medicare-medicaid-reform/) |
+| [Education](../us/budget/education/) | Japan | $2,996 | $1,288 | 2.3x | $579B | $2,244/yr ($187/mo) |
+| [Science / NASA](../us/budget/science-nasa/) | Netherlands | $1,991 | $1,064 | 1.9x | $314B | $1,218/yr ($102/mo) · [bill](../us/legislation/science-nasa-reform/) |
+| **TOTAL** | | | | | **$3.7T** | **$14,510/yr ($1,209/mo)** |
 
 ## What Changes
 
-### Military: Adopt Ireland's Approach
+### Military: Adopt Switzerland's Approach
 
-Ireland achieves Life Expectancy of **82** at **$226/cap**. The US gets Life Expectancy 76.93 at $2,052/cap (9.1x more for worse results).
+Switzerland achieves Life Expectancy of **83.37** at **$389/cap**. The US gets Life Expectancy 76.93 at $2,052/cap (5.3x more for worse results).
 
-Savings: **$619B/yr** → **$2,399/yr per adult** as Universal Dividend.
+Savings: **$564B/yr** → **$2,185/yr per adult** as Universal Dividend.
 
 [View detailed analysis →](../us/budget/military/) · [View model legislation →](../us/legislation/military-reform/)
 
-### Healthcare (total system): Adopt Portugal's Approach
+### Healthcare (total system): Adopt South Korea's Approach
 
-Portugal achieves Life Expectancy of **81.37** at **$2,924/cap**. The US gets Life Expectancy 76.93 at $10,333/cap (3.5x more for worse results).
+South Korea achieves Life Expectancy of **83.57** at **$3,588/cap**. The US gets Life Expectancy 76.93 at $10,333/cap (2.9x more for worse results).
 
-Savings: **$2.5T/yr** → **$9,735/yr per adult** as Universal Dividend.
+Savings: **$2.3T/yr** → **$8,863/yr per adult** as Universal Dividend.
 
 [View detailed analysis →](../us/budget/health-non-medicare-medicaid/) · [View model legislation →](../us/legislation/health-non-medicare-medicaid-reform/)
 
-### Science / NASA: Adopt Ireland's Approach
+### Education: Adopt Japan's Approach
 
-Ireland achieves GDP per Capita of **75433.33** at **$843/cap**. The US gets GDP per Capita 57590 at $1,991/cap (2.4x more for worse results).
+Japan achieves PISA Math Score of **536** at **$1,288/cap**. The US gets PISA Math Score 465 at $2,996/cap (2.3x more for worse results).
 
-Savings: **$389B/yr** → **$1,508/yr per adult** as Universal Dividend.
-
-[View detailed analysis →](../us/budget/science-nasa/) · [View model legislation →](../us/legislation/science-nasa-reform/)
-
-### Education: Adopt Ireland's Approach
-
-Ireland achieves GDP per Capita of **75433.33** at **$2,560/cap**. The US gets GDP per Capita 57590 at $2,898/cap (1.1x more for worse results).
-
-Savings: **$115B/yr** → **$444/yr per adult** as Universal Dividend.
+Savings: **$579B/yr** → **$2,244/yr per adult** as Universal Dividend.
 
 [View detailed analysis →](../us/budget/education/)
+
+### Science / NASA: Adopt Netherlands's Approach
+
+Netherlands achieves After-Tax Median Income (PPP) of **31221.39** at **$1,064/cap**. The US gets After-Tax Median Income (PPP) 26245.67 at $1,991/cap (1.9x more for worse results).
+
+Savings: **$314B/yr** → **$1,218/yr per adult** as Universal Dividend.
+
+[View detailed analysis →](../us/budget/science-nasa/) · [View model legislation →](../us/legislation/science-nasa-reform/)
 
 ## Household Dividend Projections
 
 | Adults | Monthly | Annual |
 |--------|---------|--------|
-| 1 | **$1,174/mo** | $14,087/yr |
-| 2 | **$2,348/mo** | $28,174/yr |
-| 3 | **$3,522/mo** | $42,261/yr |
-| 4 | **$4,696/mo** | $56,348/yr |
+| 1 | **$1,209/mo** | $14,510/yr |
+| 2 | **$2,418/mo** | $29,020/yr |
+| 3 | **$3,627/mo** | $43,530/yr |
+| 4 | **$4,836/mo** | $58,040/yr |
 
 ## Citizen Choice
 

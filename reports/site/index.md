@@ -10,7 +10,7 @@ layout: layout.njk
 ### [United States](./us/)
 
 23 budget categories analyzed against 23 OECD countries.
-Total overspend vs efficient floor: **$3.6T/yr** ($14,086/adult).
+Total overspend vs efficient floor: **$3.7T/yr** ($14,510/adult).
 
 ### [Wishonia: The Optimal Composite](./wishonia/)
 

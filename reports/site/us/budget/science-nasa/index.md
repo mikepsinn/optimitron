@@ -12,32 +12,32 @@ layout: layout.njk
 | Federal budget line item | $44B |
 | Real per-capita (2017 USD, federal) | $99 |
 | OECD total gov spending (all levels) | $1991/cap |
-| OECD efficiency rank | **20/23** |
-| Overspend ratio | **2.4x** |
-| Floor spending | $843/cap |
-| Potential savings | **$389B/yr** |
+| OECD efficiency rank | **23/27** |
+| Overspend ratio | **1.9x** |
+| Floor spending | $1064/cap |
+| Potential savings | **$314B/yr** |
 | Recommendation | **DECREASE** |
-| Evidence | OECD efficient frontier (23 countries, rank 20/23) |
-| **Your dividend** | **$1,508/yr ($126/mo)** per adult |
+| Evidence | OECD efficient frontier (27 countries, rank 23/27) |
+| **Your dividend** | **$1,218/yr ($102/mo)** per adult |
 
 ## OECD Efficiency Comparison
 
 > **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Science / NASA" is $44B, but the OECD comparison uses the full government system at $1991/cap.
 
-| Country | Spending/cap | GDP per Capita | Rank |
-|---------|-------------|----------------|------|
-| **US** | **$1991** | **57590** | **20** |
-| Ireland | $859 | 75433.33 | 1 |
-| Spain | $472 | 33080 | 2 |
-| New Zealand | $481 | 33430 | 3 |
+| Country | Spending/cap | After-Tax Median Income (PPP) | Rank |
+|---------|-------------|-------------------------------|------|
+| **US** | **$1991** | **26245.67** | **23** |
+| Netherlands | $1064 | 31221.39 | 1 |
+| Norway | $1214 | 33589.79 | 2 |
+| Denmark | $1317 | 30452.17 | 3 |
 
-Best: **Ireland** — $859/cap → GDP per Capita 75433.33
+Best: **Netherlands** — $1064/cap → After-Tax Median Income (PPP) 31221.39
 
 ## Diminishing Returns Model
 
 - Model: log
-- R²: 0.318
-- Observations: 529
+- R²: 0.276
+- Observations: 574
 
 ## Historical Spending (2015–2025)
 
@@ -70,9 +70,9 @@ Best: **Ireland** — $859/cap → GDP per Capita 75433.33
 
 ## Recommendation
 
-**Adopt the approach of Ireland, Spain, New Zealand.** These countries achieve GDP per Capita of 75433.33 while spending $859/cap vs the US at $1991/cap for GDP per Capita 57590.
+**Adopt the approach of Netherlands, Norway, Denmark.** These countries achieve After-Tax Median Income (PPP) of 31221.39 while spending $1064/cap vs the US at $1991/cap for After-Tax Median Income (PPP) 26245.67.
 
-Reducing to the efficient floor of $843/cap would save **$389B/yr**, equivalent to **$1,508/yr ($126/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $1064/cap would save **$314B/yr**, equivalent to **$1,218/yr ($102/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/science-nasa-reform/)**
 

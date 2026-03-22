@@ -11,10 +11,10 @@ Total budget: **$6.7T**
 
 | Category | Nominal | Real/Cap | OECD Rank | Overspend | Wasted/yr | Action |
 |----------|---------|----------|-----------|-----------|-----------|--------|
-| [Health (non-Medicare/Medicaid)](./health-non-medicare-medicaid/) | $94B | $212/cap | 23/23 | 3.5x | $2.5T | major_decrease · [legislation](../legislation/health-non-medicare-medicaid-reform/) |
-| [Military](./military/) | $886B | $1996/cap | 23/23 | 9.1x | $619B | major_decrease · [legislation](../legislation/military-reform/) |
-| [Science / NASA](./science-nasa/) | $44B | $99/cap | 20/23 | 2.4x | $389B | decrease · [legislation](../legislation/science-nasa-reform/) |
-| [Education](./education/) | $102B | $230/cap | 8/23 | 1.1x | $115B | maintain |
+| [Health (non-Medicare/Medicaid)](./health-non-medicare-medicaid/) | $94B | $212/cap | 28/28 | 2.9x | $2.3T | decrease · [legislation](../legislation/health-non-medicare-medicaid-reform/) |
+| [Education](./education/) | $102B | $230/cap | 11/11 | 2.3x | $579B | decrease |
+| [Military](./military/) | $886B | $1996/cap | 27/28 | 5.3x | $564B | major_decrease · [legislation](../legislation/military-reform/) |
+| [Science / NASA](./science-nasa/) | $44B | $99/cap | 23/27 | 1.9x | $314B | decrease · [legislation](../legislation/science-nasa-reform/) |
 | [Social Security](./social-security/) | $1.5T | $3291/cap | — | — | — | maintain · [legislation](../legislation/social-security-reform/) |
 | [Interest on Debt](./interest-on-debt/) | $892B | $2009/cap | — | — | — | maintain |
 | [Medicare](./medicare/) | $874B | $1969/cap | — | — | — | maintain · [legislation](../legislation/medicare-reform/) |

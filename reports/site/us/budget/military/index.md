@@ -12,13 +12,13 @@ layout: layout.njk
 | Federal budget line item | $886B |
 | Real per-capita (2017 USD, federal) | $1996 |
 | OECD total gov spending (all levels) | $2052/cap |
-| OECD efficiency rank | **23/23** |
-| Overspend ratio | **9.1x** |
-| Floor spending | $226/cap |
-| Potential savings | **$619B/yr** |
+| OECD efficiency rank | **27/28** |
+| Overspend ratio | **5.3x** |
+| Floor spending | $389/cap |
+| Potential savings | **$564B/yr** |
 | Recommendation | **MAJOR_DECREASE** |
-| Evidence | OECD efficient frontier (23 countries, rank 23/23) |
-| **Your dividend** | **$2,399/yr ($200/mo)** per adult |
+| Evidence | OECD efficient frontier (28 countries, rank 27/28) |
+| **Your dividend** | **$2,186/yr ($182/mo)** per adult |
 
 ## OECD Efficiency Comparison
 
@@ -26,18 +26,18 @@ layout: layout.njk
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
-| **US** | **$2052** | **76.93** | **23** |
-| Ireland | $226 | 82 | 1 |
-| Spain | $331 | 82.87 | 2 |
-| Austria | $339 | 81.3 | 3 |
+| **US** | **$2052** | **76.93** | **27** |
+| Switzerland | $389 | 83.37 | 1 |
+| Japan | $400 | 84.53 | 2 |
+| Sweden | $565 | 82.9 | 3 |
 
-Best: **Ireland** — $226/cap → Life Expectancy 82
+Best: **Switzerland** — $389/cap → Life Expectancy 83.37
 
 ## Diminishing Returns Model
 
 - Model: log
-- R²: 0.006
-- Observations: 529
+- R²: 0.012
+- Observations: 584
 
 ## Historical Spending (2015–2025)
 
@@ -70,9 +70,9 @@ Best: **Ireland** — $226/cap → Life Expectancy 82
 
 ## Recommendation
 
-**Adopt the approach of Ireland, Spain, Austria.** These countries achieve Life Expectancy of 82 while spending $226/cap vs the US at $2052/cap for Life Expectancy 76.93.
+**Adopt the approach of Switzerland, Japan, Sweden.** These countries achieve Life Expectancy of 83.37 while spending $389/cap vs the US at $2052/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $226/cap would save **$619B/yr**, equivalent to **$2,399/yr ($200/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $389/cap would save **$564B/yr**, equivalent to **$2,186/yr ($182/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/military-reform/)**
 

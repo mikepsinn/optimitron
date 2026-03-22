@@ -12,13 +12,13 @@ layout: layout.njk
 | Federal budget line item | $94B |
 | Real per-capita (2017 USD, federal) | $212 |
 | OECD total gov spending (all levels) | $10333/cap |
-| OECD efficiency rank | **23/23** |
-| Overspend ratio | **3.5x** |
-| Floor spending | $2924/cap |
-| Potential savings | **$2.5T/yr** |
-| Recommendation | **MAJOR_DECREASE** |
-| Evidence | OECD efficient frontier (23 countries, rank 23/23) |
-| **Your dividend** | **$9,736/yr ($811/mo)** per adult |
+| OECD efficiency rank | **28/28** |
+| Overspend ratio | **2.9x** |
+| Floor spending | $3588/cap |
+| Potential savings | **$2.3T/yr** |
+| Recommendation | **DECREASE** |
+| Evidence | OECD efficient frontier (28 countries, rank 28/28) |
+| **Your dividend** | **$8,863/yr ($739/mo)** per adult |
 
 ## OECD Efficiency Comparison
 
@@ -26,18 +26,18 @@ layout: layout.njk
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
-| **US** | **$10333** | **76.93** | **23** |
-| Portugal | $2924 | 81.37 | 1 |
-| Czech Republic | $2898 | 77.97 | 2 |
-| Israel | $3110 | 82.17 | 3 |
+| **US** | **$10333** | **76.93** | **28** |
+| South Korea | $3588 | 83.57 | 1 |
+| Japan | $4095 | 84.53 | 2 |
+| Australia | $4544 | 83.1 | 3 |
 
-Best: **Portugal** — $2924/cap → Life Expectancy 81.37
+Best: **South Korea** — $3588/cap → Life Expectancy 83.57
 
 ## Diminishing Returns Model
 
-- Model: saturation
-- R²: 0.11
-- Observations: 529
+- Model: log
+- R²: 0.282
+- Observations: 584
 
 ## Historical Spending (2015–2025)
 
@@ -69,9 +69,9 @@ Best: **Portugal** — $2924/cap → Life Expectancy 81.37
 
 ## Recommendation
 
-**Adopt the approach of Portugal, Czech Republic, Israel.** These countries achieve Life Expectancy of 81.37 while spending $2924/cap vs the US at $10333/cap for Life Expectancy 76.93.
+**Adopt the approach of South Korea, Japan, Australia.** These countries achieve Life Expectancy of 83.57 while spending $3588/cap vs the US at $10333/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $2924/cap would save **$2.5T/yr**, equivalent to **$9,736/yr ($811/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent to **$8,863/yr ($739/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/health-non-medicare-medicaid-reform/)**
 
