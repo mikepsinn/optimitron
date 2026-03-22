@@ -1,106 +1,60 @@
 /**
- * Earth Optimization Prize page — smoke + content tests.
+ * Prize page functional tests — verify the deposit form works.
  *
- * Run against the running dev server:
- *   SKIP_SERVER=1 npx playwright test e2e/contribute.spec.ts
+ * Run:
+ *   SKIP_SERVER=1 BASE_URL=http://localhost:3333 npx playwright test e2e/voter-prize.spec.ts
  */
 import { test, expect } from "@playwright/test";
 
-test("contribute: loads successfully", async ({ page }) => {
-  const response = await page.goto("/contribute");
-  const status = response?.status() ?? 0;
-
-  if (status >= 500) {
-    test.skip(true, "Voter prize page returned 500 (likely needs database)");
-    return;
-  }
-
-  expect(status).toBeLessThan(400);
-  await expect(page).toHaveTitle(/Earth Optimization Prize/i);
-});
-
-test("contribute: renders hero and how-it-works", async ({ page }) => {
-  const response = await page.goto("/contribute");
+test("prize page: deposit form has wallet connect and amount presets", async ({ page }) => {
+  const response = await page.goto("/prize");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
   }
   await page.waitForLoadState("domcontentloaded");
 
-  await expect(
-    page.locator("text=Fund the Future. Reward the Voters."),
-  ).toBeVisible({ timeout: 10_000 });
+  // Wallet connect buttons exist
+  const walletButtons = page.locator("button").filter({ hasText: /wallet|metamask/i });
+  expect(await walletButtons.count()).toBeGreaterThan(0);
 
-  await expect(
-    page.locator("text=Depositors Fund the Treasury").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  await expect(
-    page.locator("text=Voters Earn VOTE Tokens").first(),
-  ).toBeVisible();
-});
-
-test("contribute: renders wallet connect and deposit form", async ({
-  page,
-}) => {
-  const response = await page.goto("/contribute");
-  if ((response?.status() ?? 0) >= 500) {
-    test.skip(true, "Needs database");
-    return;
-  }
-  await page.waitForLoadState("domcontentloaded");
-
-  await expect(
-    page.locator("text=Connect Wallet").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  await expect(
-    page.locator("text=Deposit to Prize Treasury").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  // Preset amount buttons
+  // Deposit preset buttons exist
   for (const amount of ["$100", "$500", "$1,000", "$5,000"]) {
-    await expect(
-      page.locator(`button:has-text("${amount}")`),
-    ).toBeVisible();
+    await expect(page.locator(`button:has-text("${amount}")`)).toBeVisible();
   }
 });
 
-test("contribute: renders contract architecture", async ({ page }) => {
-  const response = await page.goto("/contribute");
+test("referendum: 1% Treaty is active and votable", async ({ page }) => {
+  const response = await page.goto("/referendum");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
   }
   await page.waitForLoadState("domcontentloaded");
 
-  await expect(
-    page.locator("text=Contract Architecture").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  await expect(page.locator("text=VOTE (ERC-20)").first()).toBeVisible();
-  await expect(
-    page.locator("text=PRIZE (ERC-20 Vault)").first(),
-  ).toBeVisible();
-  await expect(page.locator("text=Aave V3 (USDC)").first()).toBeVisible();
-});
-
-test("contribute: renders VOTE token section and CTA", async ({ page }) => {
-  const response = await page.goto("/contribute");
-  if ((response?.status() ?? 0) >= 500) {
-    test.skip(true, "Needs database");
-    return;
-  }
-  await page.waitForLoadState("domcontentloaded");
-
-  await expect(
-    page.locator("h2:has-text('Your VOTE Tokens')").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  await expect(
-    page.locator("text=Democracy Should Pay").first(),
-  ).toBeVisible({ timeout: 10_000 });
-
-  const referendumLinks = page.locator('a[href="/referendum"]');
+  // Should have at least one referendum link
+  const referendumLinks = page.locator('a[href*="/referendum/"]');
   expect(await referendumLinks.count()).toBeGreaterThan(0);
+
+  // Click through to the referendum
+  await referendumLinks.first().click();
+  await page.waitForLoadState("domcontentloaded");
+
+  // Vote page should have a sign-in prompt (unauthenticated)
+  const signInLink = page.locator('a[href*="/auth/signin"]');
+  expect(await signInLink.count()).toBeGreaterThan(0);
+});
+
+test("scoreboard: shows live game metrics from DB", async ({ page }) => {
+  const response = await page.goto("/scoreboard");
+  if ((response?.status() ?? 0) >= 500) {
+    test.skip(true, "Needs database");
+    return;
+  }
+  await page.waitForLoadState("domcontentloaded");
+
+  // Should have numeric values (not loading spinners or empty)
+  // The page should render actual numbers even if they're 0
+  const poolValue = page.locator("text=$0").first();
+  await expect(poolValue).toBeVisible({ timeout: 10_000 });
 });

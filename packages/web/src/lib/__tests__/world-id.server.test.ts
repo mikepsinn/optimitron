@@ -6,6 +6,23 @@ const mocks = vi.hoisted(() => ({
   hashSignal: vi.fn(),
   signRequest: vi.fn(),
   upsertPersonhoodVerification: vi.fn(),
+  envStore: {
+    WORLD_ID_APP_ID: "app_test_world",
+    WORLD_ID_RP_ID: "app_test_rp",
+    WORLD_ID_SIGNING_KEY: "signing_key",
+    WORLD_ID_ACTION: "verify-personhood",
+    WORLD_ID_ENVIRONMENT: "staging" as const,
+    WORLD_ID_REQUEST_TTL_SECONDS: "300",
+    WORLD_ID_ALLOW_LEGACY_PROOFS: "true",
+  } as Record<string, string | undefined>,
+}));
+
+vi.mock("@/lib/env", () => ({
+  serverEnv: new Proxy({} as Record<string, string | undefined>, {
+    get(_target, prop: string) {
+      return mocks.envStore[prop];
+    },
+  }),
 }));
 
 vi.mock("@worldcoin/idkit/hashing", () => ({
@@ -40,13 +57,13 @@ describe("world id server helpers", () => {
       sig: "signed_request",
     });
     mocks.upsertPersonhoodVerification.mockResolvedValue({ id: "verification_1" });
-    vi.stubEnv("WORLD_ID_APP_ID", "app_test_world");
-    vi.stubEnv("WORLD_ID_RP_ID", "app_test_rp");
-    vi.stubEnv("WORLD_ID_SIGNING_KEY", "signing_key");
-    vi.stubEnv("WORLD_ID_ACTION", "verify-personhood");
-    vi.stubEnv("WORLD_ID_ENVIRONMENT", "staging");
-    vi.stubEnv("WORLD_ID_REQUEST_TTL_SECONDS", "300");
-    vi.stubEnv("WORLD_ID_ALLOW_LEGACY_PROOFS", "true");
+    mocks.envStore.WORLD_ID_APP_ID = "app_test_world";
+    mocks.envStore.WORLD_ID_RP_ID = "app_test_rp";
+    mocks.envStore.WORLD_ID_SIGNING_KEY = "signing_key";
+    mocks.envStore.WORLD_ID_ACTION = "verify-personhood";
+    mocks.envStore.WORLD_ID_ENVIRONMENT = "staging";
+    mocks.envStore.WORLD_ID_REQUEST_TTL_SECONDS = "300";
+    mocks.envStore.WORLD_ID_ALLOW_LEGACY_PROOFS = "true";
     global.fetch = vi.fn();
   });
 
@@ -58,7 +75,7 @@ describe("world id server helpers", () => {
   it("reports whether the World ID server config is present", () => {
     expect(isWorldIdConfigured()).toBe(true);
 
-    vi.stubEnv("WORLD_ID_SIGNING_KEY", "");
+    mocks.envStore.WORLD_ID_SIGNING_KEY = "";
     expect(isWorldIdConfigured()).toBe(false);
   });
 
