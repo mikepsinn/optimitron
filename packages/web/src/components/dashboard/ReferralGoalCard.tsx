@@ -15,7 +15,7 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
           YOUR REFERRAL GOAL
         </CardTitle>
         <CardDescription className="text-foreground font-bold">
-          Recruit 2 humans. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own
+          QUEST: Recruit 2 players. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own.
         </CardDescription>
       </CardHeader>
       <CardContent>
