@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { prizeLink } from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 import { fmtParam } from "@/lib/format-parameter";
 import {
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
@@ -175,13 +174,7 @@ export function TwoFuturesSection() {
             You are currently on Path A. You chose it by not choosing. Which
             is very on-brand for your species.
           </p>
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="px-8 py-3.5 bg-foreground text-background font-black uppercase text-lg border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-          >
-            Choose Path B
-          </NavItemLink>
+          <GameCTA href="/prize" variant="secondary" size="lg">Choose Path B</GameCTA>
         </div>
       </motion.div>
     </section>

@@ -1,4 +1,3 @@
-import { StepReveal } from "@/components/animations/StepReveal";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { fullManualPaperLink } from "@/lib/routes";
 import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
@@ -56,7 +55,7 @@ export function ImplementationPlanSection() {
         </p>
       </div>
 
-      <StepReveal className="space-y-6" staggerDelay={0.15}>
+      <div className="space-y-6">
         {steps.map((item) => (
           <div
             key={item.step}
@@ -80,7 +79,7 @@ export function ImplementationPlanSection() {
             </div>
           </div>
         ))}
-      </StepReveal>
+      </div>
 
       <div className="text-center mt-8">
         <NavItemLink
