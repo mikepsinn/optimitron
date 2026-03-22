@@ -166,7 +166,7 @@ function generateBudgetIndex() {
   const rows = cats.map((c: any) => {
     const eff = c.efficiency;
     const slug = slugify(c.name);
-    const rank = eff ? `${eff.usRank}/${eff.totalCountries}` : '—';
+    const rank = eff ? `${eff.rank}/${eff.totalCountries}` : '—';
     const over = eff ? `${eff.overspendRatio}x` : '—';
     const savings = eff ? fmt(eff.potentialSavingsTotal) : '—';
     const legSlug = LEGISLATION_MAP[c.name];
@@ -183,7 +183,7 @@ layout: layout.njk
 
 # ${JURISDICTION.name} Federal Budget: ${cats.length} Categories
 
-Total budget: **${fmt(budgetData.totalBudget)}**
+Total budget: **${fmt(budgetData.totalSpendingNominal)}**
 
 | Category | Nominal | Real/Cap | OECD Rank | Overspend | Wasted/yr | Action |
 |----------|---------|----------|-----------|-----------|-----------|--------|
@@ -222,10 +222,10 @@ layout: layout.njk
     md += `| Federal budget line item | ${fmt(cat.currentSpending)} |\n`;
     md += `| Real per-capita (2017 USD, federal) | $${cat.currentSpendingRealPerCapita.toFixed(0)} |\n`;
     if (eff) {
-      md += `| OECD total gov spending (all levels) | $${eff.usData.spending}/cap |\n`;
-      md += `| OECD efficiency rank | **${eff.usRank}/${eff.totalCountries}** |\n`;
+      md += `| OECD total gov spending (all levels) | $${eff.spendingPerCapita}/cap |\n`;
+      md += `| OECD efficiency rank | **${eff.rank}/${eff.totalCountries}** |\n`;
       md += `| Overspend ratio | **${eff.overspendRatio}x** |\n`;
-      md += `| Floor spending | $${eff.floorSpending}/cap |\n`;
+      md += `| Floor spending | $${eff.floorSpendingPerCapita}/cap |\n`;
       md += `| Potential savings | **${fmt(eff.potentialSavingsTotal)}/yr** |\n`;
     }
     md += `| Recommendation | **${cat.recommendation.toUpperCase()}** |\n`;
@@ -247,15 +247,15 @@ layout: layout.njk
       } else {
         md += `> **Note:** OECD spending data reflects total government spending (federal + state + local). `;
         md += `The US federal budget line item for "${cat.name}" is ${fmt(cat.currentSpending)}, `;
-        md += `but the OECD comparison uses the full government system at $${eff.usData.spending}/cap.\n\n`;
+        md += `but the OECD comparison uses the full government system at $${eff.spendingPerCapita}/cap.\n\n`;
       }
       md += `| Country | Spending/cap | ${eff.outcomeName} | Rank |\n`;
       md += `|---------|-------------|${'-'.repeat(eff.outcomeName.length + 2)}|------|\n`;
-      md += `| **US** | **$${eff.usData.spending}** | **${eff.usData.outcome}** | **${eff.usRank}** |\n`;
+      md += `| **${JURISDICTION.name}** | **$${eff.spendingPerCapita}** | **${eff.outcome}** | **${eff.rank}** |\n`;
       for (const t of eff.topEfficient) {
-        md += `| ${t.name} | $${t.spending} | ${t.outcome} | ${t.rank} |\n`;
+        md += `| ${t.name} | $${t.spendingPerCapita} | ${t.outcome} | ${t.rank} |\n`;
       }
-      md += `\nBest: **${eff.bestCountry.name}** — $${eff.bestCountry.spending}/cap → ${eff.outcomeName} ${eff.bestCountry.outcome}\n\n`;
+      md += `\nBest: **${eff.bestCountry.name}** — $${eff.bestCountry.spendingPerCapita}/cap → ${eff.outcomeName} ${eff.bestCountry.outcome}\n\n`;
     }
 
     // Diminishing returns
@@ -307,8 +307,8 @@ layout: layout.njk
       // Wishonia one-liner
       const wishoniaLines: Record<string, string> = {
         'Military': `Spending ${eff.overspendRatio}x more than ${best?.name ?? 'the best'} for worse outcomes. On my planet, we call this a refund.`,
-        'Health (non-Medicare/Medicaid)': `${best?.name ?? 'South Korea'} spends a third of what you do and their citizens live ${Math.round((best?.outcome ?? 83) - eff.usData.outcome)} years longer. It's almost like pricing and outcomes are related.`,
-        'Education': `${best?.name ?? 'Japan'} spends half as much and their students score ${Math.round((best?.outcome ?? 536) - eff.usData.outcome)} points higher on maths. Wild.`,
+        'Health (non-Medicare/Medicaid)': `${best?.name ?? 'South Korea'} spends a third of what you do and their citizens live ${Math.round((best?.outcome ?? 83) - eff.outcome)} years longer. It's almost like pricing and outcomes are related.`,
+        'Education': `${best?.name ?? 'Japan'} spends half as much and their students score ${Math.round((best?.outcome ?? 536) - eff.outcome)} points higher on maths. Wild.`,
         'Science / NASA': `${best?.name ?? 'Netherlands'} spends half as much on R&D and their median citizen earns more. Perhaps the issue isn't how much you spend.`,
       };
       const wishonia = wishoniaLines[cat.name] ?? `${eff.overspendRatio}x overspend. I've seen more efficient use of resources on planets that haven't discovered fire yet.`;
@@ -316,9 +316,9 @@ layout: layout.njk
       md += `## Recommendation\n\n`;
       md += `> *${wishonia}*\n\n`;
       md += `**Adopt the approach of ${topNames}.** These countries achieve ${eff.outcomeName} `;
-      md += `of ${best?.outcome ?? '?'} while spending $${best?.spending ?? '?'}/cap `;
-      md += `vs the ${JURISDICTION.name} at $${eff.usData.spending}/cap for ${eff.outcomeName} ${eff.usData.outcome}.\n\n`;
-      md += `Reducing to the efficient floor of $${eff.floorSpending}/cap would save **${fmt(eff.potentialSavingsTotal)}/yr**, `;
+      md += `of ${best?.outcome ?? '?'} while spending $${best?.spendingPerCapita ?? '?'}/cap `;
+      md += `vs the ${JURISDICTION.name} at $${eff.spendingPerCapita}/cap for ${eff.outcomeName} ${eff.outcome}.\n\n`;
+      md += `Reducing to the efficient floor of $${eff.floorSpendingPerCapita}/cap would save **${fmt(eff.potentialSavingsTotal)}/yr**, `;
       md += `equivalent to **$${perAdult.toLocaleString()}/yr ($${perMonth.toLocaleString()}/mo)** per adult as an Optimization Dividend.\n\n`;
       if (legSlug) {
         md += `**[Read the model legislation for this reform →](../legislation/${legSlug}/)**\n\n`;
@@ -541,7 +541,7 @@ The ${JURISDICTION.name} compared to 23 OECD countries across ${withEff.length} 
   for (const c of withEff.sort((a: any, b: any) => b.efficiency.overspendRatio - a.efficiency.overspendRatio)) {
     const e = c.efficiency;
     const slug = slugify(c.name);
-    md += `| [${c.name}](../budget/${slug}/) | $${e.usData.spending} | ${e.usRank}/${e.totalCountries} | $${e.floorSpending} | **${e.overspendRatio}x** | ${fmt(e.potentialSavingsTotal)} | ${e.bestCountry.name} ($${e.bestCountry.spending}) |\n`;
+    md += `| [${c.name}](../budget/${slug}/) | $${e.spendingPerCapita} | ${e.rank}/${e.totalCountries} | $${e.floorSpendingPerCapita} | **${e.overspendRatio}x** | ${fmt(e.potentialSavingsTotal)} | ${e.bestCountry.name} ($${e.bestCountry.spendingPerCapita}) |\n`;
   }
 
   md += `\n## Related\n\n`;
@@ -758,8 +758,8 @@ function generateWishonia() {
   const rows = deduped.map((c: any) => {
     const e = c.efficiency;
     const label = OECD_FIELD_MAP[c.name] === 'health' ? 'Healthcare (total system)' : c.name;
-    const currentTotal = e.usData.spending * JURISDICTION.population;
-    const optimalTotal = e.floorSpending * JURISDICTION.population;
+    const currentTotal = e.spendingPerCapita * JURISDICTION.population;
+    const optimalTotal = e.floorSpendingPerCapita * JURISDICTION.population;
     totalCurrentSpending += currentTotal;
     totalOptimalSpending += optimalTotal;
     const savings = currentTotal - optimalTotal;
@@ -771,14 +771,14 @@ function generateWishonia() {
     return {
       label,
       modelCountry: e.bestCountry.name,
-      currentPerCap: e.usData.spending,
-      optimalPerCap: e.floorSpending,
+      currentPerCap: e.spendingPerCapita,
+      optimalPerCap: e.floorSpendingPerCapita,
       savings,
       perAdult,
       perMonth,
       outcomeName: e.outcomeName,
       modelOutcome: e.bestCountry.outcome,
-      usOutcome: e.usData.outcome,
+      targetOutcome: e.outcome,
       overspend: e.overspendRatio,
       detailLink: `../${JURISDICTION.code}/budget/${slugify(c.name)}/`,
       legLink,
@@ -823,7 +823,7 @@ Wishonia is a composite jurisdiction that adopts **each spending category's most
   for (const r of rows) {
     indexMd += `### ${r.label}: Adopt ${r.modelCountry}'s Approach\n\n`;
     indexMd += `${r.modelCountry} achieves ${r.outcomeName} of **${r.modelOutcome}** at **$${r.optimalPerCap.toLocaleString()}/cap**. `;
-    indexMd += `The US gets ${r.outcomeName} ${r.usOutcome} at $${r.currentPerCap.toLocaleString()}/cap (${r.overspend}x more for worse results).\n\n`;
+    indexMd += `The ${JURISDICTION.name} gets ${r.outcomeName} ${r.targetOutcome} at $${r.currentPerCap.toLocaleString()}/cap (${r.overspend}x more for worse results).\n\n`;
     indexMd += `Savings: **${fmt(r.savings)}/yr** → **$${r.perAdult.toLocaleString()}/yr per adult** as Optimization Dividend.\n\n`;
     indexMd += `[View detailed analysis →](${r.detailLink})${r.legLink ? ` · [View model legislation →](${r.legLink.replace(' · ', '').replace('[bill]', '').replace('(', '').replace(')', '')})` : ''}\n\n`;
   }

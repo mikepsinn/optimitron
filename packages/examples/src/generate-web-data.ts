@@ -73,22 +73,6 @@ type OECDMapping = OECDCategoryMapping;
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
-// Use EfficiencyAnalysis from OBG as the canonical type.
-// Adapt to the output shape expected by the JSON and site reports.
-interface EfficiencyInfo {
-  usRank: number;
-  totalCountries: number;
-  bestCountry: { code: string; name: string; spending: number; outcome: number };
-  usData: { spending: number; outcome: number };
-  floorSpending: number;
-  floorOutcome: number;
-  overspendRatio: number;
-  potentialSavingsPerCapita: number;
-  potentialSavingsTotal: number;
-  outcomeName: string;
-  topEfficient: Array<{ name: string; spending: number; outcome: number; rank: number }>;
-}
-
 interface BudgetCategoryOutput {
   name: string;
   currentSpending: number;
@@ -109,13 +93,11 @@ interface BudgetCategoryOutput {
     elasticity: number | null;
     outcomeName: string;
   } | null;
-  efficiency: EfficiencyInfo | null;
+  efficiency: EfficiencyAnalysis | null;
 }
 
-/** Convert OECD panel data to SpendingOutcomePoint[] for a given mapping, then
- *  run the OBG "cheapest high performer" analysis. */
-function runEfficiencyAnalysis(mapping: OECDMapping, targetCode: string = 'USA'): EfficiencyInfo | null {
-  // Convert OECD panel to spending-outcome pairs
+/** Convert OECD panel data to SpendingOutcomePoint[], run OBG efficiency analysis. */
+function runEfficiencyAnalysis(mapping: OECDMapping): EfficiencyAnalysis | null {
   let data = oecdBudgetPanelToSpendingOutcome(
     mapping.spendingField as keyof OECDBudgetPanelDataPoint,
     mapping.outcomeField as keyof OECDBudgetPanelDataPoint,
@@ -124,30 +106,12 @@ function runEfficiencyAnalysis(mapping: OECDMapping, targetCode: string = 'USA')
     data = data.map(d => ({ ...d, outcome: 100 - d.outcome }));
   }
 
-  // Delegate to OBG library
-  const result = analyzeEfficiency(data, {
-    jurisdictionCode: targetCode,
-    population: US_POPULATION,
+  return analyzeEfficiency(data, {
+    jurisdictionCode: JURISDICTION.code,
+    population: JURISDICTION.population,
     countryNames: COUNTRY_NAMES,
     outcomeName: mapping.outcomeName,
   });
-
-  if (!result) return null;
-
-  // Adapt EfficiencyAnalysis → EfficiencyInfo shape (add usData/usRank aliases)
-  return {
-    usRank: result.rank,
-    totalCountries: result.totalCountries,
-    bestCountry: result.bestCountry,
-    usData: { spending: result.spending, outcome: result.outcome },
-    floorSpending: result.floorSpending,
-    floorOutcome: result.floorOutcome,
-    overspendRatio: result.overspendRatio,
-    potentialSavingsPerCapita: result.potentialSavingsPerCapita,
-    potentialSavingsTotal: result.potentialSavingsTotal,
-    outcomeName: result.outcomeName,
-    topEfficient: result.topEfficient,
-  };
 }
 
 /** Fit a diminishing returns model for informational context only (R², model type).
@@ -171,7 +135,7 @@ function fitModelInfo(
 }
 
 function generateBudgetAnalysis() {
-  const totalBudget = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spending * 1e9, 0);
+  const totalSpendingNominal = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions * 1e9, 0);
   const categories: BudgetCategoryOutput[] = [];
 
   for (const cat of US_FEDERAL_BUDGET.categories) {
@@ -191,7 +155,7 @@ function generateBudgetAnalysis() {
     let recommendation = 'maintain';
     let evidenceSource = 'none';
     let drInfo: BudgetCategoryOutput['diminishingReturns'] = null;
-    let efficiencyInfo: EfficiencyInfo | null = null;
+    let efficiencyInfo: EfficiencyAnalysis | null = null;
 
     // Run efficiency analysis for all OECD-mapped categories (even non-discretionary)
     if (mapping) {
@@ -205,14 +169,14 @@ function generateBudgetAnalysis() {
       // NOTE: OECD spending is total government (federal+state+local), while
       // currentUsd is federal-only. The gap uses OECD per-capita values to be
       // comparable across countries. Positive gap = US overspends vs floor.
-      optimalPerCapita = efficiencyInfo.floorSpending;
-      const usOECDSpendingTotal = efficiencyInfo.usData.spending * US_POPULATION; // total gov, not federal
-      optimalNominal = efficiencyInfo.floorSpending * US_POPULATION;
+      optimalPerCapita = efficiencyInfo.floorSpendingPerCapita;
+      const usOECDSpendingTotal = efficiencyInfo.spendingPerCapita * US_POPULATION; // total gov, not federal
+      optimalNominal = efficiencyInfo.floorSpendingPerCapita * US_POPULATION;
       gap = usOECDSpendingTotal - optimalNominal; // OECD total vs floor — positive = overspend
       gapPercent = usOECDSpendingTotal > 0 ? (gap / usOECDSpendingTotal) * 100 : 0;
 
       const nCountries = efficiencyInfo.totalCountries;
-      evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${efficiencyInfo.usRank}/${nCountries})`;
+      evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${efficiencyInfo.rank}/${nCountries})`;
 
       // Fit a diminishing returns model for informational context only
       const modelInfo = fitModelInfo(mapping);
@@ -290,17 +254,17 @@ function generateBudgetAnalysis() {
       const savings = e.potentialSavingsTotal;
       const fmtSavings = savings >= 1e12 ? `$${(savings/1e12).toFixed(1)}T` : `$${(savings/1e9).toFixed(0)}B`;
       if (e.overspendRatio > 1.2) {
-        return `${c.name}: ${JURISDICTION.name} spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spending}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. Potential savings: ${fmtSavings}/yr`;
+        return `${c.name}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spendingPerCapita}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. Potential savings: ${fmtSavings}/yr`;
       } else if (e.overspendRatio < 0.8) {
-        return `${c.name}: ${JURISDICTION.name} underspends at $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Floor: $${e.floorSpending}/cap.`;
+        return `${c.name}: ${JURISDICTION.name} underspends at $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Floor: $${e.floorSpendingPerCapita}/cap.`;
       } else {
-        return `${c.name}: ${JURISDICTION.name} spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Near floor ($${e.floorSpending}/cap). ${e.outcomeName}: ${e.usData.outcome}`;
+        return `${c.name}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Near floor ($${e.floorSpendingPerCapita}/cap). ${e.outcomeName}: ${e.outcome}`;
       }
     });
 
   return {
     jurisdiction: JURISDICTION.name,
-    totalBudget,
+    totalSpendingNominal,
     categories,
     topRecommendations,
     generatedAt: new Date().toISOString(),
@@ -352,7 +316,7 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
       // Health effect: only claim if outcome IS life expectancy AND best country is better
       // For non-LE outcomes (PISA, median income), health effect is 0.
       const isLifeExpOutcome = e.outcomeName === 'Life Expectancy';
-      const leGap = isLifeExpOutcome ? (e.bestCountry.outcome - e.usData.outcome) : 0;
+      const leGap = isLifeExpOutcome ? (e.bestCountry.outcome - e.outcome) : 0;
       // Convert LE gap in years to a fraction of baseline HALE (~66 years)
       // Only claim half the gap as realistic improvement (conservative)
       const healthEffect = isLifeExpOutcome ? Math.round((leGap * 0.5 / 66) * 1000) / 1000 : 0;
@@ -361,7 +325,7 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
         name: `${c.name}: Adopt ${e.bestCountry.name}'s Approach`,
         type: 'budget_allocation',
         category: c.name.toLowerCase().replace(/[^a-z]+/g, '_'),
-        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap; ${JURISDICTION.name} gets ${e.usData.outcome} at $${e.usData.spending}/cap.`,
+        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap; ${JURISDICTION.name} gets ${e.outcome} at $${e.spendingPerCapita}/cap.`,
         effectSize: Math.min(e.overspendRatio / 5, 1.5),
         studyCount: e.totalCountries,
         hasPredecessor: true, // other countries already do this
@@ -373,9 +337,9 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
         outcomeCount: 1,
         incomeEffect: Math.round(incomeEffect * 1000) / 1000,
         healthEffect,
-        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap. ${JURISDICTION.name} at $${e.usData.spending}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spending})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend.`,
-        currentStatus: `${JURISDICTION.name} spends $${e.usData.spending}/cap, ranks ${e.usRank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
-        recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpending}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Optimization Dividend.`,
+        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend.`,
+        currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap, ranks ${e.rank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
+        recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpendingPerCapita}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Optimization Dividend.`,
         blockingFactors: ['political_opposition'],
       } satisfies PolicyInput;
     });

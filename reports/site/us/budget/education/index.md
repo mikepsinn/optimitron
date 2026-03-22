@@ -26,7 +26,7 @@ layout: layout.njk
 
 | Country | Spending/cap | PISA Math Score | Rank |
 |---------|-------------|-----------------|------|
-| **US** | **$2996** | **465** | **11** |
+| **United States** | **$2996** | **465** | **11** |
 | Japan | $1288 | 536 | 1 |
 | Taiwan | $1367 | 544.33 | 2 |
 | Singapore | $2509 | 569.33 | 3 |

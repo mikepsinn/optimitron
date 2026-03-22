@@ -1,6 +1,6 @@
 {
   "jurisdiction": "United States",
-  "totalBudget": 6707000000000,
+  "totalSpendingNominal": 6707000000000,
   "categories": [
     {
       "name": "Health (non-Medicare/Medicaid)",
@@ -95,48 +95,46 @@
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
-        "usRank": 28,
+        "rank": 28,
         "totalCountries": 28,
+        "spendingPerCapita": 10333,
+        "outcome": 76.93,
+        "outcomeName": "Life Expectancy",
         "bestCountry": {
           "code": "KOR",
           "name": "South Korea",
-          "spending": 3588,
+          "spendingPerCapita": 3588,
           "outcome": 83.57,
           "rank": 1
         },
-        "usData": {
-          "spending": 10333,
-          "outcome": 76.93
-        },
-        "floorSpending": 3588,
-        "floorOutcome": 83.57,
-        "overspendRatio": 2.9,
-        "potentialSavingsPerCapita": 6745,
-        "potentialSavingsTotal": 2286555000000,
-        "outcomeName": "Life Expectancy",
         "topEfficient": [
           {
             "code": "KOR",
             "name": "South Korea",
-            "spending": 3588,
+            "spendingPerCapita": 3588,
             "outcome": 83.57,
             "rank": 1
           },
           {
             "code": "JPN",
             "name": "Japan",
-            "spending": 4095,
+            "spendingPerCapita": 4095,
             "outcome": 84.53,
             "rank": 2
           },
           {
             "code": "AUS",
             "name": "Australia",
-            "spending": 4544,
+            "spendingPerCapita": 4544,
             "outcome": 83.1,
             "rank": 3
           }
-        ]
+        ],
+        "floorSpendingPerCapita": 3588,
+        "floorOutcome": 83.57,
+        "overspendRatio": 2.9,
+        "potentialSavingsPerCapita": 6745,
+        "potentialSavingsTotal": 2286555000000
       }
     },
     {
@@ -242,48 +240,46 @@
         "outcomeName": "PISA Math Score"
       },
       "efficiency": {
-        "usRank": 11,
+        "rank": 11,
         "totalCountries": 11,
+        "spendingPerCapita": 2996,
+        "outcome": 465,
+        "outcomeName": "PISA Math Score",
         "bestCountry": {
           "code": "JPN",
           "name": "Japan",
-          "spending": 1288,
+          "spendingPerCapita": 1288,
           "outcome": 536,
           "rank": 1
         },
-        "usData": {
-          "spending": 2996,
-          "outcome": 465
-        },
-        "floorSpending": 1288,
-        "floorOutcome": 536,
-        "overspendRatio": 2.3,
-        "potentialSavingsPerCapita": 1708,
-        "potentialSavingsTotal": 579012000000,
-        "outcomeName": "PISA Math Score",
         "topEfficient": [
           {
             "code": "JPN",
             "name": "Japan",
-            "spending": 1288,
+            "spendingPerCapita": 1288,
             "outcome": 536,
             "rank": 1
           },
           {
             "code": "TWN",
             "name": "Taiwan",
-            "spending": 1367,
+            "spendingPerCapita": 1367,
             "outcome": 544.33,
             "rank": 2
           },
           {
             "code": "SGP",
             "name": "Singapore",
-            "spending": 2509,
+            "spendingPerCapita": 2509,
             "outcome": 569.33,
             "rank": 3
           }
-        ]
+        ],
+        "floorSpendingPerCapita": 1288,
+        "floorOutcome": 536,
+        "overspendRatio": 2.3,
+        "potentialSavingsPerCapita": 1708,
+        "potentialSavingsTotal": 579012000000
       }
     },
     {
@@ -384,48 +380,46 @@
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
-        "usRank": 27,
+        "rank": 27,
         "totalCountries": 28,
+        "spendingPerCapita": 2052,
+        "outcome": 76.93,
+        "outcomeName": "Life Expectancy",
         "bestCountry": {
           "code": "CHE",
           "name": "Switzerland",
-          "spending": 389,
+          "spendingPerCapita": 389,
           "outcome": 83.37,
           "rank": 1
         },
-        "usData": {
-          "spending": 2052,
-          "outcome": 76.93
-        },
-        "floorSpending": 389,
-        "floorOutcome": 83.37,
-        "overspendRatio": 5.3,
-        "potentialSavingsPerCapita": 1663,
-        "potentialSavingsTotal": 563870000000,
-        "outcomeName": "Life Expectancy",
         "topEfficient": [
           {
             "code": "CHE",
             "name": "Switzerland",
-            "spending": 389,
+            "spendingPerCapita": 389,
             "outcome": 83.37,
             "rank": 1
           },
           {
             "code": "JPN",
             "name": "Japan",
-            "spending": 400,
+            "spendingPerCapita": 400,
             "outcome": 84.53,
             "rank": 2
           },
           {
             "code": "SWE",
             "name": "Sweden",
-            "spending": 565,
+            "spendingPerCapita": 565,
             "outcome": 82.9,
             "rank": 3
           }
-        ]
+        ],
+        "floorSpendingPerCapita": 389,
+        "floorOutcome": 83.37,
+        "overspendRatio": 5.3,
+        "potentialSavingsPerCapita": 1663,
+        "potentialSavingsTotal": 563870000000
       }
     },
     {
@@ -526,48 +520,46 @@
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "usRank": 23,
+        "rank": 23,
         "totalCountries": 27,
+        "spendingPerCapita": 1991,
+        "outcome": 26245.67,
+        "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
           "code": "NLD",
           "name": "Netherlands",
-          "spending": 1064,
+          "spendingPerCapita": 1064,
           "outcome": 31221.39,
           "rank": 1
         },
-        "usData": {
-          "spending": 1991,
-          "outcome": 26245.67
-        },
-        "floorSpending": 1064,
-        "floorOutcome": 31221.39,
-        "overspendRatio": 1.9,
-        "potentialSavingsPerCapita": 927,
-        "potentialSavingsTotal": 314253000000,
-        "outcomeName": "After-Tax Median Income (PPP)",
         "topEfficient": [
           {
             "code": "NLD",
             "name": "Netherlands",
-            "spending": 1064,
+            "spendingPerCapita": 1064,
             "outcome": 31221.39,
             "rank": 1
           },
           {
             "code": "NOR",
             "name": "Norway",
-            "spending": 1214,
+            "spendingPerCapita": 1214,
             "outcome": 33589.79,
             "rank": 2
           },
           {
             "code": "DNK",
             "name": "Denmark",
-            "spending": 1317,
+            "spendingPerCapita": 1317,
             "outcome": 30452.17,
             "rank": 3
           }
-        ]
+        ],
+        "floorSpendingPerCapita": 1064,
+        "floorOutcome": 31221.39,
+        "overspendRatio": 1.9,
+        "potentialSavingsPerCapita": 927,
+        "potentialSavingsTotal": 314253000000
       }
     },
     {
@@ -2245,7 +2237,7 @@
     "Education: United States spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential savings: $579B/yr",
     "Science / NASA: United States spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-03-22T22:49:06.391Z",
+  "generatedAt": "2026-03-22T23:31:01.414Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

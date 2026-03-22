@@ -26,7 +26,7 @@ layout: layout.njk
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
-| **US** | **$10333** | **76.93** | **28** |
+| **United States** | **$10333** | **76.93** | **28** |
 | South Korea | $3588 | 83.57 | 1 |
 | Japan | $4095 | 84.53 | 2 |
 | Australia | $4544 | 83.1 | 3 |

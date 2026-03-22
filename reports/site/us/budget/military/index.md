@@ -27,7 +27,7 @@ layout: layout.njk
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
-| **US** | **$2052** | **76.93** | **27** |
+| **United States** | **$2052** | **76.93** | **27** |
 | Switzerland | $389 | 83.37 | 1 |
 | Japan | $400 | 84.53 | 2 |
 | Sweden | $565 | 82.9 | 3 |

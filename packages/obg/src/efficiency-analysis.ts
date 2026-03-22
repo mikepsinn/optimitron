@@ -25,7 +25,7 @@ import type { SpendingOutcomePoint } from './diminishing-returns.js';
 export const CountryComparisonSchema = z.object({
   code: z.string(),
   name: z.string(),
-  spending: z.number(),
+  spendingPerCapita: z.number(),
   outcome: z.number(),
   rank: z.number(),
 });
@@ -38,7 +38,7 @@ export const EfficiencyAnalysisSchema = z.object({
   /** Total countries compared */
   totalCountries: z.number().int().positive(),
   /** Target jurisdiction's spending per capita */
-  spending: z.number(),
+  spendingPerCapita: z.number(),
   /** Target jurisdiction's outcome value */
   outcome: z.number(),
   /** Outcome metric name */
@@ -47,8 +47,8 @@ export const EfficiencyAnalysisSchema = z.object({
   bestCountry: CountryComparisonSchema,
   /** Top 3 cheapest high performers */
   topEfficient: z.array(CountryComparisonSchema),
-  /** Floor spending = cheapest high performer's spending */
-  floorSpending: z.number(),
+  /** Floor spending per capita = cheapest high performer's spending */
+  floorSpendingPerCapita: z.number(),
   /** Floor outcome = cheapest high performer's outcome */
   floorOutcome: z.number(),
   /** Overspend ratio: target spending / floor (>1 = overspending) */
@@ -142,16 +142,16 @@ export function analyzeEfficiency(
   // 3. Best value = cheapest high performer
   const bestValue = highPerformers[0]!;
 
-  // 4. Floor = best value's spending
-  const floorSpending = bestValue.spending;
-  const ratio = floorSpending > 0 ? target.spending / floorSpending : 1;
-  const savingsPerCapita = Math.max(0, target.spending - floorSpending);
+  // 4. Floor = best value's per-capita spending
+  const floor = bestValue.spending;
+  const ratio = floor > 0 ? target.spending / floor : 1;
+  const savingsPerCapita = Math.max(0, target.spending - floor);
 
-  // 5. Top 3 cheapest high performers
+  // 5. Top 3 cheapest high performers (map internal `spending` → output `spendingPerCapita`)
   const topEfficient: CountryComparison[] = highPerformers.slice(0, 3).map((c, i) => ({
     code: c.code,
     name: nameOf(c.code),
-    spending: Math.round(c.spending),
+    spendingPerCapita: Math.round(c.spending),
     outcome: Math.round(c.outcome * 100) / 100,
     rank: i + 1,
   }));
@@ -164,18 +164,18 @@ export function analyzeEfficiency(
   return {
     rank: targetRank,
     totalCountries: countries.length,
-    spending: Math.round(target.spending),
+    spendingPerCapita: Math.round(target.spending),
     outcome: Math.round(target.outcome * 100) / 100,
     outcomeName,
     bestCountry: {
       code: bestValue.code,
       name: nameOf(bestValue.code),
-      spending: Math.round(bestValue.spending),
+      spendingPerCapita: Math.round(bestValue.spending),
       outcome: Math.round(bestValue.outcome * 100) / 100,
       rank: 1,
     },
     topEfficient,
-    floorSpending: Math.round(floorSpending),
+    floorSpendingPerCapita: Math.round(floor),
     floorOutcome: Math.round(bestValue.outcome * 100) / 100,
     overspendRatio: Math.round(ratio * 10) / 10,
     potentialSavingsPerCapita: Math.round(savingsPerCapita),

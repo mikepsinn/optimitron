@@ -43,8 +43,8 @@ export interface HistoricalSpending {
 export interface BudgetCategory {
   /** Category name */
   name: string;
-  /** FY2025 outlays in billions USD */
-  spending: number;
+  /** FY2025 outlays in billions of nominal USD */
+  spendingBillions: number;
   /** Percent of total federal outlays */
   percentOfTotal: number;
   /** Whether this is mandatory or discretionary spending */
@@ -91,7 +91,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Social Security ───────────────────────────────────────────────
     {
       name: 'Social Security',
-      spending: 1461,
+      spendingBillions: 1461,
       percentOfTotal: 21.3,
       type: 'mandatory',
       historicalSpending: [
@@ -146,7 +146,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Interest on Debt ──────────────────────────────────────────────
     {
       name: 'Interest on Debt',
-      spending: 892,
+      spendingBillions: 892,
       percentOfTotal: 13.0,
       type: 'net_interest',
       historicalSpending: [
@@ -193,7 +193,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Military ────────────────────────────────────────────────────────
     {
       name: 'Military',
-      spending: 886,
+      spendingBillions: 886,
       percentOfTotal: 12.9,
       type: 'discretionary',
       historicalSpending: [
@@ -248,7 +248,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Medicare ──────────────────────────────────────────────────────
     {
       name: 'Medicare',
-      spending: 874,
+      spendingBillions: 874,
       percentOfTotal: 12.7,
       type: 'mandatory',
       historicalSpending: [
@@ -303,7 +303,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Medicaid ──────────────────────────────────────────────────────
     {
       name: 'Medicaid',
-      spending: 616,
+      spendingBillions: 616,
       percentOfTotal: 9.0,
       type: 'mandatory',
       historicalSpending: [
@@ -358,7 +358,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Veterans Affairs ──────────────────────────────────────────────
     {
       name: 'Veterans Affairs',
-      spending: 325,
+      spendingBillions: 325,
       percentOfTotal: 4.7,
       type: 'discretionary',
       historicalSpending: [
@@ -413,7 +413,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Other Mandatory Programs ──────────────────────────────────────
     {
       name: 'Other Mandatory Programs',
-      spending: 842,
+      spendingBillions: 842,
       percentOfTotal: 12.3,
       type: 'mandatory',
       historicalSpending: [
@@ -460,7 +460,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Transportation ────────────────────────────────────────────────
     {
       name: 'Transportation',
-      spending: 105,
+      spendingBillions: 105,
       percentOfTotal: 1.5,
       type: 'discretionary',
       historicalSpending: [
@@ -515,7 +515,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Education ─────────────────────────────────────────────────────
     {
       name: 'Education',
-      spending: 102,
+      spendingBillions: 102,
       percentOfTotal: 1.5,
       type: 'discretionary',
       historicalSpending: [
@@ -578,7 +578,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── HUD / Housing ─────────────────────────────────────────────────
     {
       name: 'HUD / Housing',
-      spending: 73,
+      spendingBillions: 73,
       percentOfTotal: 1.1,
       type: 'discretionary',
       historicalSpending: [
@@ -625,7 +625,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Foreign Aid (International Affairs) ───────────────────────────
     {
       name: 'Foreign Aid / International Affairs',
-      spending: 63,
+      spendingBillions: 63,
       percentOfTotal: 0.9,
       type: 'discretionary',
       historicalSpending: [
@@ -672,7 +672,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Energy ────────────────────────────────────────────────────────
     {
       name: 'Energy',
-      spending: 52,
+      spendingBillions: 52,
       percentOfTotal: 0.8,
       type: 'discretionary',
       historicalSpending: [
@@ -719,7 +719,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Science / NASA ────────────────────────────────────────────────
     {
       name: 'Science / NASA',
-      spending: 44,
+      spendingBillions: 44,
       percentOfTotal: 0.6,
       type: 'discretionary',
       historicalSpending: [
@@ -774,7 +774,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Justice / Law Enforcement ─────────────────────────────────────
     {
       name: 'Justice / Law Enforcement',
-      spending: 40,
+      spendingBillions: 40,
       percentOfTotal: 0.6,
       type: 'discretionary',
       historicalSpending: [
@@ -821,7 +821,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Agriculture ───────────────────────────────────────────────────
     {
       name: 'Agriculture',
-      spending: 38,
+      spendingBillions: 38,
       percentOfTotal: 0.6,
       type: 'discretionary',
       historicalSpending: [
@@ -868,7 +868,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── EPA / Environment ─────────────────────────────────────────────
     {
       name: 'EPA / Environment',
-      spending: 12,
+      spendingBillions: 12,
       percentOfTotal: 0.2,
       type: 'discretionary',
       historicalSpending: [
@@ -923,7 +923,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Health (non-Medicare/Medicaid) ─────────────────────────────────
     {
       name: 'Health (non-Medicare/Medicaid)',
-      spending: 94,
+      spendingBillions: 94,
       percentOfTotal: 1.4,
       type: 'discretionary',
       historicalSpending: [
@@ -970,7 +970,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Homeland Security ─────────────────────────────────────────────
     {
       name: 'Homeland Security',
-      spending: 62,
+      spendingBillions: 62,
       percentOfTotal: 0.9,
       type: 'discretionary',
       historicalSpending: [
@@ -1017,7 +1017,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Labor ─────────────────────────────────────────────────────────
     {
       name: 'Labor',
-      spending: 42,
+      spendingBillions: 42,
       percentOfTotal: 0.6,
       type: 'discretionary',
       historicalSpending: [
@@ -1064,7 +1064,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Commerce / Economic Development ───────────────────────────────
     {
       name: 'Commerce / Economic Development',
-      spending: 18,
+      spendingBillions: 18,
       percentOfTotal: 0.3,
       type: 'discretionary',
       historicalSpending: [
@@ -1103,7 +1103,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Interior / Natural Resources ──────────────────────────────────
     {
       name: 'Interior / Natural Resources',
-      spending: 17,
+      spendingBillions: 17,
       percentOfTotal: 0.2,
       type: 'discretionary',
       historicalSpending: [
@@ -1150,7 +1150,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── Treasury / General Government ─────────────────────────────────
     {
       name: 'Treasury / General Government',
-      spending: 30,
+      spendingBillions: 30,
       percentOfTotal: 0.4,
       type: 'discretionary',
       historicalSpending: [
@@ -1189,7 +1189,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
     // ─── State Department / Diplomacy ──────────────────────────────────
     {
       name: 'State Department / Diplomacy',
-      spending: 19,
+      spendingBillions: 19,
       percentOfTotal: 0.3,
       type: 'discretionary',
       historicalSpending: [
@@ -1252,7 +1252,7 @@ export const US_FEDERAL_BUDGET: FederalBudgetDataset = {
  * and categories not listed separately.
  */
 export function getTotalCategorySpending(): number {
-  return US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spending, 0);
+  return US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions, 0);
 }
 
 /**

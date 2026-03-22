@@ -58,8 +58,8 @@ describe('analyzeEfficiency (cheapest high performer)', () => {
     // High performers (>=84): JPN (84, $405), KOR (84, $605)
     // Cheapest among them: JPN at $405
     expect(result!.bestCountry.code).toBe('JPN');
-    expect(result!.bestCountry.spending).toBe(405);
-    expect(result!.floorSpending).toBe(405);
+    expect(result!.bestCountry.spendingPerCapita).toBe(405);
+    expect(result!.floorSpendingPerCapita).toBe(405);
   });
 
   it('calculates overspend ratio correctly', () => {
@@ -116,7 +116,7 @@ describe('analyzeEfficiency (cheapest high performer)', () => {
     expect(result).not.toBeNull();
     // Germany: $655/cap, outcome 81. Not in top quartile (p75 ≈ 83+).
     // So Germany's overspend is relative to cheapest high performer
-    expect(result!.spending).toBeCloseTo(655, 0);
+    expect(result!.spendingPerCapita).toBeCloseTo(655, 0);
     expect(result!.overspendRatio).toBeGreaterThan(1);
   });
 

@@ -18,55 +18,8 @@ import type { EfficiencyAnalysis } from '@optimitron/obg';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
-export interface EfficiencyEvidence {
-  /** Budget category (e.g., "Military", "Healthcare") */
-  category: string;
-  /** US spending per capita */
-  usSpendingPerCapita: number;
-  /** US outcome value */
-  usOutcome: number;
-  /** Outcome metric name (e.g., "Life Expectancy") */
-  outcomeName: string;
-  /** US efficiency rank (1 = best) */
-  usRank: number;
-  /** Total countries compared */
-  totalCountries: number;
-  /** Overspend ratio (actual / floor) */
-  overspendRatio: number;
-  /** Floor spending per capita */
-  floorSpendingPerCapita: number;
-  /** Top efficient countries with their data */
-  topCountries: Array<{
-    name: string;
-    spendingPerCapita: number;
-    outcome: number;
-  }>;
-}
-
-/**
- * Convert OBG's canonical EfficiencyAnalysis into the simplified
- * EfficiencyEvidence used for Gemini prompt construction.
- */
-export function toEfficiencyEvidence(
-  analysis: EfficiencyAnalysis,
-  category: string,
-): EfficiencyEvidence {
-  return {
-    category,
-    usSpendingPerCapita: analysis.spending,
-    usOutcome: analysis.outcome,
-    outcomeName: analysis.outcomeName,
-    usRank: analysis.rank,
-    totalCountries: analysis.totalCountries,
-    overspendRatio: analysis.overspendRatio,
-    floorSpendingPerCapita: analysis.floorSpending,
-    topCountries: analysis.topEfficient.map(c => ({
-      name: c.name,
-      spendingPerCapita: c.spending,
-      outcome: c.outcome,
-    })),
-  };
-}
+/** Efficiency evidence for a budget category — just EfficiencyAnalysis + category name */
+export type EfficiencyEvidence = EfficiencyAnalysis & { category: string };
 
 export interface PolicyExemplarInput {
   name: string;
@@ -120,7 +73,7 @@ function buildPrompt(
   exemplars: PolicyExemplarInput[],
   targetJurisdiction: string,
 ): string {
-  const countryList = evidence.topCountries
+  const countryList = evidence.topEfficient
     .map(c => `${c.name}: $${c.spendingPerCapita}/cap, ${evidence.outcomeName} ${c.outcome}`)
     .join('\n    ');
 
@@ -135,9 +88,9 @@ function buildPrompt(
 
 ## EVIDENCE: ${evidence.category} Spending Efficiency
 
-The ${targetJurisdiction} ranks **${evidence.usRank} out of ${evidence.totalCountries}** OECD countries in ${evidence.category.toLowerCase()} spending efficiency.
+The ${targetJurisdiction} ranks **${evidence.rank} out of ${evidence.totalCountries}** OECD countries in ${evidence.category.toLowerCase()} spending efficiency.
 
-- **${targetJurisdiction}**: $${evidence.usSpendingPerCapita}/capita → ${evidence.outcomeName}: ${evidence.usOutcome}
+- **${targetJurisdiction}**: $${evidence.spendingPerCapita}/capita → ${evidence.outcomeName}: ${evidence.outcome}
 - **Overspend ratio**: ${evidence.overspendRatio}x (spending ${evidence.overspendRatio}x more than the minimum level needed for comparable outcomes)
 - **Floor spending**: $${evidence.floorSpendingPerCapita}/capita (lowest spending that achieves comparable outcomes)
 
@@ -156,7 +109,7 @@ Research what specific policies, regulations, and institutional structures the t
 
 1. **FINDINGS** — Cite specific data comparing ${targetJurisdiction} to the top-performing countries. Include spending levels, outcomes, and the efficiency gap. Reference real studies, government reports, and international evaluations.
 
-2. **PURPOSE** — State the goal: achieve outcomes comparable to [best country] while reducing per-capita spending from $${evidence.usSpendingPerCapita} toward the efficient floor of $${evidence.floorSpendingPerCapita}.
+2. **PURPOSE** — State the goal: achieve outcomes comparable to [best country] while reducing per-capita spending from $${evidence.spendingPerCapita} toward the efficient floor of $${evidence.floorSpendingPerCapita}.
 
 3. **KEY PROVISIONS** — For each major policy mechanism:
    - What it does (modeled on which country's approach)

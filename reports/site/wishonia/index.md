@@ -25,7 +25,7 @@ Wishonia is a composite jurisdiction that adopts **each spending category's most
 
 ### Military: Adopt Switzerland's Approach
 
-Switzerland achieves Life Expectancy of **83.37** at **$389/cap**. The US gets Life Expectancy 76.93 at $2,052/cap (5.3x more for worse results).
+Switzerland achieves Life Expectancy of **83.37** at **$389/cap**. The United States gets Life Expectancy 76.93 at $2,052/cap (5.3x more for worse results).
 
 Savings: **$564B/yr** → **$2,185/yr per adult** as Optimization Dividend.
 
@@ -33,7 +33,7 @@ Savings: **$564B/yr** → **$2,185/yr per adult** as Optimization Dividend.
 
 ### Healthcare (total system): Adopt South Korea's Approach
 
-South Korea achieves Life Expectancy of **83.57** at **$3,588/cap**. The US gets Life Expectancy 76.93 at $10,333/cap (2.9x more for worse results).
+South Korea achieves Life Expectancy of **83.57** at **$3,588/cap**. The United States gets Life Expectancy 76.93 at $10,333/cap (2.9x more for worse results).
 
 Savings: **$2.3T/yr** → **$8,863/yr per adult** as Optimization Dividend.
 
@@ -41,7 +41,7 @@ Savings: **$2.3T/yr** → **$8,863/yr per adult** as Optimization Dividend.
 
 ### Education: Adopt Japan's Approach
 
-Japan achieves PISA Math Score of **536** at **$1,288/cap**. The US gets PISA Math Score 465 at $2,996/cap (2.3x more for worse results).
+Japan achieves PISA Math Score of **536** at **$1,288/cap**. The United States gets PISA Math Score 465 at $2,996/cap (2.3x more for worse results).
 
 Savings: **$579B/yr** → **$2,244/yr per adult** as Optimization Dividend.
 
@@ -49,7 +49,7 @@ Savings: **$579B/yr** → **$2,244/yr per adult** as Optimization Dividend.
 
 ### Science / NASA: Adopt Netherlands's Approach
 
-Netherlands achieves After-Tax Median Income (PPP) of **31221.39** at **$1,064/cap**. The US gets After-Tax Median Income (PPP) 26245.67 at $1,991/cap (1.9x more for worse results).
+Netherlands achieves After-Tax Median Income (PPP) of **31221.39** at **$1,064/cap**. The United States gets After-Tax Median Income (PPP) 26245.67 at $1,991/cap (1.9x more for worse results).
 
 Savings: **$314B/yr** → **$1,218/yr per adult** as Optimization Dividend.
 

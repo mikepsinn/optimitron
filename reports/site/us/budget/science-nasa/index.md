@@ -26,7 +26,7 @@ layout: layout.njk
 
 | Country | Spending/cap | After-Tax Median Income (PPP) | Rank |
 |---------|-------------|-------------------------------|------|
-| **US** | **$1991** | **26245.67** | **23** |
+| **United States** | **$1991** | **26245.67** | **23** |
 | Netherlands | $1064 | 31221.39 | 1 |
 | Norway | $1214 | 33589.79 | 2 |
 | Denmark | $1317 | 30452.17 | 3 |
