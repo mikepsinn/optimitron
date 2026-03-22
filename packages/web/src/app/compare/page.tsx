@@ -94,7 +94,7 @@ export default function ComparePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <p className="font-mono text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-2">
+        <p className="font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-2">
           Versus Mode
         </p>
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-foreground mb-2">

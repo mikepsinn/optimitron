@@ -19,7 +19,7 @@ export default async function AlignmentPage() {
   if (!user?.id) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8 text-center">
-        <p className="font-mono text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-3">
+        <p className="font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-3">
           Boss Fight
         </p>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground mb-4">

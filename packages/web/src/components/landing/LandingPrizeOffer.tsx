@@ -26,7 +26,7 @@ export function LandingPrizeOffer() {
     <section className="bg-brutal-pink">
       <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <ScrollReveal className="mb-16 text-center">
-          <h2 className="text-3xl font-black font-mono uppercase tracking-tight text-brutal-pink-foreground sm:text-4xl md:text-5xl">
+          <h2 className="text-3xl font-black font-[family-name:var(--font-arcade)] uppercase tracking-tight text-brutal-pink-foreground sm:text-4xl md:text-5xl">
             The Earth Optimization Game
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-background">

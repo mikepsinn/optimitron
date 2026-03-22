@@ -477,9 +477,11 @@
   /* Typography */
   --font-family-sans: var(--font-sans);
   --font-family-mono: var(--font-mono);
+  --font-family-arcade: var(--font-arcade);
   --font-sans: var(--v0-font-dm-sans);
   --font-mono: var(--v0-font-space-mono);
   --font-serif: var(--v0-font-source-serif-4);
+  --font-arcade: var(--v0-font-press-start-2p);
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;

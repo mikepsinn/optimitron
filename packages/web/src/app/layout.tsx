@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { DM_Sans, Space_Mono, Source_Serif_4 } from "next/font/google";
+import { DM_Sans, Space_Mono, Source_Serif_4, Press_Start_2P } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
@@ -24,7 +24,12 @@ const sourceSerif4 = Source_Serif_4({
   weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
   variable: "--v0-font-source-serif-4",
 });
-const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.variable}`;
+const pressStart2P = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--v0-font-press-start-2p",
+});
+const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.variable} ${pressStart2P.variable}`;
 
 export const metadata: Metadata = {
   applicationName: "Optimitron",
