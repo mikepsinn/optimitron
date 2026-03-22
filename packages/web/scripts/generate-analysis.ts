@@ -1,8 +1,11 @@
 #!/usr/bin/env tsx
 /**
  * Generate real policy and budget analysis JSON from the OPG/OBG libraries.
- * 
- * This replaces the static mock data with actual optimizer output.
+ *
+ * Budget analysis uses OECD cross-country panel data (23 countries × 23 years)
+ * to fit diminishing-returns curves and estimate optimal spending levels (OSL).
+ * Categories without OECD mappings fall back to outcome-trend heuristics.
+ *
  * Run: pnpm --filter @optimitron/web run generate
  */
 
@@ -27,27 +30,182 @@ import {
 
 // OBG imports
 import {
-  estimateOSL,
+  fitLogModel,
+  fitSaturationModel,
+  findOSL,
+  marginalReturn as calcMarginalReturn,
+  predictOutcome,
   type SpendingOutcomePoint,
+  type DiminishingReturnsModel,
 } from '@optimitron/obg';
 
 // Data imports
-import { US_FEDERAL_BUDGET } from '@optimitron/data';
+import {
+  US_FEDERAL_BUDGET,
+  toRealPerCapita,
+  historicalToRealPerCapita,
+  oecdBudgetPanelToSpendingOutcome,
+} from '@optimitron/data';
+import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../src/data');
+
+const US_POPULATION = 339_000_000; // 2025 estimate
+
+// ─── OECD Category Mappings ─────────────────────────────────────────
+// Maps US federal budget category names to OECD panel spending/outcome fields.
+// Categories with a mapping get real cross-country OSL estimation.
+
+type OECDSpendingField = 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
+type OECDOutcomeField = 'lifeExpectancyYears' | 'gdpPerCapitaPpp' | 'infantMortalityPer1000' | 'giniIndex';
+
+interface OECDMapping {
+  spendingField: OECDSpendingField;
+  outcomeField: OECDOutcomeField;
+  /** Negate outcome so higher = better (e.g., infant mortality) */
+  negateOutcome?: boolean;
+  outcomeName: string;
+}
+
+const OECD_MAPPINGS: Record<string, OECDMapping> = {
+  'Medicare': {
+    spendingField: 'healthSpendingPerCapitaPpp',
+    outcomeField: 'lifeExpectancyYears',
+    outcomeName: 'Life Expectancy',
+  },
+  'Medicaid': {
+    spendingField: 'healthSpendingPerCapitaPpp',
+    outcomeField: 'infantMortalityPer1000',
+    negateOutcome: true,
+    outcomeName: 'Infant Survival (inverted mortality)',
+  },
+  'Military': {
+    spendingField: 'militarySpendingPerCapitaPpp',
+    outcomeField: 'lifeExpectancyYears',
+    outcomeName: 'Life Expectancy',
+  },
+  'Social Security': {
+    spendingField: 'socialSpendingPerCapitaPpp',
+    outcomeField: 'lifeExpectancyYears',
+    outcomeName: 'Life Expectancy',
+  },
+  'Education': {
+    spendingField: 'educationSpendingPerCapitaPpp',
+    outcomeField: 'gdpPerCapitaPpp',
+    outcomeName: 'GDP per Capita',
+  },
+  'Science / NASA': {
+    spendingField: 'rdSpendingPerCapitaPpp',
+    outcomeField: 'gdpPerCapitaPpp',
+    outcomeName: 'GDP per Capita',
+  },
+  'Health (non-Medicare/Medicaid)': {
+    spendingField: 'healthSpendingPerCapitaPpp',
+    outcomeField: 'lifeExpectancyYears',
+    outcomeName: 'Life Expectancy',
+  },
+};
+
+// Non-discretionary categories: skip OSL — these are mandated obligations
+const NON_DISCRETIONARY = new Set([
+  'Interest on Debt',
+  'Social Security',
+  'Medicare',
+  'Other Mandatory Programs',
+]);
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
 interface BudgetCategoryOutput {
   name: string;
   currentSpending: number;
-  optimalSpending: number;
+  currentSpendingRealPerCapita: number;
+  optimalSpendingPerCapita: number | null;
+  optimalSpendingNominal: number | null;
   gap: number;
   gapPercent: number;
-  marginalReturn: number;
   recommendation: string;
+  evidenceSource: string;
   outcomeMetrics: { name: string; value: number; trend: string }[];
+  historicalRealPerCapita: { year: number; nominalBillions: number; realPerCapita: number }[];
+  diminishingReturns: {
+    modelType: string;
+    r2: number;
+    n: number;
+    marginalReturn: number;
+    elasticity: number | null;
+    outcomeName: string;
+  } | null;
+}
+
+function runOSLAnalysis(
+  mapping: OECDMapping,
+  currentPerCapita: number,
+): {
+  model: DiminishingReturnsModel;
+  oslPerCapita: number;
+  mr: number;
+  elasticity: number | null;
+  data: SpendingOutcomePoint[];
+} | null {
+  // Get cross-country data
+  let data = oecdBudgetPanelToSpendingOutcome(
+    mapping.spendingField as keyof OECDBudgetPanelDataPoint,
+    mapping.outcomeField as keyof OECDBudgetPanelDataPoint,
+  );
+
+  // Negate outcome if needed (so higher = better)
+  if (mapping.negateOutcome) {
+    data = data.map(d => ({ ...d, outcome: 100 - d.outcome }));
+  }
+
+  if (data.length < 10) return null;
+
+  // Fit both models, pick best
+  const logModel = fitLogModel(data);
+  const satModel = fitSaturationModel(data);
+  const model = logModel.r2 >= satModel.r2 ? logModel : satModel;
+
+  if (model.r2 < 0.01) return null; // No relationship
+
+  // Calculate average marginal return across observed data
+  const avgMR = data.reduce(
+    (sum, d) => sum + Math.abs(calcMarginalReturn(d.spending, model)), 0,
+  ) / data.length;
+
+  // OSL = where marginal return drops to 50% of average
+  const targetMR = avgMR * 0.5;
+  let oslPerCapita: number;
+
+  if (model.beta <= 0) {
+    // Negative or zero benefit — recommend minimum observed
+    const minSpending = Math.min(...data.map(d => d.spending));
+    oslPerCapita = minSpending;
+  } else if (targetMR > 0) {
+    oslPerCapita = findOSL(model, targetMR);
+    if (oslPerCapita <= 0 || !isFinite(oslPerCapita)) {
+      oslPerCapita = currentPerCapita;
+    }
+  } else {
+    oslPerCapita = currentPerCapita;
+  }
+
+  // Clamp to observed data range (don't extrapolate wildly)
+  const maxObserved = Math.max(...data.map(d => d.spending));
+  const minObserved = Math.min(...data.map(d => d.spending));
+  oslPerCapita = Math.max(minObserved * 0.5, Math.min(oslPerCapita, maxObserved * 1.5));
+
+  // Extra conservative for low-fit models
+  if (model.r2 < 0.3) {
+    oslPerCapita = Math.max(currentPerCapita * 0.5, Math.min(oslPerCapita, currentPerCapita * 2));
+  }
+
+  const mr = calcMarginalReturn(currentPerCapita, model);
+  const predicted = predictOutcome(currentPerCapita, model);
+  const elasticity = predicted !== 0 ? mr * (currentPerCapita / predicted) : null;
+
+  return { model, oslPerCapita, mr, elasticity, data };
 }
 
 function generateBudgetAnalysis() {
@@ -55,76 +213,116 @@ function generateBudgetAnalysis() {
   const categories: BudgetCategoryOutput[] = [];
 
   for (const cat of US_FEDERAL_BUDGET.categories) {
-    // For budget analysis, we use a proportional model based on outcome metrics.
-    // True OSL requires cross-jurisdictional data (many countries at different spending levels).
-    // TODO: Wire international comparison data for cross-country OSL estimation.
-    // For now, we estimate optimal as current +/- adjustment based on outcome trends.
-
-    let optimalSpending: number;
-    let marginalReturn: number;
-
     const latestSpending = cat.historicalSpending[cat.historicalSpending.length - 1]?.amount ?? 0;
+    const latestYear = cat.historicalSpending[cat.historicalSpending.length - 1]?.year ?? 2025;
     const currentUsd = latestSpending * 1e9;
+    const currentRealPerCapita = toRealPerCapita(latestSpending, latestYear);
+    const historicalRPC = historicalToRealPerCapita(cat.historicalSpending);
 
-    // Calculate growth rate from historical spending
-    const firstSpending = cat.historicalSpending[0]?.amount ?? latestSpending;
-    const years = cat.historicalSpending.length > 1 ? cat.historicalSpending.length - 1 : 1;
-    const cagr = firstSpending > 0 ? Math.pow(latestSpending / firstSpending, 1 / years) - 1 : 0;
+    const isNonDiscretionary = NON_DISCRETIONARY.has(cat.name);
+    const mapping = OECD_MAPPINGS[cat.name];
 
-    // Estimate optimal based on outcome trends
-    const improvingMetrics = cat.outcomeMetrics.filter(m => 
-      m.trend === 'improving' || m.trend === 'increasing'
-    ).length;
-    const decliningMetrics = cat.outcomeMetrics.filter(m => 
-      m.trend === 'declining' || m.trend === 'decreasing' || m.trend === 'worsening'
-    ).length;
-    const totalMetrics = cat.outcomeMetrics.length || 1;
+    let optimalPerCapita: number | null = null;
+    let optimalNominal: number | null = null;
+    let gap = 0;
+    let gapPercent = 0;
+    let recommendation = 'maintain';
+    let evidenceSource = 'none';
+    let drInfo: BudgetCategoryOutput['diminishingReturns'] = null;
 
-    // If outcomes are declining despite spending increases, suggest reallocation
-    // If outcomes are improving, spending is likely effective
-    const outcomeScore = (improvingMetrics - decliningMetrics) / totalMetrics;
-    
-    // Adjust optimal: if outcomes declining, reduce; if improving, maintain or increase slightly
-    const adjustment = outcomeScore * 0.1; // +/- 10% max
-    optimalSpending = Math.round(currentUsd * (1 + adjustment));
-    marginalReturn = Math.max(0.0001, (1 + outcomeScore) * 0.003);
+    if (isNonDiscretionary) {
+      // Non-discretionary: no optimization, just report
+      evidenceSource = 'non-discretionary (mandated)';
+    } else if (mapping) {
+      // Real OECD cross-country OSL estimation
+      const result = runOSLAnalysis(mapping, currentRealPerCapita);
+      if (result) {
+        optimalPerCapita = result.oslPerCapita;
+        optimalNominal = result.oslPerCapita * US_POPULATION;
+        gap = optimalNominal - currentUsd;
+        gapPercent = currentUsd > 0 ? (gap / currentUsd) * 100 : 0;
+        evidenceSource = `OECD cross-country (${result.data.length} observations, ${new Set(result.data.map(d => d.jurisdiction)).size} countries)`;
 
-    const gap = optimalSpending - currentUsd;
-    const gapPercent = currentUsd > 0 ? (gap / currentUsd) * 100 : 0;
+        drInfo = {
+          modelType: result.model.type,
+          r2: Math.round(result.model.r2 * 1000) / 1000,
+          n: result.model.n,
+          marginalReturn: Math.round(result.mr * 100000) / 100000,
+          elasticity: result.elasticity !== null ? Math.round(result.elasticity * 1000) / 1000 : null,
+          outcomeName: mapping.outcomeName,
+        };
 
-    let recommendation: string;
-    if (gapPercent > 10) recommendation = 'increase';
-    else if (gapPercent < -10) recommendation = 'decrease';
-    else recommendation = 'maintain';
+        // Recommendation from gap
+        if (gapPercent > 50) recommendation = 'scale_up';
+        else if (gapPercent > 10) recommendation = 'increase';
+        else if (gapPercent > -10) recommendation = 'maintain';
+        else if (gapPercent > -50) recommendation = 'decrease';
+        else recommendation = 'major_decrease';
+      } else {
+        evidenceSource = 'OECD mapping available but insufficient data';
+      }
+    } else {
+      // Fallback: outcome trend heuristic
+      const improvingMetrics = cat.outcomeMetrics.filter(m =>
+        m.trend === 'improving' || m.trend === 'increasing'
+      ).length;
+      const decliningMetrics = cat.outcomeMetrics.filter(m =>
+        m.trend === 'declining' || m.trend === 'decreasing' || m.trend === 'worsening'
+      ).length;
+      const totalMetrics = cat.outcomeMetrics.length || 1;
+      const outcomeScore = (improvingMetrics - decliningMetrics) / totalMetrics;
+
+      evidenceSource = 'outcome-trend heuristic (no cross-country data)';
+
+      // For trend-based: only flag strong signals
+      if (outcomeScore <= -0.5) {
+        recommendation = 'decrease';
+        gapPercent = outcomeScore * 20; // -10% to -20%
+        gap = currentUsd * (gapPercent / 100);
+      } else if (outcomeScore >= 0.5) {
+        recommendation = 'increase';
+        gapPercent = outcomeScore * 20;
+        gap = currentUsd * (gapPercent / 100);
+      }
+    }
 
     categories.push({
       name: cat.name,
       currentSpending: currentUsd,
-      optimalSpending: Math.round(optimalSpending),
+      currentSpendingRealPerCapita: Math.round(currentRealPerCapita * 100) / 100,
+      optimalSpendingPerCapita: optimalPerCapita !== null ? Math.round(optimalPerCapita * 100) / 100 : null,
+      optimalSpendingNominal: optimalNominal !== null ? Math.round(optimalNominal) : null,
       gap: Math.round(gap),
       gapPercent: Math.round(gapPercent * 10) / 10,
-      marginalReturn: Math.round(marginalReturn * 10000) / 10000,
       recommendation,
+      evidenceSource,
       outcomeMetrics: cat.outcomeMetrics.map(m => ({
         name: m.name,
         value: m.value,
         trend: m.trend,
       })),
+      historicalRealPerCapita: historicalRPC.map(h => ({
+        year: h.year,
+        nominalBillions: h.nominalBillions,
+        realPerCapita: Math.round(h.realPerCapita * 100) / 100,
+      })),
+      diminishingReturns: drInfo,
     });
   }
 
   // Sort by absolute gap (biggest misallocation first)
   categories.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
 
-  // Top recommendations
+  // Top recommendations (only categories with real evidence)
   const topRecommendations = categories
-    .filter(c => c.recommendation !== 'maintain')
-    .slice(0, 5)
+    .filter(c => c.recommendation !== 'maintain' && c.diminishingReturns !== null)
+    .slice(0, 10)
     .map(c => {
       const dir = c.gap > 0 ? 'Increase' : 'Decrease';
       const amt = Math.abs(c.gap);
       const fmtAmt = amt >= 1e12 ? `$${(amt/1e12).toFixed(1)}T` : `$${(amt/1e9).toFixed(0)}B`;
-      return `${dir} ${c.name} by ${fmtAmt}`;
+      const model = c.diminishingReturns!;
+      return `${dir} ${c.name} by ${fmtAmt} (${model.modelType} model, R²=${model.r2}, ${model.n} observations)`;
     });
 
   return {
@@ -133,8 +331,22 @@ function generateBudgetAnalysis() {
     categories,
     topRecommendations,
     generatedAt: new Date().toISOString(),
-    generatedBy: '@optimitron/obg',
-    note: 'Generated from real US federal budget data using diminishing returns analysis. Not mock data.',
+    generatedBy: '@optimitron/obg + OECD cross-country panel',
+    inflationAdjustment: {
+      method: 'CPI-U deflator',
+      baseYear: 2017,
+      perCapita: true,
+      unit: 'constant 2017 USD per capita',
+      note: 'Matches OECD cross-country PPP convention for comparable analysis',
+    },
+    methodology: {
+      oslMethod: 'Diminishing returns curve fitting (log-linear or saturation model)',
+      oslThreshold: 'OSL where marginal return drops to 50% of cross-country average',
+      dataClamping: 'OSL clamped to [50% min, 150% max] of observed cross-country spending',
+      lowFitGuard: 'Models with R² < 0.3 constrained to [0.5×, 2×] current spending',
+      nonDiscretionary: 'Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization',
+    },
+    note: 'Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics.',
   };
 }
 
@@ -145,27 +357,23 @@ interface PolicyInput {
   type: string;
   category: string;
   description: string;
-  // Bradford Hill inputs
-  effectSize: number;          // Cohen's d or similar
-  studyCount: number;          // Number of studies/countries
-  hasPredecessor: boolean;     // temporality
-  doseResponseExists: boolean; // gradient
-  hasRCT: boolean;             // experiment quality
-  mechanismKnown: boolean;     // plausibility
-  consistentWithTheory: boolean; // coherence
-  analogyExists: boolean;      // analogy
-  outcomeCount: number;        // specificity (fewer = more specific)
-  // Impact
+  effectSize: number;
+  studyCount: number;
+  hasPredecessor: boolean;
+  doseResponseExists: boolean;
+  hasRCT: boolean;
+  mechanismKnown: boolean;
+  consistentWithTheory: boolean;
+  analogyExists: boolean;
+  outcomeCount: number;
   incomeEffect: number;
   healthEffect: number;
-  // Meta
   rationale: string;
   currentStatus: string;
   recommendedTarget: string;
   blockingFactors: string[];
 }
 
-// Real policies based on cross-country evidence, not DC talking points
 const REAL_POLICIES: PolicyInput[] = [
   {
     name: 'Shift Drug Policy from Criminal to Health Approach',
@@ -315,7 +523,6 @@ const REAL_POLICIES: PolicyInput[] = [
 
 function generatePolicyAnalysis() {
   const policies = REAL_POLICIES.map(p => {
-    // Calculate Bradford Hill scores using the real OPG library
     const method: AnalysisMethod = p.hasRCT ? 'rct' : 'cross_sectional';
     const bh = {
       strength: scoreStrength(p.effectSize),
@@ -336,21 +543,16 @@ function generatePolicyAnalysis() {
     };
 
     const ccs = calculateCCS(bh);
-
-    // Calculate welfare using the real welfare function
-    // incomeGrowth = pp/year impact, healthyLifeYears = years gained
     const welfare = calculatePolicyWelfare({
-      incomeGrowth: p.incomeEffect * 2, // convert effect to approx pp/year
-      healthyLifeYears: 75 + p.healthEffect * 10, // base + improvement in years
+      incomeGrowth: p.incomeEffect * 2,
+      healthyLifeYears: 75 + p.healthEffect * 10,
     });
 
-    // Evidence grade from CCS
     let evidenceGrade: string;
     if (ccs >= 0.75) evidenceGrade = 'A';
     else if (ccs >= 0.55) evidenceGrade = 'B';
     else evidenceGrade = 'C';
 
-    // Policy impact score (CCS weighted by welfare)
     const policyImpactScore = ccs * 0.6 + (welfare / 100) * 0.4;
 
     return {
@@ -375,7 +577,6 @@ function generatePolicyAnalysis() {
     };
   });
 
-  // Sort by policy impact score
   policies.sort((a, b) => b.policyImpactScore - a.policyImpactScore);
 
   return {
@@ -383,7 +584,7 @@ function generatePolicyAnalysis() {
     policies,
     generatedAt: new Date().toISOString(),
     generatedBy: '@optimitron/opg',
-    note: 'Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence. Not mock data.',
+    note: 'Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence.',
   };
 }
 
@@ -397,7 +598,11 @@ writeFileSync(
 );
 console.log(`  ✅ ${budgetAnalysis.categories.length} categories → us-budget-analysis.json`);
 
-console.log('Generating policy analysis...');
+const withOSL = budgetAnalysis.categories.filter(c => c.diminishingReturns !== null);
+const withRecs = budgetAnalysis.categories.filter(c => c.recommendation !== 'maintain');
+console.log(`  📊 ${withOSL.length} with OECD-backed OSL, ${withRecs.length} with non-maintain recommendations`);
+
+console.log('\nGenerating policy analysis...');
 const policyAnalysis = generatePolicyAnalysis();
 writeFileSync(
   resolve(dataDir, 'us-policy-analysis.json'),
@@ -405,4 +610,4 @@ writeFileSync(
 );
 console.log(`  ✅ ${policyAnalysis.policies.length} policies → us-policy-analysis.json`);
 
-console.log('\nDone! Data generated from real OPG/OBG libraries.');
+console.log('\nDone! Data generated from real OPG/OBG libraries + OECD cross-country data.');

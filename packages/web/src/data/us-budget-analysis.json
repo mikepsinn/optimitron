@@ -1,1117 +1,2062 @@
 {
   "jurisdiction": "United States of America",
-  "totalBudget": 6750000000000,
+  "totalBudget": 6707000000000,
   "categories": [
     {
       "name": "Education",
-      "currentSpending": 238000000000,
-      "optimalSpending": 1170775323989.3784,
-      "gap": 932775323989.3784,
-      "gapPercent": 391.922405037554,
-      "marginalReturn": 20.575629851985255,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "A",
-      "evidenceDescription": "Strong causal evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 767859067764.8467,
-      "elasticity": 0.7036324297622262,
-      "discretionary": true,
-      "wesMethodology": "causal",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.526218371017746,
-        "n": 529,
-        "lowFit": false,
-        "smallSample": false
-      },
-      "welfareEffect": {
-        "incomeEffect": 5.458671878270352,
-        "healthEffect": 3.2752031269622113
-      },
+      "currentSpending": 102000000000,
+      "currentSpendingRealPerCapita": 229.74,
+      "optimalSpendingPerCapita": 3484.45,
+      "optimalSpendingNominal": 1181228675096,
+      "gap": 1079228675096,
+      "gapPercent": 1058.1,
+      "recommendation": "scale_up",
+      "evidenceSource": "OECD cross-country (529 observations, 23 countries)",
       "outcomeMetrics": [
         {
-          "name": "PISA Average Score",
-          "value": 489,
-          "trend": "decreasing"
+          "name": "High school graduation rate",
+          "value": 87,
+          "trend": "stable"
         },
         {
-          "name": "College Completion Rate",
-          "value": 62.2,
-          "trend": "increasing"
+          "name": "College enrollment rate (18-24)",
+          "value": 38,
+          "trend": "declining"
         },
         {
-          "name": "Student Debt per Graduate ($K)",
-          "value": 37.6,
-          "trend": "increasing"
+          "name": "PISA math score (US)",
+          "value": 465,
+          "trend": "declining"
+        },
+        {
+          "name": "PISA reading score (US)",
+          "value": 504,
+          "trend": "declining"
+        },
+        {
+          "name": "Student loan debt (total)",
+          "value": 1740,
+          "trend": "declining"
         }
-      ]
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 70,
+          "realPerCapita": 225.7
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 73,
+          "realPerCapita": 230.76
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 68,
+          "realPerCapita": 209.14
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 71,
+          "realPerCapita": 211.87
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 72,
+          "realPerCapita": 210.2
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 76,
+          "realPerCapita": 217.16
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 102,
+          "realPerCapita": 277.83
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 131,
+          "realPerCapita": 329.13
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 119,
+          "realPerCapita": 284.98
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 108,
+          "realPerCapita": 249.62
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 102,
+          "realPerCapita": 229.74
+        }
+      ],
+      "diminishingReturns": {
+        "modelType": "saturation",
+        "r2": 0.526,
+        "n": 529,
+        "marginalReturn": 30.58773,
+        "elasticity": 0.807,
+        "outcomeName": "GDP per Capita"
+      }
+    },
+    {
+      "name": "Science / NASA",
+      "currentSpending": 44000000000,
+      "currentSpendingRealPerCapita": 99.1,
+      "optimalSpendingPerCapita": 1372.1,
+      "optimalSpendingNominal": 465142998744,
+      "gap": 421142998744,
+      "gapPercent": 957.1,
+      "recommendation": "scale_up",
+      "evidenceSource": "OECD cross-country (529 observations, 23 countries)",
+      "outcomeMetrics": [
+        {
+          "name": "R&D as % of GDP (federal)",
+          "value": 0.67,
+          "trend": "stable"
+        },
+        {
+          "name": "US patents granted",
+          "value": 352013,
+          "trend": "stable"
+        },
+        {
+          "name": "Nobel Prizes in science (cumulative, US-affiliated)",
+          "value": 285,
+          "trend": "improving"
+        },
+        {
+          "name": "NASA commercial crew missions",
+          "value": 12,
+          "trend": "improving"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 30,
+          "realPerCapita": 96.73
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 31,
+          "realPerCapita": 97.99
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 31,
+          "realPerCapita": 95.34
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 32,
+          "realPerCapita": 95.49
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 33,
+          "realPerCapita": 96.34
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 35,
+          "realPerCapita": 100.01
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 37,
+          "realPerCapita": 100.78
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 40,
+          "realPerCapita": 100.5
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 42,
+          "realPerCapita": 100.58
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 43,
+          "realPerCapita": 99.39
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 44,
+          "realPerCapita": 99.1
+        }
+      ],
+      "diminishingReturns": {
+        "modelType": "log",
+        "r2": 0.318,
+        "n": 529,
+        "marginalReturn": 88.55407,
+        "elasticity": 0.443,
+        "outcomeName": "GDP per Capita"
+      }
+    },
+    {
+      "name": "Health (non-Medicare/Medicaid)",
+      "currentSpending": 94000000000,
+      "currentSpendingRealPerCapita": 211.72,
+      "optimalSpendingPerCapita": 423.44,
+      "optimalSpendingNominal": 143547663551,
+      "gap": 49547663551,
+      "gapPercent": 52.7,
+      "recommendation": "scale_up",
+      "evidenceSource": "OECD cross-country (529 observations, 23 countries)",
+      "outcomeMetrics": [
+        {
+          "name": "Life expectancy at birth",
+          "value": 77.5,
+          "trend": "improving"
+        },
+        {
+          "name": "Opioid overdose deaths",
+          "value": 81083,
+          "trend": "improving"
+        },
+        {
+          "name": "NIH-funded clinical trials",
+          "value": 13500,
+          "trend": "improving"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 66,
+          "realPerCapita": 212.8
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 67,
+          "realPerCapita": 211.79
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 65,
+          "realPerCapita": 199.91
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 71,
+          "realPerCapita": 211.87
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 75,
+          "realPerCapita": 218.96
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 122,
+          "realPerCapita": 348.6
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 190,
+          "realPerCapita": 517.52
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 127,
+          "realPerCapita": 319.08
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 102,
+          "realPerCapita": 244.27
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 97,
+          "realPerCapita": 224.2
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 94,
+          "realPerCapita": 211.72
+        }
+      ],
+      "diminishingReturns": {
+        "modelType": "saturation",
+        "r2": 0.11,
+        "n": 529,
+        "marginalReturn": 0.00179,
+        "elasticity": 0.005,
+        "outcomeName": "Life Expectancy"
+      }
+    },
+    {
+      "name": "Veterans Affairs",
+      "currentSpending": 325000000000,
+      "currentSpendingRealPerCapita": 732.02,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 48750000000,
+      "gapPercent": 15,
+      "recommendation": "increase",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Veteran suicide rate",
+          "value": 33.9,
+          "trend": "stable"
+        },
+        {
+          "name": "VA patient satisfaction (inpatient)",
+          "value": 71,
+          "trend": "improving"
+        },
+        {
+          "name": "Veteran homelessness",
+          "value": 35286,
+          "trend": "improving"
+        },
+        {
+          "name": "Average wait time for primary care",
+          "value": 20.3,
+          "trend": "improving"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 161,
+          "realPerCapita": 519.12
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 167,
+          "realPerCapita": 527.9
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 176,
+          "realPerCapita": 541.29
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 189,
+          "realPerCapita": 564.01
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 200,
+          "realPerCapita": 583.89
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 218,
+          "realPerCapita": 622.9
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 234,
+          "realPerCapita": 637.36
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 267,
+          "realPerCapita": 670.83
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 302,
+          "realPerCapita": 723.23
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 314,
+          "realPerCapita": 725.76
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 325,
+          "realPerCapita": 732.02
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "HUD / Housing",
+      "currentSpending": 73000000000,
+      "currentSpendingRealPerCapita": 164.42,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": -9733333333,
+      "gapPercent": -13.3,
+      "recommendation": "decrease",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Total homeless population",
+          "value": 653104,
+          "trend": "declining"
+        },
+        {
+          "name": "Housing cost burden (>30% income)",
+          "value": 30,
+          "trend": "declining"
+        },
+        {
+          "name": "Homeownership rate",
+          "value": 65.6,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 37,
+          "realPerCapita": 119.3
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 39,
+          "realPerCapita": 123.28
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 39,
+          "realPerCapita": 119.95
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 41,
+          "realPerCapita": 122.35
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 44,
+          "realPerCapita": 128.46
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 56,
+          "realPerCapita": 160.01
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 63,
+          "realPerCapita": 171.6
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 60,
+          "realPerCapita": 150.75
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 68,
+          "realPerCapita": 162.85
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 71,
+          "realPerCapita": 164.1
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 73,
+          "realPerCapita": 164.42
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Agriculture",
+      "currentSpending": 38000000000,
+      "currentSpendingRealPerCapita": 85.59,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": -7600000000,
+      "gapPercent": -20,
+      "recommendation": "decrease",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Food insecurity rate",
+          "value": 12.8,
+          "trend": "declining"
+        },
+        {
+          "name": "Farm income (net)",
+          "value": 116.1,
+          "trend": "declining"
+        },
+        {
+          "name": "Crop export value",
+          "value": 171,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 25,
+          "realPerCapita": 80.61
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 24,
+          "realPerCapita": 75.87
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 24,
+          "realPerCapita": 73.81
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 25,
+          "realPerCapita": 74.6
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 39,
+          "realPerCapita": 113.86
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 46,
+          "realPerCapita": 131.44
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 28,
+          "realPerCapita": 76.27
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 29,
+          "realPerCapita": 72.86
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 33,
+          "realPerCapita": 79.03
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 36,
+          "realPerCapita": 83.21
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 38,
+          "realPerCapita": 85.59
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Justice / Law Enforcement",
+      "currentSpending": 40000000000,
+      "currentSpendingRealPerCapita": 90.09,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 5333333333,
+      "gapPercent": 13.3,
+      "recommendation": "increase",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Violent crime rate",
+          "value": 363.8,
+          "trend": "improving"
+        },
+        {
+          "name": "Incarceration rate",
+          "value": 531,
+          "trend": "improving"
+        },
+        {
+          "name": "Federal prison population",
+          "value": 158169,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 33,
+          "realPerCapita": 106.4
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 33,
+          "realPerCapita": 104.31
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 35,
+          "realPerCapita": 107.64
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 34,
+          "realPerCapita": 101.46
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 34,
+          "realPerCapita": 99.26
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 37,
+          "realPerCapita": 105.72
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 39,
+          "realPerCapita": 106.23
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 38,
+          "realPerCapita": 95.47
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 39,
+          "realPerCapita": 93.4
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 40,
+          "realPerCapita": 92.45
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 40,
+          "realPerCapita": 90.09
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Treasury / General Government",
+      "currentSpending": 30000000000,
+      "currentSpendingRealPerCapita": 67.57,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": -3000000000,
+      "gapPercent": -10,
+      "recommendation": "decrease",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Tax gap (estimated)",
+          "value": 688,
+          "trend": "declining"
+        },
+        {
+          "name": "IRS voluntary compliance rate",
+          "value": 83.6,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 23,
+          "realPerCapita": 74.16
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 23,
+          "realPerCapita": 72.7
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 22,
+          "realPerCapita": 67.66
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 24,
+          "realPerCapita": 71.62
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 25,
+          "realPerCapita": 72.99
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 25,
+          "realPerCapita": 71.43
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 27,
+          "realPerCapita": 73.54
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 28,
+          "realPerCapita": 70.35
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 29,
+          "realPerCapita": 69.45
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 29,
+          "realPerCapita": 67.03
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 30,
+          "realPerCapita": 67.57
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "State Department / Diplomacy",
+      "currentSpending": 19000000000,
+      "currentSpendingRealPerCapita": 42.79,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 1900000000,
+      "gapPercent": 10,
+      "recommendation": "increase",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "US passport holders",
+          "value": 160,
+          "trend": "improving"
+        },
+        {
+          "name": "Bilateral trade agreements active",
+          "value": 14,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 15,
+          "realPerCapita": 48.36
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 15.5,
+          "realPerCapita": 49
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 15.2,
+          "realPerCapita": 46.75
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 15,
+          "realPerCapita": 44.76
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 15.7,
+          "realPerCapita": 45.84
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 16,
+          "realPerCapita": 45.72
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 16.5,
+          "realPerCapita": 44.94
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 17.2,
+          "realPerCapita": 43.21
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 18,
+          "realPerCapita": 43.11
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 18.5,
+          "realPerCapita": 42.76
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 19,
+          "realPerCapita": 42.79
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Commerce / Economic Development",
+      "currentSpending": 18000000000,
+      "currentSpendingRealPerCapita": 40.54,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 1800000000,
+      "gapPercent": 10,
+      "recommendation": "increase",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "GDP growth rate (real)",
+          "value": 2.5,
+          "trend": "stable"
+        },
+        {
+          "name": "New business applications",
+          "value": 5500000,
+          "trend": "improving"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 9,
+          "realPerCapita": 29.02
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 9.5,
+          "realPerCapita": 30.03
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 9.2,
+          "realPerCapita": 28.29
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 11.5,
+          "realPerCapita": 34.32
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 12,
+          "realPerCapita": 35.03
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 34,
+          "realPerCapita": 97.15
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 30,
+          "realPerCapita": 81.71
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 22,
+          "realPerCapita": 55.27
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 20,
+          "realPerCapita": 47.9
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 19,
+          "realPerCapita": 43.92
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 18,
+          "realPerCapita": 40.54
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Social Security",
+      "currentSpending": 1461000000000,
+      "currentSpendingRealPerCapita": 3290.7,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "non-discretionary (mandated)",
+      "outcomeMetrics": [
+        {
+          "name": "Elderly poverty rate",
+          "value": 10.2,
+          "trend": "stable"
+        },
+        {
+          "name": "Beneficiaries",
+          "value": 67.9,
+          "trend": "improving"
+        },
+        {
+          "name": "Average monthly retirement benefit",
+          "value": 1907,
+          "trend": "improving"
+        },
+        {
+          "name": "Trust fund depletion year (projected)",
+          "value": 2033,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 882,
+          "realPerCapita": 2843.85
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 910,
+          "realPerCapita": 2876.56
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 939,
+          "realPerCapita": 2887.92
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 982,
+          "realPerCapita": 2930.44
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 1039,
+          "realPerCapita": 3033.32
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 1090,
+          "realPerCapita": 3114.5
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 1133,
+          "realPerCapita": 3086.04
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 1219,
+          "realPerCapita": 3062.7
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 1354,
+          "realPerCapita": 3242.56
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 1417,
+          "realPerCapita": 3275.17
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 1461,
+          "realPerCapita": 3290.7
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Interest on Debt",
+      "currentSpending": 892000000000,
+      "currentSpendingRealPerCapita": 2009.11,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "non-discretionary (mandated)",
+      "outcomeMetrics": [
+        {
+          "name": "Debt-to-GDP ratio",
+          "value": 121,
+          "trend": "declining"
+        },
+        {
+          "name": "Net interest as % of revenue",
+          "value": 18,
+          "trend": "declining"
+        },
+        {
+          "name": "Average interest rate on debt",
+          "value": 3.3,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 223,
+          "realPerCapita": 719.02
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 240,
+          "realPerCapita": 758.65
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 263,
+          "realPerCapita": 808.86
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 325,
+          "realPerCapita": 969.85
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 375,
+          "realPerCapita": 1094.8
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 345,
+          "realPerCapita": 985.78
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 352,
+          "realPerCapita": 958.77
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 475,
+          "realPerCapita": 1193.42
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 659,
+          "realPerCapita": 1578.18
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 882,
+          "realPerCapita": 2038.6
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 892,
+          "realPerCapita": 2009.11
+        }
+      ],
+      "diminishingReturns": null
     },
     {
       "name": "Military",
       "currentSpending": 886000000000,
-      "optimalSpending": 443000000000,
-      "gap": -443000000000,
-      "gapPercent": -50,
-      "marginalReturn": -0.0001028225355234275,
-      "recommendation": "decrease",
-      "recommendedAction": "major_decrease",
-      "evidenceGrade": "D",
-      "evidenceDescription": "Weak evidence",
-      "investmentStatus": "Over-invested",
-      "priorityScore": 375005720418.0123,
-      "elasticity": -0.003384926258965176,
-      "discretionary": true,
-      "wesMethodology": "causal",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0.006189722836379308,
-        "n": 529,
-        "lowFit": true,
-        "smallSample": false
-      },
-      "welfareEffect": {
-        "incomeEffect": -0.0000018467455866022667,
-        "healthEffect": -0.00000110804735196136
-      },
+      "currentSpendingRealPerCapita": 1995.59,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "OECD mapping available but insufficient data",
       "outcomeMetrics": [
         {
-          "name": "Global Firepower Index Rank",
+          "name": "Global Peace Index ranking (US)",
+          "value": 131,
+          "trend": "declining"
+        },
+        {
+          "name": "Military strength index (Global Firepower)",
           "value": 1,
           "trend": "stable"
         },
         {
-          "name": "Military Readiness Score",
-          "value": 87,
+          "name": "Active duty personnel",
+          "value": 1.33,
+          "trend": "declining"
+        },
+        {
+          "name": "Military spending as % GDP",
+          "value": 3,
           "trend": "stable"
         }
-      ]
-    },
-    {
-      "name": "Science & Space (NASA, NSF)",
-      "currentSpending": 81000000000,
-      "optimalSpending": 461026689020.17535,
-      "gap": 380026689020.17535,
-      "gapPercent": 469.1687518767597,
-      "marginalReturn": 36.40441349096675,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "B",
-      "evidenceDescription": "Probable causal link",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 299356097248.6339,
-      "elasticity": 0.31807157194706004,
-      "discretionary": true,
-      "wesMethodology": "causal",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0.31800482279935205,
-        "n": 529,
-        "lowFit": false,
-        "smallSample": false
-      },
-      "welfareEffect": {
-        "incomeEffect": 3.8342661997880705,
-        "healthEffect": 2.300559719872842
-      },
-      "outcomeMetrics": [
+      ],
+      "historicalRealPerCapita": [
         {
-          "name": "Patent Applications",
-          "value": 350000,
-          "trend": "increasing"
+          "year": 2015,
+          "nominalBillions": 596,
+          "realPerCapita": 1921.69
         },
         {
-          "name": "STEM Graduates per 100K",
-          "value": 28,
-          "trend": "increasing"
+          "year": 2016,
+          "nominalBillions": 604,
+          "realPerCapita": 1909.28
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 610,
+          "realPerCapita": 1876.07
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 654,
+          "realPerCapita": 1951.64
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 686,
+          "realPerCapita": 2002.75
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 714,
+          "realPerCapita": 2040.14
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 742,
+          "realPerCapita": 2021.04
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 766,
+          "realPerCapita": 1924.55
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 806,
+          "realPerCapita": 1930.21
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 849,
+          "realPerCapita": 1962.33
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 886,
+          "realPerCapita": 1995.59
         }
-      ]
-    },
-    {
-      "name": "Transportation & Infrastructure",
-      "currentSpending": 168000000000,
-      "optimalSpending": 663073037958.2012,
-      "gap": 495073037958.2012,
-      "gapPercent": 294.6863321179769,
-      "marginalReturn": 0.053100233241181675,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 90200525389.99547,
-      "elasticity": 0.651540837111797,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9674378988714181,
-        "n": 9,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.006385716133133254,
-        "healthEffect": 0.003831429679879952
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Infrastructure Quality Index",
-          "value": 58.5,
-          "trend": "stable"
-        },
-        {
-          "name": "Bridge Deficiency Rate",
-          "value": 7.5,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Commute Time (minutes)",
-          "value": 27.6,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Income Security (SNAP, Housing)",
-      "currentSpending": 304000000000,
-      "optimalSpending": 608000000000,
-      "gap": 304000000000,
-      "gapPercent": 100,
-      "marginalReturn": 0.0014212525984477462,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "D",
-      "evidenceDescription": "Weak evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 88231169169.84708,
-      "elasticity": 0.020667369318781104,
-      "discretionary": true,
-      "wesMethodology": "causal",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.0813812141645276,
-        "n": 330,
-        "lowFit": true,
-        "smallSample": false
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.0003501584600790166,
-        "healthEffect": 0.00021009507604740995
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Food Insecurity Rate",
-          "value": 12.8,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Poverty Rate",
-          "value": 11.5,
-          "trend": "stable"
-        },
-        {
-          "name": "Homelessness per 10K",
-          "value": 18,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Justice & Law Enforcement",
-      "currentSpending": 68000000000,
-      "optimalSpending": 206771740919.0071,
-      "gap": 138771740919.0071,
-      "gapPercent": 204.07608958677517,
-      "marginalReturn": 0.22173723670302645,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 25370148218.588898,
-      "elasticity": 1.2078478148291332,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.8573276203074891,
-        "n": 8,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.0021851476312567107,
-        "healthEffect": 0.0013110885787540264
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Violent Crime Rate per 100K",
-          "value": 380,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Incarceration Rate per 100K",
-          "value": 531,
-          "trend": "decreasing"
-        }
-      ]
-    },
-    {
-      "name": "International Affairs & Aid",
-      "currentSpending": 68000000000,
-      "optimalSpending": 148378040617.7017,
-      "gap": 80378040617.70169,
-      "gapPercent": 118.20300090838485,
-      "marginalReturn": 0.11548584787930415,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 14588117497.627533,
-      "elasticity": 0.39882797565788053,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9937155910524301,
-        "n": 9,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.00713721076634274,
-        "healthEffect": 0.004282326459805644
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Aid as % of GNI",
-          "value": 0.17,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Global Influence Index",
-          "value": 54.5,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Community & Regional Development",
-      "currentSpending": 41000000000,
-      "optimalSpending": 102809202124.3387,
-      "gap": 61809202124.3387,
-      "gapPercent": 150.7541515227773,
-      "marginalReturn": 0.16565208352368918,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "D",
-      "evidenceDescription": "Weak evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 14149027764.680208,
-      "elasticity": 0.3661285061869093,
-      "discretionary": true,
-      "wesMethodology": "estimated",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9974010610529958,
-        "n": 8,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.018960088858119034,
-        "healthEffect": 0.01137605331487142
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Housing Affordability Index",
-          "value": 52,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Community Development Score",
-          "value": 55,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Farm Subsidies",
-      "currentSpending": 30000000000,
-      "optimalSpending": 15000000000.000002,
-      "gap": -14999999999.999998,
-      "gapPercent": -49.99999999999999,
-      "marginalReturn": -0.045594349442446086,
-      "recommendation": "decrease",
-      "recommendedAction": "decrease",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Over-invested",
-      "priorityScore": 13708547475.066118,
-      "elasticity": -0.05130928883100197,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0.22333771639765698,
-        "n": 9,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": -0.0003028041685572896,
-        "healthEffect": -0.00018168250113437376
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Farm Income Index",
-          "value": 74,
-          "trend": "stable"
-        },
-        {
-          "name": "Food Price Index",
-          "value": 108,
-          "trend": "increasing"
-        },
-        {
-          "name": "Subsidy per Capita",
-          "value": 89,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Energy Programs",
-      "currentSpending": 54000000000,
-      "optimalSpending": 104447885670.81783,
-      "gap": 50447885670.817825,
-      "gapPercent": 93.42201050151449,
-      "marginalReturn": 0.14675424590697142,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "D",
-      "evidenceDescription": "Weak evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 12662546487.48399,
-      "elasticity": 0.36639956438098653,
-      "discretionary": true,
-      "wesMethodology": "estimated",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9956807520359329,
-        "n": 8,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.018417842852308356,
-        "healthEffect": 0.011050705711385013
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Renewable Energy Share %",
-          "value": 21,
-          "trend": "increasing"
-        },
-        {
-          "name": "Energy Independence Index",
-          "value": 58,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Health Research (NIH, CDC)",
-      "currentSpending": 102000000000,
-      "optimalSpending": 148270641791.5879,
-      "gap": 46270641791.58789,
-      "gapPercent": 45.363374305478324,
-      "marginalReturn": 0.0593150182582553,
-      "recommendation": "increase",
-      "recommendedAction": "increase",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 8359602775.5191765,
-      "elasticity": 0.23710875622398156,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0.9947071121354132,
-        "n": 10,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.028849921994127396,
-        "healthEffect": 0.017309953196476435
-      },
-      "outcomeMetrics": [
-        {
-          "name": "NIH-Funded Publications",
-          "value": 85000,
-          "trend": "increasing"
-        },
-        {
-          "name": "Drug Approvals (FDA)",
-          "value": 55,
-          "trend": "increasing"
-        },
-        {
-          "name": "Life Expectancy",
-          "value": 77.5,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Immigration & Customs Enforcement",
-      "currentSpending": 9000000000,
-      "optimalSpending": 1680000000,
-      "gap": -7320000000,
-      "gapPercent": -81.33333333333333,
-      "marginalReturn": -0.13283184845801563,
-      "recommendation": "decrease",
-      "recommendedAction": "major_decrease",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Over-invested",
-      "priorityScore": 7279423390.02019,
-      "elasticity": -0.04612748230875006,
-      "discretionary": true,
-      "wesMethodology": "estimated",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9885495551726966,
-        "n": 9,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": -0.0007363205065270656,
-        "healthEffect": -0.00044179230391623933
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Deportations per Year",
-          "value": 170000,
-          "trend": "increasing"
-        },
-        {
-          "name": "Border Encounters per Year",
-          "value": 2000000,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Environment & EPA",
-      "currentSpending": 68000000000,
-      "optimalSpending": 97310980109.96185,
-      "gap": 29310980109.961853,
-      "gapPercent": 43.104382514649785,
-      "marginalReturn": 0.11615249581521574,
-      "recommendation": "increase",
-      "recommendedAction": "increase",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 5342627730.032323,
-      "elasticity": 0.32426666675205296,
-      "discretionary": true,
-      "wesMethodology": "domestic",
-      "diminishingReturns": {
-        "modelType": "Saturation (Michaelis-Menten)",
-        "r2": 0.9925329151859725,
-        "n": 9,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.012620758995421501,
-        "healthEffect": 0.0075724553972529
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Air Quality Index (avg)",
-          "value": 63.5,
-          "trend": "improving"
-        },
-        {
-          "name": "CO2 Emissions (Mt)",
-          "value": 4900,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Clean Water Access %",
-          "value": 99.2,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Agriculture & Food Safety",
-      "currentSpending": 38000000000,
-      "optimalSpending": 125143969984.08743,
-      "gap": 87143969984.08743,
-      "gapPercent": 229.3262368002301,
-      "marginalReturn": 0.19329460623472997,
-      "recommendation": "increase",
-      "recommendedAction": "scale_up",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Under-invested",
-      "priorityScore": 2588044879.353822,
-      "elasticity": 0.3722802590227495,
-      "discretionary": true,
-      "wesMethodology": "estimated",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0.9803715216533956,
-        "n": 8,
-        "lowFit": false,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0.0028702795842549594,
-        "healthEffect": 0.0017221677505529756
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Food Safety Violations per 1000",
-          "value": 3.2,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Farm Income Stability Index",
-          "value": 74,
-          "trend": "stable"
-        }
-      ]
-    },
-    {
-      "name": "Social Security",
-      "currentSpending": 1418000000000,
-      "optimalSpending": 1418000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0,
-      "recommendation": "maintain",
-      "recommendedAction": "maintain",
-      "evidenceGrade": "D",
-      "evidenceDescription": "Weak evidence",
-      "investmentStatus": "Near optimal",
-      "priorityScore": 0,
-      "discretionary": false,
-      "wesMethodology": "non-discretionary",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0,
-        "n": 0,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0,
-        "healthEffect": 0
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Elderly Poverty Rate",
-          "value": 10.2,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Retirement Security Index",
-          "value": 67,
-          "trend": "stable"
-        }
-      ]
+      ],
+      "diminishingReturns": null
     },
     {
       "name": "Medicare",
       "currentSpending": 874000000000,
-      "optimalSpending": 874000000000,
+      "currentSpendingRealPerCapita": 1968.57,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
       "gap": 0,
       "gapPercent": 0,
-      "marginalReturn": 0,
       "recommendation": "maintain",
-      "recommendedAction": "maintain",
-      "evidenceGrade": "B",
-      "evidenceDescription": "Probable causal link",
-      "investmentStatus": "Near optimal",
-      "priorityScore": 0,
-      "discretionary": false,
-      "wesMethodology": "non-discretionary",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0,
-        "n": 0,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0,
-        "healthEffect": 0
-      },
+      "evidenceSource": "non-discretionary (mandated)",
       "outcomeMetrics": [
         {
-          "name": "Life Expectancy at 65",
-          "value": 19.4,
+          "name": "Life expectancy at 65",
+          "value": 18.9,
+          "trend": "declining"
+        },
+        {
+          "name": "Medicare beneficiaries",
+          "value": 67.4,
+          "trend": "improving"
+        },
+        {
+          "name": "Hospital readmission rate (30-day)",
+          "value": 15.3,
+          "trend": "improving"
+        },
+        {
+          "name": "Per-capita Medicare spending",
+          "value": 13050,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 546,
+          "realPerCapita": 1760.48
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 588,
+          "realPerCapita": 1858.7
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 595,
+          "realPerCapita": 1829.94
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 605,
+          "realPerCapita": 1805.41
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 651,
+          "realPerCapita": 1900.57
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 776,
+          "realPerCapita": 2217.3
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 755,
+          "realPerCapita": 2056.45
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 747,
+          "realPerCapita": 1876.82
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 839,
+          "realPerCapita": 2009.24
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 869,
+          "realPerCapita": 2008.55
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 874,
+          "realPerCapita": 1968.57
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Medicaid",
+      "currentSpending": 616000000000,
+      "currentSpendingRealPerCapita": 1387.46,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "OECD mapping available but insufficient data",
+      "outcomeMetrics": [
+        {
+          "name": "Uninsured rate (overall)",
+          "value": 7.9,
+          "trend": "improving"
+        },
+        {
+          "name": "Medicaid enrollment",
+          "value": 72,
+          "trend": "declining"
+        },
+        {
+          "name": "Infant mortality rate",
+          "value": 5.6,
+          "trend": "declining"
+        },
+        {
+          "name": "Children covered by Medicaid/CHIP",
+          "value": 39.7,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 350,
+          "realPerCapita": 1128.51
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 368,
+          "realPerCapita": 1163.27
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 375,
+          "realPerCapita": 1153.32
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 389,
+          "realPerCapita": 1160.84
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 409,
+          "realPerCapita": 1194.06
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 458,
+          "realPerCapita": 1308.66
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 521,
+          "realPerCapita": 1419.09
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 592,
+          "realPerCapita": 1487.38
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 616,
+          "realPerCapita": 1475.2
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 618,
+          "realPerCapita": 1428.41
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 616,
+          "realPerCapita": 1387.46
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Other Mandatory Programs",
+      "currentSpending": 842000000000,
+      "currentSpendingRealPerCapita": 1896.49,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "non-discretionary (mandated)",
+      "outcomeMetrics": [
+        {
+          "name": "SNAP participation",
+          "value": 41.2,
+          "trend": "declining"
+        },
+        {
+          "name": "Unemployment rate",
+          "value": 4.2,
           "trend": "stable"
         },
         {
-          "name": "Uninsured Rate (65+)",
-          "value": 1,
-          "trend": "stable"
-        },
-        {
-          "name": "Preventable Hospitalizations per 1000",
-          "value": 48,
-          "trend": "decreasing"
-        }
-      ]
-    },
-    {
-      "name": "Medicaid & CHIP",
-      "currentSpending": 575000000000,
-      "optimalSpending": 575000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0,
-      "recommendation": "maintain",
-      "recommendedAction": "maintain",
-      "evidenceGrade": "C",
-      "evidenceDescription": "Moderate evidence",
-      "investmentStatus": "Near optimal",
-      "priorityScore": 0,
-      "discretionary": false,
-      "wesMethodology": "non-discretionary",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0,
-        "n": 0,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0,
-        "healthEffect": 0
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Uninsured Rate (Low-Income)",
-          "value": 12.5,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Infant Mortality Rate",
-          "value": 5.4,
-          "trend": "decreasing"
-        },
-        {
-          "name": "Child Health Coverage Rate",
-          "value": 95.2,
-          "trend": "increasing"
-        }
-      ]
-    },
-    {
-      "name": "Net Interest on Debt",
-      "currentSpending": 881000000000,
-      "optimalSpending": 881000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0,
-      "recommendation": "maintain",
-      "recommendedAction": "maintain",
-      "evidenceGrade": "C",
-      "evidenceDescription": "Moderate evidence",
-      "investmentStatus": "Near optimal",
-      "priorityScore": 0,
-      "discretionary": false,
-      "wesMethodology": "non-discretionary",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0,
-        "n": 0,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0,
-        "healthEffect": 0
-      },
-      "outcomeMetrics": [
-        {
-          "name": "Debt-to-GDP Ratio",
-          "value": 124,
-          "trend": "increasing"
-        },
-        {
-          "name": "Sovereign Credit Rating (S&P)",
-          "value": 85,
+          "name": "Poverty rate (overall)",
+          "value": 11.1,
           "trend": "stable"
         }
-      ]
-    },
-    {
-      "name": "Veterans Benefits",
-      "currentSpending": 270000000000,
-      "optimalSpending": 270000000000,
-      "gap": 0,
-      "gapPercent": 0,
-      "marginalReturn": 0,
-      "recommendation": "maintain",
-      "recommendedAction": "maintain",
-      "evidenceGrade": "F",
-      "evidenceDescription": "Insufficient evidence",
-      "investmentStatus": "Near optimal",
-      "priorityScore": 0,
-      "discretionary": false,
-      "wesMethodology": "non-discretionary",
-      "diminishingReturns": {
-        "modelType": "Log-linear",
-        "r2": 0,
-        "n": 0,
-        "lowFit": true,
-        "smallSample": true
-      },
-      "welfareEffect": {
-        "incomeEffect": 0,
-        "healthEffect": 0
-      },
-      "outcomeMetrics": [
+      ],
+      "historicalRealPerCapita": [
         {
-          "name": "Veteran Unemployment Rate",
-          "value": 3.5,
-          "trend": "decreasing"
+          "year": 2015,
+          "nominalBillions": 550,
+          "realPerCapita": 1773.37
         },
         {
-          "name": "VA Healthcare Satisfaction",
+          "year": 2016,
+          "nominalBillions": 572,
+          "realPerCapita": 1808.13
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 581,
+          "realPerCapita": 1786.88
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 611,
+          "realPerCapita": 1823.32
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 624,
+          "realPerCapita": 1821.74
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 1631,
+          "realPerCapita": 4660.33
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 1765,
+          "realPerCapita": 4807.47
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 984,
+          "realPerCapita": 2472.27
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 853,
+          "realPerCapita": 2042.77
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 836,
+          "realPerCapita": 1932.28
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 842,
+          "realPerCapita": 1896.49
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Transportation",
+      "currentSpending": 105000000000,
+      "currentSpendingRealPerCapita": 236.5,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Infrastructure grade (ASCE)",
           "value": 67,
-          "trend": "increasing"
+          "trend": "improving"
+        },
+        {
+          "name": "Traffic fatalities",
+          "value": 40990,
+          "trend": "declining"
+        },
+        {
+          "name": "Traffic fatality rate",
+          "value": 12.1,
+          "trend": "declining"
+        },
+        {
+          "name": "Structurally deficient bridges",
+          "value": 42966,
+          "trend": "improving"
         }
-      ]
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 86,
+          "realPerCapita": 277.29
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 89,
+          "realPerCapita": 281.33
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 87,
+          "realPerCapita": 267.57
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 88,
+          "realPerCapita": 262.61
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 92,
+          "realPerCapita": 268.59
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 100,
+          "realPerCapita": 285.73
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 95,
+          "realPerCapita": 258.76
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 97,
+          "realPerCapita": 243.71
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 101,
+          "realPerCapita": 241.88
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 103,
+          "realPerCapita": 238.07
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 105,
+          "realPerCapita": 236.5
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Foreign Aid / International Affairs",
+      "currentSpending": 63000000000,
+      "currentSpendingRealPerCapita": 141.9,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Foreign aid as % GNI",
+          "value": 0.22,
+          "trend": "stable"
+        },
+        {
+          "name": "PEPFAR lives saved (cumulative)",
+          "value": 25,
+          "trend": "improving"
+        },
+        {
+          "name": "Countries receiving US bilateral aid",
+          "value": 140,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 46,
+          "realPerCapita": 148.32
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 46,
+          "realPerCapita": 145.41
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 47,
+          "realPerCapita": 144.55
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 49,
+          "realPerCapita": 146.22
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 52,
+          "realPerCapita": 151.81
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 51,
+          "realPerCapita": 145.72
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 55,
+          "realPerCapita": 149.81
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 66,
+          "realPerCapita": 165.82
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 73,
+          "realPerCapita": 174.82
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 67,
+          "realPerCapita": 154.86
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 63,
+          "realPerCapita": 141.9
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Energy",
+      "currentSpending": 52000000000,
+      "currentSpendingRealPerCapita": 117.12,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Renewable energy share of electricity",
+          "value": 22.7,
+          "trend": "improving"
+        },
+        {
+          "name": "Energy-related CO₂ emissions",
+          "value": 4790,
+          "trend": "improving"
+        },
+        {
+          "name": "Average retail electricity price",
+          "value": 12.7,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 29,
+          "realPerCapita": 93.51
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 32,
+          "realPerCapita": 101.15
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 30,
+          "realPerCapita": 92.27
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 31,
+          "realPerCapita": 92.51
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 35,
+          "realPerCapita": 102.18
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 38,
+          "realPerCapita": 108.58
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 42,
+          "realPerCapita": 114.4
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 44,
+          "realPerCapita": 110.55
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 47,
+          "realPerCapita": 112.56
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 50,
+          "realPerCapita": 115.57
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 52,
+          "realPerCapita": 117.12
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "EPA / Environment",
+      "currentSpending": 12000000000,
+      "currentSpendingRealPerCapita": 27.03,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Days exceeding Air Quality Index standards",
+          "value": 117,
+          "trend": "declining"
+        },
+        {
+          "name": "Greenhouse gas emissions",
+          "value": 5060,
+          "trend": "improving"
+        },
+        {
+          "name": "Superfund sites cleaned up (cumulative)",
+          "value": 459,
+          "trend": "improving"
+        },
+        {
+          "name": "Clean Water Act compliance rate",
+          "value": 86,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 8.1,
+          "realPerCapita": 26.12
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 8.6,
+          "realPerCapita": 27.19
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 8.1,
+          "realPerCapita": 24.91
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 8.8,
+          "realPerCapita": 26.26
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 9,
+          "realPerCapita": 26.28
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 9.4,
+          "realPerCapita": 26.86
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 9.2,
+          "realPerCapita": 25.06
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 10.5,
+          "realPerCapita": 26.38
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 11,
+          "realPerCapita": 26.34
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 11.5,
+          "realPerCapita": 26.58
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 12,
+          "realPerCapita": 27.03
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Homeland Security",
+      "currentSpending": 62000000000,
+      "currentSpendingRealPerCapita": 139.65,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Southwest border encounters",
+          "value": 2048000,
+          "trend": "declining"
+        },
+        {
+          "name": "Domestic terrorism incidents",
+          "value": 38,
+          "trend": "improving"
+        },
+        {
+          "name": "Disaster relief obligated (FEMA)",
+          "value": 34.2,
+          "trend": "declining"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 39,
+          "realPerCapita": 125.75
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 41,
+          "realPerCapita": 129.6
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 42,
+          "realPerCapita": 129.17
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 46,
+          "realPerCapita": 137.27
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 51,
+          "realPerCapita": 148.89
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 52,
+          "realPerCapita": 148.58
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 55,
+          "realPerCapita": 149.81
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 54,
+          "realPerCapita": 135.67
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 57,
+          "realPerCapita": 136.5
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 60,
+          "realPerCapita": 138.68
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 62,
+          "realPerCapita": 139.65
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Labor",
+      "currentSpending": 42000000000,
+      "currentSpendingRealPerCapita": 94.6,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "Labor force participation rate",
+          "value": 62.5,
+          "trend": "stable"
+        },
+        {
+          "name": "Median weekly earnings",
+          "value": 1145,
+          "trend": "improving"
+        },
+        {
+          "name": "Workplace fatalities",
+          "value": 5283,
+          "trend": "stable"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 43,
+          "realPerCapita": 138.65
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 40,
+          "realPerCapita": 126.44
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 38,
+          "realPerCapita": 116.87
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 37,
+          "realPerCapita": 110.41
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 38,
+          "realPerCapita": 110.94
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 64,
+          "realPerCapita": 182.87
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 47,
+          "realPerCapita": 128.02
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 46,
+          "realPerCapita": 115.57
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 44,
+          "realPerCapita": 105.37
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 43,
+          "realPerCapita": 99.39
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 42,
+          "realPerCapita": 94.6
+        }
+      ],
+      "diminishingReturns": null
+    },
+    {
+      "name": "Interior / Natural Resources",
+      "currentSpending": 17000000000,
+      "currentSpendingRealPerCapita": 38.29,
+      "optimalSpendingPerCapita": null,
+      "optimalSpendingNominal": null,
+      "gap": 0,
+      "gapPercent": 0,
+      "recommendation": "maintain",
+      "evidenceSource": "outcome-trend heuristic (no cross-country data)",
+      "outcomeMetrics": [
+        {
+          "name": "National park visits",
+          "value": 325.5,
+          "trend": "improving"
+        },
+        {
+          "name": "Wildfire acres burned",
+          "value": 2693910,
+          "trend": "declining"
+        },
+        {
+          "name": "Endangered species recovered",
+          "value": 54,
+          "trend": "improving"
+        }
+      ],
+      "historicalRealPerCapita": [
+        {
+          "year": 2015,
+          "nominalBillions": 12.4,
+          "realPerCapita": 39.98
+        },
+        {
+          "year": 2016,
+          "nominalBillions": 13.1,
+          "realPerCapita": 41.41
+        },
+        {
+          "year": 2017,
+          "nominalBillions": 12.6,
+          "realPerCapita": 38.75
+        },
+        {
+          "year": 2018,
+          "nominalBillions": 12.9,
+          "realPerCapita": 38.5
+        },
+        {
+          "year": 2019,
+          "nominalBillions": 13.5,
+          "realPerCapita": 39.41
+        },
+        {
+          "year": 2020,
+          "nominalBillions": 14.1,
+          "realPerCapita": 40.29
+        },
+        {
+          "year": 2021,
+          "nominalBillions": 14.8,
+          "realPerCapita": 40.31
+        },
+        {
+          "year": 2022,
+          "nominalBillions": 15.4,
+          "realPerCapita": 38.69
+        },
+        {
+          "year": 2023,
+          "nominalBillions": 16,
+          "realPerCapita": 38.32
+        },
+        {
+          "year": 2024,
+          "nominalBillions": 16.5,
+          "realPerCapita": 38.14
+        },
+        {
+          "year": 2025,
+          "nominalBillions": 17,
+          "realPerCapita": 38.29
+        }
+      ],
+      "diminishingReturns": null
     }
   ],
   "topRecommendations": [
-    "Increase Education by $932.8B (+391.9%)",
-    "Decrease Military by $443.0B (-50.0%)",
-    "Increase Science & Space (NASA, NSF) by $380.0B (+469.2%)",
-    "Increase Income Security (SNAP, Housing) by $304.0B (+100.0%)",
-    "Increase Community & Regional Development by $61.8B (+150.8%)",
-    "Increase Energy Programs by $50.4B (+93.4%)"
+    "Increase Education by $1.1T (saturation model, R²=0.526, 529 observations)",
+    "Increase Science / NASA by $421B (log model, R²=0.318, 529 observations)",
+    "Increase Health (non-Medicare/Medicaid) by $50B (saturation model, R²=0.11, 529 observations)"
   ],
-  "generatedAt": "2026-03-12T21:33:37.869Z",
-  "constrainedReallocation": {
-    "totalBudget": 6750000000000,
-    "nonDiscretionaryTotal": 4018000000000,
-    "actionableBudget": 2181000000000,
-    "categories": [
-      {
-        "name": "Education",
-        "currentSpending": 238000000000,
-        "constrainedOptimal": 883532444339.926,
-        "reallocation": 645532444339.926,
-        "reallocationPercent": 271.23211947055717,
-        "action": "Major increase",
-        "evidenceGrade": "A",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Military",
-        "currentSpending": 886000000000,
-        "constrainedOptimal": 334312540435.92926,
-        "reallocation": -551687459564.0708,
-        "reallocationPercent": -62.26720762574163,
-        "action": "Major decrease",
-        "evidenceGrade": "D",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Science & Space (NASA, NSF)",
-        "currentSpending": 81000000000,
-        "constrainedOptimal": 347916486715.8012,
-        "reallocation": 266916486715.8012,
-        "reallocationPercent": 329.5265268096311,
-        "action": "Major increase",
-        "evidenceGrade": "B",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Transportation & Infrastructure",
-        "currentSpending": 168000000000,
-        "constrainedOptimal": 168000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Income Security (SNAP, Housing)",
-        "currentSpending": 304000000000,
-        "constrainedOptimal": 458830755270.9819,
-        "reallocation": 154830755270.98187,
-        "reallocationPercent": 50.931169497033515,
-        "action": "Major increase",
-        "evidenceGrade": "D",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Justice & Law Enforcement",
-        "currentSpending": 68000000000,
-        "constrainedOptimal": 68000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "International Affairs & Aid",
-        "currentSpending": 68000000000,
-        "constrainedOptimal": 68000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Community & Regional Development",
-        "currentSpending": 41000000000,
-        "constrainedOptimal": 77585565558.41672,
-        "reallocation": 36585565558.41672,
-        "reallocationPercent": 89.23308672784566,
-        "action": "Major increase",
-        "evidenceGrade": "D",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Farm Subsidies",
-        "currentSpending": 30000000000,
-        "constrainedOptimal": 30000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Energy Programs",
-        "currentSpending": 54000000000,
-        "constrainedOptimal": 78822207678.94492,
-        "reallocation": 24822207678.944916,
-        "reallocationPercent": 45.9670512573054,
-        "action": "Increase",
-        "evidenceGrade": "D",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Health Research (NIH, CDC)",
-        "currentSpending": 102000000000,
-        "constrainedOptimal": 102000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Immigration & Customs Enforcement",
-        "currentSpending": 9000000000,
-        "constrainedOptimal": 9000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Environment & EPA",
-        "currentSpending": 68000000000,
-        "constrainedOptimal": 68000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Agriculture & Food Safety",
-        "currentSpending": 38000000000,
-        "constrainedOptimal": 38000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Insufficient evidence",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": false
-      },
-      {
-        "name": "Social Security",
-        "currentSpending": 1418000000000,
-        "constrainedOptimal": 1418000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Non-discretionary",
-        "evidenceGrade": "D",
-        "isNonDiscretionary": true
-      },
-      {
-        "name": "Medicare",
-        "currentSpending": 874000000000,
-        "constrainedOptimal": 874000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Non-discretionary",
-        "evidenceGrade": "B",
-        "isNonDiscretionary": true
-      },
-      {
-        "name": "Medicaid & CHIP",
-        "currentSpending": 575000000000,
-        "constrainedOptimal": 575000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Non-discretionary",
-        "evidenceGrade": "C",
-        "isNonDiscretionary": true
-      },
-      {
-        "name": "Net Interest on Debt",
-        "currentSpending": 881000000000,
-        "constrainedOptimal": 881000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Non-discretionary",
-        "evidenceGrade": "C",
-        "isNonDiscretionary": true
-      },
-      {
-        "name": "Veterans Benefits",
-        "currentSpending": 270000000000,
-        "constrainedOptimal": 270000000000,
-        "reallocation": 0,
-        "reallocationPercent": 0,
-        "action": "Non-discretionary",
-        "evidenceGrade": "F",
-        "isNonDiscretionary": true
-      }
-    ]
+  "generatedAt": "2026-03-22T08:07:57.881Z",
+  "generatedBy": "@optimitron/obg + OECD cross-country panel",
+  "inflationAdjustment": {
+    "method": "CPI-U deflator",
+    "baseYear": 2017,
+    "perCapita": true,
+    "unit": "constant 2017 USD per capita",
+    "note": "Matches OECD cross-country PPP convention for comparable analysis"
   },
-  "causalEvidenceDetail": [
-    {
-      "name": "Education",
-      "forwardPearson": 0.8159253130296651,
-      "nCountries": 23,
-      "positiveCount": 23,
-      "negativeCount": 0,
-      "meanPercentChange": 13.013043478260867,
-      "bhStrength": 0.914927922903069,
-      "bhTemporality": 1,
-      "bhGradient": 0.6629845093411811,
-      "wesScore": 0.8231983072631007,
-      "evidenceGrade": "A"
-    },
-    {
-      "name": "Science & Space (NASA, NSF)",
-      "forwardPearson": 0.77216926667008,
-      "nCountries": 23,
-      "positiveCount": 23,
-      "negativeCount": 0,
-      "meanPercentChange": 12.791304347826086,
-      "bhStrength": 0.8755005510014493,
-      "bhTemporality": 1,
-      "bhGradient": 0.6094253076163135,
-      "wesScore": 0.7877238780793664,
-      "evidenceGrade": "B"
-    },
-    {
-      "name": "Military",
-      "forwardPearson": -0.09794552501539068,
-      "nCountries": 23,
-      "positiveCount": 10,
-      "negativeCount": 13,
-      "meanPercentChange": -0.38260869565217404,
-      "bhStrength": 0.7847094731926414,
-      "bhTemporality": 1,
-      "bhGradient": 0.597221124699816,
-      "wesScore": 0.30697191684870284,
-      "evidenceGrade": "D"
-    },
-    {
-      "name": "Income Security (SNAP, Housing)",
-      "forwardPearson": -0.04146142804373228,
-      "nCountries": 22,
-      "positiveCount": 10,
-      "negativeCount": 12,
-      "meanPercentChange": -0.3636363636363637,
-      "bhStrength": 0.71808064327913,
-      "bhTemporality": 1,
-      "bhGradient": 0.508817652859426,
-      "wesScore": 0.29023410911133907,
-      "evidenceGrade": "D"
-    }
-  ],
-  "domesticEvidenceDetail": [
-    {
-      "name": "Justice & Law Enforcement",
-      "bestOutcomeName": "Infant Mortality",
-      "correlation": 0.9699135848264199,
-      "nYears": 24,
-      "bhStrength": 0.960562781743413,
-      "wesScore": 0.18281926889852854,
-      "evidenceGrade": "F"
-    },
-    {
-      "name": "Environment & EPA",
-      "bestOutcomeName": "Infant Mortality",
-      "correlation": 0.9488728363989899,
-      "nYears": 24,
-      "bhStrength": 0.9576975152983498,
-      "wesScore": 0.18227393659267424,
-      "evidenceGrade": "F"
-    },
-    {
-      "name": "Transportation & Infrastructure",
-      "bestOutcomeName": "Infant Mortality",
-      "correlation": 0.9459975476681004,
-      "nYears": 24,
-      "bhStrength": 0.9572901266249214,
-      "wesScore": 0.18219640027662154,
-      "evidenceGrade": "F"
-    },
-    {
-      "name": "International Affairs & Aid",
-      "bestOutcomeName": "Infant Mortality",
-      "correlation": 0.9211279801637068,
-      "nYears": 24,
-      "bhStrength": 0.9535986442091159,
-      "wesScore": 0.18149381828069575,
-      "evidenceGrade": "F"
-    },
-    {
-      "name": "Health Research (NIH, CDC)",
-      "bestOutcomeName": "Infant Mortality",
-      "correlation": 0.8942957365783719,
-      "nYears": 24,
-      "bhStrength": 0.9492572124598107,
-      "wesScore": 0.18066753457132664,
-      "evidenceGrade": "F"
-    },
-    {
-      "name": "Farm Subsidies",
-      "bestOutcomeName": "Poverty Rate",
-      "correlation": 0.7053250727258397,
-      "nYears": 24,
-      "bhStrength": 0.9047341215282059,
-      "wesScore": 0.1721936699911841,
-      "evidenceGrade": "F"
-    }
-  ]
+  "methodology": {
+    "oslMethod": "Diminishing returns curve fitting (log-linear or saturation model)",
+    "oslThreshold": "OSL where marginal return drops to 50% of cross-country average",
+    "dataClamping": "OSL clamped to [50% min, 150% max] of observed cross-country spending",
+    "lowFitGuard": "Models with R² < 0.3 constrained to [0.5×, 2×] current spending",
+    "nonDiscretionary": "Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization"
+  },
+  "note": "Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics."
 }

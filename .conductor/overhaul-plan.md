@@ -148,7 +148,7 @@ Below, each proposed track includes:
 1. Replace synthetic OECD direct outcomes with sourced series or mark explicitly as simulated. — ⬜ Remaining
 2. ~~Add WHO HALE fetcher + dataset wiring.~~ ✅ HALE in WHO fetcher (`who.ts`)
 3. ~~Expand OECD panel to include direct outcomes fields.~~ ✅ 4 datasets in OECD fetcher
-4. Add GDP deflator option for US spending conversion. — ⬜ Remaining
+4. ~~Add GDP deflator option for US spending conversion.~~ ✅ CPI-U deflator in `inflation-adjustment.ts` + `toRealPerCapita()` + wired into `generate-analysis.ts`
 5. Add caching/versioning metadata for static datasets. — ⬜ Remaining
 6. ~~Improve FRED fetcher reliability (keys, rate-limit handling).~~ ✅ Optional API key, graceful degradation
 

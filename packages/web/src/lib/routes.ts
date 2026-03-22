@@ -26,6 +26,7 @@ export const ROUTES = {
   referendum: "/referendum",
   politicians: "/politicians",
   scoreboard: "/scoreboard",
+  governments: "/governments",
   tools: "/tools",
   dashboard: "/dashboard",
   signIn: "/auth/signin",
@@ -216,6 +217,14 @@ export const toolsLink: NavItem = {
   matchPrefixes: [ROUTES.tools],
 };
 
+export const governmentsLink: NavItem = {
+  href: ROUTES.governments,
+  label: "Government Report Cards",
+  emoji: "💀",
+  description: "Every government ranked by body count — the data they hope you never see",
+  matchPrefixes: [ROUTES.governments],
+};
+
 export const politicianLeaderboardLink: NavItem = {
   href: ROUTES.politicians,
   label: "Politician Leaderboard",
@@ -280,7 +289,7 @@ export interface NavSection {
 
 export const navSections: NavSection[] = [
   { id: "participate", label: "Participate", items: [wishocracyLink, alignmentLink, referendumLink] },
-  { id: "explore", label: "Explore", items: [studiesLink, compareLink, policiesLink, budgetLink, misconceptionsLink, discoveriesLink] },
+  { id: "explore", label: "Explore", items: [studiesLink, compareLink, policiesLink, budgetLink, governmentsLink, misconceptionsLink, discoveriesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink, moneyLink] },
   { id: "system", label: "System", items: [politicianLeaderboardLink, transparencyLink, federalReserveLink, departmentOfWarLink, aboutLink] },
 ];

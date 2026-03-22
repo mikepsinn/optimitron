@@ -29,3 +29,4 @@ export * from './natural-experiments.js';
 export * from './aggregated-nof1-drug-war-proxy.js';
 export * from './aggregated-nof1-drug-enforcement.js';
 export * from './monetary-policy-panel.js';
+export * from './government-report-cards.js';

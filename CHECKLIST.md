@@ -168,6 +168,7 @@ Last updated: 2026-03-22.
 - [x] Measurement validation — physiological bounds for 20+ variables (`measurement-validation.ts`, 217 lines)
 - [x] Variable statistics — mean, median, stddev, variance, skewness, kurtosis + global aggregation (`variable-statistics.ts`, 329 lines)
 - [x] Importer normalization — `resolveVariableName` wired into importers
+- [x] Inflation adjustment — CPI-U deflator + US population data (2000-2025) + `toRealPerCapita()` for nominal→real per-capita conversion (`inflation-adjustment.ts`)
 
 ### ❌ Not Yet Implemented
 - [ ] **Variable tagging / common tags** — hierarchical: "Advil 200mg" → "Ibuprofen" → "NSAIDs" (MEDIUM)
