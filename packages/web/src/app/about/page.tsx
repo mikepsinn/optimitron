@@ -249,7 +249,7 @@ export default function AboutPage() {
               variant="custom"
               className="mt-4 inline-flex items-center text-sm font-black uppercase text-brutal-pink-foreground hover:text-brutal-yellow transition-colors"
             >
-              Join the Prize &rarr;
+              Play the Game &rarr;
             </NavItemLink>
           </div>
           <div className="card bg-brutal-cyan border-primary">
@@ -291,7 +291,7 @@ export default function AboutPage() {
             variant="custom"
             className="inline-flex items-center text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
           >
-            Join the Prize &rarr;
+            Play the Game &rarr;
           </NavItemLink>
           <NavItemLink
             item={transparencyLink}

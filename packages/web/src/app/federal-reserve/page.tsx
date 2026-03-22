@@ -611,7 +611,7 @@ export default function FederalReservePage() {
             variant="custom"
             className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
           >
-            Deposit to Prize
+            Play the Game
           </NavItemLink>
           <NavItemLink
             item={wishocracyLink}

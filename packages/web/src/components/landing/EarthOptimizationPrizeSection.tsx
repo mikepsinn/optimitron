@@ -75,7 +75,7 @@ export function EarthOptimizationPrizeSection() {
                 href="/prize#invest"
                 className="px-8 py-3.5 bg-brutal-yellow text-foreground font-black uppercase text-lg border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
               >
-                Join the Prize
+                Play the Game
               </a>
               <NavItemLink
                 item={earthOptimizationPrizePaperLink}

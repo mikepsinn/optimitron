@@ -85,7 +85,7 @@ export function PrizeCTA({ headline, body, variant = "pink" }: PrizeCTAProps) {
           href="/prize"
           className={`inline-flex items-center justify-center ${s.btn} border-4 border-primary px-6 py-2.5 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}
         >
-          Join the Prize
+          Play the Game
         </Link>
       </div>
     </ScrollReveal>
