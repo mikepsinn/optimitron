@@ -5,7 +5,7 @@ import Link from "next/link";
 import budgetData from "@/data/us-budget-analysis.json";
 import { getBudgetCategoryPath } from "@/lib/routes";
 import { PrizeCTA } from "@/components/prize/PrizeCTA";
-import { BudgetGapChart } from "@/components/landing/BudgetGapChart";
+// BudgetGapChart deleted — referenced old schema
 import { EfficientFrontierChart, EfficientFrontierSummary } from "@/components/landing/EfficientFrontierChart";
 
 interface Category {
@@ -444,7 +444,7 @@ export default function BudgetPage() {
         </div>
       </div>
 
-      <BudgetGapChart />
+      {/* BudgetGapChart removed — referenced old schema */}
 
       <div className="mt-10">
         <PrizeCTA

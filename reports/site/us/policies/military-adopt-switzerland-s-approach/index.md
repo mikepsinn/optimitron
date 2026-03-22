@@ -46,6 +46,7 @@ Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at 
 
 ## Related
 
+- [**View Model Legislation →**](../../legislation/military-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
 - [Universal Dividend](../../dividend/)

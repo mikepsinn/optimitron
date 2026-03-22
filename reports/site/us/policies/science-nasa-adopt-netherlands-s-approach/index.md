@@ -46,6 +46,7 @@ Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (
 
 ## Related
 
+- [**View Model Legislation →**](../../legislation/science-nasa-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
 - [Universal Dividend](../../dividend/)

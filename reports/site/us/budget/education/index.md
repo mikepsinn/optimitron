@@ -71,9 +71,19 @@ Best: **Japan** — $1288/cap → PISA Math Score 536
 
 ## Recommendation
 
+> *Japan spends half as much and their students score 71 points higher on maths. Wild.*
+
 **Adopt the approach of Japan, Taiwan, Singapore.** These countries achieve PISA Math Score of 536 while spending $1288/cap vs the US at $2996/cap for PISA Math Score 465.
 
 Reducing to the efficient floor of $1288/cap would save **$579B/yr**, equivalent to **$2,244/yr ($187/mo)** per adult as a Universal Dividend.
+
+## Evaluation & Sunset
+
+- **Metrics:** Real after-tax median income + median healthy life years (HALE)
+- **Review:** Biennial (every 2 years) by GAO
+- **Sunset:** Auto-expires if BOTH metrics fail minimum thresholds by Year 4
+- **Benchmarks:** Japan, Taiwan, Singapore
+- **Data mandate:** BLS (income) + CDC (HALE) must publish annually
 
 ## Related
 

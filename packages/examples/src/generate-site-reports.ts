@@ -93,7 +93,10 @@ function deduplicateByOECDField(categories: any[]): any[] {
 const POLICY_TO_LEGISLATION: Record<string, string> = {
   'health': 'health-non-medicare-medicaid-reform',
   'health_research': 'health-non-medicare-medicaid-reform',
+  'health_non_medicare_medicaid_': 'health-non-medicare-medicaid-reform',
   'defense': 'military-reform',
+  'military': 'military-reform',
+  'science_nasa': 'science-nasa-reform',
 };
 
 // ─── Index Page ─────────────────────────────────────────────────────
@@ -216,9 +219,15 @@ layout: layout.njk
     // Efficiency comparison
     if (eff) {
       md += `## OECD Efficiency Comparison\n\n`;
-      md += `> **Note:** OECD spending data reflects total government spending (federal + state + local). `;
-      md += `The US federal budget line item for "${cat.name}" is ${fmt(cat.currentSpending)}, `;
-      md += `but the OECD comparison uses the full government system at $${eff.usData.spending}/cap.\n\n`;
+      if (cat.name === 'Military') {
+        md += `> **Note:** Military spending is entirely federal. OECD per-capita figures derived from %GDP × GDP/capita.\n`;
+        md += `> Life expectancy is used as a general welfare proxy — military spending shows R²≈0.01 correlation with LE. `;
+        md += `The savings benefit comes from redirecting funds to healthcare/dividend, not from military cuts directly improving health.\n\n`;
+      } else {
+        md += `> **Note:** OECD spending data reflects total government spending (federal + state + local). `;
+        md += `The US federal budget line item for "${cat.name}" is ${fmt(cat.currentSpending)}, `;
+        md += `but the OECD comparison uses the full government system at $${eff.usData.spending}/cap.\n\n`;
+      }
       md += `| Country | Spending/cap | ${eff.outcomeName} | Rank |\n`;
       md += `|---------|-------------|${'-'.repeat(eff.outcomeName.length + 2)}|------|\n`;
       md += `| **US** | **$${eff.usData.spending}** | **${eff.usData.outcome}** | **${eff.usRank}** |\n`;
@@ -267,22 +276,43 @@ layout: layout.njk
       md += '\n';
     }
 
-    // Recommendation
+    // Recommendation with Wishonia voice
     if (eff && eff.overspendRatio >= 1.5) {
       const perAdult = Math.round(eff.potentialSavingsTotal / JURISDICTION.adults);
       const perMonth = Math.round(perAdult / 12);
       const topNames = eff.topEfficient.map((t: any) => t.name).join(', ');
+      const best = eff.topEfficient[0];
+
+      // Wishonia one-liner
+      const wishoniaLines: Record<string, string> = {
+        'Military': `Spending ${eff.overspendRatio}x more than ${best?.name ?? 'the best'} for worse outcomes. On my planet, we call this a refund.`,
+        'Health (non-Medicare/Medicaid)': `${best?.name ?? 'South Korea'} spends a third of what you do and their citizens live ${Math.round((best?.outcome ?? 83) - eff.usData.outcome)} years longer. It's almost like pricing and outcomes are related.`,
+        'Education': `${best?.name ?? 'Japan'} spends half as much and their students score ${Math.round((best?.outcome ?? 536) - eff.usData.outcome)} points higher on maths. Wild.`,
+        'Science / NASA': `${best?.name ?? 'Netherlands'} spends half as much on R&D and their median citizen earns more. Perhaps the issue isn't how much you spend.`,
+      };
+      const wishonia = wishoniaLines[cat.name] ?? `${eff.overspendRatio}x overspend. I've seen more efficient use of resources on planets that haven't discovered fire yet.`;
+
       md += `## Recommendation\n\n`;
+      md += `> *${wishonia}*\n\n`;
       md += `**Adopt the approach of ${topNames}.** These countries achieve ${eff.outcomeName} `;
-      md += `of ${eff.topEfficient[0]?.outcome ?? '?'} while spending $${eff.topEfficient[0]?.spending ?? '?'}/cap `;
+      md += `of ${best?.outcome ?? '?'} while spending $${best?.spending ?? '?'}/cap `;
       md += `vs the US at $${eff.usData.spending}/cap for ${eff.outcomeName} ${eff.usData.outcome}.\n\n`;
       md += `Reducing to the efficient floor of $${eff.floorSpending}/cap would save **${fmt(eff.potentialSavingsTotal)}/yr**, `;
       md += `equivalent to **$${perAdult.toLocaleString()}/yr ($${perMonth.toLocaleString()}/mo)** per adult as a Universal Dividend.\n\n`;
       if (legSlug) {
         md += `**[Read the model legislation for this reform →](../legislation/${legSlug}/)**\n\n`;
       }
+
+      // Evaluation schedule
+      md += `## Evaluation & Sunset\n\n`;
+      md += `- **Metrics:** Real after-tax median income + median healthy life years (HALE)\n`;
+      md += `- **Review:** Biennial (every 2 years) by GAO\n`;
+      md += `- **Sunset:** Auto-expires if BOTH metrics fail minimum thresholds by Year 4\n`;
+      md += `- **Benchmarks:** ${topNames}\n`;
+      md += `- **Data mandate:** BLS (income) + CDC (HALE) must publish annually\n\n`;
     } else if (eff && eff.overspendRatio < 1.2) {
       md += `## Assessment\n\n`;
+      md += `> *Near the efficient floor. One of the few things your species isn't catastrophically overpaying for. Well done.*\n\n`;
       md += `US spending on ${cat.name} is **near the efficient floor** (${eff.overspendRatio}x). No major reallocation recommended.\n\n`;
     }
 

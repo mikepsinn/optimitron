@@ -28,11 +28,13 @@ import {
   type AnalysisMethod,
 } from '@optimitron/opg';
 
-// OBG imports — diminishing returns model for supplementary context only
+// OBG imports
 import {
   fitLogModel,
   fitSaturationModel,
+  analyzeEfficiency,
   type DiminishingReturnsModel,
+  type EfficiencyAnalysis,
 } from '@optimitron/obg';
 
 // Data imports
@@ -61,58 +63,21 @@ type OECDMapping = OECDCategoryMapping;
 
 // ─── Efficiency Analysis Helpers ─────────────────────────────────────
 
-/** Average the latest 3 years of OECD data per country for a given field */
-function latestCountryAverages(
-  spendingField: keyof OECDBudgetPanelDataPoint,
-  outcomeField: keyof OECDBudgetPanelDataPoint,
-  negateOutcome?: boolean,
-): Array<{ code: string; name: string; spending: number; outcome: number }> {
-  // Group by country, take last 3 years with non-null data
-  const byCountry = new Map<string, { spending: number[]; outcome: number[] }>();
-  for (const row of OECD_BUDGET_PANEL) {
-    const s = row[spendingField] as number | null;
-    const o = row[outcomeField] as number | null;
-    if (s == null || o == null) continue;
-    if (!byCountry.has(row.jurisdictionIso3)) {
-      byCountry.set(row.jurisdictionIso3, { spending: [], outcome: [] });
-    }
-    const entry = byCountry.get(row.jurisdictionIso3)!;
-    entry.spending.push(s);
-    entry.outcome.push(negateOutcome ? 100 - o : o);
-  }
-
-  return [...byCountry.entries()].map(([code, data]) => {
-    // Take last 3 entries (sorted by insertion order = chronological)
-    const recentS = data.spending.slice(-3);
-    const recentO = data.outcome.slice(-3);
-    const avgS = recentS.reduce((a, b) => a + b, 0) / recentS.length;
-    const avgO = recentO.reduce((a, b) => a + b, 0) / recentO.length;
-    return { code, name: COUNTRY_NAMES[code] ?? code, spending: avgS, outcome: avgO };
-  }).filter(c => c.spending > 0);
-}
-
-
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
+// Use EfficiencyAnalysis from OBG as the canonical type.
+// Adapt to the output shape expected by the JSON and site reports.
 interface EfficiencyInfo {
-  /** US rank among OECD countries (1 = most efficient) */
   usRank: number;
   totalCountries: number;
-  /** Most efficient country */
   bestCountry: { code: string; name: string; spending: number; outcome: number };
-  /** US data point */
   usData: { spending: number; outcome: number };
-  /** Minimum effective spending (floor where outcomes plateau) */
   floorSpending: number;
   floorOutcome: number;
-  /** US overspend ratio: actual / floor */
   overspendRatio: number;
-  /** Potential savings if spending at the floor */
   potentialSavingsPerCapita: number;
   potentialSavingsTotal: number;
-  /** Outcome name being measured */
   outcomeName: string;
-  /** Top 3 most efficient countries for context */
   topEfficient: Array<{ name: string; spending: number; outcome: number; rank: number }>;
 }
 
@@ -136,89 +101,44 @@ interface BudgetCategoryOutput {
     elasticity: number | null;
     outcomeName: string;
   } | null;
-  /** Efficient frontier + minimum effective spending analysis */
   efficiency: EfficiencyInfo | null;
 }
 
-/**
- * "Cheapest High Performer" algorithm.
- *
- * 1. Get all countries' latest spending + outcome averages
- * 2. Compute the 75th percentile outcome (the "high performer" threshold)
- * 3. Filter to countries at or above that threshold
- * 4. Rank high performers by spending (lowest first)
- * 5. "Best value" = cheapest high performer
- * 6. "Floor" = best value country's spending
- * 7. Overspend ratio = target jurisdiction / floor
- *
- * No GDP filters, no US-centric logic, no clamping.
- * Works for any jurisdiction as the target.
- */
+/** Convert OECD panel data to SpendingOutcomePoint[] for a given mapping, then
+ *  run the OBG "cheapest high performer" analysis. */
 function runEfficiencyAnalysis(mapping: OECDMapping, targetCode: string = 'USA'): EfficiencyInfo | null {
-  const countries = latestCountryAverages(
+  // Convert OECD panel to spending-outcome pairs
+  let data = oecdBudgetPanelToSpendingOutcome(
     mapping.spendingField as keyof OECDBudgetPanelDataPoint,
     mapping.outcomeField as keyof OECDBudgetPanelDataPoint,
-    mapping.negateOutcome,
   );
+  if (mapping.negateOutcome) {
+    data = data.map(d => ({ ...d, outcome: 100 - d.outcome }));
+  }
 
-  if (countries.length < 5) return null;
-
-  const target = countries.find(c => c.code === targetCode);
-  if (!target) return null;
-
-  // 1. Compute 75th percentile outcome — the "high performer" threshold
-  const sortedOutcomes = countries.map(c => c.outcome).sort((a, b) => a - b);
-  const p75Index = Math.floor(sortedOutcomes.length * 0.75);
-  const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1]!;
-
-  // 2. High performers: countries at or above the 75th percentile
-  const highPerformers = countries
-    .filter(c => c.outcome >= p75)
-    .sort((a, b) => a.spending - b.spending); // cheapest first
-
-  if (highPerformers.length === 0) return null;
-
-  // 3. Best value = cheapest high performer
-  const bestValue = highPerformers[0]!;
-
-  // 4. Floor = best value's spending. Overspend = target / floor.
-  const floorSpending = bestValue.spending;
-  const ratio = floorSpending > 0 ? target.spending / floorSpending : 1;
-  const savingsPerCapita = Math.max(0, target.spending - floorSpending);
-
-  // 5. Top 3 high performers (cheapest first)
-  const topEfficient = highPerformers.slice(0, 3).map((c, i) => ({
-    name: COUNTRY_NAMES[c.code] ?? c.code,
-    spending: Math.round(c.spending),
-    outcome: Math.round(c.outcome * 100) / 100,
-    rank: i + 1,
-  }));
-
-  // 6. Rank the target among all countries by outcome/spending ratio
-  const allByRatio = [...countries]
-    .sort((a, b) => (b.outcome / b.spending) - (a.outcome / a.spending));
-  const targetRank = allByRatio.findIndex(c => c.code === targetCode) + 1;
-
-  return {
-    usRank: targetRank,
-    totalCountries: countries.length,
-    bestCountry: {
-      code: bestValue.code,
-      name: COUNTRY_NAMES[bestValue.code] ?? bestValue.code,
-      spending: Math.round(bestValue.spending),
-      outcome: Math.round(bestValue.outcome * 100) / 100,
-    },
-    usData: {
-      spending: Math.round(target.spending),
-      outcome: Math.round(target.outcome * 100) / 100,
-    },
-    floorSpending: Math.round(floorSpending),
-    floorOutcome: Math.round(bestValue.outcome * 100) / 100,
-    overspendRatio: Math.round(ratio * 10) / 10,
-    potentialSavingsPerCapita: Math.round(savingsPerCapita),
-    potentialSavingsTotal: Math.round(savingsPerCapita * US_POPULATION),
+  // Delegate to OBG library
+  const result = analyzeEfficiency(data, {
+    jurisdictionCode: targetCode,
+    population: US_POPULATION,
+    countryNames: COUNTRY_NAMES,
     outcomeName: mapping.outcomeName,
-    topEfficient,
+  });
+
+  if (!result) return null;
+
+  // Adapt EfficiencyAnalysis → EfficiencyInfo shape (add usData/usRank aliases)
+  return {
+    usRank: result.rank,
+    totalCountries: result.totalCountries,
+    bestCountry: result.bestCountry,
+    usData: { spending: result.spending, outcome: result.outcome },
+    floorSpending: result.floorSpending,
+    floorOutcome: result.floorOutcome,
+    overspendRatio: result.overspendRatio,
+    potentialSavingsPerCapita: result.potentialSavingsPerCapita,
+    potentialSavingsTotal: result.potentialSavingsTotal,
+    outcomeName: result.outcomeName,
+    topEfficient: result.topEfficient,
   };
 }
 

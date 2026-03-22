@@ -69,11 +69,21 @@ Best: **South Korea** — $3588/cap → Life Expectancy 83.57
 
 ## Recommendation
 
+> *South Korea spends a third of what you do and their citizens live 7 years longer. It's almost like pricing and outcomes are related.*
+
 **Adopt the approach of South Korea, Japan, Australia.** These countries achieve Life Expectancy of 83.57 while spending $3588/cap vs the US at $10333/cap for Life Expectancy 76.93.
 
 Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent to **$8,863/yr ($739/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/health-non-medicare-medicaid-reform/)**
+
+## Evaluation & Sunset
+
+- **Metrics:** Real after-tax median income + median healthy life years (HALE)
+- **Review:** Biennial (every 2 years) by GAO
+- **Sunset:** Auto-expires if BOTH metrics fail minimum thresholds by Year 4
+- **Benchmarks:** South Korea, Japan, Australia
+- **Data mandate:** BLS (income) + CDC (HALE) must publish annually
 
 ## Related
 

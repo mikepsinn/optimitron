@@ -1,22 +1,23 @@
 /**
- * Efficiency Analysis — Unified Cross-Country Spending Efficiency
+ * Efficiency Analysis — "Cheapest High Performer"
  *
- * Combines efficient frontier ranking, minimum effective spending (floor),
- * and overspend ratio into a single per-category analysis for a jurisdiction.
+ * For each spending category, finds countries that achieve top-quartile
+ * outcomes at the lowest cost. This is the canonical algorithm for
+ * "who does this well and cheaply?"
  *
- * This is the canonical type for "how does this jurisdiction compare to peers?"
- * Used by report generators, web UI, and legislation drafter.
+ * Algorithm:
+ * 1. Compute 75th percentile outcome across all panel countries
+ * 2. Filter to "high performers" (at or above 75th percentile)
+ * 3. Rank high performers by spending (lowest first)
+ * 4. "Best value" = cheapest high performer
+ * 5. "Floor" = best value's spending
+ * 6. Overspend = target jurisdiction spending / floor
+ *
+ * No GDP filters, no jurisdiction-centric logic, no clamping.
+ * Works for any jurisdiction as the target.
  */
 
 import { z } from 'zod';
-import {
-  efficientFrontier,
-  type CountryEfficiencyDatum,
-} from './efficient-frontier.js';
-import {
-  findMinimumEffectiveSpending,
-  type SpendingDecile,
-} from './minimum-effective-spending.js';
 import type { SpendingOutcomePoint } from './diminishing-returns.js';
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -32,25 +33,25 @@ export const CountryComparisonSchema = z.object({
 export type CountryComparison = z.infer<typeof CountryComparisonSchema>;
 
 export const EfficiencyAnalysisSchema = z.object({
-  /** This jurisdiction's efficiency rank (1 = most efficient) */
+  /** Target jurisdiction's efficiency rank (by outcome/spending ratio, 1 = best) */
   rank: z.number().int().positive(),
   /** Total countries compared */
   totalCountries: z.number().int().positive(),
-  /** This jurisdiction's spending per capita */
+  /** Target jurisdiction's spending per capita */
   spending: z.number(),
-  /** This jurisdiction's outcome value */
+  /** Target jurisdiction's outcome value */
   outcome: z.number(),
-  /** Outcome metric name (e.g., "Life Expectancy") */
+  /** Outcome metric name */
   outcomeName: z.string(),
-  /** Most efficient country */
+  /** Cheapest high performer (best value) */
   bestCountry: CountryComparisonSchema,
-  /** Top 3 most efficient countries */
+  /** Top 3 cheapest high performers */
   topEfficient: z.array(CountryComparisonSchema),
-  /** Minimum effective spending level (floor) */
+  /** Floor spending = cheapest high performer's spending */
   floorSpending: z.number(),
-  /** Outcome at the floor spending level */
+  /** Floor outcome = cheapest high performer's outcome */
   floorOutcome: z.number(),
-  /** Overspend ratio: actual / floor (>1 = overspending) */
+  /** Overspend ratio: target spending / floor (>1 = overspending) */
   overspendRatio: z.number(),
   /** Potential savings per capita if spending at floor */
   potentialSavingsPerCapita: z.number(),
@@ -61,29 +62,6 @@ export const EfficiencyAnalysisSchema = z.object({
 export type EfficiencyAnalysis = z.infer<typeof EfficiencyAnalysisSchema>;
 
 // ─── Helpers ────────────────────────────────────────────────────────
-
-/**
- * Build spending deciles from per-country data points.
- * Groups countries into 10 bins by spending level, computes average outcome per bin.
- */
-function buildDeciles(
-  countries: Array<{ spending: number; outcome: number }>,
-): SpendingDecile[] {
-  const sorted = [...countries].sort((a, b) => a.spending - b.spending);
-  const decileSize = Math.max(1, Math.floor(sorted.length / 10));
-  const deciles: SpendingDecile[] = [];
-
-  for (let d = 0; d < 10; d++) {
-    const start = d * decileSize;
-    const end = d === 9 ? sorted.length : start + decileSize;
-    const slice = sorted.slice(start, end);
-    if (slice.length === 0) continue;
-    const avgSpending = slice.reduce((s, c) => s + c.spending, 0) / slice.length;
-    const avgOutcome = slice.reduce((s, c) => s + c.outcome, 0) / slice.length;
-    deciles.push({ decile: d + 1, avgSpending, outcome: avgOutcome });
-  }
-  return deciles;
-}
 
 /**
  * Average the latest N data points per jurisdiction from spending→outcome pairs.
@@ -113,25 +91,18 @@ function latestAverages(
 // ─── Main Function ──────────────────────────────────────────────────
 
 export interface AnalyzeEfficiencyOptions {
-  /** ISO3 code of the jurisdiction to analyze (default: 'USA') */
+  /** ISO3 code of the target jurisdiction (default: 'USA') */
   jurisdictionCode?: string;
   /** Population for total savings calculation */
   population?: number;
   /** Human-readable country names: code → name */
   countryNames?: Record<string, string>;
-  /** Name of the outcome metric (e.g., 'Life Expectancy') */
+  /** Name of the outcome metric */
   outcomeName?: string;
-  /** Tolerance for minimum effective spending floor detection */
-  floorTolerance?: number;
 }
 
 /**
- * Run unified efficiency analysis for a jurisdiction against cross-country data.
- *
- * Combines:
- * 1. Efficient frontier ranking (outcome-per-dollar)
- * 2. Minimum effective spending floor detection
- * 3. Overspend ratio calculation
+ * "Cheapest High Performer" efficiency analysis.
  *
  * @param data - Cross-country spending→outcome pairs (e.g., from OECD panel)
  * @param options - Configuration
@@ -146,10 +117,8 @@ export function analyzeEfficiency(
     population = 339_000_000,
     countryNames = {},
     outcomeName = 'Outcome',
-    floorTolerance = 1,
   } = options;
 
-  // Average latest data per country
   const countries = latestAverages(data);
   if (countries.length < 5) return null;
 
@@ -158,76 +127,56 @@ export function analyzeEfficiency(
 
   const nameOf = (code: string) => countryNames[code] ?? code;
 
-  // 1. Efficient frontier — rank by outcome-per-dollar
-  const frontierResult = efficientFrontier([{
-    categoryId: 'analysis',
-    categoryName: outcomeName,
-    outcomeDirection: 'higher',
-    countries: countries.map(c => ({
-      countryCode: c.code,
-      countryName: nameOf(c.code),
-      spending: c.spending,
-      outcome: c.outcome,
-    })),
-  }]);
+  // 1. Compute 75th percentile outcome
+  const sortedOutcomes = countries.map(c => c.outcome).sort((a, b) => a - b);
+  const p75Index = Math.floor(sortedOutcomes.length * 0.75);
+  const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1]!;
 
-  const rankings = frontierResult[0]?.rankings ?? [];
-  const targetRanking = rankings.find(r => r.countryCode === jurisdictionCode);
-  if (!targetRanking) return null;
+  // 2. High performers: at or above 75th percentile, sorted by spending (cheapest first)
+  const highPerformers = countries
+    .filter(c => c.outcome >= p75)
+    .sort((a, b) => a.spending - b.spending);
 
-  // 2. Minimum effective spending floor
-  const deciles = buildDeciles(countries);
-  const floorResult = findMinimumEffectiveSpending([{
-    categoryId: 'analysis',
-    categoryName: outcomeName,
-    deciles,
-  }], {
-    outcomeTolerance: floorTolerance,
-    outcomeDirection: 'higher',
-  });
+  if (highPerformers.length === 0) return null;
 
-  const floor = floorResult[0];
-  let floorSpending = floor?.floorSpending ?? target.spending;
-  const floorOutcome = floor?.floorOutcome ?? target.outcome;
+  // 3. Best value = cheapest high performer
+  const bestValue = highPerformers[0]!;
 
-  // Clamp floor to not exceed the best country's spending.
-  // The decile-based floor can be higher than the single best performer
-  // because it averages multiple countries in a bin. But the floor should
-  // never exceed the best — that's the definition of "minimum effective."
-  const bestSpending = rankings[0]?.spending ?? floorSpending;
-  floorSpending = Math.min(floorSpending, bestSpending);
-
-  // 3. Overspend ratio
+  // 4. Floor = best value's spending
+  const floorSpending = bestValue.spending;
   const ratio = floorSpending > 0 ? target.spending / floorSpending : 1;
   const savingsPerCapita = Math.max(0, target.spending - floorSpending);
 
-  // Top 3 efficient
-  const topEfficient: CountryComparison[] = rankings.slice(0, 3).map(r => ({
-    code: r.countryCode,
-    name: nameOf(r.countryCode),
-    spending: Math.round(r.spending),
-    outcome: Math.round(r.outcome * 100) / 100,
-    rank: r.rank,
+  // 5. Top 3 cheapest high performers
+  const topEfficient: CountryComparison[] = highPerformers.slice(0, 3).map((c, i) => ({
+    code: c.code,
+    name: nameOf(c.code),
+    spending: Math.round(c.spending),
+    outcome: Math.round(c.outcome * 100) / 100,
+    rank: i + 1,
   }));
 
-  const best = rankings[0]!;
+  // 6. Rank target by outcome/spending ratio (for context)
+  const allByRatio = [...countries]
+    .sort((a, b) => (b.outcome / b.spending) - (a.outcome / a.spending));
+  const targetRank = allByRatio.findIndex(c => c.code === jurisdictionCode) + 1;
 
   return {
-    rank: targetRanking.rank,
-    totalCountries: rankings.length,
+    rank: targetRank,
+    totalCountries: countries.length,
     spending: Math.round(target.spending),
     outcome: Math.round(target.outcome * 100) / 100,
     outcomeName,
     bestCountry: {
-      code: best.countryCode,
-      name: nameOf(best.countryCode),
-      spending: Math.round(best.spending),
-      outcome: Math.round(best.outcome * 100) / 100,
+      code: bestValue.code,
+      name: nameOf(bestValue.code),
+      spending: Math.round(bestValue.spending),
+      outcome: Math.round(bestValue.outcome * 100) / 100,
       rank: 1,
     },
     topEfficient,
     floorSpending: Math.round(floorSpending),
-    floorOutcome: Math.round(floorOutcome * 100) / 100,
+    floorOutcome: Math.round(bestValue.outcome * 100) / 100,
     overspendRatio: Math.round(ratio * 10) / 10,
     potentialSavingsPerCapita: Math.round(savingsPerCapita),
     potentialSavingsTotal: Math.round(savingsPerCapita * population),

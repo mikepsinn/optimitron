@@ -46,6 +46,7 @@ Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at 
 
 ## Related
 
+- [**View Model Legislation →**](../../legislation/health-non-medicare-medicaid-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
 - [Universal Dividend](../../dividend/)

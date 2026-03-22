@@ -101,7 +101,8 @@
           "code": "KOR",
           "name": "South Korea",
           "spending": 3588,
-          "outcome": 83.57
+          "outcome": 83.57,
+          "rank": 1
         },
         "usData": {
           "spending": 10333,
@@ -115,18 +116,21 @@
         "outcomeName": "Life Expectancy",
         "topEfficient": [
           {
+            "code": "KOR",
             "name": "South Korea",
             "spending": 3588,
             "outcome": 83.57,
             "rank": 1
           },
           {
+            "code": "JPN",
             "name": "Japan",
             "spending": 4095,
             "outcome": 84.53,
             "rank": 2
           },
           {
+            "code": "AUS",
             "name": "Australia",
             "spending": 4544,
             "outcome": 83.1,
@@ -244,7 +248,8 @@
           "code": "JPN",
           "name": "Japan",
           "spending": 1288,
-          "outcome": 536
+          "outcome": 536,
+          "rank": 1
         },
         "usData": {
           "spending": 2996,
@@ -258,18 +263,21 @@
         "outcomeName": "PISA Math Score",
         "topEfficient": [
           {
+            "code": "JPN",
             "name": "Japan",
             "spending": 1288,
             "outcome": 536,
             "rank": 1
           },
           {
+            "code": "TWN",
             "name": "Taiwan",
             "spending": 1367,
             "outcome": 544.33,
             "rank": 2
           },
           {
+            "code": "SGP",
             "name": "Singapore",
             "spending": 2509,
             "outcome": 569.33,
@@ -382,7 +390,8 @@
           "code": "CHE",
           "name": "Switzerland",
           "spending": 389,
-          "outcome": 83.37
+          "outcome": 83.37,
+          "rank": 1
         },
         "usData": {
           "spending": 2052,
@@ -396,18 +405,21 @@
         "outcomeName": "Life Expectancy",
         "topEfficient": [
           {
+            "code": "CHE",
             "name": "Switzerland",
             "spending": 389,
             "outcome": 83.37,
             "rank": 1
           },
           {
+            "code": "JPN",
             "name": "Japan",
             "spending": 400,
             "outcome": 84.53,
             "rank": 2
           },
           {
+            "code": "SWE",
             "name": "Sweden",
             "spending": 565,
             "outcome": 82.9,
@@ -520,7 +532,8 @@
           "code": "NLD",
           "name": "Netherlands",
           "spending": 1064,
-          "outcome": 31221.39
+          "outcome": 31221.39,
+          "rank": 1
         },
         "usData": {
           "spending": 1991,
@@ -534,18 +547,21 @@
         "outcomeName": "After-Tax Median Income (PPP)",
         "topEfficient": [
           {
+            "code": "NLD",
             "name": "Netherlands",
             "spending": 1064,
             "outcome": 31221.39,
             "rank": 1
           },
           {
+            "code": "NOR",
             "name": "Norway",
             "spending": 1214,
             "outcome": 33589.79,
             "rank": 2
           },
           {
+            "code": "DNK",
             "name": "Denmark",
             "spending": 1317,
             "outcome": 30452.17,
@@ -2229,7 +2245,7 @@
     "Education: US spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential savings: $579B/yr",
     "Science / NASA: US spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-03-22T22:16:52.954Z",
+  "generatedAt": "2026-03-22T22:27:52.185Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

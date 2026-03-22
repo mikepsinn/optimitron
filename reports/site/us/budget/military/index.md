@@ -22,7 +22,8 @@ layout: layout.njk
 
 ## OECD Efficiency Comparison
 
-> **Note:** OECD spending data reflects total government spending (federal + state + local). The US federal budget line item for "Military" is $886B, but the OECD comparison uses the full government system at $2052/cap.
+> **Note:** Military spending is entirely federal. OECD per-capita figures derived from %GDP × GDP/capita.
+> Life expectancy is used as a general welfare proxy — military spending shows R²≈0.01 correlation with LE. The savings benefit comes from redirecting funds to healthcare/dividend, not from military cuts directly improving health.
 
 | Country | Spending/cap | Life Expectancy | Rank |
 |---------|-------------|-----------------|------|
@@ -70,11 +71,21 @@ Best: **Switzerland** — $389/cap → Life Expectancy 83.37
 
 ## Recommendation
 
+> *Spending 5.3x more than Switzerland for worse outcomes. On my planet, we call this a refund.*
+
 **Adopt the approach of Switzerland, Japan, Sweden.** These countries achieve Life Expectancy of 83.37 while spending $389/cap vs the US at $2052/cap for Life Expectancy 76.93.
 
 Reducing to the efficient floor of $389/cap would save **$564B/yr**, equivalent to **$2,186/yr ($182/mo)** per adult as a Universal Dividend.
 
 **[Read the model legislation for this reform →](../legislation/military-reform/)**
+
+## Evaluation & Sunset
+
+- **Metrics:** Real after-tax median income + median healthy life years (HALE)
+- **Review:** Biennial (every 2 years) by GAO
+- **Sunset:** Auto-expires if BOTH metrics fail minimum thresholds by Year 4
+- **Benchmarks:** Switzerland, Japan, Sweden
+- **Data mandate:** BLS (income) + CDC (HALE) must publish annually
 
 ## Related
 
