@@ -13,11 +13,11 @@ import {
   EFFICACY_LAG_YEARS,
 } from "@/lib/parameters-calculations-citations";
 import {
-  incentiveAlignmentBondsPaperLink,
   contractsSourceLink,
   prizeLink,
 } from "@/lib/routes";
 import { IABCalculator } from "@/components/landing/IABCalculator";
+import { GameCTA } from "@/components/ui/game-cta";
 
 export const metadata: Metadata = {
   title: "Incentive Alignment Bonds | Optimitron",
@@ -62,27 +62,9 @@ export default function IABPage() {
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <a
-            href="#invest"
-            className="inline-flex items-center justify-center border-4 border-primary bg-brutal-pink px-8 py-3 text-sm font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Buy IABs
-          </a>
-          <NavItemLink
-            item={incentiveAlignmentBondsPaperLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Read the Paper
-          </NavItemLink>
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center border-4 border-primary bg-brutal-cyan px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Phase 1: Prize
-          </NavItemLink>
+          <GameCTA href="#invest" variant="primary">Buy IABs</GameCTA>
+          <GameCTA href="https://iab.warondisease.org" variant="outline" external>Read the Paper</GameCTA>
+          <GameCTA href="/prize" variant="cyan">Phase 1: Prize</GameCTA>
         </div>
       </section>
 
@@ -439,21 +421,8 @@ export default function IABPage() {
           sell the bonds.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Play the Game
-          </NavItemLink>
-          <NavItemLink
-            item={incentiveAlignmentBondsPaperLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Read the IAB Paper
-          </NavItemLink>
+          <GameCTA href="/prize" variant="secondary">Play the Game</GameCTA>
+          <GameCTA href="https://iab.warondisease.org" variant="outline" external>Read the IAB Paper</GameCTA>
         </div>
       </section>
     </div>

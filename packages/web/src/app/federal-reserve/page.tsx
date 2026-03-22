@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { fmtParam } from "@/lib/format-parameter";
 import {
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
@@ -7,11 +6,7 @@ import {
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   MONEY_PRINTER_WAR_DEATHS,
 } from "@/lib/parameters-calculations-citations";
-import {
-  moneyLink,
-  prizeLink,
-  wishocracyLink,
-} from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 
 const milToTrialsRatio = Math.round(
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /
@@ -599,27 +594,9 @@ export default function FederalReservePage() {
           left to manage.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <NavItemLink
-            item={moneyLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            See How $WISH Works
-          </NavItemLink>
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Play the Game
-          </NavItemLink>
-          <NavItemLink
-            item={wishocracyLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Set Your Priorities
-          </NavItemLink>
+          <GameCTA href="/money" variant="secondary">See How $WISH Works</GameCTA>
+          <GameCTA href="/prize" variant="outline">Play the Game</GameCTA>
+          <GameCTA href="/wishocracy" variant="outline">Set Your Priorities</GameCTA>
         </div>
       </section>
     </div>

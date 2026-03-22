@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { AlignmentReport } from "@/components/alignment/AlignmentReport";
+import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { authOptions } from "@/lib/auth";
 import { getPersonalAlignmentState } from "@/lib/alignment-report.server";
 import { getSignInPath, ROUTES } from "@/lib/routes";
@@ -19,9 +20,7 @@ export default async function AlignmentPage() {
   if (!user?.id) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8 text-center">
-        <p className="font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-3">
-          Boss Fight
-        </p>
+        <ArcadeTag className="mb-3">Boss Fight</ArcadeTag>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-foreground mb-4">
           Which Politicians Match Your Priorities?
         </h1>

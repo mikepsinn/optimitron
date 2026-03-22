@@ -2,9 +2,8 @@
 
 import { Suspense } from "react";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { PrizeCalculator } from "@/components/prize/PrizeCalculator";
-import { prizeLink, earthOptimizationPrizePaperLink } from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 import { fmtParam } from "@/lib/format-parameter";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
@@ -154,21 +153,8 @@ export function LandingPrizeOffer() {
         </ScrollReveal>
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center border-4 border-primary bg-foreground px-8 py-3.5 text-lg font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Play the Game
-          </NavItemLink>
-          <NavItemLink
-            item={earthOptimizationPrizePaperLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3.5 text-lg font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Read the Full Paper
-          </NavItemLink>
+          <GameCTA href="/prize" variant="secondary" size="lg">Play the Game</GameCTA>
+          <GameCTA href="https://prize.warondisease.org" variant="outline" size="lg" external>Read the Full Paper</GameCTA>
         </div>
       </div>
     </section>

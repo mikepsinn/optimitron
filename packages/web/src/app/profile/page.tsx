@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ProfileHub } from "@/components/profile/ProfileHub";
+import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { authOptions } from "@/lib/auth";
 import { getProfilePageData } from "@/lib/profile.server";
 import { getSignInPath, ROUTES } from "@/lib/routes";
@@ -24,9 +25,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <p className="font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-4">
-        Player Profile
-      </p>
+      <ArcadeTag className="mb-4">Player Profile</ArcadeTag>
       <ProfileHub initialData={initialData} />
     </div>
   );

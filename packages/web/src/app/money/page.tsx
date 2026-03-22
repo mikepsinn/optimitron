@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { TreasuryDashboard } from "@/app/treasury/TreasuryDashboard";
-import {
-  wishocracyLink,
-  prizeLink,
-  aboutLink,
-} from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 
 export const metadata: Metadata = {
   title: "How Money Should Work | Optimitron",
@@ -353,27 +348,9 @@ export default function MoneyPage() {
           almost like treating people like humans works better. Weird.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <NavItemLink
-            item={wishocracyLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Express Your Preferences
-          </NavItemLink>
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Play the Game
-          </NavItemLink>
-          <NavItemLink
-            item={aboutLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Learn More
-          </NavItemLink>
+          <GameCTA href="/wishocracy" variant="secondary">Express Your Preferences</GameCTA>
+          <GameCTA href="/prize" variant="outline">Play the Game</GameCTA>
+          <GameCTA href="/about" variant="outline">Learn More</GameCTA>
         </div>
       </section>
     </div>

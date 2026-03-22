@@ -2,6 +2,7 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { earthOptimizationPrizePaperLink } from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { fmtParam } from "@/lib/format-parameter";
 
@@ -71,12 +72,7 @@ export function EarthOptimizationPrizeSection() {
         <ScrollReveal delay={0.3}>
           <div className="text-center">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="/prize#invest"
-                className="px-8 py-3.5 bg-brutal-yellow text-foreground font-black uppercase text-lg border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-              >
-                Play the Game
-              </a>
+              <GameCTA href="/prize#invest" variant="yellow" size="lg">Play the Game</GameCTA>
               <NavItemLink
                 item={earthOptimizationPrizePaperLink}
                 variant="custom"

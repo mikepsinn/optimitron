@@ -13,11 +13,7 @@ import {
   TREATY_HALE_GAIN_YEAR_15,
 } from "@/lib/parameters-calculations-citations";
 import {
-  earthOptimizationPrizePaperLink,
   contractsSourceLink,
-  wishocracyLink,
-  scoreboardLink,
-  referendumLink,
 } from "@/lib/routes";
 import { VoterPrizeTreasuryDeposit } from "@/components/prize/VoterPrizeTreasuryDeposit";
 import { CitizenDashboardWrapper } from "@/components/prize/CitizenDashboardWrapper";
@@ -28,6 +24,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
+import { GameCTA } from "@/components/ui/game-cta";
 
 export const metadata: Metadata = {
   title: "The Earth Optimization Game | Optimitron",
@@ -247,30 +244,9 @@ export default function PrizePage() {
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <NavItemLink
-            item={scoreboardLink}
-            variant="custom"
-            className="border-4 border-primary bg-brutal-cyan p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
-          >
-            <p className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase text-muted-foreground">View</p>
-            <p className="font-[family-name:var(--font-arcade)] text-sm font-black text-foreground uppercase">High Scores</p>
-          </NavItemLink>
-          <NavItemLink
-            item={wishocracyLink}
-            variant="custom"
-            className="border-4 border-primary bg-brutal-yellow p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
-          >
-            <p className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase text-muted-foreground">Play</p>
-            <p className="font-[family-name:var(--font-arcade)] text-sm font-black text-foreground uppercase">Level 3</p>
-          </NavItemLink>
-          <NavItemLink
-            item={referendumLink}
-            variant="custom"
-            className="border-4 border-primary bg-brutal-pink p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all"
-          >
-            <p className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase text-brutal-pink-foreground">Play</p>
-            <p className="font-[family-name:var(--font-arcade)] text-sm font-black text-brutal-pink-foreground uppercase">Level 4</p>
-          </NavItemLink>
+          <GameCTA href="/scoreboard" variant="cyan" size="sm">High Scores</GameCTA>
+          <GameCTA href="/wishocracy" variant="yellow" size="sm">Level 3</GameCTA>
+          <GameCTA href="/referendum" variant="primary" size="sm">Level 4</GameCTA>
         </div>
       </section>
 
@@ -441,27 +417,9 @@ export default function PrizePage() {
             altruistic. You just need to be numerate.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <a
-              href="#invest"
-              className="inline-flex items-center justify-center gap-2 font-[family-name:var(--font-arcade)] bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-            >
-              Insert Coin
-            </a>
-            <NavItemLink
-              item={scoreboardLink}
-              variant="custom"
-              className="inline-flex items-center justify-center gap-2 font-[family-name:var(--font-arcade)] bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-            >
-              High Scores
-            </NavItemLink>
-            <NavItemLink
-              item={earthOptimizationPrizePaperLink}
-              variant="custom"
-              external
-              className="inline-flex items-center justify-center gap-2 font-[family-name:var(--font-arcade)] bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-            >
-              Read the Manual
-            </NavItemLink>
+            <GameCTA href="#invest" variant="secondary">Insert Coin</GameCTA>
+            <GameCTA href="/scoreboard" variant="outline">High Scores</GameCTA>
+            <GameCTA href="https://prize.warondisease.org" variant="outline" external>Read the Manual</GameCTA>
           </div>
         </div>
       </section>

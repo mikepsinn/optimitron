@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { NavItemLink } from "@/components/navigation/NavItemLink";
-import {
-  incentiveAlignmentBondsPaperLink,
-  wishocracyPaperLink,
-  githubLink,
-  prizeLink,
-} from "@/lib/routes";
 import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import { GameCTA } from "@/components/ui/game-cta";
 import { fmtParam } from "@/lib/format-parameter";
 import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
@@ -318,13 +312,7 @@ export default function TransparencyPage() {
               <div className="text-xs text-muted-foreground mt-1">Median healthy life years (1% threshold) + median real income (0.5% threshold).</div>
             </div>
           </div>
-          <NavItemLink
-            item={prizeLink}
-            variant="custom"
-            className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Play the Game
-          </NavItemLink>
+          <GameCTA href="/prize" variant="secondary">Play the Game</GameCTA>
         </div>
       </section>
 
@@ -374,30 +362,9 @@ export default function TransparencyPage() {
           theatre.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <NavItemLink
-            item={githubLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-black text-background uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            View Source
-          </NavItemLink>
-          <NavItemLink
-            item={incentiveAlignmentBondsPaperLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Incentive Alignment Bonds Paper
-          </NavItemLink>
-          <NavItemLink
-            item={wishocracyPaperLink}
-            variant="custom"
-            external
-            className="inline-flex items-center justify-center gap-2 bg-background px-6 py-3 text-sm font-black text-foreground uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Wishocracy Paper
-          </NavItemLink>
+          <GameCTA href="https://github.com/mikepsinn/optimitron" variant="secondary" external>View Source</GameCTA>
+          <GameCTA href="https://iab.warondisease.org" variant="outline" external>Incentive Alignment Bonds Paper</GameCTA>
+          <GameCTA href="https://wishocracy.warondisease.org" variant="outline" external>Wishocracy Paper</GameCTA>
         </div>
       </section>
     </div>

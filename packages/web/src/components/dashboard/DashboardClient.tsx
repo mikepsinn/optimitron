@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
+import { ArcadeTag } from "@/components/ui/arcade-tag"
 import { buildPrizeReferralUrl } from "@/lib/url"
 import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
 import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard"
@@ -50,9 +51,7 @@ export function DashboardClient({
           <div className="mb-8">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink mb-2">
-                  Player Stats
-                </p>
+                <ArcadeTag>Player Stats</ArcadeTag>
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-4">
                   EARTH <span className="text-brutal-pink">OPTIMIZATION</span>
                 </h1>

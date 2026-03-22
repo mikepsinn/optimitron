@@ -27,6 +27,7 @@ import {
   misconceptionsLink,
   scoreboardLink,
 } from "@/lib/routes";
+import { GameCTA } from "@/components/ui/game-cta";
 import misconceptionData from "../../public/data/misconceptions.json";
 import budgetData from "../data/us-budget-analysis.json";
 import { fmtParam } from "@/lib/format-parameter";
@@ -159,18 +160,8 @@ export default function Home() {
                 from treatable diseases. I made a spreadsheet. You&apos;re welcome.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                  href="/prize#invest"
-                  className="px-8 py-3.5 bg-brutal-pink text-brutal-pink-foreground font-black uppercase text-lg border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-                >
-                  Play the Game
-                </a>
-                <a
-                  href="#win-either-way"
-                  className="px-8 py-3.5 bg-brutal-yellow text-foreground font-black uppercase text-lg border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-                >
-                  See Why It Can&apos;t Lose
-                </a>
+                <GameCTA href="/prize#invest" variant="primary" size="lg">Play the Game</GameCTA>
+                <GameCTA href="#win-either-way" variant="yellow" size="lg">See Why It Can&apos;t Lose</GameCTA>
               </div>
               <p className="mt-6 text-sm font-bold text-muted-foreground max-w-2xl mx-auto">
                 Everything saves to your{" "}
@@ -283,19 +274,8 @@ export default function Home() {
         bgColor="yellow"
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="/prize#invest"
-            className="px-8 py-3 bg-brutal-pink text-brutal-pink-foreground font-black uppercase border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Play the Game
-          </a>
-          <NavItemLink
-            item={wishocracyLink}
-            variant="custom"
-            className="px-8 py-3 bg-foreground text-background font-black uppercase border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-          >
-            Express Your Preferences
-          </NavItemLink>
+          <GameCTA href="/prize#invest" variant="primary">Play the Game</GameCTA>
+          <GameCTA href="/wishocracy" variant="secondary">Express Your Preferences</GameCTA>
         </div>
       </CTASection>
     </div>
