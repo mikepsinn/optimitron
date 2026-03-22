@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} — {{ site.title }}</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css">
+  <style>
+    :root { --pico-font-family: system-ui, -apple-system, sans-serif; }
+    nav { margin-bottom: 1rem; font-size: 0.875rem; }
+    nav a { text-decoration: none; }
+    .related { margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--pico-muted-border-color); }
+    table { font-size: 0.875rem; }
+    .badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-weight: 700; font-size: 0.75rem; }
+    .badge-red { background: #fee; color: #c00; }
+    .badge-green { background: #efe; color: #060; }
+    .badge-yellow { background: #ffe; color: #960; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <nav>
+      <a href="/"><strong>{{ site.title }}</strong></a>
+      &nbsp;/&nbsp;
+      <a href="/budget/">Budget</a>
+      &nbsp;/&nbsp;
+      <a href="/policies/">Policies</a>
+      &nbsp;/&nbsp;
+      <a href="/legislation/">Legislation</a>
+      &nbsp;/&nbsp;
+      <a href="/efficiency/">Efficiency</a>
+      &nbsp;/&nbsp;
+      <a href="/dividend/">Dividend</a>
+    </nav>
+
+    {{ content | safe }}
+  </main>
+</body>
+</html>

@@ -25,6 +25,7 @@
     "generate:drug-policy": "pnpm run build:deps && tsx src/international-analysis/generate-drug-policy-comparison.ts",
     "generate:education": "pnpm run build:deps && tsx src/international-analysis/generate-education-comparison.ts",
     "generate:cross-country": "pnpm run build:deps && tsx src/international-analysis/generate-cross-country-analysis.ts",
+    "generate:site": "tsx src/generate-site-reports.ts",
     "test": "pnpm run build:deps && vitest run",
     "test:integration": "pnpm run build:deps && vitest run src/integration-tests/"
   },
