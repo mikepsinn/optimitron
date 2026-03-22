@@ -1,104 +1,33 @@
 import { fetchPrivateConsumptionPpp } from './world-bank.js';
+import {
+  EUROSTAT_API_BASE,
+  EUROSTAT_GEO_TO_ISO3,
+  EUROSTAT_HICP_DATASET,
+  EUROSTAT_MEDIAN_INCOME_DATASET,
+  EUROSTAT_MEDIAN_INCOME_SOURCE_URL,
+  ISO3_TO_EUROSTAT_GEO,
+} from './eurostat-income-shared.js';
+import type {
+  DerivedEurostatMedianDisposableIncomePoint,
+  EurostatHicpPoint,
+  EurostatJsonStatResponse,
+  EurostatMedianIncomeLocalPoint,
+} from './eurostat-income-shared.js';
 import type { DataPoint, FetchOptions } from '../types.js';
-const EUROSTAT_API_BASE =
-  'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data';
-const EUROSTAT_MEDIAN_INCOME_DATASET = 'ilc_di03';
-const EUROSTAT_HICP_DATASET = 'prc_hicp_aind';
-export const EUROSTAT_MEDIAN_INCOME_SOURCE_URL =
-  'https://ec.europa.eu/eurostat/databrowser/view/ilc_di03/default/table?lang=en';
-export const EUROSTAT_HICP_SOURCE_URL =
-  'https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_aind/default/table?lang=en';
-const EUROSTAT_GEO_TO_ISO3: Record<string, string> = {
-  AL: 'ALB',
-  AT: 'AUT',
-  BE: 'BEL',
-  BG: 'BGR',
-  CH: 'CHE',
-  CY: 'CYP',
-  CZ: 'CZE',
-  DE: 'DEU',
-  DK: 'DNK',
-  EE: 'EST',
-  EL: 'GRC',
-  ES: 'ESP',
-  FI: 'FIN',
-  FR: 'FRA',
-  HR: 'HRV',
-  HU: 'HUN',
-  IE: 'IRL',
-  IS: 'ISL',
-  IT: 'ITA',
-  LT: 'LTU',
-  LU: 'LUX',
-  LV: 'LVA',
-  ME: 'MNE',
-  MK: 'MKD',
-  MT: 'MLT',
-  NL: 'NLD',
-  NO: 'NOR',
-  PL: 'POL',
-  PT: 'PRT',
-  RO: 'ROU',
-  RS: 'SRB',
-  SE: 'SWE',
-  SI: 'SVN',
-  SK: 'SVK',
-  TR: 'TUR',
-  UK: 'GBR',
-  XK: 'XKX',
-};
-
-const ISO3_TO_EUROSTAT_GEO = Object.fromEntries(
-  Object.entries(EUROSTAT_GEO_TO_ISO3).map(([geo, iso3]) => [iso3, geo]),
-) as Record<string, string>;
-export interface EurostatJsonStatCategory {
-  index?: Record<string, number>;
-  label?: Record<string, string>;
-}
-export interface EurostatJsonStatDimension {
-  label?: string;
-  category?: EurostatJsonStatCategory;
-}
-export interface EurostatJsonStatResponse {
-  id?: string[];
-  size?: number[];
-  value?: Record<string, number>;
-  status?: Record<string, string>;
-  updated?: string;
-  dimension?: Record<string, EurostatJsonStatDimension>;
-}
 interface EurostatObservation {
   dimensions: Record<string, string>;
   value: number;
   status?: string;
 }
-interface EurostatMedianIncomeLocalPoint {
-  jurisdictionIso3: string;
-  jurisdictionName: string;
-  year: number;
-  nominalMedianLocalCurrency: number;
-  estimateType?: string;
-  sourceUrl: string;
-}
-interface EurostatHicpPoint {
-  jurisdictionIso3: string;
-  year: number;
-  hicpAnnualAverage: number;
-}
-export interface DerivedEurostatMedianDisposableIncomePoint {
-  jurisdictionIso3: string;
-  jurisdictionName: string;
-  year: number;
-  nominalMedianLocalCurrency: number;
-  hicpAnnualAverage: number | null;
-  pppPrivateConsumption: number | null;
-  realMedianLocalCurrency: number | null;
-  nominalMedianPppUsd: number | null;
-  realMedianPppUsd: number | null;
-  estimateType?: string;
-  source: string;
-  sourceUrl: string;
-}
+
+export {
+  EUROSTAT_HICP_SOURCE_URL,
+  EUROSTAT_MEDIAN_INCOME_SOURCE_URL,
+} from './eurostat-income-shared.js';
+export type {
+  DerivedEurostatMedianDisposableIncomePoint,
+  EurostatJsonStatResponse,
+} from './eurostat-income-shared.js';
 function decodeEurostatPosition(position: number, sizes: number[]): number[] {
   const coordinates = new Array(sizes.length).fill(0);
   let remainder = position;
