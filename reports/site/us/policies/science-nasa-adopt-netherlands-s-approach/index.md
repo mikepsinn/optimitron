@@ -20,11 +20,11 @@ layout: layout.njk
 
 **Current status:** US spends $1991/cap, ranks 23/27. 1.9x overspend.
 
-**Target:** Netherlands model ($1064/cap floor). $314B/yr savings → Universal Dividend.
+**Target:** Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. US at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Universal Dividend.
+Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. US at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 
@@ -49,4 +49,4 @@ Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (
 - [**View Model Legislation →**](../../legislation/science-nasa-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

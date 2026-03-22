@@ -24,4 +24,4 @@ Ranked by welfare impact (income + healthy life years). Dollar amounts are per-h
 
 - [Budget Analysis](../budget/) — spending efficiency by category
 - [Model Legislation](../legislation/) — drafted bills
-- [Universal Dividend](../dividend/) — combined savings per household
+- [Optimization Dividend](../dividend/) — combined savings per household

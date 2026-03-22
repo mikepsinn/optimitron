@@ -54,13 +54,12 @@ function fmt(n: number): string {
   return `$${n.toLocaleString()}`;
 }
 
+// Only discretionary categories with current legislation drafts
 const LEGISLATION_MAP: Record<string, string> = {
   'Military': 'military-reform',
-  'Medicare': 'medicare-reform',
-  'Medicaid': 'medicaid-reform',
   'Health (non-Medicare/Medicaid)': 'health-non-medicare-medicaid-reform',
+  'Education': 'education-reform',
   'Science / NASA': 'science-nasa-reform',
-  'Social Security': 'social-security-reform',
 };
 
 const US_MEDIAN_INCOME = JURISDICTION.medianIncome;
@@ -111,10 +110,10 @@ title: Home
 layout: layout.njk
 ---
 
-# Optimitron Analysis: US Federal Budget
+# Optimitron Analysis: ${JURISDICTION.name} Federal Budget
 
 **${budgetData.categories.length} budget categories** analyzed against **23 OECD countries**.
-The US ranks dead last in ${withEfficiency.filter((c: any) => c.efficiency.usRank === c.efficiency.totalCountries).length} of ${withEfficiency.length} categories with cross-country data.
+The ${JURISDICTION.name} ranks dead last in ${withEfficiency.filter((c: any) => c.efficiency.usRank === c.efficiency.totalCountries).length} of ${withEfficiency.length} categories with cross-country data.
 
 **Total waste vs OECD efficient floor: ${fmt(totalWasted)}/yr**
 
@@ -124,7 +123,7 @@ The US ranks dead last in ${withEfficiency.filter((c: any) => c.efficiency.usRan
 - [**Policy Rankings**](./policies/) — ${policyData.policies.length} evidence-based policies ranked by impact
 - [**Model Legislation**](./legislation/) — ${Object.keys(LEGISLATION_MAP).length} Gemini-drafted bills with citations
 - [**Efficiency Rankings**](./efficiency/) — OECD cross-country comparisons
-- [**Universal Dividend**](./dividend/) — Savings breakdown per household
+- [**Optimization Dividend**](./dividend/) — Savings breakdown per household
 
 ## Top Findings
 
@@ -160,7 +159,7 @@ layout: layout.njk
 
 [← Home](../)
 
-# US Federal Budget: ${cats.length} Categories
+# ${JURISDICTION.name} Federal Budget: ${cats.length} Categories
 
 Total budget: **${fmt(budgetData.totalBudget)}**
 
@@ -173,7 +172,7 @@ ${rows}
 - [Policy Rankings](../policies/) — evidence-based policies for each category
 - [Model Legislation](../legislation/) — drafted bills for overspending categories
 - [Efficiency Rankings](../efficiency/) — full OECD comparison table
-- [Universal Dividend](../dividend/) — your share of the savings
+- [Optimization Dividend](../dividend/) — your share of the savings
 `;
   write(`${JURISDICTION.code}/budget/index.md`, md);
 }
@@ -296,9 +295,9 @@ layout: layout.njk
       md += `> *${wishonia}*\n\n`;
       md += `**Adopt the approach of ${topNames}.** These countries achieve ${eff.outcomeName} `;
       md += `of ${best?.outcome ?? '?'} while spending $${best?.spending ?? '?'}/cap `;
-      md += `vs the US at $${eff.usData.spending}/cap for ${eff.outcomeName} ${eff.usData.outcome}.\n\n`;
+      md += `vs the ${JURISDICTION.name} at $${eff.usData.spending}/cap for ${eff.outcomeName} ${eff.usData.outcome}.\n\n`;
       md += `Reducing to the efficient floor of $${eff.floorSpending}/cap would save **${fmt(eff.potentialSavingsTotal)}/yr**, `;
-      md += `equivalent to **$${perAdult.toLocaleString()}/yr ($${perMonth.toLocaleString()}/mo)** per adult as a Universal Dividend.\n\n`;
+      md += `equivalent to **$${perAdult.toLocaleString()}/yr ($${perMonth.toLocaleString()}/mo)** per adult as an Optimization Dividend.\n\n`;
       if (legSlug) {
         md += `**[Read the model legislation for this reform →](../legislation/${legSlug}/)**\n\n`;
       }
@@ -313,7 +312,7 @@ layout: layout.njk
     } else if (eff && eff.overspendRatio < 1.2) {
       md += `## Assessment\n\n`;
       md += `> *Near the efficient floor. One of the few things your species isn't catastrophically overpaying for. Well done.*\n\n`;
-      md += `US spending on ${cat.name} is **near the efficient floor** (${eff.overspendRatio}x). No major reallocation recommended.\n\n`;
+      md += `${JURISDICTION.name} spending on ${cat.name} is **near the efficient floor** (${eff.overspendRatio}x). No major reallocation recommended.\n\n`;
     }
 
     // Related links
@@ -323,7 +322,7 @@ layout: layout.njk
     }
     md += `- [Efficiency Rankings](../efficiency/)\n`;
     md += `- [Policy Rankings](../policies/)\n`;
-    md += `- [Universal Dividend](../dividend/)\n`;
+    md += `- [Optimization Dividend](../dividend/)\n`;
     md += `- [← Back to Budget Overview](../)\n`;
 
     write(`${JURISDICTION.code}/budget/${slug}/index.md`, md);
@@ -361,7 +360,7 @@ ${rows}
 
 - [Budget Analysis](../budget/) — spending efficiency by category
 - [Model Legislation](../legislation/) — drafted bills
-- [Universal Dividend](../dividend/) — combined savings per household
+- [Optimization Dividend](../dividend/) — combined savings per household
 `;
   write(`${JURISDICTION.code}/policies/index.md`, md);
 }
@@ -422,7 +421,7 @@ layout: layout.njk
     }
     md += `- [Policy Rankings](../)\n`;
     md += `- [Budget Analysis](../../budget/)\n`;
-    md += `- [Universal Dividend](../../dividend/)\n`;
+    md += `- [Optimization Dividend](../../dividend/)\n`;
 
     write(`${JURISDICTION.code}/policies/${slug}/index.md`, md);
   }
@@ -509,11 +508,11 @@ layout: layout.njk
 
 # OECD Spending Efficiency Rankings
 
-The US compared to 23 OECD countries across ${withEff.length} spending categories.
+The ${JURISDICTION.name} compared to 23 OECD countries across ${withEff.length} spending categories.
 
 **Total waste vs efficient floor: ${fmt(totalWasted)}/yr** (${fmt(perAdult)}/adult)
 
-| Category | US $/cap | Rank | Floor | Overspend | Wasted/yr | Best Country |
+| Category | ${JURISDICTION.name} $/cap | Rank | Floor | Overspend | Wasted/yr | Best Country |
 |----------|----------|------|-------|-----------|-----------|--------------|
 `;
 
@@ -526,7 +525,7 @@ The US compared to 23 OECD countries across ${withEff.length} spending categorie
   md += `\n## Related\n\n`;
   md += `- [Budget Analysis](../budget/) — detailed analysis per category\n`;
   md += `- [Model Legislation](../legislation/) — bills to address overspending\n`;
-  md += `- [Universal Dividend](../dividend/) — your share of the savings\n`;
+  md += `- [Optimization Dividend](../dividend/) — your share of the savings\n`;
 
   write(`${JURISDICTION.code}/efficiency/index.md`, md);
 }
@@ -542,15 +541,15 @@ function generateDividendPage() {
 
   let totalSavings = 0;
   let md = `---
-title: Universal Dividend
+title: Optimization Dividend
 layout: layout.njk
 ---
 
 [← Home](../)
 
-# Universal Dividend Calculator
+# Optimization Dividend Calculator
 
-If the US matched the spending efficiency of the best OECD countries, the savings could fund a Universal Dividend for every adult citizen.
+If the ${JURISDICTION.name} matched the spending efficiency of the best OECD countries, the savings could fund an Optimization Dividend for every adult citizen.
 
 > **Note:** Healthcare savings are counted once (Medicare, Medicaid, and other health programs share the same OECD health spending comparison).
 
@@ -803,7 +802,7 @@ Wishonia is a composite jurisdiction that adopts **each spending category's most
     indexMd += `### ${r.label}: Adopt ${r.modelCountry}'s Approach\n\n`;
     indexMd += `${r.modelCountry} achieves ${r.outcomeName} of **${r.modelOutcome}** at **$${r.optimalPerCap.toLocaleString()}/cap**. `;
     indexMd += `The US gets ${r.outcomeName} ${r.usOutcome} at $${r.currentPerCap.toLocaleString()}/cap (${r.overspend}x more for worse results).\n\n`;
-    indexMd += `Savings: **${fmt(r.savings)}/yr** → **$${r.perAdult.toLocaleString()}/yr per adult** as Universal Dividend.\n\n`;
+    indexMd += `Savings: **${fmt(r.savings)}/yr** → **$${r.perAdult.toLocaleString()}/yr per adult** as Optimization Dividend.\n\n`;
     indexMd += `[View detailed analysis →](${r.detailLink})${r.legLink ? ` · [View model legislation →](${r.legLink.replace(' · ', '').replace('[bill]', '').replace('(', '').replace(')', '')})` : ''}\n\n`;
   }
 

@@ -47,5 +47,5 @@ layout: layout.njk
 
 - [Efficiency Rankings](../efficiency/)
 - [Policy Rankings](../policies/)
-- [Universal Dividend](../dividend/)
+- [Optimization Dividend](../dividend/)
 - [← Back to Budget Overview](../)

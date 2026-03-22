@@ -20,11 +20,11 @@ layout: layout.njk
 
 **Current status:** US spends $2052/cap, ranks 27/28. 5.3x overspend.
 
-**Target:** Switzerland model ($389/cap floor). $564B/yr savings → Universal Dividend.
+**Target:** Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. US at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Universal Dividend.
+Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. US at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 
@@ -49,4 +49,4 @@ Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at 
 - [**View Model Legislation →**](../../legislation/military-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

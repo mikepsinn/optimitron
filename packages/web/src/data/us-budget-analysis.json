@@ -2245,7 +2245,7 @@
     "Education: US spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential savings: $579B/yr",
     "Science / NASA: US spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-03-22T22:27:52.185Z",
+  "generatedAt": "2026-03-22T22:40:34.635Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

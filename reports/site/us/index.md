@@ -14,9 +14,9 @@ The US ranks dead last in 2 of 4 categories with cross-country data.
 
 - [**Budget Analysis**](./budget/) — 23 categories with OECD efficiency rankings
 - [**Policy Rankings**](./policies/) — 8 evidence-based policies ranked by impact
-- [**Model Legislation**](./legislation/) — 6 Gemini-drafted bills with citations
+- [**Model Legislation**](./legislation/) — 4 Gemini-drafted bills with citations
 - [**Efficiency Rankings**](./efficiency/) — OECD cross-country comparisons
-- [**Universal Dividend**](./dividend/) — Savings breakdown per household
+- [**Optimization Dividend**](./dividend/) — Savings breakdown per household
 
 ## Top Findings
 

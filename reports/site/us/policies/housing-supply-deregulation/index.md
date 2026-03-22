@@ -48,4 +48,4 @@ Tokyo has no housing crisis because they allow building. Minneapolis eliminated 
 
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

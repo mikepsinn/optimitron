@@ -48,4 +48,4 @@ Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. Participants 
 
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

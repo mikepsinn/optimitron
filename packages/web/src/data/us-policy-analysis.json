@@ -85,9 +85,9 @@
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. US at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Universal Dividend.",
+      "rationale": "Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. US at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.",
       "currentStatus": "US spends $2052/cap, ranks 27/28. 5.3x overspend.",
-      "recommendedTarget": "Switzerland model ($389/cap floor). $564B/yr savings → Universal Dividend.",
+      "recommendedTarget": "Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
       ]
@@ -115,9 +115,9 @@
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. US at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Universal Dividend.",
+      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. US at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.",
       "currentStatus": "US spends $10333/cap, ranks 28/28. 2.9x overspend.",
-      "recommendedTarget": "South Korea model ($3588/cap floor). $2287B/yr savings → Universal Dividend.",
+      "recommendedTarget": "South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
       ]
@@ -205,9 +205,9 @@
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/cap. US at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Universal Dividend.",
+      "rationale": "Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/cap. US at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Optimization Dividend.",
       "currentStatus": "US spends $2996/cap, ranks 11/11. 2.3x overspend.",
-      "recommendedTarget": "Japan model ($1288/cap floor). $579B/yr savings → Universal Dividend.",
+      "recommendedTarget": "Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
       ]
@@ -235,15 +235,15 @@
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. US at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Universal Dividend.",
+      "rationale": "Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. US at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.",
       "currentStatus": "US spends $1991/cap, ranks 23/27. 1.9x overspend.",
-      "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Universal Dividend.",
+      "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
       ]
     }
   ],
-  "generatedAt": "2026-03-22T22:27:52.194Z",
+  "generatedAt": "2026-03-22T22:40:34.649Z",
   "generatedBy": "@optimitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 }

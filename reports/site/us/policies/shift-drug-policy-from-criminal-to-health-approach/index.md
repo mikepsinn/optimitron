@@ -49,4 +49,4 @@ Portugal decriminalized in 2001: drug deaths dropped 80%, HIV among users droppe
 - [**View Model Legislation →**](../../legislation/health-non-medicare-medicaid-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

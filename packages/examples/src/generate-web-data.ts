@@ -54,7 +54,15 @@ import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../../web/src/data');
 
-const US_POPULATION = 339_000_000; // 2025 estimate
+// Jurisdiction config — change to generate for any country
+const JURISDICTION = {
+  code: 'USA',
+  name: 'United States',
+  population: 339_000_000,
+  households: 133_000_000,
+  medianIncome: 59_540,
+};
+const US_POPULATION = JURISDICTION.population;
 
 // Use canonical mappings from @optimitron/data (no local duplicates)
 const OECD_MAPPINGS = OECD_CATEGORY_MAPPINGS;
@@ -282,16 +290,16 @@ function generateBudgetAnalysis() {
       const savings = e.potentialSavingsTotal;
       const fmtSavings = savings >= 1e12 ? `$${(savings/1e12).toFixed(1)}T` : `$${(savings/1e9).toFixed(0)}B`;
       if (e.overspendRatio > 1.2) {
-        return `${c.name}: US spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spending}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. Potential savings: ${fmtSavings}/yr`;
+        return `${c.name}: ${JURISDICTION.name} spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spending}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. Potential savings: ${fmtSavings}/yr`;
       } else if (e.overspendRatio < 0.8) {
-        return `${c.name}: US underspends at $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Floor: $${e.floorSpending}/cap.`;
+        return `${c.name}: ${JURISDICTION.name} underspends at $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Floor: $${e.floorSpending}/cap.`;
       } else {
-        return `${c.name}: US spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Near floor ($${e.floorSpending}/cap). ${e.outcomeName}: ${e.usData.outcome}`;
+        return `${c.name}: ${JURISDICTION.name} spends $${e.usData.spending}/cap (rank ${e.usRank}/${e.totalCountries}). Near floor ($${e.floorSpending}/cap). ${e.outcomeName}: ${e.usData.outcome}`;
       }
     });
 
   return {
-    jurisdiction: 'United States of America',
+    jurisdiction: JURISDICTION.name,
     totalBudget,
     categories,
     topRecommendations,
@@ -328,11 +336,11 @@ const STRUCTURAL_REFORMS: PolicyInput[] = [...STRUCTURAL_POLICY_REFORMS];
 
 // Auto-generate efficiency-derived policy recommendations from budget analysis.
 // These are spending reallocations, not structural reforms — the "effect" is the
-// savings redirected as Universal Dividend (income) and the outcome improvement
+// savings redirected as Optimization Dividend (income) and the outcome improvement
 // from matching the high performer's level (health, if the outcome is life expectancy).
 function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): PolicyInput[] {
-  const MEDIAN_INCOME = 59_540;
-  const HOUSEHOLDS = 133_000_000;
+  const MEDIAN_INCOME = JURISDICTION.medianIncome;
+  const HOUSEHOLDS = JURISDICTION.households;
 
   return budgetCategories
     .filter(c => c.efficiency && c.efficiency.overspendRatio >= 1.5)
@@ -353,7 +361,7 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
         name: `${c.name}: Adopt ${e.bestCountry.name}'s Approach`,
         type: 'budget_allocation',
         category: c.name.toLowerCase().replace(/[^a-z]+/g, '_'),
-        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap; US gets ${e.usData.outcome} at $${e.usData.spending}/cap.`,
+        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap; ${JURISDICTION.name} gets ${e.usData.outcome} at $${e.usData.spending}/cap.`,
         effectSize: Math.min(e.overspendRatio / 5, 1.5),
         studyCount: e.totalCountries,
         hasPredecessor: true, // other countries already do this
@@ -365,9 +373,9 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
         outcomeCount: 1,
         incomeEffect: Math.round(incomeEffect * 1000) / 1000,
         healthEffect,
-        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap. US at $${e.usData.spending}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spending})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Universal Dividend.`,
-        currentStatus: `US spends $${e.usData.spending}/cap, ranks ${e.usRank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
-        recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpending}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Universal Dividend.`,
+        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spending}/cap. ${JURISDICTION.name} at $${e.usData.spending}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spending})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend.`,
+        currentStatus: `${JURISDICTION.name} spends $${e.usData.spending}/cap, ranks ${e.usRank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
+        recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpending}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Optimization Dividend.`,
         blockingFactors: ['political_opposition'],
       } satisfies PolicyInput;
     });
@@ -435,7 +443,7 @@ function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]) {
   policies.sort((a, b) => b.policyImpactScore - a.policyImpactScore);
 
   return {
-    jurisdiction: 'United States of America',
+    jurisdiction: JURISDICTION.name,
     policies,
     generatedAt: new Date().toISOString(),
     generatedBy: '@optimitron/opg',

@@ -22,4 +22,4 @@ The US compared to 23 OECD countries across 4 spending categories.
 
 - [Budget Analysis](../budget/) — detailed analysis per category
 - [Model Legislation](../legislation/) — bills to address overspending
-- [Universal Dividend](../dividend/) — your share of the savings
+- [Optimization Dividend](../dividend/) — your share of the savings

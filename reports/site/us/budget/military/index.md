@@ -75,7 +75,7 @@ Best: **Switzerland** — $389/cap → Life Expectancy 83.37
 
 **Adopt the approach of Switzerland, Japan, Sweden.** These countries achieve Life Expectancy of 83.37 while spending $389/cap vs the US at $2052/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $389/cap would save **$564B/yr**, equivalent to **$2,186/yr ($182/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $389/cap would save **$564B/yr**, equivalent to **$2,186/yr ($182/mo)** per adult as an Optimization Dividend.
 
 **[Read the model legislation for this reform →](../legislation/military-reform/)**
 
@@ -92,5 +92,5 @@ Reducing to the efficient floor of $389/cap would save **$564B/yr**, equivalent 
 - [**View Model Legislation →**](../legislation/military-reform/)
 - [Efficiency Rankings](../efficiency/)
 - [Policy Rankings](../policies/)
-- [Universal Dividend](../dividend/)
+- [Optimization Dividend](../dividend/)
 - [← Back to Budget Overview](../)

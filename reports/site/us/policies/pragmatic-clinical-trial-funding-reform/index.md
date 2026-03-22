@@ -50,4 +50,4 @@ NIH spends $48B/yr but 70%+ goes to indirect costs. 85% of findings fail to repl
 - [**View Model Legislation →**](../../legislation/health-non-medicare-medicaid-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

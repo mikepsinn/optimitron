@@ -45,8 +45,7 @@ layout: layout.njk
 
 ## Related
 
-- [**View Model Legislation →**](../legislation/medicare-reform/)
 - [Efficiency Rankings](../efficiency/)
 - [Policy Rankings](../policies/)
-- [Universal Dividend](../dividend/)
+- [Optimization Dividend](../dividend/)
 - [← Back to Budget Overview](../)

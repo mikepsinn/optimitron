@@ -1,13 +1,13 @@
 ---
-title: Universal Dividend
+title: Optimization Dividend
 layout: layout.njk
 ---
 
 [← Home](../)
 
-# Universal Dividend Calculator
+# Optimization Dividend Calculator
 
-If the US matched the spending efficiency of the best OECD countries, the savings could fund a Universal Dividend for every adult citizen.
+If the US matched the spending efficiency of the best OECD countries, the savings could fund an Optimization Dividend for every adult citizen.
 
 > **Note:** Healthcare savings are counted once (Medicare, Medicaid, and other health programs share the same OECD health spending comparison).
 

@@ -73,7 +73,7 @@ Best: **South Korea** — $3588/cap → Life Expectancy 83.57
 
 **Adopt the approach of South Korea, Japan, Australia.** These countries achieve Life Expectancy of 83.57 while spending $3588/cap vs the US at $10333/cap for Life Expectancy 76.93.
 
-Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent to **$8,863/yr ($739/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent to **$8,863/yr ($739/mo)** per adult as an Optimization Dividend.
 
 **[Read the model legislation for this reform →](../legislation/health-non-medicare-medicaid-reform/)**
 
@@ -90,5 +90,5 @@ Reducing to the efficient floor of $3588/cap would save **$2.3T/yr**, equivalent
 - [**View Model Legislation →**](../legislation/health-non-medicare-medicaid-reform/)
 - [Efficiency Rankings](../efficiency/)
 - [Policy Rankings](../policies/)
-- [Universal Dividend](../dividend/)
+- [Optimization Dividend](../dividend/)
 - [← Back to Budget Overview](../)

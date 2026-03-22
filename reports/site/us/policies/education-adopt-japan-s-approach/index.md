@@ -20,11 +20,11 @@ layout: layout.njk
 
 **Current status:** US spends $2996/cap, ranks 11/11. 2.3x overspend.
 
-**Target:** Japan model ($1288/cap floor). $579B/yr savings → Universal Dividend.
+**Target:** Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/cap. US at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Universal Dividend.
+Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/cap. US at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 
@@ -48,4 +48,4 @@ Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/ca
 
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)

@@ -75,7 +75,9 @@ Best: **Japan** — $1288/cap → PISA Math Score 536
 
 **Adopt the approach of Japan, Taiwan, Singapore.** These countries achieve PISA Math Score of 536 while spending $1288/cap vs the US at $2996/cap for PISA Math Score 465.
 
-Reducing to the efficient floor of $1288/cap would save **$579B/yr**, equivalent to **$2,244/yr ($187/mo)** per adult as a Universal Dividend.
+Reducing to the efficient floor of $1288/cap would save **$579B/yr**, equivalent to **$2,244/yr ($187/mo)** per adult as an Optimization Dividend.
+
+**[Read the model legislation for this reform →](../legislation/education-reform/)**
 
 ## Evaluation & Sunset
 
@@ -87,7 +89,8 @@ Reducing to the efficient floor of $1288/cap would save **$579B/yr**, equivalent
 
 ## Related
 
+- [**View Model Legislation →**](../legislation/education-reform/)
 - [Efficiency Rankings](../efficiency/)
 - [Policy Rankings](../policies/)
-- [Universal Dividend](../dividend/)
+- [Optimization Dividend](../dividend/)
 - [← Back to Budget Overview](../)

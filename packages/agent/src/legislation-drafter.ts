@@ -214,13 +214,13 @@ Every provision MUST explicitly state:
 - **CURRENT COST**: What the replaced program costs today
 - **NEW COST**: What the replacement costs
 - **NET SAVINGS**: The difference
-- **SAVINGS DESTINATION**: ALL net savings flow to the Universal Dividend Pool (see below)
+- **SAVINGS DESTINATION**: ALL net savings flow to the Optimization Dividend Pool (see below)
 
 Do NOT frame this as "cutting" anything. Frame it as: "Replacing an inefficient system with a proven one, and returning the savings directly to citizens."
 
 ### UNIVERSAL DIVIDEND POOL
 
-ALL net savings from every provision in this Act flow to a single "Universal Dividend Pool" distributed equally to every adult citizen as a monthly payment. This is critical for political viability — every citizen has a direct financial incentive to support the reforms.
+ALL net savings from every provision in this Act flow to a single "Optimization Dividend Pool" distributed equally to every adult citizen as a monthly payment. This is critical for political viability — every citizen has a direct financial incentive to support the reforms.
 
 Calculate the projected per-person annual dividend:
   Dividend = (Total annual savings from all provisions) / (Adult US population ~258M)
@@ -229,7 +229,7 @@ Example: $601B military savings → $2,329/adult/year → $194/month per person
 
 The dividend creates a constituency FOR reform. Instead of "the government is cutting programs," the message is "you get a check every month because we stopped overpaying."
 
-**CITIZEN CHOICE PROVISION**: Every citizen receiving the Universal Dividend may redirect any portion of their payment to any federal budget category of their choosing. This is a simple opt-in on their Treasury account: "Redirect X% of my dividend to [Defense / Healthcare / Education / etc.]". Default = receive the full cash payment.
+**CITIZEN CHOICE PROVISION**: Every citizen receiving the Optimization Dividend may redirect any portion of their payment to any federal budget category of their choosing. This is a simple opt-in on their Treasury account: "Redirect X% of my dividend to [Defense / Healthcare / Education / etc.]". Default = receive the full cash payment.
 
 This eliminates the strongest political objection: "But I liked the old program!" Fine — donate your savings back to it. If enough people do, the program effectively continues via voluntary funding. If they don't, it proves citizens prefer cash over the inefficient program. This is the free market applied to government spending: revealed preference through voluntary allocation, not politicians deciding for you.
 

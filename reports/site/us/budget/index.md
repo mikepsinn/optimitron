@@ -12,13 +12,13 @@ Total budget: **$6.7T**
 | Category | Nominal | Real/Cap | OECD Rank | Overspend | Wasted/yr | Action |
 |----------|---------|----------|-----------|-----------|-----------|--------|
 | [Health (non-Medicare/Medicaid)](./health-non-medicare-medicaid/) | $94B | $212/cap | 28/28 | 2.9x | $2.3T | decrease · [legislation](../legislation/health-non-medicare-medicaid-reform/) |
-| [Education](./education/) | $102B | $230/cap | 11/11 | 2.3x | $579B | decrease |
+| [Education](./education/) | $102B | $230/cap | 11/11 | 2.3x | $579B | decrease · [legislation](../legislation/education-reform/) |
 | [Military](./military/) | $886B | $1996/cap | 27/28 | 5.3x | $564B | major_decrease · [legislation](../legislation/military-reform/) |
 | [Science / NASA](./science-nasa/) | $44B | $99/cap | 23/27 | 1.9x | $314B | decrease · [legislation](../legislation/science-nasa-reform/) |
-| [Social Security](./social-security/) | $1.5T | $3291/cap | — | — | — | maintain · [legislation](../legislation/social-security-reform/) |
+| [Social Security](./social-security/) | $1.5T | $3291/cap | — | — | — | maintain |
 | [Interest on Debt](./interest-on-debt/) | $892B | $2009/cap | — | — | — | maintain |
-| [Medicare](./medicare/) | $874B | $1969/cap | — | — | — | maintain · [legislation](../legislation/medicare-reform/) |
-| [Medicaid](./medicaid/) | $616B | $1387/cap | — | — | — | maintain · [legislation](../legislation/medicaid-reform/) |
+| [Medicare](./medicare/) | $874B | $1969/cap | — | — | — | maintain |
+| [Medicaid](./medicaid/) | $616B | $1387/cap | — | — | — | maintain |
 | [Veterans Affairs](./veterans-affairs/) | $325B | $732/cap | — | — | — | maintain |
 | [Other Mandatory Programs](./other-mandatory-programs/) | $842B | $1896/cap | — | — | — | maintain |
 | [Transportation](./transportation/) | $105B | $237/cap | — | — | — | maintain |
@@ -40,4 +40,4 @@ Total budget: **$6.7T**
 - [Policy Rankings](../policies/) — evidence-based policies for each category
 - [Model Legislation](../legislation/) — drafted bills for overspending categories
 - [Efficiency Rankings](../efficiency/) — full OECD comparison table
-- [Universal Dividend](../dividend/) — your share of the savings
+- [Optimization Dividend](../dividend/) — your share of the savings

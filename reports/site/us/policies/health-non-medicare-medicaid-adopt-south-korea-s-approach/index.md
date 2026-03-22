@@ -20,11 +20,11 @@ layout: layout.njk
 
 **Current status:** US spends $10333/cap, ranks 28/28. 2.9x overspend.
 
-**Target:** South Korea model ($3588/cap floor). $2287B/yr savings → Universal Dividend.
+**Target:** South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.
 
 ## Evidence
 
-Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. US at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Universal Dividend.
+Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. US at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.
 
 ## Bradford Hill Scores
 
@@ -49,4 +49,4 @@ Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at 
 - [**View Model Legislation →**](../../legislation/health-non-medicare-medicaid-reform/)
 - [Policy Rankings](../)
 - [Budget Analysis](../../budget/)
-- [Universal Dividend](../../dividend/)
+- [Optimization Dividend](../../dividend/)
