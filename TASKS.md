@@ -141,3 +141,63 @@ Tasks are ordered by priority. Work top-to-bottom. Mark status as you go.
 | 59 | LLM review evaluation with Gemini | done | Gemini sanity-checks policy evaluation outputs for reasonableness. Scored 94/100 on golden path test. Tests in `packages/agent/src/__tests__/analysis-publication-review.test.ts` and `packages/examples/src/analysis-explorer/__tests__/publication-review.test.ts`. |
 | 60 | Mega study publication review | done | Review workflow for mega study outputs. `packages/examples/src/analysis-explorer/publication-review.ts` + `mega-study-generator.ts` updates. Output in `packages/examples/output/mega-studies/mega-study-publication-review.json`. |
 | 61 | Gemini model update + `askGemini()` helper | done | Updated from `gemini-2.5-flash` to `gemini-3-flash-preview`. Added `askGemini()` convenience helper to `@optimitron/agent` (`packages/agent/src/analysis-publication-review.ts`). |
+
+## P12: Human Cost of Votes — Politician Body Count Attribution
+
+Systematically quantify the human cost of each politician's military/conflict votes using Gemini + credible data sources. The existing alignment scoring compares politician votes against citizen preferences. This adds a second dimension: how many people died because of their votes.
+
+### Data Pipeline
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 62 | Military operations database | todo | Gemini agent scrapes/aggregates casualty data for each named military operation (Iraq, Afghanistan, Libya, Syria, Yemen, Iran, etc.) from credible sources: Watson Institute Costs of War (Brown University), UN OCHA, Airwars, WHO conflict mortality reports, ICRC. Store as structured data with operation name, date range, authorization source, and casualty estimates (low/mid/high with confidence). |
+| 63 | Congressional vote mapping | todo | Map each military operation to the congressional votes that authorized/funded it: AUMF 2001, AUMF 2002, NDAA annual votes, arms sale approvals, specific authorization votes. Use Congress.gov API + Gemini for vote record extraction. Store as vote ID → operation ID mapping. |
+| 64 | Attribution model | todo | For each politician, sum the casualties from operations they voted to authorize/fund. Attribution rules: (1) Voted YES on authorization = full attribution for subsequent casualties. (2) Voted YES on funding (NDAA) = partial attribution (funded continuation). (3) Executive orders (president) = full attribution. (4) Voted NO = zero attribution. Handle edge cases: abstentions, not-yet-in-office, committee vs floor votes. |
+| 65 | DB schema for conflict data | todo | Add Prisma models: `MilitaryOperation` (name, dateRange, casualties, sources, confidence), `OperationVote` (operationId, voteId, voteType), `PoliticianCasualties` (politicianId, operationId, attributedCasualties, attributionType). |
+
+### Integration with Existing Systems
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 66 | Add "Human Cost" to alignment score | todo | Extend the existing `AlignmentReport` component to show a second metric alongside the citizen-preference alignment score: "Attributed Casualties" with breakdown by operation. |
+| 67 | Politician leaderboard update | todo | Add "Human Cost" column to `/politicians` scoreboard. Sort option: most casualties attributed. Make it undeniable. |
+| 68 | Hypercert attestation for body counts | todo | Publish each politician's casualty attribution as a verifiable Hypercert on IPFS. Same pipeline as existing alignment Hypercerts. Immutable public record. |
+| 69 | Gemini agent cron job | todo | Periodic agent run: scrape new casualty reports → update attribution → publish Hypercerts → update scoreboard. Use existing `packages/agent` orchestration. |
+
+### Data Sources (Priority Order)
+
+1. **Watson Institute Costs of War** (Brown University) — most comprehensive US war casualty database
+2. **Airwars** — civilian casualty tracking for air/drone strikes, per-operation
+3. **UN OCHA** — humanitarian impact reports with civilian casualty estimates
+4. **ACLED** (Armed Conflict Location & Event Data) — global conflict events database
+5. **Iraq Body Count** — peer-reviewed civilian casualty database
+6. **Congress.gov API** — official voting records
+7. **OpenSecrets** — defense industry donations to correlate with votes
+
+### Key Design Decisions
+
+- **Conservative estimates only** — use low-end credible figures, cite sources. Overestimating undermines credibility.
+- **Per-operation breakdown** — don't just show a total. Show "Iraq: X, Afghanistan: Y, Yemen drone strikes: Z"
+- **No editorializing** — let the numbers speak. Wishonia's voice works here: deadpan presentation of horrifying facts.
+- **Verifiable** — every number links to its source. Every attribution links to the vote record.
+- **Time-bounded** — only count casualties during/after the politician's vote, not before.
+
+## P13: Web App — Session Wrap-Up Tasks
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 70 | Landing page rebuild (22→8 sections) | done | Tight funnel to prize. New components: LandingProblemSection, LandingPrizeOffer, LandingFAQSection. |
+| 71 | Prize mechanism simplification | done | Removed bounty stages, v1/v2, required functions, whatYouFund. Prize is simple: deposit, recruit, allocate, vote, wait. |
+| 72 | Earth Optimization Game arcade framing | done | INSERT COIN TO PLAY, GAME OVER cards, LEVELS, hedge framing, Press Start 2P pixel font, "Play the Game" CTA. |
+| 73 | VOTE tokens → VOTE points | done | 45 user-facing occurrences across 21 files. Code identifiers unchanged. |
+| 74 | Parameter renames (PRIZE_ESCROW → PRIZE_POOL_HORIZON) | done | All hardcoded numbers replaced with fmtParam(). Double-unit bugs fixed. |
+| 75 | Route reorganization | done | /scoreboard → /politicians (politician leaderboard). New /scoreboard (game dashboard). New /tools page. |
+| 76 | Live data wiring | done | Scoreboard + prize page pull pool size, verified voters, VOTE points from DB. |
+| 77 | Countdown timer | done | CollapseCountdownTimer component. Live countdown to 50% GDP collapse. On prize + scoreboard. |
+| 78 | GDP trajectory chart | done | 4-trajectory SVG: status quo, treaty, optimal governance, productive GDP. On scoreboard. |
+| 79 | Shared components | done | GameCTA (30 instances), ArcadeTag (4), PrizeCalculator, messaging.ts, .env.test for vitest. |
+| 80 | Animation cleanup | done | Removed ScrollReveal, StaggerGrid, HeroEntrance, CountUp from landing page. Content renders immediately. |
+| 81 | DB seed | done | 1% Treaty referendum seeded. Budget categories, jurisdictions, demo user. |
+| 82 | E2E tests | done | 25 Playwright tests (18 smoke + 7 functional). 216 vitest unit tests. All passing. |
+| 83 | Wishonia is an alien, not AI | done | Removed all "governance AI" / "alien AI" references. |
+| 84 | Content consistency sweep | done | Zero stale CTAs, zero old parameter names, zero wrong framing across entire codebase. |
