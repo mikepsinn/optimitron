@@ -28,8 +28,11 @@ export * from './us-death-penalty.js';
 export * from './us-climate-spending.js';
 export * from './oecd-budget-panel.js';
 export * from './natural-experiments.js';
-export * from './aggregated-nof1-drug-war-proxy.js';
-export * from './aggregated-nof1-drug-enforcement.js';
+// Node-only datasets (use fileURLToPath + readFileSync).
+// Import directly from the file when needed — do NOT barrel-export
+// because it breaks client-side bundling in Next.js.
+// import from '@optimitron/data/datasets/aggregated-nof1-drug-war-proxy'
+// import from '@optimitron/data/datasets/aggregated-nof1-drug-enforcement'
 export * from './monetary-policy-panel.js';
 export * from './government-report-cards.js';
 export * from './median-income-series.js';

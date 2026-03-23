@@ -7,7 +7,7 @@
  */
 
 import type { Item } from '@optimitron/wishocracy';
-import { US_PRIORITY_ITEMS, type PriorityItem, type USPriorityItemId } from '@optimitron/data';
+import { US_PRIORITY_ITEMS, type PriorityItem, type USPriorityItemId } from '@optimitron/data/dist/datasets/us-priority-items.js';
 import budgetAnalysisData from '@/data/us-budget-analysis.json';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

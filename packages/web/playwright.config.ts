@@ -37,6 +37,14 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: "default",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1920, height: 1080 },
+        deviceScaleFactor: 1,
+      },
+    },
   ],
   webServer: process.env.SKIP_SERVER
     ? undefined

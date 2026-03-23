@@ -27,6 +27,7 @@ export const ROUTES = {
   politicians: "/politicians",
   scoreboard: "/scoreboard",
   governments: "/governments",
+  agencies: "/agencies",
   tools: "/tools",
   dashboard: "/dashboard",
   signIn: "/auth/signin",
@@ -146,6 +147,14 @@ export const referendumLink: NavItem = {
   matchPrefixes: [ROUTES.referendum],
 };
 
+export const agenciesLink: NavItem = {
+  href: ROUTES.agencies,
+  label: "Deprecated Agencies",
+  emoji: "🏚️",
+  description: "Government agencies replaced by smart contract functions — the code that makes them obsolete",
+  matchPrefixes: [ROUTES.agencies],
+};
+
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
   referendumLink,
@@ -156,7 +165,7 @@ export const exploreLinks: NavItem[] = [
   misconceptionsLink,
   discoveriesLink,
   moneyLink,
-  federalReserveLink,
+  agenciesLink,
   departmentOfWarLink,
 ];
 
@@ -225,6 +234,7 @@ export const governmentsLink: NavItem = {
   matchPrefixes: [ROUTES.governments],
 };
 
+
 export const politicianLeaderboardLink: NavItem = {
   href: ROUTES.politicians,
   label: "Politician Leaderboard",
@@ -291,7 +301,7 @@ export const navSections: NavSection[] = [
   { id: "participate", label: "Participate", items: [wishocracyLink, alignmentLink, referendumLink] },
   { id: "explore", label: "Explore", items: [studiesLink, compareLink, policiesLink, budgetLink, governmentsLink, misconceptionsLink, discoveriesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink, moneyLink] },
-  { id: "system", label: "System", items: [politicianLeaderboardLink, transparencyLink, federalReserveLink, departmentOfWarLink, aboutLink] },
+  { id: "system", label: "System", items: [politicianLeaderboardLink, transparencyLink, agenciesLink, departmentOfWarLink, aboutLink] },
 ];
 
 /** Footer-only internal links */
