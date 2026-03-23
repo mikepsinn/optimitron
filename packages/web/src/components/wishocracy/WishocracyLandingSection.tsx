@@ -77,7 +77,7 @@ export function WishocracyLandingSection() {
       itemId,
       communityPercent: percentage,
       governmentPercent: governmentAllocations[itemId],
-      category: WISHOCRATIC_ITEMS[itemId],
+      item: WISHOCRATIC_ITEMS[itemId],
     }));
   }, [governmentAllocations, summary.averageAllocations, summary.topItems]);
 

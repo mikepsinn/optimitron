@@ -105,8 +105,8 @@ interface WishocraticPairSliderProps {
 }
 
 export function WishocraticPairSlider({
-  itemA,
-  itemB,
+  itemA: itemAId,
+  itemB: itemBId,
   initialAllocation = 50,
   onSubmit,
 }: WishocraticPairSliderProps) {
@@ -151,10 +151,10 @@ export function WishocraticPairSlider({
     timers.push(hideTimer)
 
     return () => timers.forEach(timer => clearTimeout(timer))
-  }, [itemA, itemB, initialAllocation])
+  }, [itemAId, itemBId, initialAllocation])
 
-  const itemA = WISHOCRATIC_ITEMS[itemA]
-  const itemB = WISHOCRATIC_ITEMS[itemB]
+  const itemA = WISHOCRATIC_ITEMS[itemAId]
+  const itemB = WISHOCRATIC_ITEMS[itemBId]
 
   // Calculate allocations from slider value
   // Always use actual slider value (not animated) so slider stays at 50% during tutorial
@@ -250,21 +250,21 @@ export function WishocraticPairSlider({
         <div className="flex justify-between gap-4">
           <div className="flex-1 text-center">
             <TruncatedDescription text={itemA.description} sources={itemA.sources} />
-            {enrichedItems[itemA] && (
+            {enrichedItems[itemAId] && (
               <EfficiencyTag
-                context={enrichedItems[itemA].efficiencyContext}
-                roiRatio={enrichedItems[itemA].roiRatio}
-                annualBudgetBillions={enrichedItems[itemA].annualBudgetBillions}
+                context={enrichedItems[itemAId].efficiencyContext}
+                roiRatio={enrichedItems[itemAId].roiRatio}
+                annualBudgetBillions={enrichedItems[itemAId].annualBudgetBillions}
               />
             )}
           </div>
           <div className="flex-1 text-center">
             <TruncatedDescription text={itemB.description} sources={itemB.sources} />
-            {enrichedItems[itemB] && (
+            {enrichedItems[itemBId] && (
               <EfficiencyTag
-                context={enrichedItems[itemB].efficiencyContext}
-                roiRatio={enrichedItems[itemB].roiRatio}
-                annualBudgetBillions={enrichedItems[itemB].annualBudgetBillions}
+                context={enrichedItems[itemBId].efficiencyContext}
+                roiRatio={enrichedItems[itemBId].roiRatio}
+                annualBudgetBillions={enrichedItems[itemBId].annualBudgetBillions}
               />
             )}
           </div>

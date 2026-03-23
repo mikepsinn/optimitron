@@ -2038,8 +2038,8 @@ model AggregationRun {
   /// Relation to the Jurisdiction
   jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id])
 
-  /// Total comparisons included in this run
-  comparisonCount Int
+  /// Total pairwise allocations included in this run
+  allocationCount Int
 
   /// Total unique participants included in this run
   participantCount Int

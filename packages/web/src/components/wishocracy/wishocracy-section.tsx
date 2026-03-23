@@ -107,7 +107,7 @@ export default function WishocracySection() {
 
         <WishocracyCompletionCard
           show={isComplete}
-          comparisons={state.allocations}
+          allocations={state.allocations}
           isAuthenticated={isAuthenticated}
           userEmail={state.session?.user?.email}
           shareUrl={shareUrl}
@@ -116,12 +116,12 @@ export default function WishocracySection() {
         <WishocracyAllocationCard
           show={!state.showIntro && !state.showItemInclusion}
           isLoading={state.isLoading}
-          comparisons={state.allocations}
+          allocations={state.allocations}
         />
 
         {isAuthenticated && isComplete ? (
           <WishocracyEditSection
-            comparisons={state.allocations}
+            allocations={state.allocations}
             selectedItemIds={state.selectedItemIds}
             onSave={handlers.handleEditSave}
           />
