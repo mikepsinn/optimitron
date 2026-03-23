@@ -75,6 +75,7 @@ type OECDMapping = OECDCategoryMapping;
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
 export const BudgetCategoryOutputSchema = z.object({
+  id: z.string(),
   name: z.string(),
   currentSpending: z.number(),
   currentSpendingRealPerCapita: z.number(),
@@ -189,8 +190,8 @@ function generateBudgetAnalysis() {
     const currentRealPerCapita = toRealPerCapita(latestSpending, latestYear);
     const historicalRPC = historicalToRealPerCapita(cat.historicalSpending);
 
-    const isNonDiscretionary = NON_DISCRETIONARY.has(cat.name);
-    const mapping = OECD_MAPPINGS[cat.name];
+    const isNonDiscretionary = NON_DISCRETIONARY.has(cat.id);
+    const mapping = OECD_MAPPINGS[cat.id];
 
     let optimalPerCapita: number | null = null;
     let optimalNominal: number | null = null;
@@ -248,6 +249,7 @@ function generateBudgetAnalysis() {
     }
 
     categories.push({
+      id: cat.id,
       name: cat.name,
       currentSpending: currentUsd,
       currentSpendingRealPerCapita: Math.round(currentRealPerCapita * 100) / 100,
@@ -284,7 +286,7 @@ function generateBudgetAnalysis() {
     .filter(c => c.efficiency !== null)
     .sort((a, b) => (b.efficiency?.overspendRatio ?? 0) - (a.efficiency?.overspendRatio ?? 0))
     .filter(c => {
-      const mapping = OECD_MAPPINGS[c.name];
+      const mapping = OECD_MAPPINGS[c.id];
       if (!mapping) return true;
       if (seenSpendingFields.has(mapping.spendingField)) return false;
       seenSpendingFields.add(mapping.spendingField);

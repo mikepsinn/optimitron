@@ -26,36 +26,37 @@ export interface OECDCategoryMapping {
   outcomeName: string;
 }
 
+/** Keyed by BudgetCategory.id */
 export const OECD_CATEGORY_MAPPINGS: Record<string, OECDCategoryMapping> = {
-  'Military': {
+  military: {
     spendingField: 'militarySpendingPerCapitaPpp',
     outcomeField: 'lifeExpectancyYears',
     outcomeName: 'Life Expectancy',
   },
-  'Education': {
+  education: {
     spendingField: 'educationSpendingPerCapitaPpp',
     outcomeField: 'pisaMathScore',
     outcomeName: 'PISA Math Score',
   },
-  'Science / NASA': {
+  science_nasa: {
     spendingField: 'rdSpendingPerCapitaPpp',
     outcomeField: 'afterTaxMedianIncomePpp',
     outcomeName: 'After-Tax Median Income (PPP)',
   },
-  'Health (non-Medicare/Medicaid)': {
+  health_discretionary: {
     spendingField: 'healthSpendingPerCapitaPpp',
     outcomeField: 'lifeExpectancyYears',
     outcomeName: 'Life Expectancy',
   },
 };
 
-/** Non-discretionary categories: excluded from optimization entirely */
+/** Non-discretionary category IDs: excluded from optimization entirely */
 export const NON_DISCRETIONARY_CATEGORIES = new Set([
-  'Interest on Debt',
-  'Social Security',
-  'Medicare',
-  'Medicaid',
-  'Other Mandatory Programs',
+  'interest_debt',
+  'social_security',
+  'medicare',
+  'medicaid',
+  'other_mandatory',
 ]);
 
 /** Country names for display (ISO3 → human-readable) */

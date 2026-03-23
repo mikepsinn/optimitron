@@ -16,8 +16,8 @@
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface FiscalCategoryShare {
-  /** Name matching BudgetCategory.name from us-federal-budget.ts */
-  fiscalCategoryName: string;
+  /** ID matching BudgetCategory.id from us-federal-budget.ts (e.g., 'military', 'education') */
+  fiscalCategoryId: string;
   /** Fraction of this priority item's budget from this fiscal category (0-1) */
   share: number;
 }
@@ -106,7 +106,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'CMS National Health Expenditure Data — $4.7T total', url: 'https://www.cms.gov/data-research/statistics-trends-and-reports/national-health-expenditure-data' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Health (non-Medicare/Medicaid)', share: 1.0 },
+      { fiscalCategoryId: 'health_discretionary', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -128,7 +128,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'SAMHSA — 2023 National Survey on Drug Use and Health', url: 'https://www.samhsa.gov/data/data-we-collect/nsduh-national-survey-drug-use-and-health/national-releases/2023' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Health (non-Medicare/Medicaid)', share: 1.0 },
+      { fiscalCategoryId: 'health_discretionary', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -149,7 +149,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'Heckman Equation — 13:1 ROI Toolbox', url: 'https://heckmanequation.org/resource/13-roi-toolbox/' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Education', share: 1.0 },
+      { fiscalCategoryId: 'education', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -171,8 +171,8 @@ export const US_PRIORITY_ITEMS = {
       { name: 'GAO — Critical Infrastructure Protection', url: 'https://www.gao.gov/products/gao-23-106441' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Homeland Security', share: 0.7 },
-      { fiscalCategoryName: 'Military', share: 0.3 },
+      { fiscalCategoryId: 'homeland_security', share: 0.7 },
+      { fiscalCategoryId: 'military', share: 0.3 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -201,9 +201,9 @@ export const US_PRIORITY_ITEMS = {
       { name: 'Cato Institute — Four decades of failure', url: 'https://www.cato.org/policy-analysis/four-decades-counting-continued-failure-war-drugs' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Justice / Law Enforcement', share: 0.6 },
-      { fiscalCategoryName: 'Homeland Security', share: 0.2 },
-      { fiscalCategoryName: 'Other Mandatory Programs', share: 0.2 },
+      { fiscalCategoryId: 'justice', share: 0.6 },
+      { fiscalCategoryId: 'homeland_security', share: 0.2 },
+      { fiscalCategoryId: 'other_mandatory', share: 0.2 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -230,8 +230,8 @@ export const US_PRIORITY_ITEMS = {
       { name: 'Penn Wharton — Mass deportation GDP impact analysis', url: 'https://budgetmodel.wharton.upenn.edu/issues/2025/7/28/mass-deportation-of-unauthorized-immigrants-fiscal-and-economic-effects' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Homeland Security', share: 0.8 },
-      { fiscalCategoryName: 'Justice / Law Enforcement', share: 0.2 },
+      { fiscalCategoryId: 'homeland_security', share: 0.8 },
+      { fiscalCategoryId: 'justice', share: 0.2 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -252,7 +252,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'EWG — Farm subsidy distribution analysis', url: 'https://www.ewg.org/research/farm-subsidies' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Agriculture', share: 1.0 },
+      { fiscalCategoryId: 'agriculture', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -277,8 +277,8 @@ export const US_PRIORITY_ITEMS = {
       { name: 'National Geographic — $240B/yr in climate damages to US economy', url: 'https://www.nationalgeographic.com/science/article/climate-change-costs-us-economy-billions-report' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Energy', share: 0.6 },
-      { fiscalCategoryName: 'Treasury / General Government', share: 0.4 },
+      { fiscalCategoryId: 'energy', share: 0.6 },
+      { fiscalCategoryId: 'treasury', share: 0.4 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -303,8 +303,8 @@ export const US_PRIORITY_ITEMS = {
       { name: 'SIPRI — Minimum deterrence at 200-311 warheads', url: 'https://www.sipri.org/sites/default/files/2022-06/sipriinsight2206_minimal_nuclear_deterrence_1.pdf' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Military', share: 0.7 },
-      { fiscalCategoryName: 'Energy', share: 0.3 },
+      { fiscalCategoryId: 'military', share: 0.7 },
+      { fiscalCategoryId: 'energy', share: 0.3 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -331,7 +331,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'US News — Netherlands closed 27 prisons for lack of prisoners', url: 'https://www.usnews.com/news/best-countries/articles/2019-05-13/the-netherlands-is-closing-its-prisons' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Justice / Law Enforcement', share: 1.0 },
+      { fiscalCategoryId: 'justice', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -352,7 +352,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'SIGAR — Taliban retook Afghanistan in 11 days after 20 years', url: 'https://www.sigar.mil/pdf/lessonslearned/SIGAR-21-46-LL.pdf' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Military', share: 1.0 },
+      { fiscalCategoryId: 'military', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -378,7 +378,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'CRS — US military operations casualty statistics', url: 'https://sgp.fas.org/crs/natsec/RL32492.pdf' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Military', share: 1.0 },
+      { fiscalCategoryId: 'military', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -399,8 +399,8 @@ export const US_PRIORITY_ITEMS = {
       { name: 'Quincy Institute — $21.7B in US military aid to Israel since Oct 2023', url: 'https://quincyinst.org/research/u-s-military-aid-and-arms-transfers-to-israel-october-2023-september-2025/' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Foreign Aid / International Affairs', share: 0.5 },
-      { fiscalCategoryName: 'Military', share: 0.5 },
+      { fiscalCategoryId: 'foreign_aid', share: 0.5 },
+      { fiscalCategoryId: 'military', share: 0.5 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -422,7 +422,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'UNDP — 377,000 deaths in Yemen war', url: 'https://www.undp.org/publications/assessing-impact-war-yemen' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Military', share: 1.0 },
+      { fiscalCategoryId: 'military', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -449,10 +449,10 @@ export const US_PRIORITY_ITEMS = {
       { name: 'Cato Institute — Corporate welfare in the federal budget', url: 'https://www.cato.org/policy-analysis/corporate-welfare-federal-budget-0' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Commerce / Economic Development', share: 0.3 },
-      { fiscalCategoryName: 'Treasury / General Government', share: 0.3 },
-      { fiscalCategoryName: 'Agriculture', share: 0.2 },
-      { fiscalCategoryName: 'Energy', share: 0.2 },
+      { fiscalCategoryId: 'commerce', share: 0.3 },
+      { fiscalCategoryId: 'treasury', share: 0.3 },
+      { fiscalCategoryId: 'agriculture', share: 0.2 },
+      { fiscalCategoryId: 'energy', share: 0.2 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -476,9 +476,9 @@ export const US_PRIORITY_ITEMS = {
       { name: 'New America — NSA bulk surveillance minimal contribution to investigations', url: 'https://www.newamerica.org/oti/policy-papers/surveillance-costs-the-nsas-impact-on-the-economy-internet-freedom-cybersecurity/' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Homeland Security', share: 0.5 },
-      { fiscalCategoryName: 'Military', share: 0.3 },
-      { fiscalCategoryName: 'Justice / Law Enforcement', share: 0.2 },
+      { fiscalCategoryId: 'homeland_security', share: 0.5 },
+      { fiscalCategoryId: 'military', share: 0.3 },
+      { fiscalCategoryId: 'justice', share: 0.2 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',
@@ -500,7 +500,7 @@ export const US_PRIORITY_ITEMS = {
       { name: 'FBI — Uniform Crime Reporting clearance rates', url: 'https://ucr.fbi.gov/' },
     ],
     fiscalCategoryMappings: [
-      { fiscalCategoryName: 'Justice / Law Enforcement', share: 1.0 },
+      { fiscalCategoryId: 'justice', share: 1.0 },
     ],
     type: 'existing' as const,
     jurisdictionCode: 'USA',

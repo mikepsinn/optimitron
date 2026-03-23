@@ -68,6 +68,9 @@ export * from './variable-registry.js';
 // Curated datasets (US federal budget, evidence-based policies)
 export * from './datasets/index.js';
 
+// Jurisdiction registry
+export * from './jurisdictions.js';
+
 // Inflation-adjustment & per-capita conversion
 export * from './inflation-adjustment.js';
 

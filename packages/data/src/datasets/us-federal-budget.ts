@@ -33,6 +33,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
   categories: [
     // ─── Social Security ───────────────────────────────────────────────
     {
+      id: 'social_security',
       name: 'Social Security',
       spendingBillions: 1461,
       percentOfTotal: 21.3,
@@ -88,6 +89,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Interest on Debt ──────────────────────────────────────────────
     {
+      id: 'interest_debt',
       name: 'Interest on Debt',
       spendingBillions: 892,
       percentOfTotal: 13.0,
@@ -135,6 +137,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Military ────────────────────────────────────────────────────────
     {
+      id: 'military',
       name: 'Military',
       spendingBillions: 886,
       percentOfTotal: 12.9,
@@ -190,6 +193,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Medicare ──────────────────────────────────────────────────────
     {
+      id: 'medicare',
       name: 'Medicare',
       spendingBillions: 874,
       percentOfTotal: 12.7,
@@ -245,6 +249,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Medicaid ──────────────────────────────────────────────────────
     {
+      id: 'medicaid',
       name: 'Medicaid',
       spendingBillions: 616,
       percentOfTotal: 9.0,
@@ -300,6 +305,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Veterans Affairs ──────────────────────────────────────────────
     {
+      id: 'veterans_affairs',
       name: 'Veterans Affairs',
       spendingBillions: 325,
       percentOfTotal: 4.7,
@@ -355,6 +361,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Other Mandatory Programs ──────────────────────────────────────
     {
+      id: 'other_mandatory',
       name: 'Other Mandatory Programs',
       spendingBillions: 842,
       percentOfTotal: 12.3,
@@ -402,6 +409,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Transportation ────────────────────────────────────────────────
     {
+      id: 'transportation',
       name: 'Transportation',
       spendingBillions: 105,
       percentOfTotal: 1.5,
@@ -457,6 +465,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Education ─────────────────────────────────────────────────────
     {
+      id: 'education',
       name: 'Education',
       spendingBillions: 102,
       percentOfTotal: 1.5,
@@ -520,6 +529,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── HUD / Housing ─────────────────────────────────────────────────
     {
+      id: 'housing',
       name: 'HUD / Housing',
       spendingBillions: 73,
       percentOfTotal: 1.1,
@@ -567,6 +577,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Foreign Aid (International Affairs) ───────────────────────────
     {
+      id: 'foreign_aid',
       name: 'Foreign Aid / International Affairs',
       spendingBillions: 63,
       percentOfTotal: 0.9,
@@ -614,6 +625,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Energy ────────────────────────────────────────────────────────
     {
+      id: 'energy',
       name: 'Energy',
       spendingBillions: 52,
       percentOfTotal: 0.8,
@@ -661,6 +673,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Science / NASA ────────────────────────────────────────────────
     {
+      id: 'science_nasa',
       name: 'Science / NASA',
       spendingBillions: 44,
       percentOfTotal: 0.6,
@@ -716,6 +729,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Justice / Law Enforcement ─────────────────────────────────────
     {
+      id: 'justice',
       name: 'Justice / Law Enforcement',
       spendingBillions: 40,
       percentOfTotal: 0.6,
@@ -763,6 +777,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Agriculture ───────────────────────────────────────────────────
     {
+      id: 'agriculture',
       name: 'Agriculture',
       spendingBillions: 38,
       percentOfTotal: 0.6,
@@ -810,6 +825,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── EPA / Environment ─────────────────────────────────────────────
     {
+      id: 'environment',
       name: 'EPA / Environment',
       spendingBillions: 12,
       percentOfTotal: 0.2,
@@ -865,6 +881,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Health (non-Medicare/Medicaid) ─────────────────────────────────
     {
+      id: 'health_discretionary',
       name: 'Health (non-Medicare/Medicaid)',
       spendingBillions: 94,
       percentOfTotal: 1.4,
@@ -912,6 +929,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Homeland Security ─────────────────────────────────────────────
     {
+      id: 'homeland_security',
       name: 'Homeland Security',
       spendingBillions: 62,
       percentOfTotal: 0.9,
@@ -959,6 +977,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Labor ─────────────────────────────────────────────────────────
     {
+      id: 'labor',
       name: 'Labor',
       spendingBillions: 42,
       percentOfTotal: 0.6,
@@ -1006,6 +1025,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Commerce / Economic Development ───────────────────────────────
     {
+      id: 'commerce',
       name: 'Commerce / Economic Development',
       spendingBillions: 18,
       percentOfTotal: 0.3,
@@ -1045,6 +1065,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Interior / Natural Resources ──────────────────────────────────
     {
+      id: 'interior',
       name: 'Interior / Natural Resources',
       spendingBillions: 17,
       percentOfTotal: 0.2,
@@ -1092,6 +1113,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── Treasury / General Government ─────────────────────────────────
     {
+      id: 'treasury',
       name: 'Treasury / General Government',
       spendingBillions: 30,
       percentOfTotal: 0.4,
@@ -1131,6 +1153,7 @@ export const US_FEDERAL_BUDGET: JurisdictionBudget = {
 
     // ─── State Department / Diplomacy ──────────────────────────────────
     {
+      id: 'state_department',
       name: 'State Department / Diplomacy',
       spendingBillions: 19,
       percentOfTotal: 0.3,

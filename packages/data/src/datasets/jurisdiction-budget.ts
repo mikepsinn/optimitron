@@ -30,9 +30,9 @@ export interface HistoricalSpending {
 }
 
 export interface BudgetCategory {
-  /** Optional machine-readable identifier */
-  id?: string;
-  /** Category name */
+  /** Stable machine-readable identifier (e.g., 'military', 'education') */
+  id: string;
+  /** Human-readable display name */
   name: string;
   /** Current-year outlays in billions of nominal USD */
   spendingBillions: number;

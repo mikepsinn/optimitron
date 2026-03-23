@@ -36,8 +36,8 @@ export interface EnrichedPriorityItem extends Item {
   roiRatio: string | null;
   /** Annual spending in billions USD */
   annualBudgetBillions: number;
-  /** Fiscal categories this item maps to */
-  fiscalCategoryNames: string[];
+  /** Fiscal category IDs this item maps to */
+  fiscalCategoryIds: string[];
   /** Whether this is existing spending or proposed */
   priorityType: 'existing' | 'proposed';
 }
@@ -45,6 +45,7 @@ export interface EnrichedPriorityItem extends Item {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 interface BudgetAnalysisCategory {
+  id?: string;
   name: string;
   efficiency: {
     rank: number;
@@ -67,8 +68,12 @@ function getAnalysisCategories(): BudgetAnalysisCategory[] {
   return data.categories;
 }
 
-function findFiscalCategoryAnalysis(fiscalCategoryName: string): BudgetAnalysisCategory | undefined {
-  return getAnalysisCategories().find(c => c.name === fiscalCategoryName);
+function findFiscalCategoryAnalysis(fiscalCategoryId: string): BudgetAnalysisCategory | undefined {
+  // Match by id (preferred) or fall back to slugified name for pre-regeneration JSON
+  return getAnalysisCategories().find(c =>
+    c.id === fiscalCategoryId ||
+    c.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+$/, '') === fiscalCategoryId
+  );
 }
 
 /**
@@ -83,7 +88,7 @@ function computeEfficiencyContext(item: PriorityItem): EfficiencyContext | null 
   const primary = sorted[0];
   if (!primary) return null;
 
-  const analysis = findFiscalCategoryAnalysis(primary.fiscalCategoryName);
+  const analysis = findFiscalCategoryAnalysis(primary.fiscalCategoryId);
   if (!analysis?.efficiency) return null;
 
   const eff = analysis.efficiency;
@@ -120,7 +125,7 @@ export function buildEnrichedPriorityItems(): Record<USPriorityItemId, EnrichedP
       efficiencyContext: computeEfficiencyContext(item),
       roiRatio: item.roiData?.ratio ?? null,
       annualBudgetBillions: item.annualBudgetBillions,
-      fiscalCategoryNames: item.fiscalCategoryMappings.map(m => m.fiscalCategoryName),
+      fiscalCategoryIds: item.fiscalCategoryMappings.map(m => m.fiscalCategoryId),
       priorityType: item.type,
     };
   }
