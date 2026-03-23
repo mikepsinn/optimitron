@@ -459,13 +459,13 @@ export default function TreatyVoteSection() {
               ) : (
                 <Card className="bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                   <div className="mb-4">
-                    <p className="text-center font-bold text-base sm:text-lg mb-2">
+                    <p className="text-center font-bold text-lg sm:text-xl mb-2">
                       {VOTE_SECTION.authPrompt}
                     </p>
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-center text-base font-bold text-muted-foreground">
                       {VOTE_SECTION.authSubtext}
                     </p>
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-center text-base text-muted-foreground">
                       {VOTE_SECTION.authPrivacy}
                     </p>
                   </div>

@@ -89,6 +89,15 @@ export function HeroSection() {
             {TAGLINES.gameObjective}
           </motion.p>
 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-3 text-center text-base sm:text-lg md:text-xl font-bold text-muted-foreground max-w-3xl leading-tight"
+          >
+            {TAGLINES.alignTheSuperintelligence} Vote. Share. Win.
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,6 +111,15 @@ export function HeroSection() {
               {CTA.seeTheRules}
             </GameCTA>
           </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="mt-4 text-lg sm:text-xl font-black text-muted-foreground uppercase"
+          >
+            Free. 30 seconds. No catch.
+          </motion.p>
         </motion.div>
       </Container>
     </SectionContainer>

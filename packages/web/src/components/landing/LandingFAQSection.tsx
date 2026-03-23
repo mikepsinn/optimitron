@@ -8,7 +8,17 @@ import { fmtParam } from "@/lib/format-parameter";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
+  MILITARY_VS_MEDICAL_RESEARCH_RATIO,
+  TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
+  CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
+  VOTE_TOKEN_POTENTIAL_VALUE,
 } from "@/lib/parameters-calculations-citations";
+
+const incomeMultiplier = Math.round(
+  TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value /
+    CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value,
+);
+const spendingRatio = Math.round(MILITARY_VS_MEDICAL_RESEARCH_RATIO.value);
 
 const objections = [
   {
@@ -32,6 +42,11 @@ const objections = [
     question: "Why should I trust an alien?",
     answer:
       "You shouldn't. Trust the smart contracts. They're open source, deployed on a public blockchain, with no admin keys. The alien is just the narrator. The maths works whether or not you find her charming. VoterPrizeTreasury.sol and VoteToken.sol — full source on GitHub.",
+  },
+  {
+    id: "share",
+    question: "Why should I share this with friends?",
+    answer: `Everyone would be healthier and ${incomeMultiplier}x richer if their governments weren't spending ${spendingRatio} times more on blowing everything up than on clinical trials. But everyone assumes nobody else would agree to a saner allocation — despite the fact that this is what literally everyone wants. That's called pluralistic ignorance and it's the only thing standing between you and a cured planet. Each friend who plays proves one more person agrees, earns you a VOTE point worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)}+, and moves closer to the tipping point. You're not asking for a favour. You're showing them the maths.`,
   },
 ];
 

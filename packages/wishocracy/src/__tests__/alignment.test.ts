@@ -85,9 +85,9 @@ describe('calculateAlignmentScore', () => {
       ['military', 40],
     ]);
     const result = calculateAlignmentScore(prefs, votes, 'pol-5');
-    expect(result.categoryScores).toBeDefined();
-    expect(result.categoryScores!['medical']).toBeDefined();
-    expect(result.categoryScores!['military']).toBeDefined();
+    expect(result.itemScores).toBeDefined();
+    expect(result.itemScores!['medical']).toBeDefined();
+    expect(result.itemScores!['military']).toBeDefined();
   });
 
   it('higher-weighted items have more influence on score', () => {

@@ -90,7 +90,7 @@ export const AlignmentScoreSchema = z.object({
   /** Number of votes compared */
   votesCompared: z.number().int(),
   /** Per-category alignment breakdown */
-  categoryScores: z.record(z.string(), z.number()).optional(),
+  itemScores: z.record(z.string(), z.number()).optional(),
 });
 
 export type AlignmentScore = z.infer<typeof AlignmentScoreSchema>;

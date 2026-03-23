@@ -50,7 +50,7 @@ export function calculateAlignmentScore(
   let totalWeightedAlignment = 0;
   let totalWeight = 0;
   let votesCompared = 0;
-  const categoryScores: Record<string, number> = {};
+  const itemScores: Record<string, number> = {};
 
   for (const pref of citizenPreferences) {
     const votedPct = politicianVotes.get(pref.itemId);
@@ -66,12 +66,12 @@ export function calculateAlignmentScore(
     totalWeightedAlignment += itemAlignment * weight;
     totalWeight += weight;
 
-    categoryScores[pref.itemId] = itemAlignment * 100;
+    itemScores[pref.itemId] = itemAlignment * 100;
   }
 
   // If no votes were compared, alignment is unknown — return 0
   if (votesCompared === 0) {
-    return { politicianId, score: 0, votesCompared: 0, categoryScores };
+    return { politicianId, score: 0, votesCompared: 0, itemScores };
   }
 
   // Weighted average of per-category alignment ratios
@@ -83,7 +83,7 @@ export function calculateAlignmentScore(
     politicianId,
     score,
     votesCompared,
-    categoryScores,
+    itemScores,
   };
 }
 

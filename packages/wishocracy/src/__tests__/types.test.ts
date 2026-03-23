@@ -284,7 +284,7 @@ describe('AlignmentScoreSchema', () => {
       politicianId: 'sen-123',
       score: 78.5,
       votesCompared: 15,
-      categoryScores: {
+      itemScores: {
         medical: 95,
         defense: 60,
         education: 80,
@@ -293,7 +293,7 @@ describe('AlignmentScoreSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('validates without optional categoryScores', () => {
+  it('validates without optional itemScores', () => {
     const result = AlignmentScoreSchema.safeParse({
       politicianId: 'rep-456',
       score: 45,

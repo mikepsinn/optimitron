@@ -237,12 +237,12 @@ export async function computeAggregateAlignmentScores(
       return Object.entries(d.itemScores).map(([itemId, scoreValue]) => ({
         alignmentScoreId,
         itemId,
-        score: scoreValue,
+        score: scoreValue as number,
       }));
     });
 
     if (categoryRows.length > 0) {
-      await prisma.itemAlignmentScore.createMany({ data: categoryRows });
+      await prisma.wishocraticItemAlignmentScore.createMany({ data: categoryRows });
     }
   }
 

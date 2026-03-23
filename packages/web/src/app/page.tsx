@@ -22,6 +22,12 @@ import {
 } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
 import { CTA, TAGLINES } from "@/lib/messaging";
+import { fmtParam } from "@/lib/format-parameter";
+import {
+  DESTRUCTIVE_ECONOMY_35PCT_YEAR,
+  VOTE_TOKEN_POTENTIAL_VALUE,
+  GLOBAL_COORDINATION_TARGET_SUPPORTERS,
+} from "@/lib/parameters-calculations-citations";
 
 export const metadata: Metadata = {
   title: "Optimitron — The Earth Optimization Game",
@@ -168,8 +174,8 @@ export default function Home() {
 
       {/* ── 8. Final CTA ── */}
       <CTASection
-        heading="Right Then. Shall We Get On With It?"
-        description="I've done the research. I've built the tools. I've written you a manual. At this point I genuinely cannot make it easier."
+        heading="The Clock Is Running"
+        description={`The parasitic economy hits 35% of GDP by ${Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value)}. Your VOTE points are worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)} if ${(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value / 1e9).toFixed(0)} billion people play. Worth nothing if they don't.`}
         bgColor="yellow"
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

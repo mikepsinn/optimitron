@@ -39,10 +39,11 @@ export const TAGLINES = {
     "Recruit voters too and you win in both scenarios. The only losing move is not playing.",
   everyPlayerWins:
     "Every player wins. The only losing move is not playing.",
+  // 604x ratio from MILITARY_VS_MEDICAL_RESEARCH_RATIO parameter
   awarenessBarrier:
-    "Most people want this. They just don't know everyone else does too. That's the bug. The game fixes it.",
+    "Your governments spend 604x more on weapons than clinical trials. Everyone wants that fixed. Nobody knows everyone else does too. That's the bug. The game fixes it.",
   pluralisticIgnorance:
-    "4 billion people probably agree on this. They just can't see each other yet.",
+    "4 billion people would rather be healthy and rich than funding 604x more weapons than cures. They just can't see each other yet.",
   alignTheSuperintelligence:
     "Your governments are misaligned superintelligences. This is the alignment software.",
   theObjective:
@@ -68,7 +69,6 @@ export const ARCADE_LABELS = {
   armory: "The Armory",
   itemShop: "Item Shop",
   howToWin: "How to Win",
-  howToPlay: "How to Play",
 } as const;
 
 export const VOTE_SECTION = {

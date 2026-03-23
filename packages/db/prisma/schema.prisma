@@ -2047,8 +2047,8 @@ model AggregationRun {
   /// AHP consistency ratio (< 0.1 = good)
   consistencyRatio Float?
 
-  /// Filter: which categories were included (null = all)
-  categoryFilter String?
+  /// Filter: which wishocratic items were included (null = all)
+  itemFilter String?
 
   /// Filter: which region was included (null = all)
   regionFilter String?

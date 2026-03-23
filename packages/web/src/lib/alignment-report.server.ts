@@ -101,7 +101,7 @@ export async function getPersonalAlignmentState(
       },
     }),
     prisma.wishocraticItemInclusion.findMany({
-      where: { userId, selected: true },
+      where: { userId, included: true },
       select: {
         itemId: true,
       },

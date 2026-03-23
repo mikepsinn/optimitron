@@ -16,7 +16,7 @@ const baseInput = {
   alignmentScore: 73.2,
   votesCompared: 14,
   participantCount: 412,
-  categoryScores: [
+  itemScores: [
     {
       itemId: 'healthcare',
       itemName: 'Healthcare',

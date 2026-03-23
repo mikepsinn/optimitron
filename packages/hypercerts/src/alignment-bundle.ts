@@ -23,7 +23,7 @@ import {
   type MeasurementMetricInput,
 } from './types.js';
 
-const AlignmentCategoryScoreSchema = z.object({
+const AlignmentItemScoreSchema = z.object({
   itemId: z.string().min(1),
   itemName: z.string().min(1).optional(),
   score: z.number().min(0).max(100),
@@ -31,7 +31,7 @@ const AlignmentCategoryScoreSchema = z.object({
   politicianVotedPct: z.number().optional(),
 });
 
-type AlignmentCategoryScore = z.infer<typeof AlignmentCategoryScoreSchema>;
+type AlignmentItemScore = z.infer<typeof AlignmentItemScoreSchema>;
 
 export const AlignmentHypercertInputSchema = z.object({
   politicianId: z.string().min(1),
@@ -44,7 +44,7 @@ export const AlignmentHypercertInputSchema = z.object({
   alignmentScore: z.number().min(0).max(100),
   votesCompared: z.number().int().nonnegative(),
   participantCount: z.number().int().nonnegative().default(0),
-  categoryScores: z.array(AlignmentCategoryScoreSchema).default([]),
+  itemScores: z.array(AlignmentItemScoreSchema).default([]),
   contributorDid: z.string().min(1),
   evaluatorDid: z.string().min(1).default('did:plc:wishocracy-aggregate'),
   createdAt: z.string().datetime().optional(),
@@ -116,10 +116,10 @@ function buildAlignmentDescription(input: AlignmentHypercertInput): string {
   lines.push(`Votes compared: ${input.votesCompared}`);
   lines.push(`Participants: ${input.participantCount}`);
 
-  if (input.categoryScores.length > 0) {
+  if (input.itemScores.length > 0) {
     lines.push('');
     lines.push('Category breakdown:');
-    for (const cat of input.categoryScores) {
+    for (const cat of input.itemScores) {
       const name = cat.itemName ?? cat.itemId;
       const parts = [`  ${name}: ${cat.score.toFixed(1)}%`];
       if (cat.citizenPreferredPct !== undefined && cat.politicianVotedPct !== undefined) {
@@ -152,7 +152,7 @@ function buildAlignmentMeasurements(input: AlignmentHypercertInput): Measurement
     },
   ];
 
-  for (const cat of input.categoryScores) {
+  for (const cat of input.itemScores) {
     const name = cat.itemName ?? cat.itemId;
     metrics.push({
       metric: `Category Alignment: ${name}`,

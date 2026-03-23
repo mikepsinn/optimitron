@@ -4,11 +4,13 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
 import { Stat } from "@/components/ui/stat";
+import { fmtParam } from "@/lib/format-parameter";
 import { CTA, TAGLINES } from "@/lib/messaging";
 import {
   VOTE_TOKEN_POTENTIAL_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@/lib/parameters-calculations-citations";
 
 const steps = [
@@ -27,12 +29,12 @@ const steps = [
     title: "Get Your Link",
     body: "Sign in and get your referral URL. Every verified voter you bring in earns you 1 VOTE point.",
     color: "cyan" as const,
-    ctas: [],
+    ctas: [{ label: "Sign In", href: "#vote" }],
   },
   {
     number: "3",
-    title: "Recruit 2",
-    body: "Get 2 people to vote. They each get 2 more. This is how you destroy pluralistic ignorance — by making the demand visible.",
+    title: "Play With Friends",
+    body: `Share your link with 2 friends. They each share with 2 more. 28 rounds of this = ${Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6)}M people = tipping point. Each VOTE point worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)}+ if targets are hit.`,
     color: "yellow" as const,
     ctas: [],
   },
@@ -76,15 +78,6 @@ export function HowToPlaySection() {
                   <p className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">
                     {step.body}
                   </p>
-                  {step.number === "3" && (
-                    <p className="text-lg sm:text-xl font-bold text-foreground mt-2">
-                      Each VOTE point worth{" "}
-                      <span className="font-black">
-                        <Stat param={VOTE_TOKEN_POTENTIAL_VALUE} />+
-                      </span>{" "}
-                      if targets are hit.
-                    </p>
-                  )}
                   {step.ctas.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-3">
                       {step.ctas.map((cta) => (
