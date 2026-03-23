@@ -70,7 +70,7 @@ export function EfficientFrontierChart({
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const reduced = useReducedMotion();
 
-  const categories = (efficientFrontierData as { categories: CategoriesMap }).categories;
+  const categories = (efficientFrontierData as unknown as { categories: CategoriesMap }).categories;
   const cat = categories[category];
   if (!cat) return null;
 

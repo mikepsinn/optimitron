@@ -117,7 +117,7 @@ describe('US Federal Budget Dataset', () => {
     it('should have the last historical year match the category spending', () => {
       US_FEDERAL_BUDGET.categories.forEach((cat) => {
         const lastYear = cat.historicalSpending[cat.historicalSpending.length - 1];
-        expect(lastYear.amount).toBe(cat.spending);
+        expect(lastYear?.amount).toBe(cat.spendingBillions);
       });
     });
 

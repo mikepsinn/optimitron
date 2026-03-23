@@ -74,7 +74,75 @@ type OECDMapping = OECDCategoryMapping;
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
-export const BudgetCategoryOutputSchema = z.object({
+// ─── Output Types (explicit interfaces for type safety + Zod schemas for runtime validation) ───
+
+export interface BudgetCategoryOutput {
+  id: string;
+  name: string;
+  currentSpending: number;
+  currentSpendingRealPerCapita: number;
+  optimalSpendingPerCapita: number | null;
+  optimalSpendingNominal: number | null;
+  gap: number;
+  gapPercent: number;
+  recommendation: string;
+  evidenceSource: string;
+  outcomeMetrics: Array<{ name: string; value: number; trend: string }>;
+  historicalRealPerCapita: Array<{ year: number; nominalBillions: number; realPerCapita: number }>;
+  diminishingReturns: {
+    modelType: string;
+    r2: number;
+    n: number;
+    marginalReturn: number;
+    elasticity: number | null;
+    outcomeName: string;
+  } | null;
+  efficiency: EfficiencyAnalysis | null;
+}
+
+export interface BudgetAnalysisOutput {
+  jurisdiction: string;
+  totalSpendingNominal: number;
+  categories: BudgetCategoryOutput[];
+  topRecommendations: string[];
+  generatedAt: string;
+  generatedBy: string;
+  inflationAdjustment: Record<string, unknown>;
+  methodology: Record<string, unknown>;
+  note: string;
+}
+
+export interface PolicyOutput {
+  name: string;
+  type: string;
+  category: string;
+  description: string;
+  recommendationType: string;
+  evidenceGrade: string;
+  causalConfidenceScore: number;
+  policyImpactScore: number;
+  welfareScore: number;
+  incomeEffect: number;
+  healthEffect: number;
+  bradfordHillScores: Record<string, number>;
+  rationale: string;
+  currentStatus: string;
+  recommendedTarget: string;
+  blockingFactors: string[];
+}
+
+export interface PolicyAnalysisOutput {
+  jurisdiction: string;
+  policies: PolicyOutput[];
+  generatedAt: string;
+  generatedBy: string;
+  note: string;
+}
+
+// Zod schemas for runtime validation
+// Uses z.any() for efficiency field to avoid cross-package deep type instantiation (TS2589).
+// The explicit interfaces above provide compile-time safety; Zod validates structure at runtime.
+export const BudgetCategoryOutputSchema: z.ZodType<BudgetCategoryOutput> = z.object({
   id: z.string(),
   name: z.string(),
   currentSpending: z.number(),
@@ -88,18 +156,13 @@ export const BudgetCategoryOutputSchema = z.object({
   outcomeMetrics: z.array(z.object({ name: z.string(), value: z.number(), trend: z.string() })),
   historicalRealPerCapita: z.array(z.object({ year: z.number(), nominalBillions: z.number(), realPerCapita: z.number() })),
   diminishingReturns: z.object({
-    modelType: z.string(),
-    r2: z.number(),
-    n: z.number(),
-    marginalReturn: z.number(),
-    elasticity: z.number().nullable(),
-    outcomeName: z.string(),
+    modelType: z.string(), r2: z.number(), n: z.number(),
+    marginalReturn: z.number(), elasticity: z.number().nullable(), outcomeName: z.string(),
   }).nullable(),
-  efficiency: EfficiencyAnalysisSchema.nullable(),
-});
-export type BudgetCategoryOutput = z.infer<typeof BudgetCategoryOutputSchema>;
+  efficiency: z.any().nullable(),
+}) as unknown as z.ZodType<BudgetCategoryOutput>;
 
-export const BudgetAnalysisOutputSchema = z.object({
+export const BudgetAnalysisOutputSchema: z.ZodType<BudgetAnalysisOutput> = z.object({
   jurisdiction: z.string(),
   totalSpendingNominal: z.number(),
   categories: z.array(BudgetCategoryOutputSchema),
@@ -109,37 +172,24 @@ export const BudgetAnalysisOutputSchema = z.object({
   inflationAdjustment: z.record(z.unknown()),
   methodology: z.record(z.unknown()),
   note: z.string(),
-});
-export type BudgetAnalysisOutput = z.infer<typeof BudgetAnalysisOutputSchema>;
+}) as unknown as z.ZodType<BudgetAnalysisOutput>;
 
-export const PolicyOutputSchema = z.object({
-  name: z.string(),
-  type: z.string(),
-  category: z.string(),
-  description: z.string(),
-  recommendationType: z.string(),
-  evidenceGrade: z.string(),
-  causalConfidenceScore: z.number(),
-  policyImpactScore: z.number(),
-  welfareScore: z.number(),
-  incomeEffect: z.number(),
-  healthEffect: z.number(),
+export const PolicyOutputSchema: z.ZodType<PolicyOutput> = z.object({
+  name: z.string(), type: z.string(), category: z.string(),
+  description: z.string(), recommendationType: z.string(),
+  evidenceGrade: z.string(), causalConfidenceScore: z.number(),
+  policyImpactScore: z.number(), welfareScore: z.number(),
+  incomeEffect: z.number(), healthEffect: z.number(),
   bradfordHillScores: z.record(z.number()),
-  rationale: z.string(),
-  currentStatus: z.string(),
-  recommendedTarget: z.string(),
-  blockingFactors: z.array(z.string()),
-});
-export type PolicyOutput = z.infer<typeof PolicyOutputSchema>;
+  rationale: z.string(), currentStatus: z.string(),
+  recommendedTarget: z.string(), blockingFactors: z.array(z.string()),
+}) as unknown as z.ZodType<PolicyOutput>;
 
-export const PolicyAnalysisOutputSchema = z.object({
+export const PolicyAnalysisOutputSchema: z.ZodType<PolicyAnalysisOutput> = z.object({
   jurisdiction: z.string(),
   policies: z.array(PolicyOutputSchema),
-  generatedAt: z.string(),
-  generatedBy: z.string(),
-  note: z.string(),
-});
-export type PolicyAnalysisOutput = z.infer<typeof PolicyAnalysisOutputSchema>;
+  generatedAt: z.string(), generatedBy: z.string(), note: z.string(),
+}) as unknown as z.ZodType<PolicyAnalysisOutput>;
 
 /** Convert OECD panel data to SpendingOutcomePoint[], run OBG efficiency analysis. */
 function runEfficiencyAnalysis(mapping: OECDMapping): EfficiencyAnalysis | null {
@@ -354,10 +404,10 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
   const HOUSEHOLDS = JURISDICTION.households;
 
   return budgetCategories
-    .filter(c => c.efficiency && c.efficiency.overspendRatio >= 1.5)
+    .filter((c): c is BudgetCategoryOutput & { efficiency: EfficiencyAnalysis } =>
+      c.efficiency !== null && c.efficiency.overspendRatio >= 1.5)
     .map(c => {
       const e = c.efficiency;
-      if (!e) return null;
       const savingsPerHH = Math.round(e.potentialSavingsTotal / HOUSEHOLDS);
       const incomeEffect = savingsPerHH / MEDIAN_INCOME;
 

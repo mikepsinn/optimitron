@@ -278,8 +278,8 @@ layout: layout.njk
 
     // Historical spending
     if (cat.historicalRealPerCapita.length > 0) {
-      const first = cat.historicalRealPerCapita[0];
-      const last = cat.historicalRealPerCapita[cat.historicalRealPerCapita.length - 1];
+      const first = cat.historicalRealPerCapita[0]!;
+      const last = cat.historicalRealPerCapita[cat.historicalRealPerCapita.length - 1]!;
       const nomGrowth = ((last.nominalBillions / first.nominalBillions - 1) * 100).toFixed(0);
       const realGrowth = ((last.realPerCapita / first.realPerCapita - 1) * 100).toFixed(0);
 

@@ -64,7 +64,7 @@ interface BudgetData {
   generatedAt: string;
 }
 
-const data = budgetData as BudgetData;
+const data = budgetData as unknown as BudgetData;
 
 function fmt(n: number | undefined | null): string {
   if (n == null) return "N/A";
