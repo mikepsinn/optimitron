@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySection";
-import { TwoFuturesSection } from "@/components/landing/TwoFuturesSection";
-import { LandingProblemSection } from "@/components/landing/LandingProblemSection";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { HowToWinSection } from "@/components/landing/HowToWinSection";
+import { HowToPlaySection } from "@/components/landing/HowToPlaySection";
+import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
 import { LandingFAQSection } from "@/components/landing/LandingFAQSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
-import VoteImpactSection from "@/components/landing/VoteImpactSection";
-import { VoteValueReveal } from "@/components/landing/VoteValueReveal";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -14,29 +13,22 @@ import { CTASection } from "@/components/ui/cta-section";
 import {
   alignmentLink,
   prizeLink,
-  profileLink,
   studiesLink,
   trackLink,
   wishocracyLink,
   misconceptionsLink,
   scoreboardLink,
+  toolsLink,
 } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
-import { CTA } from "@/lib/messaging";
-import { fmtParam } from "@/lib/format-parameter";
-import {
-  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-  GLOBAL_DISEASE_DEATHS_DAILY,
-} from "@/lib/parameters-calculations-citations";
+import { CTA, TAGLINES } from "@/lib/messaging";
 
 export const metadata: Metadata = {
-  title: "Optimitron — The Earth Optimization Machine",
-  description:
-    "Your governments cost $101 trillion a year in dysfunction and let 150,000 people die daily from treatable diseases. This is the spreadsheet that proves it and the plan that fixes it.",
+  title: "Optimitron — The Earth Optimization Game",
+  description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,
   openGraph: {
-    title: "Optimitron — The Earth Optimization Machine",
-    description:
-      "Your governments cost $101 trillion a year in dysfunction. This is the spreadsheet that proves it.",
+    title: "Optimitron — The Earth Optimization Game",
+    description: TAGLINES.gameObjective,
     type: "website",
   },
 };
@@ -48,7 +40,7 @@ const productWorkflows = [
     title: "Play the Earth Optimization Game",
     description:
       "Deposit USDC. Recruit verified voters. Earn VOTE points. The only way to lose is to not play.",
-    cta: "Play the Game",
+    cta: CTA.playTheGame,
     color: "bg-brutal-pink",
   },
   {
@@ -57,7 +49,7 @@ const productWorkflows = [
     title: "Humanity's Scoreboard",
     description:
       "Live game metrics: health, income, pool size, verified participants. The coalition size, visible to everyone.",
-    cta: "View Scoreboard",
+    cta: CTA.viewScoreboard,
     color: "bg-brutal-cyan",
   },
   {
@@ -66,7 +58,7 @@ const productWorkflows = [
     title: "Build your ideal budget",
     description:
       "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Sneaky, isn't it?",
-    cta: "Start Voting",
+    cta: CTA.startVoting,
     color: "bg-brutal-yellow",
   },
   {
@@ -75,7 +67,7 @@ const productWorkflows = [
     title: "Who actually agrees with you?",
     description:
       "Compare your priorities against real politician voting records. Spoiler: it's not who you think.",
-    cta: "Check Alignment",
+    cta: CTA.checkAlignment,
     color: "bg-brutal-cyan",
   },
   {
@@ -84,7 +76,7 @@ const productWorkflows = [
     title: "Chat with an alien",
     description:
       "Track health, meals, mood, and habits with an alien who's been running a planet for 4,237 years.",
-    cta: "Open Chat",
+    cta: CTA.openChat,
     color: "bg-brutal-cyan",
   },
   {
@@ -93,7 +85,7 @@ const productWorkflows = [
     title: "Look at the actual numbers",
     description:
       "Outcome hubs, pair studies, policy rankings, country comparisons. All evidence, no vibes.",
-    cta: "Browse Studies",
+    cta: CTA.browseStudies,
     color: "bg-brutal-yellow",
   },
   {
@@ -102,7 +94,7 @@ const productWorkflows = [
     title: "Things your government got wrong",
     description:
       "War on Drugs, healthcare spending, abstinence education — graded against real data.",
-    cta: "See the Myths",
+    cta: CTA.seeTheMmyths,
     color: "bg-brutal-pink",
   },
 ];
@@ -110,87 +102,22 @@ const productWorkflows = [
 export default function Home() {
   return (
     <div>
-      {/* ── 1. Hero ── */}
-      <SectionContainer bgColor="background" borderPosition="bottom" className="overflow-hidden">
-        <Container className="py-24 sm:py-32">
-          <div className="text-center">
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">
-              Built by Wishonia // Alien // 4,237 years of field testing
-            </p>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none text-foreground">
-              The{" "}
-              <span className="bg-brutal-cyan px-2">Earth</span>{" "}
-              Optimization{" "}
-              <span className="bg-brutal-yellow px-2">Machine</span>
-            </h1>
-            <p className="mt-6 text-xl sm:text-2xl font-black text-foreground max-w-2xl mx-auto">
-              Your species has the{" "}
-              <span className="text-brutal-cyan">data</span>. It has the{" "}
-              <span className="text-brutal-yellow">solutions</span>.
-              It simply refuses to use them.
-            </p>
-            <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-bold">
-              Your governments cost you{" "}
-              <span className="font-black text-brutal-red">
-                {fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} a year
-              </span>{" "}
-              in dysfunction and let{" "}
-              <span className="font-black text-brutal-pink">
-                {fmtParam({...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""})} people die daily
-              </span>{" "}
-              from treatable diseases. I made a spreadsheet. You&apos;re welcome.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <GameCTA href="#vote" variant="primary" size="lg">
-                {CTA.answerTheQuestion}
-              </GameCTA>
-              <GameCTA href="#evidence" variant="yellow" size="lg">
-                {CTA.convinceMe}
-              </GameCTA>
-            </div>
-            <p className="mt-6 text-sm font-bold text-muted-foreground max-w-2xl mx-auto">
-              Everything saves to your{" "}
-              <NavItemLink
-                item={profileLink}
-                variant="custom"
-                className="font-black text-foreground hover:text-brutal-pink"
-              >
-                {profileLink.label}
-              </NavItemLink>
-              . Budget allocations, alignment reports, daily check-ins. Evidence
-              that you tried.
-            </p>
-          </div>
-        </Container>
-      </SectionContainer>
+      {/* ── 1. Hero — Game name + objective ── */}
+      <HeroSection />
 
-      {/* ── 2. Vote — First conversion point (fast converters) ── */}
+      {/* ── 2. Vote — The core game action ── */}
       <TreatyVoteSection />
 
-      {/* ── 3. The Cost of Doing Nothing ── */}
-      <div id="evidence">
-        <LandingProblemSection />
-      </div>
+      {/* ── 3. How to Win — Scoreboard + win/lose conditions ── */}
+      <HowToWinSection />
 
-      {/* ── 4. The 1% Treaty ── */}
-      <OnePercentTreatySection />
+      {/* ── 4. How to Play — 4-step player journey ── */}
+      <HowToPlaySection />
 
-      {/* ── 5. Two Futures ── */}
-      <TwoFuturesSection />
+      {/* ── 5. What Happens If Nobody Plays — Stakes ── */}
+      <WhyPlaySection />
 
-      {/* ── 6. Vote — Second conversion point (convinced skeptics) ── */}
-      <TreatyVoteSection />
-
-      {/* ── 7. Your Vote's Impact ── */}
-      <VoteImpactSection />
-
-      {/* ── 8. What Your Vote Could Be Worth ── */}
-      <VoteValueReveal />
-
-      {/* ── 9. Frequently Asked Objections ── */}
-      <LandingFAQSection />
-
-      {/* ── 10. Select Mode ── */}
+      {/* ── 6. Select Mode — Other game modes ── */}
       <SectionContainer bgColor="background" borderPosition="none" padding="lg">
         <Container>
           <SectionHeader
@@ -207,8 +134,10 @@ export default function Home() {
                 <div className="text-xs font-black px-2.5 py-1 bg-foreground text-background inline-block self-start mb-4 uppercase">
                   {workflow.label}
                 </div>
-                <h3 className="text-xl font-black text-foreground mb-3">{workflow.title}</h3>
-                <p className="text-sm text-foreground leading-relaxed font-bold flex-grow">
+                <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">
+                  {workflow.title}
+                </h3>
+                <p className="text-base sm:text-lg text-foreground leading-relaxed font-bold flex-grow">
                   {workflow.description}
                 </p>
                 <NavItemLink
@@ -221,10 +150,23 @@ export default function Home() {
               </div>
             ))}
           </div>
+          {/* Armory link */}
+          <div className="mt-8 text-center">
+            <NavItemLink
+              item={toolsLink}
+              variant="custom"
+              className="text-lg font-black text-foreground uppercase hover:text-brutal-pink transition-colors"
+            >
+              Want more tools? Visit The Armory &rarr;
+            </NavItemLink>
+          </div>
         </Container>
       </SectionContainer>
 
-      {/* ── 11. Final CTA ── */}
+      {/* ── 7. Frequently Asked Objections ── */}
+      <LandingFAQSection />
+
+      {/* ── 8. Final CTA ── */}
       <CTASection
         heading="Right Then. Shall We Get On With It?"
         description="I've done the research. I've built the tools. I've written you a manual. At this point I genuinely cannot make it easier."
@@ -232,7 +174,7 @@ export default function Home() {
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <GameCTA href="#vote" variant="primary">
-            {CTA.answerTheQuestion}
+            {CTA.playNow}
           </GameCTA>
           <GameCTA href="/prize" variant="secondary">
             {CTA.seeTheMath}

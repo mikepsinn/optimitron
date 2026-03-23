@@ -64,20 +64,20 @@ export async function POST(req: NextRequest) {
         AllocationData & { itemAId: WishocraticItemId; itemBId: WishocraticItemId }
       > = [];
 
-      for (const comparison of normalizedAllocations) {
-        if (!isValidWishocraticAllocation(comparison)) {
+      for (const allocation of normalizedAllocations) {
+        if (!isValidWishocraticAllocation(allocation)) {
           return NextResponse.json(
-            { error: "Allocations must reference valid categories and sum to 100 or 0." },
+            { error: "Allocations must reference valid items and sum to 100 or 0." },
             { status: 400 },
           );
         }
 
-        validAllocations.push(comparison);
+        validAllocations.push(allocation);
       }
 
       const allocationItemIds = validAllocations.reduce<WishocraticItemId[]>(
-        (itemIds, comparison) => {
-          itemIds.push(comparison.itemAId, comparison.itemBId);
+        (itemIds, allocation) => {
+          itemIds.push(allocation.itemAId, allocation.itemBId);
           return itemIds;
         },
         [],
@@ -90,12 +90,12 @@ export async function POST(req: NextRequest) {
       await prisma.wishocraticAllocation.deleteMany({ where: { userId } });
 
       const createResult = await prisma.wishocraticAllocation.createMany({
-        data: validAllocations.map((comparison) => ({
+        data: validAllocations.map((allocation) => ({
           userId,
-          itemAId: comparison.itemAId,
-          itemBId: comparison.itemBId,
-          allocationA: comparison.allocationA,
-          allocationB: comparison.allocationB,
+          itemAId: allocation.itemAId,
+          itemBId: allocation.itemBId,
+          allocationA: allocation.allocationA,
+          allocationB: allocation.allocationB,
         })),
       });
 

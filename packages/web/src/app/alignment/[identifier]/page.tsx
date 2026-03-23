@@ -28,7 +28,7 @@ export async function generateMetadata({
   return {
     title: `${owner.displayName} Alignment Report | Optimitron`,
     description:
-      "Shared alignment report from Optimitron, the Earth Optimization Machine.",
+      "Shared alignment report from Optimitron, the Earth Optimization Game.",
   };
 }
 

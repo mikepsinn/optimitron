@@ -2,7 +2,7 @@ import * as React from "react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-export type BrutalCardBgColor = "background" | "foreground" | "pink" | "cyan" | "yellow" | "green" | "default"
+export type BrutalCardBgColor = "background" | "foreground" | "pink" | "cyan" | "yellow" | "green" | "red" | "default"
 export type BrutalCardShadowSize = 4 | 8 | 12
 export type BrutalCardPadding = "sm" | "md" | "lg"
 
@@ -23,6 +23,7 @@ const bgClasses: Record<BrutalCardBgColor, string> = {
   cyan: "bg-brutal-cyan",
   yellow: "bg-brutal-yellow",
   green: "bg-brutal-green",
+  red: "bg-brutal-red",
   default: "bg-card",
 }
 

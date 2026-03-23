@@ -15,15 +15,15 @@ type WishocracyLandingSummary = {
   averageAllocations: Record<WishocraticItemId, number>;
   totalUsers: number;
   totalAllocations: number;
-  topCategories: Array<{
-    categoryId: WishocraticItemId;
+  topItems: Array<{
+    itemId: WishocraticItemId;
     percentage: number;
   }>;
 };
 
 function createEmptySummary(): WishocracyLandingSummary {
-  const averageAllocations = Object.keys(WISHOCRATIC_ITEMS).reduce((allocations, categoryId) => {
-    allocations[categoryId as WishocraticItemId] = 0;
+  const averageAllocations = Object.keys(WISHOCRATIC_ITEMS).reduce((allocations, itemId) => {
+    allocations[itemId as WishocraticItemId] = 0;
     return allocations;
   }, {} as Record<WishocraticItemId, number>);
 
@@ -31,7 +31,7 @@ function createEmptySummary(): WishocracyLandingSummary {
     averageAllocations,
     totalUsers: 0,
     totalAllocations: 0,
-    topCategories: [],
+    topItems: [],
   };
 }
 
@@ -66,23 +66,23 @@ export function WishocracyLandingSection() {
   }, []);
 
   const rows = useMemo(() => {
-    const source = summary.topCategories.length
-      ? summary.topCategories
-      : (Object.keys(WISHOCRATIC_ITEMS) as WishocraticItemId[]).map((categoryId) => ({
-          categoryId,
-          percentage: summary.averageAllocations[categoryId],
+    const source = summary.topItems.length
+      ? summary.topItems
+      : (Object.keys(WISHOCRATIC_ITEMS) as WishocraticItemId[]).map((itemId) => ({
+          itemId,
+          percentage: summary.averageAllocations[itemId],
         }));
 
-    return source.slice(0, 5).map(({ categoryId, percentage }) => ({
-      categoryId,
+    return source.slice(0, 5).map(({ itemId, percentage }) => ({
+      itemId,
       communityPercent: percentage,
-      governmentPercent: governmentAllocations[categoryId],
-      category: WISHOCRATIC_ITEMS[categoryId],
+      governmentPercent: governmentAllocations[itemId],
+      category: WISHOCRATIC_ITEMS[itemId],
     }));
-  }, [governmentAllocations, summary.averageAllocations, summary.topCategories]);
+  }, [governmentAllocations, summary.averageAllocations, summary.topItems]);
 
   const hasCommunityData = summary.totalUsers > 0;
-  const topCategory = hasCommunityData ? rows[0] : null;
+  const topItem = hasCommunityData ? rows[0] : null;
 
   return (
     <section className="border-y-4 border-primary bg-brutal-cyan">
@@ -118,7 +118,7 @@ export function WishocracyLandingSection() {
               </div>
               <div className="border-4 border-primary bg-background px-4 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-lg font-black text-foreground">
-                  {topCategory?.category.name ?? "Starts With You"}
+                  {topItem?.item.name ?? "Starts With You"}
                 </div>
                 <div className="text-xs font-bold uppercase text-muted-foreground">
                   Top Priority
@@ -165,12 +165,12 @@ export function WishocracyLandingSection() {
 
             <div className="space-y-4">
               {rows.map((row) => (
-                <div key={row.categoryId}>
+                <div key={row.itemId}>
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl">{row.category.icon}</span>
+                      <span className="text-2xl">{row.item.icon}</span>
                       <span className="text-sm font-black uppercase text-foreground">
-                        {row.category.name}
+                        {row.item.name}
                       </span>
                     </div>
                     <div className="text-right text-xs font-bold uppercase text-muted-foreground">

@@ -41,10 +41,10 @@ export function filterRejectedPairs(
 
 export function filterAllocatedPairs(
   allPairs: Array<[WishocraticItemId, WishocraticItemId]>,
-  completedComparisons: Array<{ itemAId: string; itemBId: string }>,
+  completedAllocations: Array<{ itemAId: string; itemBId: string }>,
 ): Array<[WishocraticItemId, WishocraticItemId]> {
   const completedPairKeys = new Set(
-    completedComparisons.map((comparison) => `${comparison.itemAId}_${comparison.itemBId}`),
+    completedAllocations.map((allocation) => `${allocation.itemAId}_${allocation.itemBId}`),
   );
 
   return allPairs.filter(

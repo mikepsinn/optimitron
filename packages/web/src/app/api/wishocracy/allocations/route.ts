@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     if (!isValidWishocraticAllocation(normalized)) {
       return NextResponse.json(
-        { error: "Allocations must reference valid categories and sum to 100 or 0." },
+        { error: "Allocations must reference valid items and sum to 100 or 0." },
         { status: 400 },
       );
     }
@@ -182,34 +182,34 @@ export async function PATCH(req: Request) {
 
       if (!normalizedAllocations.every(isValidWishocraticAllocation)) {
         return NextResponse.json(
-          { error: "Allocations must reference valid categories and sum to 100 or 0." },
+          { error: "Allocations must reference valid items and sum to 100 or 0." },
           { status: 400 },
         );
       }
 
       await ensureWishocraticItemsExist(
-        normalizedAllocations.flatMap((comparison) => [comparison.itemAId, comparison.itemBId]),
+        normalizedAllocations.flatMap((allocation) => [allocation.itemAId, allocation.itemBId]),
       );
 
-      for (const comparison of normalizedAllocations) {
+      for (const allocation of normalizedAllocations) {
         await prisma.wishocraticAllocation.deleteMany({
           where: {
             userId: user.id,
             OR: [
-              { itemAId: comparison.itemAId, itemBId: comparison.itemBId },
-              { itemAId: comparison.itemBId, itemBId: comparison.itemAId },
+              { itemAId: allocation.itemAId, itemBId: allocation.itemBId },
+              { itemAId: allocation.itemBId, itemBId: allocation.itemAId },
             ],
           },
         });
       }
 
       await prisma.wishocraticAllocation.createMany({
-        data: normalizedAllocations.map((comparison) => ({
+        data: normalizedAllocations.map((allocation) => ({
           userId: user.id,
-          itemAId: comparison.itemAId,
-          itemBId: comparison.itemBId,
-          allocationA: comparison.allocationA,
-          allocationB: comparison.allocationB,
+          itemAId: allocation.itemAId,
+          itemBId: allocation.itemBId,
+          allocationA: allocation.allocationA,
+          allocationB: allocation.allocationB,
         })),
       });
     }

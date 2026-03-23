@@ -49,7 +49,7 @@ export function LandingFAQSection() {
           <h2 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Frequently Asked Objections
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-lg sm:text-xl font-bold text-muted-foreground">
             I have been fielding these for 4,237 years. Your species is not as
             original as it thinks.
           </p>
@@ -66,11 +66,11 @@ export function LandingFAQSection() {
                 value={item.id}
                 className="border-b-4 border-primary last:border-b-0"
               >
-                <AccordionTrigger className="px-6 py-5 text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+                <AccordionTrigger className="px-6 py-5 text-base sm:text-lg font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent className="px-6">
-                  <p className="text-sm font-bold text-muted-foreground leading-relaxed pb-2">
+                  <p className="text-base font-bold text-muted-foreground leading-relaxed pb-2">
                     {item.answer}
                   </p>
                 </AccordionContent>

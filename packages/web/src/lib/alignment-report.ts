@@ -24,7 +24,7 @@ const PERSONAL_ALIGNMENT_PRELIMINARY_ALLOCATION_THRESHOLD = 10;
 const PERSONAL_ALIGNMENT_PRELIMINARY_COMPLETION_THRESHOLD = 0.5;
 
 export interface AlignmentPriorityHighlight {
-  categoryId: WishocraticItemId;
+  itemId: WishocraticItemId;
   name: string;
   icon: string;
   percentage: number;
@@ -201,13 +201,13 @@ export function buildTopPriorityHighlights(
   limit: number = 5,
 ): AlignmentPriorityHighlight[] {
   return Object.entries(allocations)
-    .map(([categoryId, percentage]) => ({
-      categoryId: categoryId as WishocraticItemId,
-      name: WISHOCRATIC_ITEMS[categoryId as WishocraticItemId].name,
-      icon: WISHOCRATIC_ITEMS[categoryId as WishocraticItemId].icon,
+    .map(([itemId, percentage]) => ({
+      itemId: itemId as WishocraticItemId,
+      name: WISHOCRATIC_ITEMS[itemId as WishocraticItemId].name,
+      icon: WISHOCRATIC_ITEMS[itemId as WishocraticItemId].icon,
       percentage: Number(percentage.toFixed(1)),
     }))
-    .filter((category) => category.percentage > 0)
+    .filter((highlight) => highlight.percentage > 0)
     .sort((a, b) => b.percentage - a.percentage)
     .slice(0, limit);
 }

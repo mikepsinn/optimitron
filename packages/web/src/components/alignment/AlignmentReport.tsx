@@ -258,7 +258,7 @@ export function AlignmentReport({
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               {state.report.topPriorities.map((priority) => (
                 <div
-                  key={priority.categoryId}
+                  key={priority.itemId}
                   className="flex items-center gap-3 border-4 border-primary bg-muted p-3"
                 >
                   <span className="text-3xl">{priority.icon}</span>

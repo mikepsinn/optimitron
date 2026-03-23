@@ -70,15 +70,15 @@ export interface PoliticianAlignmentResult {
   preferenceGaps: PreferenceGap[];
 }
 
-function normalizeCategoryToken(value: string): string {
+function normalizeItemToken(value: string): string {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-const CATEGORY_LOOKUP = new Map<string, WishocraticItemId>();
-for (const [categoryId, category] of Object.entries(WISHOCRATIC_ITEMS)) {
-  const typedCategoryId = categoryId as WishocraticItemId;
-  for (const alias of [typedCategoryId, category.slug, category.name]) {
-    CATEGORY_LOOKUP.set(normalizeCategoryToken(alias), typedCategoryId);
+const WISHOCRATIC_ITEM_LOOKUP = new Map<string, WishocraticItemId>();
+for (const [itemId, item] of Object.entries(WISHOCRATIC_ITEMS)) {
+  const typedItemId = itemId as WishocraticItemId;
+  for (const alias of [typedItemId, item.slug, item.name]) {
+    WISHOCRATIC_ITEM_LOOKUP.set(normalizeItemToken(alias), typedItemId);
   }
 }
 
@@ -90,58 +90,58 @@ function toRawAllocationEntries(raw: RawPoliticianAllocations): Array<[string, n
 }
 
 function buildBudgetItems(currentAllocationPct?: Record<WishocraticItemId, number>) {
-  return ALL_WISHOCRATIC_ITEM_IDS.map((categoryId) => ({
-    id: categoryId,
-    name: WISHOCRATIC_ITEMS[categoryId].name,
-    currentAllocationPct: currentAllocationPct?.[categoryId] ?? 0,
+  return ALL_WISHOCRATIC_ITEM_IDS.map((itemId) => ({
+    id: itemId,
+    name: WISHOCRATIC_ITEMS[itemId].name,
+    currentAllocationPct: currentAllocationPct?.[itemId] ?? 0,
   }));
 }
 
 function convertToPairwiseAllocations(
-  comparisons: StoredWishocraticAllocation[],
+  allocations: StoredWishocraticAllocation[],
 ): PairwiseComparison[] {
-  return comparisons
+  return allocations
     .filter(
-      (comparison) =>
-        ALL_WISHOCRATIC_ITEM_IDS.includes(comparison.itemAId as WishocraticItemId) &&
-        ALL_WISHOCRATIC_ITEM_IDS.includes(comparison.itemBId as WishocraticItemId),
+      (allocation) =>
+        ALL_WISHOCRATIC_ITEM_IDS.includes(allocation.itemAId as WishocraticItemId) &&
+        ALL_WISHOCRATIC_ITEM_IDS.includes(allocation.itemBId as WishocraticItemId),
     )
-    .map((comparison, index) => ({
+    .map((allocation, index) => ({
       id: `wishocracy-${index}`,
-      participantId: comparison.userId,
-      itemAId: comparison.itemAId,
-      itemBId: comparison.itemBId,
-      allocationA: comparison.allocationA,
+      participantId: allocation.userId,
+      itemAId: allocation.itemAId,
+      itemBId: allocation.itemBId,
+      allocationA: allocation.allocationA,
       timestamp:
-        comparison.timestamp instanceof Date
-          ? comparison.timestamp.toISOString()
-          : comparison.timestamp ?? new Date(0).toISOString(),
+        allocation.timestamp instanceof Date
+          ? allocation.timestamp.toISOString()
+          : allocation.timestamp ?? new Date(0).toISOString(),
     }));
 }
 
-export function resolveWishocraticItemId(category: string): WishocraticItemId | null {
-  return CATEGORY_LOOKUP.get(normalizeCategoryToken(category)) ?? null;
+export function resolveWishocraticItemId(input: string): WishocraticItemId | null {
+  return WISHOCRATIC_ITEM_LOOKUP.get(normalizeItemToken(input)) ?? null;
 }
 
-export function mapVoteAllocationsToBudgetCategories(
+export function mapVoteAllocationsToWishocraticItems(
   raw: RawPoliticianAllocations,
 ): NormalizedPoliticianAllocations {
   const totals = createEmptyAverageAllocations();
   const unresolvedItems: string[] = [];
 
-  for (const [rawCategory, rawValue] of toRawAllocationEntries(raw)) {
+  for (const [rawItemName, rawValue] of toRawAllocationEntries(raw)) {
     if (!Number.isFinite(rawValue) || rawValue < 0) {
-      unresolvedItems.push(rawCategory);
+      unresolvedItems.push(rawItemName);
       continue;
     }
 
-    const categoryId = resolveWishocraticItemId(rawCategory);
-    if (!categoryId) {
-      unresolvedItems.push(rawCategory);
+    const itemId = resolveWishocraticItemId(rawItemName);
+    if (!itemId) {
+      unresolvedItems.push(rawItemName);
       continue;
     }
 
-    totals[categoryId] += rawValue;
+    totals[itemId] += rawValue;
   }
 
   const totalInput = Object.values(totals).reduce((sum, value) => sum + value, 0);
@@ -235,7 +235,7 @@ export function buildCitizenPreferenceSummary(
     actualGovernmentAllocations,
     totalAllocations: pairwiseAllocations.length,
     totalParticipants: new Set(
-      pairwiseAllocations.map((comparison) => comparison.participantId),
+      pairwiseAllocations.map((allocation) => allocation.participantId),
     ).size,
     itemsCompared: itemIds.length,
     consistencyRatio: consistencyRatio(matrix),
@@ -252,7 +252,7 @@ export function buildPoliticianAlignmentResults(
   ranking: AlignmentScore[];
 } {
   const politiciansWithResults = politicians.map((politician) => {
-    const normalized = mapVoteAllocationsToBudgetCategories(politician.allocations);
+    const normalized = mapVoteAllocationsToWishocraticItems(politician.allocations);
     const alignment = calculateAlignmentScore(
       summary.preferenceWeights,
       new Map(Object.entries(normalized.allocations)),

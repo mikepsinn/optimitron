@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCitizenPreferenceSummary,
   buildPoliticianAlignmentResults,
-  mapVoteAllocationsToBudgetCategories,
+  mapVoteAllocationsToWishocraticItems,
   resolveWishocraticItemId,
 } from "@/lib/wishocracy-alignment";
 import { WISHOCRATIC_ITEMS } from "@/lib/wishocracy-data";
@@ -48,7 +48,7 @@ describe("wishocracy alignment utilities", () => {
   });
 
   it("normalizes mixed allocation inputs into budget categories", () => {
-    const result = mapVoteAllocationsToBudgetCategories({
+    const result = mapVoteAllocationsToWishocraticItems({
       military: 20,
       ADDICTION_TREATMENT: 30,
       [WISHOCRATIC_ITEMS.PRAGMATIC_CLINICAL_TRIALS.name]: 50,

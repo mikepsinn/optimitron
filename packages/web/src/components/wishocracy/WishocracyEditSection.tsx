@@ -41,18 +41,18 @@ export function WishocracyEditSection({
 
   const allItemIds = Object.keys(WISHOCRATIC_ITEMS) as WishocraticItemId[]
 
-  const handleItemToggle = (categoryId: WishocraticItemId, selected: boolean) => {
+  const handleItemToggle = (itemId: WishocraticItemId, selected: boolean) => {
     const newItemIds = new Set(editedItemIds)
 
     if (selected) {
-      newItemIds.add(categoryId)
+      newItemIds.add(itemId)
       // Remove from delete list if re-adding
       const newToDelete = new Set(itemsToDelete)
-      newToDelete.delete(categoryId)
+      newToDelete.delete(itemId)
       setItemsToDelete(newToDelete)
 
-      // Generate missing pairs involving this newly enabled category
-      const otherIncludedItems = Array.from(newItemIds).filter(cat => cat !== categoryId)
+      // Generate missing pairs involving this newly enabled item
+      const otherIncludedItems = Array.from(newItemIds).filter(id => id !== itemId)
 
       const newPairs: Array<{
         itemAId: string
@@ -61,19 +61,18 @@ export function WishocracyEditSection({
         allocationB: number
       }> = []
 
-      // Create pairs between the newly enabled category and all other selected categories
-      for (const otherCat of otherIncludedItems) {
-        // Check if this pair already exists in either direction
+      // Create pairs between the newly enabled item and all other included items
+      for (const otherId of otherIncludedItems) {
         const pairExists = editedAllocations.some(comp =>
-          (comp.itemAId === categoryId && comp.itemBId === otherCat) ||
-          (comp.itemAId === otherCat && comp.itemBId === categoryId)
+          (comp.itemAId === itemId && comp.itemBId === otherId) ||
+          (comp.itemAId === otherId && comp.itemBId === itemId)
         )
 
         if (!pairExists) {
           // Add new pair at 50/50
           newPairs.push({
-            itemAId: categoryId,
-            itemBId: otherCat,
+            itemAId: itemId,
+            itemBId: otherId,
             allocationA: 50,
             allocationB: 50
           })
@@ -85,10 +84,10 @@ export function WishocracyEditSection({
         setEditedAllocations(prev => [...prev, ...newPairs])
       }
     } else {
-      newItemIds.delete(categoryId)
+      newItemIds.delete(itemId)
       // Mark for deletion
       const newToDelete = new Set(itemsToDelete)
-      newToDelete.add(categoryId)
+      newToDelete.add(itemId)
       setItemsToDelete(newToDelete)
       setShowWarning(true)
     }
@@ -164,10 +163,10 @@ export function WishocracyEditSection({
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-foreground mt-0.5" />
                     <div>
-                      <p className="font-bold text-foreground">Warning: Category Deselection</p>
+                      <p className="font-bold text-foreground">Warning: Item Removal</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Deselecting a category will permanently delete all comparisons involving that category.
-                        You'll need to re-do those comparisons if you change your mind.
+                        Removing an item will permanently delete all allocations involving that item.
+                        You'll need to redo those allocations if you change your mind.
                       </p>
                       <p className="text-xs font-bold text-foreground mt-2">
                         Categories to be removed: {Array.from(itemsToDelete).map(id => WISHOCRATIC_ITEMS[id].name).join(", ")}
@@ -177,18 +176,18 @@ export function WishocracyEditSection({
                 </div>
               )}
 
-              {/* Category Toggles */}
+              {/* Item Toggles */}
               <div className="mb-8">
-                <h4 className="text-lg font-black uppercase mb-4 pt-4">Selected Categories</h4>
+                <h4 className="text-lg font-black uppercase mb-4 pt-4">Included Items</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {allItemIds.map(categoryId => {
-                    const category = WISHOCRATIC_ITEMS[categoryId]
-                    const isSelected = editedItemIds.has(categoryId)
-                    const willBeDeleted = itemsToDelete.has(categoryId)
+                  {allItemIds.map(itemId => {
+                    const item = WISHOCRATIC_ITEMS[itemId]
+                    const isSelected = editedItemIds.has(itemId)
+                    const willBeDeleted = itemsToDelete.has(itemId)
 
                     return (
                       <div
-                        key={categoryId}
+                        key={itemId}
                         className={`p-3 border-2 rounded flex items-center justify-between ${
                           isSelected && !willBeDeleted
                             ? "border-brutal-cyan bg-brutal-cyan"
@@ -198,11 +197,11 @@ export function WishocracyEditSection({
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{category.icon}</span>
+                          <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <p className="font-bold text-sm">{category.name}</p>
+                            <p className="font-bold text-sm">{item.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {editedAllocations.filter(c => c.itemAId === categoryId || c.itemBId === categoryId).length} allocations
+                              {editedAllocations.filter(c => c.itemAId === itemId || c.itemBId === itemId).length} allocations
                             </p>
                           </div>
                         </div>
@@ -210,7 +209,7 @@ export function WishocracyEditSection({
                           <input
                             type="checkbox"
                             checked={isSelected && !willBeDeleted}
-                            onChange={(e) => handleItemToggle(categoryId, e.target.checked)}
+                            onChange={(e) => handleItemToggle(itemId, e.target.checked)}
                             className="sr-only peer"
                           />
                           <div className="w-full h-full bg-muted border-4 border-primary peer-checked:bg-brutal-cyan transition-colors" />

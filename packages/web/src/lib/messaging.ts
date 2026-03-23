@@ -22,6 +22,10 @@ export const CTA = {
   convinceMe: "Convince Me First",
   seeTheMath: "See the Full Math",
   earnPoints: "Earn VOTE Points",
+  playNow: "Play Now",
+  seeTheRules: "See the Rules",
+  startPlaying: "Start Playing",
+  browseArmory: "Browse the Armory",
 } as const;
 
 export const TAGLINES = {
@@ -33,6 +37,18 @@ export const TAGLINES = {
     "The only arcade game where you get your coins back 11x if you lose.",
   winBothWays:
     "Recruit voters too and you win in both scenarios. The only losing move is not playing.",
+  everyPlayerWins:
+    "Every player wins. The only losing move is not playing.",
+  awarenessBarrier:
+    "Most people want this. They just don't know everyone else does too. That's the bug. The game fixes it.",
+  pluralisticIgnorance:
+    "4 billion people probably agree on this. They just can't see each other yet.",
+  alignTheSuperintelligence:
+    "Your governments are misaligned superintelligences. This is the alignment software.",
+  theObjective:
+    "Reallocate humanity's resources from things making you poorer and deader to things that make you healthier and wealthier.",
+  rewardFunction:
+    "Maximize median healthy life years and median after-tax inflation-adjusted income. That's the entire objective. Two numbers.",
 } as const;
 
 export const ARCADE_LABELS = {
@@ -51,6 +67,8 @@ export const ARCADE_LABELS = {
   howToPlay: "How to Play",
   armory: "The Armory",
   itemShop: "Item Shop",
+  howToWin: "How to Win",
+  howToPlay: "How to Play",
 } as const;
 
 export const VOTE_SECTION = {

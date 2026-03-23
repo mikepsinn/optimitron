@@ -23,31 +23,31 @@ export function isValidAllocationPair(allocationA: number, allocationB: number):
 }
 
 export function normalizeWishocraticAllocation<T extends WishocraticAllocationInput>(
-  comparison: T,
+  allocation: T,
 ): T {
-  if (comparison.itemAId <= comparison.itemBId) {
-    return comparison;
+  if (allocation.itemAId <= allocation.itemBId) {
+    return allocation;
   }
 
   return {
-    ...comparison,
-    itemAId: comparison.itemBId,
-    itemBId: comparison.itemAId,
-    allocationA: comparison.allocationB,
-    allocationB: comparison.allocationA,
+    ...allocation,
+    itemAId: allocation.itemBId,
+    itemBId: allocation.itemAId,
+    allocationA: allocation.allocationB,
+    allocationB: allocation.allocationA,
   };
 }
 
 export function isValidWishocraticAllocation(
-  comparison: WishocraticAllocationInput,
-): comparison is WishocraticAllocationInput & {
+  allocation: WishocraticAllocationInput,
+): allocation is WishocraticAllocationInput & {
   itemAId: WishocraticItemId;
   itemBId: WishocraticItemId;
 } {
   return (
-    comparison.itemAId !== comparison.itemBId &&
-    isWishocraticItemId(comparison.itemAId) &&
-    isWishocraticItemId(comparison.itemBId) &&
-    isValidAllocationPair(comparison.allocationA, comparison.allocationB)
+    allocation.itemAId !== allocation.itemBId &&
+    isWishocraticItemId(allocation.itemAId) &&
+    isWishocraticItemId(allocation.itemBId) &&
+    isValidAllocationPair(allocation.allocationA, allocation.allocationB)
   );
 }

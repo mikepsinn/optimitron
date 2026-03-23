@@ -33,12 +33,12 @@ const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.v
 
 export const metadata: Metadata = {
   applicationName: "Optimitron",
-  title: "Optimitron — The Evidence-Based Earth Optimization Machine",
+  title: "Optimitron — The Evidence-Based Earth Optimization Game",
   description:
-    "Earth Optimization Machine for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
+    "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
   keywords: [
     "Optimitron",
-    "Earth Optimization Machine",
+    "Earth Optimization Game",
     "planetary debugging software",
     "budget optimization",
     "policy analysis",
@@ -48,15 +48,15 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     siteName: "Optimitron",
-    title: "Optimitron — The Evidence-Based Earth Optimization Machine",
+    title: "Optimitron — The Evidence-Based Earth Optimization Game",
     description:
       "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Evidence-Based Earth Optimization Machine" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Evidence-Based Earth Optimization Game" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Optimitron — Earth Optimization Machine",
+    title: "Optimitron — Earth Optimization Game",
     description:
       "Planetary debugging software for budgets, policies, politicians, and public outcomes.",
     images: ["/twitter-image.jpg"],

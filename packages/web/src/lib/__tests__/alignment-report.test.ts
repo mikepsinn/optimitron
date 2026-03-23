@@ -93,7 +93,7 @@ describe("alignment report utilities", () => {
     expect(report.totalPossiblePairs).toBe(3);
     expect(report.completionRatio).toBe(1);
     expect(report.isPreliminary).toBe(false);
-    expect(report.topPriorities[0]?.categoryId).toBe("PRAGMATIC_CLINICAL_TRIALS");
+    expect(report.topPriorities[0]?.itemId).toBe("PRAGMATIC_CLINICAL_TRIALS");
     expect(report.ranking).toHaveLength(ALIGNMENT_BENCHMARKS.length);
     expect(report.ranking[0]?.score).toBeGreaterThanOrEqual(
       report.ranking[1]?.score ?? 0,
