@@ -22,6 +22,7 @@ const scripts = [
   { name: "Economic Indicators (World Bank)", file: "generate-economic-indicators.ts" },
   { name: "Median Income (Eurostat + PIP)", file: "generate-median-income-series.ts" },
   { name: "Agency Performance (Gemini)", file: "generate-agency-data.ts" },
+  { name: "Politician Scorecards (Congress.gov)", file: "generate-politician-scorecards.ts" },
 ];
 
 async function main() {

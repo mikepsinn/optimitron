@@ -14,6 +14,7 @@
     "data:refresh:health": "tsx ./scripts/generate-health-outcomes.ts",
     "data:refresh:economic": "tsx ./scripts/generate-economic-indicators.ts",
     "data:refresh:agencies": "tsx ./scripts/generate-agency-data.ts",
+    "data:refresh:politicians": "tsx ./scripts/generate-politician-scorecards.ts",
     "data:import-csvs": "tsx ./scripts/import-csv-datasets.ts"
   },
   "keywords": [
@@ -29,10 +30,11 @@
   "license": "MIT",
   "dependencies": {
     "@optimitron/optimizer": "workspace:*",
+    "dotenv": "^17.3.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
+    "@types/node": "^20.19.32",
     "tsx": "^4.21.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"

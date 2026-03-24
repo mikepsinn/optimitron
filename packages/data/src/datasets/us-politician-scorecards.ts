@@ -230,8 +230,8 @@ const POLITICIAN_RECORDS: PoliticianRecord[] = [
 // Compute scorecards from actual dollar votes
 // ---------------------------------------------------------------------------
 
-/** Clinical trials are ~1.7% of the NIH budget (JAMA/GAO) */
-const CLINICAL_TRIAL_PCT_OF_NIH = 0.017;
+/** Clinical trials are ~3.3% of the NIH budget (NIH_CLINICAL_TRIALS_SPENDING_PCT from parameters) */
+const CLINICAL_TRIAL_PCT_OF_NIH = 0.033;
 
 function computeScorecard(record: PoliticianRecord): PoliticianScorecard {
   let destructiveDollars = 0;

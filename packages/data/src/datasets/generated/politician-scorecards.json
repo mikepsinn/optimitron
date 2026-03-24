@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-03-24T06:29:48.711Z",
+  "congress": 118,
+  "memberCount": 0,
+  "gradeDistribution": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 0,
+    "F": 0
+  },
+  "systemWideRatio": 1094,
+  "scorecards": [],
+  "presidents": [
+    {
+      "name": "George W. Bush",
+      "term": "2001-2009",
+      "totalMilitarySigned": 4200000000000,
+      "totalNIHSigned": 232000000000,
+      "clinicalTrialPortion": 7656000000,
+      "ratio": 549,
+      "grade": "F",
+      "keyActions": [
+        "Started Iraq War based on fabricated WMD evidence — $2.4T total cost",
+        "Started Afghanistan War — $2.3T total cost",
+        "Signed PATRIOT Act — warrantless surveillance of all Americans",
+        "NIH budget doubling completed (2003) then flatlined"
+      ]
+    },
+    {
+      "name": "Barack Obama",
+      "term": "2009-2017",
+      "totalMilitarySigned": 5100000000000,
+      "totalNIHSigned": 244000000000,
+      "clinicalTrialPortion": 8052000000,
+      "ratio": 633,
+      "grade": "F",
+      "keyActions": [
+        "Expanded drone warfare to 7 countries",
+        "Libya intervention — created failed state with open-air slave markets",
+        "Signed ACA — premiums increased 105%",
+        "NIH hit by sequestration ($1.7B cut in 2013)"
+      ]
+    },
+    {
+      "name": "Donald Trump (1st term)",
+      "term": "2017-2021",
+      "totalMilitarySigned": 2900000000000,
+      "totalNIHSigned": 156000000000,
+      "clinicalTrialPortion": 5148000000,
+      "ratio": 563,
+      "grade": "F",
+      "keyActions": [
+        "Signed largest peacetime NDAA ($738B FY2020)",
+        "Trade war tariffs cost $1,277/household/yr",
+        "NIH budget increased to $41.7B (2020)",
+        "Operation Warp Speed — $18B for COVID vaccines (rare clinical trial investment)"
+      ]
+    },
+    {
+      "name": "Joe Biden",
+      "term": "2021-2025",
+      "totalMilitarySigned": 3400000000000,
+      "totalNIHSigned": 182000000000,
+      "clinicalTrialPortion": 6006000000,
+      "ratio": 566,
+      "grade": "F",
+      "keyActions": [
+        "Signed $886B NDAA FY2024 — largest ever",
+        "$95B supplemental for Ukraine + Israel military aid",
+        "IRA included $80B IRS funding (later partially clawed back)",
+        "Afghanistan withdrawal — ended 20-year war"
+      ]
+    }
+  ]
+}
