@@ -75,6 +75,8 @@ export const MILITARY_SPENDING_SYNONYMS = [
   "nightmare fuel",
   "skeleton manufacturing",
   "ruining lives",
+  "blowing stuff up",
+  "destroying everything",
 ] as const;
 
 /**
