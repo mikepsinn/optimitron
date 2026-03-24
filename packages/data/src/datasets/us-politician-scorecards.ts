@@ -44,8 +44,8 @@ export interface PoliticianScorecard {
   chamber?: string;
   /** PRIMARY: $ military voted for / $ clinical trials voted for */
   militaryToTrialsRatio: number;
-  /** Grade: A = voted against military AND for trials. F = voted for all military, against trials */
-  grade: "A" | "B" | "C" | "D" | "F";
+  /** Grade: A = voted against military AND for trials. F = voted for all military. "—" = insufficient data */
+  grade: "A" | "B" | "C" | "D" | "F" | "—";
   /** Total $ of military/destructive spending they voted FOR */
   destructiveDollarsVotedFor: number;
   /** Total $ of clinical trial funding they voted FOR */
@@ -263,6 +263,7 @@ function computeScorecard(record: PoliticianRecord): PoliticianScorecard {
 
   // Simple grading: ratio < 1 = A, < 2 = B, < 3 = C, < 4 = D, >= 4 = F
   let grade: PoliticianScorecard["grade"];
+  // Grades computed but hidden on front end until vote coverage is complete
   if (ratio < 1) grade = "A";
   else if (ratio < 2) grade = "B";
   else if (ratio < 3) grade = "C";
