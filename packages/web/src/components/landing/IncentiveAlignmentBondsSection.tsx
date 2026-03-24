@@ -36,9 +36,10 @@ export function IncentiveAlignmentBondsSection() {
             The Bond That Replaces Your Entire Political System
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            Your principal earns yield. Your referral link earns votes. Your share
-            of the upside scales with the demand you proved. The side effect is
-            fixing civilisation, but I&apos;ve learned not to lead with that.
+            Your principal earns yield. Your proceeds fund campaigns for
+            politicians who vote to reallocate from low to high net social value
+            activities. The side effect is fixing civilisation, but I&apos;ve
+            learned not to lead with that.
           </p>
         </ScrollReveal>
 
@@ -70,16 +71,17 @@ export function IncentiveAlignmentBondsSection() {
                 Your Upside (Plan Succeeds)
               </div>
               <h3 className="text-2xl font-black text-foreground mb-2">
-                Vote-Proportional Revenue Share
+                Perpetual Treaty Revenue Share
               </h3>
               <p className="text-sm text-foreground leading-relaxed font-bold mb-3">
+                Treaty passes → $27B/yr flows in. 80% funds pragmatic clinical trials.
+                10% returns to bondholders. 10% funds politicians ranked by Alignment Score.
                 <Stat param={{...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} />–<Stat param={{...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} /> per-capita income gains across adopting jurisdictions.
-                Your share scales with verified votes you brought in via referral link.
               </p>
               <div className="p-3 bg-muted border border-primary">
                 <p className="text-xs font-bold text-muted-foreground">
-                  Buy bonds → share referral link → prove demand exists.
-                  More votes you verify, bigger your share of the upside.
+                  Buy bonds → proceeds fund aligned politicians → treaty passes →
+                  bondholders earn {bondReturnPct} annual returns from treaty revenue. Perpetually.
                 </p>
               </div>
             </div>
@@ -133,7 +135,7 @@ export function IncentiveAlignmentBondsSection() {
                 className="h-full bg-brutal-cyan border-4 border-primary flex items-center justify-center px-3 flex-grow"
               >
                 <span className="text-xs font-black text-foreground whitespace-nowrap">
-                  Succeeds → vote-proportional share
+                  Succeeds → perpetual treaty revenue share
                 </span>
               </motion.div>
             </div>

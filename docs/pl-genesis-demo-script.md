@@ -87,7 +87,7 @@
 
 > "The Prize Pool is a Dominant Assurance Contract diversified across venture capital, achieving 17% annual returns. Here is how it works:"
 
-> "Donors deposit $WISH into a smart contract. If Earth hits its targets — median income up, healthy life years up — the funds unlock and flow to verified implementers. If Earth fails to hit its targets, depositors get their principal back. Plus 17% annual gains. The gains that were achievable anyway by diversifying across venture capital."
+> "Depositors deposit USDC into a smart contract and receive PRIZE claim tokens — their receipt for a share of the pool. If Earth hits its targets — median income up, healthy life years up — the funds unlock and flow to verified implementers. If Earth fails to hit its targets, PRIZE holders get their principal back. Plus the Aave V3 yield that accrued the entire time — roughly 4.2x over 15 years. You either fix civilisation or you quadruple your money. The only way to lose is not to play."
 
 *Visual*: Highlight the smart contract logic — escrow, thresholds, refund conditions.
 
@@ -99,7 +99,7 @@
 
 > "Now for the part your lobbyists really won't enjoy."
 
-*Visual*: Show the $WISH token / IAB section.
+*Visual*: Show the IAB section.
 
 > "Incentive Alignment Bonds. Sell one billion dollars of these. Use the proceeds to fund a 1% Treaty campaign. Create a Special Purpose Vehicle that receives treaty inflows — 1% of military spending per year, $27 billion annually. Distribute: 10% to bond holders, 10% to a Super PAC, 80% to fund clinical trials."
 

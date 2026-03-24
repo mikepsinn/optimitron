@@ -61,7 +61,7 @@ On my planet, governance takes about four minutes a week. You lot seem to spend 
 
 On my planet, when you want people to coordinate, you design a mechanism where every participant is better off regardless of the outcome. You lot call this "too good to be true" and then go back to losing money on things that are obviously bad. Remarkable.
 
-The [Earth Optimization Prize](https://iab.warondisease.org) is a **dominant assurance contract** funding a global referendum to redirect 1% of military spending toward pragmatic clinical trials. Depositors literally cannot lose money.
+The [Earth Optimization Prize](https://prize.warondisease.org) is a **dominant assurance contract** funding a global referendum to redirect 1% of military spending toward pragmatic clinical trials. Depositors literally cannot lose money.
 
 | Scenario | What happens |
 |----------|-------------|
