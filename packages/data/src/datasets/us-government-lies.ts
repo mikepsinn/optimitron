@@ -15,6 +15,10 @@ export interface GovernmentLie {
   theTruth: string;
   harm: string;
   deathsOrAffected: string;
+  /** Numeric estimate for charting — deaths directly attributable */
+  estimatedDeaths: number;
+  /** Numeric estimate for charting — total people affected */
+  estimatedAffected: number;
   source: string;
   sourceUrl: string;
   declassified?: boolean;
@@ -32,6 +36,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Deliberately withheld penicillin treatment for 40 years to study the progression of untreated syphilis. Conducted by the US Public Health Service.",
     harm: "128 men killed by syphilis or complications, 40 wives infected, 19 children born with congenital syphilis.",
     deathsOrAffected: "128 killed, 59+ infected",
+    estimatedDeaths: 128,
+    estimatedAffected: 600,
     source: "CDC \u2014 US Public Health Service Syphilis Study at Tuskegee",
     sourceUrl: "https://www.cdc.gov/tuskegee/timeline.htm",
   },
@@ -46,6 +52,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "CIA drugged thousands of Americans without consent \u2014 LSD, barbiturates, electroshock, sensory deprivation, hypnosis. Experiments conducted at 80+ institutions including universities and hospitals.",
     harm: "Unknown number of deaths. At least 2 confirmed (Frank Olson \u2014 thrown from window after LSD dosing; Harold Blauer \u2014 died from injected mescaline derivative). CIA Director ordered all files destroyed in 1973.",
     deathsOrAffected: "Thousands experimented on, unknown deaths",
+    estimatedDeaths: 2,
+    estimatedAffected: 5000,
     source: "Senate Church Committee Report / CIA FOIA declassification",
     sourceUrl: "https://www.intelligence.senate.gov/sites/default/files/hearings/95mkultra.pdf",
     declassified: true,
@@ -61,6 +69,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Joint Chiefs of Staff proposed staging terrorist attacks on US cities \u2014 bombings, hijackings, sinking a US Navy ship \u2014 to create a pretext for invading Cuba. Signed by the Chairman of the Joint Chiefs.",
     harm: "Proposed, not executed. Demonstrates willingness of military leadership to murder US citizens for political objectives.",
     deathsOrAffected: "Proposed only",
+    estimatedDeaths: 0,
+    estimatedAffected: 0,
     source: "National Security Archive \u2014 declassified JCS document",
     sourceUrl: "https://nsarchive2.gwu.edu/news/20010430/northwoods.pdf",
     declassified: true,
@@ -76,6 +86,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Government's own analysis concluded since 1967 that the war was unwinnable. Continued sending soldiers for 8 more years anyway. 7,000-page classified study proved systematic deception of Congress and the public.",
     harm: "~30,000 additional US soldiers killed after government knew the war was lost. 1M+ Vietnamese civilians murdered in the same period.",
     deathsOrAffected: "30K+ US soldiers killed needlessly",
+    estimatedDeaths: 30000,
+    estimatedAffected: 0,
     source: "National Archives \u2014 Pentagon Papers",
     sourceUrl: "https://www.archives.gov/research/pentagon-papers",
     declassified: true,
@@ -91,6 +103,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Secretly sold weapons to Iran (under arms embargo) and used the profits to fund Contra rebels in Nicaragua (explicitly prohibited by Congress). When caught, key evidence was shredded.",
     harm: "~30,000 Nicaraguan civilians killed by US-funded Contras. Iran received 2,500+ TOW missiles. 14 officials indicted, most pardoned.",
     deathsOrAffected: "30K Nicaraguan civilians murdered",
+    estimatedDeaths: 30000,
+    estimatedAffected: 0,
     source: "National Security Archive \u2014 Iran-Contra",
     sourceUrl: "https://nsarchive2.gwu.edu/NSAEBB/NSAEBB210/",
     declassified: true,
@@ -106,6 +120,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "CIA operated black sites in 54 countries. Techniques included waterboarding, rectal feeding, sleep deprivation for 180 hours, confinement in coffin-sized boxes. Abu Ghraib photos showed systemic abuse. Senate Torture Report (6,700 pages) documented widespread torture.",
     harm: "119 known CIA detainees. At least 100+ detainees died in US custody across all facilities. Many never charged with any crime.",
     deathsOrAffected: "100+ killed in custody",
+    estimatedDeaths: 100,
+    estimatedAffected: 119,
     source: "Senate Intelligence Committee Torture Report (SSCI)",
     sourceUrl: "https://www.intelligence.senate.gov/study-intelligence-committee-study-cia-detention-and-interrogation-program",
   },
@@ -120,6 +136,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "NSA collected metadata on every phone call made in the United States. PRISM program accessed Google, Facebook, Apple, Microsoft, Yahoo servers directly. XKeyscore allowed searching anyone's emails without a warrant. Director of National Intelligence lied to Congress under oath about the program's existence.",
     harm: "Constitutional rights of 330M Americans violated. Chilling effect on journalism, activism, and dissent.",
     deathsOrAffected: "330M Americans surveilled",
+    estimatedDeaths: 0,
+    estimatedAffected: 330000000,
     source: "The Guardian / Washington Post Snowden disclosures",
     sourceUrl: "https://www.theguardian.com/world/interactive/2013/nov/01/snowden-nsa-files-surveillance-revelations-decoded",
   },
@@ -134,6 +152,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Industry knew lead was neurotoxic from the start \u2014 workers at the first TEL plant had hallucinations, convulsions, and 5 died within months. Government agencies accepted industry-funded studies for 63 years. A single scientist (Clair Patterson) proved atmospheric lead came from gasoline in 1965. Industry tried to destroy his career.",
     harm: "Estimated 824M IQ points lost in the US population. 170M Americans born with elevated lead levels. Correlated with violent crime wave of 1960s-1990s.",
     deathsOrAffected: "170M+ Americans with elevated lead",
+    estimatedDeaths: 0,
+    estimatedAffected: 170000000,
     source: "Needleman / Bellinger studies, Reyes 2007 (crime correlation)",
     sourceUrl: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1257652/",
   },
@@ -148,6 +168,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Internal industry documents proved companies knew since the 1950s that smoking caused cancer. They funded doubt-manufacturing campaigns. Government agencies accepted industry lobbying for decades. 7 CEOs lied under oath to Congress in 1994.",
     harm: "480,000 Americans killed per year by tobacco. 16M living with smoking-related disease. 8M killed globally per year.",
     deathsOrAffected: "480K Americans killed per year",
+    estimatedDeaths: 480000,
+    estimatedAffected: 16000000,
     source: "Legacy Tobacco Documents Library / Master Settlement Agreement",
     sourceUrl: "https://www.industrydocuments.ucsf.edu/tobacco/",
   },
@@ -162,6 +184,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "Government officials switched Flint's water source to save $5M. Internal emails show officials knew water was contaminated with lead. EPA regional administrator suppressed a report documenting high lead levels. State officials told residents the water was safe for 18 months while children were being poisoned.",
     harm: "12 killed by Legionnaires' disease outbreak. 12,000+ children exposed to lead-contaminated water. Long-term developmental damage.",
     deathsOrAffected: "12 killed, 12K+ children poisoned",
+    estimatedDeaths: 12,
+    estimatedAffected: 12000,
     source: "Michigan Civil Rights Commission Report / EPA OIG",
     sourceUrl: "https://www.michigan.gov/documents/mdcr/VFlintCrisisRep-F-Edited3-13-17_554317_7.pdf",
   },
@@ -176,6 +200,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "VA denied the illness for 17 years while 250,000+ veterans suffered. The 2008 Research Advisory Committee found 'the illness is real, not psychological.' Causes included exposure to nerve agents, depleted uranium, pesticides, and oil well fires.",
     harm: "250,000+ veterans affected. Thousands died while VA denied their illness was real.",
     deathsOrAffected: "250K+ veterans affected",
+    estimatedDeaths: 1000,
+    estimatedAffected: 250000,
     source: "Research Advisory Committee on Gulf War Veterans' Illnesses (2008)",
     sourceUrl: "https://www.va.gov/RAC-GWVI/",
   },
@@ -190,6 +216,8 @@ export const GOVERNMENT_LIES: GovernmentLie[] = [
     theTruth: "FBI infiltrated, surveilled, and actively sabotaged civil rights groups, antiwar movements, and political organizations. Sent anonymous letter encouraging civil rights leader to commit suicide. Planted informants in every major social movement.",
     harm: "Systematic suppression of constitutional rights. Assassination of civil rights leaders facilitated. Destruction of political organizations.",
     deathsOrAffected: "Thousands of Americans targeted",
+    estimatedDeaths: 0,
+    estimatedAffected: 10000,
     source: "Senate Church Committee Final Report",
     sourceUrl: "https://www.intelligence.senate.gov/resources/intelligence-related-commissions",
     declassified: true,
