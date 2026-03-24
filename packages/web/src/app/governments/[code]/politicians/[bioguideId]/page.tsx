@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : `Politician | ${gov?.name ?? code}`;
 
   const description = politician
-    ? `${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on explosions, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} testing which medicines work. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
+    ? `${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on explosions, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} finding out which medicines work.`
     : "Politician budget allocation data";
 
   return {
@@ -350,8 +350,8 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               : politician.militaryDollarsVotedFor === 0
                 ? `${politician.name} voted to test which medicines work without voting for any explosions. You'd think this would be more common. You'd be adorable for thinking that.`
                 : politician.clinicalTrialDollarsVotedFor === 0
-                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in explosions and zero dollars testing which medicines work. If cancer had oil, this ratio would be different.`
-                  : `${politician.name} spent $${politician.ratio.toLocaleString()} on explosions for every $1 testing which medicines work. Your species average is ${systemRatio.toLocaleString()}:1. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
+                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in explosions and zero dollars finding out which medicines work. It's like having a Department of Transportation that hasn't gotten around to roads yet.`
+                  : `${politician.name} spent $${politician.ratio.toLocaleString()} on explosions for every $1 finding out which medicines work. Your species average is ${systemRatio.toLocaleString()}:1. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
             }
           </p>
         </BrutalCard>

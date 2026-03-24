@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { code } = await params;
   const gov = getGovernment(code.toUpperCase());
   const title = `${gov?.name ?? code} Politicians — Explosions vs Cures | Optimitron`;
-  const description = `Every ${gov?.name ?? code} politician ranked by explosions per dollar testing which medicines work. If cancer had oil, you would have cured it by 2003.`;
+  const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on explosions per dollar finding out if their medicines work.`;
   return {
     title,
     description,
@@ -110,7 +110,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
           <Container>
             <SectionHeader
               title="Explosions vs Testing Which Medicines Work"
-              subtitle={`Your politicians spend ${scorecardData.systemWideRatio.toLocaleString()} dollars on explosions for every 1 dollar on testing which medicines work. If cancer had oil, you would have cured it by 2003.`}
+              subtitle={`Your politicians spend ${scorecardData.systemWideRatio.toLocaleString()} dollars on explosions for every 1 dollar finding out which medicines work. Fifty 9/11s worth of people die from disease every single day, except nobody invades anyone about it because diseases don't have oil.`}
               size="lg"
             />
             <PoliticianScorecardTable
