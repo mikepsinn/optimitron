@@ -38,6 +38,8 @@ export const ROUTES = {
   prize: "/prize",
   scoreboard: "/scoreboard",
   iab: "/iab",
+  // Money
+  money: "/money",
   // Analysis
   compare: "/compare",
   misconceptions: "/misconceptions",
@@ -328,8 +330,14 @@ export const demoLink: NavItem = {
 
 /** @deprecated Use dtreasuryLink instead */
 export const treasuryLink = dtreasuryLink;
-/** @deprecated Use dtreasuryLink instead */
-export const moneyLink = dtreasuryLink;
+
+export const moneyLink: NavItem = {
+  href: ROUTES.money,
+  label: "Money \u2014 Why It\u2019s Broken & How to Fix It",
+  emoji: "\uD83D\uDCB8",
+  description: "97% of your dollar\u2019s value destroyed in one century. Gold standard wages, Fed failures, inequality data, and the $WISH alternative.",
+  matchPrefixes: [ROUTES.money],
+};
 
 export const contributeLink: NavItem = {
   href: ROUTES.contribute,

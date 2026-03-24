@@ -16,7 +16,7 @@ const REDIRECTS = [
   { source: "/alignment/:id", destination: "/agencies/dfec/alignment/:id", permanent: true },
   { source: "/referendum", destination: "/agencies/dcongress/referendums", permanent: true },
   { source: "/referendum/:slug", destination: "/agencies/dcongress/referendums/:slug", permanent: true },
-  { source: "/money", destination: "/agencies/dtreasury", permanent: true },
+  // /money is now a standalone page — no redirect needed
   { source: "/budget", destination: "/agencies/domb", permanent: true },
   { source: "/budget/:slug", destination: "/agencies/domb/:slug", permanent: true },
   { source: "/policies", destination: "/agencies/dcbo", permanent: true },
