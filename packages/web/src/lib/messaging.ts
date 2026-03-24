@@ -52,6 +52,50 @@ export const TAGLINES = {
     "Maximize median healthy life years and median after-tax inflation-adjusted income. That's the entire objective. Two numbers.",
 } as const;
 
+/**
+ * Technically accurate descriptions of what military spending does.
+ * Rotated throughout the UI so no single page repeats.
+ * Each one uses corporate/industrial language for atrocities —
+ * the comedy comes from describing it honestly.
+ */
+export const MILITARY_SPENDING_SYNONYMS = [
+  "orphan manufacturing",
+  "death logistics",
+  "widow production",
+  "organized suffering",
+  "limb removal services",
+  "refugee generation",
+  "famine engineering",
+  "rubble creation",
+  "trauma exports",
+  "murder infrastructure",
+  "killing strangers",
+  "civilian terrorizing",
+  "grave digging",
+  "nightmare fuel",
+  "skeleton manufacturing",
+  "ruining lives",
+] as const;
+
+/**
+ * Get a deterministic synonym for a given seed (e.g. politician bioguideId, page path).
+ * Same seed always returns the same synonym — no layout shift on re-render.
+ */
+export function getMilitarySynonym(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+  }
+  return MILITARY_SPENDING_SYNONYMS[
+    Math.abs(hash) % MILITARY_SPENDING_SYNONYMS.length
+  ]!;
+}
+
+/** Title-cased variant for headings and meta tags where CSS uppercase isn't applied */
+export function getMilitarySynonymTitle(seed: string): string {
+  return getMilitarySynonym(seed).replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export const ARCADE_LABELS = {
   gameTitle: "The Earth Optimization Game",
   insertCoin: "Insert Coin to Play",

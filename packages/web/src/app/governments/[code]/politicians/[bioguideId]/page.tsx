@@ -10,6 +10,7 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { MilitaryVsTrialsPie } from "@/components/shared/MilitaryVsTrialsPie";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { ROUTES } from "@/lib/routes";
+import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 
 interface PageProps {
   params: Promise<{ code: string; bioguideId: string }>;
@@ -76,11 +77,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const gov = getGovernment(code.toUpperCase());
 
   const title = politician
-    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on Explosions, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} on Cures | Optimitron`
+    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines | Optimitron`
     : `Politician | ${gov?.name ?? code}`;
 
   const description = politician
-    ? `${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on explosions, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} finding out which medicines work.`
+    ? `${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonym(politician.bioguideId + "-desc")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} finding out which medicines work.`
     : "Politician budget allocation data";
 
   return {
@@ -155,10 +156,10 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           <p className="text-base font-bold text-foreground mt-2">
             <span className="text-brutal-red font-black">
               {politician.militaryDollarsVotedFor > 0 && politician.clinicalTrialDollarsVotedFor > 0
-                ? `${(politician.militaryDollarsVotedFor / (politician.militaryDollarsVotedFor + politician.clinicalTrialDollarsVotedFor) * 100).toFixed(1)}% explosions`
+                ? `${(politician.militaryDollarsVotedFor / (politician.militaryDollarsVotedFor + politician.clinicalTrialDollarsVotedFor) * 100).toFixed(1)}% ${getMilitarySynonym(politician.bioguideId + "-pct")}`
                 : politician.militaryDollarsVotedFor === 0
-                  ? "0% explosions"
-                  : "100% explosions"
+                  ? `0% ${getMilitarySynonym(politician.bioguideId + "-pct")}`
+                  : `100% ${getMilitarySynonym(politician.bioguideId + "-pct")}`
               }
             </span>
             {" vs "}
@@ -179,7 +180,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <BrutalCard bgColor="red" shadowSize={8} padding="lg">
             <div className="text-xs font-black uppercase text-brutal-red-foreground mb-1">
-              Explosions $ Voted For
+              {getMilitarySynonym(politician.bioguideId + "-stat")}
             </div>
             <div className="text-3xl sm:text-4xl font-black text-brutal-red-foreground">
               {formatDollars(politician.militaryDollarsVotedFor)}
@@ -200,7 +201,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
 
           <BrutalCard bgColor="background" shadowSize={8} padding="lg">
             <div className="text-xs font-black uppercase text-muted-foreground mb-1">
-              Explosions : Medicines Ratio
+              {getMilitarySynonym(politician.bioguideId + "-ratio")} : medicines ratio
             </div>
             <div className={`text-3xl sm:text-4xl font-black ${
               politician.ratio >= 100 ? "text-brutal-red" : politician.ratio <= 1 ? "text-brutal-cyan" : "text-foreground"
@@ -229,6 +230,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           }
           militaryDollars={politician.militaryDollarsVotedFor}
           trialsDollars={politician.clinicalTrialDollarsVotedFor}
+          militaryLabel={getMilitarySynonym(politician.bioguideId + "-pie")}
           size={280}
         />
       </section>
@@ -240,7 +242,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         </p>
         <SocialShareButtons
           url={`https://optimitron.earth/governments/${gov.code}/politicians/${politician.bioguideId}`}
-          text={`${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on explosions, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} testing which medicines work.`}
+          text={`${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonym(politician.bioguideId + "-share")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} testing which medicines work.`}
         />
       </section>
 
@@ -346,12 +348,12 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           </h3>
           <p className="text-base font-bold text-foreground leading-relaxed">
             {politician.militaryDollarsVotedFor === 0 && politician.clinicalTrialDollarsVotedFor === 0
-              ? `${politician.name} voted against both explosions and testing which medicines work. I mention not to be rude but because you seem weirdly calm about this.`
+              ? `${politician.name} voted against both ${getMilitarySynonym(politician.bioguideId + "-maths-a")} and finding out which medicines work. I mention not to be rude but because you seem weirdly calm about this.`
               : politician.militaryDollarsVotedFor === 0
-                ? `${politician.name} voted to test which medicines work without voting for any explosions. You'd think this would be more common. You'd be adorable for thinking that.`
+                ? `${politician.name} voted to find out which medicines work without voting for any ${getMilitarySynonym(politician.bioguideId + "-maths-b")}. You'd think this would be more common. You'd be adorable for thinking that.`
                 : politician.clinicalTrialDollarsVotedFor === 0
-                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in explosions and zero dollars finding out which medicines work. It's like having a Department of Transportation that hasn't gotten around to roads yet.`
-                  : `${politician.name} spent $${politician.ratio.toLocaleString()} on explosions for every $1 finding out which medicines work. Your species average is ${systemRatio.toLocaleString()}:1. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
+                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in ${getMilitarySynonym(politician.bioguideId + "-maths-c")} and zero dollars finding out which medicines work. It's like having a Department of Transportation that hasn't gotten around to roads yet.`
+                  : `${politician.name} spent $${politician.ratio.toLocaleString()} on ${getMilitarySynonym(politician.bioguideId + "-maths-d")} for every $1 finding out which medicines work. Your species average is ${systemRatio.toLocaleString()}:1. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
             }
           </p>
         </BrutalCard>

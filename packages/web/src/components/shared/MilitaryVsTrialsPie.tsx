@@ -10,6 +10,8 @@ interface MilitaryVsTrialsPieProps {
   trialsDollars: number;
   /** Size in px */
   size?: number;
+  /** Label for military spending slice */
+  militaryLabel?: string;
 }
 
 function formatDollars(value: number): string {
@@ -30,6 +32,7 @@ export function MilitaryVsTrialsPie({
   militaryDollars,
   trialsDollars,
   size = 240,
+  militaryLabel = "organized suffering",
 }: MilitaryVsTrialsPieProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
@@ -112,7 +115,7 @@ export function MilitaryVsTrialsPie({
           textAnchor="middle"
           className="fill-brutal-red-foreground text-[9px] font-bold"
         >
-          Military
+          {militaryLabel}
         </text>
       </svg>
 
@@ -121,7 +124,7 @@ export function MilitaryVsTrialsPie({
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 bg-brutal-red border-2 border-primary" />
           <span className="text-xs font-black text-foreground">
-            Military {formatDollars(militaryDollars)}
+            {militaryLabel} {formatDollars(militaryDollars)}
           </span>
         </div>
         <div className="flex items-center gap-1">

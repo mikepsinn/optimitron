@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getMilitarySynonym } from "@/lib/messaging";
 
 interface PoliticianScore {
   bioguideId: string;
@@ -88,7 +89,7 @@ export function PoliticianScorecardTable({
           {systemWideRatio.toLocaleString()}:1
         </div>
         <p className="text-sm font-bold text-brutal-red-foreground">
-          Dollars on explosions per dollar testing which medicines work. If cancer had oil, you would have cured it by 2003.
+          Dollars on {getMilitarySynonym("table-ratio")} per dollar testing which medicines work. If cancer had oil, you would have cured it by 2003.
         </p>
       </div>
 
@@ -122,7 +123,7 @@ export function PoliticianScorecardTable({
                 Party{indicator("party")}
               </th>
               <th className={`${hdrClass} text-right`} onClick={() => handleSort("military")}>
-                Explosions ${indicator("military")}
+                {getMilitarySynonym("table-header")}{indicator("military")}
               </th>
               <th className={`${hdrClass} text-right`} onClick={() => handleSort("trials")}>
                 Testing Medicines{indicator("trials")}

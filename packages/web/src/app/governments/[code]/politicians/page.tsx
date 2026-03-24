@@ -12,6 +12,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES } from "@/lib/routes";
+import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -24,8 +25,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
   const gov = getGovernment(code.toUpperCase());
-  const title = `${gov?.name ?? code} Politicians — Explosions vs Cures | Optimitron`;
-  const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on explosions per dollar finding out if their medicines work.`;
+  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines | Optimitron`;
+  const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on ${getMilitarySynonym("politicians-meta-desc")} per dollar finding out which medicines work.`;
   return {
     title,
     description,
@@ -109,8 +110,8 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
         <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
           <Container>
             <SectionHeader
-              title="Explosions vs Testing Which Medicines Work"
-              subtitle={`Your politicians spend ${scorecardData.systemWideRatio.toLocaleString()} dollars on explosions for every 1 dollar finding out which medicines work. Fifty 9/11s worth of people die from disease every single day, except nobody invades anyone about it because diseases don't have oil.`}
+              title={`${getMilitarySynonymTitle("politicians-section-title")} vs Testing Medicines`}
+              subtitle={`Your politicians spend ${scorecardData.systemWideRatio.toLocaleString()} dollars on ${getMilitarySynonym("politicians-section-subtitle")} for every 1 dollar finding out which medicines work. Fifty 9/11s worth of people die from disease every single day, except nobody invades anyone about it because diseases don't have oil.`}
               size="lg"
             />
             <PoliticianScorecardTable

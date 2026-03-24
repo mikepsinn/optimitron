@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -72,7 +73,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
         {/* Stats */}
         <div style={{ display: "flex", gap: 32, marginTop: 32 }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#ef4444", textTransform: "uppercase" }}>Explosions</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#ef4444", textTransform: "uppercase" }}>{getMilitarySynonym(p.bioguideId + "-og-stat")}</div>
             <div style={{ fontSize: 40, fontWeight: 900, color: "#ef4444" }}>{fmt(p.militaryDollarsVotedFor)}</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#ef4444" }}>{milPct.toFixed(1)}%</div>
           </div>
@@ -135,7 +136,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
         <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#ef4444" }} />
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#aaa" }}>Explosions</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#aaa" }}>{getMilitarySynonymTitle(p.bioguideId + "-og-legend")}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#00D9FF" }} />
