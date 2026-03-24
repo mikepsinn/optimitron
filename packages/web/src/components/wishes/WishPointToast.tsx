@@ -69,14 +69,13 @@ export function WishPointToast({ amount, label, onDone }: WishPointToastProps) {
             animate={{
               y: 0,
               scale: [0, 1.4, 1],
-              rotate: [−180, 15, 0],
+              rotate: [-180, 15, 0],
             }}
             exit={{ y: -400, scale: 0.3, opacity: 0, rotate: 180 }}
             transition={{
               type: "spring",
               stiffness: 300,
               damping: 20,
-              exit: { duration: 0.5, ease: "easeIn" },
             }}
             className="relative"
           >

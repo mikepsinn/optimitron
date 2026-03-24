@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { AuthPostSigninSync } from "@/components/auth/AuthPostSigninSync";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Web3Provider } from "@/components/providers/Web3Provider";
+import { WishPointProvider } from "@/components/wishes/WishPointProvider";
 
 export function Providers({
   children,
@@ -18,8 +19,10 @@ export function Providers({
     <SessionProvider>
       <ThemeProvider>
         <Web3Provider initialState={initialState}>
-          <AuthPostSigninSync />
-          {children}
+          <WishPointProvider>
+            <AuthPostSigninSync />
+            {children}
+          </WishPointProvider>
         </Web3Provider>
       </ThemeProvider>
     </SessionProvider>

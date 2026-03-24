@@ -3,6 +3,8 @@ import { requireAuth } from "@/lib/auth-utils";
 import { isPersonhoodExternalIdConflict } from "@/lib/personhood.server";
 import { isWorldIdConfigured, verifyAndSaveWorldIdResult } from "@/lib/world-id.server";
 import type { WorldIdVerificationPayload } from "@/lib/world-id";
+import { grantWishes } from "@/lib/wishes.server";
+import { checkBadgesAfterWish } from "@/lib/badges.server";
 
 export const runtime = "nodejs";
 
@@ -17,9 +19,24 @@ export async function POST(request: Request) {
     const result = (await request.json()) as WorldIdVerificationPayload;
     const verification = await verifyAndSaveWorldIdResult(userId, result);
 
+    // Grant wish points for World ID verification
+    let wishesEarned = 0;
+    try {
+      const wishResult = await grantWishes({
+        userId,
+        reason: "WORLD_ID_VERIFICATION",
+        amount: 10,
+      });
+      if (wishResult) wishesEarned = wishResult.amount;
+      void checkBadgesAfterWish(userId, "WORLD_ID_VERIFICATION");
+    } catch (wishError) {
+      console.error("[WORLD ID VERIFY] Wish grant error:", wishError);
+    }
+
     return NextResponse.json({
       success: true,
       verification,
+      wishesEarned,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {

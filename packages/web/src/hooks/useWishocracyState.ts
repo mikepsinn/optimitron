@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { API_ROUTES } from "@/lib/api-routes";
 import { createLogger } from "@/lib/logger";
 import { storage } from "@/lib/storage";
@@ -22,6 +23,7 @@ const logger = createLogger("useWishocracyState");
 export function useWishocracyState() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
+  const { showWishReward } = useWishPoints();
   const authCardRef = useRef<HTMLDivElement>(null);
   const initializationKey = `${status}:${session?.user?.id ?? "guest"}`;
   const initializedKeyRef = useRef<string | null>(null);
@@ -138,6 +140,11 @@ export function useWishocracyState() {
 
         if (!response.ok) {
           logger.error("Failed to save allocation", await response.json());
+        } else {
+          const data = (await response.json().catch(() => null)) as { wishesEarned?: number } | null;
+          if (data?.wishesEarned) {
+            try { showWishReward(data.wishesEarned, "Budget Allocation"); } catch { /* noop */ }
+          }
         }
       } catch (error) {
         logger.error("Failed to save allocation", error);

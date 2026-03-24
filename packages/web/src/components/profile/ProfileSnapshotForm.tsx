@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { API_ROUTES } from "@/lib/api-routes";
+import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,6 +48,7 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { showWishReward } = useWishPoints();
 
   useEffect(() => {
     setFormState(toFormState(profile));
@@ -94,7 +96,7 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
       })
         .then(async (response) => {
           const payload = (await response.json().catch(() => null)) as
-            | { data?: ProfilePageData; error?: string }
+            | { data?: ProfilePageData; error?: string; wishesEarned?: number }
             | null;
 
           if (!response.ok || !payload?.data) {
@@ -103,6 +105,10 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
 
           onSaved(payload.data);
           setSuccess("Saved.");
+
+          if (payload.wishesEarned) {
+            try { showWishReward(payload.wishesEarned, "Census Data"); } catch { /* noop */ }
+          }
         })
         .catch((submitError) => {
           setError(

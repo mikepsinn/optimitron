@@ -4,6 +4,8 @@ import { requireAuth } from "@/lib/auth-utils";
 import { VotePosition } from "@optimitron/db";
 import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 import { serverEnv } from "@/lib/env";
+import { grantWishes } from "@/lib/wishes.server";
+import { checkBadgesAfterWish } from "@/lib/badges.server";
 
 export async function POST(
   request: Request,
@@ -116,7 +118,22 @@ export async function POST(
       console.error("[VOTE TOKEN MINT] Queue error:", mintError);
     }
 
-    return NextResponse.json({ vote, voteTokenMint });
+    // Grant wish points for voting
+    let wishesEarned = 0;
+    try {
+      const wishResult = await grantWishes({
+        userId,
+        reason: "REFERENDUM_VOTE",
+        amount: 2,
+        dedupeKey: referendum.id,
+      });
+      if (wishResult) wishesEarned = wishResult.amount;
+      void checkBadgesAfterWish(userId, "REFERENDUM_VOTE");
+    } catch (wishError) {
+      console.error("[REFERENDUM VOTE] Wish grant error:", wishError);
+    }
+
+    return NextResponse.json({ vote, voteTokenMint, wishesEarned });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

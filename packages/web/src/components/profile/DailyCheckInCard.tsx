@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { API_ROUTES } from "@/lib/api-routes";
+import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { AlertCard } from "@/components/ui/alert-card";
 import { AmountSelector } from "@/components/ui/amount-selector";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { showWishReward } = useWishPoints();
 
   useEffect(() => {
     setHealthRating(currentCheckIn.healthRating);
@@ -56,7 +58,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
       })
         .then(async (response) => {
           const payload = (await response.json().catch(() => null)) as
-            | { data?: ProfilePageData; error?: string }
+            | { data?: ProfilePageData; error?: string; wishesEarned?: number }
             | null;
 
           if (!response.ok || !payload?.data) {
@@ -65,6 +67,10 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
 
           onSaved(payload.data);
           setSuccess("Saved.");
+
+          if (payload.wishesEarned) {
+            try { showWishReward(payload.wishesEarned, "Daily Check-In"); } catch { /* noop */ }
+          }
         })
         .catch((submitError) => {
           setError(

@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import Link from "next/link";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
+import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
 import { getSignInPath } from "@/lib/routes";
 import { storage } from "@/lib/storage";
@@ -33,6 +34,7 @@ export function ReferendumVoteSection({
   const [error, setError] = useState<string | null>(null);
   const [mintQueued, setMintQueued] = useState(false);
   const { address } = useAccount();
+  const { showWishReward } = useWishPoints();
 
   // Store referral code for attribution at signup and vote time
   if (typeof window !== "undefined" && referralCode) {
@@ -62,9 +64,13 @@ export function ReferendumVoteSection({
         throw new Error(data.error ?? "Failed to cast vote");
       }
 
-      const result = (await res.json()) as { voteTokenMint?: unknown };
+      const result = (await res.json()) as { voteTokenMint?: unknown; wishesEarned?: number };
       if (result.voteTokenMint) {
         setMintQueued(true);
+      }
+
+      if (result.wishesEarned) {
+        try { showWishReward(result.wishesEarned, "Referendum Vote"); } catch { /* noop */ }
       }
 
       setAnswer(position);

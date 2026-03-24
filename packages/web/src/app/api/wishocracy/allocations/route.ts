@@ -8,6 +8,8 @@ import {
 } from "@/lib/wishocracy-community";
 import { serverEnv } from "@/lib/env";
 import { ensureWishocraticItemsExist } from "@/lib/wishocracy-catalog.server";
+import { grantWishes } from "@/lib/wishes.server";
+import { checkBadgesAfterWish } from "@/lib/badges.server";
 
 const logger = createLogger("api/wishocracy/allocations");
 
@@ -136,7 +138,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    // Grant wish points for allocation
+    let wishesEarned = 0;
+    try {
+      const wishResult = await grantWishes({
+        userId,
+        reason: "WISHOCRATIC_ALLOCATION",
+        amount: 2,
+      });
+      if (wishResult) wishesEarned = wishResult.amount;
+      void checkBadgesAfterWish(userId, "WISHOCRATIC_ALLOCATION");
+    } catch (wishError) {
+      console.error("[WISHOCRATIC ALLOCATION] Wish grant error:", wishError);
+    }
+
+    return NextResponse.json({ success: true, wishesEarned });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

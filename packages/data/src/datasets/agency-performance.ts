@@ -129,15 +129,17 @@ export const US_AGENCY_PERFORMANCE: AgencyPerformance[] = [
     emoji: "💊",
     countryCode: "US",
     mission: "Enforce controlled substance laws and reduce drug availability",
-    spendingLabel: "DEA Annual Budget (USD)",
+    spendingLabel: "Total Drug War Spending (ONDCP: DEA + enforcement + interdiction + incarceration)",
     spendingTimeSeries: [
-      { year: 2000, value: 1.5e9 }, { year: 2002, value: 1.7e9 },
-      { year: 2004, value: 1.9e9 }, { year: 2006, value: 2.1e9 },
-      { year: 2008, value: 2.4e9 }, { year: 2010, value: 2.6e9 },
-      { year: 2012, value: 2.9e9 }, { year: 2014, value: 2.9e9 },
-      { year: 2016, value: 3.1e9 }, { year: 2018, value: 3.1e9 },
-      { year: 2020, value: 3.2e9 }, { year: 2022, value: 3.3e9 },
-      { year: 2024, value: 3.5e9 },
+      // Source: ONDCP National Drug Control Budget. DEA is ~$3.5B of this.
+      // Includes DEA, interdiction, state/local enforcement, drug-related incarceration, treatment
+      { year: 2000, value: 18.5e9 }, { year: 2002, value: 19.2e9 },
+      { year: 2004, value: 22.5e9 }, { year: 2006, value: 25.2e9 },
+      { year: 2008, value: 28.0e9 }, { year: 2010, value: 31.0e9 },
+      { year: 2012, value: 33.0e9 }, { year: 2014, value: 35.0e9 },
+      { year: 2016, value: 38.0e9 }, { year: 2018, value: 40.0e9 },
+      { year: 2020, value: 42.0e9 }, { year: 2022, value: 44.2e9 },
+      { year: 2024, value: 47.0e9 },
     ],
     outcomes: [
       {
@@ -177,9 +179,10 @@ export const US_AGENCY_PERFORMANCE: AgencyPerformance[] = [
       { year: 2001, label: "Portugal decriminalizes all drugs. Drug deaths drop 80% over next decade. US doubles down on enforcement.", url: "https://www.emcdda.europa.eu/countries/drug-reports/2023/portugal_en" },
     ],
     grade: "F",
-    gradeRationale: "Budget doubled while overdose deaths increased 600%. The agency tasked with reducing drug deaths presided over the largest increase in drug deaths in human history.",
-    wishoniaQuote: "You spent three and a half billion dollars a year to make the drug problem six times worse. On my planet, we call that a subscription to failure.",
+    gradeRationale: "Total drug war spending grew from $18.5B to $47B/yr while overdose deaths went from 17,415 (2000) to 107,941 (2022) — a 520% increase. Since the DEA was created in 1973, deaths went from ~5,000 to 108,000 — roughly 20x worse.",
+    wishoniaQuote: "Forty-seven billion dollars a year — and overdose deaths are twenty times higher than when you started. Portugal decriminalized everything in 2001 and deaths dropped eighty percent. You are spending fifty billion a year to make the problem twenty times worse.",
     sources: [
+      { label: "ONDCP National Drug Control Budget", url: "https://www.whitehouse.gov/ondcp/" },
       { label: "DEA Budget (DOJ)", url: "https://www.justice.gov/dea/resource-center" },
       { label: "CDC WONDER Overdose Deaths", url: "https://wonder.cdc.gov/" },
     ],

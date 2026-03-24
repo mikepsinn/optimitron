@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useTransition } from "react";
 import { API_ROUTES } from "@/lib/api-routes";
+import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
   const [isRefreshing, startRefresh] = useTransition();
+  const { showWishReward } = useWishPoints();
   const worldIdEnabled = clientEnv.NEXT_PUBLIC_WORLD_ID_ENABLED !== "false";
   const sessionUser = session?.user;
   const isVerified = Boolean(sessionUser?.personhoodVerified);
@@ -99,10 +101,14 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
         },
         body: JSON.stringify(result),
       });
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as { error?: string; wishesEarned?: number } | null;
 
       if (!response.ok) {
         throw new Error(payload?.error ?? "World ID verification failed.");
+      }
+
+      if (payload?.wishesEarned) {
+        try { showWishReward(payload.wishesEarned, "Verified Personhood"); } catch { /* noop */ }
       }
     } catch (error) {
       setRequestError(
