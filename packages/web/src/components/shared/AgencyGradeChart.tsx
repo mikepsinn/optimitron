@@ -4,6 +4,13 @@ import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import type { AgencyPerformance, AgencyGrade } from "@optimitron/data";
 
+const OUTCOME_COLORS = [
+  "var(--brutal-pink)",
+  "var(--brutal-yellow)",
+  "#888",
+  "var(--brutal-red)",
+];
+
 const gradeColors: Record<AgencyGrade, string> = {
   A: "bg-brutal-cyan text-foreground",
   B: "bg-brutal-cyan text-foreground",
@@ -31,51 +38,75 @@ function formatCompact(value: number): string {
 interface AgencyGradeChartProps {
   agency: AgencyPerformance;
   compact?: boolean;
+  /** Show all outcome lines (default: just primary) */
+  showAllOutcomes?: boolean;
 }
 
-export function AgencyGradeChart({ agency, compact = false }: AgencyGradeChartProps) {
+export function AgencyGradeChart({
+  agency,
+  compact = false,
+  showAllOutcomes = false,
+}: AgencyGradeChartProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
   const reduced = useReducedMotion();
 
   const spend = agency.spendingTimeSeries;
-  const outcome = agency.outcomes[0]?.data ?? [];
-  if (spend.length < 2 || outcome.length < 2) return null;
+  const primaryOutcome = agency.outcomes[0];
+  if (!primaryOutcome || spend.length < 2 || primaryOutcome.data.length < 2) return null;
+
+  const outcomesToShow = showAllOutcomes ? agency.outcomes : [primaryOutcome];
 
   // SVG dimensions
-  const W = 320;
-  const H = compact ? 160 : 200;
-  const PAD = { top: 20, right: 50, bottom: 30, left: 55 };
+  const W = compact ? 320 : 400;
+  const H = compact ? 160 : 240;
+  const PAD = { top: 24, right: 50, bottom: 30, left: 55 };
   const plotW = W - PAD.left - PAD.right;
   const plotH = H - PAD.top - PAD.bottom;
 
-  // Combine year ranges
-  const allYears = [...spend.map((p) => p.year), ...outcome.map((p) => p.year)];
+  // Combine year ranges from all series
+  const allYears = [
+    ...spend.map((p) => p.year),
+    ...outcomesToShow.flatMap((o) => o.data.map((p) => p.year)),
+  ];
   const minYear = Math.min(...allYears);
   const maxYear = Math.max(...allYears);
+  const yearRange = maxYear - minYear || 1;
 
   const xScale = (year: number) =>
-    PAD.left + ((year - minYear) / (maxYear - minYear)) * plotW;
+    PAD.left + ((year - minYear) / yearRange) * plotW;
 
   // Spending scale (left axis)
   const spendMin = Math.min(...spend.map((p) => p.value));
   const spendMax = Math.max(...spend.map((p) => p.value));
+  const spendRange = (spendMax - spendMin) * 1.2 || 1;
+  const spendBase = spendMin - (spendMax - spendMin) * 0.1;
   const spendScale = (v: number) =>
-    PAD.top + plotH - ((v - spendMin * 0.8) / (spendMax * 1.1 - spendMin * 0.8)) * plotH;
+    PAD.top + plotH - ((v - spendBase) / spendRange) * plotH;
 
-  // Outcome scale (right axis)
-  const outcomeMin = Math.min(...outcome.map((p) => p.value));
-  const outcomeMax = Math.max(...outcome.map((p) => p.value));
+  // Primary outcome scale (right axis)
+  const outcomeMin = Math.min(...primaryOutcome.data.map((p) => p.value));
+  const outcomeMax = Math.max(...primaryOutcome.data.map((p) => p.value));
+  const outcomeRange = (outcomeMax - outcomeMin) * 1.2 || 1;
+  const outcomeBase = outcomeMin - (outcomeMax - outcomeMin) * 0.1;
   const outcomeScale = (v: number) =>
-    PAD.top + plotH - ((v - outcomeMin * 0.8) / (outcomeMax * 1.1 - outcomeMin * 0.8)) * plotH;
+    PAD.top + plotH - ((v - outcomeBase) / outcomeRange) * plotH;
 
   const spendPath = spend
     .map((p, i) => `${i === 0 ? "M" : "L"} ${xScale(p.year)} ${spendScale(p.value)}`)
     .join(" ");
 
-  const outcomePath = outcome
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${xScale(p.year)} ${outcomeScale(p.value)}`)
-    .join(" ");
+  // Build paths for all outcome lines (each uses primary scale for simplicity)
+  const outcomePaths = outcomesToShow.map((o) =>
+    o.data
+      .map((p, i) => `${i === 0 ? "M" : "L"} ${xScale(p.year)} ${outcomeScale(p.value)}`)
+      .join(" "),
+  );
+
+  // Annotations — filter to visible year range
+  const annotations = (agency.annotations ?? []).filter(
+    (a) => a.year >= minYear && a.year <= maxYear,
+  );
 
   return (
     <div
@@ -86,7 +117,7 @@ export function AgencyGradeChart({ agency, compact = false }: AgencyGradeChartPr
       <div className="flex items-start justify-between mb-2">
         <div className="flex-grow min-w-0">
           <h4 className="text-sm font-black uppercase text-foreground truncate">
-            {agency.agencyName}
+            {agency.emoji} {agency.agencyName}
           </h4>
           {!compact && (
             <p className="text-xs font-bold text-muted-foreground truncate">
@@ -102,7 +133,12 @@ export function AgencyGradeChart({ agency, compact = false }: AgencyGradeChartPr
       </div>
 
       {/* Chart */}
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`${agency.agencyName}: Grade ${agency.grade}`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full"
+        role="img"
+        aria-label={`${agency.agencyName}: Grade ${agency.grade}`}
+      >
         {/* Grid lines */}
         {[0, 0.25, 0.5, 0.75, 1].map((pct) => (
           <line
@@ -112,12 +148,40 @@ export function AgencyGradeChart({ agency, compact = false }: AgencyGradeChartPr
             x2={PAD.left + plotW}
             y2={PAD.top + plotH * (1 - pct)}
             stroke="currentColor"
-            strokeOpacity={0.1}
+            strokeOpacity={0.07}
             strokeDasharray="4 4"
           />
         ))}
 
-        {/* Spending line (blue-ish / muted) */}
+        {/* Annotation markers — vertical dashed lines with labels */}
+        {!compact &&
+          annotations.map((ann, i) => {
+            const x = xScale(ann.year);
+            return (
+              <g key={`ann-${i}`}>
+                <line
+                  x1={x}
+                  y1={PAD.top}
+                  x2={x}
+                  y2={PAD.top + plotH}
+                  stroke="var(--brutal-red)"
+                  strokeWidth={1}
+                  strokeDasharray="3 3"
+                  strokeOpacity={0.6}
+                />
+                <text
+                  x={x}
+                  y={PAD.top + 8 + (i % 3) * 8}
+                  textAnchor="middle"
+                  className="fill-brutal-red text-[6px] font-bold"
+                >
+                  {ann.year}
+                </text>
+              </g>
+            );
+          })}
+
+        {/* Spending line (cyan) */}
         <motion.path
           d={spendPath}
           fill="none"
@@ -130,49 +194,107 @@ export function AgencyGradeChart({ agency, compact = false }: AgencyGradeChartPr
           transition={{ duration: 1, delay: 0.2 }}
         />
 
-        {/* Outcome line (red / pink) */}
-        <motion.path
-          d={outcomePath}
-          fill="none"
-          stroke="var(--brutal-pink)"
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={reduced ? {} : { pathLength: 0 }}
-          animate={isInView ? { pathLength: 1 } : {}}
-          transition={{ duration: 1, delay: 0.5 }}
-        />
+        {/* Outcome lines */}
+        {outcomePaths.map((path, idx) => (
+          <motion.path
+            key={`outcome-${idx}`}
+            d={path}
+            fill="none"
+            stroke={OUTCOME_COLORS[idx % OUTCOME_COLORS.length]}
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={reduced ? {} : { pathLength: 0 }}
+            animate={isInView ? { pathLength: 1 } : {}}
+            transition={{ duration: 1, delay: 0.4 + idx * 0.2 }}
+          />
+        ))}
 
         {/* Year labels */}
-        <text x={xScale(minYear)} y={H - 5} textAnchor="start" className="fill-muted-foreground text-[9px] font-bold">
+        <text
+          x={xScale(minYear)}
+          y={H - 5}
+          textAnchor="start"
+          className="fill-muted-foreground text-[9px] font-bold"
+        >
           {minYear}
         </text>
-        <text x={xScale(maxYear)} y={H - 5} textAnchor="end" className="fill-muted-foreground text-[9px] font-bold">
+        <text
+          x={xScale(maxYear)}
+          y={H - 5}
+          textAnchor="end"
+          className="fill-muted-foreground text-[9px] font-bold"
+        >
           {maxYear}
         </text>
 
         {/* Left axis label (spending) */}
-        <text x={5} y={PAD.top + 4} textAnchor="start" className="fill-brutal-cyan text-[8px] font-black">
+        <text
+          x={5}
+          y={PAD.top + 4}
+          textAnchor="start"
+          className="fill-brutal-cyan text-[8px] font-black"
+        >
           {formatCompact(spendMax)}
         </text>
 
         {/* Right axis label (outcome) */}
-        <text x={W - 5} y={PAD.top + 4} textAnchor="end" className="fill-brutal-pink text-[8px] font-black">
+        <text
+          x={W - 5}
+          y={PAD.top + 4}
+          textAnchor="end"
+          className="fill-brutal-pink text-[8px] font-black"
+        >
           {formatCompact(outcomeMax)}
         </text>
       </svg>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-1">
+      <div className="flex flex-wrap items-center gap-3 mt-1">
         <div className="flex items-center gap-1">
           <div className="w-3 h-0.5 bg-brutal-cyan" />
-          <span className="text-[9px] font-bold text-muted-foreground">Spending</span>
+          <span className="text-[9px] font-bold text-muted-foreground">
+            {compact ? "Spending" : agency.spendingLabel}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-0.5 bg-brutal-pink" />
-          <span className="text-[9px] font-bold text-muted-foreground">Outcome</span>
-        </div>
+        {outcomesToShow.map((o, idx) => (
+          <div key={o.label} className="flex items-center gap-1">
+            <div
+              className="w-3 h-0.5"
+              style={{
+                backgroundColor:
+                  OUTCOME_COLORS[idx % OUTCOME_COLORS.length],
+              }}
+            />
+            <span className="text-[9px] font-bold text-muted-foreground">
+              {o.emoji} {compact ? "Outcome" : o.label}
+            </span>
+          </div>
+        ))}
       </div>
+
+      {/* Annotation list (non-compact only) */}
+      {!compact && annotations.length > 0 && (
+        <div className="mt-2 space-y-1">
+          {annotations.map((ann, i) => (
+            <p key={i} className="text-[9px] font-bold text-muted-foreground leading-tight">
+              <span className="text-brutal-red font-black">{ann.year}</span>{" "}
+              {ann.url ? (
+                <a
+                  href={ann.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-brutal-pink transition-colors"
+                >
+                  {ann.label} ↗
+                </a>
+              ) : (
+                ann.label
+              )}
+            </p>
+          ))}
+        </div>
+      )}
 
       {/* Rationale */}
       {!compact && (

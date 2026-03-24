@@ -6,12 +6,15 @@ import {
   getGovernment,
   getAgencyPerformance,
   getAgencyPerformanceByCountry,
+  getHistoricalTrend,
 } from "@optimitron/data";
 import type { AgencyGrade } from "@optimitron/data";
 import { GameCTA } from "@/components/ui/game-cta";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
+import { ROUTES } from "@/lib/routes";
 import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
+import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
 
 // ---------------------------------------------------------------------------
 // Wishonia replacement mapping
@@ -165,16 +168,33 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* Chart */}
+      {/* Chart — with all outcomes and annotations */}
       <section className="mb-12">
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
           Spending vs. Outcomes
         </h2>
-        <AgencyGradeChart agency={agency} />
-        <p className="text-base font-bold text-muted-foreground mt-4">
-          {agency.gradeRationale}
-        </p>
+        <AgencyGradeChart agency={agency} showAllOutcomes />
       </section>
+
+      {/* Historical Before/After (if data exists) */}
+      {(() => {
+        const historicalTrend = getHistoricalTrend(agency.agencyId);
+        if (!historicalTrend) return null;
+        return (
+          <section className="mb-12">
+            <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-2">
+              Before vs. After: Did It Change the Trend?
+            </h2>
+            <p className="text-base font-bold text-muted-foreground mb-4">
+              {historicalTrend.question}
+            </p>
+            <HistoricalTrendChart trend={historicalTrend} />
+            <p className="text-base font-bold text-muted-foreground mt-4">
+              {historicalTrend.finding}
+            </p>
+          </section>
+        );
+      })()}
 
       {/* Stats */}
       <section className="mb-12">
@@ -275,7 +295,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
             On a well-run planet, every agency is graded in real time and replaced
             when it fails. Here is the full roster.
           </p>
-          <GameCTA href="/agencies" variant="primary" size="lg">
+          <GameCTA href={ROUTES.agencies} variant="primary" size="lg">
             Wishonia&apos;s Agencies
           </GameCTA>
         </section>

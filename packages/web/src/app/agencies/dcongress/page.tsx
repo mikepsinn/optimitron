@@ -39,7 +39,7 @@ export default function DCongressPage() {
         href={ROUTES.agencies}
         className="text-sm font-black uppercase text-muted-foreground hover:text-brutal-pink transition-colors"
       >
-        &larr; Wishonia&apos;s Government
+        &larr; Optimized Governance
       </Link>
 
       <section className="mt-6 mb-12">

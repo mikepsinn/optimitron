@@ -10,7 +10,7 @@
  * @type {Array<{ source: string; destination: string; permanent: boolean }>}
  */
 const REDIRECTS = [
-  // Wishonia's Government — old top-level paths → new /agencies/* paths
+  // Optimized Governance — old top-level paths → new /agencies/* paths
   { source: "/wishocracy", destination: "/agencies/dcongress/wishocracy", permanent: true },
   { source: "/alignment", destination: "/agencies/dfec/alignment", permanent: true },
   { source: "/alignment/:id", destination: "/agencies/dfec/alignment/:id", permanent: true },

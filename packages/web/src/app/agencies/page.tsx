@@ -130,7 +130,7 @@ export default function AgenciesIndexPage() {
         <div className="max-w-3xl space-y-5">
           <ArcadeTag>{totalAgencies} Agencies</ArcadeTag>
           <h1 className="text-3xl font-black uppercase tracking-tight text-foreground md:text-5xl">
-            Wishonia&apos;s Government
+            Optimized Governance
           </h1>
           <p className="text-lg font-bold leading-relaxed text-foreground">
             On my planet, governance takes about four minutes a week. Nine

@@ -10,14 +10,14 @@ export function DeprecateCTA() {
       bgColor="red"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-        <GameCTA href="/prize" variant="secondary">
+        <GameCTA href={ROUTES.prize} variant="secondary">
           Fund the Referendum
         </GameCTA>
-        <GameCTA href={ROUTES.dtreasury} variant="outline">
-          See the Full System
+        <GameCTA href={ROUTES.agencies} variant="outline">
+          Optimized Governance
         </GameCTA>
-        <GameCTA href="/agencies" variant="outline">
-          All Deprecated Agencies
+        <GameCTA href={ROUTES.wishocracy} variant="outline">
+          Set Your Priorities
         </GameCTA>
       </div>
     </CTASection>

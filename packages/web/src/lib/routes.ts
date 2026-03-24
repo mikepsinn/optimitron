@@ -13,7 +13,7 @@ const poolMultiple = `${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x`;
 
 export const ROUTES = {
   home: "/",
-  // Wishonia's Government
+  // Optimized Governance
   agencies: "/agencies",
   dcongress: "/agencies/dcongress",
   wishocracy: "/agencies/dcongress/wishocracy",
@@ -186,7 +186,7 @@ export const referendumLink: NavItem = {
 
 export const agenciesLink: NavItem = {
   href: ROUTES.agencies,
-  label: "Wishonia's Government",
+  label: "Optimized Governance",
   emoji: "🏛️",
   description: "Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.",
   matchPrefixes: [ROUTES.agencies],
@@ -357,7 +357,7 @@ export interface NavSection {
 
 export const navSections: NavSection[] = [
   { id: "play", label: "Play", items: [wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
-  { id: "wishonia-gov", label: "Wishonia's Government", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
+  { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
   { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, studiesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
 ];

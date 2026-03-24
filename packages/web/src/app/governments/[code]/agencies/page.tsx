@@ -8,6 +8,7 @@ import {
 } from "@optimitron/data";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
+import { ROUTES } from "@/lib/routes";
 import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 
 interface PageProps {
@@ -101,8 +102,8 @@ export default async function AgenciesIndexPage({ params }: PageProps) {
           On a well-run planet, agencies are graded in real time and replaced
           when they fail. Here is what that looks like.
         </p>
-        <GameCTA href="/agencies" variant="secondary" size="lg">
-          Wishonia&apos;s Agencies
+        <GameCTA href={ROUTES.agencies} variant="secondary" size="lg">
+          Optimized Governance
         </GameCTA>
       </section>
     </div>
