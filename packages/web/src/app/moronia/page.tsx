@@ -4,7 +4,8 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES, moroniaLink } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { GlitchText, ScanLines, StaticBurst } from "@/components/animations/GlitchText";
-import { fmtParam } from "@/lib/format-parameter";
+import { PersonalIncomeChart } from "@/components/landing/PersonalIncomeChart";
+import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   GLOBAL_DISEASE_DEATHS_DAILY,
@@ -198,6 +199,25 @@ export default function MoroniaPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Income Projections — what you lose */}
+      <section className="mx-auto max-w-5xl px-4 py-24 sm:px-6 lg:px-8">
+        <h2 className="text-3xl sm:text-4xl font-black uppercase text-center mb-4">
+          <GlitchText className="text-red-400" intensity="low">
+            What You Lose, Personally
+          </GlitchText>
+        </h2>
+        <p className="text-center text-white/40 font-bold mb-12 max-w-2xl mx-auto">
+          Median household income under three scenarios. The gap between the
+          lines is what bad governance costs you.
+        </p>
+        <div className="border border-red-900/30 bg-red-950/10 backdrop-blur-sm p-6 mb-12">
+          <PersonalIncomeChart />
+        </div>
+        <div className="border border-red-900/30 bg-red-950/10 backdrop-blur-sm p-6">
+          <GdpTrajectoryChart />
         </div>
       </section>
 

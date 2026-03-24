@@ -90,17 +90,22 @@ Right now. With this code. Not in some theoretical future where humans have lear
 | What | How | Where |
 |------|-----|-------|
 | Fund the referendum | Deposit USDC, earn ~4.2x floor or prize share | [`/prize`](packages/web/) |
-| Express your budget preferences | 5-minute pairwise comparison survey | [`/wishocracy`](packages/web/) |
-| Score your politicians | Alignment reports vs your stated preferences | [`/alignment`](packages/web/) |
+| Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](packages/web/) |
+| Score your politicians | Alignment reports vs your stated preferences | [`/agencies/dfec/alignment`](packages/web/) |
+| Grade governments by outcomes | Every nation ranked by health, income, and freedom | [`/governments`](packages/web/) |
+| Browse the politician leaderboard | Voting records, alignment scores, campaign contributions | [`/politicians`](packages/web/) |
+| Vote on referendums | Direct democracy with World ID sybil resistance | [`/agencies/dcongress/referendums`](packages/web/) |
 | Vote on legislation | Cost-benefit analysis, representative lookup | [`/civic`](packages/web/) |
 | Compare countries | Health, education, drug policy, criminal justice | [`/compare`](packages/web/) |
-| Track your health | Import from 9 apps or do daily check-ins | [`@optimitron/data`](packages/data/) |
+| Submit health data | Import from 9 apps or transmit daily check-ins | [`/transmit`](packages/web/) |
 | Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optimitron/optimizer`](packages/optimizer/) |
-| Optimize a budget | Diminishing returns, overspend diagnostics | [`@optimitron/obg`](packages/obg/) |
+| Optimize a budget | 34+ categories, diminishing returns, overspend diagnostics | [`/agencies/domb`](packages/web/) |
+| Score policies | 12+ policies with Bradford Hill evidence grading | [`/agencies/dcbo`](packages/web/) |
 | Generate policy reports | Evidence-grade scoring, causal confidence | [`@optimitron/examples`](packages/examples/) |
 | Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optimitron/storage`](packages/storage/) |
+| Chat-based health tracking | NLP text-to-measurement parsing for symptoms, mood, food | [`@optimitron/chat-ui`](packages/chat-ui/) |
 
-Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 2,900+ tests across the workspace.
+Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 1,737+ tests across 8 packages.
 
 ---
 
@@ -149,25 +154,76 @@ The Next.js 15 app at `packages/web` is the primary user-facing product. Here's 
 
 | Page | Route | What It Does |
 |------|-------|-------------|
-| Earth Optimization Prize | `/prize` | Dominant assurance deposit + voter recruitment |
-| Wishocracy | `/wishocracy` | Pairwise budget preference surveys |
-| Alignment | `/alignment` | Politician alignment scoring and shareable reports |
-| Civic Hub | `/civic` | Bill voting, representative lookup, cost-benefit analysis |
-| Budget | `/budget` | Interactive US federal budget optimization |
-| Compare | `/compare` | International comparisons (health, drugs, education, justice) |
-| Referendum | `/referendum` | Direct democracy voting with World ID verification |
-| Scoreboard | `/scoreboard` | Politician rankings by alignment score |
-| Outcome Studies | `/outcomes` | Pair studies with Bradford Hill causal scores |
-| Discoveries | `/discoveries` | Population-level health insights |
-| Misconceptions | `/misconceptions` | Data-driven myth vs. reality database |
-| Money / $WISH | `/money` | $WISH token mechanics, UBI dashboard, transaction tax |
-| IABs | `/iab` | Phase 2 Incentive Alignment Bonds (not yet deployed) |
-| Department of War | `/department-of-war` | Military spending analysis and 1% Treaty case |
-| Federal Reserve | `/federal-reserve` | Monetary policy critique and historical failures |
-| Transparency | `/transparency` | Full pipeline: IPFS snapshots, Hypercerts, smart contracts |
-| Profile | `/profile` | Personal dashboard, census, daily check-ins |
+#### The Game
 
-Auth: Google OAuth, magic-link email, World ID. Referral system with VOTE token rewards.
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Earth Optimization Prize | `/prize` | Dominant assurance deposit + voter recruitment |
+| Humanity's Scoreboard | `/scoreboard` | GDP trajectory, collapse countdown, pool size, voter count |
+| Incentive Alignment Bonds | `/iab` | Phase 2 victory bonds (not yet deployed) |
+
+#### Optimized Governance Agencies (`/agencies`)
+
+Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Agencies Hub | `/agencies` | Overview of all optimized governance agencies |
+| dCongress - Wishocracy | `/agencies/dcongress/wishocracy` | Pairwise budget preference surveys (RAPPA) |
+| dCongress - Referendums | `/agencies/dcongress/referendums` | Direct democracy voting with World ID verification |
+| dFEC - Alignment | `/agencies/dfec/alignment` | Politician alignment scores and shareable report cards |
+| dCBO - Policy Scoring | `/agencies/dcbo` | 12+ policies scored via Bradford Hill causal evidence |
+| dOMB - Budget Optimization | `/agencies/domb` | 34+ budget categories, OBG engine, reallocation targets |
+| dGAO - Transparency & Audit | `/agencies/dgao` | IPFS snapshots, Hypercerts, smart contract verification |
+| dIH - Health Discoveries | `/agencies/dih/discoveries` | Population-level health insights from tracked data |
+| dTreasury - $WISH System | `/agencies/dtreasury` | $WISH token, transaction tax, UBI, wishocratic allocation |
+| dTreasury - dFED | `/agencies/dtreasury/dfed` | Monetary policy: transparent algorithm vs 12 guessers |
+| dTreasury - dIRS | `/agencies/dtreasury/dirs` | 0.5% transaction tax replacing 74,000-page tax code |
+| dTreasury - dSSA | `/agencies/dtreasury/dssa` | Universal Basic Income replacing 80+ welfare programs |
+| dDoD - Defense | `/agencies/ddod` | Military spending analysis and 1% Treaty case |
+| dCensus | `/agencies/dcensus` | Population and demographic data |
+
+#### Earth's Governments
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Government Report Cards | `/governments` | Every government ranked by outcomes (health, income, freedom) |
+| Politician Leaderboard | `/governments/US/politicians` | Politicians ranked by alignment score + voting records |
+
+#### Analysis
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Cross-Country Compare | `/compare` | International comparisons (health, drugs, education, justice) |
+| Misconceptions / Myth vs Data | `/misconceptions` | 15 data-driven myth-vs-reality analyses |
+| Studies / Outcomes | `/outcomes` | Pair studies with Bradford Hill causal scores |
+| Civic Hub | `/civic` | Bill voting, representative lookup, cost-benefit analysis |
+
+#### Player
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Data Transmit | `/transmit` | Health data submission - 9 importers (Apple Health, Fitbit, Oura, etc.) |
+| Dashboard | `/dashboard` | Referral link, badges, leaderboard rank, campaign control room |
+| Profile | `/profile` | Check-ins, census demographics, personal reports |
+
+#### Futures
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Wishonia | `/wishonia` | What 4,237 years of good governance looks like |
+| Moronia | `/moronia` | What happens when you spend more on weapons than cures |
+
+#### Meta
+
+| Page | Route | What It Does |
+|------|-------|-------------|
+| Tools | `/tools` | 18 tools for fixing civilisation |
+| Demo | `/demo` | Guided tour by Wishonia |
+| About | `/about` | What this is, why it exists, and why an alien had to build it |
+| Contribute | `/contribute` | How to help |
+
+Auth: Google OAuth, magic-link email, World ID. Referral system with VOTE point rewards.
 
 ---
 

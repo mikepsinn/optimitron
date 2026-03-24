@@ -2,6 +2,8 @@ import Image from "next/image";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES, wishoniaWorldLink } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
+import { PersonalIncomeChart } from "@/components/landing/PersonalIncomeChart";
+import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 
 export const metadata = getRouteMetadata(wishoniaWorldLink);
 
@@ -208,6 +210,23 @@ export default function WishoniaWorldPage() {
             The maths exists. The only missing variable is the decision to use
             them.
           </p>
+        </div>
+      </section>
+
+      {/* Income Projections */}
+      <section className="mx-auto max-w-5xl px-4 py-24 sm:px-6 lg:px-8">
+        <h2 className="text-3xl sm:text-4xl font-black uppercase text-center text-white mb-4">
+          What It Means For You, Personally
+        </h2>
+        <p className="text-center text-white/50 font-bold mb-12 max-w-2xl mx-auto">
+          Median household income under three scenarios. Same species. Same
+          starting point. Different governance.
+        </p>
+        <div className="border border-white/10 bg-white/5 backdrop-blur-sm p-6 rounded-lg mb-12">
+          <PersonalIncomeChart />
+        </div>
+        <div className="border border-white/10 bg-white/5 backdrop-blur-sm p-6 rounded-lg">
+          <GdpTrajectoryChart />
         </div>
       </section>
 
