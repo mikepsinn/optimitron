@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { DeprecatedAgencyPage } from "@/components/deprecated-agency/DeprecatedAgencyPage";
-import { getAgencyById } from "@/lib/deprecated-agencies-data";
+import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { getWishoniaAgency } from "@optimitron/data";
 import { fmtParam } from "@/lib/format-parameter";
 import {
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
@@ -11,7 +11,7 @@ import { getRouteMetadata } from "@/lib/metadata";
 
 export const metadata = getRouteMetadata(federalReserveLink);
 
-const agency = getAgencyById("dfed")!;
+const agency = getWishoniaAgency("dfed")!;
 
 const historicalCycles = [
   {
@@ -71,7 +71,7 @@ const beforeAfter1971 = {
 
 export default function DTreasuryDfedPage() {
   return (
-    <DeprecatedAgencyPage agency={agency}>
+    <WishoniaAgencyPage agency={agency}>
       {/* Back link */}
       <div className="mb-8">
         <Link
@@ -233,6 +233,6 @@ export default function DTreasuryDfedPage() {
           </div>
         </div>
       </section>
-    </DeprecatedAgencyPage>
+    </WishoniaAgencyPage>
   );
 }

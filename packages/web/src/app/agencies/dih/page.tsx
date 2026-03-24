@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { DeprecatedAgencyPage } from "@/components/deprecated-agency/DeprecatedAgencyPage";
-import { getAgencyById } from "@/lib/deprecated-agencies-data";
+import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { getWishoniaAgency } from "@optimitron/data";
 
-const agency = getAgencyById("dih")!;
+const agency = getWishoniaAgency("dih")!;
 
 export const metadata: Metadata = {
-  title: `${agency.dName}: ${agency.agencyName} — DEPRECATED | Optimitron`,
+  title: `${agency.dName}: ${agency.replacesAgencyName} — DEPRECATED | Optimitron`,
   description: agency.tagline,
 };
 
 export default function DIhPage() {
   return (
-    <DeprecatedAgencyPage agency={agency}>
+    <WishoniaAgencyPage agency={agency}>
       {/* Traditional vs Pragmatic Trials */}
       <section className="mb-16">
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
@@ -128,6 +128,6 @@ export default function DIhPage() {
           </div>
         </div>
       </section>
-    </DeprecatedAgencyPage>
+    </WishoniaAgencyPage>
   );
 }

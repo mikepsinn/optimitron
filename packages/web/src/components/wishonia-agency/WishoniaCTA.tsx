@@ -2,11 +2,11 @@ import { CTASection } from "@/components/ui/cta-section";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES } from "@/lib/routes";
 
-export function DeprecateCTA() {
+export function WishoniaCTA() {
   return (
     <CTASection
-      heading="Help Deprecate Them"
-      description="Every deprecated agency is one less thing standing between humanity and functional governance. Fund the referendum. See the full system. Set your priorities."
+      heading="See the Optimized Version"
+      description="Every Earth agency has a replacement that runs on code instead of bureaucracy. Fund the campaign. See the full system. Set your priorities."
       bgColor="red"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">

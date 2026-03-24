@@ -259,6 +259,72 @@ export const SEGMENTS: DemoSegment[] = [
     narration: `Eighteen tools. Policy generators. Budget optimisers. Causal inference engines. Health trackers. Outcome comparisons across a hundred jurisdictions. All free. All open source. Everything your species needs to run a civilisation that does not kill ${deathsDaily} people a day. Equip yourself.`,
   },
 
+  // ── AGENCY REPORT CARDS ─────────────────────────────────────────────────
+  {
+    id: "agencies-report-cards",
+    title: "Agency Report Cards",
+    componentId: "government-leaderboard",
+    bgColor: "background",
+    tags: ["evidence", "problem"],
+    narration: `We graded every US government agency on spending versus outcomes. Ten F's. Five D's. Two C's. One B. The EPA — the Environmental Protection Agency — is the only agency that demonstrably improves the thing it is supposed to improve. Every other agency either had no effect or made things worse. The DEA spent forty-seven billion a year and overdose deaths went up twenty times. The FDA's efficacy review has killed a hundred and two million people through delay. The Department of Education tripled its budget and test scores went down.`,
+  },
+  {
+    id: "agencies-drug-war",
+    title: "The Drug War",
+    componentId: "government-leaderboard",
+    bgColor: "foreground",
+    tags: ["evidence", "problem"],
+    narration: `Forty-seven billion dollars per year on the war on drugs. Overdose deaths have gone from five thousand when the DEA was created to a hundred and eight thousand at peak. That is a twenty-fold increase in the thing you are spending forty-seven billion dollars to prevent. Meanwhile, Portugal decriminalised all drugs in two thousand and one. Drug deaths dropped eighty percent. The data is not ambiguous.`,
+  },
+  {
+    id: "agencies-fda-graveyard",
+    title: "The Invisible Graveyard",
+    componentId: "tools",
+    bgColor: "foreground",
+    tags: ["evidence", "problem"],
+    narration: `The FDA requires eight point two years of efficacy testing after a drug has already been proven safe. Over sixty-two years, this delay has killed an estimated hundred and two million people. That is thirty-four thousand nine-elevens. Seventeen Holocausts. The drugs that did pass the review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. The total fines paid by those companies: thirty-nine billion. The total executives jailed: zero.`,
+  },
+  {
+    id: "agencies-money-printer",
+    title: "The Money Printer",
+    componentId: "scoreboard",
+    bgColor: "yellow",
+    tags: ["evidence", "problem", "financial"],
+    narration: `The Federal Reserve has destroyed ninety-seven percent of the dollar's purchasing power since it was created in nineteen thirteen. If wages had kept pace with gold, the median family would earn five hundred and twenty-eight thousand dollars per year. The actual number is seventy-seven thousand five hundred. The economy grew three point eight percent per year without a central bank. With one, it grows two point seven percent. Canada had zero bank failures during the Great Depression. Without a central bank. The United States had nine thousand. With one.`,
+  },
+  {
+    id: "agencies-government-lies",
+    title: "The Lies",
+    componentId: "tools",
+    bgColor: "foreground",
+    tags: ["evidence", "problem"],
+    narration: `Tuskegee — they told Black men they were getting free healthcare while deliberately withholding treatment for forty years. MK-Ultra — the CIA drugged thousands of citizens without consent. Gulf of Tonkin — fabricated an attack to justify Vietnam. Fifty-eight thousand Americans and two million Vietnamese civilians murdered based on a lie the NSA later admitted never happened. Iraq WMDs — fabricated evidence presented to the United Nations. Three hundred thousand Iraqi civilians murdered. Cost: two point four trillion dollars. The lies are not theories. They are declassified.`,
+  },
+  {
+    id: "agencies-ironic-laws",
+    title: "Laws Named Wrong",
+    componentId: "tools",
+    bgColor: "yellow",
+    tags: ["evidence", "problem"],
+    narration: `The Affordable Care Act — premiums increased a hundred and five percent. The Drug Free America Act — overdose deaths up six hundred percent. The Department of Defense — renamed from Department of War. Thirteen offensive wars since the rename. Zero defensive. The PATRIOT Act — warrantless surveillance of every American. The Fair Sentencing Act — reduced the crack sentencing disparity from a hundred to one down to eighteen to one. Not eliminated. Just slightly less racist. Your species names its laws the opposite of what they do.`,
+  },
+  {
+    id: "agencies-cia-coups",
+    title: "Regime Changes",
+    componentId: "government-leaderboard",
+    bgColor: "foreground",
+    tags: ["evidence", "problem"],
+    narration: `Ten democracies overthrown by the CIA. Iran nineteen fifty-three — for an oil company. Guatemala nineteen fifty-four — for a fruit company. Chile nineteen seventy-three — for a copper company. Indonesia nineteen sixty-five — five hundred thousand to one million people murdered with lists provided by the CIA. Afghanistan — funded the fighters who became the Taliban and Al-Qaeda. Then spent two point three trillion and twenty years fighting them. All declassified. All documented.`,
+  },
+  {
+    id: "agencies-corruption",
+    title: "The Corruption Machine",
+    componentId: "tools",
+    bgColor: "pink",
+    tags: ["evidence", "problem"],
+    narration: `The pharmaceutical industry spends three hundred and seventy-four million dollars per year lobbying Congress. In return, Medicare was banned from negotiating drug prices for twenty years. Insulin costs three dollars and sixty-nine cents to manufacture. It sells for three hundred dollars. Sixty-five percent of retiring members of Congress become lobbyists. Three of the last five FDA commissioners went to work for pharmaceutical companies. Members of Congress outperform the stock market by six to twelve percent. Zero have been criminally prosecuted for insider trading.`,
+  },
+
   // ── CLOSES ───────────────────────────────────────────────────────────────
   {
     id: "close-play-now",
@@ -320,17 +386,25 @@ export const PLAYLISTS: DemoPlaylist[] = [
   },
   {
     id: "full-demo",
-    name: "Full Demo (8 min)",
-    description: "Complete walkthrough of all features",
+    name: "Full Demo (12 min)",
+    description: "Complete walkthrough of all features + agency report cards + corruption data",
     segmentIds: [
       "hook-mortality",
       "hook-misaligned-ai",
       "game-scoreboard",
       "countries-leaderboard",
+      "agencies-report-cards",
+      "agencies-drug-war",
+      "agencies-fda-graveyard",
+      "agencies-money-printer",
       "game-the-question",
       "game-how-to-win",
       "game-how-to-play",
       "game-pluralistic-ignorance",
+      "agencies-government-lies",
+      "agencies-ironic-laws",
+      "agencies-cia-coups",
+      "agencies-corruption",
       "hook-parasitic-economy",
       "feature-wishocracy",
       "feature-alignment",
@@ -423,6 +497,48 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "close-play-now",
     ],
   },
+  // ── NEW YouTube Videos (from agency/corruption data) ───────────────────
+  {
+    id: "youtube-agency-grades",
+    name: "Agency Report Cards",
+    description: "Every US agency graded — 10 F's, 5 D's, 1 B",
+    segmentIds: [
+      "hook-misaligned-ai",
+      "agencies-report-cards",
+      "agencies-drug-war",
+      "agencies-fda-graveyard",
+      "close-play-now",
+    ],
+  },
+  {
+    id: "youtube-government-lies",
+    name: "Government Lies",
+    description: "Tuskegee, MK-Ultra, Gulf of Tonkin, WMDs — all declassified",
+    segmentIds: [
+      "agencies-government-lies",
+      "agencies-cia-coups",
+      "close-play-now",
+    ],
+  },
+  {
+    id: "youtube-money-printer",
+    name: "The Money Printer",
+    description: "97% purchasing power lost, $528K stolen per family, economy grew faster without the Fed",
+    segmentIds: [
+      "agencies-money-printer",
+      "agencies-corruption",
+      "close-play-now",
+    ],
+  },
+  {
+    id: "youtube-ironic-laws",
+    name: "Laws Named Wrong",
+    description: "Affordable Care Act, Drug Free America, Department of Defense — named the opposite of what they do",
+    segmentIds: [
+      "agencies-ironic-laws",
+      "close-play-now",
+    ],
+  },
   // ── Social Media Clips ─────────────────────────────────────────────────
   {
     id: "social-deaths",
@@ -453,6 +569,48 @@ export const PLAYLISTS: DemoPlaylist[] = [
     name: "You Can't Lose (30s)",
     description: "Prize downside protection",
     segmentIds: ["prize-no-downside"],
+  },
+  {
+    id: "social-drug-war",
+    name: "$47B Drug War (45s)",
+    description: "Spent $47B/yr, overdose deaths 20x worse",
+    segmentIds: ["agencies-drug-war"],
+  },
+  {
+    id: "social-fda-graveyard",
+    name: "102M Murdered by FDA (45s)",
+    description: "8.2-year efficacy lag, 102M dead",
+    segmentIds: ["agencies-fda-graveyard"],
+  },
+  {
+    id: "social-money-printer",
+    name: "97% Dollar Destroyed (45s)",
+    description: "$528K stolen per family since 1971",
+    segmentIds: ["agencies-money-printer"],
+  },
+  {
+    id: "social-government-lies",
+    name: "Declassified Lies (60s)",
+    description: "Tuskegee, MK-Ultra, Gulf of Tonkin, WMDs",
+    segmentIds: ["agencies-government-lies"],
+  },
+  {
+    id: "social-ironic-laws",
+    name: "Laws Named Wrong (45s)",
+    description: "Affordable Care Act premiums doubled",
+    segmentIds: ["agencies-ironic-laws"],
+  },
+  {
+    id: "social-cia-coups",
+    name: "10 Democracies Overthrown (60s)",
+    description: "CIA coups for corporate interests",
+    segmentIds: ["agencies-cia-coups"],
+  },
+  {
+    id: "social-corruption",
+    name: "The Corruption Machine (45s)",
+    description: "$374M pharma lobbying, insulin $3.69 to make, $300 to buy",
+    segmentIds: ["agencies-corruption"],
   },
 ];
 

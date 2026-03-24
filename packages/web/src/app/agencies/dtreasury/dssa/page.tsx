@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { DeprecatedAgencyPage } from "@/components/deprecated-agency/DeprecatedAgencyPage";
-import { getAgencyById } from "@/lib/deprecated-agencies-data";
+import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
+import { getWishoniaAgency } from "@optimitron/data";
 import { dssaLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
 export const metadata = getRouteMetadata(dssaLink);
 
-const agency = getAgencyById("dssa")!;
+const agency = getWishoniaAgency("dssa")!;
 
 const welfareProblems = [
   {
@@ -80,7 +80,7 @@ const comparisonData = {
 
 export default function DTreasuryDssaPage() {
   return (
-    <DeprecatedAgencyPage agency={agency}>
+    <WishoniaAgencyPage agency={agency}>
       {/* Back link */}
       <div className="mb-8">
         <Link
@@ -211,6 +211,6 @@ export default function DTreasuryDssaPage() {
           </p>
         </div>
       </section>
-    </DeprecatedAgencyPage>
+    </WishoniaAgencyPage>
   );
 }

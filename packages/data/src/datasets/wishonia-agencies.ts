@@ -1,42 +1,40 @@
-import type { StatCardProps } from "@/components/ui/stat-card";
+/**
+ * Wishonia's replacement agencies — pure data, no UI imports.
+ *
+ * Each entry describes a Wishonia digital agency that replaces one or more
+ * Earth government agencies, including the code that does the replacing.
+ */
 
-export interface DeprecatedAgency {
-  /** Short identifier, e.g. "dfed" */
+export interface WishoniaAgencyStat {
+  value: string;
+  label: string;
+  description?: string;
+  color?: "pink" | "cyan" | "yellow" | "green";
+}
+
+export interface WishoniaAgency {
   id: string;
-  /** Display name, e.g. "dFED" */
   dName: string;
-  /** Full agency name, e.g. "Federal Reserve System" */
-  agencyName: string;
-  /** Route path, e.g. "/agencies/dfed" */
-  href: string;
-  /** Wishonia one-liner for the hero */
+  replaces: string[];
+  replacesAgencyName: string;
   tagline: string;
-  /** Stats showing the cost of the current agency */
-  stats: StatCardProps[];
-  /** Header above the code block, e.g. "74,000 pages of tax code → 6 lines of Solidity" */
+  stats: WishoniaAgencyStat[];
   codeHeader: string;
-  /** The actual annotated code that replaces the agency */
   replacementCode: string;
-  /** Language for styling hint */
   codeLanguage: "solidity" | "typescript";
-  /** Plain-English explanation of what the code does */
   codeExplanation: string;
-  /** Big savings number */
   annualSavings: string;
-  /** Human-scale comparison */
   savingsComparison: string;
-  /** Closing Wishonia quote */
   wishoniaQuote: string;
-  /** Card color on index page */
   cardColor: "pink" | "cyan" | "yellow" | "green";
 }
 
-export const DEPRECATED_AGENCIES: DeprecatedAgency[] = [
+export const WISHONIA_AGENCIES: WishoniaAgency[] = [
   {
     id: "dfed",
     dName: "dFED",
-    agencyName: "Federal Reserve System",
-    href: "/agencies/dfed",
+    replaces: ["fed"],
+    replacesAgencyName: "Federal Reserve System",
     tagline:
       "Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation.",
     stats: [
@@ -91,8 +89,8 @@ constructor(
   {
     id: "dirs",
     dName: "dIRS",
-    agencyName: "Internal Revenue Service",
-    href: "/agencies/dirs",
+    replaces: ["irs"],
+    replacesAgencyName: "Internal Revenue Service",
     tagline:
       "Six lines of code. That's all it took.",
     stats: [
@@ -147,8 +145,8 @@ function _update(address from, address to, uint256 value) internal override {
   {
     id: "dssa",
     dName: "dSSA",
-    agencyName: "Social Security Administration + Welfare Bureaucracy",
-    href: "/agencies/dssa",
+    replaces: ["ssa"],
+    replacesAgencyName: "Social Security Administration + Welfare Bureaucracy",
     tagline:
       "You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators.",
     stats: [
@@ -202,8 +200,8 @@ function distributeUBI() external {                             // Anyone can ca
   {
     id: "dfec",
     dName: "dFEC",
-    agencyName: "Federal Election Commission + Campaign Finance System",
-    href: "/agencies/dfec",
+    replaces: ["fec"],
+    replacesAgencyName: "Federal Election Commission + Campaign Finance System",
     tagline:
       "Your politicians are funded by the people they're supposed to regulate. You call this 'campaign finance.' I call it 'bribery with extra steps.'",
     stats: [
@@ -260,8 +258,8 @@ function allocate(bytes32 jurisdiction, bytes32[] leaves,
   {
     id: "dgao",
     dName: "dGAO",
-    agencyName: "Government Accountability Office",
-    href: "/agencies/dgao",
+    replaces: ["gao"],
+    replacesAgencyName: "Government Accountability Office",
     tagline:
       "You pay 3,400 humans to audit a ledger that could audit itself. Then you wait eighteen months for the results.",
     stats: [
@@ -316,8 +314,8 @@ function allocate(bytes32 jurisdiction, bytes32[] leaves,
   {
     id: "dcbo",
     dName: "dCBO",
-    agencyName: "Congressional Budget Office",
-    href: "/agencies/dcbo",
+    replaces: ["cbo"],
+    replacesAgencyName: "Congressional Budget Office",
     tagline:
       "275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work.",
     stats: [
@@ -374,8 +372,8 @@ export function calculateWES(estimates: EffectEstimate[]): WESCalculationResult 
   {
     id: "domb",
     dName: "dOMB",
-    agencyName: "Office of Management and Budget",
-    href: "/agencies/domb",
+    replaces: ["omb"],
+    replacesAgencyName: "Office of Management and Budget",
     tagline:
       "535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone.",
     stats: [
@@ -432,8 +430,8 @@ function updateWeights(
   {
     id: "dcensus",
     dName: "dCensus",
-    agencyName: "United States Census Bureau",
-    href: "/agencies/dcensus",
+    replaces: ["census"],
+    replacesAgencyName: "United States Census Bureau",
     tagline:
       "You spend fourteen billion dollars to count everyone once every ten years. I return citizenCount() in fifty milliseconds.",
     stats: [
@@ -485,8 +483,8 @@ function citizenCount() external view returns (uint256) {
   {
     id: "dih",
     dName: "dIH",
-    agencyName: "National Institutes of Health",
-    href: "/agencies/dih",
+    replaces: ["nih", "fda", "hhs", "dea", "va"],
+    replacesAgencyName: "National Institutes of Health",
     tagline:
       "You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic.",
     stats: [
@@ -543,8 +541,8 @@ function allocateSubsidy(patient) {
   {
     id: "ddod",
     dName: "dDoD",
-    agencyName: "Department of Defense (née Department of War)",
-    href: "/agencies/ddod",
+    replaces: ["dod", "tsa", "state"],
+    replacesAgencyName: "Department of Defense (née Department of War)",
     tagline:
       "War is a negative-sum game and the spreadsheet agrees. We don't have a Department of War because — and I want to be precise here — war is fucking stupid.",
     stats: [
@@ -594,7 +592,16 @@ function allocateSubsidy(patient) {
   },
 ];
 
-/** Get a single agency by its ID */
-export function getAgencyById(id: string): DeprecatedAgency | undefined {
-  return DEPRECATED_AGENCIES.find((a) => a.id === id);
+const wishoniaAgencyMap = new Map(WISHONIA_AGENCIES.map(a => [a.id, a]));
+
+export function getWishoniaAgency(id: string): WishoniaAgency | undefined {
+  return wishoniaAgencyMap.get(id);
+}
+
+export function getWishoniaAgencies(): WishoniaAgency[] {
+  return WISHONIA_AGENCIES;
+}
+
+export function getWishoniaReplacementFor(earthAgencyId: string): WishoniaAgency | undefined {
+  return WISHONIA_AGENCIES.find(a => a.replaces.includes(earthAgencyId));
 }

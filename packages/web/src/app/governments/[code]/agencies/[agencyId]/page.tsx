@@ -17,33 +17,7 @@ import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
 import { StatCard } from "@/components/ui/stat-card";
 import { AgencySupplementarySections } from "@/components/shared/AgencySupplementarySections";
-import { getAgencyById } from "@/lib/deprecated-agencies-data";
-
-// ---------------------------------------------------------------------------
-// Wishonia replacement mapping
-// ---------------------------------------------------------------------------
-
-const wishoniaReplacements: Record<string, { href: string; label: string }> = {
-  dea: { href: "/agencies/dih", label: "dIH — Health & Research" },
-  nih: { href: "/agencies/dih", label: "dIH — Health & Research" },
-  fda: { href: "/agencies/dih", label: "dIH — Health & Research" },
-  doed: { href: "/agencies/domb", label: "dOMB — Budget Optimization" },
-  dod: { href: "/agencies/ddod", label: "dDoD — Defense" },
-  hhs: { href: "/agencies/dih", label: "dIH — Health & Research" },
-  ice: { href: "/agencies/dcensus", label: "dCensus — World ID" },
-  bop: { href: "/agencies/dcbo", label: "dCBO — Policy Scoring" },
-  epa: { href: "/agencies/dcbo", label: "dCBO — Policy Scoring" },
-  fbi: { href: "/agencies/dgao", label: "dGAO — Transparency & Audit" },
-  cyber: { href: "/agencies/dgao", label: "dGAO — Transparency & Audit" },
-};
-
-/** Maps AgencyPerformance IDs to DeprecatedAgency IDs for institutional stats */
-const deprecatedAgencyMapping: Record<string, string> = {
-  nih: "dih",
-  fda: "dih",
-  hhs: "dih",
-  dod: "ddod",
-};
+import { getWishoniaReplacementFor } from "@optimitron/data";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -146,9 +120,11 @@ export default async function AgencyDetailPage({ params }: PageProps) {
     ? trendDescription(outcomeSeries.data)
     : null;
 
-  const replacement = wishoniaReplacements[agency.agencyId];
-  const deprecatedId = deprecatedAgencyMapping[agency.agencyId];
-  const institutionalData = deprecatedId ? getAgencyById(deprecatedId) : undefined;
+  const wishoniaAgency = getWishoniaReplacementFor(agency.agencyId);
+  const replacement = wishoniaAgency
+    ? { href: `/agencies/${wishoniaAgency.id}`, label: `${wishoniaAgency.dName} — ${wishoniaAgency.replacesAgencyName}` }
+    : undefined;
+  const institutionalData = wishoniaAgency;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">

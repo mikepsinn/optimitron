@@ -1,25 +1,25 @@
 import { StatCardGrid } from "@/components/ui/stat-card";
-import type { DeprecatedAgency } from "@/lib/deprecated-agencies-data";
+import type { WishoniaAgency } from "@optimitron/data";
 import { AgencyStampHero } from "./AgencyStampHero";
 import { AnnotatedCodeBlock } from "./AnnotatedCodeBlock";
 import { SavingsImpact } from "./SavingsImpact";
-import { DeprecateCTA } from "./DeprecateCTA";
+import { WishoniaCTA } from "./WishoniaCTA";
 
-interface DeprecatedAgencyPageProps {
-  agency: DeprecatedAgency;
+interface WishoniaAgencyPageProps {
+  agency: WishoniaAgency;
   /** Optional extra content between stats and code (e.g. the dFED 1971 analysis) */
   children?: React.ReactNode;
 }
 
-export function DeprecatedAgencyPage({
+export function WishoniaAgencyPage({
   agency,
   children,
-}: DeprecatedAgencyPageProps) {
+}: WishoniaAgencyPageProps) {
   return (
     <div>
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         <AgencyStampHero
-          agencyName={agency.agencyName}
+          agencyName={agency.replacesAgencyName}
           dName={agency.dName}
           tagline={agency.tagline}
         />
@@ -49,7 +49,7 @@ export function DeprecatedAgencyPage({
         />
       </div>
 
-      <DeprecateCTA />
+      <WishoniaCTA />
     </div>
   );
 }
