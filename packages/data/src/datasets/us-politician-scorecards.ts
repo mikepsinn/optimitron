@@ -44,6 +44,10 @@ export interface PoliticianScorecard {
   chamber?: string;
   /** PRIMARY: $ military voted for / $ clinical trials voted for */
   militaryToTrialsRatio: number;
+  /** Military as % of (military + trials). e.g. 99.9% = almost all military */
+  militaryPctOfTotal: number;
+  /** Clinical trials as % of (military + trials). e.g. 0.1% */
+  trialsPctOfTotal: number;
   /** Grade: A = voted against military AND for trials. F = voted for all military. "—" = insufficient data */
   grade: "A" | "B" | "C" | "D" | "F" | "—";
   /** Total $ of military/destructive spending they voted FOR */
@@ -254,6 +258,8 @@ function computeScorecard(record: PoliticianRecord): PoliticianScorecard {
     }
   }
 
+  const total = destructiveDollars + clinicalTrialDollars;
+
   // 0 military + 0 trials = 1:1 (neutral). 0 military + any trials = 0 (perfect).
   const ratio = destructiveDollars === 0 && clinicalTrialDollars === 0
     ? 1
@@ -278,6 +284,8 @@ function computeScorecard(record: PoliticianRecord): PoliticianScorecard {
     district: record.district,
     chamber: record.chamber,
     militaryToTrialsRatio: ratio,
+    militaryPctOfTotal: total > 0 ? Math.round((destructiveDollars / total) * 1000) / 10 : 0,
+    trialsPctOfTotal: total > 0 ? Math.round((clinicalTrialDollars / total) * 1000) / 10 : 0,
     grade,
     destructiveDollarsVotedFor: destructiveDollars,
     clinicalTrialDollarsVotedFor: clinicalTrialDollars,
