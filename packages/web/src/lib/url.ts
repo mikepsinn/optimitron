@@ -14,10 +14,9 @@ export function getBaseUrl(): string {
   return "http://localhost:3001";
 }
 
-/** Build a wishocracy referral link: /agencies/dcongress/wishocracy?ref=identifier */
+/** Build a referral link: /r/identifier — clean URL, redirects to homepage with ref stored */
 export function buildReferralUrl(identifier?: string | null, baseUrl: string = getBaseUrl()): string {
-  const base = `${baseUrl}${ROUTES.wishocracy}`;
-  return identifier ? `${base}?ref=${identifier}` : base;
+  return identifier ? `${baseUrl}/r/${identifier}` : baseUrl;
 }
 
 export function buildUserReferralUrl(

@@ -10,15 +10,15 @@ import {
 import { ROUTES } from "@/lib/routes";
 
 describe("url helpers", () => {
-  it("builds referral links with ?ref= query param", () => {
+  it("builds clean referral links at /r/identifier", () => {
     expect(
       buildUserReferralUrl({ username: "jane", referralCode: "REF123" }, "https://example.com"),
-    ).toBe(`https://example.com${ROUTES.wishocracy}?ref=jane`);
+    ).toBe("https://example.com/r/jane");
     expect(buildReferralUrl("REF123", "https://example.com")).toBe(
-      `https://example.com${ROUTES.wishocracy}?ref=REF123`,
+      "https://example.com/r/REF123",
     );
     expect(buildReferralUrl(null, "https://example.com")).toBe(
-      `https://example.com${ROUTES.wishocracy}`,
+      "https://example.com",
     );
   });
 
