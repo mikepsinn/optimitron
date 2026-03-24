@@ -163,6 +163,13 @@ export {
   generateMarkdownReport,
 } from './report.js';
 
+// Shared report formatting utilities (used by opg and obg)
+export {
+  describeGrade,
+  fmt,
+  reportTimestamp,
+} from './report-utils.js';
+
 // Hypothesis-driven tests
 export {
   runHypothesisTestCase,

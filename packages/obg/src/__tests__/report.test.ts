@@ -274,7 +274,7 @@ describe('generateBudgetReport', () => {
     expect(report).toContain('Increase Education');
     expect(report).toContain('Decrease Military');
     expect(report).toContain('Priority: 100/100');
-    expect(report).toContain('Evidence: C (Moderate evidence)');
+    expect(report).toContain('Evidence: C (Possible association)');
     expect(report).toContain('Welfare 95% CI: Income +10.0% to +20.0%; Health +6.0% to +14.0%');
   });
 
