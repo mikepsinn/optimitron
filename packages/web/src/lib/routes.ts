@@ -133,7 +133,7 @@ export const moneyLink: NavItem = {
   href: ROUTES.money,
   label: "How Money Should Work",
   emoji: "💸",
-  description: "A currency that replaces the IRS, welfare, and inflation in one line of code. Your seventy-four-thousand-page tax code is not invited.",
+  description: "0.5% transaction tax, UBI, and wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.",
 };
 
 export const federalReserveLink: NavItem = {
@@ -205,7 +205,7 @@ export const dashboardLink: NavItem = {
   href: ROUTES.dashboard,
   label: "Dashboard",
   emoji: "📊",
-  description: "Your contribution receipt. Proof you played, in case anyone asks.",
+  description: "Your referral link, badges, leaderboard rank, and proof you played. The campaign control room.",
 };
 
 export const profileLink: NavItem = {
@@ -226,7 +226,7 @@ export const transparencyLink: NavItem = {
   href: ROUTES.transparency,
   label: "Transparency",
   emoji: "🔍",
-  description: "Every decision, content-addressed and impossible to quietly delete. Unlike your government's version.",
+  description: "Every attestation, every fund distribution — on IPFS, impossible to quietly delete. Unlike your government's version.",
 };
 
 export const toolsLink: NavItem = {
@@ -250,7 +250,7 @@ export const politicianLeaderboardLink: NavItem = {
   href: ROUTES.politicians,
   label: "Politician Leaderboard",
   emoji: "🏛️",
-  description: "A public receipt of every vote your representatives cast vs what you actually wanted.",
+  description: "How your representatives actually vote vs what you actually wanted. The receipts.",
   matchPrefixes: [ROUTES.politicians],
 };
 
@@ -258,7 +258,7 @@ export const scoreboardLink: NavItem = {
   href: ROUTES.scoreboard,
   label: "Humanity's Scoreboard",
   emoji: "🕹️",
-  description: "Two numbers. Healthy lifespan and median income. Everything else is a distraction.",
+  description: "Healthy lifespan and median income — the two numbers that matter. Plus the prize pool, voter count, and collapse countdown.",
   matchPrefixes: [ROUTES.scoreboard],
 };
 
