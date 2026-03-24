@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { GameCTA } from "@/components/ui/game-cta";
 import { fmtParam } from "@/lib/format-parameter";
 import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
@@ -10,6 +9,8 @@ import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdow
 import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 import { getGlobalVerifiedVoteCount } from "@/lib/verified-votes.server";
 import { prisma } from "@/lib/prisma";
+import { scoreboardLink } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
 
 async function getGameStats() {
   try {
@@ -42,11 +43,7 @@ async function getGameStats() {
   }
 }
 
-export const metadata: Metadata = {
-  title: "Scoreboard | The Earth Optimization Game",
-  description:
-    "Humanity's Scoreboard — live game metrics: global health, income, pool size, verified participants, and wishocratic allocations.",
-};
+export const metadata = getRouteMetadata(scoreboardLink);
 
 export default async function ScoreboardPage() {
   const stats = await getGameStats();

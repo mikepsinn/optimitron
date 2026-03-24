@@ -1,15 +1,12 @@
-import type { Metadata } from "next";
 import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
 import { GameCTA } from "@/components/ui/game-cta";
 import { fmtParam } from "@/lib/format-parameter";
 import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
+import { transparencyLink } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Transparency | Optimitron",
-  description:
-    "Every preference snapshot, alignment score, and fund distribution — content-addressed, verifiable, and impossible to quietly delete. Unlike most governance.",
-};
+export const metadata = getRouteMetadata(transparencyLink);
 
 const pipelineSteps = [
   {

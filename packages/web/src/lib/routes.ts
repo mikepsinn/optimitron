@@ -256,8 +256,8 @@ export const politicianLeaderboardLink: NavItem = {
 
 export const scoreboardLink: NavItem = {
   href: ROUTES.scoreboard,
-  label: "Scoreboard",
-  emoji: "📊",
+  label: "Humanity's Scoreboard",
+  emoji: "🕹️",
   description: "Two numbers. Healthy lifespan and median income. Everything else is a distraction.",
   matchPrefixes: [ROUTES.scoreboard],
 };

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { ItemCard, type ItemCardProps } from "@/components/ui/item-card";
@@ -15,13 +14,11 @@ import {
   trackLink,
   budgetLink,
   policiesLink,
+  toolsLink,
 } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "The Armory | The Earth Optimization Game",
-  description:
-    "Every weapon, scroll, and potion available to win the Earth Optimization Game. Equip yourself. Move the metrics.",
-};
+export const metadata = getRouteMetadata(toolsLink);
 
 /* ------------------------------------------------------------------ */
 /*  Shelf: a category of items (Weapons, Scrolls, Gold, Seals, Potions) */
