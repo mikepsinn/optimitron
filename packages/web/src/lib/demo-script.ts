@@ -130,6 +130,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "terminal",
     bgColor: "foreground",
     tags: ["hook"],
+    act: "I",
     narration: `Your government is a misaligned superintelligence. It controls trillions of dollars, billions of lives, and the allocation of your civilisation's entire productive capacity. And it is optimising for the wrong objective function.`,
   },
   {
@@ -138,6 +139,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "game-title",
     bgColor: "foreground",
     tags: ["hook"],
+    act: "I",
     narration: `The objective of the Earth Optimisation Game is to align it — to force it to reallocate resources away from things that make you poorer and deader, toward things that make you healthier and wealthier.`,
   },
   {
@@ -154,6 +156,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "military-pie",
     bgColor: "foreground",
     tags: ["hook", "problem"],
+    act: "I",
     narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
   },
   {
@@ -162,6 +165,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "collapse-clock",
     bgColor: "foreground",
     tags: ["problem"],
+    act: "I",
     narration: `The parasitic economy — cybercrime, rent-seeking, military spending — grows at fifteen percent per year. The productive economy grows at three percent. In fifteen years, it becomes more rational to steal than to produce. This is the clock.`,
   },
   {
@@ -170,6 +174,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "moronia",
     bgColor: "foreground",
     tags: ["problem"],
+    act: "turn",
     narration: `Moronia was a planet that spent ${milToTrialRatio} times more on weapons than on curing disease. It no longer exists. Their allocation ratio correlates with yours at ninety-four point seven percent.`,
   },
   {
@@ -178,6 +183,8 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "wishonia-slide",
     bgColor: "cyan",
     tags: ["solution"],
+    act: "turn",
+    scoreAdd: 0,
     narration: `Wishonia redirected one percent of its murder budget to clinical trials four thousand two hundred and ninety-seven years ago. That is where I am from. It is considerably nicer.`,
   },
   {
@@ -186,6 +193,9 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "one-percent-shift",
     bgColor: "yellow",
     tags: ["solution"],
+    act: "II-solution",
+    scoreAdd: 100_000,
+    inventoryAdd: { id: "treaty", name: "1% TREATY", icon: "\u{1F4DC}" },
     narration: `The fix is not complicated. Redirect one percent of global military spending — twenty-seven billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know.`,
   },
   {
@@ -194,6 +204,8 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "trial-acceleration",
     bgColor: "cyan",
     tags: ["solution", "evidence"],
+    act: "II-solution",
+    scoreAdd: 1_000_000,
     narration: `This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue} years. The maths is not in dispute.`,
   },
   {
@@ -202,6 +214,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "pluralistic-ignorance",
     bgColor: "background",
     tags: ["problem"],
+    act: "II-solution",
     narration: `The problem is not that nobody wants this. The problem is that everybody wants it but thinks nobody else will agree to it. This is called pluralistic ignorance, and it is your civilisation's most expensive bug.`,
   },
   {
@@ -210,6 +223,9 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "level-allocate",
     bgColor: "yellow",
     tags: ["mechanism", "cta"],
+    act: "II-game",
+    scoreAdd: 10_000_000,
+    inventoryAdd: { id: "allocation", name: "ALLOCATION", icon: "\u{1F5F3}" },
     narration: `Step one: allocate. Indicate your preferred share of spending devoted to weapons versus clinical trials. Compare budget priorities head-to-head. Ten comparisons. Eigenvector decomposition. The same maths invented in nineteen seventy-seven that your species mostly uses to rank American football teams.`,
   },
   {
@@ -218,6 +234,9 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "level-vote",
     bgColor: "pink",
     tags: ["mechanism", "cta"],
+    act: "II-game",
+    scoreAdd: 100_000_000,
+    inventoryAdd: { id: "vote", name: "VOTE", icon: "\u270A" },
     narration: `Step two: vote yes or no — should all governments redirect one percent of military spending to clinical trials?`,
   },
   {
@@ -226,6 +245,9 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "level-recruit",
     bgColor: "yellow",
     tags: ["mechanism", "cta"],
+    act: "II-game",
+    scoreAdd: 500_000_000,
+    inventoryAdd: { id: "referral", name: "REFERRAL LINK", icon: "\u{1F517}" },
     narration: `Step three: get your shareable URL. Every friend who votes through your link earns you alignment points. Your network becomes your lobby. Decentralised. No headquarters. No PAC. Just maths and peer pressure.`,
   },
   {
@@ -242,6 +264,9 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "government-leaderboard",
     bgColor: "background",
     tags: ["feature"],
+    act: "II-accountability",
+    scoreAdd: 3_000_000_000,
+    inventoryAdd: { id: "alignment", name: "ALIGNMENT SCORE", icon: "\u{1F50D}" },
     narration: `Every politician ranked by the ratio of spending they have voted for: mass murder capacity versus clinical trial funding. A single number. Public. Immutable. On-chain. Your leaders are not evil. They are just optimising for the wrong metric. We changed the metric.`,
   },
   {
@@ -258,6 +283,8 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "close",
     bgColor: "pink",
     tags: ["cta"],
+    act: "III",
+    scoreAdd: 8_000_000_000,
     narration: `Your governments are the most powerful artificial intelligences your species has ever built. They process more information, control more resources, and make more consequential decisions than any LLM. And they are misaligned. Optimitron. Alignment software for the most powerful AIs on your planet — the ones made of people.`,
   },
 
