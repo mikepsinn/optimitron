@@ -57,15 +57,15 @@ export function HeroSection() {
         >
           <motion.h1
             variants={wordVariants}
-            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-none tracking-tighter"
+            className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black uppercase leading-none tracking-widest neon-cyan"
           >
-            THE EARTH
+            ═══ THE EARTH ═══
           </motion.h1>
           <motion.h1
             variants={wordVariants}
-            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-none tracking-tighter"
+            className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black uppercase leading-none tracking-widest neon-green"
           >
-            OPTIMIZATION
+            ══ OPTIMIZATION ══
           </motion.h1>
           <motion.h1
             variants={gameVariants}
@@ -75,16 +75,16 @@ export function HeroSection() {
               transition: { duration: 0.5, ease: "linear" },
             }}
             whileTap={{ scale: 0.9, rotate: -10 }}
-            className="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase leading-none tracking-tighter text-brutal-pink cursor-pointer"
+            className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-none tracking-widest neon-pink cursor-pointer"
           >
-            GAME.
+            ★★★ GAME ★★★
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-6 text-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold max-w-4xl leading-tight"
+            className="mt-6 text-center text-[10px] sm:text-xs md:text-sm font-bold max-w-4xl leading-relaxed text-arcade-yellow"
           >
             {TAGLINES.gameObjective}
           </motion.p>
@@ -93,9 +93,9 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-3 text-center text-base sm:text-lg md:text-xl font-bold text-muted-foreground max-w-3xl leading-tight"
+            className="mt-3 text-center text-[9px] sm:text-[10px] md:text-xs font-bold text-arcade-cyan max-w-3xl leading-relaxed"
           >
-            {TAGLINES.alignTheSuperintelligence} Vote. Share. Win.
+            {TAGLINES.alignTheSuperintelligence} VOTE ► SHARE ► WIN
           </motion.p>
 
           <motion.div
@@ -116,9 +116,9 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.9 }}
-            className="mt-4 text-lg sm:text-xl font-black text-muted-foreground uppercase"
+            className="mt-4 text-[9px] sm:text-[10px] font-black text-arcade-green uppercase insert-coin"
           >
-            Free. 30 seconds. No catch.
+            ▶ FREE ▶ 30 SEC ▶ NO CATCH ◀
           </motion.p>
         </motion.div>
       </Container>

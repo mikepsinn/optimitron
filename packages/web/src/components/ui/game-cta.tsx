@@ -3,21 +3,21 @@ import { CTA } from "@/lib/messaging";
 
 const variants = {
   primary:
-    "bg-brutal-pink text-brutal-pink-foreground",
+    "bg-arcade-pink text-black neon-box-pink",
   secondary:
-    "bg-foreground text-background",
+    "bg-arcade-green text-black neon-box-green",
   outline:
-    "bg-background text-foreground",
+    "bg-background text-arcade-green border-arcade-green neon-box-green",
   yellow:
-    "bg-brutal-yellow text-foreground",
+    "bg-arcade-yellow text-black neon-box-yellow",
   cyan:
-    "bg-brutal-cyan text-foreground",
+    "bg-arcade-cyan text-black neon-box-cyan",
 } as const;
 
 const sizes = {
-  sm: "px-4 py-2 text-xs",
-  md: "px-6 py-3 text-sm",
-  lg: "px-8 py-3.5 text-lg",
+  sm: "px-4 py-2 text-[8px]",
+  md: "px-6 py-3 text-[9px]",
+  lg: "px-8 py-3.5 text-[10px]",
 } as const;
 
 interface GameCTAProps {
@@ -55,12 +55,10 @@ export function GameCTA({
   const baseClasses = [
     "inline-flex items-center justify-center gap-2",
     "font-[family-name:var(--font-arcade)]",
-    "font-black uppercase",
-    "border-4 border-primary",
-    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-    "hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]",
-    "hover:translate-x-[-2px] hover:translate-y-[-2px]",
-    "transition-all",
+    "font-black uppercase tracking-wider",
+    "border-2",
+    "hover:scale-105 active:scale-95",
+    "transition-all duration-150",
     variants[variant],
     sizes[size],
     className,

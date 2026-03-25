@@ -10,25 +10,25 @@ export function getNavItemLinkClasses(
 ): string {
   switch (variant) {
     case "topNav":
-      return `text-sm font-bold uppercase px-3 py-2 border-2 transition-all block ${
+      return `text-[9px] font-bold uppercase px-3 py-2 border transition-all block ${
         isActive
-          ? "border-primary bg-background text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          : "border-transparent text-foreground hover:border-primary hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          ? "border-arcade-cyan bg-arcade-cyan/10 text-arcade-cyan"
+          : "border-transparent text-arcade-green hover:border-arcade-pink hover:text-arcade-pink"
       }`;
     case "dropdown":
       return `block px-4 py-3 transition-colors ${
         isActive
-          ? "bg-brutal-yellow text-foreground"
-          : "text-foreground hover:bg-brutal-cyan"
+          ? "bg-arcade-yellow/20 text-arcade-yellow"
+          : "text-arcade-green hover:bg-arcade-cyan/20 hover:text-arcade-cyan"
       }`;
     case "mobile":
-      return `block px-3 py-2 border-2 transition-all ${
+      return `block px-3 py-2 border transition-all ${
         isActive
-          ? "border-primary bg-brutal-yellow text-foreground"
-          : "border-transparent text-foreground hover:border-primary hover:bg-brutal-cyan"
+          ? "border-arcade-cyan bg-arcade-cyan/10 text-arcade-cyan"
+          : "border-transparent text-arcade-green hover:border-arcade-pink hover:text-arcade-pink"
       }`;
     case "footer":
-      return "text-sm font-bold text-foreground hover:text-foreground transition-colors";
+      return "text-[8px] font-bold text-arcade-green hover:text-arcade-cyan transition-colors";
     case "custom":
       return "";
   }
@@ -51,10 +51,10 @@ export function getNavItemDescriptionMode(
 
 function getTooltipClasses(variant: NavItemLinkVariant): string {
   if (variant === "topNav") {
-    return "pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-52 rounded border-4 border-primary bg-background px-3 py-2 text-xs font-bold text-foreground opacity-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-opacity group-hover:opacity-100 z-50 normal-case";
+    return "pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-52 border-2 border-arcade-green bg-background px-3 py-2 text-[8px] font-bold text-arcade-green opacity-0 neon-box-green transition-opacity group-hover:opacity-100 z-50 normal-case";
   }
 
-  return "pointer-events-none absolute left-0 bottom-full mb-2 w-52 rounded border-4 border-primary bg-background px-3 py-2 text-xs font-bold text-foreground opacity-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-opacity group-hover:opacity-100 z-10";
+  return "pointer-events-none absolute left-0 bottom-full mb-2 w-52 border-2 border-arcade-green bg-background px-3 py-2 text-[8px] font-bold text-arcade-green opacity-0 neon-box-green transition-opacity group-hover:opacity-100 z-10";
 }
 
 function renderLabel(
@@ -65,15 +65,15 @@ function renderLabel(
   if (variant === "dropdown" || variant === "mobile") {
     return (
       <>
-        <span className="flex items-center gap-2 text-sm font-bold uppercase">
+        <span className="flex items-center gap-2 text-[9px] font-bold uppercase">
           {item.emoji ? <span>{item.emoji}</span> : null}
           <span>
-            {item.label}
+            ► {item.label}
             {external ? " ↗" : ""}
           </span>
         </span>
         {item.description ? (
-          <span className="mt-0.5 block text-xs text-muted-foreground normal-case">
+          <span className="mt-0.5 block text-[8px] text-arcade-green/70 normal-case">
             {item.description}
           </span>
         ) : null}

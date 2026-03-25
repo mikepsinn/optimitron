@@ -44,66 +44,73 @@ export const metadata: Metadata = {
 const productWorkflows = [
   {
     item: prizeLink,
-    label: "Game",
-    title: "Play the Earth Optimization Game",
+    label: "GAME",
+    title: "PLAY THE EARTH OPTIMIZATION GAME",
     description:
-      "Deposit USDC. Recruit verified voters. Earn VOTE points. The only way to lose is to not play.",
+      "DEPOSIT USDC. RECRUIT VERIFIED VOTERS. EARN VOTE POINTS. THE ONLY WAY TO LOSE IS TO NOT PLAY.",
     cta: CTA.playTheGame,
-    color: "bg-brutal-pink",
+    color: "neon-box-pink border-arcade-pink",
+    textColor: "neon-pink",
   },
   {
     item: scoreboardLink,
-    label: "Scoreboard",
-    title: "Humanity's Scoreboard",
+    label: "SCOREBOARD",
+    title: "HUMANITY'S SCOREBOARD",
     description:
-      "Live game metrics: health, income, pool size, verified participants. The coalition size, visible to everyone.",
+      "LIVE GAME METRICS: HEALTH, INCOME, POOL SIZE, VERIFIED PARTICIPANTS. THE COALITION SIZE, VISIBLE TO EVERYONE.",
     cta: CTA.viewScoreboard,
-    color: "bg-brutal-cyan",
+    color: "neon-box-cyan border-arcade-cyan",
+    textColor: "neon-cyan",
   },
   {
     item: wishocracyLink,
-    label: "Wishocracy",
-    title: "Build your ideal budget",
+    label: "WISHOCRACY",
+    title: "BUILD YOUR IDEAL BUDGET",
     description:
-      "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Sneaky, isn't it?",
+      "PICK BETWEEN TWO THINGS. THEN TWO MORE. BEFORE YOU KNOW IT, YOU'VE DESIGNED A COHERENT BUDGET. SNEAKY, ISN'T IT?",
     cta: CTA.startVoting,
-    color: "bg-brutal-yellow",
+    color: "neon-box-yellow border-arcade-yellow",
+    textColor: "neon-yellow",
   },
   {
     item: alignmentLink,
-    label: "Alignment",
-    title: "Who actually agrees with you?",
+    label: "ALIGNMENT",
+    title: "WHO ACTUALLY AGREES WITH YOU?",
     description:
-      "Compare your priorities against real politician voting records. Spoiler: it's not who you think.",
+      "COMPARE YOUR PRIORITIES AGAINST REAL POLITICIAN VOTING RECORDS. SPOILER: IT'S NOT WHO YOU THINK.",
     cta: CTA.checkAlignment,
-    color: "bg-brutal-cyan",
+    color: "neon-box-green border-arcade-green",
+    textColor: "neon-green",
   },
   {
     item: trackLink,
-    label: "Wishonia",
-    title: "Chat with an alien",
+    label: "WISHONIA",
+    title: "CHAT WITH AN ALIEN",
     description:
-      "Track health, meals, mood, and habits with an alien who's been running a planet for 4,237 years.",
+      "TRACK HEALTH, MEALS, MOOD, AND HABITS WITH AN ALIEN WHO'S BEEN RUNNING A PLANET FOR 4,237 YEARS.",
     cta: CTA.openChat,
-    color: "bg-brutal-cyan",
+    color: "neon-box-cyan border-arcade-cyan",
+    textColor: "neon-cyan",
   },
   {
     item: studiesLink,
-    label: "Studies",
-    title: "Look at the actual numbers",
+    label: "STUDIES",
+    title: "LOOK AT THE ACTUAL NUMBERS",
     description:
-      "Outcome hubs, pair studies, policy rankings, country comparisons. All evidence, no vibes.",
+      "OUTCOME HUBS, PAIR STUDIES, POLICY RANKINGS, COUNTRY COMPARISONS. ALL EVIDENCE, NO VIBES.",
     cta: CTA.browseStudies,
-    color: "bg-brutal-yellow",
+    color: "neon-box-yellow border-arcade-yellow",
+    textColor: "neon-yellow",
   },
   {
     item: misconceptionsLink,
-    label: "Myth vs Data",
-    title: "Things your government got wrong",
+    label: "MYTH VS DATA",
+    title: "THINGS YOUR GOVERNMENT GOT WRONG",
     description:
-      "War on Drugs, healthcare spending, abstinence education — graded against real data.",
+      "WAR ON DRUGS, HEALTHCARE SPENDING, ABSTINENCE EDUCATION — GRADED AGAINST REAL DATA.",
     cta: CTA.seeTheMmyths,
-    color: "bg-brutal-pink",
+    color: "neon-box-pink border-arcade-pink",
+    textColor: "neon-pink",
   },
 ];
 
@@ -140,23 +147,23 @@ export default function Home() {
             {productWorkflows.map((workflow) => (
               <div
                 key={workflow.title}
-                className={`p-6 border-4 border-primary ${workflow.color} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all`}
+                className={`p-6 border-2 bg-background ${workflow.color} flex flex-col hover:scale-[1.02] transition-all`}
               >
-                <div className="text-xs font-black px-2.5 py-1 bg-foreground text-background inline-block self-start mb-4 uppercase">
-                  {workflow.label}
+                <div className="text-[8px] font-black px-2.5 py-1 bg-arcade-green text-black inline-block self-start mb-4 uppercase">
+                  ► {workflow.label}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">
+                <h3 className={`text-xs sm:text-sm font-black mb-3 ${workflow.textColor}`}>
                   {workflow.title}
                 </h3>
-                <p className="text-base sm:text-lg text-foreground leading-relaxed font-bold flex-grow">
+                <p className="text-[8px] sm:text-[9px] text-arcade-green leading-relaxed font-bold flex-grow">
                   {workflow.description}
                 </p>
                 <NavItemLink
                   item={workflow.item}
                   variant="custom"
-                  className="mt-6 inline-flex items-center text-sm font-black text-foreground uppercase hover:text-brutal-pink transition-colors"
+                  className="mt-6 inline-flex items-center text-[9px] font-black text-arcade-cyan uppercase hover:text-arcade-pink transition-colors"
                 >
-                  {workflow.cta} &rarr;
+                  {workflow.cta} ►
                 </NavItemLink>
               </div>
             ))}
@@ -166,9 +173,9 @@ export default function Home() {
             <NavItemLink
               item={toolsLink}
               variant="custom"
-              className="text-lg font-black text-foreground uppercase hover:text-brutal-pink transition-colors"
+              className="text-[10px] font-black text-arcade-yellow uppercase hover:text-arcade-pink transition-colors insert-coin"
             >
-              Want more tools? Visit The Armory &rarr;
+              ► WANT MORE TOOLS? VISIT THE ARMORY ◄
             </NavItemLink>
           </div>
         </Container>

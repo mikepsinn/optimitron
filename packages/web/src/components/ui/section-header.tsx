@@ -14,18 +14,18 @@ export interface SectionHeaderProps {
 
 const sizeClasses: Record<SectionHeaderSize, { title: string; subtitle: string; spacing: string }> = {
   sm: {
-    title: "text-2xl md:text-3xl",
-    subtitle: "text-base",
+    title: "text-sm md:text-base neon-cyan",
+    subtitle: "text-[9px] text-arcade-green",
     spacing: "mb-6",
   },
   md: {
-    title: "text-3xl md:text-4xl",
-    subtitle: "text-lg",
+    title: "text-base md:text-lg neon-cyan",
+    subtitle: "text-[9px] sm:text-[10px] text-arcade-green",
     spacing: "mb-8",
   },
   lg: {
-    title: "text-3xl sm:text-4xl md:text-5xl",
-    subtitle: "text-lg sm:text-xl",
+    title: "text-lg sm:text-xl md:text-2xl neon-pink",
+    subtitle: "text-[9px] sm:text-[10px] text-arcade-yellow",
     spacing: "mb-12",
   },
 }
@@ -41,11 +41,11 @@ export function SectionHeader({
 
   return (
     <div className={cn(sizes.spacing, centered && "text-center", className)}>
-      <h2 className={cn(sizes.title, "font-black uppercase mb-4")}>
-        {title}
+      <h2 className={cn(sizes.title, "font-black uppercase tracking-wider mb-4")}>
+        ═══ {title} ═══
       </h2>
       {subtitle && (
-        <p className={cn(sizes.subtitle, "font-bold", centered && "max-w-3xl mx-auto")}>
+        <p className={cn(sizes.subtitle, "font-bold leading-relaxed", centered && "max-w-3xl mx-auto")}>
           {subtitle}
         </p>
       )}

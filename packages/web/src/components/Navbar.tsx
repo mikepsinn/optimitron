@@ -48,13 +48,13 @@ function AvatarButton({
   return (
     <Link
       href={href}
-      className="flex items-center justify-center w-10 h-10 border-4 border-primary bg-brutal-cyan hover:bg-primary hover:text-primary-foreground font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all rounded-full"
+      className="flex items-center justify-center w-10 h-10 border-2 border-arcade-cyan bg-background hover:bg-arcade-cyan hover:text-black font-black transition-all neon-box-cyan"
       title={isAuthenticated ? "Profile" : "Sign In"}
     >
       {initial ? (
-        <span className="text-lg font-black uppercase">{initial}</span>
+        <span className="text-xs font-black uppercase">{initial}</span>
       ) : (
-        <User className="h-5 w-5 stroke-[3px]" />
+        <User className="h-4 w-4 stroke-[3px]" />
       )}
     </Link>
   );
@@ -68,16 +68,16 @@ export default function Navbar() {
   const user = session?.user ?? null;
 
   return (
-    <nav className="sticky top-0 z-50 border-b-4 border-primary bg-brutal-yellow">
+    <nav className="sticky top-0 z-50 border-b-4 border-arcade-green bg-background neon-box-green">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link
             href={ROUTES.home}
-            className="text-xl font-black uppercase tracking-tight text-foreground hover:underline decoration-4"
+            className="text-xs sm:text-sm font-black uppercase tracking-wider neon-cyan hover:neon-pink transition-all"
           >
-            <span className="sm:hidden">Optimitron</span>
-            <span className="hidden sm:inline">⚡ Optimitron</span>
+            <span className="sm:hidden">OPTIMITRON</span>
+            <span className="hidden sm:inline">▶ OPTIMITRON ◀</span>
           </Link>
 
           {/* Right side: Avatar + Hamburger */}
@@ -88,16 +88,16 @@ export default function Navbar() {
               <SheetTrigger asChild>
                 <button
                   type="button"
-                  className="border-4 border-primary bg-background p-2 hover:bg-foreground hover:text-background font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
+                  className="border-2 border-arcade-pink bg-background p-2 hover:bg-arcade-pink hover:text-black font-black transition-all neon-box-pink"
                   aria-label="Open menu"
                 >
-                  <Menu className="h-5 w-5 stroke-[3px]" />
+                  <Menu className="h-4 w-4 stroke-[3px]" />
                 </button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="overflow-y-auto">
-                <SheetTitle className="text-xl font-black uppercase tracking-tight border-b-4 border-primary pb-3 mb-4">
-                  Navigation
+              <SheetContent side="right" className="overflow-y-auto bg-background border-l-2 border-arcade-green neon-box-green">
+                <SheetTitle className="text-sm font-black uppercase tracking-wider border-b-2 border-arcade-cyan pb-3 mb-4 neon-cyan">
+                  ▶ SELECT LEVEL ◀
                 </SheetTitle>
                 <SheetDescription className="sr-only">
                   Site navigation menu
@@ -105,9 +105,9 @@ export default function Navbar() {
 
                 <Accordion type="multiple" defaultValue={navSections.map((s) => s.id)} className="w-full">
                   {navSections.map((section) => (
-                    <AccordionItem key={section.id} value={section.id} className="border-b-2 border-primary">
-                      <AccordionTrigger className="text-sm font-black uppercase tracking-wide py-3 hover:no-underline">
-                        {section.label}
+                    <AccordionItem key={section.id} value={section.id} className="border-b border-arcade-green/50">
+                      <AccordionTrigger className="text-[10px] font-black uppercase tracking-wider py-3 hover:no-underline text-arcade-yellow hover:text-arcade-pink">
+                        ► {section.label}
                       </AccordionTrigger>
                       <AccordionContent className="pb-2">
                         <div className="flex flex-col gap-1">
@@ -117,10 +117,10 @@ export default function Navbar() {
                               <SheetClose asChild key={item.href}>
                                 <Link
                                   href={item.href}
-                                  className={`flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase transition-all border-2 ${
+                                  className={`flex items-center gap-2 px-3 py-2 text-[9px] font-bold uppercase transition-all border ${
                                     active
-                                      ? "border-primary bg-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                                      : "border-transparent hover:border-primary hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                                      ? "border-arcade-cyan bg-arcade-cyan/10 text-arcade-cyan"
+                                      : "border-transparent text-arcade-green hover:border-arcade-pink hover:text-arcade-pink"
                                   }`}
                                 >
                                   {item.emoji && <span>{item.emoji}</span>}
@@ -136,7 +136,7 @@ export default function Navbar() {
                 </Accordion>
 
                 {/* Auth section */}
-                <div className="border-t-4 border-primary mt-4 pt-4 space-y-3">
+                <div className="border-t-2 border-arcade-green mt-4 pt-4 space-y-3">
                   {isAuthenticated && user?.personhoodProvider && (
                     <div className="px-1">
                       <PersonhoodStatusBadge
@@ -150,7 +150,7 @@ export default function Navbar() {
                       <SheetClose asChild>
                         <Link
                           href={profileLink.href}
-                          className="block text-sm font-black uppercase px-3 py-2 border-2 border-transparent hover:border-primary hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                          className="block text-[9px] font-black uppercase px-3 py-2 border border-transparent text-arcade-green hover:border-arcade-cyan hover:text-arcade-cyan transition-all"
                         >
                           {profileLink.emoji} {profileLink.label}
                         </Link>
@@ -161,18 +161,18 @@ export default function Navbar() {
                           setOpen(false);
                           void signOut({ callbackUrl: ROUTES.home });
                         }}
-                        className="w-full text-sm font-black uppercase px-3 py-2 border-4 border-primary bg-background hover:bg-foreground hover:text-background transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none"
+                        className="w-full text-[9px] font-black uppercase px-3 py-2 border-2 border-arcade-red bg-background text-arcade-red hover:bg-arcade-red hover:text-black transition-all neon-box-pink"
                       >
-                        Sign Out
+                        ✕ GAME OVER ✕
                       </button>
                     </>
                   ) : (
                     <SheetClose asChild>
                       <Link
                         href={getSignInPath(ROUTES.wishocracy)}
-                        className="block text-sm font-black uppercase px-3 py-2 border-4 border-primary bg-brutal-cyan text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
+                        className="block text-[9px] font-black uppercase px-3 py-2 border-2 border-arcade-green bg-arcade-green text-black text-center hover:bg-arcade-cyan transition-all insert-coin"
                       >
-                        Sign In
+                        ▶ INSERT COIN ◀
                       </Link>
                     </SheetClose>
                   )}

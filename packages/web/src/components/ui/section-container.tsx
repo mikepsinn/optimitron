@@ -16,18 +16,18 @@ export interface SectionContainerProps extends React.HTMLAttributes<HTMLElement>
 const bgClasses: Record<SectionBgColor, string> = {
   background: "bg-background",
   foreground: "bg-foreground text-background",
-  pink: "bg-brutal-pink",
-  cyan: "bg-brutal-cyan",
-  yellow: "bg-brutal-yellow",
-  green: "bg-brutal-green",
-  red: "bg-brutal-red",
-  primary: "bg-primary text-primary-foreground",
+  pink: "bg-arcade-pink/10 text-arcade-pink",
+  cyan: "bg-arcade-cyan/10 text-arcade-cyan",
+  yellow: "bg-arcade-yellow/10 text-arcade-yellow",
+  green: "bg-arcade-green/10 text-arcade-green",
+  red: "bg-arcade-red/10 text-arcade-red",
+  primary: "bg-primary/20 text-primary",
 }
 
 const borderClasses: Record<BorderPosition, string> = {
-  top: "border-t-4 border-primary",
-  bottom: "border-b-4 border-primary",
-  both: "border-t-4 border-b-4 border-primary",
+  top: "border-t border-arcade-green/30",
+  bottom: "border-b border-arcade-green/30",
+  both: "border-t border-b border-arcade-green/30",
   none: "",
 }
 

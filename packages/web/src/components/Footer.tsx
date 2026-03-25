@@ -11,24 +11,24 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="border-t-4 border-primary bg-brutal-yellow">
+    <footer className="border-t-2 border-arcade-green bg-background neon-box-green">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href={ROUTES.home} className="text-xl font-black uppercase text-foreground">
-              ⚡ Optimitron
+            <Link href={ROUTES.home} className="text-xs font-black uppercase neon-cyan">
+              ▶ OPTIMITRON ◀
             </Link>
-            <p className="text-sm text-foreground mt-3 leading-relaxed font-bold">
-              Planetary debugging software. Because your species keeps ignoring
-              its own data.
+            <p className="text-[8px] text-arcade-green mt-3 leading-relaxed font-bold">
+              PLANETARY DEBUGGING SOFTWARE. BECAUSE YOUR SPECIES KEEPS IGNORING
+              ITS OWN DATA.
             </p>
           </div>
 
           {/* App */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3 text-foreground">
-              App
+            <h4 className="text-[9px] font-black uppercase mb-3 text-arcade-yellow">
+              ► APP
             </h4>
             <ul className="space-y-2">
               {footerAppLinks.map((link) => (
@@ -41,8 +41,8 @@ export default function Footer() {
 
           {/* Analysis */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3 text-foreground">
-              Analysis
+            <h4 className="text-[9px] font-black uppercase mb-3 text-arcade-yellow">
+              ► ANALYSIS
             </h4>
             <ul className="space-y-2">
               {exploreLinks.map((link) => (
@@ -55,8 +55,8 @@ export default function Footer() {
 
           {/* Papers */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3 text-foreground">
-              Papers
+            <h4 className="text-[9px] font-black uppercase mb-3 text-arcade-yellow">
+              ► PAPERS
             </h4>
             <ul className="space-y-2">
               {paperLinks.map((link) => (
@@ -69,8 +69,8 @@ export default function Footer() {
 
           {/* Open Source */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3 text-foreground">
-              Open Source
+            <h4 className="text-[9px] font-black uppercase mb-3 text-arcade-yellow">
+              ► OPEN SOURCE
             </h4>
             <ul className="space-y-2">
               {communityLinks.map((link) => (
@@ -82,29 +82,31 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t-2 border-primary text-center text-sm text-foreground font-bold">
+        <div className="mt-12 pt-8 border-t border-arcade-green/50 text-center text-[7px] text-arcade-green font-bold">
           <p>
-            None of this is financial advice. Obviously. Please direct all
-            complaints to{" "}
+            NOT FINANCIAL ADVICE. OBVIOUSLY. DIRECT ALL COMPLAINTS TO{" "}
             <a
               href="https://mikesinn.com"
-              className="text-foreground font-bold hover:underline"
+              className="text-arcade-cyan font-bold hover:text-arcade-pink"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Mike P. Sinn
+              MIKE P. SINN
             </a>
-            , who insists on trying to fix your planet despite overwhelming
-            evidence that it doesn&apos;t want to be fixed.{" "}
+            , WHO INSISTS ON TRYING TO FIX YOUR PLANET DESPITE OVERWHELMING
+            EVIDENCE THAT IT DOESN&apos;T WANT TO BE FIXED.{" "}
             <NavItemLink
               item={githubLink}
               variant="custom"
               external
-              className="text-foreground font-bold hover:underline"
+              className="text-arcade-cyan font-bold hover:text-arcade-pink"
             >
-              Source code
+              SOURCE CODE
             </NavItemLink>{" "}
-            available for inspection, not that any of you will read it.
+            AVAILABLE FOR INSPECTION. NOT THAT ANY OF YOU WILL READ IT.
+          </p>
+          <p className="mt-4 text-arcade-pink insert-coin">
+            ▶ GAME OVER ▶ INSERT COIN TO CONTINUE ◀
           </p>
         </div>
       </div>

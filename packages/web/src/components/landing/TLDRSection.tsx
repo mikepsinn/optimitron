@@ -17,36 +17,36 @@ export function TLDRSection() {
         <div className="space-y-6 text-center">
           {/* The two steps */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black text-brutal-pink mb-2">1</div>
-              <p className="text-xl sm:text-2xl font-black uppercase text-foreground">
-                Click 2 Buttons
+            <div className="p-6 border-2 border-arcade-cyan bg-background neon-box-cyan">
+              <div className="text-3xl font-black neon-cyan mb-2">►1◄</div>
+              <p className="text-xs sm:text-sm font-black uppercase neon-cyan">
+                CLICK 2 BUTTONS
               </p>
-              <p className="text-lg font-bold text-muted-foreground mt-2">
-                Verify you&apos;re human. Vote. 30 seconds.
+              <p className="text-[9px] font-bold text-arcade-green mt-2">
+                VERIFY YOU&apos;RE HUMAN. VOTE. 30 SECONDS.
               </p>
             </div>
-            <div className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="text-6xl font-black text-brutal-pink mb-2">2</div>
-              <p className="text-xl sm:text-2xl font-black uppercase text-foreground">
-                Tell Your Friends
+            <div className="p-6 border-2 border-arcade-pink bg-background neon-box-pink">
+              <div className="text-3xl font-black neon-pink mb-2">►2◄</div>
+              <p className="text-xs sm:text-sm font-black uppercase neon-pink">
+                TELL YOUR FRIENDS
               </p>
-              <p className="text-lg font-bold text-muted-foreground mt-2">
-                They click 2 buttons. They tell their friends. Done.
+              <p className="text-[9px] font-bold text-arcade-green mt-2">
+                THEY CLICK 2 BUTTONS. THEY TELL THEIR FRIENDS. DONE.
               </p>
             </div>
           </div>
 
           {/* The punchline */}
-          <div className="p-6 border-4 border-primary bg-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-xl sm:text-2xl font-black text-background leading-relaxed">
-              That&apos;s it. You&apos;re done. 99% of you don&apos;t need to
-              know anything else.
+          <div className="p-6 border-2 border-arcade-green bg-background neon-box-green">
+            <p className="text-[10px] sm:text-xs font-black neon-green leading-relaxed">
+              THAT&apos;S IT. YOU&apos;RE DONE. 99% OF YOU DON&apos;T NEED TO
+              KNOW ANYTHING ELSE.
             </p>
-            <p className="text-lg font-bold text-background mt-3">
-              The rest of this site is the instruction manual. Read it if
-              you&apos;re into ending war and disease. But for the love of your
-              species, click the buttons first.
+            <p className="text-[9px] font-bold text-arcade-yellow mt-3">
+              THE REST OF THIS SITE IS THE INSTRUCTION MANUAL. READ IT IF
+              YOU&apos;RE INTO ENDING WAR AND DISEASE. BUT FOR THE LOVE OF YOUR
+              SPECIES, CLICK THE BUTTONS FIRST.
             </p>
           </div>
 

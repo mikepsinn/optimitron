@@ -7,160 +7,153 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Unified neobrutalist design system with cohesive color palette */
+/* ═══════════════════════════════════════════════════════════════════════════
+   80s VIDEO GAME DESIGN SYSTEM
+   Inspired by classic arcade cabinets, Tron, Space Invaders, and neon aesthetics
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  /* Base colors - high contrast neobrutalism */
-  --background: rgb(255, 255, 255);
-  --foreground: rgb(0, 0, 0);
+  /* Base colors - CRT monitor aesthetic (dark with high contrast) */
+  --background: rgb(5, 5, 15);
+  --foreground: rgb(0, 255, 128);
 
-  /* Card & Popover */
-  --card: rgb(255, 255, 255);
-  --card-foreground: rgb(0, 0, 0);
-  --popover: rgb(255, 255, 255);
-  --popover-foreground: rgb(0, 0, 0);
+  /* Card & Popover - Dark with neon borders */
+  --card: rgb(10, 10, 25);
+  --card-foreground: rgb(0, 255, 128);
+  --popover: rgb(10, 10, 25);
+  --popover-foreground: rgb(0, 255, 128);
 
-  /* Primary - Brutal Pink */
-  --primary: rgb(236, 70, 153);
-  --primary-foreground: rgb(255, 255, 255);
-
-  /* Secondary - Brutal Yellow */
-  --secondary: rgb(255, 221, 87);
-  --secondary-foreground: rgb(0, 0, 0);
-
-  /* Accent - Brutal Cyan */
-  --accent: rgb(123, 221, 234);
-  --accent-foreground: rgb(0, 0, 0);
-
-  /* Muted - Light gray for subtle backgrounds */
-  --muted: rgb(245, 245, 245);
-  --muted-foreground: rgb(64, 64, 64);
-
-  /* Destructive - Keep as red for warnings */
-  --destructive: rgb(239, 68, 68);
-  --destructive-foreground: rgb(255, 255, 255);
-
-  /* Borders & Inputs - Always black for neobrutalism */
-  --border: rgb(0, 0, 0);
-  --input: rgb(0, 0, 0);
-  --ring: rgb(236, 70, 153);
-
-  /* Chart colors - Using our neobrutalist palette */
-  --chart-1: rgb(236, 70, 153); /* Pink */
-  --chart-2: rgb(123, 221, 234); /* Cyan */
-  --chart-3: rgb(255, 221, 87); /* Yellow */
-  --chart-4: rgb(0, 200, 83); /* Vivid green */
-  --chart-5: rgb(168, 85, 247); /* Vivid purple */
-
-  /* Radius - 0 for sharp neobrutalist edges */
-  --radius: 0px;
-
-  /* Sidebar */
-  --sidebar-background: rgb(250, 250, 250);
-  --sidebar-foreground: rgb(0, 0, 0);
-  --sidebar-primary: rgb(236, 70, 153);
-  --sidebar-primary-foreground: rgb(255, 255, 255);
-  --sidebar-accent: rgb(123, 221, 234);
-  --sidebar-accent-foreground: rgb(0, 0, 0);
-  --sidebar-border: rgb(0, 0, 0);
-  --sidebar-ring: rgb(236, 70, 153);
-  --sidebar: rgb(245, 245, 245);
-
-  /* Neobrutalist color tokens - matching primary/secondary/accent */
-  --brutal-pink: rgb(236, 70, 153);
-  --brutal-pink-foreground: rgb(255, 255, 255);
-  --brutal-cyan: rgb(123, 221, 234);
-  --brutal-cyan-foreground: rgb(0, 0, 0);
-  --brutal-yellow: rgb(255, 221, 87);
-  --brutal-yellow-foreground: rgb(0, 0, 0);
-  --brutal-red: rgb(239, 68, 68);
-  --brutal-red-foreground: rgb(255, 255, 255);
-
-  /* Shadow system - hard shadows for neobrutalism */
-  --shadow-x: 8px;
-  --shadow-y: 8px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 1;
-  --shadow-color: rgb(0, 0, 0);
-}
-
-/* Dark mode with inverted neobrutalist aesthetic */
-.dark {
-  /* Base colors - inverted */
-  --background: rgb(0, 0, 0);
-  --foreground: rgb(255, 255, 255);
-
-  /* Card & Popover */
-  --card: rgb(23, 23, 23);
-  --card-foreground: rgb(255, 255, 255);
-  --popover: rgb(23, 23, 23);
-  --popover-foreground: rgb(255, 255, 255);
-
-  /* Primary - Brighter pink for dark mode */
-  --primary: rgb(244, 114, 182);
+  /* Primary - Electric Neon Pink (arcade classic) */
+  --primary: rgb(255, 0, 128);
   --primary-foreground: rgb(0, 0, 0);
 
-  /* Secondary - Brighter yellow for dark mode */
-  --secondary: rgb(253, 224, 71);
+  /* Secondary - Electric Cyan (Tron blue) */
+  --secondary: rgb(0, 255, 255);
   --secondary-foreground: rgb(0, 0, 0);
 
-  /* Accent - Brighter cyan for dark mode */
-  --accent: rgb(165, 243, 252);
+  /* Accent - Neon Yellow (Pac-Man yellow) */
+  --accent: rgb(255, 255, 0);
   --accent-foreground: rgb(0, 0, 0);
 
-  /* Muted */
-  --muted: rgb(38, 38, 38);
-  --muted-foreground: rgb(163, 163, 163);
+  /* Muted - Dark CRT gray */
+  --muted: rgb(20, 20, 35);
+  --muted-foreground: rgb(100, 100, 120);
 
-  /* Destructive */
-  --destructive: rgb(248, 113, 113);
-  --destructive-foreground: rgb(0, 0, 0);
+  /* Destructive - Danger red (Game Over) */
+  --destructive: rgb(255, 0, 0);
+  --destructive-foreground: rgb(255, 255, 255);
 
-  /* Borders & Inputs - White for dark mode */
-  --border: rgb(255, 255, 255);
-  --input: rgb(255, 255, 255);
-  --ring: rgb(244, 114, 182);
+  /* Borders & Inputs - Neon glow style */
+  --border: rgb(0, 255, 128);
+  --input: rgb(0, 255, 128);
+  --ring: rgb(255, 0, 128);
 
-  /* Chart colors - Brighter for dark mode */
-  --chart-1: rgb(244, 114, 182);
-  --chart-2: rgb(165, 243, 252);
-  --chart-3: rgb(253, 224, 71);
-  --chart-4: rgb(0, 200, 83);
-  --chart-5: rgb(168, 85, 247);
+  /* Chart colors - Full neon palette */
+  --chart-1: rgb(255, 0, 128); /* Neon Pink */
+  --chart-2: rgb(0, 255, 255); /* Cyan */
+  --chart-3: rgb(255, 255, 0); /* Yellow */
+  --chart-4: rgb(0, 255, 128); /* Matrix Green */
+  --chart-5: rgb(128, 0, 255); /* Purple */
 
-  /* Sidebar */
-  --sidebar-background: rgb(10, 10, 10);
-  --sidebar-foreground: rgb(255, 255, 255);
-  --sidebar-primary: rgb(244, 114, 182);
+  /* Radius - Pixel-perfect sharp edges */
+  --radius: 0px;
+
+  /* Sidebar - Dark arcade cabinet */
+  --sidebar-background: rgb(8, 8, 20);
+  --sidebar-foreground: rgb(0, 255, 128);
+  --sidebar-primary: rgb(255, 0, 128);
   --sidebar-primary-foreground: rgb(0, 0, 0);
-  --sidebar-accent: rgb(165, 243, 252);
+  --sidebar-accent: rgb(0, 255, 255);
   --sidebar-accent-foreground: rgb(0, 0, 0);
-  --sidebar-border: rgb(255, 255, 255);
-  --sidebar-ring: rgb(244, 114, 182);
-  --sidebar: rgb(23, 23, 23);
+  --sidebar-border: rgb(0, 255, 128);
+  --sidebar-ring: rgb(255, 0, 128);
+  --sidebar: rgb(10, 10, 25);
 
-  /* Dark mode neobrutalist colors */
-  --brutal-pink: rgb(244, 114, 182);
-  --brutal-pink-foreground: rgb(0, 0, 0);
-  --brutal-cyan: rgb(165, 243, 252);
-  --brutal-cyan-foreground: rgb(0, 0, 0);
-  --brutal-yellow: rgb(253, 224, 71);
-  --brutal-yellow-foreground: rgb(0, 0, 0);
-  --brutal-red: rgb(248, 113, 113);
-  --brutal-red-foreground: rgb(0, 0, 0);
+  /* 80s Arcade color tokens */
+  --arcade-pink: rgb(255, 0, 128);
+  --arcade-pink-foreground: rgb(0, 0, 0);
+  --arcade-cyan: rgb(0, 255, 255);
+  --arcade-cyan-foreground: rgb(0, 0, 0);
+  --arcade-yellow: rgb(255, 255, 0);
+  --arcade-yellow-foreground: rgb(0, 0, 0);
+  --arcade-green: rgb(0, 255, 128);
+  --arcade-green-foreground: rgb(0, 0, 0);
+  --arcade-red: rgb(255, 0, 0);
+  --arcade-red-foreground: rgb(255, 255, 255);
+  --arcade-purple: rgb(128, 0, 255);
+  --arcade-purple-foreground: rgb(255, 255, 255);
+  --arcade-orange: rgb(255, 128, 0);
+  --arcade-orange-foreground: rgb(0, 0, 0);
 
-  /* Shadow - white shadows for dark mode */
-  --shadow-x: 8px;
-  --shadow-y: 8px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 1;
-  --shadow-color: rgb(255, 255, 255);
+  /* Keep brutal tokens for backwards compatibility, mapped to arcade colors */
+  --brutal-pink: var(--arcade-pink);
+  --brutal-pink-foreground: var(--arcade-pink-foreground);
+  --brutal-cyan: var(--arcade-cyan);
+  --brutal-cyan-foreground: var(--arcade-cyan-foreground);
+  --brutal-yellow: var(--arcade-yellow);
+  --brutal-yellow-foreground: var(--arcade-yellow-foreground);
+  --brutal-red: var(--arcade-red);
+  --brutal-red-foreground: var(--arcade-red-foreground);
+
+  /* Shadow system - Neon glow shadows */
+  --shadow-x: 0px;
+  --shadow-y: 0px;
+  --shadow-blur: 15px;
+  --shadow-spread: 2px;
+  --shadow-opacity: 0.8;
+  --shadow-color: rgb(0, 255, 128);
 }
 
-/* Tailwind v4 @theme with unified color system */
-/* Override ALL default Tailwind color scales → brutal tokens.
-   Any Tailwind color class now outputs a brutal color. No pastels possible. */
+/* Dark mode - Already dark, but can have alternate palette */
+.dark {
+  /* Same as light - 80s games were always dark */
+  --background: rgb(5, 5, 15);
+  --foreground: rgb(0, 255, 128);
+
+  --card: rgb(10, 10, 25);
+  --card-foreground: rgb(0, 255, 128);
+  --popover: rgb(10, 10, 25);
+  --popover-foreground: rgb(0, 255, 128);
+
+  --primary: rgb(255, 0, 128);
+  --primary-foreground: rgb(0, 0, 0);
+
+  --secondary: rgb(0, 255, 255);
+  --secondary-foreground: rgb(0, 0, 0);
+
+  --accent: rgb(255, 255, 0);
+  --accent-foreground: rgb(0, 0, 0);
+
+  --muted: rgb(20, 20, 35);
+  --muted-foreground: rgb(100, 100, 120);
+
+  --destructive: rgb(255, 0, 0);
+  --destructive-foreground: rgb(255, 255, 255);
+
+  --border: rgb(0, 255, 128);
+  --input: rgb(0, 255, 128);
+  --ring: rgb(255, 0, 128);
+
+  --chart-1: rgb(255, 0, 128);
+  --chart-2: rgb(0, 255, 255);
+  --chart-3: rgb(255, 255, 0);
+  --chart-4: rgb(0, 255, 128);
+  --chart-5: rgb(128, 0, 255);
+
+  --sidebar-background: rgb(8, 8, 20);
+  --sidebar-foreground: rgb(0, 255, 128);
+  --sidebar-primary: rgb(255, 0, 128);
+  --sidebar-primary-foreground: rgb(0, 0, 0);
+  --sidebar-accent: rgb(0, 255, 255);
+  --sidebar-accent-foreground: rgb(0, 0, 0);
+  --sidebar-border: rgb(0, 255, 128);
+  --sidebar-ring: rgb(255, 0, 128);
+  --sidebar: rgb(10, 10, 25);
+
+  --shadow-color: rgb(0, 255, 128);
+}
+
+/* Tailwind v4 @theme with 80s arcade system */
 @theme inline {
   --color-*: initial;
 
@@ -169,261 +162,261 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* ── Pink family → brutal-pink ─────────────────────────────── */
-  --color-pink-50: var(--brutal-pink);
-  --color-pink-100: var(--brutal-pink);
-  --color-pink-200: var(--brutal-pink);
-  --color-pink-300: var(--brutal-pink);
-  --color-pink-400: var(--brutal-pink);
-  --color-pink-500: var(--brutal-pink);
-  --color-pink-600: var(--brutal-pink);
-  --color-pink-700: var(--brutal-pink);
-  --color-pink-800: var(--brutal-pink);
-  --color-pink-900: var(--brutal-pink);
-  --color-pink-950: var(--brutal-pink);
-  --color-rose-50: var(--brutal-pink);
-  --color-rose-100: var(--brutal-pink);
-  --color-rose-200: var(--brutal-pink);
-  --color-rose-300: var(--brutal-pink);
-  --color-rose-400: var(--brutal-pink);
-  --color-rose-500: var(--brutal-pink);
-  --color-rose-600: var(--brutal-pink);
-  --color-rose-700: var(--brutal-pink);
-  --color-rose-800: var(--brutal-pink);
-  --color-rose-900: var(--brutal-pink);
-  --color-rose-950: var(--brutal-pink);
-  --color-fuchsia-50: var(--brutal-pink);
-  --color-fuchsia-100: var(--brutal-pink);
-  --color-fuchsia-200: var(--brutal-pink);
-  --color-fuchsia-300: var(--brutal-pink);
-  --color-fuchsia-400: var(--brutal-pink);
-  --color-fuchsia-500: var(--brutal-pink);
-  --color-fuchsia-600: var(--brutal-pink);
-  --color-fuchsia-700: var(--brutal-pink);
-  --color-fuchsia-800: var(--brutal-pink);
-  --color-fuchsia-900: var(--brutal-pink);
-  --color-fuchsia-950: var(--brutal-pink);
+  /* ── Pink family → arcade-pink ─────────────────────────────── */
+  --color-pink-50: var(--arcade-pink);
+  --color-pink-100: var(--arcade-pink);
+  --color-pink-200: var(--arcade-pink);
+  --color-pink-300: var(--arcade-pink);
+  --color-pink-400: var(--arcade-pink);
+  --color-pink-500: var(--arcade-pink);
+  --color-pink-600: var(--arcade-pink);
+  --color-pink-700: var(--arcade-pink);
+  --color-pink-800: var(--arcade-pink);
+  --color-pink-900: var(--arcade-pink);
+  --color-pink-950: var(--arcade-pink);
+  --color-rose-50: var(--arcade-pink);
+  --color-rose-100: var(--arcade-pink);
+  --color-rose-200: var(--arcade-pink);
+  --color-rose-300: var(--arcade-pink);
+  --color-rose-400: var(--arcade-pink);
+  --color-rose-500: var(--arcade-pink);
+  --color-rose-600: var(--arcade-pink);
+  --color-rose-700: var(--arcade-pink);
+  --color-rose-800: var(--arcade-pink);
+  --color-rose-900: var(--arcade-pink);
+  --color-rose-950: var(--arcade-pink);
+  --color-fuchsia-50: var(--arcade-pink);
+  --color-fuchsia-100: var(--arcade-pink);
+  --color-fuchsia-200: var(--arcade-pink);
+  --color-fuchsia-300: var(--arcade-pink);
+  --color-fuchsia-400: var(--arcade-pink);
+  --color-fuchsia-500: var(--arcade-pink);
+  --color-fuchsia-600: var(--arcade-pink);
+  --color-fuchsia-700: var(--arcade-pink);
+  --color-fuchsia-800: var(--arcade-pink);
+  --color-fuchsia-900: var(--arcade-pink);
+  --color-fuchsia-950: var(--arcade-pink);
 
-  /* ── Purple family → brutal-pink ───────────────────────────── */
-  --color-purple-50: var(--brutal-pink);
-  --color-purple-100: var(--brutal-pink);
-  --color-purple-200: var(--brutal-pink);
-  --color-purple-300: var(--brutal-pink);
-  --color-purple-400: var(--brutal-pink);
-  --color-purple-500: var(--brutal-pink);
-  --color-purple-600: var(--brutal-pink);
-  --color-purple-700: var(--brutal-pink);
-  --color-purple-800: var(--brutal-pink);
-  --color-purple-900: var(--brutal-pink);
-  --color-purple-950: var(--brutal-pink);
-  --color-violet-50: var(--brutal-pink);
-  --color-violet-100: var(--brutal-pink);
-  --color-violet-200: var(--brutal-pink);
-  --color-violet-300: var(--brutal-pink);
-  --color-violet-400: var(--brutal-pink);
-  --color-violet-500: var(--brutal-pink);
-  --color-violet-600: var(--brutal-pink);
-  --color-violet-700: var(--brutal-pink);
-  --color-violet-800: var(--brutal-pink);
-  --color-violet-900: var(--brutal-pink);
-  --color-violet-950: var(--brutal-pink);
-  --color-indigo-50: var(--brutal-pink);
-  --color-indigo-100: var(--brutal-pink);
-  --color-indigo-200: var(--brutal-pink);
-  --color-indigo-300: var(--brutal-pink);
-  --color-indigo-400: var(--brutal-pink);
-  --color-indigo-500: var(--brutal-pink);
-  --color-indigo-600: var(--brutal-pink);
-  --color-indigo-700: var(--brutal-pink);
-  --color-indigo-800: var(--brutal-pink);
-  --color-indigo-900: var(--brutal-pink);
-  --color-indigo-950: var(--brutal-pink);
+  /* ── Purple family → arcade-purple ───────────────────────────── */
+  --color-purple-50: var(--arcade-purple);
+  --color-purple-100: var(--arcade-purple);
+  --color-purple-200: var(--arcade-purple);
+  --color-purple-300: var(--arcade-purple);
+  --color-purple-400: var(--arcade-purple);
+  --color-purple-500: var(--arcade-purple);
+  --color-purple-600: var(--arcade-purple);
+  --color-purple-700: var(--arcade-purple);
+  --color-purple-800: var(--arcade-purple);
+  --color-purple-900: var(--arcade-purple);
+  --color-purple-950: var(--arcade-purple);
+  --color-violet-50: var(--arcade-purple);
+  --color-violet-100: var(--arcade-purple);
+  --color-violet-200: var(--arcade-purple);
+  --color-violet-300: var(--arcade-purple);
+  --color-violet-400: var(--arcade-purple);
+  --color-violet-500: var(--arcade-purple);
+  --color-violet-600: var(--arcade-purple);
+  --color-violet-700: var(--arcade-purple);
+  --color-violet-800: var(--arcade-purple);
+  --color-violet-900: var(--arcade-purple);
+  --color-violet-950: var(--arcade-purple);
+  --color-indigo-50: var(--arcade-purple);
+  --color-indigo-100: var(--arcade-purple);
+  --color-indigo-200: var(--arcade-purple);
+  --color-indigo-300: var(--arcade-purple);
+  --color-indigo-400: var(--arcade-purple);
+  --color-indigo-500: var(--arcade-purple);
+  --color-indigo-600: var(--arcade-purple);
+  --color-indigo-700: var(--arcade-purple);
+  --color-indigo-800: var(--arcade-purple);
+  --color-indigo-900: var(--arcade-purple);
+  --color-indigo-950: var(--arcade-purple);
 
-  /* ── Blue/cyan/teal/sky family → brutal-cyan ───────────────── */
-  --color-blue-50: var(--brutal-cyan);
-  --color-blue-100: var(--brutal-cyan);
-  --color-blue-200: var(--brutal-cyan);
-  --color-blue-300: var(--brutal-cyan);
-  --color-blue-400: var(--brutal-cyan);
-  --color-blue-500: var(--brutal-cyan);
-  --color-blue-600: var(--brutal-cyan);
-  --color-blue-700: var(--brutal-cyan);
-  --color-blue-800: var(--brutal-cyan);
-  --color-blue-900: var(--brutal-cyan);
-  --color-blue-950: var(--brutal-cyan);
-  --color-cyan-50: var(--brutal-cyan);
-  --color-cyan-100: var(--brutal-cyan);
-  --color-cyan-200: var(--brutal-cyan);
-  --color-cyan-300: var(--brutal-cyan);
-  --color-cyan-400: var(--brutal-cyan);
-  --color-cyan-500: var(--brutal-cyan);
-  --color-cyan-600: var(--brutal-cyan);
-  --color-cyan-700: var(--brutal-cyan);
-  --color-cyan-800: var(--brutal-cyan);
-  --color-cyan-900: var(--brutal-cyan);
-  --color-cyan-950: var(--brutal-cyan);
-  --color-teal-50: var(--brutal-cyan);
-  --color-teal-100: var(--brutal-cyan);
-  --color-teal-200: var(--brutal-cyan);
-  --color-teal-300: var(--brutal-cyan);
-  --color-teal-400: var(--brutal-cyan);
-  --color-teal-500: var(--brutal-cyan);
-  --color-teal-600: var(--brutal-cyan);
-  --color-teal-700: var(--brutal-cyan);
-  --color-teal-800: var(--brutal-cyan);
-  --color-teal-900: var(--brutal-cyan);
-  --color-teal-950: var(--brutal-cyan);
-  --color-sky-50: var(--brutal-cyan);
-  --color-sky-100: var(--brutal-cyan);
-  --color-sky-200: var(--brutal-cyan);
-  --color-sky-300: var(--brutal-cyan);
-  --color-sky-400: var(--brutal-cyan);
-  --color-sky-500: var(--brutal-cyan);
-  --color-sky-600: var(--brutal-cyan);
-  --color-sky-700: var(--brutal-cyan);
-  --color-sky-800: var(--brutal-cyan);
-  --color-sky-900: var(--brutal-cyan);
-  --color-sky-950: var(--brutal-cyan);
+  /* ── Blue/cyan/teal/sky family → arcade-cyan ───────────────── */
+  --color-blue-50: var(--arcade-cyan);
+  --color-blue-100: var(--arcade-cyan);
+  --color-blue-200: var(--arcade-cyan);
+  --color-blue-300: var(--arcade-cyan);
+  --color-blue-400: var(--arcade-cyan);
+  --color-blue-500: var(--arcade-cyan);
+  --color-blue-600: var(--arcade-cyan);
+  --color-blue-700: var(--arcade-cyan);
+  --color-blue-800: var(--arcade-cyan);
+  --color-blue-900: var(--arcade-cyan);
+  --color-blue-950: var(--arcade-cyan);
+  --color-cyan-50: var(--arcade-cyan);
+  --color-cyan-100: var(--arcade-cyan);
+  --color-cyan-200: var(--arcade-cyan);
+  --color-cyan-300: var(--arcade-cyan);
+  --color-cyan-400: var(--arcade-cyan);
+  --color-cyan-500: var(--arcade-cyan);
+  --color-cyan-600: var(--arcade-cyan);
+  --color-cyan-700: var(--arcade-cyan);
+  --color-cyan-800: var(--arcade-cyan);
+  --color-cyan-900: var(--arcade-cyan);
+  --color-cyan-950: var(--arcade-cyan);
+  --color-teal-50: var(--arcade-cyan);
+  --color-teal-100: var(--arcade-cyan);
+  --color-teal-200: var(--arcade-cyan);
+  --color-teal-300: var(--arcade-cyan);
+  --color-teal-400: var(--arcade-cyan);
+  --color-teal-500: var(--arcade-cyan);
+  --color-teal-600: var(--arcade-cyan);
+  --color-teal-700: var(--arcade-cyan);
+  --color-teal-800: var(--arcade-cyan);
+  --color-teal-900: var(--arcade-cyan);
+  --color-teal-950: var(--arcade-cyan);
+  --color-sky-50: var(--arcade-cyan);
+  --color-sky-100: var(--arcade-cyan);
+  --color-sky-200: var(--arcade-cyan);
+  --color-sky-300: var(--arcade-cyan);
+  --color-sky-400: var(--arcade-cyan);
+  --color-sky-500: var(--arcade-cyan);
+  --color-sky-600: var(--arcade-cyan);
+  --color-sky-700: var(--arcade-cyan);
+  --color-sky-800: var(--arcade-cyan);
+  --color-sky-900: var(--arcade-cyan);
+  --color-sky-950: var(--arcade-cyan);
 
-  /* ── Green/emerald/lime family → brutal-cyan ───────────────── */
-  --color-green-50: var(--brutal-cyan);
-  --color-green-100: var(--brutal-cyan);
-  --color-green-200: var(--brutal-cyan);
-  --color-green-300: var(--brutal-cyan);
-  --color-green-400: var(--brutal-cyan);
-  --color-green-500: var(--brutal-cyan);
-  --color-green-600: var(--brutal-cyan);
-  --color-green-700: var(--brutal-cyan);
-  --color-green-800: var(--brutal-cyan);
-  --color-green-900: var(--brutal-cyan);
-  --color-green-950: var(--brutal-cyan);
-  --color-emerald-50: var(--brutal-cyan);
-  --color-emerald-100: var(--brutal-cyan);
-  --color-emerald-200: var(--brutal-cyan);
-  --color-emerald-300: var(--brutal-cyan);
-  --color-emerald-400: var(--brutal-cyan);
-  --color-emerald-500: var(--brutal-cyan);
-  --color-emerald-600: var(--brutal-cyan);
-  --color-emerald-700: var(--brutal-cyan);
-  --color-emerald-800: var(--brutal-cyan);
-  --color-emerald-900: var(--brutal-cyan);
-  --color-emerald-950: var(--brutal-cyan);
-  --color-lime-50: var(--brutal-cyan);
-  --color-lime-100: var(--brutal-cyan);
-  --color-lime-200: var(--brutal-cyan);
-  --color-lime-300: var(--brutal-cyan);
-  --color-lime-400: var(--brutal-cyan);
-  --color-lime-500: var(--brutal-cyan);
-  --color-lime-600: var(--brutal-cyan);
-  --color-lime-700: var(--brutal-cyan);
-  --color-lime-800: var(--brutal-cyan);
-  --color-lime-900: var(--brutal-cyan);
-  --color-lime-950: var(--brutal-cyan);
+  /* ── Green/emerald/lime family → arcade-green ───────────────── */
+  --color-green-50: var(--arcade-green);
+  --color-green-100: var(--arcade-green);
+  --color-green-200: var(--arcade-green);
+  --color-green-300: var(--arcade-green);
+  --color-green-400: var(--arcade-green);
+  --color-green-500: var(--arcade-green);
+  --color-green-600: var(--arcade-green);
+  --color-green-700: var(--arcade-green);
+  --color-green-800: var(--arcade-green);
+  --color-green-900: var(--arcade-green);
+  --color-green-950: var(--arcade-green);
+  --color-emerald-50: var(--arcade-green);
+  --color-emerald-100: var(--arcade-green);
+  --color-emerald-200: var(--arcade-green);
+  --color-emerald-300: var(--arcade-green);
+  --color-emerald-400: var(--arcade-green);
+  --color-emerald-500: var(--arcade-green);
+  --color-emerald-600: var(--arcade-green);
+  --color-emerald-700: var(--arcade-green);
+  --color-emerald-800: var(--arcade-green);
+  --color-emerald-900: var(--arcade-green);
+  --color-emerald-950: var(--arcade-green);
+  --color-lime-50: var(--arcade-green);
+  --color-lime-100: var(--arcade-green);
+  --color-lime-200: var(--arcade-green);
+  --color-lime-300: var(--arcade-green);
+  --color-lime-400: var(--arcade-green);
+  --color-lime-500: var(--arcade-green);
+  --color-lime-600: var(--arcade-green);
+  --color-lime-700: var(--arcade-green);
+  --color-lime-800: var(--arcade-green);
+  --color-lime-900: var(--arcade-green);
+  --color-lime-950: var(--arcade-green);
 
-  /* ── Yellow/amber/orange family → brutal-yellow ────────────── */
-  --color-yellow-50: var(--brutal-yellow);
-  --color-yellow-100: var(--brutal-yellow);
-  --color-yellow-200: var(--brutal-yellow);
-  --color-yellow-300: var(--brutal-yellow);
-  --color-yellow-400: var(--brutal-yellow);
-  --color-yellow-500: var(--brutal-yellow);
-  --color-yellow-600: var(--brutal-yellow);
-  --color-yellow-700: var(--brutal-yellow);
-  --color-yellow-800: var(--brutal-yellow);
-  --color-yellow-900: var(--brutal-yellow);
-  --color-yellow-950: var(--brutal-yellow);
-  --color-amber-50: var(--brutal-yellow);
-  --color-amber-100: var(--brutal-yellow);
-  --color-amber-200: var(--brutal-yellow);
-  --color-amber-300: var(--brutal-yellow);
-  --color-amber-400: var(--brutal-yellow);
-  --color-amber-500: var(--brutal-yellow);
-  --color-amber-600: var(--brutal-yellow);
-  --color-amber-700: var(--brutal-yellow);
-  --color-amber-800: var(--brutal-yellow);
-  --color-amber-900: var(--brutal-yellow);
-  --color-amber-950: var(--brutal-yellow);
-  --color-orange-50: var(--brutal-yellow);
-  --color-orange-100: var(--brutal-yellow);
-  --color-orange-200: var(--brutal-yellow);
-  --color-orange-300: var(--brutal-yellow);
-  --color-orange-400: var(--brutal-yellow);
-  --color-orange-500: var(--brutal-yellow);
-  --color-orange-600: var(--brutal-yellow);
-  --color-orange-700: var(--brutal-yellow);
-  --color-orange-800: var(--brutal-yellow);
-  --color-orange-900: var(--brutal-yellow);
-  --color-orange-950: var(--brutal-yellow);
+  /* ── Yellow/amber/orange family → arcade-yellow ────────────── */
+  --color-yellow-50: var(--arcade-yellow);
+  --color-yellow-100: var(--arcade-yellow);
+  --color-yellow-200: var(--arcade-yellow);
+  --color-yellow-300: var(--arcade-yellow);
+  --color-yellow-400: var(--arcade-yellow);
+  --color-yellow-500: var(--arcade-yellow);
+  --color-yellow-600: var(--arcade-yellow);
+  --color-yellow-700: var(--arcade-yellow);
+  --color-yellow-800: var(--arcade-yellow);
+  --color-yellow-900: var(--arcade-yellow);
+  --color-yellow-950: var(--arcade-yellow);
+  --color-amber-50: var(--arcade-yellow);
+  --color-amber-100: var(--arcade-yellow);
+  --color-amber-200: var(--arcade-yellow);
+  --color-amber-300: var(--arcade-yellow);
+  --color-amber-400: var(--arcade-yellow);
+  --color-amber-500: var(--arcade-yellow);
+  --color-amber-600: var(--arcade-yellow);
+  --color-amber-700: var(--arcade-yellow);
+  --color-amber-800: var(--arcade-yellow);
+  --color-amber-900: var(--arcade-yellow);
+  --color-amber-950: var(--arcade-yellow);
+  --color-orange-50: var(--arcade-orange);
+  --color-orange-100: var(--arcade-orange);
+  --color-orange-200: var(--arcade-orange);
+  --color-orange-300: var(--arcade-orange);
+  --color-orange-400: var(--arcade-orange);
+  --color-orange-500: var(--arcade-orange);
+  --color-orange-600: var(--arcade-orange);
+  --color-orange-700: var(--arcade-orange);
+  --color-orange-800: var(--arcade-orange);
+  --color-orange-900: var(--arcade-orange);
+  --color-orange-950: var(--arcade-orange);
 
-  /* ── Red family → brutal-red ───────────────────────────────── */
-  --color-red-50: var(--brutal-red);
-  --color-red-100: var(--brutal-red);
-  --color-red-200: var(--brutal-red);
-  --color-red-300: var(--brutal-red);
-  --color-red-400: var(--brutal-red);
-  --color-red-500: var(--brutal-red);
-  --color-red-600: var(--brutal-red);
-  --color-red-700: var(--brutal-red);
-  --color-red-800: var(--brutal-red);
-  --color-red-900: var(--brutal-red);
-  --color-red-950: var(--brutal-red);
+  /* ── Red family → arcade-red ───────────────────────────────── */
+  --color-red-50: var(--arcade-red);
+  --color-red-100: var(--arcade-red);
+  --color-red-200: var(--arcade-red);
+  --color-red-300: var(--arcade-red);
+  --color-red-400: var(--arcade-red);
+  --color-red-500: var(--arcade-red);
+  --color-red-600: var(--arcade-red);
+  --color-red-700: var(--arcade-red);
+  --color-red-800: var(--arcade-red);
+  --color-red-900: var(--arcade-red);
+  --color-red-950: var(--arcade-red);
 
-  /* ── Gray family → black with opacity (structural) ─────────── */
-  --color-gray-50: rgb(245 245 245);
-  --color-gray-100: rgb(229 229 229);
-  --color-gray-200: rgb(212 212 212);
-  --color-gray-300: rgb(163 163 163);
-  --color-gray-400: rgb(115 115 115);
-  --color-gray-500: rgb(82 82 82);
-  --color-gray-600: rgb(64 64 64);
-  --color-gray-700: rgb(38 38 38);
-  --color-gray-800: rgb(23 23 23);
-  --color-gray-900: rgb(10 10 10);
-  --color-gray-950: rgb(5 5 5);
-  --color-slate-50: rgb(245 245 245);
-  --color-slate-100: rgb(229 229 229);
-  --color-slate-200: rgb(212 212 212);
-  --color-slate-300: rgb(163 163 163);
-  --color-slate-400: rgb(115 115 115);
-  --color-slate-500: rgb(82 82 82);
-  --color-slate-600: rgb(64 64 64);
-  --color-slate-700: rgb(38 38 38);
-  --color-slate-800: rgb(23 23 23);
-  --color-slate-900: rgb(10 10 10);
-  --color-slate-950: rgb(5 5 5);
-  --color-zinc-50: rgb(245 245 245);
-  --color-zinc-100: rgb(229 229 229);
-  --color-zinc-200: rgb(212 212 212);
-  --color-zinc-300: rgb(163 163 163);
-  --color-zinc-400: rgb(115 115 115);
-  --color-zinc-500: rgb(82 82 82);
-  --color-zinc-600: rgb(64 64 64);
-  --color-zinc-700: rgb(38 38 38);
-  --color-zinc-800: rgb(23 23 23);
-  --color-zinc-900: rgb(10 10 10);
-  --color-zinc-950: rgb(5 5 5);
-  --color-neutral-50: rgb(245 245 245);
-  --color-neutral-100: rgb(229 229 229);
-  --color-neutral-200: rgb(212 212 212);
-  --color-neutral-300: rgb(163 163 163);
-  --color-neutral-400: rgb(115 115 115);
-  --color-neutral-500: rgb(82 82 82);
-  --color-neutral-600: rgb(64 64 64);
-  --color-neutral-700: rgb(38 38 38);
-  --color-neutral-800: rgb(23 23 23);
-  --color-neutral-900: rgb(10 10 10);
-  --color-neutral-950: rgb(5 5 5);
-  --color-stone-50: rgb(245 245 245);
-  --color-stone-100: rgb(229 229 229);
-  --color-stone-200: rgb(212 212 212);
-  --color-stone-300: rgb(163 163 163);
-  --color-stone-400: rgb(115 115 115);
-  --color-stone-500: rgb(82 82 82);
-  --color-stone-600: rgb(64 64 64);
-  --color-stone-700: rgb(38 38 38);
-  --color-stone-800: rgb(23 23 23);
-  --color-stone-900: rgb(10 10 10);
-  --color-stone-950: rgb(5 5 5);
+  /* ── Gray family → dark CRT tones ─────────── */
+  --color-gray-50: rgb(30 30 45);
+  --color-gray-100: rgb(25 25 40);
+  --color-gray-200: rgb(20 20 35);
+  --color-gray-300: rgb(60 60 80);
+  --color-gray-400: rgb(80 80 100);
+  --color-gray-500: rgb(100 100 120);
+  --color-gray-600: rgb(120 120 140);
+  --color-gray-700: rgb(140 140 160);
+  --color-gray-800: rgb(160 160 180);
+  --color-gray-900: rgb(180 180 200);
+  --color-gray-950: rgb(200 200 220);
+  --color-slate-50: rgb(30 30 45);
+  --color-slate-100: rgb(25 25 40);
+  --color-slate-200: rgb(20 20 35);
+  --color-slate-300: rgb(60 60 80);
+  --color-slate-400: rgb(80 80 100);
+  --color-slate-500: rgb(100 100 120);
+  --color-slate-600: rgb(120 120 140);
+  --color-slate-700: rgb(140 140 160);
+  --color-slate-800: rgb(160 160 180);
+  --color-slate-900: rgb(180 180 200);
+  --color-slate-950: rgb(200 200 220);
+  --color-zinc-50: rgb(30 30 45);
+  --color-zinc-100: rgb(25 25 40);
+  --color-zinc-200: rgb(20 20 35);
+  --color-zinc-300: rgb(60 60 80);
+  --color-zinc-400: rgb(80 80 100);
+  --color-zinc-500: rgb(100 100 120);
+  --color-zinc-600: rgb(120 120 140);
+  --color-zinc-700: rgb(140 140 160);
+  --color-zinc-800: rgb(160 160 180);
+  --color-zinc-900: rgb(180 180 200);
+  --color-zinc-950: rgb(200 200 220);
+  --color-neutral-50: rgb(30 30 45);
+  --color-neutral-100: rgb(25 25 40);
+  --color-neutral-200: rgb(20 20 35);
+  --color-neutral-300: rgb(60 60 80);
+  --color-neutral-400: rgb(80 80 100);
+  --color-neutral-500: rgb(100 100 120);
+  --color-neutral-600: rgb(120 120 140);
+  --color-neutral-700: rgb(140 140 160);
+  --color-neutral-800: rgb(160 160 180);
+  --color-neutral-900: rgb(180 180 200);
+  --color-neutral-950: rgb(200 200 220);
+  --color-stone-50: rgb(30 30 45);
+  --color-stone-100: rgb(25 25 40);
+  --color-stone-200: rgb(20 20 35);
+  --color-stone-300: rgb(60 60 80);
+  --color-stone-400: rgb(80 80 100);
+  --color-stone-500: rgb(100 100 120);
+  --color-stone-600: rgb(120 120 140);
+  --color-stone-700: rgb(140 140 160);
+  --color-stone-800: rgb(160 160 180);
+  --color-stone-900: rgb(180 180 200);
+  --color-stone-950: rgb(200 200 220);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -458,7 +451,23 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Neobrutalist color tokens */
+  /* Arcade color tokens */
+  --color-arcade-pink: var(--arcade-pink);
+  --color-arcade-pink-foreground: var(--arcade-pink-foreground);
+  --color-arcade-cyan: var(--arcade-cyan);
+  --color-arcade-cyan-foreground: var(--arcade-cyan-foreground);
+  --color-arcade-yellow: var(--arcade-yellow);
+  --color-arcade-yellow-foreground: var(--arcade-yellow-foreground);
+  --color-arcade-green: var(--arcade-green);
+  --color-arcade-green-foreground: var(--arcade-green-foreground);
+  --color-arcade-red: var(--arcade-red);
+  --color-arcade-red-foreground: var(--arcade-red-foreground);
+  --color-arcade-purple: var(--arcade-purple);
+  --color-arcade-purple-foreground: var(--arcade-purple-foreground);
+  --color-arcade-orange: var(--arcade-orange);
+  --color-arcade-orange-foreground: var(--arcade-orange-foreground);
+
+  /* Backwards compatible brutal tokens */
   --color-brutal-pink: var(--brutal-pink);
   --color-brutal-pink-foreground: var(--brutal-pink-foreground);
   --color-brutal-cyan: var(--brutal-cyan);
@@ -468,17 +477,17 @@
   --color-brutal-red: var(--brutal-red);
   --color-brutal-red-foreground: var(--brutal-red-foreground);
 
-  /* Radius - sharp edges */
+  /* Radius - pixel-perfect sharp edges */
   --radius-lg: var(--radius);
   --radius-md: var(--radius);
   --radius-sm: var(--radius);
   --radius-xl: var(--radius);
 
-  /* Typography */
-  --font-family-sans: var(--font-sans);
+  /* Typography - PIXEL FONTS ARE DEFAULT */
+  --font-family-sans: var(--font-arcade);
   --font-family-mono: var(--font-mono);
   --font-family-arcade: var(--font-arcade);
-  --font-sans: var(--v0-font-dm-sans);
+  --font-sans: var(--v0-font-press-start-2p);
   --font-mono: var(--v0-font-space-mono);
   --font-serif: var(--v0-font-source-serif-4);
   --font-arcade: var(--v0-font-press-start-2p);
@@ -486,22 +495,18 @@
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-blink: blink 1s step-end infinite;
+  --animate-glow: glow 2s ease-in-out infinite;
+  --animate-scanline: scanline 8s linear infinite;
 
-  /* Shadow system - hard neobrutalist shadows */
-  --shadow-2xs: var(--shadow-x) var(--shadow-y)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-xs: calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-sm: calc(var(--shadow-x) * 0.75) calc(var(--shadow-y) * 0.75) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-md: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-lg: calc(var(--shadow-x) * 1.5) calc(var(--shadow-y) * 1.5) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-xl: calc(var(--shadow-x) * 2) calc(var(--shadow-y) * 2) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
-  --shadow-2xl: calc(var(--shadow-x) * 3) calc(var(--shadow-y) * 3) var(--shadow-blur) var(--shadow-spread)
-    color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+  /* Shadow system - Neon glow effects */
+  --shadow-2xs: 0 0 5px var(--shadow-color);
+  --shadow-xs: 0 0 8px var(--shadow-color);
+  --shadow-sm: 0 0 10px var(--shadow-color);
+  --shadow-md: 0 0 15px var(--shadow-color), 0 0 30px var(--shadow-color);
+  --shadow-lg: 0 0 20px var(--shadow-color), 0 0 40px var(--shadow-color);
+  --shadow-xl: 0 0 30px var(--shadow-color), 0 0 60px var(--shadow-color);
+  --shadow-2xl: 0 0 50px var(--shadow-color), 0 0 100px var(--shadow-color);
   --shadow: var(--shadow-md);
 
   --color-shadow-color: var(--shadow-color);
@@ -518,46 +523,172 @@
   }
   body {
     @apply bg-background text-foreground;
+    image-rendering: pixelated;
   }
   html {
     scroll-behavior: smooth;
   }
+  
+  /* CRT Scanline overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  }
+  
+  /* CRT screen flicker - subtle */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  }
 }
 
-/* Neobrutalist utility classes */
+/* 80s Arcade utility classes */
 @layer components {
   .card {
-    @apply bg-white border-2 border-black p-6;
-    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+    @apply bg-card border-2 border-arcade-green p-6;
+    box-shadow: 0 0 15px var(--arcade-green), inset 0 0 10px rgba(0, 255, 128, 0.1);
   }
 
   .section-title {
-    @apply text-2xl font-black uppercase tracking-tight text-black mb-6;
+    @apply text-lg font-black uppercase tracking-wide text-arcade-cyan mb-6;
+    text-shadow: 0 0 10px var(--arcade-cyan), 0 0 20px var(--arcade-cyan);
   }
 
-  /* Progress bars — neobrutalist flat style */
+  /* Progress bars — arcade style */
   .bar-current {
-    @apply bg-brutal-pink;
+    @apply bg-arcade-pink;
+    box-shadow: 0 0 10px var(--arcade-pink);
   }
   .bar-optimal {
-    @apply bg-brutal-cyan;
+    @apply bg-arcade-cyan;
+    box-shadow: 0 0 10px var(--arcade-cyan);
   }
 
-  /* Evidence grade badges */
+  /* Evidence grade badges - arcade style */
   .badge-A {
-    @apply bg-brutal-cyan text-black border-2 border-black;
+    @apply bg-arcade-green text-black border-2 border-arcade-green;
+    box-shadow: 0 0 10px var(--arcade-green);
   }
   .badge-B {
-    @apply bg-brutal-cyan text-black border-2 border-black;
+    @apply bg-arcade-cyan text-black border-2 border-arcade-cyan;
+    box-shadow: 0 0 10px var(--arcade-cyan);
   }
   .badge-C {
-    @apply bg-brutal-yellow text-black border-2 border-black;
+    @apply bg-arcade-yellow text-black border-2 border-arcade-yellow;
+    box-shadow: 0 0 10px var(--arcade-yellow);
   }
   .badge-D {
-    @apply bg-brutal-yellow text-black border-2 border-black;
+    @apply bg-arcade-orange text-black border-2 border-arcade-orange;
+    box-shadow: 0 0 10px var(--arcade-orange);
   }
   .badge-F {
-    @apply bg-brutal-red text-black border-2 border-black;
+    @apply bg-arcade-red text-white border-2 border-arcade-red;
+    box-shadow: 0 0 10px var(--arcade-red);
+  }
+  
+  /* Neon glow text utilities */
+  .neon-pink {
+    color: var(--arcade-pink);
+    text-shadow: 0 0 10px var(--arcade-pink), 0 0 20px var(--arcade-pink), 0 0 40px var(--arcade-pink);
+  }
+  .neon-cyan {
+    color: var(--arcade-cyan);
+    text-shadow: 0 0 10px var(--arcade-cyan), 0 0 20px var(--arcade-cyan), 0 0 40px var(--arcade-cyan);
+  }
+  .neon-yellow {
+    color: var(--arcade-yellow);
+    text-shadow: 0 0 10px var(--arcade-yellow), 0 0 20px var(--arcade-yellow), 0 0 40px var(--arcade-yellow);
+  }
+  .neon-green {
+    color: var(--arcade-green);
+    text-shadow: 0 0 10px var(--arcade-green), 0 0 20px var(--arcade-green), 0 0 40px var(--arcade-green);
+  }
+  .neon-purple {
+    color: var(--arcade-purple);
+    text-shadow: 0 0 10px var(--arcade-purple), 0 0 20px var(--arcade-purple), 0 0 40px var(--arcade-purple);
+  }
+  
+  /* Neon box glow utilities */
+  .neon-box-pink {
+    box-shadow: 0 0 10px var(--arcade-pink), 0 0 20px var(--arcade-pink), inset 0 0 10px rgba(255, 0, 128, 0.2);
+    border-color: var(--arcade-pink);
+  }
+  .neon-box-cyan {
+    box-shadow: 0 0 10px var(--arcade-cyan), 0 0 20px var(--arcade-cyan), inset 0 0 10px rgba(0, 255, 255, 0.2);
+    border-color: var(--arcade-cyan);
+  }
+  .neon-box-yellow {
+    box-shadow: 0 0 10px var(--arcade-yellow), 0 0 20px var(--arcade-yellow), inset 0 0 10px rgba(255, 255, 0, 0.2);
+    border-color: var(--arcade-yellow);
+  }
+  .neon-box-green {
+    box-shadow: 0 0 10px var(--arcade-green), 0 0 20px var(--arcade-green), inset 0 0 10px rgba(0, 255, 128, 0.2);
+    border-color: var(--arcade-green);
+  }
+  
+  /* Arcade button style */
+  .arcade-button {
+    @apply uppercase font-black tracking-wider px-6 py-3 border-4 transition-all;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+  }
+  .arcade-button:hover {
+    transform: scale(1.05);
+  }
+  .arcade-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Blinking cursor effect */
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
+  
+  /* Pixel border style */
+  .pixel-border {
+    border-style: solid;
+    border-width: 4px;
+    image-rendering: pixelated;
+  }
+  
+  /* High score style */
+  .high-score {
+    @apply text-arcade-yellow font-black uppercase tracking-widest;
+    text-shadow: 0 0 10px var(--arcade-yellow), 0 0 20px var(--arcade-yellow);
+    letter-spacing: 0.2em;
+  }
+  
+  /* Game over style */
+  .game-over {
+    @apply text-arcade-red font-black uppercase;
+    text-shadow: 0 0 20px var(--arcade-red), 0 0 40px var(--arcade-red);
+    animation: blink 0.5s step-end infinite;
+  }
+  
+  /* Insert coin style */
+  .insert-coin {
+    @apply text-arcade-green font-black uppercase;
+    text-shadow: 0 0 10px var(--arcade-green);
+    animation: blink 1s step-end infinite;
   }
 }
 
@@ -577,6 +708,56 @@
   to {
     height: 0;
   }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes glow {
+  0%, 100% { 
+    filter: brightness(1);
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+  50% { 
+    filter: brightness(1.2);
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Flicker animation for that authentic CRT feel */
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  5% { opacity: 0.95; }
+  10% { opacity: 0.97; }
+  15% { opacity: 0.94; }
+  20% { opacity: 0.98; }
+  25% { opacity: 0.96; }
+  30% { opacity: 0.97; }
+  35% { opacity: 0.95; }
+  40% { opacity: 0.98; }
+  45% { opacity: 0.97; }
+  50% { opacity: 0.95; }
+  55% { opacity: 0.98; }
+  60% { opacity: 0.96; }
+  65% { opacity: 0.97; }
+  70% { opacity: 0.95; }
+  75% { opacity: 0.98; }
+  80% { opacity: 0.97; }
+  85% { opacity: 0.96; }
+  90% { opacity: 0.98; }
+  95% { opacity: 0.95; }
+  100% { opacity: 0.97; }
 }
 
 * {
