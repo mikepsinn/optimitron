@@ -1017,6 +1017,23 @@ Each left building crumbles as the right contract glows brighter. Solidity logo 
 
 ---
 
+### Billions of Brains (10s)
+
+*Segment*: `script-armory-brains` · *Component*: `i-pencil` · *BG*: foreground
+
+> "You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with VOTE points worth $194,000, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. The incentive is $774 trillion."
+
+*Visual*: Pixel art — a Sierra "I, Pencil" sequence. A pixel pencil sits in the center of the screen. Zoom lines expand outward from it showing the supply chain: a pixel lumberjack, a pixel miner, a pixel factory worker, a pixel painter — each in a different pixel country. None of them know each other. Lines connect them all to the pencil. Then the pencil morphs into a pixel test tube (clinical trial), and the supply chain morphs too: a pixel developer writing Solidity, a pixel doctor running a trial, a pixel data scientist on Storacha, a pixel patient getting treated, a pixel auditor minting a Hypercert. Same structure. Same principle. Nobody coordinates them. The prize pool does.
+
+Below, a counter: "BRAINS INCENTIVIZED: 4,000,000,000. VOTE POINT VALUE: $194,000. PRIZE POOL: $774 TRILLION." The numbers pulse.
+
+*Sierra verb*: `> LOOK AT pencil` → "Nobody knows how to make this. Millions of people each contribute one step. The market coordinates them. The prize pool does the same thing, except instead of pencils it produces cures."
+`> WORRY ABOUT complexity` → "Your species built the internet without a central plan. It built Wikipedia without paying anyone. It will build this because $194,000 per person is a better incentive than either of those had."
+
+**Score**: `5,800,000,000`
+
+---
+
 ### Part 6: The Climax
 
 ### Your $15.7 Million (10s)
