@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-arcade), "Press Start 2P", monospace;
+  --font-mono: var(--font-terminal), "VT323", monospace;
+
+  /* 80s Arcade Neon Color Palette */
+  --color-arcade-pink: #ff2d95;
+  --color-arcade-cyan: #00fff2;
+  --color-arcade-green: #39ff14;
+  --color-arcade-yellow: #ffff00;
+  --color-arcade-purple: #bf00ff;
+  --color-arcade-orange: #ff6600;
+  --color-arcade-red: #ff0040;
+  --color-arcade-blue: #0080ff;
+
+  /* Dark CRT Monitor Background */
+  --color-background: rgb(5, 5, 15);
+  --color-foreground: #39ff14;
+
+  /* Semantic Colors - Neon Theme */
+  --color-primary: #ff2d95;
+  --color-primary-foreground: #000000;
+
+  --color-secondary: #00fff2;
+  --color-secondary-foreground: #000000;
+
+  --color-muted: rgba(57, 255, 20, 0.2);
+  --color-muted-foreground: rgba(57, 255, 20, 0.7);
+
+  --color-accent: #bf00ff;
+  --color-accent-foreground: #000000;
+
+  --color-card: rgba(0, 255, 242, 0.05);
+  --color-card-foreground: #39ff14;
+
+  --color-border: rgba(57, 255, 20, 0.3);
+  --color-input: rgba(57, 255, 20, 0.1);
+  --color-ring: #ff2d95;
+
+  --radius: 0px;
+}
+
+/* Base Styles */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Neon Glow Text Classes */
+.neon-pink {
+  color: var(--color-arcade-pink);
+  text-shadow: 0 0 5px var(--color-arcade-pink), 0 0 10px var(--color-arcade-pink),
+    0 0 20px var(--color-arcade-pink), 0 0 40px var(--color-arcade-pink);
+}
+
+.neon-cyan {
+  color: var(--color-arcade-cyan);
+  text-shadow: 0 0 5px var(--color-arcade-cyan), 0 0 10px var(--color-arcade-cyan),
+    0 0 20px var(--color-arcade-cyan), 0 0 40px var(--color-arcade-cyan);
+}
+
+.neon-green {
+  color: var(--color-arcade-green);
+  text-shadow: 0 0 5px var(--color-arcade-green), 0 0 10px var(--color-arcade-green),
+    0 0 20px var(--color-arcade-green), 0 0 40px var(--color-arcade-green);
+}
+
+.neon-yellow {
+  color: var(--color-arcade-yellow);
+  text-shadow: 0 0 5px var(--color-arcade-yellow), 0 0 10px var(--color-arcade-yellow),
+    0 0 20px var(--color-arcade-yellow);
+}
+
+.neon-purple {
+  color: var(--color-arcade-purple);
+  text-shadow: 0 0 5px var(--color-arcade-purple), 0 0 10px var(--color-arcade-purple),
+    0 0 20px var(--color-arcade-purple), 0 0 40px var(--color-arcade-purple);
+}
+
+/* Neon Box Shadows */
+.neon-box-pink {
+  box-shadow: 0 0 5px var(--color-arcade-pink), 0 0 10px var(--color-arcade-pink),
+    inset 0 0 5px rgba(255, 45, 149, 0.2);
+}
+
+.neon-box-cyan {
+  box-shadow: 0 0 5px var(--color-arcade-cyan), 0 0 10px var(--color-arcade-cyan),
+    inset 0 0 5px rgba(0, 255, 242, 0.2);
+}
+
+.neon-box-green {
+  box-shadow: 0 0 5px var(--color-arcade-green), 0 0 10px var(--color-arcade-green),
+    inset 0 0 5px rgba(57, 255, 20, 0.2);
+}
+
+.neon-box-yellow {
+  box-shadow: 0 0 5px var(--color-arcade-yellow), 0 0 10px var(--color-arcade-yellow),
+    inset 0 0 5px rgba(255, 255, 0, 0.2);
+}
+
+.neon-box-purple {
+  box-shadow: 0 0 5px var(--color-arcade-purple), 0 0 10px var(--color-arcade-purple),
+    inset 0 0 5px rgba(191, 0, 255, 0.2);
+}
+
+/* Arcade Button Style */
+.arcade-button {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(180deg, rgba(255, 45, 149, 0.2) 0%, rgba(255, 45, 149, 0.1) 100%);
+  border: 2px solid var(--color-arcade-pink);
+  color: var(--color-arcade-pink);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.15s ease;
+}
+
+.arcade-button:hover {
+  background: var(--color-arcade-pink);
+  color: #000;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px var(--color-arcade-pink), 0 0 40px var(--color-arcade-pink);
+}
+
+.arcade-button:active {
+  transform: scale(0.95);
+}
+
+/* Insert Coin Blink Animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.insert-coin {
+  animation: blink 1s infinite;
+}
+
+/* Pixel Border */
+.pixel-border {
+  border-style: solid;
+  border-width: 4px;
+  border-image: linear-gradient(
+    90deg,
+    var(--color-arcade-cyan) 25%,
+    var(--color-arcade-pink) 25%,
+    var(--color-arcade-pink) 50%,
+    var(--color-arcade-yellow) 50%,
+    var(--color-arcade-yellow) 75%,
+    var(--color-arcade-green) 75%
+  ) 1;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-arcade-pink);
+  color: #000;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-arcade-green);
+  border: 1px solid var(--color-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-arcade-cyan);
+}
