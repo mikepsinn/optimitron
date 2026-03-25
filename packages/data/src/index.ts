@@ -41,8 +41,9 @@ export * from './sources/index.js';
 // Exported as namespace to avoid name collisions with legacy sources
 export * as fetchers from './fetchers/index.js';
 
-// CSV loader (Gapminder-format parser)
-export * from './csv-loader.js';
+// CSV loader (Gapminder-format parser).
+// NOT barrel-exported — contains Node.js APIs (node:fs, node:url) that break browser bundling.
+// Import directly when needed: import { parseGapminderCsv } from '@optimitron/data/csv-loader'
 
 // Economic data catalog
 export * from './catalog.js';

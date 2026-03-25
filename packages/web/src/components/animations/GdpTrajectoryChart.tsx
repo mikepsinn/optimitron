@@ -62,30 +62,33 @@ function generateAllTrajectories(): { trajectories: Trajectory[]; maxY: number }
   const wishonia: { year: number; value: number }[] = [];
   const productive: { year: number; value: number }[] = [];
 
-  const treatyCagr = DESTRUCTIVE_CAGR * TREATY_CAGR;
-  const wishoniaCagr = DESTRUCTIVE_CAGR * WISHONIA_CAGR;
+  // Treaty and Wishonia are TOTAL GDP growth rates, not destructive multipliers.
+  // Treaty: 17.9% CAGR → GDP reaches $3.11Q by year 20
+  // Wishonia: 25.4% CAGR → GDP reaches $10.7Q by year 20
+  // Source: https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html
 
   for (let t = 0; t <= PROJECTION_YEARS; t++) {
     const year = START_YEAR + t;
-    const gdp = GLOBAL_GDP_T * Math.pow(1 + PRODUCTIVE_CAGR, t);
-    productive.push({ year, value: gdp });
+    productive.push({ year, value: GLOBAL_GDP_T * Math.pow(1 + PRODUCTIVE_CAGR, t) });
     statusQuo.push({ year, value: DESTRUCTIVE_BASE_T * Math.pow(1 + DESTRUCTIVE_CAGR, t) });
-    treaty.push({ year, value: DESTRUCTIVE_BASE_T * Math.pow(1 + treatyCagr, t) });
-    wishonia.push({ year, value: DESTRUCTIVE_BASE_T * Math.pow(1 + wishoniaCagr, t) });
+    treaty.push({ year, value: GLOBAL_GDP_T * Math.pow(1 + TREATY_CAGR, t) });
+    wishonia.push({ year, value: GLOBAL_GDP_T * Math.pow(1 + WISHONIA_CAGR, t) });
   }
 
   const maxVal = Math.max(
+    treaty[treaty.length - 1]!.value,
+    wishonia[wishonia.length - 1]!.value,
     statusQuo[statusQuo.length - 1]!.value,
     productive[productive.length - 1]!.value,
   );
-  const maxY = Math.ceil(maxVal / 50) * 50;
+  const maxY = Math.ceil(maxVal / 500) * 500;
 
   return {
     trajectories: [
-      { label: "Productive GDP (3%/yr)", color: "#059669", points: productive },
-      { label: "Status Quo — Destructive (15%/yr)", color: "#dc2626", points: statusQuo },
-      { label: "1% Treaty Trajectory", color: "#f59e0b", points: treaty },
-      { label: "Optimal Governance", color: "#7bddea", points: wishonia },
+      { label: "Status Quo GDP (3%/yr)", color: "#059669", points: productive },
+      { label: "Destructive Economy (15%/yr)", color: "#dc2626", points: statusQuo },
+      { label: "1% Treaty (17.9%/yr)", color: "#f59e0b", points: treaty },
+      { label: "Optimal Governance (25.4%/yr)", color: "#7bddea", points: wishonia },
     ],
     maxY,
   };
@@ -105,9 +108,10 @@ export function GdpTrajectoryChart({ className = "" }: { className?: string }) {
   const fiftyPctYear = START_YEAR + 15; // from DESTRUCTIVE_ECONOMY_YEARS_TO_50PCT_GDP
   const fiftyPctX = xScale(fiftyPctYear);
 
-  // Grid
+  // Grid — dynamic tick step based on scale
+  const yTickStep = maxY <= 500 ? 50 : maxY <= 2000 ? 200 : maxY <= 5000 ? 500 : 2000;
   const yTicks: number[] = [];
-  for (let v = 0; v <= maxY; v += 50) yTicks.push(v);
+  for (let v = 0; v <= maxY; v += yTickStep) yTicks.push(v);
   const xTicks: number[] = [];
   for (let y = START_YEAR; y <= END_YEAR; y += 5) xTicks.push(y);
 
@@ -133,7 +137,7 @@ export function GdpTrajectoryChart({ className = "" }: { className?: string }) {
               x={PADDING.left - 8} y={yScale(v, maxY) + 4}
               textAnchor="end" className="text-[11px]" fill="#6b7280"
             >
-              ${v}T
+              {v >= 1000 ? `$${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}Q` : `$${v}T`}
             </text>
           </g>
         ))}

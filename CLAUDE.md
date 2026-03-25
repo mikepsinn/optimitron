@@ -259,6 +259,30 @@ The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check
 | Inline stat block | `<StatCard value="$27B" label="Annual savings" color="cyan" />` |
 | Inline CTA section | `<CTASection heading="..." bgColor="pink">` |
 | Inline comparison layout | `<ComparisonCard left={...} right={...} />` |
+| Inline numbered list item | `<NumberedStepCard step={1} title="..." description="..." />` |
+| Manual stat grid | `<StatCardGrid stats={[...]} columns={3} />` |
+
+### Available UI Primitives (`packages/web/src/components/ui/`)
+
+**ALWAYS check this list before building a new component.** If a UI primitive exists, use it. Do not hand-roll cards, stat blocks, comparison layouts, section headers, or CTAs.
+
+| Component | File | Use For |
+|-----------|------|---------|
+| `StatCard` / `StatCardGrid` | `stat-card.tsx` | Single stat display with value, label, color; or a grid of them |
+| `SectionHeader` | `section-header.tsx` | `h2` with subtitle, responsive sizing, centered by default |
+| `SectionContainer` | `section-container.tsx` | Full-width section with bg color, padding, border |
+| `ComparisonCard` | `comparison-card.tsx` | Two-sided before/after or vs comparison |
+| `BrutalCard` | `brutal-card.tsx` | Neobrutalist card with color, shadow, border |
+| `Container` | `container.tsx` | Max-width content wrapper |
+| `GameCTA` | `game-cta.tsx` | Arcade-styled call-to-action button/link |
+| `NumberedStepCard` | `numbered-step-card.tsx` | Step indicator card for flows |
+| `IconCard` / `IconBoxCard` | `icon-card.tsx` / `icon-box-card.tsx` | Cards with icon headers |
+| `FeaturedInfoCard` | `featured-info-card.tsx` | Highlighted info block |
+| `StatBar` | `stat-bar.tsx` | Horizontal bar with label and value |
+| `ArcadeTag` | `arcade-tag.tsx` | Arcade-font labels/badges |
+| `CTASection` | `cta-section.tsx` | Full CTA section wrapper |
+| `CheckmarkList` | `checkmark-list.tsx` | Bulleted list with checkmarks |
+| `Stat` | `stat.tsx` | Inline parameter display (pulls from parameters-calculations-citations) |
 
 ### Border Weight
 - **Always `border-4 border-primary`** on cards and sections

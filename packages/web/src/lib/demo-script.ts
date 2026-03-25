@@ -27,6 +27,20 @@ import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
+  BED_NETS_COST_PER_DALY,
+  TREATY_VS_BED_NETS_MULTIPLIER,
+  TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
+  TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT,
+  CONTRIBUTION_DALYS_PER_PCT_POINT,
+  CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
+  US_GOV_WASTE_DRUG_WAR,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@/lib/parameters-calculations-citations";
 
 // Precompute for narration strings (spoken-word, so use full words not abbreviations)
@@ -38,6 +52,20 @@ const votePointValue = fmtParam(VOTE_TOKEN_POTENTIAL_VALUE);
 const poolMultiple = PRIZE_POOL_HORIZON_MULTIPLE.value.toFixed(0);
 const tippingPointM = Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6);
 const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value);
+const bedNetsMultiplier = Math.round(TREATY_VS_BED_NETS_MULTIPLIER.value).toLocaleString();
+const riskAdjMultiplier = Math.round(TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER.value);
+const treatyCostPerDaly = TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG.value.toFixed(5);
+const bedNetsCost = BED_NETS_COST_PER_DALY.value.toFixed(0);
+const livesPer1Pct = Math.round(CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT.value / 1e6);
+const dalysPer1Pct = (CONTRIBUTION_DALYS_PER_PCT_POINT.value / 1e9).toFixed(2);
+const sufferingHrsPer1Pct = (CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT.value / 1e12).toFixed(1);
+const oldTrialCost = Math.round(TRADITIONAL_PHASE3_COST_PER_PATIENT.value).toLocaleString();
+const newTrialCost = Math.round(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value).toLocaleString();
+const trialCapacityX = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
+const oldQueue = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
+const newQueue = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
+const drugWarCostB = Math.round(US_GOV_WASTE_DRUG_WAR.value / 1e9);
+const treatyGainM = (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value / 1e6).toFixed(1);
 
 export interface DemoSegment {
   id: string;
@@ -65,9 +93,164 @@ export interface DemoPlaylist {
 export const SEGMENTS: DemoSegment[] = [
   // ── HOOKS & PROBLEM ──────────────────────────────────────────────────────
   {
+    id: "hook-deaths",
+    title: "150,000 Deaths Per Day",
+    componentId: "death-count",
+    bgColor: "foreground",
+    tags: ["hook", "problem"],
+    narration: `${deathsDaily} people die every day from diseases that are theoretically curable. That is fifty-nine September elevenths. Every single day. But nobody invades anybody about it because cancer does not have oil.`,
+  },
+  {
+    id: "hook-ratio",
+    title: "604:1",
+    componentId: "military-pie",
+    bgColor: "foreground",
+    tags: ["hook", "problem"],
+    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
+  },
+  // ── SCRIPT-ALIGNED HACKATHON ─────────────────────────────────────────────
+  {
+    id: "script-1a-misaligned",
+    title: "Misaligned Superintelligence",
+    componentId: "terminal",
+    bgColor: "foreground",
+    tags: ["hook"],
+    narration: `Your government is a misaligned superintelligence. It controls trillions of dollars, billions of lives, and the allocation of your civilisation's entire productive capacity. And it is optimising for the wrong objective function.`,
+  },
+  {
+    id: "script-1b-objective",
+    title: "The Earth Optimization Game",
+    componentId: "game-title",
+    bgColor: "foreground",
+    tags: ["hook"],
+    narration: `The objective of the Earth Optimisation Game is to align it — to force it to reallocate resources away from things that make you poorer and deader, toward things that make you healthier and wealthier.`,
+  },
+  {
+    id: "script-2a-deaths",
+    title: "150,000 Deaths Per Day",
+    componentId: "death-count",
+    bgColor: "foreground",
+    tags: ["hook", "problem"],
+    narration: `${deathsDaily} humans die every day from diseases that are theoretically curable. That is fifty-nine September elevenths. But nobody invades anybody about it because cancer does not have oil.`,
+  },
+  {
+    id: "script-2b-ratio",
+    title: "604:1",
+    componentId: "military-pie",
+    bgColor: "foreground",
+    tags: ["hook", "problem"],
+    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
+  },
+  {
+    id: "script-2c-clock",
+    title: "The Clock",
+    componentId: "collapse-clock",
+    bgColor: "foreground",
+    tags: ["problem"],
+    narration: `The parasitic economy — cybercrime, rent-seeking, military spending — grows at fifteen percent per year. The productive economy grows at three percent. In fifteen years, it becomes more rational to steal than to produce. This is the clock.`,
+  },
+  {
+    id: "script-3a-moronia",
+    title: "Moronia",
+    componentId: "moronia",
+    bgColor: "foreground",
+    tags: ["problem"],
+    narration: `Moronia was a planet that spent ${milToTrialRatio} times more on weapons than on curing disease. It no longer exists. Their allocation ratio correlates with yours at ninety-four point seven percent.`,
+  },
+  {
+    id: "script-3b-wishonia",
+    title: "Wishonia",
+    componentId: "wishonia-slide",
+    bgColor: "cyan",
+    tags: ["solution"],
+    narration: `Wishonia redirected one percent of its murder budget to clinical trials four thousand two hundred and ninety-seven years ago. That is where I am from. It is considerably nicer.`,
+  },
+  {
+    id: "script-4a-fix",
+    title: "The Fix",
+    componentId: "one-percent-shift",
+    bgColor: "yellow",
+    tags: ["solution"],
+    narration: `The fix is not complicated. Redirect one percent of global military spending — twenty-seven billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know.`,
+  },
+  {
+    id: "script-4b-acceleration",
+    title: "12.3× Acceleration",
+    componentId: "trial-acceleration",
+    bgColor: "cyan",
+    tags: ["solution", "evidence"],
+    narration: `This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue} years. The maths is not in dispute.`,
+  },
+  {
+    id: "script-4c-ignorance",
+    title: "Pluralistic Ignorance",
+    componentId: "pluralistic-ignorance",
+    bgColor: "background",
+    tags: ["problem"],
+    narration: `The problem is not that nobody wants this. The problem is that everybody wants it but thinks nobody else will agree to it. This is called pluralistic ignorance, and it is your civilisation's most expensive bug.`,
+  },
+  {
+    id: "script-5a-allocate",
+    title: "Level 1: Allocate",
+    componentId: "level-allocate",
+    bgColor: "yellow",
+    tags: ["mechanism", "cta"],
+    narration: `Step one: allocate. Indicate your preferred share of spending devoted to weapons versus clinical trials. Compare budget priorities head-to-head. Ten comparisons. Eigenvector decomposition. The same maths invented in nineteen seventy-seven that your species mostly uses to rank American football teams.`,
+  },
+  {
+    id: "script-5b-vote",
+    title: "Level 2: Vote",
+    componentId: "level-vote",
+    bgColor: "pink",
+    tags: ["mechanism", "cta"],
+    narration: `Step two: vote yes or no — should all governments redirect one percent of military spending to clinical trials?`,
+  },
+  {
+    id: "script-5c-share",
+    title: "Level 3: Recruit",
+    componentId: "level-recruit",
+    bgColor: "yellow",
+    tags: ["mechanism", "cta"],
+    narration: `Step three: get your shareable URL. Every friend who votes through your link earns you alignment points. Your network becomes your lobby. Decentralised. No headquarters. No PAC. Just maths and peer pressure.`,
+  },
+  {
+    id: "script-6-prize",
+    title: "The Prize",
+    componentId: "prize-worked-example",
+    bgColor: "pink",
+    tags: ["financial", "mechanism"],
+    narration: `Depositors deposit USDC into a smart contract and receive PRIZE claim tokens — their receipt for a share of the pool. If Earth hits its targets — median income up, healthy life years up — the funds unlock and flow to verified implementers. If Earth fails to hit its targets, PRIZE holders get their principal back. Plus the yield that accrued the entire time — roughly eleven times over fifteen years. You either fix civilisation or you eleven-x your money. The only way to lose is not to play.`,
+  },
+  {
+    id: "script-8-leaderboard",
+    title: "The Leaderboard",
+    componentId: "government-leaderboard",
+    bgColor: "background",
+    tags: ["feature"],
+    narration: `Every politician ranked by the ratio of spending they have voted for: mass murder capacity versus clinical trial funding. A single number. Public. Immutable. On-chain. Your leaders are not evil. They are just optimising for the wrong metric. We changed the metric.`,
+  },
+  {
+    id: "script-10-architecture",
+    title: "Under the Hood",
+    componentId: "architecture-stats",
+    bgColor: "background",
+    tags: ["feature"],
+    narration: `Under the hood: fifteen packages, twenty-six hundred tests, domain-agnostic causal inference, full TypeScript monorepo. Storacha for immutable content-addressed storage. Hypercerts for verifiable attestations. Solidity for enforceable incentives. Everything is auditable. Nothing relies on trusting us.`,
+  },
+  {
+    id: "script-11-close",
+    title: "Play Now",
+    componentId: "close",
+    bgColor: "pink",
+    tags: ["cta"],
+    narration: `Your governments are the most powerful artificial intelligences your species has ever built. They process more information, control more resources, and make more consequential decisions than any LLM. And they are misaligned. Optimitron. Alignment software for the most powerful AIs on your planet — the ones made of people.`,
+  },
+
+  // Legacy alias — playlists referencing the old combined hook still work
+  {
     id: "hook-mortality",
     title: "150,000 Deaths Per Day",
-    componentId: "hook",
+    componentId: "death-count",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `${deathsDaily} people die every day from treatable diseases. Your governments spend ${milToTrialRatio} dollars on weapons and military systems for every one dollar they spend on clinical trials. That is not a policy disagreement. That is a configuration error in a collective intelligence system controlling eight billion lives.`,
@@ -165,6 +348,73 @@ export const SEGMENTS: DemoSegment[] = [
     narration: `Targets met: humanity gets cured, you get paid. Targets missed: your deposit grew ${poolMultiple} times. That is not charity. That is not gambling. That is a financial instrument where the downside is becoming richer and the upside is saving civilisation. The only scenario where you lose is the one where you do not play.`,
   },
 
+  {
+    id: "treaty-one-percent",
+    title: "The 1% Fix",
+    componentId: "one-percent-shift",
+    bgColor: "yellow",
+    tags: ["solution"],
+    narration: `The fix is not complicated. Redirect one percent of global military spending — twenty-seven billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know. This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue}. The maths is not in dispute.`,
+  },
+
+  // ── EVIDENCE & UNIT ECONOMICS ───────────────────────────────────────────
+  {
+    id: "evidence-cost-effectiveness",
+    title: "Cost Per Life",
+    componentId: "cost-effectiveness",
+    bgColor: "cyan",
+    tags: ["evidence", "financial"],
+    narration: `The cost per disability-adjusted life year for this campaign is ${treatyCostPerDaly} dollars. Bed nets — the gold standard of cost-effective intervention — cost ${bedNetsCost} dollars per DALY. This is ${bedNetsMultiplier} times more cost-effective. Even if you adjust for political uncertainty at one percent success probability, it is still ${riskAdjMultiplier} times more cost-effective than bed nets. The maths is not ambiguous.`,
+  },
+  {
+    id: "evidence-trial-cost",
+    title: "Trial Costs",
+    componentId: "trial-cost",
+    bgColor: "background",
+    tags: ["evidence"],
+    narration: `A traditional Phase Three clinical trial costs ${oldTrialCost} dollars per patient. A pragmatic trial — same patients, real-world conditions instead of artificial ones — costs ${newTrialCost} dollars. That is a ${trialCapacityX} times increase in trial capacity for the same budget. The queue to cure all diseases drops from ${oldQueue} years to ${newQueue}. Not because of a miracle. Because of basic arithmetic applied to trial design.`,
+  },
+  {
+    id: "evidence-historical-waste",
+    title: "Historical Proof",
+    componentId: "historical-waste",
+    bgColor: "foreground",
+    tags: ["evidence", "problem"],
+    narration: `Your War on Terror cost eight trillion dollars. Terror attacks increased from roughly one thousand per year to seventeen thousand. Your War on Drugs costs ${drugWarCostB} billion dollars per year. Overdose deaths went from six thousand to a hundred and eight thousand. Your species has a pattern: spend more money, get worse results, declare victory, and increase the budget. On my planet, when something does not work, we stop doing it. Radical concept, apparently.`,
+  },
+  {
+    id: "evidence-worked-example",
+    title: "The Worked Example",
+    componentId: "prize-worked-example",
+    bgColor: "pink",
+    tags: ["financial", "mechanism"],
+    narration: `One hundred dollars deposited. Two friends recruited. If the targets are missed, your deposit grew to roughly one thousand one hundred dollars. If the targets are hit, your two VOTE points pay two times ${votePointValue} — that is three hundred and eighty-seven thousand dollars. The break-even probability is one in fifteen thousand. You do not need to be altruistic. You just need to be numerate.`,
+  },
+  {
+    id: "evidence-viral-doubling",
+    title: "The Doubling Model",
+    componentId: "viral-doubling",
+    bgColor: "yellow",
+    tags: ["evidence", "mechanism"],
+    narration: `Tell two people. They each tell two more. Twenty-eight rounds of this reaches ${tippingPointM} million people — Chenoweth's three point five percent tipping point. No campaign in history that reached this threshold ever failed. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
+  },
+  {
+    id: "evidence-per-pct-point",
+    title: "The Value of One Percent",
+    componentId: "per-pct-point",
+    bgColor: "pink",
+    tags: ["evidence", "mechanism"],
+    narration: `Every percentage point you shift the probability is worth ${livesPer1Pct} million lives. ${dalysPer1Pct} billion disability-adjusted life years. ${sufferingHrsPer1Pct} trillion hours of suffering prevented. Every share, every vote, every conversation moves that probability. The question is not whether your effort matters. It is how many hundred million lives it is worth.`,
+  },
+  {
+    id: "evidence-personal-upside",
+    title: "Your Personal Upside",
+    componentId: "personal-upside",
+    bgColor: "cyan",
+    tags: ["financial"],
+    narration: `You currently lose ${dysfunctionPerPerson} per year to political dysfunction. That is your share of the ${dysfunctionCostT} trillion dollar bug. If the one percent treaty passes, your lifetime income gains are ${treatyGainM} million dollars. Per person. Not per country. Per person. This is not philanthropy. This is the largest investment opportunity in the history of your species. The cost of not playing is ${treatyGainM} million dollars.`,
+  },
+
   // ── COUNTRY COMPARISONS ──────────────────────────────────────────────────
   {
     id: "countries-leaderboard",
@@ -238,7 +488,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "tools",
     bgColor: "yellow",
     tags: ["feature", "financial"],
-    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically via World ID, and Incentive Alignment Bonds where smart contracts distribute campaign funds to politicians based on their alignment scores. Politicians earn funding by aligning with citizens, not donors.`,
+    narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically via World ID, and wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
   },
   {
     id: "feature-architecture",
@@ -374,20 +624,31 @@ export const PLAYLISTS: DemoPlaylist[] = [
   {
     id: "hackathon",
     name: "Hackathon (3 min)",
-    description: "Compressed pitch: problem → game → play now",
+    description: "Script-aligned visual pitch — one concept per slide, arcade aesthetic",
     segmentIds: [
-      "hook-mortality",
-      "game-scoreboard",
-      "game-the-question",
-      "game-how-to-win",
-      "game-how-to-play",
-      "close-hackathon",
+      "script-1a-misaligned",
+      "script-1b-objective",
+      "script-2a-deaths",
+      "script-2b-ratio",
+      "script-2c-clock",
+      "script-3a-moronia",
+      "script-3b-wishonia",
+      "script-4a-fix",
+      "script-4b-acceleration",
+      "script-4c-ignorance",
+      "script-5a-allocate",
+      "script-5b-vote",
+      "script-5c-share",
+      "script-6-prize",
+      "script-8-leaderboard",
+      "script-10-architecture",
+      "script-11-close",
     ],
   },
   {
     id: "full-demo",
-    name: "Full Demo (12 min)",
-    description: "Complete walkthrough of all features + agency report cards + corruption data",
+    name: "Full Demo (16 min)",
+    description: "Complete walkthrough: evidence + features + agency report cards + corruption data",
     segmentIds: [
       "hook-mortality",
       "hook-misaligned-ai",
@@ -395,12 +656,18 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "countries-leaderboard",
       "agencies-report-cards",
       "agencies-drug-war",
+      "evidence-historical-waste",
       "agencies-fda-graveyard",
       "agencies-money-printer",
       "game-the-question",
+      "evidence-cost-effectiveness",
+      "evidence-trial-cost",
       "game-how-to-win",
+      "evidence-worked-example",
       "game-how-to-play",
+      "evidence-viral-doubling",
       "game-pluralistic-ignorance",
+      "evidence-per-pct-point",
       "agencies-government-lies",
       "agencies-ironic-laws",
       "agencies-cia-coups",
@@ -411,20 +678,28 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "feature-dfda",
       "feature-optimizer",
       "armory-overview",
+      "evidence-personal-upside",
       "close-play-now",
     ],
   },
   {
     id: "investor",
-    name: "Investor Pitch (5 min)",
-    description: "Financial mechanism + ROI + architecture",
+    name: "Investor Pitch (8 min)",
+    description: "Financial mechanism + evidence + unit economics + ROI",
     segmentIds: [
       "hook-mortality",
       "hook-dysfunction-tax",
       "game-scoreboard",
+      "evidence-historical-waste",
+      "evidence-trial-cost",
+      "evidence-cost-effectiveness",
       "prize-mechanism",
+      "evidence-worked-example",
       "prize-vote-points",
       "prize-no-downside",
+      "evidence-personal-upside",
+      "evidence-viral-doubling",
+      "evidence-per-pct-point",
       "countries-singapore",
       "feature-architecture",
       "close-investor",
@@ -537,6 +812,22 @@ export const PLAYLISTS: DemoPlaylist[] = [
     segmentIds: [
       "agencies-ironic-laws",
       "close-play-now",
+    ],
+  },
+  {
+    id: "youtube-evidence",
+    name: "The Math Behind the Prize",
+    description: "Cost-effectiveness, trial costs, viral model, worked example, per-percentage-point value",
+    segmentIds: [
+      "hook-mortality",
+      "evidence-cost-effectiveness",
+      "evidence-trial-cost",
+      "evidence-historical-waste",
+      "evidence-worked-example",
+      "evidence-viral-doubling",
+      "evidence-per-pct-point",
+      "evidence-personal-upside",
+      "close-investor",
     ],
   },
   // ── Social Media Clips ─────────────────────────────────────────────────
