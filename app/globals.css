@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-arcade), "Press Start 2P", monospace;
-  --font-mono: var(--font-terminal), "VT323", monospace;
+  --font-sans: "Press Start 2P", monospace;
+  --font-mono: "VT323", monospace;
 
   /* 80s Arcade Neon Color Palette */
   --color-arcade-pink: #ff2d95;
