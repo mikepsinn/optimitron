@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Loader2, type LucideIcon } from "lucide-react"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/retroui/Button"
 import { cn } from "@/lib/utils"
 import { type VariantProps } from "class-variance-authority"
 

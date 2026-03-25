@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { Award } from "lucide-react"
 import type { DashboardBadge } from "@/types/dashboard"
 
@@ -9,16 +9,16 @@ interface BadgesSectionProps {
 export function BadgesSection({ badges }: BadgesSectionProps) {
   return (
     <Card className="border-4 border-primary mb-8">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
           <Award className="h-6 w-6" />
           BADGES & ACHIEVEMENTS
-        </CardTitle>
-        <CardDescription className="font-bold">
+        </Card.Title>
+        <Card.Description className="font-bold">
           Your contributions to Earth optimization. Well done, human.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {badges.length > 0 ? (
             badges.map((badge) => (
@@ -41,7 +41,7 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
             <p className="text-center text-muted-foreground py-8 col-span-3">No achievements unlocked yet. On my planet we&apos;d call this &ldquo;a blank record.&rdquo; Yours is showing.</p>
           )}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

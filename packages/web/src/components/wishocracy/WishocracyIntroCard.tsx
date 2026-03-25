@@ -1,8 +1,8 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
 import { Stat } from "@/components/ui/stat"
 import { US_FEDERAL_SPENDING_2024 } from "@/lib/parameters-calculations-citations"
 

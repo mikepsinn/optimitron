@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import type { DashboardUser, LeaderboardEntry, DashboardStats } from "@/types/dashboard"
 
 interface LeaderboardCardProps {
@@ -32,13 +32,13 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
 
   return (
     <Card className="border-4 border-primary" id="leaderboard">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">LEADERBOARD</CardTitle>
-        <CardDescription className="font-bold">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase">LEADERBOARD</Card.Title>
+        <Card.Description className="font-bold">
           Humans who have done the most to fix their planet. The bar is low
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="space-y-3">
           {leaderboardWithUser.map((entry) => {
             const isCurrentUser = entry.userId === user.id
@@ -73,7 +73,7 @@ export function LeaderboardCard({ leaderboard, user, stats }: LeaderboardCardPro
             )
           })}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

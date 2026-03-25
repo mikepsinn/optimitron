@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { Target } from "lucide-react"
 import type { DashboardStats } from "@/types/dashboard"
 
@@ -9,16 +9,16 @@ interface ReferralGoalCardProps {
 export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
   return (
     <Card className="border-4 border-primary mb-8 bg-brutal-pink">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
           <Target className="h-6 w-6" />
           YOUR REFERRAL GOAL
-        </CardTitle>
-        <CardDescription className="text-foreground font-bold">
+        </Card.Title>
+        <Card.Description className="text-foreground font-bold">
           QUEST: Recruit 2 players. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="space-y-4">
           <div>
             <div className="flex justify-between text-sm font-bold mb-2">
@@ -63,7 +63,7 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
                   : "You're a LEGENDARY recruiter! 🏆"}
           </p>
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

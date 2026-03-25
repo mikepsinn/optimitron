@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
 import { WISHOCRATIC_ITEMS, type WishocraticItemId } from "@/lib/wishocracy-data"
 import { buildEnrichedWishocraticItems, type EfficiencyContext } from "@/lib/wishocracy-bridge"
 

@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
+import { Label } from "@/components/retroui/Label"
 import type { DashboardNotificationPreference } from "@/types/dashboard"
 import { useState } from "react"
 
@@ -55,11 +55,11 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
 
   return (
     <Card className="border-4 border-primary mb-8">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">NOTIFICATION PREFERENCES</CardTitle>
-        <CardDescription className="font-bold">Choose how and when to be bothered</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase">NOTIFICATION PREFERENCES</Card.Title>
+        <Card.Description className="font-bold">Choose how and when to be bothered</Card.Description>
+      </Card.Header>
+      <Card.Content className="space-y-4">
         {/* Channel headers */}
         <div className="hidden sm:grid grid-cols-[1fr_repeat(3,80px)] gap-2 px-4 pb-2 border-b-2 border-primary">
           <div />
@@ -104,7 +104,7 @@ export function NotificationPreferencesCard({ preferences, onRefresh }: Notifica
             On my planet, notifications take 0.003 seconds to process. You lot seem to need the option to ignore them entirely.
           </p>
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

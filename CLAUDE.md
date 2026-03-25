@@ -262,9 +262,64 @@ The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check
 | Inline numbered list item | `<NumberedStepCard step={1} title="..." description="..." />` |
 | Manual stat grid | `<StatCardGrid stats={[...]} columns={3} />` |
 
-### Available UI Primitives (`packages/web/src/components/ui/`)
+### RetroUI Primitives (`packages/web/src/components/retroui/`)
 
-**ALWAYS check this list before building a new component.** If a UI primitive exists, use it. Do not hand-roll cards, stat blocks, comparison layouts, section headers, or CTAs.
+Base UI components from [RetroUI](https://retroui.dev). These use **compound component pattern**: `<Card.Header>` not `<CardHeader>`.
+
+| Component | File | Use For |
+|-----------|------|---------|
+| `Button` | `Button.tsx` | All interactive buttons. Variants: default, secondary, destructive, outline, link, ghost |
+| `Card` | `Card.tsx` | Base card container. Sub-components: `.Header`, `.Title`, `.Description`, `.Content`, `.Footer`, `.Action` |
+| `Input` | `Input.tsx` | Form text inputs |
+| `Textarea` | `Textarea.tsx` | Multi-line text inputs |
+| `Label` | `Label.tsx` | Form labels |
+| `Badge` | `Badge.tsx` | Status badges. Variants: default, secondary, destructive, outline, solid, surface |
+| `Accordion` | `Accordion.tsx` | Collapsible sections. Sub: `.Item`, `.Header`, `.Content` |
+| `Alert` | `Alert.tsx` | Alert messages. Status: error, success, warning, info |
+| `Avatar` | `Avatar.tsx` | User avatars. Sub: `.Image`, `.Fallback` |
+| `Breadcrumb` | `Breadcrumb.tsx` | Navigation breadcrumbs |
+| `Calendar` | `Calendar.tsx` | Date picker calendar |
+| `Carousel` | `Carousel.tsx` | Content carousel. Sub: `.Content`, `.Item`, `.Previous`, `.Next` |
+| `Checkbox` | `Checkbox.tsx` | Checkboxes |
+| `Command` | `Command.tsx` | Command palette / search |
+| `ContextMenu` | `ContextMenu.tsx` | Right-click context menus |
+| `Dialog` | `Dialog.tsx` | Modal dialogs. Sub: `.Trigger`, `.Close`, `.Header`, `.Content`, `.Description`, `.Footer` |
+| `Drawer` | `Drawer.tsx` | Side/bottom drawers (Vaul-based) |
+| `Loader` | `Loader.tsx` | Loading animation (bouncing dots) |
+| `Menu` | `Menu.tsx` | Dropdown menus. Sub: `.Trigger`, `.Content`, `.Item` |
+| `Popover` | `Popover.tsx` | Popover menus. Sub: `.Trigger`, `.Content`, `.Anchor` |
+| `Progress` | `Progress.tsx` | Progress bars |
+| `Radio` | `Radio.tsx` | Radio button groups |
+| `Select` | `Select.tsx` | Select dropdowns |
+| `Slider` | `Slider.tsx` | Range sliders |
+| `Sonner` | `Sonner.tsx` | Toast notifications |
+| `Switch` | `Switch.tsx` | Toggle switches |
+| `Tab` | `Tab.tsx` | Tabbed interfaces |
+| `Table` | `Table.tsx` | Data tables. Sub: `.Header`, `.Body`, `.Footer`, `.Row`, `.Head`, `.Cell` |
+| `Text` | `Text.tsx` | Polymorphic text (`as="h1"`, `as="p"`, etc.) |
+| `Toggle` | `Toggle.tsx` | Toggle buttons |
+| `ToggleGroup` | `ToggleGroup.tsx` | Toggle button groups |
+| `Tooltip` | `Tooltip.tsx` | Hover tooltips. Sub: `.Provider`, `.Trigger`, `.Content` |
+| `TableOfContents` | `TableOfContents.tsx` | Auto-generated TOC from headings |
+| `AreaChart` | `charts/AreaChart.tsx` | Area charts (Recharts) |
+| `BarChart` | `charts/BarChart.tsx` | Bar charts (Recharts) |
+| `LineChart` | `charts/LineChart.tsx` | Line charts (Recharts) |
+| `PieChart` | `charts/PieChart.tsx` | Pie/donut charts (Recharts) |
+
+**Import pattern:**
+```tsx
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
+
+<Card>
+  <Card.Header><Card.Title>Title</Card.Title></Card.Header>
+  <Card.Content>Content</Card.Content>
+</Card>
+```
+
+### Custom Domain Primitives (`packages/web/src/components/ui/`)
+
+Project-specific components that wrap RetroUI primitives with domain styling.
 
 | Component | File | Use For |
 |-----------|------|---------|
@@ -285,18 +340,19 @@ The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check
 | `Stat` | `stat.tsx` | Inline parameter display (pulls from parameters-calculations-citations) |
 
 ### Border Weight
-- **Always `border-4 border-primary`** on cards and sections
-- Never `border`, `border-2`, or `border-black` (use `border-primary` for dark mode)
+- **RetroUI components use `border-2`** — this is the default for all RetroUI primitives
+- **Custom domain components (BrutalCard, SectionContainer) use `border-4 border-primary`** — for extra emphasis
+- Never use `border-black` — use `border-primary` for dark mode compat
 
 ### Shadow Style
-- **Hard, opaque, consistent:** `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]` (default)
-- Never soft: no `rgba(0,0,0,0.3)`, no `shadow-sm`, `shadow-md`, `shadow-lg`
-- Consistent sizes: 4px (small/hover-in), 8px (default), 12px (hover-out/emphasis)
+- **RetroUI components use `shadow-md`** which maps to hard offset shadows via CSS custom properties
+- **Custom components** use explicit `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]` where RetroUI tokens don't apply
+- Never soft: no `rgba(0,0,0,0.3)`
 
-### Hover Direction (IMPORTANT — opposite of what you'd guess)
-- **Hover OUT (shadow grows):** `hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_...]`
-- This is the dih-neobrutalist convention — card lifts UP and shadow extends
-- NOT: `hover:translate-x-[2px] hover:translate-y-[2px]` (that's push-in, wrong direction)
+### Hover Behavior
+- **RetroUI buttons:** push-down on hover (`hover:translate-y-1 active:translate-y-2`) — shadow shrinks
+- **Custom cards (BrutalCard):** hover-OUT (shadow grows, card lifts UP) — `hover:translate-x-[-2px] hover:translate-y-[-2px]`
+- Both patterns are valid — RetroUI for standard interactions, hover-OUT for featured cards
 
 ### Typography
 - **Headings:** `font-black uppercase` always
@@ -311,7 +367,7 @@ The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check
 
 ### Do NOT Use
 - `rounded-xl`, `rounded-2xl` — keep `rounded-md` or `rounded-none` for brutal feel
-- `shadow-sm`, `shadow-md`, `shadow-lg` — only hard offset shadows
+- `shadow-sm`, `shadow-lg` — use `shadow-md` (RetroUI default) or explicit hard offset shadows
 - `font-normal`, `font-medium`, `font-light` — too soft for neobrutalist
 - `bg-gray-50`, `bg-gray-100`, etc. — use `bg-muted` or `bg-background`
 - Gradients (`bg-gradient-to-*`) — flat colors only
@@ -320,7 +376,7 @@ The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check
 
 - **Monorepo**: pnpm workspaces
 - **Tests**: vitest (unit/integration), Playwright (e2e in web)
-- **Web**: Next.js 15, Tailwind CSS 4, Radix UI, next-auth + WorldID
+- **Web**: Next.js 15, Tailwind CSS 4, RetroUI + Radix UI, next-auth + WorldID
 - **Contracts**: Hardhat 2.22, OpenZeppelin 5.1, Solidity 0.8.24
 - **CI**: GitHub Actions (typecheck + lint + test on push/PR; web excluded — Vercel handles it)
 

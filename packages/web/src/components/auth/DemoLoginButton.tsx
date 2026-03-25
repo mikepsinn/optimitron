@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import { ROUTES } from "@/lib/routes";
 
 interface DemoLoginButtonProps {

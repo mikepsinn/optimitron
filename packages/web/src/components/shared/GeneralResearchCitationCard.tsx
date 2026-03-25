@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { ExternalLink } from "lucide-react"
 import type { GeneralResearchCitation } from "@/types/general-research-citation"
 

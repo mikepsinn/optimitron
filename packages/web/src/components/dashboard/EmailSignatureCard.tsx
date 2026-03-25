@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
 import { Copy, Check, Mail } from "lucide-react"
 import {
   VOTER_LIVES_SAVED,
@@ -68,16 +68,16 @@ export function EmailSignatureCard({ referralLink, userName }: EmailSignatureCar
 
   return (
     <Card className="border-4 border-primary mb-8">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
           <Mail className="h-6 w-6" />
           Email Signature Generator
-        </CardTitle>
-        <CardDescription className="font-bold">
+        </Card.Title>
+        <Card.Description className="font-bold">
           Paste this into your email signature. Every email becomes a tiny act of civilisation repair. Zero effort on your part, which I&apos;ve learned is important
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="space-y-4">
           <div className="border-4 border-primary p-4 bg-background">
             <p className="text-xs text-muted-foreground mb-3 font-bold uppercase">Preview:</p>
@@ -111,7 +111,7 @@ export function EmailSignatureCard({ referralLink, userName }: EmailSignatureCar
             <p><strong>Apple Mail:</strong> Preferences → Signatures → Paste</p>
           </div>
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

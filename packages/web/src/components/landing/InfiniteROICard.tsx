@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { LatexBlock } from "@/components/ui/latex"
 import { ImpactExplainer } from "@/components/shared/ImpactExplainer"
 import {

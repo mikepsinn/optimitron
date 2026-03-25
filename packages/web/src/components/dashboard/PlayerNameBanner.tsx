@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
+import { Input } from "@/components/retroui/Input"
 import { Pencil, X, Check, Gamepad2 } from "lucide-react"
 import type { DashboardUser } from "@/types/dashboard"
 

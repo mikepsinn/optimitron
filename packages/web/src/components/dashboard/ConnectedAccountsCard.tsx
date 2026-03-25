@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/retroui/Button"
+import { Card } from "@/components/retroui/Card"
 import type { DashboardSocialAccount } from "@/types/dashboard"
 import { FaGithub, FaXTwitter, FaDiscord, FaTelegram, FaEthereum } from "react-icons/fa6"
 import { signIn } from "next-auth/react"
@@ -86,13 +86,13 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
 
   return (
     <Card className="border-4 border-primary">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">CONNECTED ACCOUNTS</CardTitle>
-        <CardDescription className="font-bold">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase">CONNECTED ACCOUNTS</Card.Title>
+        <Card.Description className="font-bold">
           Link your accounts. Helps me verify you&apos;re real and not three bots in a trenchcoat
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="space-y-3">
           {PLATFORMS.map((row) => {
             const account = getAccount(row.key)
@@ -126,7 +126,7 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
             )
           })}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

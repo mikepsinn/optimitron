@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
+import { Input } from "@/components/retroui/Input"
+import { Label } from "@/components/retroui/Label"
+import { Textarea } from "@/components/retroui/Textarea"
 import { Check, Copy, ExternalLink, Globe } from "lucide-react"
 import { PrivacyToggle } from "@/components/dashboard/PrivacyToggle"
 import { OrganizationSelector } from "@/components/dashboard/OrganizationSelector"
@@ -106,11 +106,11 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
 
   return (
     <Card className="border-4 border-primary">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">YOUR PROFILE</CardTitle>
-        <CardDescription className="font-bold">Your public record on this planet</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase">YOUR PROFILE</Card.Title>
+        <Card.Description className="font-bold">Your public record on this planet</Card.Description>
+      </Card.Header>
+      <Card.Content className="space-y-6">
         <div className="space-y-4">
           <div>
             <Label className="text-sm font-bold uppercase">Name</Label>
@@ -246,7 +246,7 @@ export function ProfileCard({ user, onUserChange, onRefresh }: ProfileCardProps)
         </div>
 
         {formError && <p className="text-sm font-bold text-red-600">{formError}</p>}
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

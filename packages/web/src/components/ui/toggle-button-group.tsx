@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/retroui/Button"
 import { cn } from "@/lib/utils"
 
 export type ToggleActiveColor = "pink" | "cyan" | "yellow" | "green"

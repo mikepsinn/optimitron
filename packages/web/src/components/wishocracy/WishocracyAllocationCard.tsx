@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { WishocraticAllocationBars } from "./WishocraticAllocationBars"
 import type { WishocraticAllocationInput } from "@/lib/wishocracy-allocation"
 

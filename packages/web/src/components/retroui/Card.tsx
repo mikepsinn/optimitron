@@ -39,11 +39,31 @@ const CardContent = ({ className, ...props }: ICardProps) => {
   return <div className={cn("p-4", className)} {...props} />;
 };
 
+const CardFooter = ({ className, ...props }: ICardProps) => {
+  return (
+    <div
+      className={cn("flex items-center p-4 [.border-t]:pt-4", className)}
+      {...props}
+    />
+  );
+};
+
+const CardAction = ({ className, ...props }: ICardProps) => {
+  return (
+    <div
+      className={cn("col-start-2 row-span-2 row-start-1 self-start justify-self-end", className)}
+      {...props}
+    />
+  );
+};
+
 const CardComponent = Object.assign(Card, {
   Header: CardHeader,
   Title: CardTitle,
   Description: CardDescription,
   Content: CardContent,
+  Footer: CardFooter,
+  Action: CardAction,
 });
 
 export { CardComponent as Card };

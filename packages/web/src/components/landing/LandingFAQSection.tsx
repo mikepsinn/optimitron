@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+import { Accordion } from "@/components/retroui/Accordion";
 import { fmtParam } from "@/lib/format-parameter";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
@@ -76,20 +71,20 @@ export function LandingFAQSection() {
             className="border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             {objections.map((item) => (
-              <AccordionItem
+              <Accordion.Item
                 key={item.id}
                 value={item.id}
                 className="border-b-4 border-primary last:border-b-0"
               >
-                <AccordionTrigger className="px-6 py-5 text-base sm:text-lg font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+                <Accordion.Header className="px-6 py-5 text-base sm:text-lg font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
                   {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="px-6">
+                </Accordion.Header>
+                <Accordion.Content className="px-6">
                   <p className="text-base font-bold text-muted-foreground leading-relaxed pb-2">
                     {item.answer}
                   </p>
-                </AccordionContent>
-              </AccordionItem>
+                </Accordion.Content>
+              </Accordion.Item>
             ))}
           </Accordion>
         </div>

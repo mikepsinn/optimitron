@@ -5,7 +5,7 @@ import { ArrowRight, BarChart3, ExternalLink, Scale, Shield, Sparkles, Target } 
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import { ALIGNMENT_BENCHMARK_SOURCE_NOTE } from "@/lib/alignment-benchmarks";
 import type { PersonalAlignmentState } from "@/lib/alignment-report";
 import { wishocracyLink } from "@/lib/routes";

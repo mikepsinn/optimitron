@@ -6,13 +6,8 @@ import type { LeaderboardEntry } from "@/lib/verified-votes.server";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { ShareTemplatesCard } from "@/components/prize/ShareTemplatesCard";
-import { Progress } from "@/components/ui/progress";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Progress } from "@/components/retroui/Progress";
+import { Tooltip } from "@/components/retroui/Tooltip";
 import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
 import { buildPrizeReferralUrl } from "@/lib/url";
 import {
@@ -190,9 +185,9 @@ export function CitizenDashboard() {
           Your Verified Votes Have Contributed To
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TooltipProvider>
+          <Tooltip.Provider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <Tooltip.Trigger asChild>
                 <div className="cursor-help">
                   <div className="text-3xl font-black text-brutal-pink-foreground">
                     {Math.round(livesSaved).toLocaleString()}
@@ -201,20 +196,20 @@ export function CitizenDashboard() {
                     lives saved (attributed)
                   </div>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              </Tooltip.Trigger>
+              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Each verified vote = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives
                   saved (total lives saved by the treaty ÷ 280M target voting
                   bloc). Your {stats.verifiedVotes} verified votes ={" "}
                   {Math.round(livesSaved).toLocaleString()} lives.
                 </p>
-              </TooltipContent>
+              </Tooltip.Content>
             </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
+          </Tooltip.Provider>
+          <Tooltip.Provider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <Tooltip.Trigger asChild>
                 <div className="cursor-help">
                   <div className="text-3xl font-black text-brutal-pink-foreground">
                     {sufferingYearsPrevented.toLocaleString()}
@@ -223,20 +218,20 @@ export function CitizenDashboard() {
                     years of suffering prevented
                   </div>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              </Tooltip.Trigger>
+              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Each verified vote prevents ~{SUFFERING_YEARS_PER_VOTE.toLocaleString()} years
                   of suffering ({(SUFFERING_HOURS_PER_VOTE / 1e6).toFixed(1)}M
                   hours ÷ 8,760 hours/year). Based on DALYs averted by
                   accelerating treatment timelines.
                 </p>
-              </TooltipContent>
+              </Tooltip.Content>
             </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
+          </Tooltip.Provider>
+          <Tooltip.Provider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <Tooltip.Trigger asChild>
                 <div className="cursor-help">
                   <div className="text-3xl font-black text-brutal-pink-foreground">
                     {estimatedReach.toLocaleString()}
@@ -245,16 +240,16 @@ export function CitizenDashboard() {
                     hearts &amp; minds reached
                   </div>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              </Tooltip.Trigger>
+              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Estimated reach based on your referrals. Each referral
                   generates an average of {AVG_IMPRESSIONS_PER_SHARE} social
                   media impressions.
                 </p>
-              </TooltipContent>
+              </Tooltip.Content>
             </Tooltip>
-          </TooltipProvider>
+          </Tooltip.Provider>
         </div>
       </div>
 
@@ -409,14 +404,14 @@ export function CitizenDashboard() {
           <h3 className="text-lg font-black uppercase text-foreground">
             Progress Toward {TIPPING_POINT_PCT}% Tipping Point
           </h3>
-          <TooltipProvider>
+          <Tooltip.Provider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <Tooltip.Trigger asChild>
                 <button className="w-6 h-6 border-4 border-primary bg-background flex items-center justify-center text-xs font-black hover:bg-brutal-pink hover:text-background transition-colors">
                   ?
                 </button>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+              </Tooltip.Trigger>
+              <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   <span className="text-brutal-pink">
                     The {TIPPING_POINT_PCT}% Rule:
@@ -426,9 +421,9 @@ export function CitizenDashboard() {
                   never failed to bring about change. Our target is{" "}
                   {(VOTING_BLOC_TARGET / 1e6).toFixed(0)}M people globally.
                 </p>
-              </TooltipContent>
+              </Tooltip.Content>
             </Tooltip>
-          </TooltipProvider>
+          </Tooltip.Provider>
         </div>
         <p className="text-sm font-bold text-muted-foreground mb-3">
           We need {TIPPING_POINT_PCT}% of the global population to create

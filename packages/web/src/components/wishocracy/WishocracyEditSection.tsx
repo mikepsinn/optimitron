@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
 import { ChevronDown, ChevronUp, Save, AlertTriangle } from "lucide-react"
 import { WISHOCRATIC_ITEMS, WishocraticItemId } from "@/lib/wishocracy-data"
 import { motion, AnimatePresence } from "framer-motion"

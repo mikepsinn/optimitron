@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { Users, BarChart3, Award, TrendingUp, Star } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip } from "@/components/retroui/Tooltip"
 import type { DashboardStats } from "@/types/dashboard"
 
 interface StatsOverviewProps {
@@ -14,11 +14,11 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
         Impact Stats
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <TooltipProvider>
+        <Tooltip.Provider>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <Tooltip.Trigger asChild>
               <Card className="border-4 border-primary hover:border-brutal-yellow hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-                <CardContent className="pt-6">
+                <Card.Content className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-bold uppercase text-muted-foreground">Wishes</p>
@@ -26,19 +26,19 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
                     </div>
                     <Star className="h-12 w-12 text-brutal-yellow" />
                   </div>
-                </CardContent>
+                </Card.Content>
               </Card>
-            </TooltipTrigger>
-            <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+            </Tooltip.Trigger>
+            <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
               <p className="font-bold text-sm">
                 Earned by playing. Vote, allocate, check in, verify, recruit — every action earns wishes.
               </p>
-            </TooltipContent>
+            </Tooltip.Content>
           </Tooltip>
-        </TooltipProvider>
+        </Tooltip.Provider>
 
         <Card className="border-4 border-primary hover:border-brutal-pink hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-          <CardContent className="pt-6">
+          <Card.Content className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold uppercase text-muted-foreground">Referrals</p>
@@ -46,11 +46,11 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
               </div>
               <Users className="h-12 w-12 text-brutal-pink" />
             </div>
-          </CardContent>
+          </Card.Content>
         </Card>
 
         <Card className="border-4 border-primary hover:border-brutal-cyan hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-          <CardContent className="pt-6">
+          <Card.Content className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold uppercase text-muted-foreground">Comparisons</p>
@@ -58,14 +58,14 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
               </div>
               <BarChart3 className="h-12 w-12 text-brutal-cyan" />
             </div>
-          </CardContent>
+          </Card.Content>
         </Card>
 
-        <TooltipProvider>
+        <Tooltip.Provider>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <Tooltip.Trigger asChild>
               <Card className="border-4 border-primary hover:border-brutal-yellow hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-                <CardContent className="pt-6">
+                <Card.Content className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-bold uppercase text-muted-foreground">Badges</p>
@@ -73,19 +73,19 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
                     </div>
                     <Award className="h-12 w-12 text-brutal-yellow" />
                   </div>
-                </CardContent>
+                </Card.Content>
               </Card>
-            </TooltipTrigger>
-            <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
+            </Tooltip.Trigger>
+            <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
               <p className="font-bold text-sm">
                 Proof you did something. Comparisons, referrals, deposits, and not being a bot.
               </p>
-            </TooltipContent>
+            </Tooltip.Content>
           </Tooltip>
-        </TooltipProvider>
+        </Tooltip.Provider>
 
         <Card className="border-4 border-primary hover:border-primary hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-          <CardContent className="pt-6">
+          <Card.Content className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold uppercase text-muted-foreground">Global Ranking</p>
@@ -93,7 +93,7 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
               </div>
               <TrendingUp className="h-12 w-12 text-primary" />
             </div>
-          </CardContent>
+          </Card.Content>
         </Card>
       </div>
     </div>

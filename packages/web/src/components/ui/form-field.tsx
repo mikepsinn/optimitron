@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/retroui/Label"
 import { cn } from "@/lib/utils"
 
 export interface FormFieldProps {

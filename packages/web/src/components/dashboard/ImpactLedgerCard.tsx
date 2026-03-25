@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { calculateImpactLedger, getNextLifeMilestoneMessage, HOURS_PER_YEAR, VALUE_PER_HOUR } from "@/lib/impact-ledger"
 import { formatCurrencyShort, formatLives, formatNumberShort } from "@/lib/formatters"
 import { Sparkles, Clock3, Heart } from "lucide-react"
@@ -50,17 +50,17 @@ export function ImpactLedgerCard({ votesLogged }: ImpactLedgerCardProps) {
 
   return (
     <Card className="border-4 border-primary bg-background">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase flex items-center gap-2">
           <Sparkles className="h-6 w-6" />
           IMPACT SCOREBOARD
           <ImpactExplainer className="ml-1 h-7 w-7" />
-        </CardTitle>
-        <CardDescription className="font-bold">
+        </Card.Title>
+        <Card.Description className="font-bold">
           Every person you recruit adds to your ledger. We price a healthy year at $150K, which is the standard your own economists use and then ignore.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </Card.Description>
+      </Card.Header>
+      <Card.Content className="space-y-6">
         <section>
           <p className="font-black uppercase text-sm mb-3">Your Total Impact</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -100,7 +100,7 @@ export function ImpactLedgerCard({ votesLogged }: ImpactLedgerCardProps) {
             )}
           </p>
         </section>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

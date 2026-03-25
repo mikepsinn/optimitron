@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { cn } from "@/lib/utils"
 
 export type BrutalCardBgColor = "background" | "foreground" | "pink" | "cyan" | "yellow" | "green" | "red" | "default"

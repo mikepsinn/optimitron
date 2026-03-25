@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 
 interface WishocracyLoadingCardProps {
   isLoading: boolean

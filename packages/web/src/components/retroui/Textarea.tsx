@@ -1,12 +1,15 @@
-import React from "react";
+import React, { TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  className?: string;
+}
+
 export function Textarea({
-  type = "text",
   placeholder = "Enter text...",
   className = "",
   ...props
-}) {
+}: TextareaProps) {
   return (
     <textarea
       placeholder={placeholder}

@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { AllocationBar } from "./AllocationBar"
 
 interface AllocationCategory {

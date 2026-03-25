@@ -4,11 +4,11 @@ import { useEffect, useState, useTransition } from "react";
 import { API_ROUTES } from "@/lib/api-routes";
 import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { AlertCard } from "@/components/ui/alert-card";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
 import { FormField } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/retroui/Input";
+import { Textarea } from "@/components/retroui/Textarea";
 import {
   EDUCATION_LEVEL_OPTIONS,
   EMPLOYMENT_STATUS_OPTIONS,
@@ -150,10 +150,10 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
 
   return (
     <Card className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <CardHeader className="gap-3">
-        <CardTitle className="text-2xl font-black uppercase text-foreground">
+      <Card.Header className="gap-3">
+        <Card.Title className="text-2xl font-black uppercase text-foreground">
           Census Snapshot
-        </CardTitle>
+        </Card.Title>
         <p className="text-sm font-bold text-muted-foreground">
           Income is saved as annual household income in USD.
         </p>
@@ -162,8 +162,8 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
             Updated {new Date(profile.censusUpdatedAt).toLocaleString()}
           </p>
         ) : null}
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </Card.Header>
+      <Card.Content className="space-y-4">
         {error ? <AlertCard className="mb-0" message={error} type="error" /> : null}
         {success ? <AlertCard className="mb-0" message={success} type="success" /> : null}
 
@@ -369,7 +369,7 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
             {isPending ? "Saving..." : "Save Snapshot"}
           </Button>
         </form>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

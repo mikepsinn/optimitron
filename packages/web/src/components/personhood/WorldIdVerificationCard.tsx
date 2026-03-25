@@ -9,8 +9,8 @@ import { API_ROUTES } from "@/lib/api-routes";
 import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import { AlertCard } from "@/components/ui/alert-card";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
 import { createLogger } from "@/lib/logger";
 import { clientEnv } from "@/lib/env";
 import type { WorldIdRequestPayload, WorldIdVerificationPayload } from "@/lib/world-id";
@@ -135,12 +135,12 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
   return (
     <div className="mx-auto mb-8 max-w-3xl">
       <Card className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <CardHeader className="gap-3">
+        <Card.Header className="gap-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-lg font-black uppercase text-foreground">
+              <Card.Title className="text-lg font-black uppercase text-foreground">
                 Proof of Personhood
-              </CardTitle>
+              </Card.Title>
               <p className="mt-2 text-sm text-muted-foreground">
                 Verify with World ID so we can weight civic input toward real people instead of bots.
               </p>
@@ -150,8 +150,8 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               verified={isVerified}
             />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </Card.Header>
+        <Card.Content className="space-y-4">
           {successMessage ? <AlertCard type="success" message={successMessage} /> : null}
           {requestError ? <AlertCard type="error" message={requestError} /> : null}
 
@@ -243,7 +243,7 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
               </div>
             </div>
           )}
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {requestPayload ? (

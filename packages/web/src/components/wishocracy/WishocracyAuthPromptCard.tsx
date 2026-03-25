@@ -3,8 +3,8 @@
 import type { RefObject } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
 import { wishocracyLink } from "@/lib/routes";
 
 interface WishocracyAuthPromptCardProps {

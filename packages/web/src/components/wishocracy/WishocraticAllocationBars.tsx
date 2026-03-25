@@ -1,9 +1,9 @@
 "use client"
 
 import { useMemo, useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
+import { Input } from "@/components/retroui/Input"
 import { API_ROUTES } from "@/lib/api-routes"
 import { WISHOCRATIC_ITEMS, WishocraticItemId, getActualGovernmentAllocations } from "@/lib/wishocracy-data"
 import type { WishocraticAllocationInput } from "@/lib/wishocracy-allocation"

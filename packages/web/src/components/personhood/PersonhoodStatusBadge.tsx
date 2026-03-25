@@ -1,7 +1,7 @@
 "use client";
 
 import { ShieldAlert, ShieldCheck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/retroui/Badge";
 import {
   getPersonhoodProviderLabel,
   type PersonhoodProviderValue,

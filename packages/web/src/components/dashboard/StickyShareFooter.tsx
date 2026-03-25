@@ -4,7 +4,7 @@ import { calculateImpactLedger, HOURS_PER_YEAR } from "@/lib/impact-ledger"
 import { formatLives, formatNumberShort } from "@/lib/formatters"
 import { CopyLinkButton } from "@/components/sharing/copy-link-button"
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/retroui/Button"
 import { Heart, Clock3, Share2 } from "lucide-react"
 import { useState } from "react"
 

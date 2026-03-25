@@ -1,7 +1,7 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/retroui/Card"
+import { Button } from "@/components/retroui/Button"
 import Link from "next/link"
 import { Building2, CheckCircle2, Clock, XCircle, TrendingUp } from "lucide-react"
 import type { DashboardOrganization } from "@/types/dashboard"

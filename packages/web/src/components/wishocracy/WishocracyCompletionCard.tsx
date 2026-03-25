@@ -6,7 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import { alignmentLink } from "@/lib/routes";
 import { PrizeCTA } from "@/components/prize/PrizeCTA";
 import { WISHOCRATIC_ITEMS, WishocraticItemId } from "@/lib/wishocracy-data";

@@ -15,12 +15,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion } from "@/components/retroui/Accordion";
 import {
   ROUTES,
   getSignInPath,
@@ -105,11 +100,11 @@ export default function Navbar() {
 
                 <Accordion type="multiple" defaultValue={navSections.map((s) => s.id)} className="w-full">
                   {navSections.map((section) => (
-                    <AccordionItem key={section.id} value={section.id} className="border-b-2 border-primary">
-                      <AccordionTrigger className="text-sm font-black uppercase tracking-wide py-3 hover:no-underline">
+                    <Accordion.Item key={section.id} value={section.id} className="border-b-2 border-primary">
+                      <Accordion.Header className="text-sm font-black uppercase tracking-wide py-3 hover:no-underline">
                         {section.label}
-                      </AccordionTrigger>
-                      <AccordionContent className="pb-2">
+                      </Accordion.Header>
+                      <Accordion.Content className="pb-2">
                         <div className="flex flex-col gap-1">
                           {section.items.map((item) => {
                             const active = isNavItemActive(pathname, item);
@@ -130,8 +125,8 @@ export default function Navbar() {
                             );
                           })}
                         </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                      </Accordion.Content>
+                    </Accordion.Item>
                   ))}
                 </Accordion>
 

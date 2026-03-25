@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/retroui/Card";
 import type { DailyCheckInHistoryEntry } from "@/lib/profile";
 
 interface CheckInHistoryCardProps {
@@ -25,12 +25,12 @@ function RatingBar({ colorClassName, value }: { colorClassName: string; value: n
 export function CheckInHistoryCard({ history }: CheckInHistoryCardProps) {
   return (
     <Card className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <CardHeader className="gap-3">
-        <CardTitle className="text-2xl font-black uppercase text-foreground">
+      <Card.Header className="gap-3">
+        <Card.Title className="text-2xl font-black uppercase text-foreground">
           Recent History
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </Card.Title>
+      </Card.Header>
+      <Card.Content>
         {history.length === 0 ? (
           <p className="text-sm font-bold text-muted-foreground">
             No check-ins yet.
@@ -66,7 +66,7 @@ export function CheckInHistoryCard({ history }: CheckInHistoryCardProps) {
             ))}
           </div>
         )}
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

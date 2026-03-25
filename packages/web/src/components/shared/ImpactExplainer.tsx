@@ -1,6 +1,6 @@
 import { HelpCircle, ArrowUpRight, UsersRound, HeartPulse, Clock3, Zap } from "lucide-react"
 import Link from "next/link"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip } from "@/components/retroui/Tooltip"
 import { cn } from "@/lib/utils"
 import {
   EFFICACY_LAG_YEARS,
@@ -31,9 +31,9 @@ interface ImpactExplainerProps {
 
 export function ImpactExplainer({ className, iconClassName, size = 18, label = "Impact math explainer" }: ImpactExplainerProps) {
   return (
-    <TooltipProvider delayDuration={50}>
+    <Tooltip.Provider delayDuration={50}>
       <Tooltip>
-        <TooltipTrigger asChild>
+        <Tooltip.Trigger asChild>
           <button
             type="button"
             aria-label={label}
@@ -44,8 +44,8 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
           >
             <HelpCircle className={cn("stroke-[3px]", iconClassName)} style={{ width: size, height: size }} />
           </button>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[400px] bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-semibold space-y-3">
+        </Tooltip.Trigger>
+        <Tooltip.Content className="max-w-[400px] bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-semibold space-y-3">
           <div className="space-y-1">
             <p className="font-black uppercase text-xs">The Math Behind Your Impact</p>
             <p>
@@ -106,8 +106,8 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
             See the full analysis
             <ArrowUpRight className="h-3 w-3" />
           </Link>
-        </TooltipContent>
+        </Tooltip.Content>
       </Tooltip>
-    </TooltipProvider>
+    </Tooltip.Provider>
   )
 }

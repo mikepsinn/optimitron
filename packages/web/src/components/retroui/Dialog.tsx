@@ -221,8 +221,11 @@ const DialogHeader = ({
   );
 };
 
+const DialogClose = ReactDialog.Close;
+
 const DialogComponent = Object.assign(Dialog, {
   Trigger: DialogTrigger,
+  Close: DialogClose,
   Header: DialogHeader,
   Content: DialogContent,
   Description: DialogDescription,

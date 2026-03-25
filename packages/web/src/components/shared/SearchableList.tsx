@@ -1,6 +1,6 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/retroui/Input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Search } from "lucide-react"
 import { ReactNode } from "react"

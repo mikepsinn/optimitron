@@ -5,10 +5,10 @@ import { API_ROUTES } from "@/lib/api-routes";
 import { useWishPoints } from "@/components/wishes/WishPointProvider";
 import { AlertCard } from "@/components/ui/alert-card";
 import { AmountSelector } from "@/components/ui/amount-selector";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
 import { FormField } from "@/components/ui/form-field";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/retroui/Textarea";
 import type { CurrentCheckInData, ProfilePageData } from "@/lib/profile";
 
 interface DailyCheckInCardProps {
@@ -82,10 +82,10 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
 
   return (
     <Card className="border-4 border-primary bg-brutal-yellow shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <CardHeader className="gap-3">
-        <CardTitle className="text-2xl font-black uppercase text-foreground">
+      <Card.Header className="gap-3">
+        <Card.Title className="text-2xl font-black uppercase text-foreground">
           Daily Check-In
-        </CardTitle>
+        </Card.Title>
         <p className="text-sm font-bold text-muted-foreground">
           One check-in per UTC day for overall health and happiness.
         </p>
@@ -94,8 +94,8 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
             Today&apos;s entry: {currentCheckIn.date}
           </p>
         ) : null}
-      </CardHeader>
-      <CardContent className="space-y-5">
+      </Card.Header>
+      <Card.Content className="space-y-5">
         {error ? <AlertCard className="mb-0" message={error} type="error" /> : null}
         {success ? <AlertCard className="mb-0" message={success} type="success" /> : null}
 
@@ -143,7 +143,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
             {isPending ? "Saving..." : "Save Check-In"}
           </Button>
         </form>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

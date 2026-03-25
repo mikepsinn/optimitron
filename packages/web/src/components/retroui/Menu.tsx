@@ -16,7 +16,7 @@ const Content = ({ className, ...props }: IMenuContent) => (
       side="bottom"
       align="start"
       className={cn(
-        "bg-white border-2 shadow-md absolute top-2 min-w-20",
+        "bg-background border-2 shadow-md absolute top-2 min-w-20",
         className,
       )}
       {...props}
@@ -31,7 +31,7 @@ const MenuItem = React.forwardRef<
   <DropdownMenu.Item
     ref={ref}
     className={cn(
-      "relative text-black flex cursor-default select-none items-center rounded-xs px-2 py-1.5 text-sm outline-hidden transition-colors hover:bg-primary focus:bg-primary data-disabled:pointer-events-none data-disabled:opacity-50",
+      "relative text-foreground flex cursor-default select-none items-center rounded-xs px-2 py-1.5 text-sm outline-hidden transition-colors hover:bg-primary focus:bg-primary data-disabled:pointer-events-none data-disabled:opacity-50",
       className,
     )}
     {...props}

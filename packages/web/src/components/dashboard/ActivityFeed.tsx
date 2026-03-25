@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import type { DashboardActivity } from "@/types/dashboard"
 
 interface ActivityFeedProps {
@@ -8,11 +8,11 @@ interface ActivityFeedProps {
 export function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
     <Card className="border-4 border-primary" id="activity">
-      <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">RECENT ACTIVITY</CardTitle>
-        <CardDescription className="font-bold">Your latest contributions</CardDescription>
-      </CardHeader>
-      <CardContent>
+      <Card.Header>
+        <Card.Title className="text-2xl font-black uppercase">RECENT ACTIVITY</Card.Title>
+        <Card.Description className="font-bold">Your latest contributions</Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="space-y-3">
           {activities.length > 0 ? (
             activities.map((activity) => (
@@ -30,7 +30,7 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
             <p className="text-center text-muted-foreground py-8">No recent activity</p>
           )}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

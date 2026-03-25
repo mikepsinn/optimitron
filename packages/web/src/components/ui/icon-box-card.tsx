@@ -1,6 +1,6 @@
 import * as React from "react"
 import { type LucideIcon } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { cn } from "@/lib/utils"
 
 export type IconBoxBgColor = "cyan" | "pink" | "yellow" | "green" | "foreground"

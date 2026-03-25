@@ -1,13 +1,8 @@
 "use client"
 
 import React from "react"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
+import { Tooltip } from "@/components/retroui/Tooltip"
+import { Badge } from "@/components/retroui/Badge"
 import { ExternalLink, Info } from "lucide-react"
 import type { Parameter } from "@/lib/parameters-calculations-citations"
 import {
@@ -57,9 +52,9 @@ export function ParameterValue({
   }
 
   return (
-    <TooltipProvider>
+    <Tooltip.Provider>
       <Tooltip delayDuration={200}>
-        <TooltipTrigger asChild>
+        <Tooltip.Trigger asChild>
           <Component
             className={cn(
               "cursor-help underline decoration-dotted underline-offset-2 decoration-foreground/30",
@@ -68,15 +63,15 @@ export function ParameterValue({
           >
             {formattedValue}
           </Component>
-        </TooltipTrigger>
-        <TooltipContent
+        </Tooltip.Trigger>
+        <Tooltip.Content
           className="max-w-sm bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           sideOffset={8}
         >
           <ParameterTooltipContent param={param} confidenceInterval={confidenceInterval} />
-        </TooltipContent>
+        </Tooltip.Content>
       </Tooltip>
-    </TooltipProvider>
+    </Tooltip.Provider>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/retroui/Card"
 import { CopyLinkButton } from "@/components/sharing/copy-link-button"
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons"
 

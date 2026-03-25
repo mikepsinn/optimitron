@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Check, ChevronsUpDown, Loader2, Plus, Building2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/retroui/Button"
 import {
   Command,
   CommandEmpty,
@@ -13,11 +13,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover } from "@/components/retroui/Popover"
 import {
   Dialog,
   DialogContent,
@@ -25,8 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/retroui/Input"
+import { Label } from "@/components/retroui/Label"
 
 interface OrganizationSelectorProps {
   value: string | null
@@ -105,7 +101,7 @@ export function OrganizationSelector({ value, onSelect, disabled, initialName }:
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <Popover.Trigger asChild>
           <Button
             variant="outline"
             role="combobox"
@@ -127,8 +123,8 @@ export function OrganizationSelector({ value, onSelect, disabled, initialName }:
             )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0 border-4 border-primary">
+        </Popover.Trigger>
+        <Popover.Content className="w-[300px] p-0 border-4 border-primary">
           <Command shouldFilter={false}>
             <CommandInput
               placeholder="Search organizations..."
@@ -204,7 +200,7 @@ export function OrganizationSelector({ value, onSelect, disabled, initialName }:
               )}
             </CommandList>
           </Command>
-        </PopoverContent>
+        </Popover.Content>
       </Popover>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

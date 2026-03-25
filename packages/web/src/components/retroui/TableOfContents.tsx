@@ -68,9 +68,9 @@ function renderTOCItems(items: TOCItem[], level = 0, activeId: string | null) {
                         <a
                             href={item.url}
                             className={`text-sm max-w-full truncate transition-colors block py-1 border-l-2 pl-2 ${
-                                isActive 
-                                    ? 'text-black border-black bg-accent' 
-                                    : 'border-transparent hover:border-black hover:text-black'
+                                isActive
+                                    ? 'text-foreground border-foreground bg-accent'
+                                    : 'border-transparent hover:border-foreground hover:text-foreground'
                             }`}
                         >
                             {item.title}
