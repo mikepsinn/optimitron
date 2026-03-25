@@ -3,7 +3,7 @@
 **Target length**: 3–4 minutes
 **Tone**: Wishonia narrating (deadpan, data-first, dry, alien observer)
 **Aesthetic**: Sierra Online adventure game (Space Quest IV–VI era) — pixel art scenes, narrator text boxes, point-and-click verbs, death screens, score counter
-**Slides**: 29 (one concept per slide)
+**Slides**: ~29 (one concept per slide — count may change as we iterate)
 **Implementation**: `packages/web/src/lib/demo-script.ts` → `hackathon` playlist
 
 ---
@@ -43,7 +43,7 @@ The entire demo is presented as a Sierra-style point-and-click adventure game. W
 
 - **Score counter** (top-left): `0 of 8,000,000,000`. Ticks up as the game progresses. Represents "lives aligned."
 - **Death ticker** (top-right): `☠ 150,000/day` — always counting, always visible, relentless. Red digits.
-- **Quest meters** (mid-bar): Two progress bars showing current → target for HALE and Median Income. These are the *win conditions*. Hidden in Act I. Appear at The Turn (slide 7). Fill through Act II. Hit 100% on completion screen.
+- **Quest meters** (mid-bar): Two progress bars showing current → target for HALE and Median Income. These are the *win conditions*. Hidden in Act I. Appear at The Turn (Wishonia). Fill through Act II. Hit 100% on completion screen.
 - **Narrator text box** (bottom): Blue gradient box. Wishonia's pixel portrait on the left (48×48, slightly animated — blinking, occasional eyebrow raise). Narration text typewriter-animates character by character (~30 chars/sec).
 - **Verb bar + Inventory** (bottom edge): Look / Use / Walk / Talk icons. 8 inventory slots that fill as the player collects items. Decorative in auto-play, functional in interactive mode.
 - **Cursor**: Sierra-style crosshair, changes contextually (eye, hand, boots, speech bubble). Tracks mouse to prove it's not a video.
@@ -52,42 +52,42 @@ The entire demo is presented as a Sierra-style point-and-click adventure game. W
 
 | Slide | Score | Why |
 |-------|-------|-----|
-| 1–8 (Act I) | 0 | Nothing has been done yet. Counter mocks the viewer. |
-| 9 (Moronia) | `GAME OVER` | Score resets to 0. Death screen. |
-| 10 (Wishonia) | `RESTORE GAME` | Score reappears. Quest meters appear. |
-| 11 (The Fix) | 100,000 | First hint of progress. |
-| 12 (Acceleration) | 1,000,000 | Momentum building. |
-| 14 (Scoreboard) | 5,000,000 | Win conditions defined. Quest meters pulse. |
-| 15 (Allocate) | 10,000,000 | Player engagement starts. |
-| 16 (Vote) | 100,000,000 | Critical mass approaching. |
-| 17 ($0.06) | 200,000,000 | The asymmetry clicks. |
-| 18 (Get Friends to Play) | 500,000,000 | Network effect. |
-| 19 (Prize Investment) | 650,000,000 | Better than your retirement fund. |
-| 20 (Prize Mechanism) | 800,000,000 | Two paths, both green. |
-| 21 ($194K/point) | 1,000,000,000 | NOW the value makes sense. |
-| 22 (You Cannot Lose) | 1,500,000,000 | All three scenarios laid out. |
-| 23 (Leaderboard) | 3,000,000,000 | Accountability layer active. |
-| 24 (Metric) | 4,000,000,000 | System reprogrammed. |
-| 25 ($15.7M) | 6,000,000,000 | Act II climax. Personal upside lands. |
-| 28 (Title Drop) | 8,000,000,000 of 8,000,000,000 | Full alignment. "YOU HAVE WON." |
+| Act I (all) | 0 | Nothing has been done yet. Counter mocks the viewer. |
+| Moronia | `GAME OVER` | Score resets to 0. Death screen. |
+| Wishonia | `RESTORE GAME` | Score reappears. Quest meters appear. |
+| The Fix | 100,000 | First hint of progress. |
+| Acceleration | 1,000,000 | Momentum building. |
+| Scoreboard | 5,000,000 | Win conditions defined. Quest meters pulse. |
+| Allocate | 10,000,000 | Player engagement starts. |
+| Vote | 100,000,000 | Critical mass approaching. |
+| $0.06 | 200,000,000 | The asymmetry clicks. |
+| Get Friends to Play | 500,000,000 | Network effect. |
+| Prize Investment | 650,000,000 | Better than your retirement fund. |
+| Prize Mechanism | 800,000,000 | Two paths, both green. |
+| $194K/point | 1,000,000,000 | NOW the value makes sense. |
+| You Cannot Lose | 1,500,000,000 | All three scenarios laid out. |
+| Leaderboard | 3,000,000,000 | Accountability layer active. |
+| Changed the Metric | 4,000,000,000 | System reprogrammed. |
+| $15.7M | 6,000,000,000 | Act II climax. Personal upside lands. |
+| The Close | 8,000,000,000 of 8,000,000,000 | Full alignment. "YOU HAVE WON." |
 
 ### Inventory Items (collected as you progress)
 
-| Slot | Acquired | Icon | Item | Tooltip |
-|------|----------|------|------|---------|
-| 1 | Slide 11 | 📜 scroll | `1% TREATY` | "Redirect 1% of military spending to clinical trials." |
-| 2 | Slide 15 | 🗳 ballot | `ALLOCATION` | "Your preferred budget split." |
-| 3 | Slide 16 | ✊ fist | `VOTE` | "Yes on the 1% Treaty." |
-| 4 | Slide 18 | 🔗 chain | `REFERRAL LINK` | "Share with 2 friends. They share with 2 more." |
-| 5 | Slide 20 | 🪙 gold coin | `PRIZE DEPOSIT` | "$100 deposited. Earning 17%/yr. Grows 11× even if targets missed." |
-| 6 | Slide 21 | 🥈🥈 silver pair | `VOTE POINTS ×2` | "$194K each if targets are hit. Earned by getting friends to play." |
-| 7 | Slide 25 | 📋 deed | `$15.7M CLAIM` | "Your lifetime income gain if the Treaty passes." |
-| 8 | Slide 23 | 🔍 magnifier | `ALIGNMENT SCORE` | "See how your leaders rank vs your preferences." |
+| Slot | Acquired At | Icon | Item | Tooltip |
+|------|-------------|------|------|---------|
+| 1 | The Fix | 📜 scroll | `1% TREATY` | "Redirect 1% of military spending to clinical trials." |
+| 2 | Allocate | 🗳 ballot | `ALLOCATION` | "Your preferred budget split." |
+| 3 | Vote | ✊ fist | `VOTE` | "Yes on the 1% Treaty." |
+| 4 | Get Friends to Play | 🔗 chain | `REFERRAL LINK` | "Share with 2 friends. They share with 2 more." |
+| 5 | Prize Mechanism | 🪙 gold coin | `PRIZE DEPOSIT` | "$100 deposited. Earning 17%/yr. Grows 11× even if targets missed." |
+| 6 | $194K Per Point | 🥈🥈 silver pair | `VOTE POINTS ×2` | "$194K each if targets are hit. Earned by getting friends to play." |
+| 7 | $15.7M | 📋 deed | `$15.7M CLAIM` | "Your lifetime income gain if the Treaty passes." |
+| 8 | Leaderboard | 🔍 magnifier | `ALIGNMENT SCORE` | "See how your leaders rank vs your preferences." |
 
 **Visual distinction between PRIZE and VOTE:**
 - `PRIZE DEPOSIT` = **gold coin** (slot 5). You earn this by *depositing money*. Invested in innovative startups at 17%/yr. Payoff if targets missed: 11× back.
 - `VOTE POINTS` = **silver tokens** (slot 6). You earn these by *getting friends to play*. Payoff if targets hit: $194K/point. The more friends who play, the bigger the prize pool, the more everyone is incentivized to make sure humanity wins.
-- A player can hold *both*. The worked example (slide 19) shows $100 deposited + 2 friends playing = both items in inventory.
+- A player can hold *both*. The worked example (You Cannot Lose) shows $100 deposited + 2 friends playing = both items in inventory.
 
 ---
 
@@ -129,7 +129,7 @@ Score approaching max. Architecture (credibility) → 10.7B lives (emotional sca
 
 ## ACT I — THE HORROR
 
-### Slide 1 — Cold Open: Death Ticker (10s)
+### Cold Open: Death Ticker (10s)
 
 *Segment*: `script-0-cold-open` · *Component*: `death-count` · *BG*: foreground
 
@@ -143,7 +143,7 @@ Score approaching max. Architecture (credibility) → 10.7B lives (emotional sca
 
 ---
 
-### Slide 2 — Misaligned Superintelligence (10s)
+### Misaligned Superintelligence (10s)
 
 *Segment*: `script-1a-misaligned` · *Component*: `terminal` · *BG*: foreground
 
@@ -156,7 +156,7 @@ Score approaching max. Architecture (credibility) → 10.7B lives (emotional sca
 
 ---
 
-### Slide 3 — The Earth Optimization Game (12s)
+### The Earth Optimization Game (12s)
 
 *Segment*: `script-1b-objective` · *Component*: `game-title` · *BG*: foreground
 
@@ -171,7 +171,7 @@ Below the slider: "A Point-and-Click Adventure in Civilisational Reallocation." 
 
 ---
 
-### Slide 4 — 604:1 (8s)
+### 604:1 (8s)
 
 *Segment*: `script-2b-ratio` · *Component*: `military-pie` · *BG*: foreground
 
@@ -184,7 +184,7 @@ Below the slider: "A Point-and-Click Adventure in Civilisational Reallocation." 
 
 ---
 
-### Slide 5 — The Clock (10s)
+### The Clock (10s)
 
 *Segment*: `script-2c-clock` · *Component*: `collapse-clock` · *BG*: foreground
 
@@ -197,26 +197,26 @@ Below the slider: "A Point-and-Click Adventure in Civilisational Reallocation." 
 
 ---
 
-### Slide 6 — Global Failed State (10s)
+### Global Failed State (10s)
 
 *Segment*: `script-2d-failed-state` · *Component*: `failed-state` · *BG*: foreground
 
 > "When stealing becomes more rational than producing, people stop producing. This is not a theory. Somalia. Venezuela. Lebanon. The productive people leave or die. The ones who remain have nothing left to steal. So they steal from each other. The entire economy becomes extraction. Nothing gets built. Nothing gets maintained. Nothing gets cured. That is where the clock ends. Not in one country. Everywhere."
 
-*Visual*: Pixel art — a Sierra city scene, but decaying in real-time. The scene starts as a functioning pixel town (shops, roads, people walking). As the narration progresses, pixel-art decay spreads: storefronts board up, pixel thieves appear on rooftops, roads crack, a hospital's red cross sign flickers and dies, pixel people flee offscreen or huddle in corners. The palette desaturates toward the Moronia greys. In the corner, a world map shows red spreading from a few countries to all continents — the same color as the parasitic economy line from slide 5. Text overlay: "WHEN DESTRUCTION > PRODUCTION: GLOBAL FAILED STATE."
+*Visual*: Pixel art — a Sierra city scene, but decaying in real-time. The scene starts as a functioning pixel town (shops, roads, people walking). As the narration progresses, pixel-art decay spreads: storefronts board up, pixel thieves appear on rooftops, roads crack, a hospital's red cross sign flickers and dies, pixel people flee offscreen or huddle in corners. The palette desaturates toward the Moronia greys. In the corner, a world map shows red spreading from a few countries to all continents — the same color as the parasitic economy line from The Clock. Text overlay: "WHEN DESTRUCTION > PRODUCTION: GLOBAL FAILED STATE."
 
 *Sierra verb*: `> LOOK AT city` → "Somalia but everywhere. Venezuela but permanent. Lebanon but with no neighbouring country to flee to. When the whole planet crosses the threshold, there is nowhere left to go."
 `> HELP` → "There is no help command in a failed state. That is what makes it a failed state."
 
 ---
 
-### Slide 7 — The AI Hacker Spiral (10s)
+### The AI Hacker Spiral (10s)
 
 *Segment*: `script-2e-ai-hackers` · *Component*: `ai-spiral` · *BG*: foreground
 
 > "It gets worse. North Korea, Russia, and criminal syndicates are already using AI to generate autonomous hacking agents. Millions of them. They steal to fund more compute. More compute creates more hackers. More hackers steal more. This is a recursive exponential loop. Your species built the tools for its own extraction. And every dollar stolen funds the next generation of thieves."
 
-*Visual*: Pixel art — a dark server room (SQ-style villain lair). A single pixel-art robot hacker sits at a terminal. It splits into two. Those two split into four. The screen fills with multiplying hacker bots — a visual echo of the doubling model from slide 15, but evil. A counter ticks: "AI HACKERS: 1... 2... 4... 1,024... 1,048,576... ∞." Below, a loop diagram animates:
+*Visual*: Pixel art — a dark server room (SQ-style villain lair). A single pixel-art robot hacker sits at a terminal. It splits into two. Those two split into four. The screen fills with multiplying hacker bots — a visual echo of the doubling model from the Get Friends to Play slide, but evil. A counter ticks: "AI HACKERS: 1... 2... 4... 1,024... 1,048,576... ∞." Below, a loop diagram animates:
 
 ```
   ┌──→ STEAL $$$  ──→ BUY COMPUTE ──→ TRAIN MORE HACKERS ──┐
@@ -225,14 +225,14 @@ Below the slider: "A Point-and-Click Adventure in Civilisational Reallocation." 
   RECURSIVE EXPONENTIAL THEFT
 ```
 
-The loop spins faster and faster. The stolen amount counter ticks up. The productive economy bar from slide 5 shrinks visibly in the HUD.
+The loop spins faster and faster. The stolen amount counter ticks up. The productive economy bar from The Clock shrinks visibly in the HUD.
 
 *Sierra verb*: `> LOOK AT hackers` → "Each one creates two more. The doubling model, but for destruction. Twenty-eight rounds of this does not create a movement. It creates an extinction."
 `> UNPLUG server` → "You cannot unplug a distributed botnet. That is rather the point of distributed systems. Your species built this too."
 
 ---
 
-### Slide 8 — Your Paycheck Already Got Stolen (8s)
+### Your Paycheck Already Got Stolen (8s)
 
 *Segment*: `script-2f-paycheck-theft` · *Component*: `paycheck-theft` · *BG*: foreground
 
@@ -245,7 +245,7 @@ The loop spins faster and faster. The stolen amount counter ticks up. The produc
 
 ---
 
-### Slide 9 — Moronia: GAME OVER (10s)
+### Moronia: GAME OVER (10s)
 
 *Segment*: `script-3a-moronia` · *Component*: `moronia` · *BG*: foreground
 
@@ -274,7 +274,7 @@ Score resets to `0`. Death counter *keeps ticking*.
 
 ## THE TURN — RESTORE GAME
 
-### Slide 10 — Wishonia: RESTORE FROM ALTERNATE SAVE (10s)
+### Wishonia: RESTORE FROM ALTERNATE SAVE (10s)
 
 *Segment*: `script-3b-wishonia` · *Component*: `wishonia-slide` · *BG*: cyan
 
@@ -307,7 +307,7 @@ Score reappears. Inventory is empty. The quest begins.
 
 ### Part 1: The Solution
 
-### Slide 11 — The Fix (10s)
+### The Fix (10s)
 
 *Segment*: `script-4a-fix` · *Component*: `one-percent-shift` · *BG*: yellow
 
@@ -321,7 +321,7 @@ Score reappears. Inventory is empty. The quest begins.
 
 ---
 
-### Slide 12 — 12.3× Acceleration (10s)
+### 12.3× Acceleration (10s)
 
 *Segment*: `script-4b-acceleration` · *Component*: `trial-acceleration` · *BG*: cyan
 
@@ -336,19 +336,79 @@ Score reappears. Inventory is empty. The quest begins.
 
 ---
 
-### Slide 13 — Pluralistic Ignorance (10s)
+### The Compounding Loop (12s)
+
+*Segment*: `script-4b2-compounding` · *Component*: `gdp-trajectory` · *BG*: yellow
+
+> "Here is how that turns into wealth. Disease currently drags down 13% of global GDP — fifteen trillion dollars a year in lost productivity and medical costs. Every disease you cure unlocks a permanent slice of that. Freed workers produce more. More production generates more tax revenue. More revenue funds more trials. More trials cure more diseases. It compounds. Healthcare spending returns three times more economic activity per dollar than military spending. At current trajectory, your economy grows at 2.5%. Redirect the spending, cure the diseases, and it compounds at 17.9%. Over twenty years, that is the difference between $12,500 per person and $339,000 per person. That is not a fantasy. That is compound interest applied to not killing people."
+
+*Visual*: Pixel art — a Sierra "machine schematic" diagram. A positive feedback loop rendered as a pixel-art cycle with animated arrows flowing clockwise:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  ⚙️ THE COMPOUNDING LOOP                                │
+│                                                         │
+│        ┌──────────────┐                                 │
+│    ┌──→│ REDIRECT $27B │──→ CURE DISEASES ──┐           │
+│    │   │ TO TRIALS     │    (44× cheaper)    │           │
+│    │   └──────────────┘                      ▼           │
+│    │                              ┌─────────────────┐   │
+│    │                              │ UNLOCK 13% GDP  │   │
+│    │                              │ ($15T/yr freed) │   │
+│    │                              └────────┬────────┘   │
+│    │                                       ▼            │
+│    │   ┌──────────────┐         MORE PRODUCTIVITY       │
+│    └───│ BIGGER BUDGET │◄──── MORE TAX REVENUE ◄────┘   │
+│        └──────────────┘                                 │
+│                                                         │
+│  💥 Military:  $1 in → $0.60 out  (0.6× multiplier)    │
+│  🧪 Healthcare: $1 in → $1.80 out (1.8× multiplier)    │
+│                                                         │
+│  Status quo growth:  2.5% / year → $12.5K per person    │
+│  Treaty growth:     17.9% / year → $339K per person     │
+│  Wishonia growth:   25.4% / year → $1.16M per person    │
+│                                                         │
+│  Timeline: 20 years. Same species. Different allocation. │
+└─────────────────────────────────────────────────────────┘
+```
+
+The loop animates continuously — pixel arrows circling, each cycle faster than the last (visually representing compounding). Below the loop, three pixel-art GDP trajectory lines diverge upward: grey (status quo, barely rising), green (Treaty, steep), gold (Wishonia, exponential). The GdpTrajectoryChart component renders in Sierra pixel style. The divergence between the lines gets dramatically wider with each year — by year 20 they're not even on the same scale.
+
+*Sierra verb*: `> LOOK AT loop` → "Every disease cured makes the economy bigger. A bigger economy funds more cures. More cures make it bigger still. Your species calls this a virtuous cycle. You have mostly been running the vicious version."
+`> COMPARE trajectories` → "Same planet. Same people. Same twenty years. The only difference is where you point the money. $12,500 versus $339,000. Compound interest does not care about your politics. It only cares about your allocation."
+
+**Score**: `2,000,000`
+
+---
+
+### Pluralistic Ignorance (10s)
 
 *Segment*: `script-4c-ignorance` · *Component*: `pluralistic-ignorance` · *BG*: background
 
-> "The problem is not that nobody wants this. The problem is that everybody wants it but thinks nobody else will agree to it. This is called pluralistic ignorance, and it is your civilisation's most expensive bug."
+> "The problem is not that nobody wants this. The problem is that everybody wants it but thinks nobody else will agree to it. This is called pluralistic ignorance, and it is your civilisation's most expensive bug. How expensive? Health innovation delays: $34 trillion a year. Migration restrictions: $57 trillion. Lead poisoning: $6 trillion. Underfunded science: $4 trillion. Total: $101 trillion per year in unrealised potential. That is 88% of global GDP wasted because your governments cannot coordinate."
 
-*Visual*: Pixel art — town square (King's Quest village). Thirty pixel villagers, each with a green ✓ thought bubble. But each is turned away, arms crossed, looking at the ground — can't see anyone else's bubble. One villager in center has yellow `!` quest marker (the player). Sierra info box: "BUG REPORT: pluralistic_ignorance.exe — Status: ACTIVE — Cost: $101T/year."
+*Visual*: Pixel art — town square (King's Quest village). Thirty pixel villagers, each with a green ✓ thought bubble. But each is turned away, arms crossed, looking at the ground — can't see anyone else's bubble. One villager in center has yellow `!` quest marker (the player). Sierra info box shows the breakdown:
+
+```
+┌──────────────────────────────────────────┐
+│  🐛 BUG REPORT: pluralistic_ignorance.exe │
+│  Status: ACTIVE                          │
+│                                          │
+│  Health innovation delays:  $34T         │
+│  Migration restrictions:    $57T         │
+│  Lead poisoning:             $6T         │
+│  Underfunded science:        $4T         │
+│  ─────────────────────────────           │
+│  TOTAL ANNUAL COST:        $101T         │
+│  (88% of global GDP)                     │
+└──────────────────────────────────────────┘
+```
 
 *Sierra verb*: `> TALK TO crowd` → "They all want the same thing. They just don't know they all want the same thing. Your job is to make the demand visible."
 
 ---
 
-### Slide 14 — The Scoreboard: Quest Objectives (10s)
+### The Scoreboard: Quest Objectives (10s)
 
 *Segment*: `script-4d-scoreboard` · *Component*: `quest-objectives` · *BG*: background
 
@@ -392,7 +452,7 @@ Quest meters in HUD pulse and glow — the viewer now understands what they're t
 
 ### Part 2: The Game
 
-### Slide 15 — Level 1: Allocate (15s)
+### Level 1: Allocate (15s)
 
 *Segment*: `script-5a-allocate` · *Component*: `level-allocate` · *BG*: yellow
 
@@ -436,7 +496,7 @@ Ballot drops into inventory slot 2.
 
 ---
 
-### Slide 16 — Level 2: Vote on the Treaty (12s)
+### Level 2: Vote on the Treaty (12s)
 
 *Segment*: `script-5b-vote` · *Component*: `level-vote` · *BG*: pink
 
@@ -463,7 +523,7 @@ Ballot drops into inventory slot 2.
 
 Cursor hovers YES. 1.5 seconds silence. Clicks.
 
-**CELEBRATION (2s):** Dialog explodes with pixel confetti. Fanfare. Score jumps 10M → 100M. Banner: "VOTE RECORDED ✓". The allocation slider from slide 3 nudges one tick rightward — the global slider moved because *you* voted.
+**CELEBRATION (2s):** Dialog explodes with pixel confetti. Fanfare. Score jumps 10M → 100M. Banner: "VOTE RECORDED ✓". The allocation slider from the title screen nudges one tick rightward — the global slider moved because *you* voted.
 
 Raised-fist drops into inventory slot 3.
 
@@ -473,7 +533,7 @@ New dialog slides in from right:
 ┌────────────────────────────────────────┐
 │  🎉 YOU'RE IN THE GAME!               │
 │                                        │
-│  Player #4,847 of 268M needed          │
+│  Player #4,847 of 4B needed            │
 │  Get your friends to play:             │
 │                                        │
 │  ┌─────────────────────────────────┐   │
@@ -496,7 +556,7 @@ New dialog slides in from right:
 
 ---
 
-### Slide 17 — $0.06 (8s)
+### $0.06 (8s)
 
 *Segment*: `script-5b2-asymmetry` · *Component*: `asymmetry` · *BG*: foreground
 
@@ -511,13 +571,13 @@ New dialog slides in from right:
 
 ---
 
-### Slide 18 — Level 3: Get All Your Friends to Play (15s)
+### Level 3: Get All Your Friends to Play (15s)
 
 *Segment*: `script-5c-share` · *Component*: `level-share` · *BG*: yellow
 
 **[Quest notification: "⚔ LEVEL 3 — Get your friends to play. Tell two people."]**
 
-> "Step three: get all your friends to play. Send them your link. When they play through your link, you earn one VOTE point. They get their own link and do the same. Tell two friends. They each tell two more. Twenty-eight rounds of this reaches 268 million players — the 3.5% tipping point. No campaign in history that reached this threshold has ever failed. And every new player who deposits grows the prize pool — which makes everyone more incentivized to make sure humanity actually wins."
+> "Step three: get all your friends to play. Send them your link. When they play through your link, you earn one VOTE point. They get their own link and do the same. The target is 4 billion players. Sounds ambitious? 4 billion people already drive to a polling station, wait in line, and vote for free — in elections where their individual vote is worth 1 in 30 million and the winner ignores them anyway. You are asking those same people to click some buttons on a website to get 10× richer. The participation barrier is not the hard part. And every new player who deposits grows the prize pool — which makes everyone more incentivized to make sure humanity actually wins."
 
 *Visual*: Split into two halves.
 
@@ -525,12 +585,27 @@ New dialog slides in from right:
 Pixel-art phone screen. Player's message: "Play this → optimitron.com/r/player1". Friends "Sarah" and "Mike" reply: "🎮 I'm playing! My link: .../r/sarah" and "🎮 I'm playing! My link: .../r/mike." Notifications: "+1 VOTE POINT" "+1 VOTE POINT." Three platform icons below (text, WhatsApp, Twitter).
 
 **RIGHT — The Exponential Effect:**
-Doubling tree grows from the phone. 1→2→4→8→16. Accelerates. "Round 5: 32... Round 10: 1,024... Round 20: 1,048,576..." Threshold line "TIPPING POINT: 268M PLAYERS (3.5%)" flashes when hit. Prize pool counter grows in lockstep: "$10K... $1M... $100M... $10B..." Text: "The more people play, the bigger the prize pool, the more everyone has at stake."
+Doubling tree grows from the phone. 1→2→4→8→16. Accelerates. "Round 5: 32... Round 10: 1,024... Round 20: 1,048,576..." A horizontal threshold line labeled "4 BILLION — people who already vote for free" flashes when the tree hits it. Below the threshold: a comparison box:
+
+```
+┌──────────────────────────┐  ┌──────────────────────────┐
+│  REGULAR VOTING          │  │  PLAYING THIS GAME       │
+│  Drive to polling station│  │  Click buttons on website│
+│  Wait in line            │  │  30 seconds              │
+│  1 in 30M chance of      │  │  Each point worth $194K  │
+│  being the tiebreaker    │  │  Everyone gets 10× richer│
+│  Winner ignores you      │  │  Winner = you            │
+│  Cost: free              │  │  Cost: free              │
+│  Reward: nothing         │  │  Reward: $15.7M          │
+└──────────────────────────┘  └──────────────────────────┘
+```
+
+Prize pool counter grows in lockstep: "$10K... $1M... $100M... $10B..." Text: "The more people play, the bigger the prize pool, the more everyone has at stake."
 
 Chain-link drops into inventory slot 4.
 
 *Sierra verb*: `> TEXT sarah` → "'Play this game.' Sarah opens the link. Plays. Gets her own link. Sends it to two more friends. The prize pool just grew. Your VOTE points just got more valuable."
-`> LOOK AT prize pool` → "Every new player who deposits makes the pool bigger. A bigger pool means more incentive for everyone to make sure the targets are hit. This is called a virtuous cycle. Your species usually creates the other kind."
+`> COMPARE voting` → "4 billion people already do something harder for nothing. You are asking them to do something easier for $15.7 million. This is not a marketing challenge. It is arithmetic."
 
 **Score**: `500,000,000` · **Inventory**: +`REFERRAL LINK` (slot 4)
 
@@ -538,7 +613,7 @@ Chain-link drops into inventory slot 4.
 
 ### Part 3: The Money
 
-### Slide 19 — Better Than Your Retirement Fund (10s)
+### Better Than Your Retirement Fund (10s)
 
 *Segment*: `script-6a-investment` · *Component*: `prize-investment` · *BG*: pink
 
@@ -577,7 +652,7 @@ Right option glows green. Left looks grey and dull.
 
 ---
 
-### Slide 20 — How the Prize Works (10s)
+### How the Prize Works (10s)
 
 *Segment*: `script-6b-mechanism` · *Component*: `prize-mechanism` · *BG*: cyan
 
@@ -604,11 +679,11 @@ BOTH paths glow green. No red path. No skull. Gold coin drops into inventory slo
 
 ---
 
-### Slide 21 — $194K Per Point (10s)
+### $194K Per Point (10s)
 
 *Segment*: `script-6c-vote-value` · *Component*: `vote-point-value` · *BG*: yellow
 
-> "Now for the VOTE points. Every friend you got to play earned you one point. Each point is worth $194,000 if the targets are hit. Two friends playing: $387,000. Ten friends: $1.9 million. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become."
+> "Now for the VOTE points. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at 17% instead of 8%, the pool reaches $774 trillion. Split across 4 billion players, each VOTE point is worth $194,000. Two friends playing: $387,000. Ten friends: $1.9 million. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become."
 
 *Visual*: Pixel art — Sierra character stats screen:
 
@@ -647,11 +722,11 @@ Two silver tokens drop into inventory slot 6. Flywheel line at bottom rendered a
 
 ---
 
-### Slide 22 — You Cannot Lose (10s)
+### You Cannot Lose (10s)
 
 *Segment*: `script-6d-free-option` · *Component*: `prize-free-option` · *BG*: pink
 
-> "But wait — if humanity wins, doesn't my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have VOTE points worth $387,000 — far more than your deposit. Second: if humanity wins, everyone is 10× richer. Your $100 deposit vanishes into a world where your lifetime income just increased by $15.7 million. You do not mourn the $100. The break-even probability is one in fifteen thousand. The only way to lose is not to play."
+> "But wait — if humanity wins, doesn't my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have VOTE points worth $387,000 — far more than your deposit. Second: if humanity wins, everyone is 10× richer. Your $100 deposit vanishes into a world where your lifetime income just increased by $15.7 million. You do not mourn the $100. You are too busy being a multimillionaire in a civilisation that cured all disease. The only way to lose is not to play."
 
 *Visual*: Sierra summary/stats screen — three outcomes:
 
@@ -682,16 +757,15 @@ Two silver tokens drop into inventory slot 6. Flywheel line at bottom rendered a
 │  │     NET: -$15,700,000 (opportunity cost)         │  │
 │  └─────────────────────────────────────────────────┘  │
 │                                                       │
-│  Break-even probability: 0.007% (1 in 15,000)        │
-│  Lottery odds: 1 in 300,000,000                       │
-│  This is 20,000× better with no downside.             │
+│  Two out of three outcomes are wins.                  │
+│  The third one is your fault.                         │
 └───────────────────────────────────────────────────────┘
 ```
 
 First ✅ box glows brightest — BEST outcome. "+$15.7 MILLION" overwhelms "deposit goes to VOTE holders." ❌ box dim red — the real loss is the opportunity cost.
 
-*Sierra verb*: `> CALCULATE odds` → "One in fifteen thousand. Your species buys lottery tickets at one in three hundred million. This is twenty thousand times better odds. And the downside is still 11× your money."
-`> WORRY ABOUT deposit` → "Your deposit goes to VOTE holders if humanity wins. You also got $15.7 million richer. On my planet we call this a good trade."
+*Sierra verb*: `> WORRY ABOUT deposit` → "Your deposit goes to VOTE holders if humanity wins. You also got $15.7 million richer. On my planet we call this a good trade."
+`> LOOK AT outcomes` → "Two green. One red. The red one is the one where you did nothing. That is the only scenario where you lose."
 
 **Score**: `1,500,000,000`
 
@@ -699,7 +773,7 @@ First ✅ box glows brightest — BEST outcome. "+$15.7 MILLION" overwhelms "dep
 
 ### Part 4: The Accountability
 
-### Slide 23 — The Leaderboard (10s)
+### The Leaderboard (10s)
 
 *Segment*: `script-8-leaderboard` · *Component*: `government-leaderboard` · *BG*: background
 
@@ -716,7 +790,7 @@ Magnifying glass drops into inventory slot 8.
 
 ---
 
-### Slide 24 — We Changed the Metric (8s)
+### We Changed the Metric (8s)
 
 *Segment*: `script-8b-metric` · *Component*: `metric-changed` · *BG*: foreground
 
@@ -732,7 +806,7 @@ Single devastating line in narrator box. Maximum whitespace. Typewriter slower t
 
 ### Part 5: The Climax
 
-### Slide 25 — Your $15.7 Million (10s)
+### Your $15.7 Million (10s)
 
 *Segment*: `script-7-personal-upside` · *Component*: `personal-upside` · *BG*: yellow
 
@@ -783,7 +857,7 @@ Each slot has pixel-art scene matching its trajectory. Glowing deed drops into i
 
 ## ACT III — THE ENDGAME
 
-### Slide 26 — Under the Hood (8s)
+### Under the Hood (8s)
 
 *Segment*: `script-10-architecture` · *Component*: `architecture-stats` · *BG*: background
 
@@ -796,13 +870,13 @@ Each slot has pixel-art scene matching its trajectory. Glowing deed drops into i
 
 ---
 
-### Slide 27 — 10.7 Billion Lives (10s)
+### 10.7 Billion Lives (10s)
 
 *Segment*: `script-10b-lives` · *Component*: `lives-saved` · *BG*: cyan
 
-> "10.7 billion lives saved over the acceleration window. 5.65 billion disability-adjusted life years per percentage point you shift the probability. Every share, every vote, every conversation moves that number. The question is not whether your effort matters. It is how many hundred million lives it is worth."
+> "150,000 deaths per day. 212 years of treatment acceleration from the combined trial capacity increase and efficacy lag elimination. A third of those deaths are avoidable with earlier cures. Multiply it out: 10.7 billion lives. More than the total number of humans who have ever lived in a single century. Every share, every vote, every conversation moves the probability. The question is not whether your effort matters. It is how many hundred million lives it is worth."
 
-*Visual*: Pixel art — planet from slide 1 returns, but transforming. Cemetery crosses being replaced one by one — each morphs into a tiny pixel person standing up, grey to green. Counter ticks: "LIVES SAVED: 10,700,000,000." Planet's palette shifts from EGA dark to VGA bright. Quest meters nearly full. Death ticker slowing.
+*Visual*: Pixel art — planet from the Cold Open returns, but transforming. Cemetery crosses being replaced one by one — each morphs into a tiny pixel person standing up, grey to green. Counter ticks: "LIVES SAVED: 10,700,000,000." Planet's palette shifts from EGA dark to VGA bright. Quest meters nearly full. Death ticker slowing.
 
 *Sierra verb*: `> COUNT lives` → "More than the total number of humans who have ever lived. That is what is at stake. No pressure."
 
@@ -810,7 +884,7 @@ Each slot has pixel-art scene matching its trajectory. Glowing deed drops into i
 
 ---
 
-### Slide 28 — The Close (12s)
+### The Close (12s)
 
 *Segment*: `script-11-close` · *Component*: `close` · *BG*: pink
 
@@ -822,7 +896,7 @@ Each slot has pixel-art scene matching its trajectory. Glowing deed drops into i
 
 > "The Earth Optimization Game. Alignment software for the most powerful AIs on your planet — the ones made of people."
 
-*Visual*: Sierra title screen returns from slide 3 — same gold font, same starfield. Score: `8,000,000,000 of 8,000,000,000`. Quest meters: 100%. All 8 inventory slots full and glowing. Final dialog:
+*Visual*: Sierra title screen returns from the Earth Optimization Game slide — same gold font, same starfield. Score: `8,000,000,000 of 8,000,000,000`. Quest meters: 100%. All 8 inventory slots full and glowing. Final dialog:
 
 ```
 ┌─────────────────────────────────────────┐
@@ -852,7 +926,7 @@ Music resolves to a single held chord. "PLAY NOW" pulses. Silence.
 
 ---
 
-### Slide 29 — Post-Credits Easter Egg (5s)
+### Post-Credits Easter Egg (5s)
 
 *Segment*: `script-easter-egg` · *Component*: `easter-egg` · *BG*: foreground
 
@@ -866,9 +940,9 @@ Music resolves to a single held chord. "PLAY NOW" pulses. Silence.
 
 ## Extended Slides (5-min version)
 
-Slot in after slide 21 for a longer cut.
+Slot in after We Changed the Metric for a longer cut.
 
-### Slide E1 — 50,300× More Cost-Effective (10s)
+### 50,300× More Cost-Effective (10s)
 
 *Segment*: `ext-cost-effectiveness` · *BG*: background
 
@@ -894,7 +968,7 @@ Slot in after slide 21 for a longer cut.
 
 ---
 
-### Slide E2 — Incentive Alignment Bonds (15s)
+### Incentive Alignment Bonds (15s)
 
 *Segment*: `ext-iab` · *BG*: cyan
 
@@ -906,19 +980,19 @@ Slot in after slide 21 for a longer cut.
 
 ---
 
-### Slide E3 — The SuperPAC (10s)
+### The SuperPAC (10s)
 
 *Segment*: `ext-superpac` · *BG*: pink
 
 > "The SuperPAC funds politicians algorithmically — based on their Citizen Alignment Score. Politicians earn campaign funding by voting for the treaty. Not by attending donor dinners."
 
-*Visual*: Leaderboard from slide 20, but gold coins rain to highest-ranked politicians. Lowest get nothing. Pixel gear/brain icon "SMART CONTRACT" replaces lobbyist. Crossed-out lobbyist in corner holding empty dinner invitation.
+*Visual*: Leaderboard from The Leaderboard slide, but gold coins rain to highest-ranked politicians. Lowest get nothing. Pixel gear/brain icon "SMART CONTRACT" replaces lobbyist. Crossed-out lobbyist in corner holding empty dinner invitation.
 
 *Sierra verb*: `> TALK TO lobbyist` → "The lobbyist has been replaced by a smart contract. It does not accept dinner invitations. Or bribes. Or phone calls."
 
 ---
 
-### Slide E4 — Optimal Policy Tools (12s)
+### Optimal Policy Tools (12s)
 
 *Segment*: `ext-policy-tools` · *BG*: yellow
 
@@ -947,23 +1021,23 @@ Slot in after slide 21 for a longer cut.
 
 ### Sierra Implementation
 - **Resolution**: 320×200 upscaled to 1920×1080 with nearest-neighbor (no smoothing)
-- **Color palette**: EGA 16-color for Act I, VGA 256 for Acts II–III (palette upgrade IS the tonal shift at slide 7)
+- **Color palette**: EGA 16-color for Act I, VGA 256 for Acts II–III (palette upgrade IS the tonal shift at Wishonia)
 - **Font**: Sierra bitmap for narrator box. Arcade font for headers/score/quest meters.
 - **Text speed**: ~30 chars/sec typewriter. Click to skip.
 - **Cursor**: Custom CSS — eye (look), hand (use), boots (walk), speech bubble (talk)
 - **Sound**: Chiptune soundtrack. Death jingle for Game Over. "Cha-ching" for items. Rising pitch on quest meters.
 - **Portrait**: Wishonia 48×48 pixel art, slightly animated (blinking, eyebrow, one smirk in post-credits)
-- **Quest meters**: HALE + Income progress bars. Hidden Act I. Appear at slide 7. Fill through Act II. 100% at completion.
+- **Quest meters**: HALE + Income progress bars. Hidden Act I. Appear at Wishonia. Fill through Act II. 100% at completion.
 
 ### General
 - Each slide is a full-viewport component — no scrolling, no page navigation
 - `/demo?playlist=hackathon` plays all slides with auto-advance
-- **Cold open**: Slide 1 death ticker starts 3s before Sierra chrome appears
-- **The Turn**: Slide 6→7 — death jingle → restore sound → EGA→VGA → quest meters appear
-- **Title bookend**: "THE EARTH OPTIMIZATION GAME" in slide 3 (intro) and slide 25 (close)
+- **Cold open**: Death ticker starts 3s before Sierra chrome appears
+- **The Turn**: Moronia → Wishonia — death jingle → restore sound → EGA→VGA → quest meters appear
+- **Title bookend**: "THE EARTH OPTIMIZATION GAME" in title screen (intro) and The Close (end)
 - **Narrative ordering**: Never introduce a value before its mechanism. Prize pool → VOTE point value.
 - **One concept per slide**: If a slide explains two things, split it.
 - **Act II climax**: $15.7M personal upside is the LAST slide before Act III — it's the gut punch.
-- **Post-credits**: Slide 26 plays after 2s black gap
+- **Post-credits**: Easter Egg plays after 2s black gap
 - TTS narration via `packages/web/src/lib/demo-tts.ts`
 - Politician leaderboard uses real data — the numbers are the joke
