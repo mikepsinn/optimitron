@@ -20,10 +20,6 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        {/* CRT Scanlines Overlay */}
-        <div className="pointer-events-none fixed inset-0 z-[9999] bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.15),rgba(0,0,0,0.15)_1px,transparent_1px,transparent_2px)] opacity-30" />
-        {/* CRT Vignette */}
-        <div className="pointer-events-none fixed inset-0 z-[9998] bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
         {children}
       </body>
     </html>
