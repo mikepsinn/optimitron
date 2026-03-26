@@ -1,0 +1,9 @@
+export { SlideDeathCounter } from "./slide-death-counter";
+export { SlideAITerminal } from "./slide-ai-terminal";
+export { SlideRatio } from "./slide-ratio";
+export { SlideCollapseClock } from "./slide-collapse-clock";
+export { SlideFailedState } from "./slide-failed-state";
+export { SlideAIHackers } from "./slide-ai-hackers";
+export { SlidePaycheckTheft } from "./slide-paycheck-theft";
+export { SlideGameOver } from "./slide-game-over";
+export { SlideGameTitle } from "./slide-game-title";
