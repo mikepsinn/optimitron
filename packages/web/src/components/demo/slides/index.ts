@@ -63,6 +63,7 @@ import IPencilSlide from "./IPencilSlide";
 // New slides — Climax + Act III
 import PersonalUpsideSlide from "./PersonalUpsideSlide";
 import LivesSavedSlide from "./LivesSavedSlide";
+import EasterEggSlide from "./EasterEggSlide";
 
 // Fallback
 import PlaceholderSlide from "./PlaceholderSlide";
@@ -130,6 +131,7 @@ const slideRegistry: Record<string, ComponentType> = {
   // Act III — Endgame
   "lives-saved": LivesSavedSlide,
   close: CloseSlide,
+  "easter-egg": EasterEggSlide,
 
   // Legacy placeholders (used by non-hackathon playlists)
   "the-question": PlaceholderSlide,

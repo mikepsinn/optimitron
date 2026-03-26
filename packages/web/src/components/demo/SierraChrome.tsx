@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate } from "framer-motion";
 import { useSierraGame } from "./SierraGameContext";
-import { CountUp } from "@/components/animations/CountUp";
 import { DEATHS_PER_SECOND } from "@/data/collapse-constants";
 import { playCoinSound } from "@/lib/wish-sound";
 
@@ -16,12 +15,29 @@ const TYPEWRITER_SPEED = 30; // chars per second
 
 function ScoreCounter() {
   const { state } = useSierraGame();
+  const ref = useRef<HTMLSpanElement>(null);
+  const prevScore = useRef(0);
+
+  useEffect(() => {
+    if (!ref.current || prevScore.current === state.score) return;
+    const controls = animate(prevScore.current, state.score, {
+      duration: 0.8,
+      ease: "easeOut",
+      onUpdate(v) {
+        if (ref.current)
+          ref.current.textContent = Math.floor(v).toLocaleString();
+      },
+    });
+    prevScore.current = state.score;
+    return () => controls.stop();
+  }, [state.score]);
+
   return (
     <div
       className={`${ARCADE} text-xs sm:text-sm text-brutal-cyan bg-foreground px-3 py-1.5 border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
     >
       <span className="text-muted-foreground">SCORE: </span>
-      <CountUp value={state.score} duration={0.8} />
+      <span ref={ref}>0</span>
       <span className="text-muted-foreground">
         {" "}
         of {state.maxScore.toLocaleString()}

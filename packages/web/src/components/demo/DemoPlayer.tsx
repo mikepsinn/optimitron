@@ -70,7 +70,9 @@ function DemoPlayerInner({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [subtitle, setSubtitle] = useState("");
+  const [subtitle, setSubtitle] = useState(
+    () => slides[0]?.narration ?? "",
+  );
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);

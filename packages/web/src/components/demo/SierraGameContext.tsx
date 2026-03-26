@@ -75,7 +75,11 @@ function sierraReducer(
 ): SierraGameState {
   switch (action.type) {
     case "SET_ACT":
-      return { ...state, act: action.act };
+      return {
+        ...state,
+        act: action.act,
+        questVisible: action.act !== "I",
+      };
     case "ADD_SCORE":
       return {
         ...state,
