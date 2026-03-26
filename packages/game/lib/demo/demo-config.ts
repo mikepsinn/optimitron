@@ -57,7 +57,7 @@ export const SLIDES: SlideConfig[] = [
     duration: 10,
     chapter: "Act I: The Horror",
     narration:
-      "Bugs in your meat software kill 150,000 of you every day. That is fifty-nine September 11ths. Nobody invades anybody about it because cancer does not have oil.",
+      "Bugs in your meat software kill 150,000 of you every day. Fifty-nine September 11ths. Every. Single. Day. But nobody invades anybody about it because cancer does not have oil.",
     stageDirection:
       "[3 seconds of black screen. Just the death counter ticking up. No narration. No Sierra chrome yet — just red numbers on black, counting. Then the UI fades in around it.]",
     visual:
@@ -85,7 +85,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 12,
     narration:
-      "Your government is an artificial intelligence. Not a metaphor. You built a system to protect and promote your general welfare (i.e. health and wealth). Instead it optimises for campaign contributions.",
+      "Your government is an artificial intelligence. Not a metaphor. You built a system to protect your health and grow your wealth. Instead it optimises for campaign contributions.",
     visual:
       'Pixel art command bridge (SQ1 Sarien ship). Five CRT monitors in a semicircle. Central monitor displays "OBJECTIVE FUNCTION: PROMOTE GENERAL WELFARE" in green text — then glitches, flickers, and rewrites to "OBJECTIVE FUNCTION: RE-ELECTION / CAMPAIGN CONTRIBUTIONS / WEALTH EXTRACTION" in red. Side monitors show: military contracts scrolling, pharma stock tickers, healthcare waitlist numbers climbing, a "CITIZEN REQUESTS" inbox with 0 read / 4,294,967,296 unread. Scan lines roll.',
     onScreen: [
@@ -244,7 +244,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Your parasitic theft economy is growing five times faster than your building economy. In 15 years, it becomes more rational to steal than to produce. Your species has a word for this. Several, actually. Somalia. Venezuela. Argentina. This is the clock.",
+      "The part of your economy that steals is growing five times faster than the part that builds. In 15 years, it becomes more rational to steal than to produce. Every civilisation that reached this crossover collapsed. This is the clock.",
     visual:
       'Pixel art — stone castle wall (King\'s Quest aesthetic) with a massive clock face. Two hands racing: red "PARASITIC (15%/yr)" spinning fast, green "PRODUCTIVE (3%/yr)" crawling behind. Below, a pixel-art line chart shows the two trajectories crossing — red overtaking green — with a flashing "X" at "2040: COLLAPSE THRESHOLD." Digital countdown ticks: "YEARS REMAINING: 14 yrs 247 days 8 hrs..."',
     onScreen: [
@@ -295,7 +295,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Your species built AI that writes code. Then criminals used it to write theft code. The theft funds more AI. The AI writes more theft code. A feedback loop your species would recognise if it ever read its own computer science papers. You automated robbery. Congratulations.",
+      "Your species built AI that writes code. Then criminals used it to write theft code. The theft funds more AI. The AI writes more theft code. A feedback loop. Your species would recognise it if it ever read its own computer science papers. You automated robbery. Congratulations.",
     visual:
       'Pixel art — a dark server room (SQ-style villain lair). A single pixel-art robot hacker sits at a terminal. It splits into two. Those two split into four. The screen fills with multiplying hacker bots. A counter ticks: "AI HACKERS: 1... 2... 4... 1,024... 1,048,576... \u221E." Below, a loop diagram animates: STEAL $$$ \u2192 BUY COMPUTE \u2192 TRAIN MORE HACKERS \u2192 (repeat). The loop spins faster and faster. The stolen amount counter ticks up. The productive economy bar from The Clock shrinks visibly in the HUD.',
     asciiArt: `
@@ -527,7 +527,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "At current trajectory, your economy grows at 2.5%. Redirect 1% of the explosions budget, and it compounds at 17.9%. Over twenty years, that is the difference between $12,500 per person and $339,000 per person. Same planet. Same people. Same twenty years.",
+      "At current trajectory, your economy grows at 2.5%. Redirect 1% of the explosions budget, and it compounds at 17.9%. Over twenty years, that is the difference between $12,500 per person per year and $339,000 per person per year. Same planet. Same people. Same twenty years.",
     visual:
       "Live GDP Trajectory Chart. A year counter ticks from 2025 to 2045. Two lines draw in real-time: Grey (Status Quo, 2.5%): barely rising. Green (Treaty, 17.9%): steep climb. By year 20, the green line is so far above grey that the chart rescales — the grey line flattens to a hair at the bottom.",
     asciiArt: `
@@ -563,7 +563,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Compound interest does not care about your politics. It does not care about your party. The confidence interval is 11 to 26%. Even the worst case is four times better than doing nothing. Your species has been arguing about this for decades. The math resolved it in one equation.",
+      "Compound interest does not care about your politics. It does not care about your party. The pessimistic estimate is 11%. The optimistic is 26%. Even the worst case is four times better than doing nothing. Your species has been arguing about this for decades. The math resolved it in one equation.",
     visual:
       "A single clean display showing four outcomes stacked vertically. The worst-case bar is dramatically larger than the do-nothing bar. A highlighted box pulses: WORST CASE IS 4x BETTER THAN DOING NOTHING.",
     asciiArt: `
@@ -888,7 +888,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Congratulations. You have just done more for civilisation than most parliaments manage in a decade. Now tell two friends.",
+      "Congratulations. You have just done more for civilisation than most parliaments manage in a decade. Now tell two friends. 33 doublings. That is how many it takes to reach 4 billion. Your species invented this. You call it going viral. We call it counting.",
     visual:
       "Banner: VOTE RECORDED. The allocation slider from the title screen nudges one tick rightward — the global slider moved because you voted. New dialog slides in showing the viral loop: tell two, they tell two, 33 doublings to 4 billion.",
     asciiArt: `
@@ -952,7 +952,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Tell two friends to play. They tell two friends. The target is 4 billion players. Sounds ambitious? 4 billion of you already drive to a polling station, wait in line, and vote for free — for a 1 in 30 million chance of changing anything. You are asking those same people to click buttons on a phone to get ten times richer. The hard part is not participation. The hard part was doing it for free. You solved that.",
+      "Tell two friends to play. They tell two friends. The target is 4 billion players. 4 billion of you already drive to a polling station and vote for free, for a 1 in 30 million chance of changing anything. You are asking those same people to click a button on a phone. For $15.7 million. The hard part was getting people to do it for free. You solved that.",
     stageDirection:
       '[Quest notification: "LEVEL 3 — Get your friends to play. Tell two people."]',
     visual:
@@ -1038,7 +1038,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 12,
     narration:
-      "Deposit $100. If Earth wins, VOTE holders split $774 trillion and your lifetime income goes up $15.7 million. You will not miss the $100. If Earth loses, you get $1,110 back. That is an 11x return on failure. Both paths pay. Your species has a word for this: a no-brainer. Which, given the circumstances, is fitting.",
+      "Deposit $100. If Earth wins, your lifetime income goes up $15.7 million. You will not miss the $100. If Earth loses, you get $1,110 back. That is an 11x return on failure. Both paths pay. Your species has a word for this. A no-brainer. Which, given the circumstances, is fitting.",
     visual:
       "Pixel art — branching path (Sierra maze fork). Player's avatar at crossroads holding gold coin. Treasure chest at fork: \"PRIZE POOL SMART CONTRACT.\" Two paths: Left path — TARGETS HIT -> pixel utopia. Pool unlocks. VOTE holders split it. Right path — TARGETS MISSED -> pile of 11x gold. Your $100 -> $1,110 back. (11x over 15 years at 17%). BOTH paths glow green. No red path. No skull. Gold coin drops into inventory slot 5.",
     asciiArt: `
@@ -1070,7 +1070,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Every friend who plays earns you one VOTE point. If the world's retirement savings compound in the prize pool at 17% instead of 8%, the pool reaches $774 trillion. Split across 4 billion players, each point is worth $194,000. Two friends: $387,000. Ten friends: $1.9 million. Points cannot be bought. Only earned by getting real humans to care. Your species finally invented a currency backed by something useful.",
+      "Every friend who plays earns you one VOTE point. Each point is worth $194,000. Two friends: $387,000. Ten friends: $1.9 million. Points cannot be bought. Only earned by getting real humans to care. Your species finally invented a currency backed by something useful.",
     visual:
       "Pixel art — Sierra character stats screen: VOTE POINT LEDGER. POINTS EARNED: 2 (from friends playing). VALUE PER POINT: $194,000. TOTAL IF HIT: $387,000. Friends Playing Table: 2 friends -> $387,000 / 5 friends -> $970,000 / 10 friends -> $1,940,000 / 50 friends -> $9,700,000. Warnings: Points are NON-TRADABLE. Cannot be purchased. Ever. Earned ONLY by getting friends to play. More players -> bigger pool -> bigger prize -> more incentive to make sure Earth wins. Two silver tokens drop into inventory slot 6. Flywheel line at bottom rendered as pixel-art cycle arrow.",
     asciiArt: `
@@ -1696,23 +1696,130 @@ RECURSIVE EXPONENTIAL THEFT`,
   {
     id: "i-pencil",
     act: "act2",
-    duration: 10,
+    duration: 12,
     narration:
-      "Nobody knows how to make a pencil. The wood comes from one country, the graphite from another, the rubber from a third. Millions of people, no coordinator. The price system does it. Four billion people with $194,000 each will figure out how to build a decentralised FDA the same way. You do not need a plan. You need an incentive. The incentive is $774 trillion. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Developer ships better code? Gets paid. The game does not pick the solution. The market does.",
+      "Nobody knows how to make a pencil. The wood comes from Washington, the graphite from South America, the rubber from Malaya. Thousands of people who do not speak the same language, who might hate one another if they ever met. No one gave orders. The price system turned their selfishness into pencils. Your species does this billions of times a day without noticing.",
     visual:
-      "Pixel art — a Sierra \"I, Pencil\" sequence. A pixel pencil sits in the center of the screen. Zoom lines expand outward from it showing the supply chain: a pixel lumberjack, a pixel miner, a pixel factory worker, a pixel painter — each in a different pixel country. None of them know each other. Lines connect them all to the pencil. Then the pencil morphs into a pixel test tube (clinical trial), and the supply chain morphs too: a pixel developer writing Solidity, a pixel doctor running a trial, a pixel data scientist on Storacha, a pixel patient getting treated, a pixel auditor minting a Hypercert. Same structure. Same principle. Nobody coordinates them. The prize pool does. Below, a counter: \"BRAINS INCENTIVIZED: 4,000,000,000. VOTE POINT VALUE: $194,000. PRIZE POOL: $774 TRILLION.\" The numbers pulse.",
+      "Pixel art — a Sierra \"I, Pencil\" sequence. A pixel pencil sits in the center of the screen. Zoom lines expand outward from it showing the supply chain: a pixel lumberjack in Washington, a pixel miner in South America, a pixel rubber tapper in Malaya, a pixel factory worker assembling. None of them know each other. Lines connect them all to the pencil. A counter ticks: STRANGERS COOPERATING: 1,000... 10,000... 100,000. The pencil assembles itself from the contributions.",
+    asciiArt: `
+┌─────────────────────────────────────────────┐
+│  ✏️ I, PENCIL                                │
+│                                             │
+│  🪵 Washington     → wood                   │
+│  ⛏️ South America  → graphite               │
+│  🌿 Malaya         → rubber                 │
+│  🔧 ???            → brass ferrule           │
+│  🎨 ???            → paint                   │
+│                                             │
+│  People cooperating:         thousands      │
+│  People who speak same language: some       │
+│  People who like each other:     unknown    │
+│  Central coordinator:            none       │
+│                                             │
+│  Cost: $0.25                                │
+│  Method: everyone wanted money              │
+│  Result: pencil                             │
+└─────────────────────────────────────────────┘`,
+    onScreen: [
+      { text: "NOBODY KNOWS HOW TO MAKE A PENCIL", size: "large", animation: "fadeIn" },
+      { text: "THOUSANDS OF STRANGERS. NO COORDINATOR.", size: "medium", animation: "fadeIn" },
+      { text: "THE PRICE SYSTEM DID IT.", size: "medium", animation: "fadeIn", color: "gold" },
+    ],
     score: 5_800_000_000,
     showQuestMeters: true,
     sierraVerbs: [
       {
         verb: "LOOK AT pencil",
         response:
-          "Nobody knows how to make this. Millions of people each contribute one step. The market coordinates them. The prize pool does the same thing, except instead of pencils it produces cures.",
+          "Nobody knows how to make this. Thousands of people each contribute one step. No one gave orders. The price system turned their selfishness into pencils.",
       },
+    ],
+  },
+  {
+    id: "cured-disease",
+    act: "act2",
+    duration: 14,
+    narration:
+      "Now look at this cured disease. The researcher in Lagos who found the cheaper trial does not know the lobbyist in Brussels who passed the directive. The lobbyist does not know the nonprofit in Manila that recruited a million voters. The voters do not know the bondholder in New York whose greed funded the campaign. The bondholder does not know the politician in Delhi who voted yes because the SuperPAC funded her opponent last time she voted no. Millions of people cooperated to cure this disease. No one gave orders.",
+    visual:
+      "Pixel art — the pencil from the previous slide morphs into a pixel test tube. The supply chain lines transform: pixel researcher in Lagos, pixel lobbyist in Brussels, pixel volunteer in Manila, pixel bondholder in New York, pixel politician in Delhi, pixel patient in Dhaka. Each appears one at a time as the narration names them. Lines connect them all to the glowing test tube at center. None of them face each other. None of them know each other exists. The test tube pulses with light.",
+    asciiArt: `
+┌─────────────────────────────────────────────┐
+│  🧪 I, CURED DISEASE                        │
+│                                             │
+│  👩‍🔬 Lagos      → cheaper trial design       │
+│  🤝 Brussels   → passed the directive       │
+│  📱 Manila     → recruited 1M voters        │
+│  💰 New York   → funded the campaign        │
+│  🏛️ Delhi      → voted yes                  │
+│  🏥 Dhaka      → enrolled in the trial      │
+│                                             │
+│  People cooperating:         millions       │
+│  People who know each other: none           │
+│  Central coordinator:        none           │
+│  Orders given:               zero           │
+│                                             │
+│  Method: everyone wanted money              │
+│  Result: cured disease                      │
+└─────────────────────────────────────────────┘`,
+    onScreen: [
+      { text: "NOW LOOK AT THIS CURED DISEASE", size: "large", animation: "fadeIn" },
+      { text: "RESEARCHER IN LAGOS → LOBBYIST IN BRUSSELS → VOTERS IN MANILA", size: "small", animation: "stagger" },
+      { text: "→ BONDHOLDER IN NEW YORK → POLITICIAN IN DELHI → PATIENT IN DHAKA", size: "small", animation: "stagger" },
+      { text: "MILLIONS COOPERATED. NO ONE GAVE ORDERS.", size: "medium", animation: "fadeIn", color: "gold" },
+    ],
+    score: 6_500_000_000,
+    showQuestMeters: true,
+    sierraVerbs: [
       {
-        verb: "WORRY ABOUT complexity",
+        verb: "LOOK AT supply chain",
         response:
-          "Your species built the internet without a central plan. It built Wikipedia without paying anyone. It will build this because $194,000 per person is a better incentive than either of those had.",
+          "The researcher does not know the lobbyist. The lobbyist does not know the voters. The voters do not know the bondholder. And yet the disease is cured. Same principle as the pencil. Bigger pencil.",
+      },
+    ],
+  },
+  {
+    id: "the-switch",
+    act: "act2",
+    duration: 10,
+    narration:
+      "Two numbers on a Scoreboard and pieces of paper with presidents on them did what no committee, no charity, and no central plan has ever done. You do not need to build the machinery. You need to turn it on. Here is the switch.",
+    visual:
+      "Pixel art — all the machinery from the previous slides assembles into a single gleaming machine. The pencil supply chain, the disease supply chain, the bonds, the SuperPAC, the trials — all visible as interlocking gears. In the center: a single large lever labeled SWITCH. The camera slowly zooms into the lever. A pixel hand reaches for it. Pause. The hand pulls it. Everything lights up. The Scoreboard from earlier appears: HALE and INCOME meters filling. The score counter accelerates.",
+    asciiArt: `
+┌─────────────────────────────────────────────┐
+│  🔌 THE SWITCH                               │
+│                                             │
+│  Two numbers on a Scoreboard                │
+│  and pieces of paper with presidents on them│
+│  did what no committee, no charity,         │
+│  and no central plan has ever done.         │
+│                                             │
+│         ┌──────────────┐                    │
+│         │              │                    │
+│         │   ╔══════╗   │                    │
+│         │   ║ ON   ║   │                    │
+│         │   ╚══════╝   │                    │
+│         │     ◄────    │                    │
+│         │              │                    │
+│         └──────────────┘                    │
+│                                             │
+│  You do not need to build the machinery.    │
+│  You need to turn it on.                    │
+└─────────────────────────────────────────────┘`,
+    onScreen: [
+      { text: "TWO NUMBERS ON A SCOREBOARD", size: "medium", animation: "fadeIn" },
+      { text: "AND PIECES OF PAPER WITH PRESIDENTS ON THEM", size: "medium", animation: "fadeIn" },
+      { text: "DID WHAT NO COMMITTEE, NO CHARITY, AND NO CENTRAL PLAN HAS EVER DONE.", size: "large", animation: "fadeIn", color: "gold" },
+      { text: "HERE IS THE SWITCH.", size: "giant", animation: "pulse", color: "green" },
+    ],
+    score: 7_000_000_000,
+    showQuestMeters: true,
+    sierraVerbs: [
+      {
+        verb: "PULL switch",
+        response:
+          "The machinery is already built. The bonds exist. The SuperPAC exists. The trials exist. The Scoreboard exists. All that is missing is you.",
       },
     ],
   },
@@ -1784,7 +1891,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act3",
     duration: 12,
     narration:
-      "150,000 deaths per day. The combined trial capacity increase and efficacy lag elimination accelerate treatment by 212 years. A third of those deaths are avoidable with earlier cures. Multiply it out: 10.7 billion lives. More than the total number of humans who have ever lived in a single century. Every share, every vote, every conversation moves the number. The math is patient. The diseases are not.",
+      "150,000 deaths per day. Faster trials and earlier access to proven treatments compress the timeline by 212 years. A third of those deaths are avoidable with earlier cures. Multiply it out. 10.7 billion lives. More than every human alive today. Every share, every vote, every conversation moves the number. The math is patient. The diseases are not.",
     visual:
       "Pixel art — planet from the Cold Open returns, but transforming. Cemetery crosses being replaced one by one — each cross morphs into a tiny pixel person standing up, grey to green. The replacement accelerates as the narration builds — slow at first, then hundreds at once. Center of screen: a massive CountUp ticks from 0 to 10,700,000,000 over the full duration of the narration. The number starts small and the font size GROWS as the count increases — by 1 billion it's large, by 10 billion it fills the screen. The planet's palette shifts from EGA dark to VGA bright in sync with the counter. Quest meters approach full. The death ticker in the HUD visibly slows — the gap between ticks widening as the count climbs. By the end, the planet is the Wishonia paradise from the Restore slide.",
     score: 7_500_000_000,
@@ -1858,7 +1965,7 @@ export const CHAPTERS = [
   { id: "act2-3", name: "The Money", slideIndex: 27 },
   { id: "act2-4", name: "Accountability", slideIndex: 31 },
   { id: "act2-5", name: "The Armory", slideIndex: 33 },
-  { id: "act3", name: "Act III: Endgame", slideIndex: 46 },
+  { id: "act3", name: "Act III: Endgame", slideIndex: 48 },
 ];
 
 // ============================================

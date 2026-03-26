@@ -102,7 +102,7 @@ const CHAPTER_STARTS = {
   act1: 0,
   turn: 9, // Moronia + Wishonia
   act2: 11,
-  act3: 27, // Approximate
+  act3: 48, // After i-pencil + cured-disease + the-switch
 };
 
 const initialState: DemoState = {
