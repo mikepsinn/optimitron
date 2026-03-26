@@ -9,8 +9,8 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_CAMPAIGN_TOTAL_COST,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter } from "@/lib/format-parameter"
+  formatParameter,
+} from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue"
 
 const escapeLatex = (str: string) => str.replace(/\$/g, '\\$')

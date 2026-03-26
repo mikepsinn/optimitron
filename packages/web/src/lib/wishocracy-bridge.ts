@@ -7,7 +7,7 @@
  */
 
 import type { Item } from '@optimitron/wishocracy';
-import { US_WISHOCRATIC_ITEMS, type WishocraticItemDefinition, type USWishocraticItemId } from '@optimitron/data/dist/datasets/us-wishocratic-items.js';
+import { US_WISHOCRATIC_ITEMS, type WishocraticItemDefinition, type USWishocraticItemId } from '@optimitron/data';
 import budgetAnalysisData from '@/data/us-budget-analysis.json';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -114,7 +114,8 @@ function computeEfficiencyContext(item: WishocraticItemDefinition): EfficiencyCo
 export function buildEnrichedWishocraticItems(): Record<USWishocraticItemId, EnrichedWishocraticItem> {
   const result: Record<string, EnrichedWishocraticItem> = {};
 
-  for (const [key, item] of Object.entries(US_WISHOCRATIC_ITEMS)) {
+  for (const [key, _item] of Object.entries(US_WISHOCRATIC_ITEMS)) {
+    const item = _item as WishocraticItemDefinition;
     result[key] = {
       id: key,
       slug: item.slug,
@@ -126,7 +127,7 @@ export function buildEnrichedWishocraticItems(): Record<USWishocraticItemId, Enr
       efficiencyContext: computeEfficiencyContext(item),
       roiRatio: item.roiData?.ratio ?? null,
       annualBudgetBillions: item.annualBudgetBillions,
-      fiscalCategoryIds: item.fiscalCategoryMappings.map(m => m.fiscalCategoryId),
+      fiscalCategoryIds: item.fiscalCategoryMappings.map((m: { fiscalCategoryId: string }) => m.fiscalCategoryId),
       priorityType: item.type,
     };
   }

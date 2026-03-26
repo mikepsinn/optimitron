@@ -14,7 +14,7 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   TREATY_HALE_GAIN_YEAR_15,
   SHARING_BREAKEVEN_ONE_IN_TREATY,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 export function VoteValueReveal() {
   return (

@@ -75,8 +75,9 @@ function normalizeItemToken(value: string): string {
 }
 
 const WISHOCRATIC_ITEM_LOOKUP = new Map<string, WishocraticItemId>();
-for (const [itemId, item] of Object.entries(WISHOCRATIC_ITEMS)) {
+for (const [itemId, _item] of Object.entries(WISHOCRATIC_ITEMS)) {
   const typedItemId = itemId as WishocraticItemId;
+  const item = _item as { slug: string; name: string };
   for (const alias of [typedItemId, item.slug, item.name]) {
     WISHOCRATIC_ITEM_LOOKUP.set(normalizeItemToken(alias), typedItemId);
   }

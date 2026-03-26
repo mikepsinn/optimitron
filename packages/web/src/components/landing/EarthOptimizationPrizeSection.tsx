@@ -1,9 +1,10 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { earthOptimizationPrizePaperLink } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
-import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+import {
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+} from "@optimitron/data/parameters";
 const coreCards = [
   {
     title: "Dominant Assurance",

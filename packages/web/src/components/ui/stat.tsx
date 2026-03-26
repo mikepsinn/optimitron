@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { Parameter, Citation } from "@/lib/parameters-calculations-citations";
-import { citations } from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+import {
+  citations,
+  fmtParam,
+  type Parameter,
+  type Citation,
+} from "@optimitron/data/parameters";
 interface StatProps {
   /** The parameter to display. */
   param: Parameter;

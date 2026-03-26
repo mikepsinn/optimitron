@@ -1,12 +1,11 @@
 import { slugify } from "@/lib/slugify";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PRIZE_POOL_HORIZON_MULTIPLE,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 // Precompute for descriptions (same pattern as demo-script.ts)
 const iabLobbyRatio = Math.round(IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT.value);
 const milToTrialRatio = Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value);

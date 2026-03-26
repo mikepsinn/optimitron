@@ -1,8 +1,9 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { fullManualPaperLink } from "@/lib/routes";
-import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+import {
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+} from "@optimitron/data/parameters";
 const steps = [
   {
     step: 1,

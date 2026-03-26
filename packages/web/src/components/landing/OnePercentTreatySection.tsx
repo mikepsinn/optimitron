@@ -1,17 +1,16 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { onePercentTreatyPaperLink } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
-import { fmtParam } from "@/lib/format-parameter";
-import { Stat } from "@/components/ui/stat";
 import {
+  fmtParam,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { Stat } from "@/components/ui/stat";
 const dfdaCapacity = Math.round(
   (GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value * 0.01 * 0.8) /
     DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value,

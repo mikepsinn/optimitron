@@ -2,7 +2,7 @@ import {
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-} from "./parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 export const VOTING_BLOC_TARGET = TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value;
 export const MINUTES_PER_PERSUASION = 15;

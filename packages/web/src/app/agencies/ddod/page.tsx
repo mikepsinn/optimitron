@@ -3,16 +3,16 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { budgetLink, federalReserveLink, wishocracyLink } from "@/lib/routes";
 import { Stat } from "@/components/ui/stat";
-import { fmtParam, fmtRaw } from "@/lib/format-parameter";
 import {
+  fmtParam,
+  fmtRaw,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   MONEY_PRINTER_WAR_DEATHS,
   ECONOMIC_MULTIPLIER_MILITARY_SPENDING,
   ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT,
   GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 const milSpend = GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value;
 const milMultiplier = ECONOMIC_MULTIPLIER_MILITARY_SPENDING.value;
 const healthMultiplier = ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT.value;

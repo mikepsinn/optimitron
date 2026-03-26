@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 

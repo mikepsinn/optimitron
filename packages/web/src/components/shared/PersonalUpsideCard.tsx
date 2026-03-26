@@ -1,11 +1,11 @@
 "use client";
 
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatCardGrid, type StatCardProps } from "@/components/ui/stat-card";
 import { CountUp } from "@/components/animations/CountUp";

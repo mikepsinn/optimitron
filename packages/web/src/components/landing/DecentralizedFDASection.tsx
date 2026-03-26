@@ -4,9 +4,8 @@ import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { dfdaSpecPaperLink } from "@/lib/routes";
-import { fmtParam } from "@/lib/format-parameter";
-import { Stat } from "@/components/ui/stat";
 import {
+  fmtParam,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
@@ -15,8 +14,8 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   EFFICACY_LAG_YEARS,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { Stat } from "@/components/ui/stat";
 const comparisons = [
   {
     label: "Cost per Patient",

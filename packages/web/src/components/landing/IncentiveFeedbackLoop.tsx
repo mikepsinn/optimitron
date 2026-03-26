@@ -9,7 +9,7 @@ import {
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   TREATY_ANNUAL_FUNDING,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 /**
  * Vertical flywheel visualization:

@@ -8,7 +8,7 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
   EFFICACY_LAG_YEARS,
-} from "@/lib/parameters-calculations-citations"
+} from "@optimitron/data/parameters"
 
 interface EmailSignatureCardProps {
   referralLink: string

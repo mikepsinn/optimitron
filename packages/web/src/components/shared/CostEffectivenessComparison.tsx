@@ -7,7 +7,7 @@ import {
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   BED_NETS_COST_PER_DALY,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CountUp } from "@/components/animations/CountUp";
 import { BrutalCard } from "@/components/ui/brutal-card";

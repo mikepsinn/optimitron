@@ -10,8 +10,8 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter } from "@/lib/format-parameter"
+  formatParameter,
+} from "@optimitron/data/parameters";
 import {
   MINUTES_PER_PERSUASION,
   VOTES_PER_HOUR,

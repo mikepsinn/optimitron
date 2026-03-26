@@ -681,7 +681,8 @@ export default function ChatPage() {
           // Map actual allocations to names
           const actualRaw = getActualGovernmentAllocations();
           const actualByName: Record<string, number> = {};
-          for (const [key, cat] of Object.entries(WISHOCRATIC_ITEMS)) {
+          for (const [key, _cat] of Object.entries(WISHOCRATIC_ITEMS)) {
+            const cat = _cat as { name: string };
             const pct = actualRaw[key as keyof typeof actualRaw];
             if (pct != null) {
               actualByName[cat.name] = pct;

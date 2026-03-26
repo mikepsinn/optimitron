@@ -2,11 +2,11 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
   VOTE_TOKEN_POTENTIAL_VALUE,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { CountUp } from "@/components/animations/CountUp";

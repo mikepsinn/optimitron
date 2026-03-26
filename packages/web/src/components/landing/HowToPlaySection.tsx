@@ -4,16 +4,15 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
 import { Stat } from "@/components/ui/stat";
-import { fmtParam } from "@/lib/format-parameter";
-import { CTA, TAGLINES } from "@/lib/messaging";
-import { ROUTES } from "@/lib/routes";
 import {
+  fmtParam,
   VOTE_TOKEN_POTENTIAL_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { CTA, TAGLINES } from "@/lib/messaging";
+import { ROUTES } from "@/lib/routes";
 const steps = [
   {
     number: "1",

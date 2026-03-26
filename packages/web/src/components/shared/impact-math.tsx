@@ -7,9 +7,8 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter } from "@/lib/format-parameter"
-
+  formatParameter,
+} from "@optimitron/data/parameters";
 // Pre-calculated totals (one-time timeline shift benefits)
 const totalLives = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const totalDALYs = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS)

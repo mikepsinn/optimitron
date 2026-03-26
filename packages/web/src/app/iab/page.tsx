@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   TREATY_ANNUAL_FUNDING,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -10,7 +10,7 @@ import {
   PRIZE_POOL_ANNUAL_RETURN,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   EFFICACY_LAG_YEARS,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import {
   contractsSourceLink,
   iabLink,

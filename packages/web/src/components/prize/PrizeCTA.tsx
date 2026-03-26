@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+import {
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+} from "@optimitron/data/parameters";
 const variantStyles = {
   pink: {
     bg: "bg-brutal-pink",

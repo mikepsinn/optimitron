@@ -9,7 +9,7 @@ import {
 } from "@/lib/activity-descriptions";
 import {
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard";
 
 function formatTimeAgo(date: Date): string {

@@ -1,5 +1,5 @@
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   GLOBAL_DISEASE_DEATHS_DAILY,
@@ -7,8 +7,7 @@ import {
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   EFFICACY_LAG_YEARS,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 const milToTrialsRatio = Math.round(
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /
     GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value,

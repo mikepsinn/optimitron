@@ -3,12 +3,11 @@
 import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Stat } from "@/components/ui/stat";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_MED_RESEARCH_SPENDING,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 const MILITARY_SPENDING = GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value / 1e9; // in billions
 const MEDICAL_RESEARCH = GLOBAL_MED_RESEARCH_SPENDING.value / 1e9; // in billions
 const RATIO = Math.round(MILITARY_SPENDING / MEDICAL_RESEARCH);

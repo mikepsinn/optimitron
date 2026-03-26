@@ -17,8 +17,8 @@
 // ---------------------------------------------------------------------------
 
 import type { BrutalCardBgColor } from "@/components/ui/brutal-card";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   GLOBAL_DISEASE_DEATHS_DAILY,
   MILITARY_VS_MEDICAL_RESEARCH_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
@@ -41,8 +41,7 @@ import {
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 // Precompute for narration strings (spoken-word, so use full words not abbreviations)
 const deathsDaily = Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value).toLocaleString();
 const milToTrialRatio = Math.round(MILITARY_VS_MEDICAL_RESEARCH_RATIO.value);

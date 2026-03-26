@@ -1,10 +1,10 @@
 import { GameCTA } from "@/components/ui/game-cta";
-import { fmtParam } from "@/lib/format-parameter";
-import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import {
+  fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
+import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
 import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 import { getGlobalVerifiedVoteCount } from "@/lib/verified-votes.server";

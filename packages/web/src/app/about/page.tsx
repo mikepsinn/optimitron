@@ -1,12 +1,12 @@
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { ImplementationPlanSection } from "@/components/landing/ImplementationPlanSection";
 import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   PRIZE_POOL_HORIZON_MULTIPLE,
   US_FEDERAL_SPENDING_2024,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import {
   aboutLink,
   alignmentLink,

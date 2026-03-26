@@ -6,7 +6,7 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ComparisonCard } from "@/components/ui/comparison-card";
 import { StatCardGrid, type StatCardProps } from "@/components/ui/stat-card";

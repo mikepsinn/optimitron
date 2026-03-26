@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ScanLines } from "@/components/animations/GlitchText";
 import { MilitaryVsTrialsPie } from "@/components/shared/MilitaryVsTrialsPie";
-import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@/lib/parameters-calculations-citations";
+import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 

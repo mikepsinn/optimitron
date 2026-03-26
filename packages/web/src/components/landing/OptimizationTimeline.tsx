@@ -9,10 +9,9 @@ import {
   EVENTUALLY_AVOIDABLE_DALY_PCT,
   GLOBAL_YLD_PROPORTION_OF_DALYS,
   GLOBAL_DISEASE_DEATHS_DAILY,
-} from "@/lib/parameters-calculations-citations"
+  getParameterValue,
+} from "@optimitron/data/parameters";
 import { HeartCrack, Skull } from "lucide-react"
-import { getParameterValue } from "@/lib/format-parameter"
-
 interface Milestone {
   id: string
   label: string

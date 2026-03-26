@@ -8,9 +8,8 @@ import {
   VICTORY_BOND_ANNUAL_RETURN_PCT,
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
-} from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 /**
  * Interactive return calculator for the Prize/IAB mechanism.
  *

@@ -1,6 +1,8 @@
-import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations";
+import {
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+} from "@optimitron/data/parameters";
 import { GameCTA } from "@/components/ui/game-cta";
-import { fmtParam } from "@/lib/format-parameter";
 import hypercertData from "@/data/alignment-hypercerts.json";
 import snapshotData from "@/data/wishocracy-snapshot.json";
 import { transparencyLink } from "@/lib/routes";

@@ -10,8 +10,9 @@ import {
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   RECOVERY_TRIAL_COST_PER_PATIENT,
   NPV_TIME_HORIZON_YEARS,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter, getParameterValue } from "@/lib/format-parameter"
+  formatParameter,
+  getParameterValue,
+} from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue"
 
 export default function SensitivityAnalysisSection() {

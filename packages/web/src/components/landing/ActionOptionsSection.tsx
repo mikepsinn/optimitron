@@ -2,8 +2,10 @@ import { Card } from "@/components/retroui/Card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import Link from "next/link"
-import { PRIZE_POOL_HORIZON_MULTIPLE } from "@/lib/parameters-calculations-citations"
-import { fmtParam } from "@/lib/format-parameter"
+import {
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+} from "@optimitron/data/parameters";
 import { ROUTES } from "@/lib/routes"
 
 export default function ActionOptionsSection() {

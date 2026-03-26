@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { WishoniaAgencyPage } from "@/components/wishonia-agency/WishoniaAgencyPage";
 import { getWishoniaAgency } from "@optimitron/data";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   MONEY_PRINTER_WAR_DEATHS,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { federalReserveLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 

@@ -24,13 +24,12 @@ import {
 } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
 import { CTA, TAGLINES } from "@/lib/messaging";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   VOTE_TOKEN_POTENTIAL_VALUE,
   GLOBAL_COORDINATION_TARGET_SUPPORTERS,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 export const metadata: Metadata = {
   title: "Optimitron — The Earth Optimization Game",
   description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,

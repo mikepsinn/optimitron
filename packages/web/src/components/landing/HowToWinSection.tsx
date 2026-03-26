@@ -12,7 +12,7 @@ import {
   VOTE_TOKEN_POTENTIAL_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   GLOBAL_COORDINATION_TARGET_SUPPORTERS,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 export function HowToWinSection() {
   const targetPeople = `${(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value / 1e9).toFixed(0)} billion`;

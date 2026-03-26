@@ -4,16 +4,15 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
 import { Stat } from "@/components/ui/stat";
-import { fmtParam } from "@/lib/format-parameter";
-import { CTA } from "@/lib/messaging";
 import {
+  fmtParam,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   GLOBAL_DISEASE_DEATHS_DAILY,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { CTA } from "@/lib/messaging";
 export function WhyPlaySection() {
   return (
     <SectionContainer bgColor="foreground" borderPosition="both" padding="lg">

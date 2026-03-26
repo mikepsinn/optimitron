@@ -7,9 +7,8 @@ import {
   EFFICACY_LAG_YEARS,
   GLOBAL_DISEASE_DEATHS_DAILY,
   PRIZE_POOL_HORIZON_MULTIPLE,
-} from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 interface ShareTemplatesCardProps {
   referralUrl: string;
 }

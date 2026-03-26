@@ -5,7 +5,7 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 

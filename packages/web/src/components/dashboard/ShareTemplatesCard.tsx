@@ -9,9 +9,8 @@ import {
   VOTER_SUFFERING_HOURS_PREVENTED,
   EFFICACY_LAG_YEARS,
   PRIZE_POOL_HORIZON_MULTIPLE,
-} from "@/lib/parameters-calculations-citations"
-import { fmtParam } from "@/lib/format-parameter"
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 interface ShareTemplatesCardProps {
   referralLink: string
 }

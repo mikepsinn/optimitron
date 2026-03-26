@@ -7,9 +7,8 @@ import {
   PRIZE_POOL_ANNUAL_RETURN,
   VOTE_TOKEN_POTENTIAL_VALUE,
   VOTE_2_CLAIMS_PAYOUT,
-} from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 /**
  * Interactive Prize return calculator.
  *

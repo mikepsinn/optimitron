@@ -4,15 +4,14 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CountUp } from "@/components/animations/CountUp";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { politicalDysfunctionTaxPaperLink } from "@/lib/routes";
-import { fmtParam } from "@/lib/format-parameter";
-import { Stat } from "@/components/ui/stat";
 import {
+  fmtParam,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { Stat } from "@/components/ui/stat";
 const milSpendFmt = fmtParam({ ...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD" });
 const milToTrialsRatio = Math.round(
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /

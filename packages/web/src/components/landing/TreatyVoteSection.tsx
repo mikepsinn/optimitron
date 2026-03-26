@@ -16,7 +16,7 @@ import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
-import { MILITARY_VS_MEDICAL_RESEARCH_RATIO } from "@/lib/parameters-calculations-citations";
+import { MILITARY_VS_MEDICAL_RESEARCH_RATIO } from "@optimitron/data/parameters";
 import { trackSliderSubmitted, trackVoteSubmitted } from "@/lib/analytics";
 import { VOTE_SECTION } from "@/lib/messaging";
 import {

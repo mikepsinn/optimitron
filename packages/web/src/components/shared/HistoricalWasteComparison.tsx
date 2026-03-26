@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { US_GOV_WASTE_DRUG_WAR } from "@/lib/parameters-calculations-citations";
+import { US_GOV_WASTE_DRUG_WAR } from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 
 const drugWarCostB = Math.round(US_GOV_WASTE_DRUG_WAR.value / 1e9);

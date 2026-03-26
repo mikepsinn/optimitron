@@ -12,7 +12,7 @@ import {
   GLOBAL_CYBERCRIME_CAGR,
   GLOBAL_GDP_2025,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 // ── Base constants ──────────────────────────────────────────────────
 

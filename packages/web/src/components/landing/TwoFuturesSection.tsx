@@ -3,16 +3,15 @@
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { GameCTA } from "@/components/ui/game-cta";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 const rows = [
   {
     metric: "Governance Cost",

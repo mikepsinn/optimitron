@@ -5,7 +5,7 @@ import { Card } from "@/components/retroui/Card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import { useEffect, useState } from "react"
-import { GLOBAL_DISEASE_DEATHS_DAILY } from "@/lib/parameters-calculations-citations"
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters"
 
 export default function OpportunityCostTicker() {
   const [todayDeaths, setTodayDeaths] = useState(0)

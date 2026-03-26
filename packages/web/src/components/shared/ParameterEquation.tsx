@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import type { Parameter } from "@/lib/parameters-calculations-citations"
+import type { Parameter } from "@optimitron/data/parameters"
 import { cn } from "@/lib/utils"
 import { Latex } from "@/components/ui/latex"
 

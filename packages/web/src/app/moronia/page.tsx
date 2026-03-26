@@ -9,7 +9,7 @@ import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   GLOBAL_DISEASE_DEATHS_DAILY,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 export const metadata = getRouteMetadata(moroniaLink);
 

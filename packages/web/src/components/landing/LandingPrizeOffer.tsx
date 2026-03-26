@@ -1,15 +1,14 @@
 import { Suspense } from "react";
 import { PrizeCalculator } from "@/components/prize/PrizeCalculator";
 import { GameCTA } from "@/components/ui/game-cta";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   CONVENTIONAL_RETIREMENT_RETURN,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 /**
  * Landing section 4: "Win Either Way"
  *

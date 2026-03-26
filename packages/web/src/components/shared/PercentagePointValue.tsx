@@ -4,7 +4,7 @@ import {
   CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT,
   CONTRIBUTION_DALYS_PER_PCT_POINT,
   CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatCardGrid, type StatCardProps } from "@/components/ui/stat-card";
 

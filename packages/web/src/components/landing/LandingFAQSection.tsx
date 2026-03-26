@@ -1,14 +1,13 @@
 import { Accordion } from "@/components/retroui/Accordion";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   MILITARY_VS_MEDICAL_RESEARCH_RATIO,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
   VOTE_TOKEN_POTENTIAL_VALUE,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
 const incomeMultiplier = Math.round(
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value /
     CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value,

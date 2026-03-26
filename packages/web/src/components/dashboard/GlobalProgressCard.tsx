@@ -4,9 +4,8 @@ import { Tooltip } from "@/components/retroui/Tooltip"
 import {
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@/lib/parameters-calculations-citations"
-import { fmtParam } from "@/lib/format-parameter"
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 const tippingPointPct = fmtParam(GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT)
 const votingBlocTarget = fmtParam(TREATY_CAMPAIGN_VOTING_BLOC_TARGET)
 

@@ -12,8 +12,9 @@ import {
   DFDA_ROI_RD_ONLY,
   NPV_TIME_HORIZON_YEARS,
   DFDA_NPV_ADOPTION_RAMP_YEARS,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter, getParameterValue } from "@/lib/format-parameter"
+  formatParameter,
+  getParameterValue,
+} from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue"
 
 const costReduction = formatParameter(RECOVERY_TRIAL_COST_REDUCTION_FACTOR)

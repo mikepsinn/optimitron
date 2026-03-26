@@ -16,7 +16,7 @@ import {
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   GLOBAL_POPULATION_2024,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 // ---------------------------------------------------------------------------
 // Types

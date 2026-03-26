@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { fmtParam } from "@/lib/format-parameter";
 import {
+  fmtParam,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
@@ -10,7 +10,7 @@ import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   TREATY_HALE_GAIN_YEAR_15,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 import {
   contractsSourceLink,
   prizeLink,

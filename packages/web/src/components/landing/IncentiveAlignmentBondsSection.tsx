@@ -18,9 +18,8 @@ import {
   VICTORY_BOND_ANNUAL_RETURN_PCT,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   PRIZE_POOL_HORIZON_MULTIPLE,
-} from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 const bondReturnPct = `${(VICTORY_BOND_ANNUAL_RETURN_PCT.value * 100).toFixed(0)}%`;
 
 export function IncentiveAlignmentBondsSection() {

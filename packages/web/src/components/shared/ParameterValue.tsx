@@ -4,12 +4,12 @@ import React from "react"
 import { Tooltip } from "@/components/retroui/Tooltip"
 import { Badge } from "@/components/retroui/Badge"
 import { ExternalLink, Info } from "lucide-react"
-import type { Parameter } from "@/lib/parameters-calculations-citations"
 import {
   formatParameter,
   formatConfidenceInterval,
+  type Parameter,
   type FormatParameterOptions,
-} from "@/lib/format-parameter"
+} from "@optimitron/data/parameters";
 import { cn } from "@/lib/utils"
 
 export interface ParameterValueProps {

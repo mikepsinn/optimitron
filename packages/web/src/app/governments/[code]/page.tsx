@@ -17,7 +17,7 @@ import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
 import {
   GLOBAL_HALE_CURRENT,
   TREATY_PROJECTED_HALE_YEAR_15,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 interface PageProps {
   params: Promise<{ code: string }>;

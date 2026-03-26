@@ -4,9 +4,8 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CountUp } from "@/components/animations/CountUp";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { invisibleGraveyardPaperLink, dfdaSpecPaperLink } from "@/lib/routes";
-import { fmtParam } from "@/lib/format-parameter";
-import { Stat } from "@/components/ui/stat";
 import {
+  fmtParam,
   EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE,
@@ -15,8 +14,8 @@ import {
   DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-} from "@/lib/parameters-calculations-citations";
-
+} from "@optimitron/data/parameters";
+import { Stat } from "@/components/ui/stat";
 const graveyardStats = [
   {
     value: 95,

@@ -10,9 +10,8 @@ import {
   GDP_BASELINE_GROWTH_RATE,
   US_MEDIAN_HOUSEHOLD_INCOME_2023,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-} from "@/lib/parameters-calculations-citations";
-import { fmtParam } from "@/lib/format-parameter";
-
+  fmtParam,
+} from "@optimitron/data/parameters";
 const YEARS = 20;
 const DEFAULT_INCOME = US_MEDIAN_HOUSEHOLD_INCOME_2023.value;
 

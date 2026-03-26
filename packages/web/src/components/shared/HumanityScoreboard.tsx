@@ -8,7 +8,7 @@ import {
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
   WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15,
   TREATY_HALE_GAIN_YEAR_15,
-} from "@/lib/parameters-calculations-citations";
+} from "@optimitron/data/parameters";
 
 const haleGain = TREATY_HALE_GAIN_YEAR_15.value.toFixed(1);
 const wishoniaHaleGain = (
