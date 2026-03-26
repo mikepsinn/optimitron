@@ -9,18 +9,12 @@ import { PALETTE_SEMANTIC } from "@/lib/demo/palette";
 
 export function SlideFinal() {
   const [showQR, setShowQR] = useState(false);
-  const [showButton, setShowButton] = useState(false);
   const { palette: paletteMode, score } = useDemoStore();
   const palette = PALETTE_SEMANTIC[paletteMode];
 
   useEffect(() => {
     const qrTimer = setTimeout(() => setShowQR(true), 1000);
-    const buttonTimer = setTimeout(() => setShowButton(true), 2000);
-
-    return () => {
-      clearTimeout(qrTimer);
-      clearTimeout(buttonTimer);
-    };
+    return () => clearTimeout(qrTimer);
   }, []);
 
   return (
@@ -126,23 +120,7 @@ export function SlideFinal() {
           </div>
         </div>
 
-        {/* CTA Button */}
-        <button
-          className={`
-            px-8 py-4 rounded-lg font-pixel text-lg md:text-xl
-            transition-all duration-500 cursor-pointer
-            hover:scale-105 active:scale-95
-            ${showButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
-          `}
-          style={{ 
-            backgroundColor: palette.success,
-            color: '#000000',
-            boxShadow: `0 4px 0 #1a5f1a, 0 8px 20px ${palette.success}40`
-          }}
-          onClick={() => window.open('https://wishonia.love/play', '_blank')}
-        >
-          [ PLAY NOW ]
-        </button>
+        {/* CTA button is now rendered by SlideCTA in sierra-chrome.tsx */}
 
         {/* Credits hint */}
         <div className="absolute bottom-4 text-xs opacity-50">

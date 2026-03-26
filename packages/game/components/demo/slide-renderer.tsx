@@ -5,7 +5,6 @@ import { SLIDES } from "@/lib/demo/demo-config";
 
 // Act I slides
 import { SlideDeathCounter } from "./slides/act1/slide-death-counter";
-import { SlideAITerminal } from "./slides/act1/slide-ai-terminal";
 import { SlideGovernmentsAreAI } from "./slides/act1/slide-governments-are-ai";
 import { SlideMisalignedProof } from "./slides/act1/slide-misaligned-proof";
 import { SlideGameTitle } from "./slides/act1/slide-game-title";
@@ -59,34 +58,20 @@ import { SlideLivesSaved } from "./slides/act3/slide-lives-saved";
 import { SlideFinal } from "./slides/act3/slide-final";
 import { SlideEasterEgg } from "./slides/act3/slide-easter-egg";
 
-// Placeholder for slides not yet implemented
-function PlaceholderSlide({ id, narration }: { id: string; narration: string }) {
-  return (
-    <div className="w-full h-full flex items-center justify-center bg-zinc-900 p-8">
-      <div className="text-center space-y-4 max-w-2xl">
-        <div className="font-pixel text-sm text-zinc-500 uppercase tracking-wider">
-          Slide: {id}
-        </div>
-        <div className="font-terminal text-lg text-zinc-400 leading-relaxed">
-          {narration}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { DataSlide } from "./slides/data-slide";
 
 // Map slide IDs to components (IDs from demo-config.ts)
 const slideComponents: Record<string, React.ComponentType> = {
   // Act I - The Horror
   "cold-open": SlideDeathCounter,
   "governments-are-ai": SlideGovernmentsAreAI,
-  "misaligned": SlideMisalignedProof,
+  "war-spending": SlideMisalignedProof,
+  "paycheck-heist": SlidePaycheckTheft,
   "game-title": SlideGameTitle,
   "ratio-604": SlideRatio,
   "clock": SlideCollapseClock,
   "failed-state": SlideFailedState,
   "ai-spiral": SlideAIHackers,
-  "paycheck-theft": SlidePaycheckTheft,
   "moronia": SlideGameOver,
 
   // The Turn
@@ -95,14 +80,14 @@ const slideComponents: Record<string, React.ComponentType> = {
   // Act II - Part 1: The Solution
   "the-fix": SlideOnePercent,
   "acceleration": SlideAcceleration,
-  "compounding": SlideGDPTrajectory,
+  "twenty-year-gap": SlideGDPTrajectory,
   "pluralistic-ignorance": SlidePluristicIgnorance,
   "dysfunction-tax": SlideDysfunctionTax,
   "scoreboard": SlideScoreboard,
 
   // Act II - Part 2: The Game
   "allocate": SlideLevelAllocate,
-  "vote": SlideLevelVote,
+  "referendum": SlideLevelVote,
   "asymmetry": SlideAsymmetry,
   "get-friends": SlideLevelShare,
 
@@ -113,16 +98,16 @@ const slideComponents: Record<string, React.ComponentType> = {
   "cannot-lose": SlideCannotLose,
 
   // Act II - Part 4: Accountability
-  "leaderboard": SlideLeaderboard,
-  "changed-metric": SlideChangedMetric,
+  "arsonist-board": SlideLeaderboard,
+  "track-record": SlideChangedMetric,
 
   // Act II - Part 5: The Armory
-  "dfda": SlideDfda,
+  "dfda-fix": SlideDfda,
   "iabs": SlideIabs,
   "superpac": SlideSuperpac,
   "storacha": SlideStoracha,
   "hypercerts": SlideHypercerts,
-  "wish-token": SlideWishToken,
+  "replace-irs": SlideWishToken,
   "optimizer": SlideOptimizer,
   "i-pencil": SlideIPencil,
 
@@ -151,6 +136,6 @@ export function SlideRenderer() {
     return <SlideComponent key={slideConfig.id} />;
   }
 
-  // Return placeholder for unimplemented slides
-  return <PlaceholderSlide id={slideConfig.id} narration={slideConfig.narration} />;
+  // Generic data-driven fallback for slides without dedicated components
+  return <DataSlide key={slideConfig.id} config={slideConfig} />;
 }

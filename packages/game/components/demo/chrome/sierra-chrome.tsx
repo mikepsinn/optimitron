@@ -6,6 +6,7 @@ import { SierraHUD } from "./sierra-hud";
 import { NarratorBox } from "./narrator-box";
 import { VerbBar, type VerbType } from "./verb-bar";
 import { Inventory, InventoryCompact } from "./inventory";
+import { SlideCTA } from "./slide-cta";
 
 interface SierraChromeProps {
   narrationText: string;
@@ -50,8 +51,12 @@ export function SierraChrome({
         "flex items-center justify-center",
         "overflow-hidden"
       )}>
-        <div className="w-full h-full max-w-[1600px] mx-auto px-4">
+        <div className="relative w-full h-full max-w-[1600px] mx-auto px-4">
           {children}
+          {/* CTA button — positioned above narrator */}
+          <div className="absolute bottom-2 right-4 z-20">
+            <SlideCTA />
+          </div>
         </div>
       </main>
 

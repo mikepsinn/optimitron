@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "generate:narration": "tsx scripts/generate-narration.ts",
     "record": "tsx scripts/record-presentation.ts",
+    "merge:audio": "tsx scripts/merge-audio.ts",
     "generate:readme": "tsx scripts/generate-readme.ts"
   },
   "dependencies": {

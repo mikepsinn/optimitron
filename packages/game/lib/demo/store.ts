@@ -45,6 +45,9 @@ export interface DemoState {
   // Typewriter state
   isTyping: boolean;
   typewriterComplete: boolean;
+
+  // Audio state
+  narrationEnded: boolean;
 }
 
 export interface DemoActions {
@@ -88,6 +91,9 @@ export interface DemoActions {
   setTyping: (isTyping: boolean) => void;
   setTypewriterComplete: (complete: boolean) => void;
 
+  // Audio
+  setNarrationEnded: (ended: boolean) => void;
+
   // Reset
   reset: () => void;
 }
@@ -123,6 +129,7 @@ const initialState: DemoState = {
   achievements: [],
   isTyping: false,
   typewriterComplete: false,
+  narrationEnded: false,
 };
 
 export const useDemoStore = create<DemoState & DemoActions>()(
@@ -133,27 +140,27 @@ export const useDemoStore = create<DemoState & DemoActions>()(
     nextSlide: () => {
       const { currentSlide, totalSlides } = get();
       if (currentSlide < totalSlides - 1) {
-        set({ currentSlide: currentSlide + 1, typewriterComplete: false });
+        set({ currentSlide: currentSlide + 1, typewriterComplete: false, narrationEnded: false });
       }
     },
 
     prevSlide: () => {
       const { currentSlide } = get();
       if (currentSlide > 0) {
-        set({ currentSlide: currentSlide - 1, typewriterComplete: false });
+        set({ currentSlide: currentSlide - 1, typewriterComplete: false, narrationEnded: false });
       }
     },
 
     goToSlide: (index: number) => {
       const { totalSlides } = get();
       if (index >= 0 && index < totalSlides) {
-        set({ currentSlide: index, typewriterComplete: false });
+        set({ currentSlide: index, typewriterComplete: false, narrationEnded: false });
       }
     },
 
     goToChapter: (chapter) => {
       const slideIndex = CHAPTER_STARTS[chapter];
-      set({ currentSlide: slideIndex, typewriterComplete: false });
+      set({ currentSlide: slideIndex, typewriterComplete: false, narrationEnded: false });
     },
 
     // Playback
@@ -218,6 +225,9 @@ export const useDemoStore = create<DemoState & DemoActions>()(
     // Typewriter
     setTyping: (isTyping) => set({ isTyping }),
     setTypewriterComplete: (complete) => set({ typewriterComplete: complete }),
+
+    // Audio
+    setNarrationEnded: (ended) => set({ narrationEnded: ended }),
 
     // Reset
     reset: () => set(initialState),

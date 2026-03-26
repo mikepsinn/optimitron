@@ -5,18 +5,67 @@
  *
  * Outputs: presentation-recording/presentation.webm (raw)
  *          presentation-recording/presentation.mp4 (converted via ffmpeg)
+ *
+ * If narration audio exists, slide wait times are synced to actual audio durations.
  */
 
 import { chromium } from "@playwright/test";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import { execSync } from "child_process";
 import { join } from "path";
 
-// Import slide config for durations
 import { SLIDES } from "../lib/demo/demo-config";
 
 const OUTPUT_DIR = join(process.cwd(), "presentation-recording");
+const NARRATION_DIR = join(process.cwd(), "public", "audio", "narration");
+const MANIFEST_PATH = join(NARRATION_DIR, "manifest.json");
 const BASE_URL = "http://localhost:3333";
+
+/** Get audio duration in seconds via ffprobe, or null if unavailable */
+function getAudioDuration(mp3Path: string): number | null {
+  try {
+    const result = execSync(
+      `ffprobe -v error -show_entries format=duration -of csv=p=0 "${mp3Path}"`,
+      { stdio: "pipe" }
+    );
+    const duration = parseFloat(result.toString().trim());
+    return isNaN(duration) ? null : duration;
+  } catch {
+    return null;
+  }
+}
+
+/** Load narration manifest and compute per-slide wait times */
+function computeWaitTimes(): Map<string, number> {
+  const waitTimes = new Map<string, number>();
+
+  let manifest: Record<string, { file: string }> | null = null;
+  if (existsSync(MANIFEST_PATH)) {
+    try {
+      manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf-8"));
+    } catch {}
+  }
+
+  for (const slide of SLIDES) {
+    const configDuration = Math.max(slide.duration || 8, 5);
+    let waitMs = configDuration * 1000;
+
+    if (manifest?.[slide.id]) {
+      const mp3Path = join(NARRATION_DIR, manifest[slide.id].file);
+      if (existsSync(mp3Path)) {
+        const audioDuration = getAudioDuration(mp3Path);
+        if (audioDuration !== null) {
+          // Use audio duration + 2s buffer, but at least the config duration
+          waitMs = Math.max(audioDuration + 2, configDuration) * 1000;
+        }
+      }
+    }
+
+    waitTimes.set(slide.id, waitMs);
+  }
+
+  return waitTimes;
+}
 
 async function main() {
   // Check dev server is running
@@ -29,6 +78,8 @@ async function main() {
   }
 
   mkdirSync(OUTPUT_DIR, { recursive: true });
+
+  const waitTimes = computeWaitTimes();
 
   console.log("\n🎬 Recording presentation...\n");
 
@@ -43,34 +94,43 @@ async function main() {
 
   const page = await context.newPage();
 
-  // Skip boot screen, suppress help overlay
+  // Skip boot screen, enable recording mode
   await page.goto(`${BASE_URL}/?skipBoot`, { waitUntil: "networkidle" });
   await page.waitForTimeout(2000);
+
+  // Enable recording mode (hides controls)
+  await page.evaluate(() => {
+    const store = (window as any).__demoStore;
+    if (store) store.setState({ isRecordingMode: true });
+  });
 
   console.log(`  Total slides: ${SLIDES.length}`);
   console.log(`  Resolution: 1920x1080`);
   console.log("");
 
+  let totalWait = 0;
+
   // Navigate through each slide using store
   for (let i = 0; i < SLIDES.length; i++) {
     const slide = SLIDES[i];
-    const duration = Math.max(slide.duration || 8, 5) * 1000; // Min 5s per slide
+    const waitMs = waitTimes.get(slide.id) || 8000;
 
     // Set slide directly via store
     await page.evaluate((idx) => {
       const store = (window as any).__demoStore;
-      if (store) store.setState({ currentSlide: idx, typewriterComplete: false });
+      if (store) store.setState({ currentSlide: idx, typewriterComplete: false, narrationEnded: false });
     }, i);
 
     const slideNum = String(i + 1).padStart(2, "0");
-    console.log(`  [${slideNum}/${SLIDES.length}] ${slide.id} (${(duration / 1000).toFixed(0)}s)`);
+    console.log(`  [${slideNum}/${SLIDES.length}] ${slide.id} (${(waitMs / 1000).toFixed(1)}s)`);
 
-    // Wait for slide duration to let animations play
-    await page.waitForTimeout(duration);
+    await page.waitForTimeout(waitMs);
+    totalWait += waitMs;
   }
 
-  // Hold on final slide for a few extra seconds
+  // Hold on final slide
   await page.waitForTimeout(3000);
+  totalWait += 3000;
 
   // Close context to finalize video
   const video = page.video();
@@ -100,9 +160,8 @@ async function main() {
     console.log(`  WebM still available at: ${webmPath}`);
   }
 
-  // Calculate total duration
-  const totalDuration = SLIDES.reduce((sum, s) => sum + Math.max(s.duration || 8, 5), 0) + 3;
-  console.log(`\n🎬 Done! Total duration: ~${Math.floor(totalDuration / 60)}m ${totalDuration % 60}s\n`);
+  const totalSec = Math.round(totalWait / 1000);
+  console.log(`\n🎬 Done! Total duration: ~${Math.floor(totalSec / 60)}m ${totalSec % 60}s\n`);
 }
 
 main().catch((err) => {

@@ -78,6 +78,11 @@ function useNarrationAudio(slideId?: string) {
       audio.volume = isMuted ? 0 : masterVolume * voiceVolume;
       audioRef.current = audio;
 
+      // Signal auto-advance when narration finishes
+      audio.addEventListener("ended", () => {
+        useDemoStore.getState().setNarrationEnded(true);
+      });
+
       // Auto-play (may be blocked by browser policy until user interaction)
       audio.play().catch(() => {});
     })();

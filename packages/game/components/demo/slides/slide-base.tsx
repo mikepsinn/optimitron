@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useDemoStore } from "@/lib/demo/store";
+import { SLIDES } from "@/lib/demo/demo-config";
 
 interface SlideBaseProps {
   children: React.ReactNode;
@@ -10,8 +11,14 @@ interface SlideBaseProps {
 }
 
 export function SlideBase({ children, className, act }: SlideBaseProps) {
-  const currentAct = useDemoStore((s) => s.currentAct);
-  const effectiveAct = act ?? currentAct;
+  const currentSlide = useDemoStore((s) => s.currentSlide);
+  const slideConfig = SLIDES[currentSlide];
+  const derivedAct: 1 | 2 | 3 | "turn" =
+    slideConfig?.act === "act1" ? 1
+    : slideConfig?.act === "turn" ? "turn"
+    : slideConfig?.act === "act2" ? 2
+    : 3;
+  const effectiveAct = act ?? derivedAct;
 
   // Different background styles based on act
   const bgClasses = {
