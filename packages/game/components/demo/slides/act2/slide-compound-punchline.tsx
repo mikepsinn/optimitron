@@ -41,7 +41,7 @@ const BARS = [
     value: DO_NOTHING_VALUE,
     widthPct: 1.7,
     colorBar: "bg-zinc-500",
-    colorText: "text-zinc-500",
+    colorText: "text-zinc-200",
   },
 ] as const;
 
@@ -83,7 +83,7 @@ export function SlideCompoundPunchline() {
       <div className="flex flex-col gap-5 w-full max-w-[1700px] mx-auto">
         {/* Phase 1: Title */}
         {phase >= 1 && (
-          <h1 className="font-pixel text-sm md:text-lg text-amber-400 text-center slide-fade-in">
+          <h1 className="font-pixel text-xl md:text-2xl text-amber-400 text-center slide-fade-in">
             🧮 WHAT COMPOUND INTEREST THINKS ABOUT YOUR POLITICS
           </h1>
         )}
@@ -99,10 +99,10 @@ export function SlideCompoundPunchline() {
                   className={`bg-zinc-900 border border-zinc-700 rounded p-2 md:p-3 ${visible ? "slide-fade-in" : "opacity-0"}`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className={`font-pixel text-xs ${bar.colorText}`}>
+                    <span className={`font-pixel text-xl ${bar.colorText}`}>
                       {bar.label}
                     </span>
-                    <span className={`font-pixel text-xs md:text-sm ${bar.colorText}`}>
+                    <span className={`font-pixel text-xl md:text-2xl ${bar.colorText}`}>
                       {formatCurrency(bar.value)} / person
                     </span>
                   </div>
@@ -125,7 +125,7 @@ export function SlideCompoundPunchline() {
         {/* Phase 3: Punchline highlight */}
         {phase >= 3 && (
           <div className="bg-cyan-500/15 border-2 border-cyan-500/50 rounded-lg p-4 slide-fade-in">
-            <p className="font-pixel text-sm md:text-lg text-cyan-400 animate-pulse text-center">
+            <p className="font-pixel text-xl md:text-2xl text-cyan-400 animate-pulse text-center">
               WORST CASE IS 4× BETTER THAN DOING NOTHING
             </p>
           </div>
@@ -134,10 +134,10 @@ export function SlideCompoundPunchline() {
         {/* Phase 4: Deadpan footnotes */}
         {phase >= 4 && (
           <div className="flex justify-between slide-fade-in px-1">
-            <span className="font-terminal text-xs text-emerald-400">
+            <span className="font-terminal text-xl text-emerald-400">
               Math consulted: yes
             </span>
-            <span className="font-terminal text-xs text-zinc-500">
+            <span className="font-terminal text-xl text-zinc-200">
               Politicians consulted: not required
             </span>
           </div>

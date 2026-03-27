@@ -62,7 +62,7 @@ function CRTMonitor({
 
           {/* Label */}
           <div
-            className="font-pixel text-xs md:text-xs mb-3 tracking-wider"
+            className="font-pixel text-2xl mb-3 tracking-wider"
             style={{ color: labelColor }}
           >
             {label}
@@ -119,7 +119,7 @@ export function SlideMisalignedProof() {
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Title */}
         <div className="text-center">
-          <div className="font-pixel text-xs text-red-400/60 tracking-widest">
+          <div className="font-pixel text-xl text-red-400 tracking-widest">
             EVIDENCE OF MISALIGNMENT
           </div>
         </div>
@@ -134,7 +134,8 @@ export function SlideMisalignedProof() {
             delay={0}
           >
             <div className="text-center">
-              <div className="font-pixel text-xl md:text-2xl text-amber-400">
+              <div className="text-4xl md:text-5xl mb-2">🖨️💵💵💵</div>
+              <div className="font-pixel text-3xl md:text-4xl text-amber-400">
                 <AnimatedCounter
                   end={CUMULATIVE_MILITARY_SPENDING_FED_ERA.value}
                   duration={3000}
@@ -142,9 +143,10 @@ export function SlideMisalignedProof() {
                   decimals={0}
                 />
               </div>
-              <div className="font-pixel text-xs text-amber-300/60 mt-2">
+              <div className="font-pixel text-2xl text-amber-400 mt-2">
                 ON WEAPONS AND WARS
               </div>
+              <div className="text-2xl mt-1">🚀💣🔫✈️</div>
             </div>
           </CRTMonitor>
 
@@ -156,15 +158,15 @@ export function SlideMisalignedProof() {
             delay={300}
           >
             <div className="text-center">
-              {/* Shrinking dollar sign */}
+              {/* Shrinking dollar — emoji shrinks with the value */}
               <div
-                className="font-pixel text-red-500 transition-all duration-100 leading-none"
+                className="transition-all duration-100 leading-none"
                 style={{
-                  fontSize: `${Math.max(dollarScale * 0.5, 12)}px`,
-                  opacity: Math.max(dollarScale / 100, 0.15),
+                  fontSize: `${Math.max(dollarScale * 0.6, 16)}px`,
+                  opacity: Math.max(dollarScale / 100, 0.2),
                 }}
               >
-                $
+                💵
               </div>
               <div className="font-pixel text-2xl md:text-3xl text-red-400 mt-1">
                 <AnimatedCounter
@@ -174,9 +176,10 @@ export function SlideMisalignedProof() {
                   suffix="%"
                 />
               </div>
-              <div className="font-pixel text-xs text-red-300/60 mt-2">
+              <div className="font-pixel text-2xl text-red-400 mt-2">
                 {GAME_PARAMS.dollarPurchasingPowerLost}% DESTROYED
               </div>
+              <div className="text-2xl mt-1">📉🔥🗑️</div>
             </div>
           </CRTMonitor>
 
@@ -188,16 +191,18 @@ export function SlideMisalignedProof() {
             delay={600}
           >
             <div className="text-center relative">
-              <div className="font-pixel text-xl md:text-2xl text-red-500">
+              <div className="text-4xl md:text-5xl mb-2">⚰️💀⚰️💀⚰️</div>
+              <div className="font-pixel text-3xl md:text-4xl text-red-500">
                 <AnimatedCounter
                   end={MONEY_PRINTER_WAR_DEATHS.value}
                   duration={3000}
                   format="number"
                 />
               </div>
-              <div className="font-pixel text-xs text-red-300/60 mt-2 animate-pulse">
+              <div className="font-pixel text-2xl text-red-400 mt-2 animate-pulse">
                 NO ONE ASKED YOU
               </div>
+              <div className="text-2xl mt-1">🪦🪦🪦🪦🪦</div>
             </div>
           </CRTMonitor>
         </div>
@@ -213,7 +218,7 @@ export function SlideMisalignedProof() {
           <div className="bg-black border-2 border-red-500/40 rounded p-3 text-center">
             <GlitchText
               text="DIAGNOSIS: MISALIGNED OBJECTIVE FUNCTION — RUNNING TO COMPLETION"
-              className="font-pixel text-sm md:text-xs text-red-500"
+              className="font-pixel text-xl md:text-2xl text-red-500"
               intensity="medium"
             />
           </div>

@@ -66,11 +66,11 @@ export function SlideLeaderboard() {
     <SlideBase act={2} className="text-cyan-400">
       {/* Title */}
       <div className="text-center mb-4">
-        <div className="font-pixel text-xs text-cyan-300/60 mb-1">PART 4: ACCOUNTABILITY</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-cyan-400">
+        <div className="font-pixel text-xl text-cyan-400 mb-1">PART 4: ACCOUNTABILITY</div>
+        <h1 className="font-pixel text-3xl md:text-4xl text-cyan-400">
           GOVERNMENT LEADERBOARD
         </h1>
-        <div className="font-terminal text-sm text-zinc-400 mt-2">
+        <div className="font-terminal text-xl text-zinc-200 mt-2">
           Ranked by health optimization score
         </div>
       </div>
@@ -80,11 +80,11 @@ export function SlideLeaderboard() {
         <div className="bg-black/40 border border-cyan-500/30 rounded overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cyan-500/10 border-b border-cyan-500/30">
-            <div className="col-span-1 font-pixel text-xs text-cyan-300/60">#</div>
-            <div className="col-span-4 font-pixel text-xs text-cyan-300/60">COUNTRY</div>
-            <div className="col-span-4 font-pixel text-xs text-cyan-300/60">SCORE</div>
-            <div className="col-span-2 font-pixel text-xs text-cyan-300/60">% GDP</div>
-            <div className="col-span-1 font-pixel text-xs text-cyan-300/60">Δ</div>
+            <div className="col-span-1 font-pixel text-xl text-cyan-400">#</div>
+            <div className="col-span-4 font-pixel text-xl text-cyan-400">COUNTRY</div>
+            <div className="col-span-4 font-pixel text-xl text-cyan-400">SCORE</div>
+            <div className="col-span-2 font-pixel text-xl text-cyan-400">% GDP</div>
+            <div className="col-span-1 font-pixel text-xl text-cyan-400">Δ</div>
           </div>
 
           {/* Rows */}
@@ -98,14 +98,14 @@ export function SlideLeaderboard() {
               {/* Rank */}
               <div className="col-span-1">
                 <span
-                  className={`font-pixel text-sm ${
+                  className={`font-pixel text-xl ${
                     country.rank === 1
                       ? "text-amber-400"
                       : country.rank === 2
                       ? "text-zinc-300"
                       : country.rank === 3
                       ? "text-amber-600"
-                      : "text-zinc-500"
+                      : "text-zinc-200"
                   }`}
                 >
                   {country.rank}
@@ -114,8 +114,8 @@ export function SlideLeaderboard() {
 
               {/* Country */}
               <div className="col-span-4 flex items-center gap-2">
-                <span className="text-lg">{country.flag}</span>
-                <span className="font-pixel text-xs text-zinc-300 truncate">
+                <span className="text-xl">{country.flag}</span>
+                <span className="font-pixel text-xl text-zinc-300 truncate">
                   {country.name}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export function SlideLeaderboard() {
                       style={{ width: `${(animatedScores[i] / maxScore) * 100}%` }}
                     />
                   </div>
-                  <span className="font-pixel text-sm text-zinc-400 w-12 text-right">
+                  <span className="font-pixel text-xl text-zinc-200 w-12 text-right">
                     {animatedScores[i].toLocaleString()}
                   </span>
                 </div>
@@ -139,7 +139,7 @@ export function SlideLeaderboard() {
 
               {/* Allocation */}
               <div className="col-span-2">
-                <span className="font-pixel text-xs text-emerald-400">
+                <span className="font-pixel text-xl text-emerald-400">
                   {country.allocation}%
                 </span>
               </div>
@@ -147,12 +147,12 @@ export function SlideLeaderboard() {
               {/* Change indicator */}
               <div className="col-span-1">
                 <span
-                  className={`font-pixel text-sm ${
+                  className={`font-pixel text-xl ${
                     country.change === "up"
                       ? "text-emerald-400"
                       : country.change === "down"
                       ? "text-red-400"
-                      : "text-zinc-500"
+                      : "text-zinc-200"
                   }`}
                 >
                   {country.change === "up" ? "↑" : country.change === "down" ? "↓" : "–"}
@@ -165,21 +165,21 @@ export function SlideLeaderboard() {
         {/* Footer stats */}
         <div className="grid grid-cols-3 gap-4 mt-4 text-center">
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-cyan-400">147</div>
-            <div className="font-pixel text-xs text-zinc-500">Countries ranked</div>
+            <div className="font-pixel text-xl text-cyan-400">147</div>
+            <div className="font-pixel text-xl text-zinc-200">Countries ranked</div>
           </div>
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-emerald-400">0.6%</div>
-            <div className="font-pixel text-xs text-zinc-500">Avg allocation</div>
+            <div className="font-pixel text-xl text-emerald-400">0.6%</div>
+            <div className="font-pixel text-xl text-zinc-200">Avg allocation</div>
           </div>
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-amber-400">LIVE</div>
-            <div className="font-pixel text-xs text-zinc-500">Updated realtime</div>
+            <div className="font-pixel text-xl text-amber-400">LIVE</div>
+            <div className="font-pixel text-xl text-zinc-200">Updated realtime</div>
           </div>
         </div>
 
         {/* Bottom message */}
-        <div className="text-center mt-4 font-terminal text-xs text-zinc-500">
+        <div className="text-center mt-4 font-terminal text-xl text-zinc-200">
           Public accountability drives competition for better health outcomes
         </div>
       </div>

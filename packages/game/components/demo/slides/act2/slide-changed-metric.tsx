@@ -72,7 +72,7 @@ export function SlideChangedMetric() {
           {/* Old Header */}
           <div className="relative inline-block">
             <h1
-              className={`font-pixel text-lg md:text-2xl text-zinc-400 ${
+              className={`font-pixel text-2xl md:text-4xl text-zinc-200 ${
                 phase !== "old" ? "opacity-50" : ""
               }`}
             >
@@ -91,7 +91,7 @@ export function SlideChangedMetric() {
 
           {/* New Header - Typewriter */}
           {showNewHeader && (
-            <h1 className="font-pixel text-lg md:text-2xl text-cyan-400">
+            <h1 className="font-pixel text-2xl md:text-4xl text-cyan-400">
               {newHeaderText}
               <span className="animate-pulse">▊</span>
             </h1>
@@ -117,28 +117,28 @@ export function SlideChangedMetric() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-pixel text-sm text-zinc-500 w-6 text-right">
+                  <span className="font-pixel text-xl text-zinc-200 w-6 text-right">
                     #{rank}
                   </span>
-                  <span className="font-pixel text-xs text-zinc-300">
+                  <span className="font-pixel text-xl text-zinc-300">
                     {entry.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {shuffled && (
                     <span
-                      className={`font-pixel text-xs ${
-                        isRising ? "text-emerald-400" : isFalling ? "text-red-400" : "text-zinc-500"
+                      className={`font-pixel text-xl ${
+                        isRising ? "text-emerald-400" : isFalling ? "text-red-400" : "text-zinc-200"
                       }`}
                     >
                       {entry.score}
                     </span>
                   )}
                   {shuffled && isRising && (
-                    <span className="text-emerald-400 text-xs">▲</span>
+                    <span className="text-emerald-400 text-xl">▲</span>
                   )}
                   {shuffled && isFalling && (
-                    <span className="text-red-400 text-xs">▼</span>
+                    <span className="text-red-400 text-xl">▼</span>
                   )}
                 </div>
               </div>

@@ -64,13 +64,13 @@ export function SlideFdaQueue() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="font-pixel text-lg md:text-2xl text-red-400">
+          <div className="font-pixel text-2xl md:text-4xl text-red-400">
             🏥 FDA WAITING ROOM
           </div>
-          <div className="font-pixel text-xs md:text-sm text-red-500 mt-1 tracking-widest">
+          <div className="font-pixel text-xl md:text-2xl text-red-500 mt-1 tracking-widest">
             TICKET #4,847 — ESTIMATED WAIT: 8.2 YEARS
           </div>
-          <div className="text-lg mt-2 tracking-widest">
+          <div className="text-xl mt-2 tracking-widest">
             🪑🪑🪑🪑🪑🪑🪑🪑🪑
           </div>
         </div>
@@ -88,14 +88,14 @@ export function SlideFdaQueue() {
                 }`}
               >
                 <span
-                  className={`font-pixel text-base ${
+                  className={`font-pixel text-xl ${
                     item.checked ? "text-emerald-400" : "pulse-red text-red-500"
                   }`}
                 >
                   {item.checked ? "✅" : "⬜"}
                 </span>
                 <span
-                  className={`font-pixel text-xs md:text-sm ${
+                  className={`font-pixel text-xl md:text-2xl ${
                     item.checked ? "text-zinc-300" : "pulse-red text-red-400"
                   }`}
                 >
@@ -112,7 +112,7 @@ export function SlideFdaQueue() {
             phase >= 3 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="font-terminal text-xs md:text-sm text-zinc-500 uppercase tracking-widest mb-1">
+          <div className="font-terminal text-xl md:text-2xl text-zinc-200 uppercase tracking-widest mb-1">
             Patients who died waiting:
           </div>
           <div className="relative inline-block">
@@ -135,15 +135,15 @@ export function SlideFdaQueue() {
         >
           <div className="bg-red-500/10 border border-red-500/30 rounded p-4 space-y-3">
             <div className="flex justify-between items-baseline gap-4">
-              <span className="font-pixel text-sm text-zinc-400">
+              <span className="font-pixel text-xl text-zinc-200">
                 People saved from bad drugs:
               </span>
-              <span className="font-pixel text-sm text-zinc-400 shrink-0">
+              <span className="font-pixel text-xl text-zinc-200 shrink-0">
                 1
               </span>
             </div>
             <div className="flex justify-between items-baseline gap-4">
-              <span className="font-pixel text-sm text-zinc-400">
+              <span className="font-pixel text-xl text-zinc-200">
                 People killed waiting for safe ones:
               </span>
               <span className="font-pixel text-3xl md:text-5xl text-red-500 shrink-0">
@@ -159,7 +159,7 @@ export function SlideFdaQueue() {
             phase >= 5 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <p className="font-terminal text-xs md:text-sm text-zinc-500 italic">
+          <p className="font-terminal text-xl md:text-2xl text-zinc-200 italic">
             &ldquo;A lifeguard who confirms the life preserver floats, then
             locks it in a cabinet for years.&rdquo;
           </p>

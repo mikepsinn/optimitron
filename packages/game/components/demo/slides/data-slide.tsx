@@ -15,8 +15,8 @@ const sizeClasses: Record<string, string> = {
   giant: "font-pixel text-4xl sm:text-5xl md:text-6xl lg:text-7xl",
   large: "font-pixel text-2xl sm:text-3xl md:text-4xl",
   medium: "font-terminal text-xl sm:text-2xl md:text-3xl",
-  small: "font-terminal text-base sm:text-lg md:text-xl",
-  label: "font-terminal text-sm sm:text-base uppercase tracking-widest opacity-80",
+  small: "font-terminal text-xl sm:text-2xl md:text-3xl",
+  label: "font-terminal text-lg sm:text-xl uppercase tracking-widest opacity-80",
 };
 
 /** Map color names to CSS classes */
@@ -103,7 +103,7 @@ export function DataSlide({ config }: DataSlideProps) {
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] w-full px-4">
         {/* Chapter heading if present */}
         {config.chapter && (
-          <div className="font-pixel text-xs sm:text-sm uppercase tracking-[0.3em] text-[var(--sierra-accent)] opacity-70">
+          <div className="font-pixel text-sm sm:text-lg uppercase tracking-[0.3em] text-[var(--sierra-accent)] opacity-70">
             {config.chapter}
           </div>
         )}
@@ -121,11 +121,11 @@ export function DataSlide({ config }: DataSlideProps) {
         {hasAscii && (
           <pre
             className={cn(
-              "font-terminal text-xs sm:text-sm md:text-base",
+              "font-terminal text-sm sm:text-lg md:text-xl",
               "text-[var(--sierra-fg)] opacity-90",
               "whitespace-pre overflow-x-auto max-w-full",
               "leading-relaxed",
-              !hasOnScreen && "text-sm sm:text-base md:text-lg"
+              !hasOnScreen && "text-lg sm:text-xl md:text-2xl"
             )}
           >
             {config.asciiArt}
@@ -134,7 +134,7 @@ export function DataSlide({ config }: DataSlideProps) {
 
         {/* Fallback: show narration excerpt if nothing else to display */}
         {!hasOnScreen && !hasAscii && (
-          <div className="font-terminal text-lg sm:text-xl text-[var(--sierra-fg)] text-center max-w-4xl leading-relaxed opacity-80">
+          <div className="font-terminal text-2xl sm:text-3xl text-[var(--sierra-fg)] text-center max-w-4xl leading-relaxed opacity-80">
             {config.narration.slice(0, 200)}
             {config.narration.length > 200 ? "..." : ""}
           </div>

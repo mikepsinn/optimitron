@@ -37,7 +37,7 @@ export function SlideOnePercent() {
   return (
     <SlideBase act={2} className="text-emerald-400">
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-emerald-400 text-center mb-8">
+      <h1 className="font-pixel text-xl md:text-2xl text-emerald-400 text-center mb-8">
         THE 1% SOLUTION
       </h1>
 
@@ -46,27 +46,27 @@ export function SlideOnePercent() {
         <div className="grid grid-cols-2 gap-4 md:gap-8">
           {/* Before */}
           <div className="text-center p-4 bg-red-500/10 border border-red-500/30 rounded">
-            <div className="font-pixel text-xs text-red-400 mb-2">CURRENT</div>
+            <div className="font-pixel text-xl text-red-400 mb-2">CURRENT</div>
             <div className="text-3xl mb-2">⚔️</div>
-            <div className="font-pixel text-sm text-red-400">
+            <div className="font-pixel text-xl text-red-400">
               {formatCurrency(militaryGlobal)}
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">
+            <div className="font-pixel text-2xl text-zinc-200 mt-1">
               100% to military
             </div>
           </div>
 
           {/* After */}
           <div className="text-center p-4 bg-emerald-500/10 border border-emerald-500/30 rounded">
-            <div className="font-pixel text-xs text-emerald-400 mb-2">PROPOSED</div>
+            <div className="font-pixel text-xl text-emerald-400 mb-2">PROPOSED</div>
             <div className="flex justify-center gap-2 mb-2">
               <span className="text-2xl">⚔️</span>
               <span className="text-2xl">🧪</span>
             </div>
-            <div className="font-pixel text-sm text-emerald-400">
+            <div className="font-pixel text-xl text-emerald-400">
               99% + 1%
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">
+            <div className="font-pixel text-2xl text-zinc-200 mt-1">
               Tiny shift, massive impact
             </div>
           </div>
@@ -74,7 +74,7 @@ export function SlideOnePercent() {
 
         {/* Animated slider */}
         <div className="space-y-4">
-          <div className="font-pixel text-sm text-center text-zinc-400">
+          <div className="font-pixel text-2xl text-center text-zinc-200">
             REALLOCATION SLIDER
           </div>
           
@@ -84,7 +84,7 @@ export function SlideOnePercent() {
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 to-red-500 transition-all duration-100"
               style={{ width: `${100 - sliderValue}%` }}
             >
-              <div className="absolute inset-0 flex items-center justify-center font-pixel text-xs text-white/80">
+              <div className="absolute inset-0 flex items-center justify-center font-pixel text-xl text-white/80">
                 Military: {(100 - sliderValue).toFixed(1)}%
               </div>
             </div>
@@ -95,7 +95,7 @@ export function SlideOnePercent() {
               style={{ width: `${sliderValue}%` }}
             >
               {sliderValue > 0.5 && (
-                <div className="absolute inset-0 flex items-center justify-center font-pixel text-xs text-white/80">
+                <div className="absolute inset-0 flex items-center justify-center font-pixel text-xl text-white/80">
                   Trials: {sliderValue.toFixed(1)}%
                 </div>
               )}
@@ -103,7 +103,7 @@ export function SlideOnePercent() {
           </div>
 
           {/* Slider track visualization */}
-          <div className="flex justify-between font-pixel text-xs text-zinc-500">
+          <div className="flex justify-between font-pixel text-2xl text-zinc-200">
             <span>0%</span>
             <span className="text-emerald-400">1% = THE TREATY</span>
             <span>100%</span>
@@ -112,7 +112,7 @@ export function SlideOnePercent() {
 
         {/* Amount being redirected */}
         <div className="text-center">
-          <div className="font-pixel text-xs text-zinc-500 mb-2">
+          <div className="font-pixel text-2xl text-zinc-200 mb-2">
             FUNDS REDIRECTED TO CLINICAL TRIALS
           </div>
           <div className="font-pixel text-3xl md:text-5xl text-emerald-400">
@@ -123,7 +123,7 @@ export function SlideOnePercent() {
               decimals={1}
             />
           </div>
-          <div className="font-pixel text-xs text-zinc-500 mt-2">
+          <div className="font-pixel text-2xl text-zinc-200 mt-2">
             per year
           </div>
         </div>
@@ -133,18 +133,18 @@ export function SlideOnePercent() {
           <div className="grid grid-cols-3 gap-4 animate-fade-in">
             <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
               <div className="text-2xl mb-1">🧬</div>
-              <div className="font-pixel text-xs text-emerald-400">12.3x</div>
-              <div className="font-pixel text-xs text-zinc-500">Faster trials</div>
+              <div className="font-pixel text-2xl text-emerald-400">12.3x</div>
+              <div className="font-pixel text-2xl text-zinc-200">Faster trials</div>
             </div>
             <div className="text-center p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
               <div className="text-2xl mb-1">💊</div>
-              <div className="font-pixel text-xs text-cyan-400">1000+</div>
-              <div className="font-pixel text-xs text-zinc-500">New treatments</div>
+              <div className="font-pixel text-2xl text-cyan-400">1000+</div>
+              <div className="font-pixel text-2xl text-zinc-200">New treatments</div>
             </div>
             <div className="text-center p-3 bg-amber-500/10 border border-amber-500/30 rounded">
               <div className="text-2xl mb-1">🌍</div>
-              <div className="font-pixel text-xs text-amber-400">10.7B</div>
-              <div className="font-pixel text-xs text-zinc-500">Lives saved</div>
+              <div className="font-pixel text-2xl text-amber-400">10.7B</div>
+              <div className="font-pixel text-2xl text-zinc-200">Lives saved</div>
             </div>
           </div>
         )}

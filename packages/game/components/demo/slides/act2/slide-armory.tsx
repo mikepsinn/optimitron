@@ -80,11 +80,11 @@ export function SlideArmory() {
     <SlideBase act={2} className="text-purple-400">
       {/* Title */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-xs text-purple-300/60 mb-1">PART 5: THE ARMORY</div>
+        <div className="font-pixel text-xs text-purple-400 mb-1">PART 5: THE ARMORY</div>
         <h1 className="font-pixel text-xl md:text-2xl text-purple-400">
           TECHNOLOGY STACK
         </h1>
-        <div className="font-terminal text-sm text-zinc-400 mt-2">
+        <div className="font-terminal text-xl text-zinc-200 mt-2">
           The tools powering the health optimization game
         </div>
       </div>
@@ -119,14 +119,14 @@ export function SlideArmory() {
 
                 {/* Name */}
                 <div
-                  className="font-pixel text-sm mb-1"
+                  className="font-pixel text-xl mb-1"
                   style={{ color: tech.color }}
                 >
                   {tech.name}
                 </div>
 
                 {/* Brief description */}
-                <div className="font-terminal text-sm text-zinc-500 line-clamp-2">
+                <div className="font-terminal text-xl text-zinc-200 line-clamp-2">
                   {tech.description}
                 </div>
 
@@ -155,19 +155,19 @@ export function SlideArmory() {
               <span className="text-4xl">{selectedItem.icon}</span>
               <div>
                 <div
-                  className="font-pixel text-lg"
+                  className="font-pixel text-xl"
                   style={{ color: selectedItem.color }}
                 >
                   {selectedItem.name}
                 </div>
-                <div className="font-terminal text-sm text-zinc-400">
+                <div className="font-terminal text-xl text-zinc-200">
                   {selectedItem.description}
                 </div>
               </div>
             </div>
 
             {/* Detailed info based on selection */}
-            <div className="font-terminal text-xs text-zinc-500 space-y-1">
+            <div className="font-terminal text-xs text-zinc-200 space-y-1">
               {selectedItem.id === "dfda" && (
                 <>
                   <p>Coordinates clinical trials across 147+ countries</p>
@@ -215,7 +215,7 @@ export function SlideArmory() {
         )}
 
         {/* Bottom message */}
-        <div className="text-center font-pixel text-xs text-zinc-500">
+        <div className="text-center font-pixel text-xs text-zinc-200">
           Tap any technology to learn more
         </div>
       </div>

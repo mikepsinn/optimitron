@@ -5,25 +5,61 @@ import { AnimatedCounter } from "../../animations/animated-counter";
 import { GlitchText } from "../../animations/glitch-text";
 import { useEffect, useState } from "react";
 
+// Precompute exponential curve columns
+const COLS = 36;
+const MAX_COL_HEIGHT = 14; // max robots stacked in rightmost column
+const ROBOT_SIZE = 32; // px per robot cell
+
+// Each column's max robot count follows an exponential curve
+const columnHeights = Array.from({ length: COLS }, (_, i) => {
+  const t = i / (COLS - 1); // 0 to 1
+  return Math.max(1, Math.round(1 + (MAX_COL_HEIGHT - 1) * (Math.pow(2, t * 4) - 1) / (Math.pow(2, 4) - 1)));
+});
+const TOTAL_ROBOTS = columnHeights.reduce((a, b) => a + b, 0);
+
+// Build ordered list of positions: left-to-right, bottom-to-top within each column
+const robotPositions: { col: number; row: number }[] = [];
+for (let col = 0; col < COLS; col++) {
+  for (let row = 0; row < columnHeights[col]; row++) {
+    robotPositions.push({ col, row });
+  }
+}
+
 export function SlideAIHackers() {
-  const [robotCount, setRobotCount] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(0);
   const [phase, setPhase] = useState(0);
+  const displayCount = Math.min(visibleCount, TOTAL_ROBOTS);
+  // Map visible count to a power-of-2 display for the counter
+  const robotCountDisplay = Math.min(64, Math.pow(2, Math.min(phase, 6)));
 
   useEffect(() => {
-    // Exponential doubling
-    const interval = setInterval(() => {
-      setRobotCount((prev) => {
-        if (prev >= 64) return 64;
-        return prev * 2;
+    // Phase counter (for doubling display and progress bar)
+    const phaseInterval = setInterval(() => {
+      setPhase((prev) => {
+        if (prev >= 7) {
+          clearInterval(phaseInterval);
+          return 7;
+        }
+        return prev + 1;
       });
-      setPhase((prev) => prev + 1);
     }, 600);
 
-    return () => clearInterval(interval);
-  }, []);
+    // Robots fill in rapidly
+    const robotInterval = setInterval(() => {
+      setVisibleCount((prev) => {
+        if (prev >= TOTAL_ROBOTS) {
+          clearInterval(robotInterval);
+          return TOTAL_ROBOTS;
+        }
+        return prev + 4; // 4 robots per tick
+      });
+    }, 30);
 
-  // Generate robot grid
-  const robots = Array.from({ length: Math.min(robotCount, 64) });
+    return () => {
+      clearInterval(phaseInterval);
+      clearInterval(robotInterval);
+    };
+  }, []);
 
   return (
     <SlideBase act={1} className="text-purple-500">
@@ -31,43 +67,46 @@ export function SlideAIHackers() {
       <div className="text-center mb-6">
         <GlitchText
           text="AI HACKERS ARE COMING"
-          className="font-pixel text-lg md:text-2xl text-purple-400"
+          className="font-pixel text-2xl md:text-4xl text-purple-400"
           intensity="medium"
         />
       </div>
 
       {/* Robot multiplication visualization */}
       <div className="relative w-full max-w-[1700px] aspect-video bg-black/50 border border-purple-500/30 rounded-lg overflow-hidden">
-        {/* Grid of robots */}
-        <div className="absolute inset-0 flex flex-wrap items-center justify-center content-center gap-1 p-4">
-          {robots.map((_, i) => (
-            <div
+        {/* Exponential curve of robots — piling up bottom-to-top, left-to-right */}
+        <div className="absolute inset-0">
+          {robotPositions.slice(0, displayCount).map((pos, i) => (
+            <span
               key={i}
-              className="text-xl md:text-3xl animate-pulse"
+              className="absolute text-xl md:text-2xl"
               style={{
-                animationDelay: `${i * 50}ms`,
-                opacity: 0.7 + Math.random() * 0.3,
+                left: `${(pos.col / COLS) * 100}%`,
+                bottom: pos.row * ROBOT_SIZE,
+                width: `${100 / COLS}%`,
+                textAlign: "center",
+                opacity: 0.6 + (pos.row / MAX_COL_HEIGHT) * 0.4,
               }}
             >
               🤖
-            </div>
+            </span>
           ))}
         </div>
 
         {/* Exponential counter */}
         <div className="absolute top-4 right-4 font-pixel text-right">
-          <div className="text-xs text-purple-300/60">AI AGENTS</div>
+          <div className="text-2xl text-purple-400">AI AGENTS</div>
           <div className="text-2xl md:text-4xl text-purple-400">
-            {robotCount.toLocaleString()}
+            {robotCountDisplay.toLocaleString()}
           </div>
-          <div className="text-xs text-purple-300/60">
-            2^{Math.log2(robotCount).toFixed(0)}
+          <div className="text-2xl text-purple-400">
+            2^{Math.log2(robotCountDisplay).toFixed(0)}
           </div>
         </div>
 
         {/* Doubling indicator */}
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="font-pixel text-xs text-purple-300/60 mb-1">
+          <div className="font-pixel text-2xl text-purple-400 mb-1">
             DOUBLING EVERY 6 MONTHS
           </div>
           <div className="flex gap-1">
@@ -90,7 +129,7 @@ export function SlideAIHackers() {
 
       {/* Warning text */}
       <div className="mt-6 space-y-2 text-center">
-        <div className="font-pixel text-sm text-purple-400">
+        <div className="font-pixel text-2xl text-purple-400">
           <AnimatedCounter
             start={0}
             end={95}
@@ -99,19 +138,19 @@ export function SlideAIHackers() {
           />
           {" "}of code will be AI-generated by 2027
         </div>
-        <div className="font-terminal text-sm text-zinc-400">
+        <div className="font-terminal text-2xl text-zinc-200">
           AI systems will find and exploit every vulnerability
         </div>
         {/* Recursive loop diagram */}
-        <div className="font-pixel text-xs text-purple-400 mt-4 text-center">
+        <div className="font-pixel text-xl text-purple-400 mt-4 text-center">
           <div className="inline-block border border-purple-500/40 bg-black/50 px-4 py-3">
             <div className="flex items-center justify-center gap-1 flex-wrap">
               <span className="text-red-400">STEAL $$$</span>
-              <span className="text-purple-300/60">&rarr;</span>
+              <span className="text-purple-400">&rarr;</span>
               <span className="text-amber-400">BUY COMPUTE</span>
-              <span className="text-purple-300/60">&rarr;</span>
+              <span className="text-purple-400">&rarr;</span>
               <span className="text-purple-400">TRAIN MORE HACKERS</span>
-              <span className="text-purple-300/60">&rarr; (loop)</span>
+              <span className="text-purple-400">&rarr; (loop)</span>
             </div>
             <div className="text-red-500 mt-2 animate-pulse">RECURSIVE EXPONENTIAL THEFT</div>
           </div>
@@ -120,7 +159,7 @@ export function SlideAIHackers() {
 
       {/* Fractal recursion hint */}
       <div className="absolute top-4 left-4 opacity-20">
-        <div className="font-pixel text-xs text-purple-400">
+        <div className="font-pixel text-xl text-purple-400">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} style={{ paddingLeft: i * 8 }}>
               {">"} spawn(self)

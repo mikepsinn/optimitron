@@ -42,7 +42,7 @@ export function SlideRatio() {
   return (
     <SlideBase act={1} className="text-red-400">
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-red-400 mb-8 text-center">
+      <h1 className="font-pixel text-2xl md:text-4xl text-red-400 mb-8 text-center">
         GLOBAL SPENDING PRIORITIES
       </h1>
 
@@ -52,7 +52,7 @@ export function SlideRatio() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Military */}
           <div className="text-center">
-            <div className="font-pixel text-xs md:text-sm text-zinc-500 mb-2">
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
               GLOBAL MILITARY SPENDING
             </div>
             <div className="font-pixel text-2xl md:text-4xl text-red-500">
@@ -68,7 +68,7 @@ export function SlideRatio() {
 
           {/* Clinical Trials */}
           <div className="text-center">
-            <div className="font-pixel text-xs md:text-sm text-zinc-500 mb-2">
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
               CLINICAL TRIAL FUNDING
             </div>
             <div className="font-pixel text-2xl md:text-4xl text-green-500">
@@ -92,7 +92,7 @@ export function SlideRatio() {
           <div className="space-y-4">
             {/* Military bar - takes full width */}
             <div>
-              <div className="flex justify-between text-xs font-pixel mb-1">
+              <div className="flex justify-between text-xl font-pixel mb-1">
                 <span className="text-red-400">⚔️ Military</span>
                 <span className="text-red-400">{formatCurrency(GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value)}</span>
               </div>
@@ -106,7 +106,7 @@ export function SlideRatio() {
 
             {/* Trials bar - tiny sliver */}
             <div>
-              <div className="flex justify-between text-xs font-pixel mb-1">
+              <div className="flex justify-between text-xl font-pixel mb-1">
                 <span className="text-green-400">🧪 Clinical Trials</span>
                 <span className="text-green-400">{formatCurrency(GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value)}</span>
               </div>
@@ -123,7 +123,7 @@ export function SlideRatio() {
                 {/* Arrow pointing to tiny bar */}
                 {showComparison && (
                   <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 text-green-400 animate-pulse">
-                    <span className="font-pixel text-sm">← BARELY VISIBLE</span>
+                    <span className="font-pixel text-xl">← BARELY VISIBLE</span>
                   </div>
                 )}
               </div>
@@ -137,13 +137,13 @@ export function SlideRatio() {
             showRatio ? "opacity-100 scale-100" : "opacity-0 scale-90"
           }`}
         >
-          <div className="font-pixel text-lg md:text-xl text-zinc-400 mb-2">
+          <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mb-2">
             THE RATIO
           </div>
           <div className="font-pixel text-6xl md:text-9xl text-red-500 animate-pulse">
             {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}:1
           </div>
-          <div className="font-pixel text-sm md:text-lg text-zinc-500 mt-4">
+          <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-4">
             For every $1 spent on clinical trials,<br />
             ${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} goes to military
           </div>

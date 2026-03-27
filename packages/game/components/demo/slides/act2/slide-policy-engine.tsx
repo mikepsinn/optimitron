@@ -88,7 +88,7 @@ export function SlidePolicyEngine() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <h1 className="font-pixel text-xl md:text-3xl text-emerald-400">
+          <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400">
             🔬 OPTIMAL POLICY GENERATOR
           </h1>
         </div>
@@ -99,10 +99,10 @@ export function SlidePolicyEngine() {
 
             {/* LEFT: Input */}
             <div className="bg-zinc-800 border border-zinc-600 rounded p-3 flex-1 min-w-0">
-              <div className="font-pixel text-sm md:text-base text-zinc-400 text-center mb-2">
+              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center mb-2">
                 WHAT EVERY COUNTRY TRIED
               </div>
-              <div className="flex justify-center gap-1 text-lg min-h-[1.75rem]">
+              <div className="flex justify-center gap-1 text-xl min-h-[1.75rem]">
                 {leftDocsVisible >= 1 && (
                   <span className="slide-in-left">📄</span>
                 )}
@@ -116,7 +116,7 @@ export function SlidePolicyEngine() {
             </div>
 
             {/* Arrow + Gear */}
-            <div className="flex items-center gap-1 shrink-0 font-pixel text-zinc-400 text-sm">
+            <div className="flex items-center gap-1 shrink-0 font-pixel text-zinc-200 text-xl">
               <span>→</span>
               <span className="spin-slow text-xl">⚙️</span>
               <span>→</span>
@@ -124,10 +124,10 @@ export function SlidePolicyEngine() {
 
             {/* RIGHT: Output */}
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-3 flex-1 min-w-0">
-              <div className="font-pixel text-sm md:text-base text-emerald-400 text-center mb-2">
+              <div className="font-pixel text-xl md:text-3xl text-emerald-400 text-center mb-2">
                 WHAT ACTUALLY WORKED
               </div>
-              <div className="flex justify-center text-lg min-h-[1.75rem]">
+              <div className="flex justify-center text-xl min-h-[1.75rem]">
                 {leftDocsVisible >= 3 && (
                   <span className="fade-in">✅</span>
                 )}
@@ -143,7 +143,7 @@ export function SlidePolicyEngine() {
 
             {/* LEFT column */}
             <div className="space-y-2">
-              <div className="font-pixel text-sm md:text-base text-zinc-500 uppercase tracking-widest mb-1">
+              <div className="font-pixel text-xl md:text-3xl text-zinc-200 uppercase tracking-widest mb-1">
                 Does not care about:
               </div>
               {DOES_NOT_CARE.map((item, i) => (
@@ -153,15 +153,15 @@ export function SlidePolicyEngine() {
                     checklistVisible > i ? "slide-in-left" : "opacity-0"
                   }`}
                 >
-                  <span className="text-base">❌</span>
-                  <span className="font-pixel text-sm md:text-base text-zinc-500">{item}</span>
+                  <span className="text-xl">❌</span>
+                  <span className="font-pixel text-xl md:text-3xl text-zinc-200">{item}</span>
                 </div>
               ))}
             </div>
 
             {/* RIGHT column */}
             <div className="space-y-2">
-              <div className="font-pixel text-sm md:text-base text-emerald-500 uppercase tracking-widest mb-1">
+              <div className="font-pixel text-xl md:text-3xl text-emerald-500 uppercase tracking-widest mb-1">
                 Cares about:
               </div>
               <div
@@ -169,8 +169,8 @@ export function SlidePolicyEngine() {
                   checklistVisible > DOES_NOT_CARE.length ? "fade-in" : "opacity-0"
                 }`}
               >
-                <span className="text-base">✅</span>
-                <span className="font-pixel text-sm md:text-base text-emerald-400">
+                <span className="text-xl">✅</span>
+                <span className="font-pixel text-xl md:text-3xl text-emerald-400">
                   Did the number go up or down
                 </span>
               </div>
@@ -183,21 +183,21 @@ export function SlidePolicyEngine() {
         {phase >= 4 && (
           <div className="flex flex-col items-center gap-2 w-full text-center">
             <p
-              className={`font-terminal text-base md:text-lg text-zinc-400 ${
+              className={`font-terminal text-xl md:text-2xl text-zinc-200 ${
                 punchlineVisible >= 1 ? "fade-in" : "opacity-0"
               }`}
             >
               Your species has a word for this.
             </p>
             <p
-              className={`font-pixel text-xl md:text-3xl text-amber-400 ${
+              className={`font-pixel text-3xl md:text-5xl text-amber-400 ${
                 punchlineVisible >= 2 ? "fade-in" : "opacity-0"
               }`}
             >
               &ldquo;Controversial.&rdquo;
             </p>
             <p
-              className={`font-terminal text-base md:text-lg text-zinc-500 ${
+              className={`font-terminal text-xl md:text-2xl text-zinc-200 ${
                 punchlineVisible >= 3 ? "fade-in" : "opacity-0"
               }`}
             >

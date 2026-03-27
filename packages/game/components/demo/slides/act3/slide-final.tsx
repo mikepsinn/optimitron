@@ -37,7 +37,7 @@ export function SlideFinal() {
             backgroundColor: `${palette.accent}20`
           }}
         >
-          <div className="text-xs uppercase tracking-widest mb-2 opacity-70">
+          <div className="text-2xl uppercase tracking-widest mb-2 opacity-70">
             Achievement Unlocked
           </div>
           <div 
@@ -50,7 +50,7 @@ export function SlideFinal() {
 
         {/* Final score */}
         <div className="text-center">
-          <div className="text-sm uppercase tracking-wider opacity-70 mb-1">
+          <div className="text-2xl uppercase tracking-wider opacity-70 mb-1">
             Final Score
           </div>
           <div
@@ -63,33 +63,33 @@ export function SlideFinal() {
 
         {/* Congratulations stats */}
         <div
-          className="px-6 py-4 rounded-lg border text-left font-terminal text-sm space-y-1"
+          className="px-6 py-4 rounded-lg border text-left font-terminal text-2xl space-y-1"
           style={{
             borderColor: `${palette.accent}40`,
             backgroundColor: `${palette.accent}10`
           }}
         >
-          <div className="font-pixel text-xs text-center mb-3 uppercase tracking-wider opacity-70">
+          <div className="font-pixel text-2xl text-center mb-3 uppercase tracking-wider opacity-70">
             Run Complete
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Lives saved:</span>
+            <span className="text-zinc-200">Lives saved:</span>
             <span style={{ color: palette.success }}>all of them</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">HALE:</span>
+            <span className="text-zinc-200">HALE:</span>
             <span style={{ color: palette.success }}>69.8 years &#10003;</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Income:</span>
+            <span className="text-zinc-200">Income:</span>
             <span style={{ color: palette.success }}>$149,000 &#10003;</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Time played:</span>
+            <span className="text-zinc-200">Time played:</span>
             <span className="text-zinc-300">3 minutes</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Inventory:</span>
+            <span className="text-zinc-200">Inventory:</span>
             <span className="text-zinc-300">8/8</span>
           </div>
         </div>
@@ -102,28 +102,28 @@ export function SlideFinal() {
             className="p-4 rounded-lg"
             style={{ backgroundColor: '#ffffff' }}
           >
-            <QRCodeSVG 
-              value="https://wishonia.love/play" 
+            <QRCodeSVG
+              value="https://optimitron.com"
               size={160}
               level="H"
               includeMargin={false}
             />
           </div>
-          <div className="mt-2 text-sm opacity-70">
+          <div className="mt-2 text-xl opacity-70">
             Scan to Play
           </div>
           <div 
-            className="text-lg font-mono"
+            className="text-2xl font-mono"
             style={{ color: palette.primary }}
           >
-            wishonia.love/play
+            optimitron.com
           </div>
         </div>
 
         {/* CTA button is now rendered by SlideCTA in sierra-chrome.tsx */}
 
         {/* Credits hint */}
-        <div className="absolute bottom-4 text-xs opacity-50">
+        <div className="absolute bottom-4 text-2xl opacity-50">
           Press any key to see credits...
         </div>
       </div>

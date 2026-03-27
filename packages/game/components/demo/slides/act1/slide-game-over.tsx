@@ -43,7 +43,7 @@ export function SlideGameOver() {
               </div>
             ))}
           </div>
-          <div className="text-center mt-4 text-zinc-600 font-pixel text-xs">
+          <div className="text-center mt-4 text-zinc-300 font-pixel text-xl">
             MORONIA - YEAR 2040
           </div>
         </div>
@@ -66,11 +66,11 @@ export function SlideGameOver() {
             active={true}
           />
           
-          <div className="mt-8 font-pixel text-sm md:text-lg text-red-400 animate-pulse">
+          <div className="mt-8 font-pixel text-2xl md:text-4xl text-red-400 animate-pulse">
             CIVILIZATION HAS COLLAPSED
           </div>
 
-          <div className="mt-4 font-pixel text-xs text-zinc-400 max-w-3xl text-center space-y-1">
+          <div className="mt-4 font-pixel text-xl md:text-2xl text-zinc-200 max-w-4xl text-center space-y-1">
             <div>Moronia allocated {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}&times; more to weapons than curing disease.</div>
             <div>Correlation with Earth: {GAME_PARAMS.moroniaCorrelation}%.</div>
           </div>
@@ -78,30 +78,30 @@ export function SlideGameOver() {
           {/* Restore game option */}
           {showRestore && (
             <div className="mt-12 animate-fade-in">
-              <div className="font-pixel text-xs text-zinc-500 mb-4 text-center animate-pulse">
+              <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mb-4 text-center animate-pulse">
                 BUT WAIT...
               </div>
-              
-              <div className="border-2 border-amber-500/50 bg-black/80 px-6 py-4">
-                <div className="font-pixel text-amber-400 text-sm mb-2">
+
+              <div className="border-2 border-amber-500/50 bg-black/80 px-8 py-6">
+                <div className="font-pixel text-amber-400 text-2xl md:text-3xl mb-3">
                   SAVE FILE DETECTED
                 </div>
-                <div className="flex gap-4 font-pixel text-xs">
-                  <div className="text-zinc-500">
+                <div className="flex gap-6 font-pixel text-xl md:text-2xl">
+                  <div className="text-zinc-200">
                     <span className="text-amber-400">File:</span> WISHONIA.SAV
                   </div>
-                  <div className="text-zinc-500">
+                  <div className="text-zinc-200">
                     <span className="text-amber-400">Date:</span> 2026
                   </div>
                 </div>
-                <div className="mt-4 flex justify-center gap-3">
-                  <span className="font-pixel text-xs text-amber-400 border border-amber-500/50 px-3 py-1 hover:bg-amber-500/20 cursor-pointer">
+                <div className="mt-5 flex justify-center gap-4">
+                  <span className="font-pixel text-xl md:text-2xl text-amber-400 border border-amber-500/50 px-5 py-2 hover:bg-amber-500/20 cursor-pointer">
                     RESTORE
                   </span>
-                  <span className="font-pixel text-xs text-zinc-400 border border-zinc-600/50 px-3 py-1 hover:bg-zinc-500/20 cursor-pointer">
+                  <span className="font-pixel text-xl md:text-2xl text-zinc-200 border border-zinc-600/50 px-5 py-2 hover:bg-zinc-500/20 cursor-pointer">
                     RESTART
                   </span>
-                  <span className="font-pixel text-xs text-zinc-400 border border-zinc-600/50 px-3 py-1 hover:bg-zinc-500/20 cursor-pointer">
+                  <span className="font-pixel text-xl md:text-2xl text-zinc-200 border border-zinc-600/50 px-5 py-2 hover:bg-zinc-500/20 cursor-pointer">
                     QUIT
                   </span>
                 </div>

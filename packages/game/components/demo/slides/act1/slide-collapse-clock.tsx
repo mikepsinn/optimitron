@@ -37,7 +37,7 @@ export function SlideCollapseClock() {
     <SlideBase act={1} className="text-amber-500">
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center">
+        <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center">
           THE ECONOMIC COLLAPSE CLOCK
         </h1>
 
@@ -48,7 +48,7 @@ export function SlideCollapseClock() {
               showClock ? "opacity-100 scale-100" : "opacity-0 scale-50"
             }`}
           >
-            <div className="relative w-48 h-48 md:w-64 md:h-64">
+            <div className="relative w-64 h-64 md:w-96 md:h-96">
               {/* Clock face */}
               <svg viewBox="0 0 100 100" className="w-full h-full">
                 {/* Outer ring */}
@@ -59,7 +59,7 @@ export function SlideCollapseClock() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="text-amber-500/30"
+                  className="text-amber-500"
                 />
                 {/* Inner ring */}
                 <circle
@@ -69,7 +69,7 @@ export function SlideCollapseClock() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1"
-                  className="text-amber-500/20"
+                  className="text-amber-500"
                 />
                 {/* Hour markers */}
                 {Array.from({ length: 12 }).map((_, i) => {
@@ -118,8 +118,8 @@ export function SlideCollapseClock() {
               {/* Clock hand labels */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center mt-16">
-                  <div className="font-pixel text-xs text-red-400">PARASITIC (15%/yr)</div>
-                  <div className="font-pixel text-xs text-green-400">PRODUCTIVE (3%/yr)</div>
+                  <div className="font-pixel text-sm md:text-xl text-red-400">PARASITIC (15%/yr)</div>
+                  <div className="font-pixel text-sm md:text-xl text-green-400">PRODUCTIVE (3%/yr)</div>
                 </div>
               </div>
             </div>
@@ -143,7 +143,7 @@ export function SlideCollapseClock() {
               formatY={(v) => `${v}%`}
             />
 
-            <div className="font-pixel text-xs text-center text-red-500 animate-pulse">
+            <div className="font-pixel text-xl text-center text-red-500 animate-pulse">
               2040: COLLAPSE THRESHOLD
             </div>
           </div>
@@ -151,10 +151,10 @@ export function SlideCollapseClock() {
 
         {/* Warning text */}
         <div className="text-center space-y-2">
-          <div className="font-pixel text-sm md:text-lg text-red-500 animate-pulse">
+          <div className="font-pixel text-xl md:text-2xl text-red-500 animate-pulse">
             POINT OF NO RETURN APPROACHING
           </div>
-          <div className="font-terminal text-sm text-zinc-400">
+          <div className="font-terminal text-xl text-zinc-200">
             Healthcare spending becomes mathematically impossible
           </div>
         </div>
@@ -170,7 +170,7 @@ export function SlideCollapseClock() {
               <div className="font-pixel text-2xl md:text-4xl text-red-500 bg-black/50 px-3 py-2 border border-red-500/30">
                 {item.value}
               </div>
-              <div className="font-pixel text-xs md:text-xs text-zinc-500 mt-1">
+              <div className="font-pixel text-xl text-zinc-200 mt-1">
                 {item.label}
               </div>
             </div>

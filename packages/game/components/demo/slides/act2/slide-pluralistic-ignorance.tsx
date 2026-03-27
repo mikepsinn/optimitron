@@ -30,7 +30,7 @@ export function SlidePluristicIgnorance() {
     <SlideBase act={2} className="text-cyan-400">
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-2xl text-cyan-400 text-center">
+        <h1 className="font-pixel text-2xl md:text-4xl text-cyan-400 text-center">
           PLURALISTIC IGNORANCE
         </h1>
 
@@ -41,9 +41,9 @@ export function SlidePluristicIgnorance() {
               {/* Thought bubble / quest marker */}
               <div className="h-6 flex items-end justify-center mb-1">
                 {v.isPlayer ? (
-                  <span className="text-sm animate-bounce">❗</span>
+                  <span className="text-xl animate-bounce">❗</span>
                 ) : (
-                  <span className="text-sm bg-zinc-800/80 border border-zinc-700 rounded-full px-1.5 py-0.5">
+                  <span className="text-xl bg-zinc-800/80 border border-zinc-700 rounded-full px-1.5 py-0.5">
                     <span className="text-emerald-400">✓</span>
                   </span>
                 )}
@@ -51,7 +51,7 @@ export function SlidePluristicIgnorance() {
               {/* Villager */}
               <span
                 className={`text-xl md:text-2xl ${
-                  v.isPlayer ? "text-yellow-400" : "text-zinc-400"
+                  v.isPlayer ? "text-yellow-400" : "text-zinc-200"
                 }`}
               >
                 👤
@@ -61,31 +61,31 @@ export function SlidePluristicIgnorance() {
         </div>
 
         {/* Core Text */}
-        <p className="font-pixel text-xs md:text-sm text-zinc-300 text-center max-w-3xl italic">
+        <p className="font-pixel text-xl md:text-2xl text-zinc-300 text-center max-w-3xl italic">
           &ldquo;Everyone wants this. Nobody knows everyone wants this.&rdquo;
         </p>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 md:gap-8 w-full max-w-4xl">
           <div className="text-center p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
-            <div className="font-pixel text-xs text-zinc-500 mb-1">
+            <div className="font-pixel text-xl text-zinc-200 mb-1">
               PUBLIC WEALTH
             </div>
-            <div className="font-pixel text-base md:text-lg text-cyan-400">
+            <div className="font-pixel text-xl md:text-2xl text-cyan-400">
               {formatCurrency(publicWealth)}
             </div>
           </div>
           <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded">
-            <div className="font-pixel text-xs text-zinc-500 mb-1">
+            <div className="font-pixel text-xl text-zinc-200 mb-1">
               DEFENCE INDUSTRY
             </div>
-            <div className="font-pixel text-base md:text-lg text-red-400">
+            <div className="font-pixel text-xl md:text-2xl text-red-400">
               {formatCurrency(defenceWealth)}
             </div>
           </div>
         </div>
 
-        <div className="font-pixel text-lg md:text-xl text-amber-400 text-center">
+        <div className="font-pixel text-2xl md:text-3xl text-amber-400 text-center">
           {ratio}:1 ratio
         </div>
       </div>

@@ -44,7 +44,7 @@ export function SlideAITerminal() {
         {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
-            className="absolute text-green-500/50 font-mono text-xs animate-fall"
+            className="absolute text-green-400 font-mono text-xs animate-fall"
             style={{
               left: `${i * 5}%`,
               animationDuration: `${3 + Math.random() * 4}s`,
@@ -65,14 +65,14 @@ export function SlideAITerminal() {
           <div className="w-3 h-3 rounded-full bg-red-500" />
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
-          <span className="ml-4 font-terminal text-xs text-zinc-400">
+          <span className="ml-4 font-terminal text-xs text-zinc-200">
             government_optimizer.exe
           </span>
         </div>
 
         {/* Terminal body */}
         <div className="bg-black/90 border border-zinc-800 rounded-b-lg p-4 md:p-6 min-h-[300px] md:min-h-[400px]">
-          <div className="font-terminal text-xs md:text-sm space-y-1">
+          <div className="font-terminal text-xl md:text-2xl space-y-1">
             {terminalLines.slice(0, visibleLines).map((line, i) => (
               <div
                 key={i}
@@ -104,7 +104,7 @@ export function SlideAITerminal() {
       <div className="absolute bottom-8 left-0 right-0 text-center">
         <GlitchText
           text="GOVERNMENTS ARE MISALIGNED AI"
-          className="font-pixel text-sm md:text-lg text-red-500"
+          className="font-pixel text-xl md:text-2xl text-red-500"
           intensity="medium"
         />
       </div>

@@ -34,7 +34,7 @@ export function SlideRoiComparison() {
         >
           {/* Military card */}
           <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-red-500/30 rounded">
-            <div className="font-pixel text-base md:text-lg text-red-400 tracking-widest">MILITARY</div>
+            <div className="font-pixel text-xl md:text-2xl text-red-400 tracking-widest">MILITARY</div>
             <div className="text-5xl md:text-6xl">⚔️</div>
 
             {/* Bar track */}
@@ -45,17 +45,17 @@ export function SlideRoiComparison() {
                   style={{ width: phase >= 2 ? "60%" : "0%" }}
                 />
               </div>
-              <div className="font-pixel text-sm md:text-base text-zinc-500 text-center">60% of container</div>
+              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center">60% of container</div>
             </div>
 
-            <div className="font-pixel text-xl md:text-2xl text-red-400 text-center">
+            <div className="font-pixel text-3xl md:text-4xl text-red-400 text-center">
               $1 IN → $0.60 OUT
             </div>
           </div>
 
           {/* Healthcare card */}
           <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-emerald-500/30 rounded">
-            <div className="font-pixel text-base md:text-lg text-emerald-400 tracking-widest">HEALTHCARE</div>
+            <div className="font-pixel text-xl md:text-2xl text-emerald-400 tracking-widest">HEALTHCARE</div>
             <div className="text-5xl md:text-6xl">💊</div>
 
             {/* Bar track — 180% represented visually at full width + overflow indicator */}
@@ -67,14 +67,14 @@ export function SlideRoiComparison() {
                 />
                 {phase >= 2 && (
                   <div className="absolute inset-0 flex items-center justify-end pr-2">
-                    <span className="font-pixel text-sm md:text-base text-emerald-900 font-bold">+80%→</span>
+                    <span className="font-pixel text-xl md:text-3xl text-emerald-900 font-bold">+80%→</span>
                   </div>
                 )}
               </div>
-              <div className="font-pixel text-sm md:text-base text-zinc-500 text-center">180% — overflows bar</div>
+              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center">180% — overflows bar</div>
             </div>
 
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center">
+            <div className="font-pixel text-3xl md:text-4xl text-emerald-400 text-center">
               $1 IN → $1.80 OUT
             </div>
           </div>
@@ -94,7 +94,7 @@ export function SlideRoiComparison() {
                   {coin}
                 </span>
               ))}
-              <div className="absolute bottom-0 w-full text-center font-pixel text-sm md:text-base text-red-500/60">
+              <div className="absolute bottom-0 w-full text-center font-pixel text-xl md:text-3xl text-red-400">
                 ▼ PIT ▼
               </div>
             </div>
@@ -110,7 +110,7 @@ export function SlideRoiComparison() {
                   {coin}
                 </span>
               ))}
-              <div className="absolute top-0 w-full text-center font-pixel text-sm md:text-base text-emerald-500/60">
+              <div className="absolute top-0 w-full text-center font-pixel text-xl md:text-3xl text-emerald-400">
                 ▲ MULTIPLY ▲
               </div>
             </div>
@@ -123,7 +123,7 @@ export function SlideRoiComparison() {
             phase >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          <div className="font-terminal text-xl md:text-2xl text-zinc-300">
+          <div className="font-terminal text-3xl md:text-4xl text-zinc-300">
             YOUR SPECIES CHOSE THE BOTTOM ONE.
           </div>
           <div className="font-pixel text-5xl md:text-6xl text-red-500 punchline-pulse">

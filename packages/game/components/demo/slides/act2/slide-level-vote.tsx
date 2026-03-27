@@ -41,11 +41,11 @@ export function SlideLevelVote() {
     <SlideBase act={2} className="text-cyan-400">
       {/* Level header */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-xs text-cyan-300/60 mb-1">LEVEL 2</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-cyan-400">
+        <div className="font-pixel text-xl text-cyan-400 mb-1">LEVEL 2</div>
+        <h1 className="font-pixel text-3xl md:text-4xl text-cyan-400">
           VOTE
         </h1>
-        <div className="font-terminal text-sm text-zinc-400 mt-2">
+        <div className="font-terminal text-xl text-zinc-200 mt-2">
           Support the 1% Treaty referendum
         </div>
       </div>
@@ -68,11 +68,11 @@ export function SlideLevelVote() {
                   format="compact"
                 />
               </div>
-              <div className="font-pixel text-xs text-zinc-500">VOTES</div>
+              <div className="font-pixel text-xl text-zinc-200">VOTES</div>
             </div>
           </ProgressRing>
 
-          <div className="font-pixel text-sm text-zinc-400">
+          <div className="font-pixel text-xl text-zinc-200">
             Target: {(targetVotes / 1000000).toFixed(1)}M signatures
           </div>
         </div>
@@ -81,7 +81,7 @@ export function SlideLevelVote() {
         {showCost && (
           <div className="animate-fade-in">
             <div className="text-center mb-4">
-              <div className="font-pixel text-sm text-emerald-400">
+              <div className="font-pixel text-xl text-emerald-400">
                 COST TO PARTICIPATE
               </div>
             </div>
@@ -90,26 +90,26 @@ export function SlideLevelVote() {
               {/* Coffee */}
               <div className="text-center">
                 <div className="text-4xl mb-2">☕</div>
-                <div className="font-pixel text-lg text-amber-400">
+                <div className="font-pixel text-xl text-amber-400">
                   ${GAME_PARAMS.costPerVote.toFixed(2)}
                 </div>
-                <div className="font-pixel text-xs text-zinc-500">per vote</div>
+                <div className="font-pixel text-xl text-zinc-200">per vote</div>
               </div>
 
               {/* Equals */}
-              <div className="font-pixel text-2xl text-zinc-600">=</div>
+              <div className="font-pixel text-2xl text-zinc-300">=</div>
 
               {/* Impact */}
               <div className="text-center">
                 <div className="text-4xl mb-2">💊</div>
-                <div className="font-pixel text-lg text-emerald-400">
+                <div className="font-pixel text-xl text-emerald-400">
                   1 life
                 </div>
-                <div className="font-pixel text-xs text-zinc-500">potentially saved</div>
+                <div className="font-pixel text-xl text-zinc-200">potentially saved</div>
               </div>
             </div>
 
-            <div className="text-center mt-4 font-terminal text-xs text-zinc-500">
+            <div className="text-center mt-4 font-terminal text-xl text-zinc-200">
               The most cost-effective intervention ever discovered
             </div>
           </div>
@@ -117,21 +117,21 @@ export function SlideLevelVote() {
 
         {/* Ballot visualization */}
         <div className="bg-black/40 border-2 border-cyan-500/30 p-4 rounded">
-          <div className="font-pixel text-xs text-cyan-300/60 mb-3">REFERENDUM BALLOT</div>
+          <div className="font-pixel text-xl text-cyan-400 mb-3">REFERENDUM BALLOT</div>
           
           <div className="space-y-3">
             <div className="p-3 border border-emerald-500 bg-emerald-500/10 rounded flex items-center gap-3">
               <div className="w-5 h-5 border-2 border-emerald-500 rounded flex items-center justify-center">
                 <div className="w-3 h-3 bg-emerald-500 rounded-sm" />
               </div>
-              <div className="font-pixel text-sm text-emerald-400">
+              <div className="font-pixel text-xl text-emerald-400">
                 YES - Redirect 1% to clinical trials
               </div>
             </div>
             
             <div className="p-3 border border-zinc-700 rounded flex items-center gap-3 opacity-50">
               <div className="w-5 h-5 border-2 border-zinc-600 rounded" />
-              <div className="font-pixel text-sm text-zinc-500">
+              <div className="font-pixel text-xl text-zinc-200">
                 NO - Maintain current allocation
               </div>
             </div>
@@ -141,16 +141,16 @@ export function SlideLevelVote() {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-4 text-center">
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-cyan-400">78%</div>
-            <div className="font-pixel text-xs text-zinc-500">Support rate</div>
+            <div className="font-pixel text-xl text-cyan-400">78%</div>
+            <div className="font-pixel text-xl text-zinc-200">Support rate</div>
           </div>
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-emerald-400">147</div>
-            <div className="font-pixel text-xs text-zinc-500">Countries</div>
+            <div className="font-pixel text-xl text-emerald-400">147</div>
+            <div className="font-pixel text-xl text-zinc-200">Countries</div>
           </div>
           <div className="bg-black/30 border border-zinc-800 p-3 rounded">
-            <div className="font-pixel text-lg text-amber-400">$24B</div>
-            <div className="font-pixel text-xs text-zinc-500">At stake</div>
+            <div className="font-pixel text-xl text-amber-400">$24B</div>
+            <div className="font-pixel text-xl text-zinc-200">At stake</div>
           </div>
         </div>
       </div>

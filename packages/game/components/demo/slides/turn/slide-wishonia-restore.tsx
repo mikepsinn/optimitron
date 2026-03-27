@@ -54,13 +54,13 @@ export function SlideWishoniaRestore() {
         {/* Loading bar (phase 0) */}
         {phase === 0 && (
           <div className="space-y-4">
-            <div className="font-pixel text-sm text-amber-400">
+            <div className="font-pixel text-2xl text-amber-400">
               RESTORING SAVE FILE...
             </div>
             <div className="w-64 h-4 bg-black/50 border border-amber-500/50 mx-auto">
               <div className="h-full bg-amber-500 animate-pulse" style={{ width: "60%" }} />
             </div>
-            <div className="font-pixel text-xs text-amber-300/50">
+            <div className="font-pixel text-2xl text-amber-400">
               WISHONIA.SAV
             </div>
           </div>
@@ -70,15 +70,15 @@ export function SlideWishoniaRestore() {
         {phase >= 1 && (
           <div className="space-y-6 animate-fade-scale-in">
             {/* World restored */}
-            <div className="text-6xl md:text-8xl animate-bounce-slow">
+            <div className="text-7xl md:text-9xl animate-bounce-slow">
               🌍
             </div>
-            
-            <h1 className="font-pixel text-2xl md:text-4xl text-cyan-400">
+
+            <h1 className="font-pixel text-3xl md:text-6xl text-cyan-400">
               SAVE RESTORED
             </h1>
-            
-            <div className="font-pixel text-lg text-emerald-400">
+
+            <div className="font-pixel text-2xl md:text-4xl text-emerald-400">
               Welcome to Wishonia
             </div>
           </div>
@@ -87,25 +87,25 @@ export function SlideWishoniaRestore() {
         {/* Score reset (phase 2+) */}
         {phase >= 2 && (
           <div className="animate-slide-up">
-            <div className="inline-block bg-black/60 border-2 border-cyan-500/50 px-6 py-3">
-              <div className="font-pixel text-xs text-cyan-300/60">SCORE RESET</div>
-              <div className="font-pixel text-2xl text-cyan-400">0 / 8,000,000,000</div>
+            <div className="inline-block bg-black/60 border-2 border-cyan-500/50 px-8 py-5">
+              <div className="font-pixel text-2xl md:text-3xl text-cyan-400">SCORE RESET</div>
+              <div className="font-pixel text-3xl md:text-4xl text-cyan-400">0 / 8,000,000,000</div>
             </div>
           </div>
         )}
 
         {/* Quest meters preview (phase 3+) */}
         {phase >= 3 && (
-          <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto animate-slide-up">
-            <div className="bg-black/60 border border-emerald-500/30 p-3 text-left">
-              <div className="font-pixel text-xs text-emerald-300/60">QUEST: HALE</div>
-              <div className="font-pixel text-sm text-emerald-400">63.3 yrs</div>
-              <div className="text-xs text-emerald-300/40">Target: 69.8 yrs</div>
+          <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto animate-slide-up">
+            <div className="bg-black/60 border border-emerald-500/30 p-5 text-left">
+              <div className="font-pixel text-2xl md:text-3xl text-emerald-400">QUEST: HALE</div>
+              <div className="font-pixel text-3xl md:text-4xl text-emerald-400">63.3 yrs</div>
+              <div className="font-pixel text-xl md:text-2xl text-emerald-400">Target: 69.8 yrs</div>
             </div>
-            <div className="bg-black/60 border border-amber-500/30 p-3 text-left">
-              <div className="font-pixel text-xs text-amber-300/60">QUEST: INCOME</div>
-              <div className="font-pixel text-sm text-amber-400">$18.7K</div>
-              <div className="text-xs text-amber-300/40">Target: $149K</div>
+            <div className="bg-black/60 border border-amber-500/30 p-5 text-left">
+              <div className="font-pixel text-2xl md:text-3xl text-amber-400">QUEST: INCOME</div>
+              <div className="font-pixel text-3xl md:text-4xl text-amber-400">$18.7K</div>
+              <div className="font-pixel text-xl md:text-2xl text-amber-400">Target: $149K</div>
             </div>
           </div>
         )}
@@ -113,10 +113,10 @@ export function SlideWishoniaRestore() {
         {/* Hopeful message (phase 4+) */}
         {phase >= 4 && (
           <div className="animate-fade-in">
-            <div className="font-terminal text-lg text-cyan-200/80">
+            <div className="font-terminal text-2xl md:text-3xl text-cyan-400">
               A different timeline is possible.
             </div>
-            <div className="font-pixel text-xs text-cyan-400/50 mt-4">
+            <div className="font-pixel text-2xl md:text-4xl text-cyan-400 mt-4">
               LET&apos;S BEGIN THE QUEST
             </div>
           </div>

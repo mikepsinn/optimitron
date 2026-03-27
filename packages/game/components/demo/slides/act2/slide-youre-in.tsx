@@ -9,17 +9,17 @@ const DOUBLING_NUMBERS: (string | number)[] = [2, 4, 8, 16, 32, 64, 128, "...", 
 function numberFontSize(index: number): string {
   // Progressively larger as the chain grows
   const sizes = [
-    "text-xs",
-    "text-xs",
-    "text-xs",
-    "text-sm",
-    "text-sm",
-    "text-base",
-    "text-base",
-    "text-base",
-    "text-lg md:text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-xl",
+    "text-2xl md:text-3xl",
   ];
-  return sizes[index] ?? "text-xs";
+  return sizes[index] ?? "text-xl";
 }
 
 export function SlideYoureIn() {
@@ -104,7 +104,7 @@ export function SlideYoureIn() {
                 🎉 VOTE RECORDED
               </h1>
             </div>
-            <p className="font-pixel text-xs md:text-sm text-zinc-400 mt-3">
+            <p className="font-pixel text-xl md:text-2xl text-zinc-200 mt-3">
               Player #4,847 of 4,000,000,000 needed
             </p>
           </div>
@@ -127,14 +127,14 @@ export function SlideYoureIn() {
                       {num}
                     </span>
                     {i < DOUBLING_NUMBERS.length - 1 && (
-                      <span className="font-pixel text-xs text-zinc-600">→</span>
+                      <span className="font-pixel text-xl text-zinc-300">→</span>
                     )}
                   </span>
                 );
               })}
             </div>
             {visibleNumbers >= DOUBLING_NUMBERS.length && (
-              <p className="font-pixel text-xs text-emerald-300/60 text-center mt-3 slide-fade-in">
+              <p className="font-pixel text-2xl text-emerald-400 text-center mt-3 slide-fade-in">
                 DOUBLINGS: 33
               </p>
             )}
@@ -145,17 +145,17 @@ export function SlideYoureIn() {
         {phase >= 3 && (
           <div className="space-y-2 text-center">
             {punchlineLines >= 1 && (
-              <p className="font-terminal text-sm md:text-base text-zinc-400 slide-fade-in">
+              <p className="font-terminal text-2xl md:text-3xl text-zinc-200 slide-fade-in">
                 Your species invented this.
               </p>
             )}
             {punchlineLines >= 2 && (
-              <p className="font-terminal text-sm md:text-base text-zinc-400 slide-fade-in">
+              <p className="font-terminal text-2xl md:text-3xl text-zinc-200 slide-fade-in">
                 You call it &ldquo;going viral.&rdquo;
               </p>
             )}
             {punchlineLines >= 3 && (
-              <p className="font-terminal text-base md:text-lg text-amber-400 slide-fade-in">
+              <p className="font-terminal text-2xl md:text-3xl text-amber-400 slide-fade-in">
                 We call it &ldquo;counting.&rdquo;
               </p>
             )}
@@ -165,10 +165,10 @@ export function SlideYoureIn() {
         {/* Phase 4: Decorative action buttons */}
         {phase >= 4 && (
           <div className="flex gap-4 slide-fade-in">
-            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-xs text-emerald-400 cursor-default">
+            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-2xl text-emerald-400 cursor-default">
               📋 COPY LINK
             </button>
-            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-xs text-emerald-400 cursor-default">
+            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-2xl text-emerald-400 cursor-default">
               📱 SHARE
             </button>
           </div>

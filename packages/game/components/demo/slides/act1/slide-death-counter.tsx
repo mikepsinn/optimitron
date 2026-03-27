@@ -12,6 +12,12 @@ export function SlideDeathCounter() {
   const [towersVisible, setTowersVisible] = useState(0);
   const [skullCount, setSkullCount] = useState(0);
 
+  // Grid: how many skulls fit per row and how many rows fill the screen
+  const SKULL_SIZE = 40; // px per skull cell
+  const COLS = Math.ceil(1920 / SKULL_SIZE); // ~48 columns
+  const MAX_ROWS = Math.ceil(1080 / SKULL_SIZE); // ~27 rows
+  const MAX_SKULLS = COLS * MAX_ROWS;
+
   useEffect(() => {
     // Phase 1 (0s): "BUGS IN YOUR MEAT SOFTWARE / KILL" fades in
     setTimeout(() => setPhase(1), 500);
@@ -33,27 +39,56 @@ export function SlideDeathCounter() {
       });
     }, 120);
 
-    // Skulls accumulate
+    // Skulls accumulate — fill entire background bottom-up
     const skullInterval = setInterval(() => {
-      setSkullCount((prev) => Math.min(prev + 1, 80));
-    }, 200);
+      setSkullCount((prev) => {
+        if (prev >= MAX_SKULLS) {
+          clearInterval(skullInterval);
+          return MAX_SKULLS;
+        }
+        return prev + 3; // 3 skulls per tick for faster fill
+      });
+    }, 50);
 
     return () => {
       clearInterval(towerInterval);
       clearInterval(skullInterval);
     };
-  }, []);
+  }, [MAX_SKULLS]);
 
   return (
     <SlideBase act={1} className="text-red-500">
-      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4 relative h-full">
+      {/* Skulls piling up over entire background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {Array.from({ length: Math.min(skullCount, MAX_SKULLS) }).map((_, i) => {
+          const col = i % COLS;
+          const row = Math.floor(i / COLS);
+          return (
+            <span
+              key={i}
+              className="absolute text-lg leading-none"
+              style={{
+                bottom: row * SKULL_SIZE,
+                left: col * SKULL_SIZE,
+                width: SKULL_SIZE,
+                textAlign: "center",
+                opacity: 0.3 + row * 0.02,
+              }}
+            >
+              💀
+            </span>
+          );
+        })}
+      </div>
+
+      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4 relative h-full z-10">
         {/* Top: "BUGS IN YOUR MEAT SOFTWARE / KILL" */}
         <div
           className={`text-center transition-opacity duration-1000 ${
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="font-pixel text-lg md:text-2xl text-red-400/70 tracking-widest">
+          <div className="font-pixel text-2xl md:text-4xl text-red-400 tracking-widest">
             BUGS IN YOUR MEAT SOFTWARE
           </div>
           <div className="font-pixel text-2xl md:text-4xl text-red-500 mt-1">
@@ -81,7 +116,7 @@ export function SlideDeathCounter() {
 
         {/* "OF YOU EVERY DAY" */}
         <div
-          className={`font-pixel text-lg md:text-2xl text-red-400 transition-opacity duration-1000 ${
+          className={`font-pixel text-2xl md:text-4xl text-red-400 transition-opacity duration-1000 ${
             phase >= 3 ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -94,7 +129,7 @@ export function SlideDeathCounter() {
             {Array.from({ length: TOTAL_TOWERS }).map((_, i) => (
               <span
                 key={i}
-                className={`text-base md:text-lg transition-opacity duration-200 ${
+                className={`text-xl md:text-2xl transition-opacity duration-200 ${
                   i < towersVisible ? "opacity-80" : "opacity-0"
                 }`}
               >
@@ -110,7 +145,7 @@ export function SlideDeathCounter() {
             phase >= 4 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="font-pixel text-base md:text-xl text-red-400">
+          <div className="font-pixel text-xl md:text-3xl text-red-400">
             THAT IS {TOTAL_TOWERS} SEPTEMBER 11THS.
           </div>
         </div>
@@ -121,30 +156,14 @@ export function SlideDeathCounter() {
             phase >= 4 ? "opacity-70" : "opacity-0"
           }`}
         >
-          <div className="font-pixel text-sm md:text-lg text-red-300/50">
+          <div className="font-pixel text-xl md:text-2xl text-red-400">
             NOBODY INVADES ANYBODY ABOUT IT
           </div>
-          <div className="font-pixel text-sm md:text-lg text-red-300/50 mt-1">
+          <div className="font-pixel text-xl md:text-2xl text-red-400 mt-1">
             BECAUSE CANCER DOES NOT HAVE OIL.
           </div>
         </div>
 
-        {/* Skulls accumulating at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 flex flex-wrap justify-center pointer-events-none overflow-hidden h-16">
-          {Array.from({ length: skullCount }).map((_, i) => (
-            <span
-              key={i}
-              className="text-sm opacity-40"
-              style={{
-                position: "absolute",
-                bottom: `${Math.floor(i / 20) * 16}px`,
-                left: `${(i % 20) * 5 + Math.random() * 2}%`,
-              }}
-            >
-              💀
-            </span>
-          ))}
-        </div>
       </div>
     </SlideBase>
   );

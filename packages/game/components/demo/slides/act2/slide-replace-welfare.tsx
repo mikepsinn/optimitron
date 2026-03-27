@@ -91,7 +91,7 @@ export function SlideReplaceWelfare() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <h1 className="font-pixel text-xl md:text-3xl text-emerald-400">
+          <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400">
             🏛️ WELFARE REPLACEMENT
           </h1>
         </div>
@@ -102,7 +102,7 @@ export function SlideReplaceWelfare() {
 
             {/* LEFT — Current System */}
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-              <div className="font-pixel text-sm md:text-base text-red-400 text-center mb-3 tracking-widest">
+              <div className="font-pixel text-xl md:text-3xl text-red-400 text-center mb-3 tracking-widest">
                 CURRENT SYSTEM
               </div>
 
@@ -113,11 +113,11 @@ export function SlideReplaceWelfare() {
                     key={row.label}
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
-                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1">
+                    <div className="font-pixel text-xl md:text-3xl text-zinc-200 mb-1">
                       {row.label}
                     </div>
                     <div
-                      className={`font-pixel text-base md:text-lg text-red-400 ${
+                      className={`font-pixel text-xl md:text-2xl text-red-400 ${
                         i < visibleRows ? "struck" : ""
                       }`}
                     >
@@ -130,7 +130,7 @@ export function SlideReplaceWelfare() {
 
             {/* RIGHT — Replacement */}
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <div className="font-pixel text-sm md:text-base text-emerald-400 text-center mb-3 tracking-widest">
+              <div className="font-pixel text-xl md:text-3xl text-emerald-400 text-center mb-3 tracking-widest">
                 REPLACEMENT
               </div>
 
@@ -141,15 +141,14 @@ export function SlideReplaceWelfare() {
                     key={row.label}
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
-                    {/* Mirror the label for alignment */}
-                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1 invisible">
+                    <div className="font-pixel text-xl md:text-3xl text-zinc-200 mb-1">
                       {row.label}
                     </div>
                     <div
                       className={`font-pixel text-emerald-400 ${
                         row.isPunchline
-                          ? "text-lg md:text-2xl"
-                          : "text-base md:text-lg"
+                          ? "text-2xl md:text-4xl"
+                          : "text-xl md:text-2xl"
                       } ${
                         row.isPunchline && i < visibleRows
                           ? "border border-emerald-400/40 rounded px-2 py-0.5 inline-block"
@@ -173,10 +172,10 @@ export function SlideReplaceWelfare() {
           }`}
         >
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-3 space-y-1">
-            <div className="font-pixel text-sm md:text-base text-emerald-400">
+            <div className="font-pixel text-xl md:text-3xl text-emerald-400">
               METHOD: UBI via World ID (automatic)
             </div>
-            <div className="font-pixel text-sm md:text-base text-emerald-400">
+            <div className="font-pixel text-xl md:text-3xl text-emerald-400">
               BUREAUCRATS NEEDED:{" "}
               <span className="font-terminal text-emerald-300">null</span>
             </div>

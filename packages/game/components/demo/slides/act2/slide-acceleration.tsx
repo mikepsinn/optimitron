@@ -50,7 +50,7 @@ export function SlideAcceleration() {
   return (
     <SlideBase act={2} className="text-cyan-400">
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-cyan-400 text-center mb-8">
+      <h1 className="font-pixel text-2xl md:text-3xl text-cyan-400 text-center mb-8">
         {accelerationFactor}x FASTER TRIALS
       </h1>
 
@@ -60,11 +60,11 @@ export function SlideAcceleration() {
           {/* Slow hourglass */}
           <div className="text-center">
             <div className="text-5xl md:text-7xl mb-4 opacity-50">⏳</div>
-            <div className="font-pixel text-sm text-zinc-400">STATUS QUO</div>
+            <div className="font-pixel text-2xl text-zinc-200">STATUS QUO</div>
             <div className="font-pixel text-2xl text-red-400 mt-2">
               {currentDurationAllDiseases} years
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">
+            <div className="font-pixel text-2xl text-zinc-200 mt-1">
               to cure ALL diseases
             </div>
           </div>
@@ -72,11 +72,11 @@ export function SlideAcceleration() {
           {/* Fast hourglass */}
           <div className="text-center">
             <div className="text-5xl md:text-7xl mb-4 animate-spin-slow">⌛</div>
-            <div className="font-pixel text-sm text-emerald-400">1% TREATY</div>
+            <div className="font-pixel text-2xl text-emerald-400">1% TREATY</div>
             <div className="font-pixel text-2xl text-emerald-400 mt-2">
               {acceleratedDurationAllDiseases} years
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">
+            <div className="font-pixel text-2xl text-zinc-200 mt-1">
               to cure ALL diseases
             </div>
           </div>
@@ -85,15 +85,15 @@ export function SlideAcceleration() {
         {/* Racing timelines */}
         {showRace && (
           <div className="space-y-6">
-            <div className="font-pixel text-sm text-center text-zinc-400">
+            <div className="font-pixel text-2xl text-center text-zinc-200">
               CLINICAL TRIAL RACE
             </div>
 
             {/* Slow lane */}
             <div className="space-y-2">
-              <div className="flex justify-between font-pixel text-xs">
+              <div className="flex justify-between font-pixel text-2xl">
                 <span className="text-red-400">Standard Trial</span>
-                <span className="text-zinc-500">{Math.min(slowProgress, 100).toFixed(0)}%</span>
+                <span className="text-zinc-200">{Math.min(slowProgress, 100).toFixed(0)}%</span>
               </div>
               <div className="h-6 bg-zinc-900 border border-zinc-700 relative overflow-hidden">
                 <div
@@ -107,7 +107,7 @@ export function SlideAcceleration() {
                     className="absolute top-0 bottom-0 w-px bg-zinc-700"
                     style={{ left: `${year * 10}%` }}
                   >
-                    <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 font-pixel text-xs text-zinc-600">
+                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 font-pixel text-xl text-zinc-300">
                       {year}yr
                     </span>
                   </div>
@@ -117,7 +117,7 @@ export function SlideAcceleration() {
 
             {/* Fast lane */}
             <div className="space-y-2">
-              <div className="flex justify-between font-pixel text-xs">
+              <div className="flex justify-between font-pixel text-2xl">
                 <span className="text-emerald-400">Accelerated Trial</span>
                 <span className="text-emerald-400">
                   {Math.min(fastProgress, 100).toFixed(0)}%
@@ -131,7 +131,7 @@ export function SlideAcceleration() {
                 />
                 {fastProgress >= 100 && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-pixel text-xs text-white animate-pulse">
+                    <span className="font-pixel text-2xl text-white animate-pulse">
                       APPROVED
                     </span>
                   </div>
@@ -147,24 +147,24 @@ export function SlideAcceleration() {
             <div className="font-pixel text-2xl text-cyan-400">
               <AnimatedCounter end={1000} duration={2000} suffix="+" />
             </div>
-            <div className="font-pixel text-xs text-zinc-500">Treatments/year</div>
+            <div className="font-pixel text-2xl text-zinc-200">Treatments/year</div>
           </div>
           <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
             <div className="font-pixel text-2xl text-emerald-400">
               <AnimatedCounter end={90} duration={2000} suffix="%" />
             </div>
-            <div className="font-pixel text-xs text-zinc-500">Cost reduction</div>
+            <div className="font-pixel text-2xl text-zinc-200">Cost reduction</div>
           </div>
           <div className="text-center p-3 bg-amber-500/10 border border-amber-500/30 rounded">
             <div className="font-pixel text-2xl text-amber-400">
               <AnimatedCounter end={147} duration={2000} prefix="$" suffix="M" />
             </div>
-            <div className="font-pixel text-xs text-zinc-500">Per life saved</div>
+            <div className="font-pixel text-2xl text-zinc-200">Per life saved</div>
           </div>
         </div>
 
         {/* Bottom text */}
-        <div className="text-center font-terminal text-sm text-zinc-400">
+        <div className="text-center font-terminal text-2xl text-zinc-200">
           Faster trials = more treatments = more lives saved
         </div>
       </div>

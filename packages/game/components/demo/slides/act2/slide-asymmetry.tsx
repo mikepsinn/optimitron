@@ -28,13 +28,13 @@ export function SlideAsymmetry() {
           {/* Left: Tiny copper coin */}
           <div className="flex flex-col items-center gap-3 p-4 bg-zinc-900/80 border border-zinc-700 rounded-lg">
             <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-amber-800 to-amber-950 rounded-full flex items-center justify-center border-2 border-amber-700/50">
-              <span className="font-pixel text-sm text-amber-600">¢</span>
+              <span className="font-pixel text-xl text-amber-600">¢</span>
             </div>
             <div className="text-center space-y-1">
-              <div className="font-pixel text-sm md:text-base text-zinc-300">
+              <div className="font-pixel text-xl md:text-3xl text-zinc-300">
                 ${GAME_PARAMS.costPerVote.toFixed(2)}
               </div>
-              <div className="font-pixel text-xs text-zinc-500">
+              <div className="font-pixel text-xl text-zinc-200">
                 30 seconds of your time
               </div>
             </div>
@@ -42,7 +42,7 @@ export function SlideAsymmetry() {
 
           {/* Trade Arrow */}
           <div className="flex flex-col items-center gap-2">
-            <div className="font-pixel text-xs text-zinc-500">TRADE</div>
+            <div className="font-pixel text-xl text-zinc-200">TRADE</div>
             <div className="text-2xl text-amber-400">⇄</div>
           </div>
 
@@ -50,16 +50,16 @@ export function SlideAsymmetry() {
           <div className="flex flex-col items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
             <div className="flex flex-wrap justify-center gap-1">
               {Array.from({ length: 12 }).map((_, i) => (
-                <span key={i} className="text-lg md:text-xl">
+                <span key={i} className="text-xl md:text-3xl">
                   🪙
                 </span>
               ))}
             </div>
             <div className="text-center space-y-1">
-              <div className="font-pixel text-sm md:text-base text-amber-400">
+              <div className="font-pixel text-xl md:text-3xl text-amber-400">
                 {formatCurrency(personalLifetimeLoss)}
               </div>
-              <div className="font-pixel text-xs text-zinc-500">
+              <div className="font-pixel text-xl text-zinc-200">
                 lifetime income gain
               </div>
             </div>
@@ -68,7 +68,7 @@ export function SlideAsymmetry() {
 
         {/* Exchange Rate - Flashing */}
         <div
-          className="font-pixel text-base md:text-xl text-center px-6 py-3 bg-amber-500/10 border border-amber-500/40 rounded"
+          className="font-pixel text-xl md:text-3xl text-center px-6 py-3 bg-amber-500/10 border border-amber-500/40 rounded"
           style={{ opacity: flashVisible ? 1 : 0.4 }}
         >
           <span className="text-amber-400">EXCHANGE RATE: </span>

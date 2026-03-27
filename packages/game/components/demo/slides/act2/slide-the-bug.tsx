@@ -88,23 +88,23 @@ export function SlideTheBug() {
         {phase >= 1 && (
           <div className="w-full bg-zinc-900 border border-green-500/50 rounded-lg overflow-hidden row-enter">
             <div className="bg-green-500/10 border-b border-green-500/30 px-4 py-2 flex items-center gap-2">
-              <span className="text-base">🐛</span>
-              <span className="font-terminal text-xl md:text-3xl text-green-400">
+              <span className="text-3xl">🐛</span>
+              <span className="font-terminal text-3xl md:text-5xl text-green-400">
                 BUG: pluralistic_ignorance
               </span>
             </div>
             <div className="px-4 py-2 flex gap-6">
-              <span className="font-terminal text-sm md:text-base text-zinc-500">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 FILED:{" "}
-                <span className="text-zinc-400">1965</span>
+                <span className="text-zinc-200">1965</span>
               </span>
-              <span className="font-terminal text-sm md:text-base text-zinc-500">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 SEVERITY:{" "}
                 <span className="text-red-400 animate-pulse">EXTINCTION</span>
               </span>
-              <span className="font-terminal text-sm md:text-base text-zinc-500">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 ASSIGNEE:{" "}
-                <span className="text-zinc-400">nobody</span>
+                <span className="text-zinc-200">nobody</span>
               </span>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function SlideTheBug() {
                 return (
                   <div
                     key={i}
-                    className="font-terminal text-sm text-zinc-600 pl-4 row-enter"
+                    className="font-terminal text-xl text-zinc-300 pl-4 row-enter"
                   >
                     &nbsp;&nbsp;&nbsp;...
                   </div>
@@ -136,21 +136,21 @@ export function SlideTheBug() {
                     isLast ? "border border-green-500/20 bg-green-500/5" : ""
                   }`}
                 >
-                  <span className="font-terminal text-sm md:text-base text-zinc-500 shrink-0 w-6">
+                  <span className="font-terminal text-xl md:text-3xl text-zinc-200 shrink-0 w-6">
                     👤
                   </span>
                   {isRevealed && (
-                    <span className="checkmark-pop text-green-400 text-sm shrink-0">
+                    <span className="checkmark-pop text-green-400 text-xl shrink-0">
                       ✓
                     </span>
                   )}
-                  <span className="font-terminal text-sm md:text-base text-zinc-400 shrink-0">
+                  <span className="font-terminal text-xl md:text-3xl text-zinc-200 shrink-0">
                     {label}:
                   </span>
-                  <span className="font-terminal text-sm md:text-base text-green-400">
+                  <span className="font-terminal text-xl md:text-3xl text-green-400">
                     &quot;I want this&quot;
                   </span>
-                  <span className="font-terminal text-sm md:text-base text-zinc-600 ml-1">
+                  <span className="font-terminal text-xl md:text-3xl text-zinc-300 ml-1">
                     {isRevealed ? (
                       <GlitchText
                         text="(thinks: EVERYONE)"
@@ -173,32 +173,32 @@ export function SlideTheBug() {
           <div className="w-full bg-black/40 border border-green-500/30 rounded p-4 stats-panel">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <div className="font-pixel text-sm md:text-base text-zinc-500">
+                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
                   YEAR DISCOVERED
                 </div>
-                <div className="font-pixel text-base md:text-xl text-foreground">
+                <div className="font-pixel text-xl md:text-3xl text-foreground">
                   1965
                 </div>
               </div>
               <div>
-                <div className="font-pixel text-sm md:text-base text-zinc-500">
+                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
                   YEARS SINCE
                 </div>
-                <div className="font-pixel text-base md:text-xl text-foreground">
+                <div className="font-pixel text-xl md:text-3xl text-foreground">
                   61
                 </div>
               </div>
               <div>
-                <div className="font-pixel text-sm md:text-base text-zinc-500">STATUS</div>
-                <div className="font-pixel text-base md:text-xl text-red-400 animate-pulse">
+                <div className="font-pixel text-xl md:text-3xl text-zinc-200">STATUS</div>
+                <div className="font-pixel text-xl md:text-3xl text-red-400 animate-pulse">
                   still governing you
                 </div>
               </div>
               <div>
-                <div className="font-pixel text-sm md:text-base text-zinc-500">
+                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
                   PATCH AVAILABLE
                 </div>
-                <div className="font-pixel text-base md:text-xl text-green-400 animate-pulse">
+                <div className="font-pixel text-xl md:text-3xl text-green-400 animate-pulse">
                   yes
                 </div>
               </div>
@@ -208,11 +208,11 @@ export function SlideTheBug() {
 
         {/* Punchline */}
         {statsVisible && (
-          <p className="font-terminal text-sm md:text-lg text-zinc-500 text-center italic stats-panel">
+          <p className="font-terminal text-xl md:text-2xl text-zinc-200 text-center italic stats-panel">
             8 billion people waiting for permission to want what they already
             want.
             <br />
-            <span className="text-zinc-400">
+            <span className="text-zinc-200">
               The dumbest reason a civilisation has ever continued dying.
             </span>
           </p>

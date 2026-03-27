@@ -98,7 +98,7 @@ export function SlideReplaceFed() {
         }
       `}</style>
 
-      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4">
+      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-2">
 
         {/* Phase 1 — Title */}
         <div
@@ -106,39 +106,39 @@ export function SlideReplaceFed() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <h1 className="font-pixel text-xl md:text-3xl text-emerald-400">
+          <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400">
             🏦 CENTRAL BANK REPLACEMENT
           </h1>
         </div>
 
         {/* Phase 2 — Split comparison */}
         {phase >= 2 && (
-          <div className="w-full grid grid-cols-2 gap-4 fade-in">
+          <div className="w-full grid grid-cols-2 gap-2 fade-in">
 
             {/* LEFT — Federal Reserve */}
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-              <div className="font-pixel text-sm md:text-base text-red-400 text-center mb-0.5 tracking-widest">
+              <div className="font-pixel text-lg md:text-xl text-red-400 text-center mb-0.5 tracking-widest">
                 FEDERAL RESERVE
               </div>
-              <div className="font-pixel text-sm text-zinc-500 text-center mb-3">
+              <div className="font-pixel text-lg text-zinc-200 text-center mb-2">
                 (1913–present)
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 {ROWS.map((row, i) => (
                   <div
                     key={row.label}
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
-                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1">
+                    <div className="font-pixel text-lg md:text-xl text-zinc-200 mb-0.5">
                       {row.label}
                     </div>
                     {row.leftBlank ? (
-                      <div className="font-pixel text-sm md:text-base text-zinc-700 select-none">
+                      <div className="font-pixel text-lg md:text-xl text-zinc-700 select-none">
                         &mdash;
                       </div>
                     ) : (
-                      <div className="font-pixel text-sm md:text-base text-red-400 line-through">
+                      <div className="font-pixel text-lg md:text-xl text-red-400 line-through">
                         {row.left}
                       </div>
                     )}
@@ -149,31 +149,30 @@ export function SlideReplaceFed() {
 
             {/* RIGHT — Smart Contract */}
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <div className="font-pixel text-sm md:text-base text-emerald-400 text-center mb-0.5 tracking-widest">
+              <div className="font-pixel text-lg md:text-xl text-emerald-400 text-center mb-0.5 tracking-widest">
                 SMART CONTRACT
               </div>
               {/* spacer to mirror the "(1913–present)" line */}
-              <div className="font-pixel text-sm text-zinc-500 text-center mb-3 invisible">
+              <div className="font-pixel text-lg text-zinc-200 text-center mb-2 invisible">
                 &nbsp;
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 {ROWS.map((row, i) => (
                   <div
                     key={row.label}
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
-                    {/* Mirror label for alignment */}
-                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1 invisible">
+                    <div className="font-pixel text-lg md:text-xl text-zinc-200 mb-0.5">
                       {row.label}
                     </div>
                     {row.isCode ? (
-                      <div className="font-terminal text-sm md:text-base text-red-400">
+                      <div className="font-terminal text-lg md:text-xl text-red-400">
                         <span className="line-through">{row.label.replace(":", "")}</span>
                         {" "}REMOVED
                       </div>
                     ) : (
-                      <div className={`font-pixel text-sm md:text-base text-emerald-400 ${row.rightClass ?? ""}`}>
+                      <div className={`font-pixel text-lg md:text-xl text-emerald-400 ${row.rightClass ?? ""}`}>
                         {row.right}
                       </div>
                     )}
@@ -191,13 +190,13 @@ export function SlideReplaceFed() {
             phase >= 4 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="bg-black/80 border border-zinc-700 rounded p-4 font-terminal">
-            <div className="text-base md:text-lg text-emerald-400">
+          <div className="bg-black/80 border border-zinc-700 rounded p-3 font-terminal">
+            <div className="text-lg md:text-xl text-emerald-400">
               {TYPEWRITER_TEXT.slice(0, typedChars)}
               <span className={`${showCursor ? "opacity-100" : "opacity-0"}`}>_</span>
             </div>
             {showError && (
-              <div className="text-base md:text-lg text-red-400 mt-1 fade-in">
+              <div className="text-lg md:text-xl text-red-400 mt-1 fade-in">
                 ERROR: print() is not a function
               </div>
             )}
@@ -210,10 +209,10 @@ export function SlideReplaceFed() {
             phase >= 5 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <p className="font-terminal text-base md:text-lg text-zinc-400">
+          <p className="font-terminal text-lg md:text-xl text-zinc-200">
             Your engineers will appreciate this.
           </p>
-          <p className="font-terminal text-base md:text-lg text-zinc-400">
+          <p className="font-terminal text-lg md:text-xl text-zinc-200">
             Your central bankers will not.
           </p>
         </div>

@@ -7,7 +7,7 @@ export function SlideDfda() {
     <SlideBase act={2} className="text-emerald-400">
       <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-xl md:text-3xl text-cyan-400 text-center">
+        <h1 className="font-pixel text-3xl md:text-5xl text-cyan-400 text-center">
           THE DECENTRALIZED FDA
         </h1>
 
@@ -15,10 +15,10 @@ export function SlideDfda() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           {/* Traditional FDA */}
           <div className="bg-red-500/10 border-2 border-red-500/30 rounded-lg p-5 space-y-3 opacity-70">
-            <div className="font-pixel text-base md:text-lg text-red-400 text-center">
+            <div className="font-pixel text-xl md:text-2xl text-red-400 text-center">
               🏥 TRADITIONAL FDA
             </div>
-            <div className="space-y-2 font-terminal text-sm md:text-base text-zinc-400">
+            <div className="space-y-2 font-terminal text-xl md:text-3xl text-zinc-200">
               <div className="flex justify-between">
                 <span>Cost per patient:</span>
                 <span className="text-red-400 font-pixel">$41,000</span>
@@ -44,10 +44,10 @@ export function SlideDfda() {
 
           {/* Decentralized FDA */}
           <div className="bg-emerald-500/15 border-2 border-emerald-500/50 rounded-lg p-5 space-y-3">
-            <div className="font-pixel text-base md:text-lg text-emerald-400 text-center">
+            <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center">
               🧪 DECENTRALIZED FDA
             </div>
-            <div className="space-y-2 font-terminal text-sm md:text-base text-zinc-300">
+            <div className="space-y-2 font-terminal text-xl md:text-3xl text-zinc-300">
               <div className="flex justify-between">
                 <span>Cost per patient:</span>
                 <span className="text-emerald-400 font-pixel">$929</span>
@@ -73,7 +73,7 @@ export function SlideDfda() {
         </div>
 
         {/* Bottom line */}
-        <div className="font-pixel text-xl md:text-3xl text-cyan-300 text-center mt-2">
+        <div className="font-pixel text-3xl md:text-5xl text-cyan-300 text-center mt-2">
           44x cheaper. 12.3x more capacity.
         </div>
       </div>

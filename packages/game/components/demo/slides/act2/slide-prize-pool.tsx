@@ -28,8 +28,8 @@ export function SlidePrizePool() {
     <SlideBase act={2} className="text-amber-400">
       {/* Title */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-xs text-amber-300/60 mb-1">PART 3: THE MONEY</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-amber-400">
+        <div className="font-pixel text-xl text-amber-400 mb-1">PART 3: THE MONEY</div>
+        <h1 className="font-pixel text-3xl md:text-4xl text-amber-400">
           PRIZE POOL INVESTMENT
         </h1>
       </div>
@@ -37,7 +37,7 @@ export function SlidePrizePool() {
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Prize pool amount */}
         <div className="text-center">
-          <div className="font-pixel text-xs text-zinc-500 mb-2">CURRENT PRIZE POOL</div>
+          <div className="font-pixel text-xl text-zinc-200 mb-2">CURRENT PRIZE POOL</div>
           <div className="font-pixel text-4xl md:text-6xl text-amber-400">
             <AnimatedCounter
               end={50000000}
@@ -46,14 +46,14 @@ export function SlidePrizePool() {
               decimals={0}
             />
           </div>
-          <div className="font-pixel text-xs text-zinc-500 mt-2">
+          <div className="font-pixel text-xl text-zinc-200 mt-2">
             and growing
           </div>
         </div>
 
         {/* Investment comparison chart */}
         <div className="bg-black/30 border border-amber-500/30 rounded p-4">
-          <div className="font-pixel text-xs text-amber-300/60 mb-3">
+          <div className="font-pixel text-xl text-amber-400 mb-3">
             10-YEAR INVESTMENT COMPARISON ($10K initial)
           </div>
           <AnimatedLineChart
@@ -76,16 +76,16 @@ export function SlidePrizePool() {
         {showComparison && (
           <div className="grid grid-cols-2 gap-4 animate-fade-in">
             <div className="bg-zinc-800/50 border border-zinc-700 p-4 rounded">
-              <div className="font-pixel text-xs text-zinc-400 mb-2">TRADITIONAL BONDS</div>
-              <div className="font-pixel text-lg text-zinc-400">7% / year</div>
-              <div className="font-terminal text-sm text-zinc-600 mt-2">
+              <div className="font-pixel text-xl text-zinc-200 mb-2">TRADITIONAL BONDS</div>
+              <div className="font-pixel text-xl text-zinc-200">7% / year</div>
+              <div className="font-terminal text-2xl text-zinc-300 mt-2">
                 Safe but slow growth
               </div>
             </div>
             <div className="bg-amber-500/10 border border-amber-500/50 p-4 rounded">
-              <div className="font-pixel text-xs text-amber-400 mb-2">TREATY PRIZE POOL</div>
-              <div className="font-pixel text-lg text-amber-400">10%+ / year</div>
-              <div className="font-terminal text-sm text-amber-300/60 mt-2">
+              <div className="font-pixel text-xl text-amber-400 mb-2">TREATY PRIZE POOL</div>
+              <div className="font-pixel text-xl text-amber-400">10%+ / year</div>
+              <div className="font-terminal text-2xl text-amber-400 mt-2">
                 Returns + impact bonuses
               </div>
             </div>
@@ -94,11 +94,11 @@ export function SlidePrizePool() {
 
         {/* Value per vote point */}
         <div className="text-center bg-black/40 border border-amber-500/30 p-4 rounded">
-          <div className="font-pixel text-xs text-zinc-500 mb-2">VALUE PER VOTE POINT</div>
+          <div className="font-pixel text-xl text-zinc-200 mb-2">VALUE PER VOTE POINT</div>
           <div className="font-pixel text-3xl text-amber-400">
             ${GAME_PARAMS.valuePerVotePoint.toLocaleString()}
           </div>
-          <div className="font-terminal text-xs text-zinc-500 mt-2">
+          <div className="font-terminal text-2xl text-zinc-200 mt-2">
             Expected lifetime value of each VOTE token
           </div>
         </div>
@@ -107,22 +107,22 @@ export function SlidePrizePool() {
         <div className="grid grid-cols-3 gap-3 text-center">
           <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded">
             <div className="text-xl mb-1">✓</div>
-            <div className="font-pixel text-xs text-emerald-400">Treaty Passes</div>
-            <div className="font-pixel text-sm text-zinc-500">10x return</div>
+            <div className="font-pixel text-2xl text-emerald-400">Treaty Passes</div>
+            <div className="font-pixel text-2xl text-zinc-200">10x return</div>
           </div>
           <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded">
             <div className="text-xl mb-1">↗</div>
-            <div className="font-pixel text-xs text-amber-400">Partial Success</div>
-            <div className="font-pixel text-sm text-zinc-500">2x return</div>
+            <div className="font-pixel text-2xl text-amber-400">Partial Success</div>
+            <div className="font-pixel text-2xl text-zinc-200">2x return</div>
           </div>
           <div className="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded">
             <div className="text-xl mb-1">↺</div>
-            <div className="font-pixel text-xs text-cyan-400">No Progress</div>
-            <div className="font-pixel text-sm text-zinc-500">1x (principal)</div>
+            <div className="font-pixel text-2xl text-cyan-400">No Progress</div>
+            <div className="font-pixel text-2xl text-zinc-200">1x (principal)</div>
           </div>
         </div>
 
-        <div className="text-center font-pixel text-sm text-emerald-400">
+        <div className="text-center font-pixel text-xl text-emerald-400">
           YOU CANNOT LOSE YOUR PRINCIPAL
         </div>
       </div>

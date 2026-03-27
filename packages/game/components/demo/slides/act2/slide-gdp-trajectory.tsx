@@ -46,7 +46,7 @@ export function SlideGDPTrajectory() {
   return (
     <SlideBase act={2} className="text-amber-400">
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center mb-6">
+      <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center mb-6">
         COMPOUND RETURNS
       </h1>
 
@@ -73,8 +73,8 @@ export function SlideGDPTrajectory() {
         {/* Key numbers */}
         <div className="grid grid-cols-3 gap-3 md:gap-6">
           <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded">
-            <div className="font-pixel text-sm text-red-400 mb-2">2055: STATUS QUO</div>
-            <div className="font-pixel text-xl md:text-2xl text-red-400">
+            <div className="font-pixel text-xl text-red-400 mb-2">2055: STATUS QUO</div>
+            <div className="font-pixel text-3xl md:text-4xl text-red-400">
               <AnimatedCounter
                 end={currentGDPperCapita * Math.pow(1 + statusQuoRate / 100, 30)}
                 duration={2000}
@@ -82,12 +82,12 @@ export function SlideGDPTrajectory() {
                 decimals={0}
               />
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">per capita</div>
+            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
           </div>
 
           <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
-            <div className="font-pixel text-sm text-emerald-400 mb-2">2055: 1% TREATY</div>
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400">
+            <div className="font-pixel text-xl text-emerald-400 mb-2">2055: 1% TREATY</div>
+            <div className="font-pixel text-3xl md:text-4xl text-emerald-400">
               <AnimatedCounter
                 end={projectedGDPperCapita_treaty}
                 duration={2000}
@@ -95,12 +95,12 @@ export function SlideGDPTrajectory() {
                 decimals={0}
               />
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">per capita</div>
+            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
           </div>
 
           <div className="text-center p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
-            <div className="font-pixel text-sm text-yellow-400 mb-2">2055: WISHONIA</div>
-            <div className="font-pixel text-xl md:text-2xl text-yellow-400">
+            <div className="font-pixel text-xl text-yellow-400 mb-2">2055: WISHONIA</div>
+            <div className="font-pixel text-3xl md:text-4xl text-yellow-400">
               <AnimatedCounter
                 end={wishoniaGDPperCapita}
                 duration={2000}
@@ -108,14 +108,14 @@ export function SlideGDPTrajectory() {
                 decimals={0}
               />
             </div>
-            <div className="font-pixel text-xs text-zinc-500 mt-1">per capita</div>
+            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
           </div>
         </div>
 
         {/* Compounding loop visualization */}
         {showLoop && (
           <div className="flex flex-col items-center space-y-4 animate-fade-in">
-            <div className="font-pixel text-sm text-amber-300/70">
+            <div className="font-pixel text-xl text-amber-400">
               THE VIRTUOUS CYCLE
             </div>
             
@@ -128,7 +128,7 @@ export function SlideGDPTrajectory() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="text-amber-500/50"
+                  className="text-amber-500"
                 />
                 {/* Animated arrow head */}
                 <circle r="4" fill="#f59e0b">
@@ -143,28 +143,28 @@ export function SlideGDPTrajectory() {
               {/* Loop labels */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 text-center">
                 <div className="text-xl">💰</div>
-                <div className="font-pixel text-xs text-amber-400">Investment</div>
+                <div className="font-pixel text-xl text-amber-400">Investment</div>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2 text-center">
                 <div className="text-xl">🧪</div>
-                <div className="font-pixel text-xs text-emerald-400">Research</div>
+                <div className="font-pixel text-xl text-emerald-400">Research</div>
               </div>
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
                 <div className="text-xl">💊</div>
-                <div className="font-pixel text-xs text-cyan-400">Treatments</div>
+                <div className="font-pixel text-xl text-cyan-400">Treatments</div>
               </div>
               <div className="absolute left-0 top-1/2 -translate-y-1/2 text-center">
                 <div className="text-xl">📈</div>
-                <div className="font-pixel text-xs text-purple-400">Productivity</div>
+                <div className="font-pixel text-xl text-purple-400">Productivity</div>
               </div>
 
               {/* Center */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="font-pixel text-lg text-amber-400">{treatyRate}%</div>
+                <div className="font-pixel text-2xl text-amber-400">{treatyRate}%</div>
               </div>
             </div>
 
-            <div className="font-terminal text-xs text-zinc-400 text-center max-w-3xl">
+            <div className="font-terminal text-xl text-zinc-200 text-center max-w-3xl">
               Healthier people are more productive, generating more tax revenue,
               funding more research, creating a self-reinforcing cycle of prosperity
             </div>

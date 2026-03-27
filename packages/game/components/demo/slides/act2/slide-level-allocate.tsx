@@ -43,11 +43,11 @@ export function SlideLevelAllocate() {
     <SlideBase act={2} className="text-emerald-400">
       {/* Level header */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-sm md:text-base text-emerald-300/60 mb-1">LEVEL 1</div>
+        <div className="font-pixel text-xl md:text-3xl text-emerald-400 mb-1">LEVEL 1</div>
         <h1 className="font-pixel text-2xl md:text-3xl text-emerald-400">
           ALLOCATE
         </h1>
-        <div className="font-terminal text-base md:text-lg text-zinc-400 mt-2">
+        <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
           Direct funding to research priorities
         </div>
       </div>
@@ -68,7 +68,7 @@ export function SlideLevelAllocate() {
               >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-2xl">{cat.icon}</span>
-                  <span className="font-pixel text-base md:text-lg text-zinc-300 truncate">
+                  <span className="font-pixel text-xl md:text-2xl text-zinc-300 truncate">
                     {cat.label}
                   </span>
                 </div>
@@ -85,7 +85,7 @@ export function SlideLevelAllocate() {
                 </div>
 
                 {/* Percentage */}
-                <div className="font-pixel text-sm md:text-base text-right mt-2" style={{ color: cat.color }}>
+                <div className="font-pixel text-xl md:text-3xl text-right mt-2" style={{ color: cat.color }}>
                   {allocation}%
                 </div>
               </div>
@@ -96,7 +96,7 @@ export function SlideLevelAllocate() {
         {/* Total allocated */}
         <div className="text-center">
           <div className="inline-block bg-black/60 border border-emerald-500/30 px-6 py-3 rounded">
-            <div className="font-pixel text-sm md:text-base text-emerald-300/60 mb-1">TOTAL ALLOCATED</div>
+            <div className="font-pixel text-xl md:text-3xl text-emerald-400 mb-1">TOTAL ALLOCATED</div>
             <div className="font-pixel text-3xl md:text-4xl text-emerald-400">
               {totalAllocated}%
             </div>
@@ -106,12 +106,12 @@ export function SlideLevelAllocate() {
         {/* Completion message */}
         {showComplete && (
           <div className="text-center space-y-3 animate-fade-in">
-            <div className="font-pixel text-base md:text-lg text-cyan-400">
+            <div className="font-pixel text-xl md:text-2xl text-cyan-400">
               ALLOCATION COMPLETE
             </div>
             <div className="flex justify-center gap-2">
-              <span className="font-pixel text-sm md:text-base text-zinc-500">ITEM ACQUIRED:</span>
-              <span className="font-pixel text-sm md:text-base text-amber-400">Budget Allocation</span>
+              <span className="font-pixel text-xl md:text-3xl text-zinc-200">ITEM ACQUIRED:</span>
+              <span className="font-pixel text-xl md:text-3xl text-amber-400">Budget Allocation</span>
               <span>📊</span>
             </div>
           </div>

@@ -103,7 +103,7 @@ export function SlideTheMismatch() {
       <div className="flex flex-col items-center justify-center gap-4 max-w-[1700px] mx-auto w-full">
         {/* Phase 1: Title */}
         {phase >= 1 && (
-          <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center fade-slide-up">
+          <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center fade-slide-up">
             ⚔️ BATTLE REPORT
           </h1>
         )}
@@ -121,7 +121,7 @@ export function SlideTheMismatch() {
                 {Array.from({ length: TOTAL_PUBLIC }).map((_, i) => (
                   <span
                     key={i}
-                    className="text-sm md:text-base leading-none"
+                    className="text-xl md:text-3xl leading-none"
                     style={{
                       opacity: i < visiblePublic ? 1 : 0,
                       animation:
@@ -134,7 +134,7 @@ export function SlideTheMismatch() {
                   </span>
                 ))}
               </div>
-              <div className="font-pixel text-xs text-emerald-400 tracking-widest mt-1">
+              <div className="font-pixel text-xl text-emerald-400 tracking-widest mt-1">
                 THE PUBLIC
               </div>
             </div>
@@ -146,7 +146,7 @@ export function SlideTheMismatch() {
                 <span className="text-2xl md:text-3xl">🤵</span>
                 <span className="text-2xl md:text-3xl">🤵</span>
               </div>
-              <div className="font-pixel text-xs text-red-400 tracking-widest">
+              <div className="font-pixel text-xl text-red-400 tracking-widest">
                 LOBBYISTS
               </div>
             </div>
@@ -158,26 +158,26 @@ export function SlideTheMismatch() {
           <div className="grid grid-cols-2 gap-4 w-full fade-slide-up">
             {/* Public stats */}
             <div className="space-y-1 text-center">
-              <div className="font-pixel text-xs text-zinc-500">
+              <div className="font-pixel text-xl text-zinc-200">
                 8,000,000,000 people
               </div>
-              <div className="font-pixel text-sm md:text-base text-emerald-400">
+              <div className="font-pixel text-xl md:text-3xl text-emerald-400">
                 {formatCurrency(publicWealth)}
               </div>
-              <div className="font-terminal text-xs text-emerald-600">
+              <div className="font-terminal text-xl text-emerald-600">
                 Want: health + wealth
               </div>
             </div>
 
             {/* Lobbyist stats */}
             <div className="space-y-1 text-center">
-              <div className="font-pixel text-xs text-zinc-500">
+              <div className="font-pixel text-xl text-zinc-200">
                 ~50,000 people
               </div>
-              <div className="font-pixel text-sm md:text-base text-red-400">
+              <div className="font-pixel text-xl md:text-3xl text-red-400">
                 {formatCurrency(defenceWealth)}
               </div>
-              <div className="font-terminal text-xs text-red-600">
+              <div className="font-terminal text-xl text-red-600">
                 Want: your money
               </div>
             </div>
@@ -196,13 +196,13 @@ export function SlideTheMismatch() {
         {/* Phase 5: The punchline */}
         {phase >= 5 && (
           <div className="w-full bg-black/60 border border-amber-500/30 rounded p-4 fade-slide-up">
-            <div className="font-pixel text-sm md:text-base text-red-400 text-center mb-2">
+            <div className="font-pixel text-xl md:text-3xl text-red-400 text-center mb-2">
               CURRENT STATUS: They are winning.
             </div>
-            <div className="font-terminal text-sm md:text-base text-amber-400 text-center">
+            <div className="font-terminal text-xl md:text-3xl text-amber-400 text-center">
               REASON: They have a group chat.
             </div>
-            <div className="font-terminal text-base md:text-lg text-amber-300 text-center font-bold mt-1">
+            <div className="font-terminal text-xl md:text-2xl text-amber-300 text-center font-bold mt-1">
               You do not.
             </div>
           </div>

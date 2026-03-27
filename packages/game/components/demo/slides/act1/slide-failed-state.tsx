@@ -45,9 +45,9 @@ export function SlideFailedState() {
   }, [decayProgress]);
 
   return (
-    <SlideBase act={1} className="text-zinc-500">
+    <SlideBase act={1} className="text-zinc-200">
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-zinc-400 mb-4 text-center">
+      <h1 className="font-pixel text-2xl md:text-4xl text-zinc-200 mb-4 text-center">
         INFRASTRUCTURE COLLAPSE
       </h1>
 
@@ -78,17 +78,17 @@ export function SlideFailedState() {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <div className="text-3xl md:text-5xl relative">
+              <div className="text-6xl md:text-8xl lg:text-9xl relative">
                 {el.emoji}
                 {failed && (
-                  <span className="absolute inset-0 flex items-center justify-center text-red-500 text-4xl md:text-6xl">
+                  <span className="absolute inset-0 flex items-center justify-center text-red-500 text-7xl md:text-9xl lg:text-[10rem]">
                     ✕
                   </span>
                 )}
               </div>
               <div
-                className={`font-pixel text-xs md:text-xs text-center mt-1 ${
-                  failed ? "text-red-400 line-through" : "text-zinc-400"
+                className={`font-pixel text-xl md:text-2xl lg:text-3xl text-center mt-1 ${
+                  failed ? "text-red-400 line-through" : "text-zinc-200"
                 }`}
               >
                 {el.label}
@@ -106,19 +106,20 @@ export function SlideFailedState() {
         </div>
 
         {/* Status overlay */}
-        <div className="absolute top-4 left-4 font-pixel text-xs">
+        <div className="absolute top-4 left-4 font-pixel text-2xl">
           <div className="text-red-400">
             SYSTEMS FAILING: {failedElements.size}/{cityElements.length}
           </div>
-          <div className="text-zinc-500">
+          <div className="text-zinc-200">
             DECAY: {decayProgress.toFixed(0)}%
           </div>
+
         </div>
 
         {/* Failed state text overlay */}
         {decayProgress >= 70 && (
           <div className="absolute bottom-6 left-0 right-0 text-center">
-            <div className="font-pixel text-xs md:text-sm text-red-500 bg-black/80 mx-4 px-3 py-2 border border-red-500/40 animate-pulse">
+            <div className="font-pixel text-2xl text-red-500 bg-black/80 mx-4 px-3 py-2 border border-red-500/40 animate-pulse">
               WHEN DESTRUCTION &gt; PRODUCTION: GLOBAL FAILED STATE
             </div>
           </div>
@@ -127,7 +128,7 @@ export function SlideFailedState() {
 
       {/* World map showing collapse */}
       <div className="mt-6 w-full max-w-[1700px]">
-        <div className="font-pixel text-xs text-zinc-500 mb-2 text-center">
+        <div className="font-pixel text-2xl text-zinc-200 mb-2 text-center">
           NATIONS ENTERING FAILED STATE STATUS
         </div>
         <div className="flex flex-wrap justify-center gap-2">
@@ -143,10 +144,10 @@ export function SlideFailedState() {
           ].map((country, i) => (
             <div
               key={country}
-              className={`font-pixel text-xs px-2 py-1 border transition-all duration-500 ${
+              className={`font-pixel text-2xl px-2 py-1 border transition-all duration-500 ${
                 decayProgress > (i + 1) * 10
                   ? "border-red-500/50 bg-red-500/20 text-red-400"
-                  : "border-zinc-700 text-zinc-600"
+                  : "border-zinc-700 text-zinc-300"
               }`}
             >
               {country}
@@ -157,7 +158,7 @@ export function SlideFailedState() {
 
       {/* Bottom text */}
       <div className="mt-6 text-center">
-        <div className="font-pixel text-sm text-zinc-400">
+        <div className="font-pixel text-2xl text-zinc-200">
           Without intervention, healthcare systems collapse first
         </div>
       </div>

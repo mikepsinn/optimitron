@@ -72,10 +72,10 @@ export function SlideYourBudget() {
         {/* Phase 1: Title */}
         {phase >= 1 && (
           <div className="text-center fade-in">
-            <h1 className="font-pixel text-lg md:text-2xl text-emerald-400">
+            <h1 className="font-pixel text-xl md:text-2xl text-emerald-400">
               📊 YOUR BUDGET
             </h1>
-            <div className="font-terminal text-sm text-zinc-500 mt-1">
+            <div className="font-terminal text-xl text-zinc-200 mt-1">
               10 comparisons, 2 minutes
             </div>
           </div>
@@ -89,7 +89,7 @@ export function SlideYourBudget() {
               return (
                 <div key={cat.label} className={isFilled ? "fade-in" : "opacity-0"}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-pixel text-xs text-zinc-400 w-36 truncate">
+                    <span className="font-pixel text-base text-zinc-200 w-28 truncate">
                       {cat.icon} {cat.label}
                     </span>
                     <div className="flex-1 h-6 md:h-8 bg-zinc-900 border border-zinc-700 rounded overflow-hidden">
@@ -98,7 +98,7 @@ export function SlideYourBudget() {
                         style={{ width: isFilled ? `${cat.pct}%` : "0%" }}
                       />
                     </div>
-                    <span className="font-pixel text-xs text-zinc-300 w-8 text-right">
+                    <span className="font-pixel text-xl text-zinc-300 w-8 text-right">
                       {cat.pct}%
                     </span>
                   </div>
@@ -112,42 +112,42 @@ export function SlideYourBudget() {
         {phase >= 3 && (
           <div className="w-full bg-black/40 border border-zinc-700 rounded p-4 fade-in space-y-2">
             <div className="flex gap-3 items-baseline">
-              <span className="font-pixel text-xs md:text-sm text-zinc-500 w-48 shrink-0">
+              <span className="font-pixel text-lg text-zinc-200 w-44 shrink-0">
                 METHOD:
               </span>
-              <span className="font-pixel text-xs md:text-sm text-foreground">
+              <span className="font-pixel text-lg text-foreground">
                 Eigenvector decomposition
               </span>
             </div>
             <div className="flex gap-3 items-baseline">
-              <span className="font-pixel text-xs md:text-sm text-zinc-500 w-48 shrink-0">
+              <span className="font-pixel text-lg text-zinc-200 w-44 shrink-0">
                 INVENTED:
               </span>
-              <span className="font-pixel text-xs md:text-sm text-foreground">
+              <span className="font-pixel text-lg text-foreground">
                 1977
               </span>
             </div>
             <div className="flex gap-3 items-baseline">
-              <span className="font-pixel text-xs md:text-sm text-zinc-500 w-48 shrink-0">
+              <span className="font-pixel text-lg text-zinc-200 w-44 shrink-0">
                 USED FOR:
               </span>
-              <span className="font-pixel text-xs md:text-sm text-foreground">
+              <span className="font-pixel text-lg text-foreground">
                 ranking football teams
               </span>
             </div>
             <div className="flex gap-3 items-baseline">
-              <span className="font-pixel text-xs md:text-sm text-zinc-500 w-48 shrink-0">
+              <span className="font-pixel text-lg text-zinc-200 w-44 shrink-0">
                 COULD ALSO BE USED FOR:
               </span>
-              <span className="font-pixel text-xs md:text-sm text-emerald-400">
+              <span className="font-pixel text-lg text-emerald-400">
                 civilisation
               </span>
             </div>
             <div className="flex gap-3 items-baseline">
-              <span className="font-pixel text-xs md:text-sm text-zinc-500 w-48 shrink-0">
+              <span className="font-pixel text-lg text-zinc-200 w-44 shrink-0">
                 HAS BEEN:
               </span>
-              <span className="font-pixel text-xs md:text-sm text-red-400 animate-pulse">
+              <span className="font-pixel text-lg text-red-400 animate-pulse">
                 no
               </span>
             </div>
@@ -156,7 +156,7 @@ export function SlideYourBudget() {
 
         {/* Phase 4: Bottom punchline */}
         {phase >= 4 && (
-          <p className="font-terminal text-xs md:text-sm text-zinc-400 italic text-center fade-in">
+          <p className="font-terminal text-xl md:text-2xl text-zinc-200 italic text-center fade-in">
             You just did in 2 minutes what your legislature fails to do in 2
             years.
           </p>

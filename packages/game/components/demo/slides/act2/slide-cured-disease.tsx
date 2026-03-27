@@ -12,19 +12,19 @@ interface SupplyNode {
 }
 
 const SUPPLY_NODES: SupplyNode[] = [
-  { emoji: "👩‍🔬", city: "Lagos",    role: "cheaper trial design",  x: 15, y: 25 },
-  { emoji: "🤝",   city: "Brussels", role: "passed the directive",   x: 85, y: 20 },
-  { emoji: "📱",   city: "Manila",   role: "recruited 1M voters",    x: 10, y: 70 },
-  { emoji: "💰",   city: "New York", role: "funded the campaign",    x: 90, y: 65 },
-  { emoji: "🏛️",  city: "Delhi",    role: "voted yes",              x: 25, y: 90 },
-  { emoji: "🏥",   city: "Dhaka",    role: "enrolled in the trial",  x: 75, y: 90 },
+  { emoji: "👩‍🔬", city: "Lagos",    role: "cheaper trial design",  x: 18, y: 15 },
+  { emoji: "🤝",   city: "Brussels", role: "passed the directive",   x: 78, y: 12 },
+  { emoji: "📱",   city: "Manila",   role: "recruited 1M voters",    x: 15, y: 65 },
+  { emoji: "💰",   city: "New York", role: "funded the campaign",    x: 82, y: 60 },
+  { emoji: "🏛️",  city: "Delhi",    role: "voted yes",              x: 30, y: 88 },
+  { emoji: "🏥",   city: "Dhaka",    role: "enrolled in the trial",  x: 70, y: 88 },
 ];
 
 const STATS = [
   { label: "People cooperating:",    value: "millions", color: "text-emerald-400" },
-  { label: "People who know each other:", value: "none",     color: "text-zinc-400" },
-  { label: "Central coordinator:",   value: "none",     color: "text-zinc-400" },
-  { label: "Orders given:",          value: "zero",     color: "text-zinc-400" },
+  { label: "People who know each other:", value: "none",     color: "text-zinc-200" },
+  { label: "Central coordinator:",   value: "none",     color: "text-zinc-200" },
+  { label: "Orders given:",          value: "zero",     color: "text-zinc-200" },
 ];
 
 export function SlideCuredDisease() {
@@ -65,7 +65,7 @@ export function SlideCuredDisease() {
 
         {/* Phase 1 — Title */}
         <h1
-          className="font-pixel text-xl md:text-3xl text-amber-400 text-center transition-opacity duration-500"
+          className="font-pixel text-3xl md:text-5xl text-amber-400 text-center transition-opacity duration-500"
           style={{ opacity: phase >= 1 ? 1 : 0 }}
         >
           🧪 I, CURED DISEASE
@@ -73,7 +73,7 @@ export function SlideCuredDisease() {
 
         {/* Phase 2/3 — SVG network */}
         <div
-          className="relative w-full aspect-video bg-black/40 border border-amber-500/30 rounded overflow-hidden transition-opacity duration-500"
+          className="relative w-full aspect-[16/9] transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
           {/* SVG lines */}
@@ -124,10 +124,10 @@ export function SlideCuredDisease() {
               }}
             >
               <div className="text-2xl md:text-3xl">{node.emoji}</div>
-              <div className="font-pixel text-sm md:text-base text-foreground whitespace-nowrap">
+              <div className="font-pixel text-base md:text-xl text-foreground whitespace-nowrap">
                 {node.city}
               </div>
-              <div className="font-pixel text-xs md:text-sm text-zinc-400 whitespace-nowrap">
+              <div className="font-pixel text-sm md:text-lg text-zinc-200 whitespace-nowrap">
                 {node.role}
               </div>
             </div>
@@ -142,10 +142,10 @@ export function SlideCuredDisease() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {STATS.slice(0, visibleStats).map((stat, i) => (
               <div key={i} className="flex items-center gap-2 fade-in">
-                <span className="font-terminal text-base md:text-lg text-zinc-400">
+                <span className="font-terminal text-xl md:text-2xl text-zinc-200">
                   {stat.label}
                 </span>
-                <span className={`font-pixel text-base md:text-lg ${stat.color}`}>
+                <span className={`font-pixel text-xl md:text-2xl ${stat.color}`}>
                   {stat.value}
                 </span>
               </div>
@@ -158,10 +158,10 @@ export function SlideCuredDisease() {
           className="text-center space-y-1 transition-opacity duration-500"
           style={{ opacity: phase >= 5 ? 1 : 0 }}
         >
-          <div className="font-terminal text-base md:text-lg text-zinc-400">
+          <div className="font-terminal text-xl md:text-2xl text-zinc-200">
             Method: everyone wanted money.
           </div>
-          <div className="font-pixel text-xl md:text-3xl text-amber-400">
+          <div className="font-pixel text-3xl md:text-5xl text-amber-400">
             Result: cured disease.
           </div>
         </div>

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 const bootLines = [
   { text: "> SYSTEM: GOVERNMENT.EXE v1776", delay: 300 },
-  { text: "> TYPE: ARTIFICIAL INTELLIGENCE", delay: 800 },
+  { text: "> TYPE: ARTIFICIAL SUPERINTELLIGENCE", delay: 800 },
   { text: "> CREATED BY: HUMANS", delay: 1300 },
   { text: "> PURPOSE: PROMOTE GENERAL WELFARE", delay: 1800 },
 ];
@@ -95,7 +95,7 @@ export function SlideGovernmentsAreAI() {
             <div className="absolute inset-0 pointer-events-none animate-[crt-flicker_0.1s_infinite] opacity-[0.03]" />
 
             {/* Boot text */}
-            <div className="font-terminal text-sm md:text-base space-y-2">
+            <div className="font-terminal text-xl md:text-3xl space-y-2">
               {bootLines.slice(0, visibleBoot).map((line, i) => (
                 <div key={i} className="text-green-400">
                   {line.text}
@@ -112,9 +112,9 @@ export function SlideGovernmentsAreAI() {
                     : "border-green-500/60 bg-green-500/5"
                 }`}
               >
-                <div className="font-terminal text-xs md:text-sm space-y-1">
+                <div className="font-terminal text-xl md:text-2xl space-y-1">
                   <div
-                    className={`font-pixel text-xs mb-2 ${
+                    className={`font-pixel text-2xl mb-2 ${
                       showCorruption ? "text-red-400" : "text-green-400"
                     }`}
                   >
@@ -125,7 +125,7 @@ export function SlideGovernmentsAreAI() {
                   <div
                     className={`transition-all duration-500 ${
                       showCorruption
-                        ? "line-through decoration-red-500 decoration-2 text-green-400/30"
+                        ? "line-through decoration-red-500 decoration-2 text-green-400"
                         : "text-green-400"
                     }`}
                   >
@@ -134,7 +134,7 @@ export function SlideGovernmentsAreAI() {
                   <div
                     className={`transition-all duration-500 ${
                       showCorruption
-                        ? "line-through decoration-red-500 decoration-2 text-green-400/30"
+                        ? "line-through decoration-red-500 decoration-2 text-green-400"
                         : "text-green-400"
                     }`}
                   >
@@ -144,7 +144,7 @@ export function SlideGovernmentsAreAI() {
                   {/* Status bar */}
                   <div className="flex items-center gap-2 mt-3">
                     <span
-                      className={`font-pixel text-sm ${
+                      className={`font-pixel text-2xl ${
                         showCorruption ? "text-red-400" : "text-green-400"
                       }`}
                     >
@@ -161,7 +161,7 @@ export function SlideGovernmentsAreAI() {
                       />
                     </div>
                     <span
-                      className={`font-pixel text-sm ${
+                      className={`font-pixel text-2xl ${
                         showCorruption ? "text-red-400" : "text-green-400"
                       }`}
                     >
@@ -176,8 +176,8 @@ export function SlideGovernmentsAreAI() {
 
                 {/* Corrupted objectives */}
                 {showCorruption && (
-                  <div className="mt-4 pt-3 border-t border-red-500/30 font-terminal text-xs md:text-sm space-y-1">
-                    <div className="font-pixel text-sm text-red-400 mb-2">
+                  <div className="mt-4 pt-3 border-t border-red-500/30 font-terminal text-xl md:text-2xl space-y-1">
+                    <div className="font-pixel text-2xl text-red-400 mb-2">
                       OBJECTIVE FUNCTION: [OVERWRITTEN]
                     </div>
                     {corruptedLines.slice(0, visibleCorrupt).map((line, i) => (
@@ -209,8 +209,8 @@ export function SlideGovernmentsAreAI() {
       {/* Bottom warning */}
       {showWarning && (
         <div className="absolute bottom-8 left-0 right-0 text-center animate-[fade-in_0.5s_ease-out]">
-          <div className="font-pixel text-sm md:text-lg text-red-500 animate-pulse">
-            ⚠ WARNING: THIS AI IS ALREADY RUNNING
+          <div className="font-pixel text-xl md:text-2xl text-red-500 animate-pulse">
+            ⚠ WARNING: THIS ASI IS ALREADY RUNNING
           </div>
         </div>
       )}

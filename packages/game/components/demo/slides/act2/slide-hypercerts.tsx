@@ -25,7 +25,7 @@ export function SlideHypercerts() {
     <SlideBase act={2} className="text-purple-400">
       <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-2xl text-purple-400 text-center">
+        <h1 className="font-pixel text-2xl md:text-4xl text-purple-400 text-center">
           HYPERCERTS: VERIFIABLE IMPACT
         </h1>
 
@@ -40,11 +40,11 @@ export function SlideHypercerts() {
                   badge.featured ? "border-2 " + colors.border : colors.border
                 } rounded-lg p-3 text-center ${badge.featured ? "ring-1 ring-emerald-400/20" : ""}`}
               >
-                <div className="font-pixel text-xs text-zinc-500 mb-1">{badge.label}</div>
-                <div className={`font-pixel text-sm ${colors.text}`}>{badge.result}</div>
-                <div className="font-pixel text-lg text-zinc-300 mt-1">{badge.efficacy}</div>
+                <div className="font-pixel text-xl text-zinc-200 mb-1">{badge.label}</div>
+                <div className={`font-pixel text-xl ${colors.text}`}>{badge.result}</div>
+                <div className="font-pixel text-xl text-zinc-300 mt-1">{badge.efficacy}</div>
                 {badge.featured && (
-                  <div className="font-pixel text-xs text-emerald-400 mt-1 animate-pulse">
+                  <div className="font-pixel text-xl text-emerald-400 mt-1 animate-pulse">
                     VERIFIED ON-CHAIN
                   </div>
                 )}
@@ -57,22 +57,22 @@ export function SlideHypercerts() {
         <div className="bg-emerald-500/10 border-2 border-emerald-500/40 rounded-lg p-4 w-full">
           <div className="flex items-center gap-3 mb-2">
             <span className="font-pixel text-2xl">🏆</span>
-            <div className="font-pixel text-sm text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">
+            <div className="font-pixel text-xl text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">
               MINTING NOW
             </div>
           </div>
-          <div className="font-terminal text-xs text-zinc-300 leading-relaxed">
+          <div className="font-terminal text-xl text-zinc-300 leading-relaxed">
             <span className="text-emerald-400 font-pixel">TRIAL #4,847:</span>{" "}
             Malaria vaccine pragmatic trial. 12,000 patients. 94% efficacy. Verified on-chain.
           </div>
           <div className="mt-2 flex items-center gap-2">
-            <span className="font-pixel text-lg">✅</span>
-            <span className="font-pixel text-sm text-emerald-400">STAMP OF APPROVAL</span>
+            <span className="font-pixel text-xl">✅</span>
+            <span className="font-pixel text-xl text-emerald-400">STAMP OF APPROVAL</span>
           </div>
         </div>
 
         {/* Key text */}
-        <p className="font-pixel text-xs md:text-sm text-zinc-400 text-center italic max-w-3xl leading-relaxed">
+        <p className="font-pixel text-xl md:text-2xl text-zinc-200 text-center italic max-w-3xl leading-relaxed">
           If a charity tells you they saved ten thousand lives, you ask for the
           Hypercert. If they do not have one, they did not save ten thousand
           lives.

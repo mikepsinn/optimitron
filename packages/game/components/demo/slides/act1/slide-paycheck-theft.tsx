@@ -40,7 +40,7 @@ export function SlidePaycheckTheft() {
       )}
 
       {/* Title */}
-      <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center mb-6">
+      <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center mb-6">
         THEY&apos;RE STEALING YOUR PAYCHECK
       </h1>
 
@@ -50,7 +50,7 @@ export function SlidePaycheckTheft() {
           {/* Your paycheck (left side) */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-24 md:w-32">
             <div className="text-4xl md:text-6xl text-center">💼</div>
-            <div className="font-pixel text-xs text-center text-amber-400 mt-2">
+            <div className="font-pixel text-2xl text-center text-amber-400 mt-2">
               YOUR<br />PAYCHECK
             </div>
           </div>
@@ -100,7 +100,7 @@ export function SlidePaycheckTheft() {
                   showSiphon ? "opacity-100" : "opacity-0"
                 }`}
               >
-                <div className="font-pixel text-xs md:text-xs" style={{ color: cat.color }}>
+                <div className="font-pixel text-2xl" style={{ color: cat.color }}>
                   &rarr; {cat.label}
                 </div>
               </div>
@@ -114,7 +114,7 @@ export function SlidePaycheckTheft() {
             showTotal ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          <div className="font-pixel text-sm text-zinc-400 mb-2">
+          <div className="font-pixel text-2xl text-zinc-200 mb-2">
             YOUR LIFETIME LOSS TO DYSFUNCTION
           </div>
           <div className="font-pixel text-4xl md:text-6xl text-red-500">
@@ -125,26 +125,26 @@ export function SlidePaycheckTheft() {
               decimals={1}
             />
           </div>
-          <div className="font-terminal text-sm text-zinc-500 mt-2">
+          <div className="font-terminal text-2xl text-zinc-200 mt-2">
             That&apos;s money that should be yours
           </div>
         </div>
 
         {/* Comparison */}
         <div className="grid grid-cols-2 gap-4 mt-6">
-          <div className="text-center p-4 bg-red-500/10 border border-red-500/30 rounded">
-            <div className="font-pixel text-xs text-red-400 mb-1">YOUR PAYCHECK</div>
-            <div className="font-pixel text-xl text-red-500">
+          <div className="text-center p-4 md:p-6 bg-red-500/10 border border-red-500/30 rounded">
+            <div className="font-pixel text-2xl md:text-3xl text-red-400 mb-2">YOUR PAYCHECK</div>
+            <div className="font-pixel text-3xl md:text-4xl text-red-500">
               ${GAME_PARAMS.currentMedianIncome.toLocaleString()}
             </div>
-            <div className="font-pixel text-xs text-zinc-500">per year</div>
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-1">per year</div>
           </div>
-          <div className="text-center p-4 bg-green-500/10 border border-green-500/30 rounded">
-            <div className="font-pixel text-xs text-green-400 mb-1">IF WAGES KEPT PACE</div>
-            <div className="font-pixel text-xl text-green-500">
+          <div className="text-center p-4 md:p-6 bg-green-500/10 border border-green-500/30 rounded">
+            <div className="font-pixel text-2xl md:text-3xl text-green-400 mb-2">IF WAGES KEPT PACE</div>
+            <div className="font-pixel text-3xl md:text-4xl text-green-500">
               ${GAME_PARAMS.wageKeptPaceIncome.toLocaleString()}
             </div>
-            <div className="font-pixel text-xs text-zinc-500">per year</div>
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-1">per year</div>
           </div>
         </div>
       </div>

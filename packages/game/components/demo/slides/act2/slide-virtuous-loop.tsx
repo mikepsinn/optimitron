@@ -129,10 +129,10 @@ export function SlideVirtuousLoop() {
         {/* ── Phase 1: Title ── */}
         {phase >= 1 && (
           <div className="text-center fade-up">
-            <h1 className="font-pixel text-lg md:text-2xl text-emerald-400 uppercase">
+            <h1 className="font-pixel text-2xl md:text-4xl text-emerald-400 uppercase">
               🔄 THE LOOP
             </h1>
-            <p className="font-pixel text-sm md:text-base text-red-400 mt-1">
+            <p className="font-pixel text-xl md:text-3xl text-red-400 mt-1">
               {gdpDragPct}% OF GLOBAL GDP LOST TO DISEASE — $15T/YEAR
             </p>
           </div>
@@ -140,44 +140,70 @@ export function SlideVirtuousLoop() {
 
         {/* ── Phase 2: Virtuous loop ── */}
         {phase >= 2 && (
-          <div className="fade-up w-full">
-            <p className="font-pixel text-xs text-emerald-400/70 text-center mb-2 uppercase tracking-widest">
+          <div className="fade-up w-full max-w-5xl mx-auto">
+            <p className="font-pixel text-xl text-emerald-400 text-center mb-3 uppercase tracking-widest">
               The Virtuous Version
             </p>
 
-            {/* 2×2 grid with marble overlay */}
-            <div className="relative">
-              <div className={`grid grid-cols-2 gap-3 transition-all duration-700 ${phase >= 4 ? "pulse-glow" : ""}`}>
-                {VIRTUOUS_STATIONS.map((station, i) => {
-                  const c = STATION_COLORS[station.color];
-                  const isActive = activeStation === i;
+            <div className={`relative transition-all duration-700 ${phase >= 4 ? "pulse-glow" : ""}`}>
+              {/* Row 1: station 0 → arrow → station 1 */}
+              <div className="flex items-center justify-center gap-2">
+                {(() => {
+                  const s = VIRTUOUS_STATIONS[0];
+                  const c = STATION_COLORS[s.color];
+                  const isActive = activeStation === 0;
                   return (
-                    <div
-                      key={station.label}
-                      className={`
-                        relative border-2 rounded p-3 text-center transition-all duration-500
-                        ${c.bg} ${c.border}
-                        ${isActive ? `${c.glow} scale-105` : "opacity-60"}
-                      `}
-                    >
-                      <div className="text-2xl md:text-3xl mb-1">{station.emoji}</div>
-                      <div className={`font-pixel text-xs ${c.text}`}>{station.label}</div>
-                      {/* Arrow to next station */}
-                      <span
-                        className={`
-                          absolute font-pixel text-base text-zinc-500
-                          ${i === 0 ? "-right-3 top-1/2 -translate-y-1/2"  : ""}
-                          ${i === 1 ? "-bottom-3 left-1/2 -translate-x-1/2": ""}
-                          ${i === 2 ? "-left-3  top-1/2 -translate-y-1/2"  : ""}
-                          ${i === 3 ? "-top-3   left-1/2 -translate-x-1/2" : ""}
-                        `}
-                        aria-hidden
-                      >
-                        {ARROWS[i]}
-                      </span>
+                    <div className={`border-2 rounded px-6 py-2 text-center transition-all duration-500 ${c.bg} ${c.border} ${isActive ? `${c.glow} scale-105` : "opacity-60"}`}>
+                      <span className="text-3xl mr-2">{s.emoji}</span>
+                      <span className={`font-pixel text-2xl ${c.text}`}>{s.label}</span>
                     </div>
                   );
-                })}
+                })()}
+                <span className="font-pixel text-4xl md:text-5xl text-emerald-400">→</span>
+                {(() => {
+                  const s = VIRTUOUS_STATIONS[1];
+                  const c = STATION_COLORS[s.color];
+                  const isActive = activeStation === 1;
+                  return (
+                    <div className={`border-2 rounded px-6 py-2 text-center transition-all duration-500 ${c.bg} ${c.border} ${isActive ? `${c.glow} scale-105` : "opacity-60"}`}>
+                      <span className="text-3xl mr-2">{s.emoji}</span>
+                      <span className={`font-pixel text-2xl ${c.text}`}>{s.label}</span>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Vertical arrows: ↑ on left, ↓ on right */}
+              <div className="flex justify-between px-16 md:px-24 py-1">
+                <span className="font-pixel text-4xl md:text-5xl text-cyan-400">↑</span>
+                <span className="font-pixel text-4xl md:text-5xl text-amber-400">↓</span>
+              </div>
+
+              {/* Row 2: station 2 ← arrow ← station 3 */}
+              <div className="flex items-center justify-center gap-2">
+                {(() => {
+                  const s = VIRTUOUS_STATIONS[2];
+                  const c = STATION_COLORS[s.color];
+                  const isActive = activeStation === 2;
+                  return (
+                    <div className={`border-2 rounded px-6 py-2 text-center transition-all duration-500 ${c.bg} ${c.border} ${isActive ? `${c.glow} scale-105` : "opacity-60"}`}>
+                      <span className="text-3xl mr-2">{s.emoji}</span>
+                      <span className={`font-pixel text-2xl ${c.text}`}>{s.label}</span>
+                    </div>
+                  );
+                })()}
+                <span className="font-pixel text-4xl md:text-5xl text-green-400">←</span>
+                {(() => {
+                  const s = VIRTUOUS_STATIONS[3];
+                  const c = STATION_COLORS[s.color];
+                  const isActive = activeStation === 3;
+                  return (
+                    <div className={`border-2 rounded px-6 py-2 text-center transition-all duration-500 ${c.bg} ${c.border} ${isActive ? `${c.glow} scale-105` : "opacity-60"}`}>
+                      <span className="text-3xl mr-2">{s.emoji}</span>
+                      <span className={`font-pixel text-2xl ${c.text}`}>{s.label}</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Marble dot */}
@@ -185,7 +211,7 @@ export function SlideVirtuousLoop() {
             </div>
 
             {cycleComplete && (
-              <p className="font-terminal text-xs text-emerald-400 text-center mt-2 fade-up">
+              <p className="font-terminal text-xl text-emerald-400 text-center mt-2 fade-up">
                 (repeat until no disease)
               </p>
             )}
@@ -194,36 +220,44 @@ export function SlideVirtuousLoop() {
 
         {/* ── Phase 3: Vicious loop ── */}
         {phase >= 3 && (
-          <div className={`fade-up w-full ${phase >= 4 ? "dim" : ""}`}>
-            <p className="font-pixel text-xs text-red-400 text-center mb-2 uppercase tracking-widest">
+          <div className={`fade-up w-full max-w-5xl mx-auto ${phase >= 4 ? "dim" : ""}`}>
+            <p className="font-pixel text-xl text-red-400 text-center mb-3 uppercase tracking-widest">
               Your Species Version:
             </p>
 
-            <div className="grid grid-cols-2 gap-2">
-              {VICIOUS_STATIONS.map((station, i) => (
-                <div
-                  key={station.label}
-                  className="relative border border-red-900/60 rounded p-2 text-center bg-red-950/20"
-                >
-                  <div className="text-xl mb-0.5">{station.emoji}</div>
-                  <div className="font-pixel text-xs text-red-500">{station.label}</div>
-                  <span
-                    className={`
-                      absolute font-pixel text-sm text-red-800
-                      ${i === 0 ? "-right-2.5 top-1/2 -translate-y-1/2"  : ""}
-                      ${i === 1 ? "-bottom-2.5 left-1/2 -translate-x-1/2": ""}
-                      ${i === 2 ? "-left-2.5  top-1/2 -translate-y-1/2"  : ""}
-                      ${i === 3 ? "-top-2.5   left-1/2 -translate-x-1/2" : ""}
-                    `}
-                    aria-hidden
-                  >
-                    {ARROWS[i]}
-                  </span>
-                </div>
-              ))}
+            {/* Row 1 */}
+            <div className="flex items-center justify-center gap-2">
+              <div className="border border-red-900/60 rounded px-6 py-2 text-center bg-red-950/20">
+                <span className="text-3xl mr-2">{VICIOUS_STATIONS[0].emoji}</span>
+                <span className="font-pixel text-2xl text-red-500">{VICIOUS_STATIONS[0].label}</span>
+              </div>
+              <span className="font-pixel text-4xl md:text-5xl text-red-600">→</span>
+              <div className="border border-red-900/60 rounded px-6 py-2 text-center bg-red-950/20">
+                <span className="text-3xl mr-2">{VICIOUS_STATIONS[1].emoji}</span>
+                <span className="font-pixel text-2xl text-red-500">{VICIOUS_STATIONS[1].label}</span>
+              </div>
             </div>
 
-            <p className="font-terminal text-xs text-red-400/60 text-center mt-2">
+            {/* Vertical arrows */}
+            <div className="flex justify-between px-16 md:px-24 py-1">
+              <span className="font-pixel text-4xl md:text-5xl text-red-800">↑</span>
+              <span className="font-pixel text-4xl md:text-5xl text-red-600">↓</span>
+            </div>
+
+            {/* Row 2 */}
+            <div className="flex items-center justify-center gap-2">
+              <div className="border border-red-900/60 rounded px-6 py-2 text-center bg-red-950/20">
+                <span className="text-3xl mr-2">{VICIOUS_STATIONS[2].emoji}</span>
+                <span className="font-pixel text-2xl text-red-500">{VICIOUS_STATIONS[2].label}</span>
+              </div>
+              <span className="font-pixel text-4xl md:text-5xl text-red-800">←</span>
+              <div className="border border-red-900/60 rounded px-6 py-2 text-center bg-red-950/20">
+                <span className="text-3xl mr-2">{VICIOUS_STATIONS[3].emoji}</span>
+                <span className="font-pixel text-2xl text-red-500">{VICIOUS_STATIONS[3].label}</span>
+              </div>
+            </div>
+
+            <p className="font-terminal text-xl text-red-400 text-center mt-2">
               (repeat until no civilisation)
             </p>
           </div>
@@ -231,7 +265,7 @@ export function SlideVirtuousLoop() {
 
         {/* ── Phase 4: Punchline ── */}
         {phase >= 4 && (
-          <p className="font-terminal text-sm text-zinc-400 text-center fade-up">
+          <p className="font-terminal text-xl text-zinc-200 text-center fade-up">
             Same planet. Same species. Different loop.
           </p>
         )}

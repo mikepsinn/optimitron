@@ -5,78 +5,54 @@ import { useDemoStore } from "@/lib/demo/store";
 import { INVENTORY_ITEMS } from "@/lib/demo/parameters";
 import { useEffect, useState } from "react";
 
-interface NetworkNode {
-  id: number;
-  x: number;
-  y: number;
-  active: boolean;
-  generation: number;
+// Doubling stages: 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128
+const DOUBLING_STAGES = [1, 2, 4, 8, 16, 32, 64, 128];
+
+// Pre-generate face positions in a growing cluster
+function generateFacePositions(count: number): { x: number; y: number }[] {
+  const positions: { x: number; y: number }[] = [];
+  // Center node
+  positions.push({ x: 50, y: 50 });
+
+  // Spiral outward from center
+  for (let i = 1; i < count; i++) {
+    const angle = i * 2.4; // golden angle spread
+    const radius = 4 * Math.sqrt(i);
+    positions.push({
+      x: Math.max(3, Math.min(97, 50 + Math.cos(angle) * radius)),
+      y: Math.max(5, Math.min(95, 50 + Math.sin(angle) * radius)),
+    });
+  }
+  return positions;
 }
+
+const ALL_POSITIONS = generateFacePositions(128);
 
 export function SlideLevelShare() {
   const addInventoryItem = useDemoStore((s) => s.addInventoryItem);
-  const [nodes, setNodes] = useState<NetworkNode[]>([]);
-  const [connections, setConnections] = useState<[number, number][]>([]);
+  const [stage, setStage] = useState(0); // index into DOUBLING_STAGES
+  const [showPunchline, setShowPunchline] = useState(false);
+
+  const visibleCount = DOUBLING_STAGES[Math.min(stage, DOUBLING_STAGES.length - 1)];
 
   useEffect(() => {
-    // Start with center node
-    const centerNode: NetworkNode = {
-      id: 0,
-      x: 50,
-      y: 50,
-      active: true,
-      generation: 0,
-    };
-    setNodes([centerNode]);
-
-    // Expand network over time
-    let currentId = 1;
-    let currentGen = 0;
-    
+    // Doubling every 700ms
     const interval = setInterval(() => {
-      setNodes((prev) => {
-        if (prev.length >= 50) {
+      setStage((prev) => {
+        if (prev >= DOUBLING_STAGES.length - 1) {
           clearInterval(interval);
-          return prev;
+          return DOUBLING_STAGES.length - 1;
         }
-
-        // Find nodes from current generation to spawn from
-        const parentNodes = prev.filter((n) => n.generation === currentGen && n.active);
-        if (parentNodes.length === 0) {
-          currentGen++;
-          return prev;
-        }
-
-        const newNodes: NetworkNode[] = [];
-        const newConnections: [number, number][] = [];
-
-        parentNodes.forEach((parent) => {
-          // Spawn 2-4 children
-          const numChildren = Math.floor(Math.random() * 3) + 2;
-          for (let i = 0; i < numChildren; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 8 + Math.random() * 12;
-            const newNode: NetworkNode = {
-              id: currentId++,
-              x: Math.max(5, Math.min(95, parent.x + Math.cos(angle) * distance)),
-              y: Math.max(10, Math.min(90, parent.y + Math.sin(angle) * distance)),
-              active: true,
-              generation: currentGen + 1,
-            };
-            newNodes.push(newNode);
-            newConnections.push([parent.id, newNode.id]);
-          }
-        });
-
-        setConnections((prevConn) => [...prevConn, ...newConnections]);
-        currentGen++;
-        return [...prev, ...newNodes];
+        return prev + 1;
       });
-    }, 400);
+    }, 700);
+
+    // Show punchline after all stages
+    setTimeout(() => setShowPunchline(true), DOUBLING_STAGES.length * 700 + 500);
 
     // Add inventory item
     setTimeout(() => {
-      addInventoryItem(INVENTORY_ITEMS[3]); // slot 4: REFERRAL LINK
+      addInventoryItem(INVENTORY_ITEMS[3]);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -86,128 +62,121 @@ export function SlideLevelShare() {
     <SlideBase act={2} className="text-purple-400">
       {/* Level header */}
       <div className="text-center mb-4">
-        <div className="font-pixel text-sm text-purple-300/60 mb-1">LEVEL 3</div>
+        <div className="font-pixel text-xl text-purple-400 mb-1">LEVEL 3</div>
         <h1 className="font-pixel text-2xl md:text-4xl text-purple-400">
-          SHARE
+          GET ALL YOUR FRIENDS TO PLAY
         </h1>
-        <div className="font-terminal text-base md:text-lg text-zinc-400 mt-2">
-          Spread the word, expand the network
+        <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
+          End pluralistic ignorance — show everyone what everyone already wants
         </div>
       </div>
 
-      <div className="w-full max-w-[1700px] mx-auto space-y-6 overflow-hidden">
-        {/* Network visualization */}
+      <div className="w-full max-w-[1700px] mx-auto space-y-4 overflow-hidden">
+        {/* Network visualization with emoji faces */}
         <div className="relative w-full aspect-video bg-black/40 border border-purple-500/30 rounded overflow-hidden">
-          <svg className="absolute inset-0 w-full h-full">
-            {/* Connections */}
-            {connections.map(([fromId, toId], i) => {
-              const fromNode = nodes.find((n) => n.id === fromId);
-              const toNode = nodes.find((n) => n.id === toId);
-              if (!fromNode || !toNode) return null;
-
+          {/* Connection lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            {ALL_POSITIONS.slice(1, visibleCount).map((pos, i) => {
+              // Connect to a "parent" — roughly i/3 for tree-like structure
+              const parentIdx = Math.max(0, Math.floor((i + 1) / 3));
+              const parent = ALL_POSITIONS[parentIdx];
               return (
                 <line
                   key={i}
-                  x1={`${fromNode.x}%`}
-                  y1={`${fromNode.y}%`}
-                  x2={`${toNode.x}%`}
-                  y2={`${toNode.y}%`}
-                  stroke="rgba(168, 85, 247, 0.3)"
+                  x1={`${parent.x}%`}
+                  y1={`${parent.y}%`}
+                  x2={`${pos.x}%`}
+                  y2={`${pos.y}%`}
+                  stroke="rgba(168, 85, 247, 0.25)"
                   strokeWidth="1"
-                  className="animate-draw-line"
                 />
               );
             })}
-
-            {/* Nodes */}
-            {nodes.map((node) => (
-              <g key={node.id}>
-                {/* Pulse effect */}
-                <circle
-                  cx={`${node.x}%`}
-                  cy={`${node.y}%`}
-                  r={node.id === 0 ? "12" : "6"}
-                  fill="none"
-                  stroke="rgba(168, 85, 247, 0.5)"
-                  className="animate-pulse"
-                />
-                {/* Node */}
-                <circle
-                  cx={`${node.x}%`}
-                  cy={`${node.y}%`}
-                  r={node.id === 0 ? "8" : "4"}
-                  fill={node.id === 0 ? "#a855f7" : "#c084fc"}
-                />
-              </g>
-            ))}
           </svg>
 
-          {/* Stats overlay */}
-          <div className="absolute top-3 left-3 font-pixel text-sm md:text-base">
-            <div className="text-purple-400">
-              NETWORK: {nodes.length} nodes
+          {/* Emoji face nodes */}
+          {ALL_POSITIONS.slice(0, visibleCount).map((pos, i) => (
+            <div
+              key={i}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+            >
+              <span className={i === 0 ? "text-3xl md:text-4xl" : "text-xl md:text-2xl"}>
+                😊
+              </span>
             </div>
-            <div className="text-purple-300/60">
-              Connections: {connections.length}
-            </div>
-          </div>
+          ))}
 
-          {/* Center label */}
+          {/* "YOU" label on center */}
           <div
-            className="absolute font-pixel text-base md:text-lg text-purple-400 text-center"
-            style={{ left: "50%", top: "50%", transform: "translate(-50%, -150%)" }}
+            className="absolute font-pixel text-xl md:text-2xl text-purple-400"
+            style={{ left: "50%", top: "50%", transform: "translate(-50%, -180%)" }}
           >
             YOU
           </div>
-        </div>
 
-        {/* Share methods */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { icon: "📱", label: "Text", multiplier: "2x" },
-            { icon: "📧", label: "Email", multiplier: "3x" },
-            { icon: "🐦", label: "Social", multiplier: "10x" },
-            { icon: "🎙️", label: "Podcast", multiplier: "100x" },
-          ].map((method) => (
-            <div
-              key={method.label}
-              className="bg-black/40 border border-purple-500/30 p-3 rounded text-center hover:border-purple-500/60 transition-colors"
-            >
-              <div className="text-2xl mb-1">{method.icon}</div>
-              <div className="font-pixel text-sm md:text-base text-purple-300">{method.label}</div>
-              <div className="font-pixel text-base md:text-lg text-purple-400">{method.multiplier}</div>
+          {/* Stats overlay */}
+          <div className="absolute top-3 left-3 font-pixel text-xl md:text-3xl">
+            <div className="text-purple-400">
+              NETWORK: {visibleCount} 😊
             </div>
-          ))}
-        </div>
-
-        {/* Viral equation */}
-        <div className="bg-black/30 border border-zinc-800 p-4 rounded text-center">
-          <div className="font-pixel text-sm md:text-base text-zinc-500 mb-2">VIRAL COEFFICIENT</div>
-          <div className="font-pixel text-2xl md:text-3xl text-purple-400">
-            1 person → 3 people → 9 people → 27 people
-          </div>
-          <div className="font-terminal text-sm md:text-base text-zinc-500 mt-2">
-            Each share multiplies impact exponentially
+            <div className="text-purple-400">
+              CYCLE: ×{visibleCount}
+            </div>
           </div>
         </div>
 
-        {/* Referral bonus */}
-        <div className="flex items-center justify-center gap-4">
-          <div className="text-center">
-            <div className="font-pixel text-sm md:text-base text-amber-300/60">REFERRAL BONUS</div>
-            <div className="font-pixel text-xl md:text-2xl text-amber-400">+10 VOTE points</div>
-            <div className="font-pixel text-sm md:text-base text-zinc-500">per signup</div>
+        {/* Doubling chain */}
+        <div className="bg-black/30 border border-purple-500/30 p-4 rounded text-center">
+          <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-3">EXPONENTIAL SPREAD</div>
+          <div className="flex items-center justify-center gap-1 md:gap-2 flex-wrap">
+            {DOUBLING_STAGES.map((count, i) => (
+              <span key={count} className="flex items-center gap-1 md:gap-2">
+                <span
+                  className={`font-pixel text-2xl md:text-3xl transition-all duration-300 ${
+                    i <= stage ? "text-purple-400" : "text-zinc-700"
+                  }`}
+                >
+                  {count}😊
+                </span>
+                {i < DOUBLING_STAGES.length - 1 && (
+                  <span
+                    className={`font-pixel text-2xl md:text-3xl ${
+                      i < stage ? "text-purple-500" : "text-zinc-800"
+                    }`}
+                  >
+                    →
+                  </span>
+                )}
+              </span>
+            ))}
           </div>
         </div>
+
+        {/* Pluralistic ignorance punchline */}
+        {showPunchline && (
+          <div className="text-center space-y-3 animate-fade-in">
+            <div className="font-pixel text-xl md:text-2xl text-amber-400">
+              PLURALISTIC IGNORANCE BROKEN
+            </div>
+            <div className="font-terminal text-xl md:text-2xl text-zinc-200 max-w-4xl mx-auto">
+              Everyone discovers that everyone else also wanted to cure disease
+              instead of manufacturing orphans. They just never asked.
+            </div>
+            <div className="font-pixel text-2xl md:text-3xl text-emerald-400 mt-2">
+              CONSENSUS UNLOCKED: 🧪 CURES &gt; 💣 ORPHANS
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
-        @keyframes draw-line {
-          from { stroke-dasharray: 100; stroke-dashoffset: 100; }
-          to { stroke-dasharray: 100; stroke-dashoffset: 0; }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-draw-line {
-          animation: draw-line 0.5s ease-out forwards;
+        .animate-fade-in {
+          animation: fade-in-up 0.6s ease-out forwards;
         }
       `}</style>
     </SlideBase>
