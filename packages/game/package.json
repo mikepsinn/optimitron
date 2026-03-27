@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3334",
+    "dev": "next dev --port 4000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -74,6 +74,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "postcss": "^8.5",
+    "styled-jsx": "^5.1.7",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
     "tw-animate-css": "1.3.3",

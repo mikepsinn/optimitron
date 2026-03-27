@@ -72,7 +72,7 @@ export function SlideArmory() {
 
     // Add tech item to inventory
     setTimeout(() => {
-      addInventoryItem({ id: "tech", name: "Tech Stack", icon: "🔧" });
+      addInventoryItem({ id: "tech", name: "Tech Stack", icon: "🔧" } as unknown as Parameters<typeof addInventoryItem>[0]);
     }, 2500);
   }, [addInventoryItem]);
 

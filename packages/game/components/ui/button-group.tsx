@@ -25,7 +25,7 @@ function ButtonGroup({
   className,
   orientation,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>) {
+}: React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof buttonGroupVariants>) {
   return (
     <div
       role="group"
@@ -41,7 +41,7 @@ function ButtonGroupText({
   className,
   asChild = false,
   ...props
-}: React.ComponentProps<'div'> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   asChild?: boolean
 }) {
   const Comp = asChild ? Slot : 'div'

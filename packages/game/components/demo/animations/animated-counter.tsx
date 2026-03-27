@@ -70,8 +70,8 @@ export function AnimatedCounter({
 }: AnimatedCounterProps) {
   const [current, setCurrent] = useState(start);
   const [hasStarted, setHasStarted] = useState(false);
-  const frameRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const frameRef = useRef<number>(undefined);
+  const startTimeRef = useRef<number>(undefined);
 
   useEffect(() => {
     const startTimeout = setTimeout(() => {

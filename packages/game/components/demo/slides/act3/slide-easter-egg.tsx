@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SlideBase } from "../slide-base";
 import { useDemoStore } from "@/lib/demo/store";
+import { PALETTE_SEMANTIC } from "@/lib/demo/palette";
 
 export function SlideEasterEgg() {
   const [showText, setShowText] = useState(false);
@@ -25,7 +26,7 @@ export function SlideEasterEgg() {
             transition-opacity duration-2000
             ${showText ? 'opacity-100' : 'opacity-0'}
           `}
-          style={{ color: palette.text }}
+          style={{ color: PALETTE_SEMANTIC[palette].foreground }}
         >
           <p className="mb-8 leading-relaxed">
             &quot;The best time to plant a tree was twenty years ago.
