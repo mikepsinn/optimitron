@@ -11,69 +11,49 @@ interface SupplyNode {
   y: number;
 }
 
+// Positions inset from edges so labels don't clip (10-90% range)
 const SUPPLY_NODES: SupplyNode[] = [
-  { emoji: "👩‍🔬", city: "Lagos",    role: "cheaper trial design",  x: 18, y: 15 },
-  { emoji: "🤝",   city: "Brussels", role: "passed the directive",   x: 78, y: 12 },
-  { emoji: "📱",   city: "Manila",   role: "recruited 1M voters",    x: 15, y: 65 },
-  { emoji: "💰",   city: "New York", role: "funded the campaign",    x: 82, y: 60 },
-  { emoji: "🏛️",  city: "Delhi",    role: "voted yes",              x: 30, y: 88 },
-  { emoji: "🏥",   city: "Dhaka",    role: "enrolled in the trial",  x: 70, y: 88 },
-];
-
-const STATS = [
-  { label: "People cooperating:",    value: "millions", color: "text-emerald-400" },
-  { label: "People who know each other:", value: "none",     color: "text-zinc-200" },
-  { label: "Central coordinator:",   value: "none",     color: "text-zinc-200" },
-  { label: "Orders given:",          value: "zero",     color: "text-zinc-200" },
+  { emoji: "👩‍🔬", city: "Lagos",    role: "cheaper trial design",  x: 12, y: 18 },
+  { emoji: "🤝",   city: "Brussels", role: "passed the directive",   x: 80, y: 14 },
+  { emoji: "📱",   city: "Manila",   role: "recruited 1M voters",    x: 10, y: 62 },
+  { emoji: "💰",   city: "New York", role: "funded the campaign",    x: 85, y: 58 },
+  { emoji: "🏛️",  city: "Delhi",    role: "voted yes",              x: 28, y: 85 },
+  { emoji: "🏥",   city: "Dhaka",    role: "enrolled in the trial",  x: 72, y: 85 },
 ];
 
 export function SlideCuredDisease() {
   const [phase, setPhase] = useState<number>(0);
   const [visibleNodes, setVisibleNodes] = useState<number>(0);
-  const [visibleStats, setVisibleStats] = useState<number>(0);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Phase 1: title
     timers.push(setTimeout(() => setPhase(1), 500));
-    // Phase 2: center test tube
     timers.push(setTimeout(() => setPhase(2), 1000));
-    // Phase 3: nodes one at a time (1.2s stagger starting at 2s)
     timers.push(setTimeout(() => setPhase(3), 2000));
     SUPPLY_NODES.forEach((_, i) => {
-      timers.push(
-        setTimeout(() => setVisibleNodes(i + 1), 2000 + i * 1200)
-      );
+      timers.push(setTimeout(() => setVisibleNodes(i + 1), 2000 + i * 1200));
     });
-    // Phase 4: stats panel (10s)
     timers.push(setTimeout(() => setPhase(4), 10000));
-    STATS.forEach((_, i) => {
-      timers.push(
-        setTimeout(() => setVisibleStats(i + 1), 10000 + i * 200)
-      );
-    });
-    // Phase 5: punchline (12s)
-    timers.push(setTimeout(() => setPhase(5), 12000));
 
     return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
     <SlideBase act={2}>
-      <div className="flex flex-col items-center gap-3 w-full max-w-[1700px] mx-auto">
+      <div className="flex flex-col items-center w-full h-full max-w-[1700px] mx-auto">
 
-        {/* Phase 1 — Title */}
+        {/* Title */}
         <h1
-          className="font-pixel text-3xl md:text-5xl text-amber-400 text-center transition-opacity duration-500"
+          className="font-pixel text-3xl md:text-5xl text-amber-400 text-center mt-4 mb-2 transition-opacity duration-500"
           style={{ opacity: phase >= 1 ? 1 : 0 }}
         >
           🧪 I, CURED DISEASE
         </h1>
 
-        {/* Phase 2/3 — SVG network */}
+        {/* SVG network — takes most of the space */}
         <div
-          className="relative w-full aspect-[16/9] transition-opacity duration-500"
+          className="relative w-full flex-1 min-h-0 transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
           {/* SVG lines */}
@@ -84,35 +64,28 @@ export function SlideCuredDisease() {
                 x1={`${node.x}%`}
                 y1={`${node.y}%`}
                 x2="50%"
-                y2="50%"
-                stroke="rgba(245, 158, 11, 0.4)"
-                strokeWidth="1.5"
+                y2="45%"
+                stroke="rgba(245, 158, 11, 0.5)"
+                strokeWidth="2"
                 className="draw-line"
               />
             ))}
           </svg>
 
-          {/* Center glow + test tube */}
+          {/* Center test tube */}
           <div
-            className="absolute"
+            className="absolute text-6xl md:text-8xl"
             style={{
               left: "50%",
-              top: "50%",
+              top: "45%",
               transform: "translate(-50%, -50%)",
-              textAlign: "center",
+              filter: "drop-shadow(0 0 16px rgba(245, 158, 11, 0.8))",
             }}
           >
-            <div
-              className="text-5xl md:text-7xl"
-              style={{
-                filter: "drop-shadow(0 0 12px rgba(245, 158, 11, 0.8))",
-              }}
-            >
-              🧪
-            </div>
+            🧪
           </div>
 
-          {/* Supply chain node labels */}
+          {/* Supply chain nodes */}
           {SUPPLY_NODES.slice(0, visibleNodes).map((node, i) => (
             <div
               key={i}
@@ -123,46 +96,32 @@ export function SlideCuredDisease() {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <div className="text-2xl md:text-3xl">{node.emoji}</div>
-              <div className="font-pixel text-base md:text-xl text-foreground whitespace-nowrap">
+              <div className="text-4xl md:text-5xl">{node.emoji}</div>
+              <div className="font-pixel text-xl md:text-2xl text-white whitespace-nowrap">
                 {node.city}
               </div>
-              <div className="font-pixel text-sm md:text-lg text-zinc-200 whitespace-nowrap">
+              <div className="font-pixel text-lg md:text-xl text-zinc-300 whitespace-nowrap">
                 {node.role}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Phase 4 — Stats panel */}
+        {/* Bottom stats — always visible area */}
         <div
-          className="w-full bg-black/40 border border-zinc-700 rounded p-4 transition-opacity duration-500"
+          className="w-full text-center pb-4 space-y-2 transition-opacity duration-500"
           style={{ opacity: phase >= 4 ? 1 : 0 }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {STATS.slice(0, visibleStats).map((stat, i) => (
-              <div key={i} className="flex items-center gap-2 fade-in">
-                <span className="font-terminal text-xl md:text-2xl text-zinc-200">
-                  {stat.label}
-                </span>
-                <span className={`font-pixel text-xl md:text-2xl ${stat.color}`}>
-                  {stat.value}
-                </span>
-              </div>
-            ))}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-1">
+            <span className="font-terminal text-xl text-zinc-300">
+              People who know each other: <span className="font-pixel text-xl text-amber-400">none</span>
+            </span>
+            <span className="font-terminal text-xl text-zinc-300">
+              Orders given: <span className="font-pixel text-xl text-amber-400">zero</span>
+            </span>
           </div>
-        </div>
-
-        {/* Phase 5 — Punchline */}
-        <div
-          className="text-center space-y-1 transition-opacity duration-500"
-          style={{ opacity: phase >= 5 ? 1 : 0 }}
-        >
-          <div className="font-terminal text-xl md:text-2xl text-zinc-200">
-            Method: everyone wanted money.
-          </div>
-          <div className="font-pixel text-3xl md:text-5xl text-amber-400">
-            Result: cured disease.
+          <div className="font-pixel text-2xl md:text-4xl text-amber-400">
+            Method: everyone wanted money. Result: cured disease.
           </div>
         </div>
 
@@ -170,14 +129,8 @@ export function SlideCuredDisease() {
 
       <style jsx>{`
         @keyframes draw-line {
-          from {
-            stroke-dasharray: 300;
-            stroke-dashoffset: 300;
-          }
-          to {
-            stroke-dasharray: 300;
-            stroke-dashoffset: 0;
-          }
+          from { stroke-dasharray: 300; stroke-dashoffset: 300; }
+          to { stroke-dasharray: 300; stroke-dashoffset: 0; }
         }
         .draw-line {
           animation: draw-line 0.6s ease-out forwards;

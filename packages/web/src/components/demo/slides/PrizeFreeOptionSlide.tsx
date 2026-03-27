@@ -1,6 +1,13 @@
 "use client";
 
 import { useReducedMotion, motion } from "framer-motion";
+import {
+  VOTE_TOKEN_VALUE,
+  VOTE_2_CLAIMS_PAYOUT,
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+  fmtRaw,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -36,8 +43,8 @@ export default function PrizeFreeOptionSlide() {
               Your deposit: goes to VOTE holders (not you)
             </p>
             <p className="text-sm font-bold text-foreground">
-              Your VOTE points: 2 &times; $194K ={" "}
-              <span className="text-brutal-cyan">$387,000</span>
+              Your VOTE points: 2 &times; {fmtParam(VOTE_TOKEN_VALUE)} ={" "}
+              <span className="text-brutal-cyan">{fmtParam(VOTE_2_CLAIMS_PAYOUT)}</span>
             </p>
             <p className="text-sm font-bold text-foreground">
               Your lifetime income:{" "}
@@ -70,7 +77,7 @@ export default function PrizeFreeOptionSlide() {
             </p>
             <p className="text-sm font-bold text-foreground">
               Your deposit: $100 &rarr;{" "}
-              <span className="text-brutal-yellow">$1,110</span> (11&times; yield)
+              <span className="text-brutal-yellow">${fmtRaw(100 * PRIZE_POOL_HORIZON_MULTIPLE.value)}</span> ({fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} yield)
             </p>
             <p className="text-sm font-bold text-muted-foreground">
               Still outperforms your retirement fund (3.5&times;)

@@ -16,19 +16,24 @@ import { PALETTE_SEMANTIC } from "@/lib/demo/palette";
 const livesSaved = Math.round(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value / 1e8) * 1e8;
 const deathsPerYear = GLOBAL_DISEASE_DEATHS_DAILY.value * 365;
 
-// Border emoji positions — evenly around all 4 edges
-const BORDER_COUNT = 60;
+// Border emoji positions — evenly around all 4 edges, inset so they don't clip
+const BORDER_COUNT = 80;
+const PAD = 2; // % inset from edges so emoji aren't cropped
 const borderPositions = Array.from({ length: BORDER_COUNT }, (_, i) => {
   const t = i / BORDER_COUNT;
-  // Walk the perimeter: top → right → bottom → left
+  // Walk the perimeter: top → right → bottom → left (inset by PAD%)
   if (t < 0.25) {
-    return { x: t * 4 * 100, y: 0 };
+    const pct = t * 4;
+    return { x: PAD + pct * (100 - 2 * PAD), y: PAD };
   } else if (t < 0.5) {
-    return { x: 100, y: (t - 0.25) * 4 * 100 };
+    const pct = (t - 0.25) * 4;
+    return { x: 100 - PAD, y: PAD + pct * (100 - 2 * PAD) };
   } else if (t < 0.75) {
-    return { x: (1 - (t - 0.5) * 4) * 100, y: 100 };
+    const pct = (t - 0.5) * 4;
+    return { x: 100 - PAD - pct * (100 - 2 * PAD), y: 100 - PAD };
   } else {
-    return { x: 0, y: (1 - (t - 0.75) * 4) * 100 };
+    const pct = (t - 0.75) * 4;
+    return { x: PAD, y: 100 - PAD - pct * (100 - 2 * PAD) };
   }
 });
 
@@ -122,7 +127,10 @@ export function SlideLivesSaved() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full gap-6">
         {/* Main counter */}
         <div className="text-center">
-          <div className="text-2xl md:text-4xl uppercase tracking-widest mb-4 opacity-70">
+          <div className="text-xl md:text-2xl uppercase tracking-widest mb-2 opacity-70">
+            1% Military → 12.3× Clinical Trial Capacity
+          </div>
+          <div className="text-2xl md:text-4xl uppercase tracking-widest mb-4">
             Lives Saved Over 100 Years
           </div>
 
@@ -183,9 +191,11 @@ export function SlideLivesSaved() {
           }}
         >
           <div className="text-2xl md:text-4xl font-medium">
-            That&apos;s more lives than were lost in all wars of the 20th century.
+            That&apos;s more lives than were lost in all wars of the 20th century. Combined.
           </div>
-          <div className="text-xl md:text-2xl mt-2 opacity-70">Combined.</div>
+          <div className="text-xl md:text-2xl mt-2 opacity-70">
+            From redirecting 1% of the military budget to clinical trials.
+          </div>
         </div>
       </div>
     </SlideBase>

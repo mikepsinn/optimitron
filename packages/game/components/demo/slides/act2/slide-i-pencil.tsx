@@ -77,7 +77,7 @@ export function SlideIPencil() {
 
         {/* Supply chain text */}
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 text-center">
-          <p className="font-terminal text-xl md:text-2xl text-zinc-300 leading-relaxed">
+          <p className="font-terminal text-2xl md:text-4xl text-zinc-200 leading-relaxed">
             Nobody knows how to make a pencil. Millions of people each doing one
             tiny step.
           </p>

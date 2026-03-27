@@ -3,80 +3,102 @@
 import { SlideBase } from "../slide-base";
 import { useEffect, useState } from "react";
 
-const DOES_NOT_CARE = [
-  "Party affiliation",
-  "Ideology",
-  "Campaign donations",
-  "Feelings",
+interface PolicyRow {
+  policy: string;
+  ccs: number;
+  action: "ENACT" | "MAINTAIN" | "REPLACE" | "REPEAL";
+}
+
+const POLICIES: PolicyRow[] = [
+  { policy: "🇵🇹 Drug Decriminalization", ccs: 0.87, action: "ENACT" },
+  { policy: "🏥 Universal Healthcare",    ccs: 0.82, action: "MAINTAIN" },
+  { policy: "📚 School Choice Programs",  ccs: 0.64, action: "REPLACE" },
+  { policy: "⚔️  War on Drugs",           ccs: 0.12, action: "REPEAL" },
+  { policy: "🏦 Quantitative Easing",     ccs: 0.19, action: "REPEAL" },
 ];
+
+const ROW_STAGGER_MS = 500;
+const PHASE_1_MS = 500;
+const PHASE_2_MS = 1500;
+const PHASE_3_START_MS = PHASE_2_MS + 400;
+const PHASE_4_MS = PHASE_3_START_MS + POLICIES.length * ROW_STAGGER_MS + 800;
+
+function actionColor(action: PolicyRow["action"]): string {
+  switch (action) {
+    case "ENACT":
+    case "MAINTAIN":
+      return "text-emerald-400";
+    case "REPLACE":
+      return "text-amber-400";
+    case "REPEAL":
+      return "text-red-400";
+  }
+}
+
+function actionBadgeBg(action: PolicyRow["action"]): string {
+  switch (action) {
+    case "ENACT":
+    case "MAINTAIN":
+      return "bg-emerald-950 border border-emerald-700";
+    case "REPLACE":
+      return "bg-amber-950 border border-amber-700";
+    case "REPEAL":
+      return "bg-red-950 border border-red-800";
+  }
+}
+
+function actionIcon(action: PolicyRow["action"]): string {
+  switch (action) {
+    case "ENACT":
+    case "MAINTAIN":
+      return "✅";
+    case "REPLACE":
+      return "🔄";
+    case "REPEAL":
+      return "❌";
+  }
+}
 
 export function SlidePolicyEngine() {
   const [phase, setPhase] = useState(0);
-  const [leftDocsVisible, setLeftDocsVisible] = useState(0);
-  const [checklistVisible, setChecklistVisible] = useState(0);
-  const [punchlineVisible, setPunchlineVisible] = useState(0);
+  const [visibleRows, setVisibleRows] = useState(0);
 
   useEffect(() => {
-    // Phase 1 (0.5s): Title
-    const t1 = setTimeout(() => setPhase(1), 500);
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Phase 2 (1.5s): Machine diagram
-    const t2 = setTimeout(() => setPhase(2), 1500);
-    const d1 = setTimeout(() => setLeftDocsVisible(1), 1700);
-    const d2 = setTimeout(() => setLeftDocsVisible(2), 2000);
-    const d3 = setTimeout(() => setLeftDocsVisible(3), 2300);
+    timers.push(setTimeout(() => setPhase(1), PHASE_1_MS));
+    timers.push(setTimeout(() => setPhase(2), PHASE_2_MS));
 
-    // Phase 3 (3.5s): Checklist
-    const t3 = setTimeout(() => setPhase(3), 3500);
-    DOES_NOT_CARE.forEach((_, i) => {
-      setTimeout(() => setChecklistVisible(i + 1), 3500 + i * 200);
+    POLICIES.forEach((_, i) => {
+      timers.push(
+        setTimeout(() => {
+          setPhase((p) => Math.max(p, 3));
+          setVisibleRows(i + 1);
+        }, PHASE_3_START_MS + i * ROW_STAGGER_MS)
+      );
     });
-    setTimeout(() => setChecklistVisible(DOES_NOT_CARE.length + 1), 3500 + DOES_NOT_CARE.length * 200);
 
-    // Phase 4 (5.5s): Punchline
-    const t4 = setTimeout(() => setPhase(4), 5500);
-    const p1 = setTimeout(() => setPunchlineVisible(1), 5500);
-    const p2 = setTimeout(() => setPunchlineVisible(2), 6000);
-    const p3 = setTimeout(() => setPunchlineVisible(3), 6500);
+    timers.push(setTimeout(() => setPhase(4), PHASE_4_MS));
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(d1);
-      clearTimeout(d2);
-      clearTimeout(d3);
-      clearTimeout(p1);
-      clearTimeout(p2);
-      clearTimeout(p3);
-    };
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
     <SlideBase act={2}>
       <style jsx>{`
-        @keyframes fadeIn {
+        @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-16px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
         .fade-in {
-          animation: fadeIn 0.5s ease-out forwards;
+          animation: fadeSlideUp 0.4s ease-out forwards;
         }
-        .slide-in-left {
-          animation: slideInLeft 0.4s ease-out forwards;
+        @keyframes gentlePulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.6; }
         }
-        .spin-slow {
-          display: inline-block;
-          animation: spin 3s linear infinite;
+        .gentle-pulse {
+          animation: gentlePulse 2s ease-in-out infinite;
         }
       `}</style>
 
@@ -93,117 +115,74 @@ export function SlidePolicyEngine() {
           </h1>
         </div>
 
-        {/* Phase 2 — Machine diagram */}
+        {/* Phase 2+ — Table */}
         {phase >= 2 && (
-          <div className="flex items-center justify-center gap-3 w-full fade-in">
+          <div className="w-full bg-black/40 border border-zinc-700 rounded fade-in">
 
-            {/* LEFT: Input */}
-            <div className="bg-zinc-800 border border-zinc-600 rounded p-3 flex-1 min-w-0">
-              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center mb-2">
-                WHAT EVERY COUNTRY TRIED
+            {/* Column headers */}
+            <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 px-4 pt-3 pb-2 border-b border-zinc-700">
+              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest">
+                POLICY
               </div>
-              <div className="flex justify-center gap-1 text-xl min-h-[1.75rem]">
-                {leftDocsVisible >= 1 && (
-                  <span className="slide-in-left">📄</span>
-                )}
-                {leftDocsVisible >= 2 && (
-                  <span className="slide-in-left">📄</span>
-                )}
-                {leftDocsVisible >= 3 && (
-                  <span className="slide-in-left">📄</span>
-                )}
+              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest text-center w-28 md:w-40">
+                EVIDENCE
+              </div>
+              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest text-center w-32 md:w-44">
+                ACTION
               </div>
             </div>
 
-            {/* Arrow + Gear */}
-            <div className="flex items-center gap-1 shrink-0 font-pixel text-zinc-200 text-xl">
-              <span>→</span>
-              <span className="spin-slow text-xl">⚙️</span>
-              <span>→</span>
+            {/* Data rows */}
+            <div className="divide-y divide-zinc-800">
+              {POLICIES.map((row, i) => {
+                if (i >= visibleRows) return null;
+
+                return (
+                  <div
+                    key={row.policy}
+                    className="grid grid-cols-[1fr_auto_auto] gap-x-4 px-4 py-3 items-center fade-in"
+                  >
+                    {/* Policy name */}
+                    <div className="font-pixel text-xl md:text-3xl text-zinc-100">
+                      {row.policy}
+                    </div>
+
+                    {/* CCS score */}
+                    <div className="text-center w-28 md:w-40">
+                      <span className={`font-pixel text-xl md:text-3xl ${actionColor(row.action)}`}>
+                        {row.ccs.toFixed(2)}
+                      </span>
+                    </div>
+
+                    {/* Action badge */}
+                    <div className="flex justify-center w-32 md:w-44">
+                      <span
+                        className={`font-pixel text-xl md:text-3xl px-2 py-0.5 rounded ${actionColor(row.action)} ${actionBadgeBg(row.action)}`}
+                      >
+                        {actionIcon(row.action)} {row.action}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* RIGHT: Output */}
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-3 flex-1 min-w-0">
-              <div className="font-pixel text-xl md:text-3xl text-emerald-400 text-center mb-2">
-                WHAT ACTUALLY WORKED
-              </div>
-              <div className="flex justify-center text-xl min-h-[1.75rem]">
-                {leftDocsVisible >= 3 && (
-                  <span className="fade-in">✅</span>
-                )}
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* Phase 3 — Checklist columns */}
-        {phase >= 3 && (
-          <div className="grid grid-cols-2 gap-4 w-full fade-in">
-
-            {/* LEFT column */}
-            <div className="space-y-2">
-              <div className="font-pixel text-xl md:text-3xl text-zinc-200 uppercase tracking-widest mb-1">
-                Does not care about:
-              </div>
-              {DOES_NOT_CARE.map((item, i) => (
-                <div
-                  key={item}
-                  className={`flex items-center gap-2 ${
-                    checklistVisible > i ? "slide-in-left" : "opacity-0"
-                  }`}
-                >
-                  <span className="text-xl">❌</span>
-                  <span className="font-pixel text-xl md:text-3xl text-zinc-200">{item}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* RIGHT column */}
-            <div className="space-y-2">
-              <div className="font-pixel text-xl md:text-3xl text-emerald-500 uppercase tracking-widest mb-1">
-                Cares about:
-              </div>
-              <div
-                className={`flex items-center gap-2 ${
-                  checklistVisible > DOES_NOT_CARE.length ? "fade-in" : "opacity-0"
-                }`}
-              >
-                <span className="text-xl">✅</span>
-                <span className="font-pixel text-xl md:text-3xl text-emerald-400">
-                  Did the number go up or down
+            {/* CCS label — appears after all rows */}
+            {phase >= 3 && visibleRows >= POLICIES.length && (
+              <div className="border-t border-zinc-800 px-4 py-2 fade-in">
+                <span className="font-terminal text-xl text-zinc-500">
+                  CCS = Causal Confidence Score
                 </span>
               </div>
-            </div>
-
+            )}
           </div>
         )}
 
         {/* Phase 4 — Punchline */}
         {phase >= 4 && (
-          <div className="flex flex-col items-center gap-2 w-full text-center">
-            <p
-              className={`font-terminal text-xl md:text-2xl text-zinc-200 ${
-                punchlineVisible >= 1 ? "fade-in" : "opacity-0"
-              }`}
-            >
-              Your species has a word for this.
-            </p>
-            <p
-              className={`font-pixel text-3xl md:text-5xl text-amber-400 ${
-                punchlineVisible >= 2 ? "fade-in" : "opacity-0"
-              }`}
-            >
-              &ldquo;Controversial.&rdquo;
-            </p>
-            <p
-              className={`font-terminal text-xl md:text-2xl text-zinc-200 ${
-                punchlineVisible >= 3 ? "fade-in" : "opacity-0"
-              }`}
-            >
-              On my planet we call it &ldquo;looking.&rdquo;
-            </p>
-          </div>
+          <p className="font-terminal text-2xl md:text-4xl text-zinc-200 text-center fade-in gentle-pulse">
+            Ranked by what actually happened. Not by who donated.
+          </p>
         )}
 
       </div>

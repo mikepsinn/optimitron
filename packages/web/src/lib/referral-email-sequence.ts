@@ -1,6 +1,18 @@
+import {
+  VOTE_TOKEN_VALUE,
+  PRIZE_POOL_ANNUAL_RETURN,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  fmtParam,
+  fmtRaw,
+} from "@optimitron/data/parameters";
+
 const HOUR_MS = 60 * 60 * 1000;
 const REFERRAL_TARGET = 3;
 const FOLLOW_UP_DELAYS_MS = [0, 24 * HOUR_MS, 96 * HOUR_MS] as const;
+
+const voteValue = fmtParam(VOTE_TOKEN_VALUE);
+const annualReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
+const dailyDeaths = fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value);
 
 export const REFERRAL_EMAIL_SEQUENCE_LENGTH = FOLLOW_UP_DELAYS_MS.length;
 
@@ -42,15 +54,15 @@ function getFirstName(name?: string | null) {
 function getSharePrompt(referralCount: number) {
   if (referralCount > 0) {
     const remaining = Math.max(REFERRAL_TARGET - referralCount, 1);
-    return `You've earned ${referralCount} VOTE ${referralCount === 1 ? "point" : "points"} so far. ${remaining} more and you hit the first milestone. Each point could be worth $194,000+ if enough people play.`;
+    return `You've earned ${referralCount} VOTE ${referralCount === 1 ? "point" : "points"} so far. ${remaining} more and you hit the first milestone. Each point could be worth ${voteValue}+ if enough people play.`;
   }
 
-  return "You have 0 VOTE points. Your first recruit earns you 1 point. Each point could be worth $194,000+ if humanity actually plays this game. Right now it's worth $0.";
+  return `You have 0 VOTE points. Your first recruit earns you 1 point. Each point could be worth ${voteValue}+ if humanity actually plays this game. Right now it's worth $0.`;
 }
 
 function getSubject(step: number, referralCount: number) {
   if (step === 0) {
-    return "You voted. Now earn VOTE points worth $194,000 each";
+    return `You voted. Now earn VOTE points worth ${voteValue} each`;
   }
 
   if (step === 1 && referralCount === 0) {
@@ -78,18 +90,18 @@ function getMainCopy(step: number, referralCount: number) {
   }
 
   if (step === 1) {
-    return "Every recruit increases the value of your existing VOTE points. More players → bigger prize fund → higher per-point payout. If the plan fails, depositors still get 17.4% annual returns. If it succeeds, everyone gets $14.7M richer. Either way, the numbers work. But only if enough people play.";
+    return `Every recruit increases the value of your existing VOTE points. More players → bigger prize fund → higher per-point payout. If the plan fails, depositors still get ${annualReturn} annual returns. If it succeeds, everyone gets $14.7M richer. Either way, the numbers work. But only if enough people play.`;
   }
 
   if (referralCount === 0) {
-    return "Last nudge: 150,000 people die daily from treatable diseases while governments spend $40 on weapons for every $1 on curing disease. Your referral link is the fastest way to change that — and earn VOTE points that could be worth six figures. One text message. That's all it takes.";
+    return `Last nudge: ${dailyDeaths} people die daily from treatable diseases while governments spend $40 on weapons for every $1 on curing disease. Your referral link is the fastest way to change that — and earn VOTE points that could be worth six figures. One text message. That's all it takes.`;
   }
 
   return "You've proven people will click. The compound effect kicks in now — your recruits recruit their friends, each one adding to the prize pool and increasing your VOTE point value. One more round of sharing while momentum is fresh.";
 }
 
 function buildShareMessage(shareUrl: string) {
-  return `Governments spend $40 on weapons for every $1 on curing disease. Vote to fix it in 30 seconds and earn VOTE points that could be worth $194k: ${shareUrl}`;
+  return `Governments spend $40 on weapons for every $1 on curing disease. Vote to fix it in 30 seconds and earn VOTE points that could be worth ${voteValue}: ${shareUrl}`;
 }
 
 export function getReferralSequenceAction(
@@ -186,7 +198,7 @@ export function buildReferralSequenceEmail({
           </ul>
           <div style="margin-top:24px;padding:16px;border:3px solid #111827;background:#111827;color:#ffffff;">
             <p style="margin:0;font-size:13px;line-height:1.6;text-align:center;">
-              <strong>THE MATH:</strong> Each VOTE point = $194,000+ at scale. Depositors earn 17.4% annually even if the plan fails. The break-even probability is 1 in 246 million.
+              <strong>THE MATH:</strong> Each VOTE point = ${voteValue}+ at scale. Depositors earn ${annualReturn} annually even if the plan fails. The break-even probability is 1 in 246 million.
             </p>
           </div>
         </div>

@@ -27,7 +27,7 @@ import { CTA, TAGLINES } from "@/lib/messaging";
 import {
   fmtParam,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
   GLOBAL_COORDINATION_TARGET_SUPPORTERS,
 } from "@optimitron/data/parameters";
 export const metadata: Metadata = {
@@ -179,7 +179,7 @@ export default function Home() {
       {/* ── 8. Final CTA ── */}
       <CTASection
         heading="The Clock Is Running"
-        description={`The parasitic economy hits 35% of GDP by ${Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value)}. Your VOTE points are worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)} if ${(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value / 1e9).toFixed(0)} billion people play. Worth nothing if they don't.`}
+        description={`The parasitic economy hits 35% of GDP by ${Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value)}. Your VOTE points are worth ${fmtParam(VOTE_TOKEN_VALUE)} if ${(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value / 1e9).toFixed(0)} billion people play. Worth nothing if they don't.`}
         bgColor="yellow"
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

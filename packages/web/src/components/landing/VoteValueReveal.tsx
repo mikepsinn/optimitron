@@ -9,7 +9,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
 import { VOTE_VALUE, CTA } from "@/lib/messaging";
 import {
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
   PRIZE_POOL_ANNUAL_RETURN,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   TREATY_HALE_GAIN_YEAR_15,
@@ -25,7 +25,7 @@ export function VoteValueReveal() {
           <ArcadeTag className="mb-4">{VOTE_VALUE.heading}</ArcadeTag>
           <div className="text-6xl sm:text-7xl md:text-8xl font-black text-brutal-pink-foreground mb-4">
             <ParameterValue
-              param={VOTE_TOKEN_POTENTIAL_VALUE}
+              param={VOTE_TOKEN_VALUE}
               className="text-brutal-pink-foreground"
             />
             +

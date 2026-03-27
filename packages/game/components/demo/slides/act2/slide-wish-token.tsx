@@ -71,9 +71,9 @@ export function SlideWishToken() {
             <div key={i} className="flex items-stretch gap-3 w-full">
               {/* Government side */}
               <div className="flex-1 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-                <div className="text-2xl md:text-3xl mb-1">{r.gov.emoji}</div>
+                <div className="text-4xl md:text-5xl mb-1">{r.gov.emoji}</div>
                 <div className="font-pixel text-xl md:text-3xl text-red-400">{r.gov.name}</div>
-                <div className="font-terminal text-xl md:text-2xl text-zinc-200">{r.gov.detail}</div>
+                <div className="font-terminal text-2xl md:text-3xl text-zinc-200">{r.gov.detail}</div>
               </div>
 
               {/* Arrow */}
@@ -83,9 +83,9 @@ export function SlideWishToken() {
 
               {/* Smart contract side */}
               <div className="flex-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
-                <div className="text-2xl md:text-3xl mb-1">{r.contract.emoji}</div>
+                <div className="text-4xl md:text-5xl mb-1">{r.contract.emoji}</div>
                 <div className="font-pixel text-xl md:text-3xl text-emerald-400">{r.contract.name}</div>
-                <div className="font-terminal text-xl md:text-2xl text-zinc-200">{r.contract.detail}</div>
+                <div className="font-terminal text-2xl md:text-3xl text-zinc-200">{r.contract.detail}</div>
               </div>
             </div>
           ))}

@@ -2,15 +2,23 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
+import {
+  VOTE_TOKEN_VALUE,
+  VOTE_2_CLAIMS_PAYOUT,
+  PRIZE_POOL_SIZE,
+  GLOBAL_COORDINATION_TARGET_SUPPORTERS,
+  fmtParam,
+  fmtRaw,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
 const FRIENDS_TABLE = [
-  { friends: 2, value: "$387,000" },
-  { friends: 5, value: "$970,000" },
-  { friends: 10, value: "$1,940,000" },
-  { friends: 50, value: "$9,700,000" },
-] as const;
+  { friends: 2, value: fmtParam(VOTE_2_CLAIMS_PAYOUT) },
+  { friends: 5, value: `$${fmtRaw(5 * VOTE_TOKEN_VALUE.value)}` },
+  { friends: 10, value: `$${fmtRaw(10 * VOTE_TOKEN_VALUE.value)}` },
+  { friends: 50, value: `$${fmtRaw(50 * VOTE_TOKEN_VALUE.value)}` },
+];
 
 /** Vote Point Value slide — game stats panel showing VOTE point value */
 export default function VotePointValueSlide() {
@@ -44,7 +52,7 @@ export default function VotePointValueSlide() {
               VALUE PER POINT
             </span>
             <span className={`${ARCADE} text-lg sm:text-xl text-brutal-cyan`}>
-              $<CountUp value={194000} prefix="" duration={1.5} />
+              $<CountUp value={Math.round(VOTE_TOKEN_VALUE.value)} prefix="" duration={1.5} />
             </span>
           </div>
           <div className="flex justify-between items-baseline border-b border-background/20 pb-2">
@@ -52,7 +60,7 @@ export default function VotePointValueSlide() {
               TOTAL IF HIT
             </span>
             <span className={`${ARCADE} text-lg sm:text-xl text-brutal-pink`}>
-              $<CountUp value={387000} prefix="" duration={1.8} />
+              $<CountUp value={Math.round(VOTE_2_CLAIMS_PAYOUT.value)} prefix="" duration={1.8} />
             </span>
           </div>
         </div>
@@ -122,7 +130,7 @@ export default function VotePointValueSlide() {
           transition={{ delay: 1.3, duration: 0.3 }}
           className={`${ARCADE} text-[10px] text-muted-foreground mt-3`}
         >
-          $774T pool &divide; 4B players = $194K/point
+          {fmtParam(PRIZE_POOL_SIZE)} pool &divide; {fmtRaw(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value)} players = {fmtParam(VOTE_TOKEN_VALUE)}/point
         </motion.p>
       </motion.div>
     </div>

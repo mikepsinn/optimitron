@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
   VOTE_2_CLAIMS_PAYOUT,
   fmtParam,
 } from "@optimitron/data/parameters";
@@ -13,11 +13,11 @@ import {
  * Interactive Prize return calculator.
  *
  * Fail scenario:  deposit × PRIZE_POOL_HORIZON_MULTIPLE (~11.1x over 15 years)
- * Success scenario: VOTE points × pro-rata share of pool (~$194K per VOTE if canonical pool size)
+ * Success scenario: VOTE points × pro-rata share of pool (VOTE_TOKEN_VALUE per VOTE if canonical pool size)
  */
 
 const FAIL_MULTIPLIER = PRIZE_POOL_HORIZON_MULTIPLE.value;
-const VOTE_VALUE = VOTE_TOKEN_POTENTIAL_VALUE.value;
+const VOTE_VALUE = VOTE_TOKEN_VALUE.value;
 
 const PRESET_AMOUNTS = [100, 1_000, 10_000, 100_000];
 const PRESET_VOTES = [1, 2, 5, 10];
@@ -167,7 +167,7 @@ export function PrizeCalculator() {
           <div className="text-xs text-muted-foreground font-bold space-y-1">
             <p>
               VOTE holders split the pool pro-rata. Each VOTE point
-              is worth ~{fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)} if the canonical pool
+              is worth ~{fmtParam(VOTE_TOKEN_VALUE)} if the canonical pool
               size materializes. You earned {voteCount} by recruiting {voteCount} verified voter{voteCount > 1 ? "s" : ""}.
             </p>
             <p className="font-bold text-muted-foreground pt-1">

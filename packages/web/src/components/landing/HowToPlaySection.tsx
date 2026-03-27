@@ -6,7 +6,7 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { Stat } from "@/components/ui/stat";
 import {
   fmtParam,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
@@ -34,7 +34,7 @@ const steps = [
   {
     number: "3",
     title: "Play With Friends",
-    body: `Share your link with 2 friends. They each share with 2 more. 28 rounds of this = ${Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6)}M people = tipping point. Each VOTE point worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)}+ if targets are hit.`,
+    body: `Share your link with 2 friends. They each share with 2 more. 28 rounds of this = ${Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6)}M people = tipping point. Each VOTE point worth ${fmtParam(VOTE_TOKEN_VALUE)}+ if targets are hit.`,
     color: "yellow" as const,
     ctas: [],
   },

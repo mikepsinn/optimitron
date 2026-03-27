@@ -100,9 +100,29 @@ export function SlideTheSwitch() {
               HERE IS THE SWITCH
             </p>
 
-            <div className="flex items-center justify-center gap-6 md:gap-10">
-              {/* Switch housing */}
-              <div className="flex flex-col items-center gap-2 border-2 border-emerald-500 bg-zinc-900/80 px-8 py-4 rounded shrink-0">
+            <div className="flex items-center justify-center gap-4 md:gap-8">
+              {/* LEFT chart — Median Income (appears after switch) */}
+              <div className={`text-center flex-1 transition-opacity duration-1000 ${leverOn ? "opacity-100" : "opacity-0"}`}>
+                <div className="font-pixel text-xl md:text-2xl text-emerald-400 mb-2">
+                  💰 MEDIAN INCOME
+                </div>
+                <AnimatedLineChart
+                  lines={[
+                    { points: incomeData, color: "#34d399" },
+                  ]}
+                  width={400}
+                  height={200}
+                  animate
+                  duration={2500}
+                  delay={200}
+                  showArea
+                  showGrid
+                  formatY={(v) => `$${Math.round(v / 1000)}K`}
+                />
+              </div>
+
+              {/* CENTER — Switch housing */}
+              <div className="flex flex-col items-center gap-2 border-2 border-emerald-500 bg-zinc-900/80 px-6 py-4 rounded shrink-0">
                 <div className="font-pixel text-xl tracking-widest">
                   <span className={leverOn ? "text-zinc-300" : "text-red-400"}>OFF</span>
                   <span className="text-zinc-300 mx-3">·</span>
@@ -118,50 +138,25 @@ export function SlideTheSwitch() {
                 <div className={`w-10 h-3 rounded-full blur-sm transition-all duration-500 ${leverOn ? "bg-emerald-400 opacity-80" : "bg-red-500 opacity-40"}`} />
               </div>
 
-              {/* Charts appear after switch flips */}
-              {leverOn && (
-                <div className="flex gap-4 md:gap-8 fade-up">
-                  {/* Median Income chart */}
-                  <div className="text-center">
-                    <div className="font-pixel text-xl md:text-2xl text-emerald-400 mb-2">
-                      💰 MEDIAN INCOME
-                    </div>
-                    <AnimatedLineChart
-                      lines={[
-                        { points: incomeData, color: "#34d399", label: "Income" },
-                      ]}
-                      width={300}
-                      height={180}
-                      animate
-                      duration={2500}
-                      delay={200}
-                      showArea
-                      showGrid
-                      formatY={(v) => `$${Math.round(v / 1000)}K`}
-                    />
-                  </div>
-
-                  {/* Healthy Life Years chart */}
-                  <div className="text-center">
-                    <div className="font-pixel text-xl md:text-2xl text-cyan-400 mb-2">
-                      ❤️ HEALTHY LIFE YEARS
-                    </div>
-                    <AnimatedLineChart
-                      lines={[
-                        { points: haleData, color: "#22d3ee", label: "HALE" },
-                      ]}
-                      width={300}
-                      height={180}
-                      animate
-                      duration={2500}
-                      delay={400}
-                      showArea
-                      showGrid
-                      formatY={(v) => `${v.toFixed(0)} yrs`}
-                    />
-                  </div>
+              {/* RIGHT chart — Healthy Life Years (appears after switch) */}
+              <div className={`text-center flex-1 transition-opacity duration-1000 ${leverOn ? "opacity-100" : "opacity-0"}`}>
+                <div className="font-pixel text-xl md:text-2xl text-cyan-400 mb-2">
+                  ❤️ HEALTHY LIFE YEARS
                 </div>
-              )}
+                <AnimatedLineChart
+                  lines={[
+                    { points: haleData, color: "#22d3ee" },
+                  ]}
+                  width={400}
+                  height={200}
+                  animate
+                  duration={2500}
+                  delay={400}
+                  showArea
+                  showGrid
+                  formatY={(v) => `${v.toFixed(0)} yrs`}
+                />
+              </div>
             </div>
           </div>
         )}

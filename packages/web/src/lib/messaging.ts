@@ -3,6 +3,13 @@
  * Change a string here, it updates everywhere.
  */
 
+import {
+  VOTE_TOKEN_VALUE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  fmtParam,
+} from "@optimitron/data/parameters";
+
 export const CTA = {
   playTheGame: "Play the Game",
   insertCoin: "Insert Coin",
@@ -34,23 +41,22 @@ export const TAGLINES = {
   onlyWayToLose: "The only way to lose is to not play.",
   hedgeLine: "Your deposit is a hedge against your own species.",
   arcadeHook:
-    "The only arcade game where you get your coins back 11x if you lose.",
+    `The only arcade game where you get your coins back ${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x if you lose.`,
   winBothWays:
     "Recruit voters too and you win in both scenarios. The only losing move is not playing.",
   everyPlayerWins:
     "Every player wins. The only losing move is not playing.",
-  // 604x ratio from MILITARY_VS_MEDICAL_RESEARCH_RATIO parameter
   awarenessBarrier:
-    "Your governments spend 604x more on weapons than clinical trials. Everyone wants that fixed. Nobody knows everyone else does too. That's the bug. The game fixes it.",
+    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on weapons than clinical trials. Everyone wants that fixed. Nobody knows everyone else does too. That's the bug. The game fixes it.`,
   pluralisticIgnorance:
-    "4 billion people would rather be healthy and rich than funding 604x more weapons than cures. They just can't see each other yet.",
+    `4 billion people would rather be healthy and rich than funding ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more weapons than cures. They just can't see each other yet.`,
   alignTheSuperintelligence:
     "Your governments are misaligned superintelligences. This is the alignment software.",
   theObjective:
     "Reallocate humanity's resources from things making you poorer and deader to things that make you healthier and wealthier.",
   rewardFunction:
     "Maximize median healthy life years and median after-tax inflation-adjusted income. That's the entire objective. Two numbers.",
-} as const;
+};
 
 /**
  * Technically accurate descriptions of what military spending does.
@@ -125,12 +131,12 @@ export const VOTE_SECTION = {
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
   authPrompt: "Sign In to Start Earning VOTE Points",
-  authSubtext: "Every friend you recruit earns you 1 VOTE point. Each point could be worth $194,000+ if enough people play.",
+  authSubtext: `Every friend you recruit earns you 1 VOTE point. Each point could be worth ${fmtParam(VOTE_TOKEN_VALUE)}+ if enough people play.`,
   authPrivacy: "30 seconds. No spam. Just proof you're a real human.",
   emailSuccessFooter:
     "Your vote is locked in. Now share your link to start earning VOTE points.",
   sharePrompt: "Each friend who votes earns you 1 VOTE point. Get them in.",
-} as const;
+};
 
 export const VOTE_VALUE = {
   heading: "What Your Vote Could Be Worth",
@@ -146,13 +152,13 @@ export const VOTE_VALUE = {
   deadlineBody:
     "The parasitic economy — military spending, cybercrime, regulatory capture — is growing faster than the productive economy. When it hits 50% of GDP, stealing beats creating and the system collapses. That's not a prediction. It's compound interest.",
   deadlineQuip:
-    "Your VOTE points are worth $194k if 4 billion people play. Worth nothing if they don't. The deadline doesn't care about your schedule.",
+    `Your VOTE points are worth ${fmtParam(VOTE_TOKEN_VALUE)} if 4 billion people play. Worth nothing if they don't. The deadline doesn't care about your schedule.`,
   flywheelHeading: "The Flywheel",
   flywheelDescription:
     "Retirement funds, foundations, billionaires — they all have an incentive to deposit because the returns beat conventional investing either way. You have an incentive to get your friends to play because each voter increases your VOTE value.",
   shopkeeperQuip:
     "You don't need to be altruistic. You just need to be numerate.",
-} as const;
+};
 
 export const ARMORY = {
   pageTitle: "The Armory",

@@ -71,23 +71,26 @@ export function SlideOptimizer() {
             <div className="font-pixel text-xl md:text-2xl text-cyan-400 text-center border-b border-cyan-500/20 pb-2">
               POLICY GENERATOR
             </div>
-            <div className="font-pixel text-xl md:text-2xl text-zinc-200 text-center">
-              Ranked by causal impact
+            {/* Column headers */}
+            <div className="grid grid-cols-3 gap-2 font-pixel text-xl text-zinc-300">
+              <div></div>
+              <div className="text-center">POLICY</div>
+              <div className="text-center">OVERDOSE DEATHS</div>
             </div>
             <div className="space-y-2">
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-3">
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-3 gap-2 items-center">
                   <span className="font-pixel text-xl md:text-2xl text-zinc-300">🇵🇹 Portugal</span>
-                  <span className="font-pixel text-2xl md:text-3xl text-emerald-400">-80% 💀→😊</span>
+                  <span className="font-terminal text-xl md:text-2xl text-emerald-400 text-center">Decriminalization</span>
+                  <span className="font-pixel text-2xl md:text-3xl text-emerald-400 text-center">-80%</span>
                 </div>
-                <div className="font-terminal text-xl md:text-2xl text-zinc-200">overdose deaths</div>
               </div>
               <div className="bg-red-500/10 border border-red-500/30 rounded p-3">
-                <div className="flex justify-between items-center">
+                <div className="grid grid-cols-3 gap-2 items-center">
                   <span className="font-pixel text-xl md:text-2xl text-zinc-300">🇺🇸 USA</span>
-                  <span className="font-pixel text-2xl md:text-3xl text-red-400">+1,700% 💉💀</span>
+                  <span className="font-terminal text-xl md:text-2xl text-red-400 text-center">$50B/yr Drug War</span>
+                  <span className="font-pixel text-2xl md:text-3xl text-red-400 text-center">+1,700%</span>
                 </div>
-                <div className="font-terminal text-xl md:text-2xl text-zinc-200">overdose deaths</div>
               </div>
             </div>
           </div>

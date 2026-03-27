@@ -17,8 +17,8 @@ const ROWS: Row[] = [
   { label: "Wars funded:", left: "all of them", right: "0" },
   { label: "Citizens consulted:", left: "0", right: "8,000,000,000" },
   { label: "Audit results:", left: "no", right: "view source", rightClass: "underline cursor-default" },
-  { label: "print(money):", left: "", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: true },
-  { label: "fund(war):", left: "", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: true },
+  { label: "print(money):", left: "constantly", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: false },
+  { label: "fund(war):", left: "all of them", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: false },
 ];
 
 const TYPEWRITER_TEXT = "> print(money)";

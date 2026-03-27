@@ -55,7 +55,7 @@ const SAVE_SLOTS: SaveSlot[] = [
     dysfunctionTax: "eliminated",
   },
   {
-    title: "WISHONIA TRAJECTORY",
+    title: "OPTIMAL GOVERNANCE + IABs",
     tag: "",
     borderColor: "border-amber-500/60",
     bgColor: "bg-amber-500/10",
@@ -74,7 +74,7 @@ export function SlidePersonalUpside() {
       <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-3xl md:text-5xl text-amber-400 text-center">
-          💾 SAVE SLOTS — CHOOSE YOUR TIMELINE
+          CHOOSE YOUR TIMELINE
         </h1>
 
         {/* Save Slots */}
@@ -86,10 +86,7 @@ export function SlidePersonalUpside() {
             >
               {/* Slot Header */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-pixel text-xl md:text-3xl text-zinc-200">
-                    SLOT {i + 1}:
-                  </span>
+                <div>
                   <span className={`font-pixel text-xl md:text-3xl ${slot.textColor}`}>
                     {slot.title}
                   </span>
@@ -141,10 +138,7 @@ export function SlidePersonalUpside() {
           ))}
         </div>
 
-        {/* Bottom Line */}
-        <p className="font-pixel text-xl md:text-3xl text-zinc-200 text-center italic">
-          You are currently on Slot 1. You chose it by not choosing.
-        </p>
+        {/* Bottom line removed */}
       </div>
     </SlideBase>
   );

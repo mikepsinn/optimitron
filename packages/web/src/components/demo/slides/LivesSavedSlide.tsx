@@ -3,6 +3,7 @@
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { PulseGlow } from "@/components/animations/PulseGlow";
+import { GLOBAL_DISEASE_DEATHS_DAILY, fmtRaw } from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -42,7 +43,7 @@ export default function LivesSavedSlide() {
         transition={{ delay: 2.0, duration: 0.5 }}
         className={`${ARCADE} text-xs sm:text-sm text-foreground leading-relaxed max-w-lg`}
       >
-        150,000 deaths/day &times; 212 years of acceleration &times; 33.8% avoidable
+        {fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value)} deaths/day &times; 212 years of acceleration &times; 33.8% avoidable
       </motion.p>
     </div>
   );

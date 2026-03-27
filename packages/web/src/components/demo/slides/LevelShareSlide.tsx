@@ -2,6 +2,7 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
+import { VOTE_TOKEN_VALUE, fmtParam } from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -17,7 +18,7 @@ const VOTING_ITEMS = [
 const GAME_ITEMS = [
   "Click buttons on website",
   "30 seconds",
-  "Each point worth $194K",
+  `Each point worth ${fmtParam(VOTE_TOKEN_VALUE)}`,
   "Everyone gets 10× richer",
   "Cost: free",
   "Reward: $15.7M",

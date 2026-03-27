@@ -1,6 +1,12 @@
 "use client";
 
 import { useReducedMotion, motion } from "framer-motion";
+import {
+  VOTE_TOKEN_VALUE,
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  fmtParam,
+  fmtRaw,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -68,7 +74,7 @@ export default function PrizeMechanismSlide() {
           </p>
           <div className="mt-3 border-t-2 border-brutal-cyan pt-2">
             <p className={`${ARCADE} text-xs text-brutal-cyan`}>
-              $194K PER POINT
+              {fmtParam(VOTE_TOKEN_VALUE)} PER POINT
             </p>
           </div>
         </motion.div>
@@ -87,10 +93,10 @@ export default function PrizeMechanismSlide() {
             TARGETS MISSED
           </p>
           <p className="text-sm font-bold text-foreground">
-            Your $100 &rarr; $1,110 back
+            Your $100 &rarr; ${fmtRaw(100 * PRIZE_POOL_HORIZON_MULTIPLE.value)} back
           </p>
           <p className="text-sm font-bold text-foreground">
-            (11&times; over 15 years at 17%)
+            ({fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years at 17%)
           </p>
           <div className="mt-3 border-t-2 border-brutal-cyan pt-2">
             <p className={`${ARCADE} text-xs text-brutal-cyan`}>

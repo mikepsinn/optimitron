@@ -5,14 +5,14 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
 } from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { CountUp } from "@/components/animations/CountUp";
 
 const poolMultiple = PRIZE_POOL_HORIZON_MULTIPLE.value;
-const voteValue = VOTE_TOKEN_POTENTIAL_VALUE.value;
+const voteValue = VOTE_TOKEN_VALUE.value;
 
 const deposit = 100;
 const votes = 2;
@@ -107,7 +107,7 @@ export function PrizeWorkedExample() {
                 Targets Hit
               </div>
               <p className="text-sm font-bold text-foreground mb-2">
-                {votes} VOTE &times; {fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)} each
+                {votes} VOTE &times; {fmtParam(VOTE_TOKEN_VALUE)} each
               </p>
               <p className="text-4xl sm:text-5xl font-black text-foreground">
                 $<CountUp value={winReturn} duration={2} />

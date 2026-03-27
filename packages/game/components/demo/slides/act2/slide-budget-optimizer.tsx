@@ -13,21 +13,21 @@ interface BudgetRow {
 
 const ROWS: BudgetRow[] = [
   {
-    label: "Healthcare",
+    label: "🏥 Healthcare",
     currentSpend: "$4.5T",
     currentOutcome: "ranked 37th",
     optimizedSpend: "$1.1T",
     optimizedOutcome: "ranked 1st",
   },
   {
-    label: "Military",
+    label: "⚔️ Military",
     currentSpend: "$886B",
     currentOutcome: "13 wars since 1945",
     optimizedSpend: "$200B",
     optimizedOutcome: "Wars needed: 0",
   },
   {
-    label: "Education",
+    label: "📚 Education",
     currentSpend: "$800B",
     currentOutcome: "scores: declining",
     optimizedSpend: "$600B",

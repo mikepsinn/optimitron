@@ -6,7 +6,7 @@ import {
   MILITARY_VS_MEDICAL_RESEARCH_RATIO,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
 } from "@optimitron/data/parameters";
 const incomeMultiplier = Math.round(
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value /
@@ -40,7 +40,7 @@ const objections = [
   {
     id: "share",
     question: "Why should I share this with friends?",
-    answer: `Everyone would be healthier and ${incomeMultiplier}x richer if their governments weren't spending ${spendingRatio} times more on blowing everything up than on clinical trials. But everyone assumes nobody else would agree to a saner allocation — despite the fact that this is what literally everyone wants. That's called pluralistic ignorance and it's the only thing standing between you and a cured planet. Each friend who plays proves one more person agrees, earns you a VOTE point worth ${fmtParam(VOTE_TOKEN_POTENTIAL_VALUE)}+, and moves closer to the tipping point. You're not asking for a favour. You're showing them the maths.`,
+    answer: `Everyone would be healthier and ${incomeMultiplier}x richer if their governments weren't spending ${spendingRatio} times more on blowing everything up than on clinical trials. But everyone assumes nobody else would agree to a saner allocation — despite the fact that this is what literally everyone wants. That's called pluralistic ignorance and it's the only thing standing between you and a cured planet. Each friend who plays proves one more person agrees, earns you a VOTE point worth ${fmtParam(VOTE_TOKEN_VALUE)}+, and moves closer to the tipping point. You're not asking for a favour. You're showing them the maths.`,
   },
 ];
 
