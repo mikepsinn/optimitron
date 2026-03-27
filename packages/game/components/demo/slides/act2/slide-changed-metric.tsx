@@ -66,7 +66,7 @@ export function SlideChangedMetric() {
 
   return (
     <SlideBase act={2} className="text-cyan-400">
-      <div className="flex flex-col items-center justify-center gap-8 max-w-xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-8 max-w-[1700px] mx-auto">
         {/* Header Area */}
         <div className="text-center space-y-3 min-h-[80px] flex flex-col items-center justify-center">
           {/* Old Header */}

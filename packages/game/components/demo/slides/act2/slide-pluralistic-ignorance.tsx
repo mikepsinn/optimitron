@@ -61,12 +61,12 @@ export function SlidePluristicIgnorance() {
         </div>
 
         {/* Core Text */}
-        <p className="font-pixel text-xs md:text-sm text-zinc-300 text-center max-w-lg italic">
+        <p className="font-pixel text-xs md:text-sm text-zinc-300 text-center max-w-3xl italic">
           &ldquo;Everyone wants this. Nobody knows everyone wants this.&rdquo;
         </p>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 md:gap-8 w-full max-w-xl">
+        <div className="grid grid-cols-2 gap-4 md:gap-8 w-full max-w-4xl">
           <div className="text-center p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
             <div className="font-pixel text-xs text-zinc-500 mb-1">
               PUBLIC WEALTH

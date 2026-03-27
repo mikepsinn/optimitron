@@ -56,7 +56,7 @@ export function SlideFdaQueue() {
         }
       `}</style>
 
-      <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-5">
+      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-5">
 
         {/* Phase 1 — Waiting room header */}
         <div

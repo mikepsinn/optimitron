@@ -94,7 +94,7 @@ export function SlideYoureIn() {
         />
       )}
 
-      <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col items-center gap-6 w-full max-w-[1700px] mx-auto">
         {/* Phase 1: Banner */}
         {phase >= 1 && (
           <div className="text-center slide-fade-in">

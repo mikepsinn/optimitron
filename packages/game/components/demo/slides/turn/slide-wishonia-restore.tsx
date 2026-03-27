@@ -96,7 +96,7 @@ export function SlideWishoniaRestore() {
 
         {/* Quest meters preview (phase 3+) */}
         {phase >= 3 && (
-          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto animate-slide-up">
+          <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto animate-slide-up">
             <div className="bg-black/60 border border-emerald-500/30 p-3 text-left">
               <div className="font-pixel text-xs text-emerald-300/60">QUEST: HALE</div>
               <div className="font-pixel text-sm text-emerald-400">63.3 yrs</div>

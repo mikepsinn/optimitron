@@ -68,7 +68,7 @@ export function SlideYourBudget() {
         }
       `}</style>
 
-      <div className="flex flex-col items-center justify-center gap-5 max-w-2xl mx-auto w-full">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto w-full">
         {/* Phase 1: Title */}
         {phase >= 1 && (
           <div className="text-center fade-in">

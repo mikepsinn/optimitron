@@ -185,7 +185,7 @@ export function SlideTheSwitch() {
       })}
 
       {/* ── Main content ── */}
-      <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto text-center">
+      <div className="flex flex-col items-center gap-6 w-full max-w-[1700px] mx-auto text-center">
 
         {/* Lines 1–3: staggered reveal */}
         <div className="space-y-3">

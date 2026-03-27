@@ -124,7 +124,7 @@ export function SlideVirtuousLoop() {
         .dim { opacity: 0.35; }
       `}</style>
 
-      <div className="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col items-center gap-4 w-full max-w-[1700px] mx-auto">
 
         {/* ── Phase 1: Title ── */}
         {phase >= 1 && (

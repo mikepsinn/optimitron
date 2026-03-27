@@ -70,7 +70,7 @@ export function SlideGameOver() {
             CIVILIZATION HAS COLLAPSED
           </div>
 
-          <div className="mt-4 font-pixel text-xs text-zinc-400 max-w-md text-center space-y-1">
+          <div className="mt-4 font-pixel text-xs text-zinc-400 max-w-3xl text-center space-y-1">
             <div>Moronia allocated {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}&times; more to weapons than curing disease.</div>
             <div>Correlation with Earth: {GAME_PARAMS.moroniaCorrelation}%.</div>
           </div>

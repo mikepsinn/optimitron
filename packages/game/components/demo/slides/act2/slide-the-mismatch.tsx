@@ -100,7 +100,7 @@ export function SlideTheMismatch() {
         }
       `}</style>
 
-      <div className="flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto w-full">
+      <div className="flex flex-col items-center justify-center gap-4 max-w-[1700px] mx-auto w-full">
         {/* Phase 1: Title */}
         {phase >= 1 && (
           <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center fade-slide-up">

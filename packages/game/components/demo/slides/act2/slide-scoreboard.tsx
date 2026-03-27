@@ -110,7 +110,7 @@ export function SlideScoreboard() {
         </div>
 
         {/* Quote */}
-        <p className="font-pixel text-base md:text-lg text-zinc-500 text-center italic max-w-2xl">
+        <p className="font-pixel text-base md:text-lg text-zinc-500 text-center italic max-w-4xl">
           &ldquo;Move these two numbers. Everything else follows.&rdquo;
           <span className="text-zinc-600 ml-1">— Wishonia</span>
         </p>

@@ -164,7 +164,7 @@ export function SlideGDPTrajectory() {
               </div>
             </div>
 
-            <div className="font-terminal text-xs text-zinc-400 text-center max-w-md">
+            <div className="font-terminal text-xs text-zinc-400 text-center max-w-3xl">
               Healthier people are more productive, generating more tax revenue,
               funding more research, creating a self-reinforcing cycle of prosperity
             </div>

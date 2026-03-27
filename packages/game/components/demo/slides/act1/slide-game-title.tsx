@@ -40,7 +40,7 @@ export function SlideGameTitle() {
         </h1>
 
         {/* Allocation Slider */}
-        <div className="w-full max-w-xl space-y-3">
+        <div className="w-full max-w-4xl space-y-3">
           <div className="font-pixel text-xs text-zinc-500 text-center">
             GLOBAL RESOURCE ALLOCATION
           </div>
@@ -76,7 +76,7 @@ export function SlideGameTitle() {
         </div>
 
         {/* Subtitle */}
-        <p className="font-pixel text-sm md:text-xs text-zinc-400 text-center italic max-w-lg">
+        <p className="font-pixel text-sm md:text-xs text-zinc-400 text-center italic max-w-3xl">
           A Point-and-Click Adventure in Civilisational Reallocation
         </p>
 

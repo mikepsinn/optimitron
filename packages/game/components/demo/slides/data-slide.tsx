@@ -134,7 +134,7 @@ export function DataSlide({ config }: DataSlideProps) {
 
         {/* Fallback: show narration excerpt if nothing else to display */}
         {!hasOnScreen && !hasAscii && (
-          <div className="font-terminal text-lg sm:text-xl text-[var(--sierra-fg)] text-center max-w-2xl leading-relaxed opacity-80">
+          <div className="font-terminal text-lg sm:text-xl text-[var(--sierra-fg)] text-center max-w-4xl leading-relaxed opacity-80">
             {config.narration.slice(0, 200)}
             {config.narration.length > 200 ? "..." : ""}
           </div>

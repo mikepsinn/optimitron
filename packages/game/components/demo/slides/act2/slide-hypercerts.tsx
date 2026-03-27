@@ -72,7 +72,7 @@ export function SlideHypercerts() {
         </div>
 
         {/* Key text */}
-        <p className="font-pixel text-xs md:text-sm text-zinc-400 text-center italic max-w-xl leading-relaxed">
+        <p className="font-pixel text-xs md:text-sm text-zinc-400 text-center italic max-w-3xl leading-relaxed">
           If a charity tells you they saved ten thousand lives, you ask for the
           Hypercert. If they do not have one, they did not save ten thousand
           lives.
