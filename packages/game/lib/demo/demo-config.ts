@@ -145,7 +145,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Your dollar has lost 96% of its value since 1913. If your wages had kept pace with productivity, the median family would earn $528,000. The actual number is $77,500. The difference funded wars and bailed out banks. Your species calls this 'monetary policy.' I call it the longest heist in history.",
+      "Your dollar has lost 96% of its value since 1913. If your wages had kept pace with productivity, the median family would earn $528,000. The actual number is $77,500. This is called 'monetary policy.' On my planet we have a word for this. It translates roughly to beige crime or theft that is far too boring for anyone to investigate.",
     visual:
       'Same command bridge. A monitor shows a dollar bill dissolving pixel by pixel — "PURCHASING POWER: 100% → 4%." Another shows two pay stubs side by side: ghost image "$528,000 — IF WAGES KEPT PACE" and real "$77,500 — ACTUAL." The gap is enormous. Pixel arrows show where the difference went.',
     asciiArt: `
@@ -216,15 +216,16 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 8,
     narration:
-      "Your governments currently spend $604 on the capacity for mass murder for every $1 they spend testing which medicines work. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.",
+      "Your governments spend $604 on the capacity for mass murder for every $1 they spend testing which medicines work. 95% of your diseases have zero approved treatments. At the current discovery rate, finding treatments for all of them takes 443 years. You personally will be dead within 80 years, which I mention not to be rude but because you seem weirdly calm about this.",
     visual:
       'Pixel art — animated zoom sequence. Start: a towering stack of pixel coins fills the entire screen top to bottom, labeled "$2,720,000,000,000 — MILITARY." The camera zooms in on the bottom-right corner — deeper, deeper — until a single pixel coin becomes visible at 64\u00D7 magnification, labeled "$4,500,000,000 — CLINICAL TRIALS." Pause. Then snap-zoom back out to full scale. The single coin disappears into the mass. The CountUp component animates the ratio from 1:1 racing to 604:1. Below, MilitaryVsTrialsPie renders — the clinical trials slice is literally one pixel wide.',
     onScreen: [
       { text: "$2,720,000,000,000 \u2014 MILITARY", size: "giant", animation: "countUp", color: "red" },
       { text: "$4,500,000,000 \u2014 CLINICAL TRIALS", size: "small", animation: "fadeIn", color: "green" },
       { text: "604 : 1", size: "giant", animation: "countUp", color: "red" },
-      { text: "CHANCE OF DYING FROM TERRORISM: 1 in 30,000,000", size: "small", animation: "fadeIn" },
-      { text: "CHANCE OF DYING FROM DISEASE: 100%", size: "medium", animation: "fadeIn", color: "red" },
+      { text: "95% OF DISEASES: ZERO APPROVED TREATMENTS", size: "medium", animation: "fadeIn", color: "red" },
+      { text: "TIME TO CURE THEM ALL: 443 YEARS", size: "small", animation: "fadeIn", color: "red" },
+      { text: "YOUR LIFESPAN: 80 YEARS", size: "small", animation: "fadeIn" },
     ],
     sierraVerbs: [
       {
@@ -244,14 +245,14 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "The part of your economy that steals is growing five times faster than the part that builds. In 15 years, it becomes more rational to steal than to produce. Every civilisation that reached this crossover collapsed. This is the clock.",
+      "Cybercrime costs $10.5 trillion per year and growing at 15% annually. Combined with your murder budget, your destructive economy is $13.2 trillion — 11.5% of global GDP. The Soviet Union collapsed at 15%. You are approaching their ratio with better technology, a faster-growing parasitic sector, and no plan. The Soviet Union's terrible plan beat your no plan, and the Soviet Union lost.",
     visual:
       'Pixel art — stone castle wall (King\'s Quest aesthetic) with a massive clock face. Two hands racing: red "PARASITIC (15%/yr)" spinning fast, green "PRODUCTIVE (3%/yr)" crawling behind. Below, a pixel-art line chart shows the two trajectories crossing — red overtaking green — with a flashing "X" at "2040: COLLAPSE THRESHOLD." Digital countdown ticks: "YEARS REMAINING: 14 yrs 247 days 8 hrs..."',
     onScreen: [
-      { text: "PARASITIC ECONOMY: 15%/yr", size: "medium", animation: "pulse", color: "red" },
-      { text: "PRODUCTIVE ECONOMY: 3%/yr", size: "medium", animation: "fadeIn", color: "green" },
-      { text: "2040: COLLAPSE THRESHOLD", size: "large", animation: "pulse", color: "red" },
-      { text: "YEARS REMAINING: 14 yrs 247 days 8 hrs", size: "small", animation: "countUp" },
+      { text: "DESTRUCTIVE ECONOMY: $13.2T (11.5% OF GDP)", size: "medium", animation: "pulse", color: "red" },
+      { text: "SOVIET UNION COLLAPSED AT: 15%", size: "medium", animation: "fadeIn", color: "red" },
+      { text: "YOUR TRAJECTORY: 25% BY 2033", size: "large", animation: "pulse", color: "red" },
+      { text: "THEIR PLAN: TERRIBLE. YOUR PLAN: NONE.", size: "small", animation: "fadeIn" },
     ],
     sierraVerbs: [
       {
@@ -270,7 +271,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "When stealing pays better than building, everyone steals. Somalia. Venezuela. Lebanon. This is not a theory. It is a travel itinerary. And your planet is booking tickets.",
+      "Why spend years building a product when you can ransom a hospital in an afternoon? Why manufacture exports when hacking banks pays better? You have a name for places where this already happened. You call them failed states. Somalia. Libya. Venezuela. You watched this happen to individual countries the way someone watches a neighbour's house burn down while storing petrol in their own basement.",
     visual:
       'Pixel art — a Sierra city scene, but decaying in real-time. The scene starts as a functioning pixel town (shops, roads, people walking). As the narration progresses, pixel-art decay spreads: storefronts board up, pixel thieves appear on rooftops, roads crack, a hospital\'s red cross sign flickers and dies, pixel people flee offscreen or huddle in corners. The palette desaturates toward the Moronia greys. In the corner, a world map shows red spreading from a few countries to all continents. Text overlay: "WHEN DESTRUCTION > PRODUCTION: GLOBAL FAILED STATE."',
     onScreen: [
@@ -295,7 +296,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Your species built AI that writes code. Then criminals used it to write theft code. The theft funds more AI. The AI writes more theft code. A feedback loop. Your species would recognise it if it ever read its own computer science papers. You automated robbery. Congratulations.",
+      "North Korea cannot build an aircraft carrier, but it funds its nuclear programme by stealing $1.5 billion in cryptocurrency in a single afternoon. Russia finances military operations with ransomware. Cybercrime is war conducted through WiFi, and it pays better. Every nation you have bombed has learned that parasitising your economy is cheaper than fighting you conventionally. That is not crime. That is homework.",
     visual:
       'Pixel art — a dark server room (SQ-style villain lair). A single pixel-art robot hacker sits at a terminal. It splits into two. Those two split into four. The screen fills with multiplying hacker bots. A counter ticks: "AI HACKERS: 1... 2... 4... 1,024... 1,048,576... \u221E." Below, a loop diagram animates: STEAL $$$ \u2192 BUY COMPUTE \u2192 TRAIN MORE HACKERS \u2192 (repeat). The loop spins faster and faster. The stolen amount counter ticks up. The productive economy bar from The Clock shrinks visibly in the HUD.',
     asciiArt: `
@@ -599,7 +600,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Everyone wants this. Everyone thinks nobody else wants it. So nobody does anything. Each ant follows the ant ahead. No ant checks whether the trail goes anywhere. Your species identified this bug, named it, taught it in universities, and then continued to be governed by it for sixty years.",
+      "Everyone wants a world without war and disease. But everyone also thinks nobody else will agree to the steps to make it happen. So nobody does anything. Your economists call it pluralistic ignorance, which is the polite term for eight billion people waiting for permission to want what they already want. This is the dumbest reason a civilisation has ever continued dying.",
     visual:
       "Pixel art — town square (King's Quest village). Thirty pixel villagers, each with a green checkmark thought bubble. But each is turned away, arms crossed, looking at the ground — can't see anyone else's bubble. One villager in center has yellow ! quest marker (the player). The thought bubbles are visible to the viewer but not to the villagers.",
     asciiArt: `
@@ -635,7 +636,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "The public holds $454 trillion in wealth. The concentrated special interests who run your government hold $5 trillion. You outnumber them 90 to 1. You are not outgunned. You are just not coordinated.",
+      "The public holds $454 trillion. The concentrated interests who run your government hold $5 trillion. You outnumber them 90 to 1. Your species identified the exact collective action problem by which your governance fails, published it, assigned it in universities, and then continued to be governed by it for sixty years. You are not outgunned. You are just not coordinated.",
     visual:
       "Pixel art — a Sierra battle screen. On the left: a massive army of pixel villagers stretching to the horizon, labeled 8 BILLION. On the right: a tiny cluster of pixel lobbyists in suits, labeled ~50,000. The ratio is absurd. The lobbyists are winning anyway.",
     asciiArt: `
@@ -888,7 +889,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Congratulations. You have just done more for civilisation than most parliaments manage in a decade. Now tell two friends. 33 doublings. That is how many it takes to reach 4 billion. Your species invented this. You call it going viral. We call it counting.",
+      "Now tell two friends. They tell two friends. 33 doublings to reach everyone on Earth. Your species spent longer than that arguing about whether Pluto is a planet. Even with heavy dropout, one person reaches global visibility in dozens of rounds, not decades.",
     visual:
       "Banner: VOTE RECORDED. The allocation slider from the title screen nudges one tick rightward — the global slider moved because you voted. New dialog slides in showing the viral loop: tell two, they tell two, 33 doublings to 4 billion.",
     asciiArt: `
@@ -995,7 +996,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 3: The Money",
     narration:
-      "Your retirement fund earns 8%. This earns 17%. The side effect of your retirement fund is nothing. The side effect of this is curing all disease. Your financial advisor will not mention this because your financial advisor is an employee of the companies earning the 8%.",
+      "Rich people have a secret money club called VC that earns 17% returns on average. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called 'investor protection.' It protects you from having money. The prize pool gets you in. Side effect: curing all disease.",
     visual:
       "Pixel art — Sierra merchant's investment counter. Two options side by side: YOUR RETIREMENT FUND (Old corporations, Rent-seeking/slow, Return: 8%/year, $100 -> $317 in 15 yrs, Side effect: nothing) vs PRIZE POOL (Innovative startups, High-growth/new, Return: 17%/year, $100 -> $1,110 in 15 yrs, Side effect: curing all disease). Right option glows green. Left looks grey and dull. The goal: build the biggest prize pool in history. So every player on Earth is incentivized to win.",
     asciiArt: `
@@ -1167,7 +1168,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 4: Accountability",
     narration:
-      "You spent $8 trillion on the War on Terror. Terrorism increased seventeen-fold. You spent $90 billion a year on the War on Drugs. Overdose deaths increased sixteen-fold. When something fails on your planet, it gets a bigger budget. By this logic, the most successful fire department is one that starts fires.",
+      "You spent $8 trillion on the War on Terror. Terrorism increased seventeen-fold. You spent $90 billion a year on the War on Drugs for fifty years. Overdose deaths went from 6,000 to 100,000. Combined scorecard: two programmes, $9 trillion spent, both problems seventeen times worse. At no point did anyone with budget authority check whether the spending was making the problem better or worse. The data existed. Nobody looked at it. The data did not have a lobbying firm.",
     visual:
       "Pixel art — a Sierra performance review pinned to a corkboard. Three line items with budgets and results. Each result animates in red — the numbers go the wrong direction. A star rating flickers between 1 and 0 stars. ACTION TAKEN: Bigger budget.",
     asciiArt: `
@@ -1177,16 +1178,15 @@ RECURSIVE EXPONENTIAL THEFT`,
 │  PROJECT             BUDGET    RESULT       │
 │  ─────────────────   ───────   ──────       │
 │  War on Terror       $8T       +1,700%      │
-│  War on Drugs        $1.35T    +1,600%      │
-│  War on Poverty      $25T      poverty won  │
+│  War on Drugs        $4.5T     +1,600%      │
+│                                             │
+│  COMBINED: $9T spent. Both problems 17× worse│
 │                                             │
 │  PERFORMANCE RATING: ★☆☆☆☆                  │
-│                                             │
 │  ACTION TAKEN: Bigger budget                │
 │                                             │
-│  REVIEWER NOTES:                            │
-│  "By this logic, the most successful fire   │
-│   department is one that starts fires."     │
+│  "The data existed. Nobody looked at it.    │
+│   The data did not have a lobbying firm."   │
 └─────────────────────────────────────────────┘`,
     score: 3_000_000_000,
     showQuestMeters: true,
@@ -1252,7 +1252,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     chapter: "Part 5: The Armory",
     ctaUrl: "/agencies/dih/discoveries",
     narration:
-      "Your FDA makes treatments wait 8.2 years after they have already been proven safe. Just sitting there. Being safe. While 102 million of you died in the queue. The drugs that DID pass? Vioxx killed 55,000. OxyContin killed 500,000. Your safety system's main product is dead patients.",
+      "Your FDA makes treatments wait 8.2 years after they have already been proven safe. Just sitting there. Being safe. While 102 million of you died in the queue. For every 1 person protected from a dangerous drug, 3,070 die waiting for a safe one locked in the approval cabinet. It is like a lifeguard who confirms the life preserver floats, then locks it in a cabinet for years to study its buoyancy profile while a billion people drown in line for the two available life jackets.",
     visual:
       "Pixel art — a Sierra waiting room. Rows of pixel patients sitting in chairs, some slumping over. A ticket counter displays \"NOW SERVING: nobody.\" A shelf behind the counter holds rows of approved drugs, gathering pixel dust. A clock on the wall shows 8.2 years passing in fast-forward.",
     asciiArt: `
@@ -1271,14 +1271,14 @@ RECURSIVE EXPONENTIAL THEFT`,
 │                                             │
 │  PATIENTS WHO DIED WAITING: 102,000,000     │
 │                                             │
-│  DRUGS THAT SKIPPED THE QUEUE:              │
-│  Vioxx — killed 55,000                      │
-│  OxyContin — killed 500,000                 │
+│  ERROR RATIO:                               │
+│  People saved from bad drugs:     1         │
+│  People killed waiting for safe:  3,070     │
 │                                             │
-│  Executives jailed: 0                       │
-│  System changed: no                         │
-│                                             │
-│  NOW SERVING: nobody, it's lunch break      │
+│  "A lifeguard who confirms the life         │
+│   preserver floats, then locks it in a      │
+│   cabinet for years while a billion         │
+│   people drown in line."                    │
 └─────────────────────────────────────────────┘`,
     score: 4_100_000_000,
     showQuestMeters: true,
@@ -1296,7 +1296,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dih/discoveries",
     narration:
-      "The decentralised version runs pragmatic trials in real-world conditions. $929 per patient instead of $41,000. Forty-four times cheaper. 12.3 times more trial capacity. Same patients. No eight-year queue. The technology exists. It just did not have a lobbying firm.",
+      "The RECOVERY trial tested 6 treatments on 48,000 patients for $500 each instead of the usual $41,000. Eighty-two times cheaper. During a pandemic. While panicking. Your species does its best medical research when terrified and disorganised, which suggests your normal system is somehow worse than panic. The decentralised version does this permanently. $929 per patient. 12.3 times more capacity. No eight-year queue.",
     visual:
       "Pixel art — the same waiting room, but transformed. The queue is gone. Patients walk in one door and out another. The ticket counter now displays real-time trial results. Everything is faster, cheaper, and nobody is dying in a chair.",
     asciiArt: `
@@ -1911,7 +1911,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     ctaUrl: "/prize",
     ctaLabel: "PLAY NOW →",
     narration:
-      "The most powerful superintelligence on your planet is not in a data centre. It is in a building with a dome. Its stated objective is to promote the general welfare. It has been misaligned since the day they wrote that down. This game is its alignment software. And unlike the version made of silicon — this one you can fix with a vote.",
+      "Right now, somewhere on your planet, a parent is holding a child who is dying of something curable because nobody ran the trial. The compound that would save this child is sitting on a shelf, untested, because the money that would have funded the trial bought a missile that is also sitting on a shelf, unused. This game is alignment software for the most powerful superintelligence on your planet. And unlike the version made of silicon — this one you can fix with a vote.",
     visual:
       "Full planet view from space. Halfway transformed — bright continents where pixel people stand, dark where crosses remain. Death counter still ticking but slower. Stars twinkling. Wishonia's portrait shifts from sardonic to something approaching sincerity — the only time in the entire demo. Dramatic pause after 'misaligned.' Two seconds of just the image breathing. Then Sierra title screen returns — same gold font, same starfield. Score: 8,000,000,000 of 8,000,000,000. Quest meters: 100%. All 8 inventory slots full and glowing. Final dialog: CONGRATULATIONS! You have completed THE EARTH OPTIMIZATION GAME. Lives saved: all of them. PLAY NOW button pulses. Music resolves to a single held chord. Silence.",
     asciiArt: `
@@ -1947,7 +1947,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act3",
     duration: 0, // Manual advance / end screen
     narration:
-      "Oh, and if you're wondering — yes, this is the actual game. You're playing it right now. The demo was level one.",
+      "The universe is literally offering you infinite money and eternal life, and you are thinking about it. This is why aliens don't visit.",
     visual:
       "Narrator text box on pure black. Wishonia's portrait: faintest smirk — one pixel of mouth moved upward. Cursor blinks. Nothing else. Hold 3 seconds, then fade.",
     stageDirection:
