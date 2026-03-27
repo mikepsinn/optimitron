@@ -71,7 +71,7 @@ const SAVE_SLOTS: SaveSlot[] = [
 export function SlidePersonalUpside() {
   return (
     <SlideBase act={3} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-xl md:text-3xl text-amber-400 text-center">
           💾 SAVE SLOTS — CHOOSE YOUR TIMELINE

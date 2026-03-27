@@ -41,7 +41,7 @@ export function SlideOnePercent() {
         THE 1% SOLUTION
       </h1>
 
-      <div className="w-full max-w-7xl mx-auto space-y-8">
+      <div className="w-full max-w-[1700px] mx-auto space-y-8">
         {/* Before/After comparison */}
         <div className="grid grid-cols-2 gap-4 md:gap-8">
           {/* Before */}

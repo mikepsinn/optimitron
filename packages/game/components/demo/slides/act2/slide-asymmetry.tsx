@@ -22,7 +22,7 @@ export function SlideAsymmetry() {
 
   return (
     <SlideBase act={2} className="text-amber-400">
-      <div className="flex flex-col items-center justify-center gap-8 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-8 max-w-[1700px] mx-auto">
         {/* Trade Comparison */}
         <div className="grid grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-center w-full">
           {/* Left: Tiny copper coin */}

@@ -5,7 +5,7 @@ import { SlideBase } from "../slide-base";
 export function SlideIabs() {
   return (
     <SlideBase act={2} className="text-blue-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-lg md:text-2xl text-blue-400 text-center">
           INCENTIVE ALIGNMENT BONDS

@@ -61,7 +61,7 @@ export function SlideCuredDisease() {
 
   return (
     <SlideBase act={2}>
-      <div className="flex flex-col items-center gap-3 w-full max-w-7xl mx-auto">
+      <div className="flex flex-col items-center gap-3 w-full max-w-[1700px] mx-auto">
 
         {/* Phase 1 — Title */}
         <h1

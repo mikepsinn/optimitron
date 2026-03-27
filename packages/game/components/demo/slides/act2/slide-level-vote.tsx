@@ -50,7 +50,7 @@ export function SlideLevelVote() {
         </div>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto space-y-8">
+      <div className="w-full max-w-[1700px] mx-auto space-y-8">
         {/* Vote counter with progress ring */}
         <div className="flex flex-col items-center gap-4">
           <ProgressRing

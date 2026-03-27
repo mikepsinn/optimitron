@@ -52,7 +52,7 @@ export function SlideLevelAllocate() {
         </div>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto space-y-6">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Allocation interface */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.map((cat) => {

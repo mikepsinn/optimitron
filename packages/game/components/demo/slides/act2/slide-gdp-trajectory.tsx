@@ -50,7 +50,7 @@ export function SlideGDPTrajectory() {
         COMPOUND RETURNS
       </h1>
 
-      <div className="w-full max-w-7xl mx-auto space-y-6">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* GDP Chart */}
         <div className="bg-black/30 border border-amber-500/30 rounded p-4">
           <AnimatedLineChart

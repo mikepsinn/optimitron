@@ -54,7 +54,7 @@ export function SlideAcceleration() {
         {accelerationFactor}x FASTER TRIALS
       </h1>
 
-      <div className="w-full max-w-7xl mx-auto space-y-8">
+      <div className="w-full max-w-[1700px] mx-auto space-y-8">
         {/* Hourglass comparison */}
         <div className="grid grid-cols-2 gap-8">
           {/* Slow hourglass */}

@@ -44,7 +44,7 @@ const replacements = [
 export function SlideWishToken() {
   return (
     <SlideBase act={2} className="text-yellow-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-xl md:text-2xl text-yellow-400 text-center">
           $WISH TOKEN — THREE REPLACEMENTS

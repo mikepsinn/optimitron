@@ -129,7 +129,7 @@ export function SlideLivesSaved() {
 
         {/* Impact statement */}
         <div 
-          className="text-center max-w-7xl px-4 py-6 rounded-lg border-2"
+          className="text-center max-w-[1700px] px-4 py-6 rounded-lg border-2"
           style={{ 
             borderColor: palette.success,
             backgroundColor: `${palette.success}10`

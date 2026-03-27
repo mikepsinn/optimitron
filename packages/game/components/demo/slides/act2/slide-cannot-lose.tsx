@@ -14,7 +14,7 @@ const annualDysfunctionTax = Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANN
 export function SlideCannotLose() {
   return (
     <SlideBase act={2} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-base md:text-xl text-zinc-300 text-center">
           📊 WORKED EXAMPLE — $100 DEPOSIT + 2 FRIENDS PLAYING

@@ -95,7 +95,7 @@ export function SlideLevelShare() {
         </div>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto space-y-6 overflow-hidden">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6 overflow-hidden">
         {/* Network visualization */}
         <div className="relative w-full aspect-video bg-black/40 border border-purple-500/30 rounded overflow-hidden">
           <svg className="absolute inset-0 w-full h-full">

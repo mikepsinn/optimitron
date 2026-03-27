@@ -16,7 +16,7 @@ export function SlideVotePointValue() {
 
   return (
     <SlideBase act={2} className="text-purple-400">
-      <div className="flex flex-col items-center justify-center gap-6 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-xl md:text-3xl text-purple-400 text-center">
           ⚔️ VOTE POINT LEDGER

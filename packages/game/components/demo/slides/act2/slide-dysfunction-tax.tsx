@@ -68,7 +68,7 @@ export function SlideDysfunctionTax() {
 
   return (
     <SlideBase act={2} className="text-red-400">
-      <div className="flex flex-col items-center justify-center gap-6 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* CRT Bug Report Title */}
         <div className="w-full bg-zinc-900 border border-red-500/50 rounded-lg overflow-hidden">
           <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2 flex items-center gap-2">

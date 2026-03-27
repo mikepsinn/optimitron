@@ -34,7 +34,7 @@ export function SlidePrizePool() {
         </h1>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto space-y-6">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Prize pool amount */}
         <div className="text-center">
           <div className="font-pixel text-xs text-zinc-500 mb-2">CURRENT PRIZE POOL</div>

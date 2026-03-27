@@ -75,7 +75,7 @@ export function SlideLeaderboard() {
         </div>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-[1700px] mx-auto">
         {/* Leaderboard table */}
         <div className="bg-black/40 border border-cyan-500/30 rounded overflow-hidden">
           {/* Header */}

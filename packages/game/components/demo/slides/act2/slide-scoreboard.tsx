@@ -18,7 +18,7 @@ const projectedGDPperCapita = GAME_PARAMS.projectedGDPperCapita;
 export function SlideScoreboard() {
   return (
     <SlideBase act={2} className="text-amber-400">
-      <div className="flex flex-col items-center justify-center gap-6 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-xl md:text-3xl text-amber-400 text-center">
           📖 QUEST LOG — EARTH OPTIMIZATION
