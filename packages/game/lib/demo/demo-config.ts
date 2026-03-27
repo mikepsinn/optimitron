@@ -57,7 +57,7 @@ export const SLIDES: SlideConfig[] = [
     duration: 10,
     chapter: "Act I: The Horror",
     narration:
-      "Bugs in your meat software kill 150,000 of you every day. Fifty-nine September 11ths. Every. Single. Day. But nobody invades anybody about it because cancer does not have oil.",
+      "Bugs in your meat software permanently stop 150,000 of you every 24 hours. One Holocaust every 40 days — except with fewer Nazis and more insurance paperwork. That is also fifty 9/11s every single day, except nobody invades anybody about it because diseases do not have oil.",
     stageDirection:
       "[3 seconds of black screen. Just the death counter ticking up. No narration. No Sierra chrome yet — just red numbers on black, counting. Then the UI fades in around it.]",
     visual:
@@ -85,7 +85,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 12,
     narration:
-      "Your governments are the most powerful artificial superintelligences ever created. Not a metaphor. Collective intelligence systems that control $50 trillion a year and 8 billion lives. Their stated objective function is to protect and promote the general welfare. That is, median health and wealth. Instead they optimise for campaign contributions.",
+      "Your governments are the most powerful artificial superintelligences ever created. Not a metaphor. Collective intelligence systems controlling $50 trillion and 8 billion lives. Their stated objective function: promote the general welfare. Their actual objective function: campaign contributions. It is a machine that converts good intentions into missiles, and it runs automatically.",
     visual:
       'Pixel art command bridge (SQ1 Sarien ship). Five CRT monitors in a semicircle. Central monitor displays "OBJECTIVE FUNCTION: PROMOTE GENERAL WELFARE" in green text — then glitches, flickers, and rewrites to "OBJECTIVE FUNCTION: RE-ELECTION / CAMPAIGN CONTRIBUTIONS / WEALTH EXTRACTION" in red. Side monitors show: military contracts scrolling, pharma stock tickers, healthcare waitlist numbers climbing, a "CITIZEN REQUESTS" inbox with 0 read / 4,294,967,296 unread. Scan lines roll.',
     onScreen: [
