@@ -85,7 +85,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 12,
     narration:
-      "Your government is an artificial intelligence. Not a metaphor. You built a system to protect your health and grow your wealth. Instead it optimises for campaign contributions.",
+      "Your governments are the most powerful artificial superintelligences ever created. Not a metaphor. Collective intelligence systems that control $50 trillion a year and 8 billion lives. Their stated objective function is to protect and promote the general welfare. That is, median health and wealth. Instead they optimise for campaign contributions.",
     visual:
       'Pixel art command bridge (SQ1 Sarien ship). Five CRT monitors in a semicircle. Central monitor displays "OBJECTIVE FUNCTION: PROMOTE GENERAL WELFARE" in green text — then glitches, flickers, and rewrites to "OBJECTIVE FUNCTION: RE-ELECTION / CAMPAIGN CONTRIBUTIONS / WEALTH EXTRACTION" in red. Side monitors show: military contracts scrolling, pharma stock tickers, healthcare waitlist numbers climbing, a "CITIZEN REQUESTS" inbox with 0 read / 4,294,967,296 unread. Scan lines roll.',
     onScreen: [
@@ -599,7 +599,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Everyone wants this. Everyone thinks nobody else wants it. So nobody does anything. Your species identified this bug, named it, taught it in universities, and then continued to be governed by it for sixty years.",
+      "Everyone wants this. Everyone thinks nobody else wants it. So nobody does anything. Each ant follows the ant ahead. No ant checks whether the trail goes anywhere. Your species identified this bug, named it, taught it in universities, and then continued to be governed by it for sixty years.",
     visual:
       "Pixel art — town square (King's Quest village). Thirty pixel villagers, each with a green checkmark thought bubble. But each is turned away, arms crossed, looking at the ground — can't see anyone else's bubble. One villager in center has yellow ! quest marker (the player). The thought bubbles are visible to the viewer but not to the villagers.",
     asciiArt: `
@@ -995,7 +995,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 3: The Money",
     narration:
-      "Your retirement fund earns 8%. This earns 17%. The side effect of your retirement fund is nothing. The side effect of this is curing all disease. Your financial advisor will not tell you about this because your financial advisor works for the 8% companies.",
+      "Your retirement fund earns 8%. This earns 17%. The side effect of your retirement fund is nothing. The side effect of this is curing all disease. Your financial advisor will not mention this because your financial advisor is an employee of the companies earning the 8%.",
     visual:
       "Pixel art — Sierra merchant's investment counter. Two options side by side: YOUR RETIREMENT FUND (Old corporations, Rent-seeking/slow, Return: 8%/year, $100 -> $317 in 15 yrs, Side effect: nothing) vs PRIZE POOL (Innovative startups, High-growth/new, Return: 17%/year, $100 -> $1,110 in 15 yrs, Side effect: curing all disease). Right option glows green. Left looks grey and dull. The goal: build the biggest prize pool in history. So every player on Earth is incentivized to win.",
     asciiArt: `
@@ -1122,7 +1122,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "If humanity wins, your $100 deposit goes to VOTE holders. You also became a multimillionaire in a civilisation that cured all disease. You do not mourn the $100. If humanity loses, you get $1,110 back. The only way to lose is not to play. Two of three outcomes are wins. The third one is your fault.",
+      "If humanity wins, your $100 deposit goes to VOTE holders. You also became a multimillionaire in a civilisation that cured all disease. You do not mourn the $100. If humanity loses, you get $1,110 back. The only way to lose is not to play. The break-even probability is 0.0067%. That means depositing is a good bet if you believe there is even a 1 in 15,000 chance this works. Two of three outcomes are wins. The third one is your fault.",
     visual:
       "Sierra summary/stats screen — three outcomes. WORKED EXAMPLE — $100 DEPOSIT + 2 FRIENDS PLAYING. Box 1 (glows brightest): HUMANITY WINS — Your deposit: goes to VOTE holders (not you). Your VOTE points: 2 x $194K = $387,000. Your lifetime income: +$15.7 MILLION. Everyone is 10x richer. You don't miss $100. NET: +$16,087,000. Box 2: HUMANITY MISSES (targets not hit) — VOTE points: expire ($0). Your deposit: $100 -> $1,110 (11x yield). Still outperforms your retirement fund (3.5x). NET: +$1,010. Box 3 (dim red): DID NOT PLAY — $0 returned. $0 earned. Still paying $12,600/yr dysfunction tax. Missed $15.7M in lifetime income. NET: -$15,700,000 (opportunity cost). Two out of three outcomes are wins. The third one is your fault.",
     asciiArt: `
@@ -1204,7 +1204,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     ctaUrl: "/agencies/dfec/alignment",
     narration:
-      "This leaderboard shows which of your leaders are arsonists. Your leaders are not evil. They are just optimising for the wrong metric. We changed the metric.",
+      "This leaderboard shows which of your leaders are arsonists. Your leaders are not evil. They are reward functions optimising for the wrong objective. We changed the objective.",
     visual:
       "Pixel art — Sierra high-score table. Header \"RE-ELECTION PROBABILITY\" gets slashed with a red X. New header typewriters in: \"CITIZEN ALIGNMENT SCORE.\" Rankings shuffle. Magnifying glass drops into inventory.",
     asciiArt: `
@@ -1911,7 +1911,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     ctaUrl: "/prize",
     ctaLabel: "PLAY NOW →",
     narration:
-      "The most powerful AI on your planet is not in a data centre. It is in a building with a dome. It has been misaligned for two centuries. This game is its alignment software. And unlike the version made of silicon — this one you can fix with a vote.",
+      "The most powerful superintelligence on your planet is not in a data centre. It is in a building with a dome. Its stated objective is to promote the general welfare. It has been misaligned since the day they wrote that down. This game is its alignment software. And unlike the version made of silicon — this one you can fix with a vote.",
     visual:
       "Full planet view from space. Halfway transformed — bright continents where pixel people stand, dark where crosses remain. Death counter still ticking but slower. Stars twinkling. Wishonia's portrait shifts from sardonic to something approaching sincerity — the only time in the entire demo. Dramatic pause after 'misaligned.' Two seconds of just the image breathing. Then Sierra title screen returns — same gold font, same starfield. Score: 8,000,000,000 of 8,000,000,000. Quest meters: 100%. All 8 inventory slots full and glowing. Final dialog: CONGRATULATIONS! You have completed THE EARTH OPTIMIZATION GAME. Lives saved: all of them. PLAY NOW button pulses. Music resolves to a single held chord. Silence.",
     asciiArt: `
