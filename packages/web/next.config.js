@@ -5,6 +5,7 @@ const { REDIRECTS } = require("./src/lib/redirects");
 const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 
 const nextConfig = {
+  transpilePackages: ['@optimitron/data'],
   output: isStaticExport ? 'export' : undefined,
   basePath: isStaticExport ? '/optimitron' : '',
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
