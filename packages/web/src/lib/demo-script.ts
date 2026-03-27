@@ -820,7 +820,7 @@ export const SEGMENTS: DemoSegment[] = [
     tags: ["feature"],
     act: "II-armory",
     scoreAdd: 5_200_000_000,
-    narration: `Every data point, every policy outcome, every budget analysis is stored on Storacha — content-addressed, immutable, permanent. No government can delete it. No lobbyist can edit it. No administration can classify it. The data is public because the data is the point. If your government could delete the evidence, they would. They cannot. It is on IPFS.`,
+    narration: `Four types of evidence — preference aggregations, policy analyses, health outcomes, budget optimisations — each one chained to the last via content-addressed CID links on Storacha. No government can delete it. No lobbyist can edit it. Break the chain? The hash won't match. Anyone can verify the entire history with nothing but a CID and an internet connection. If your government could delete the evidence, they would. They cannot. It is on IPFS.`,
   },
   {
     id: "script-armory-hypercerts",

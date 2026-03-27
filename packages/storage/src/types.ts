@@ -41,6 +41,7 @@ const LinkedSnapshotBaseSchema = z.object({
 export const WishocracyAggregationSnapshotSchema = LinkedSnapshotBaseSchema.extend({
   type: z.literal('wishocracy-aggregation'),
   participantCount: z.number().int().nonnegative(),
+  verifiedParticipantCount: z.number().int().nonnegative().optional(),
   preferenceWeights: z.array(PreferenceWeightSnapshotSchema),
   consistencyRatio: z.number().min(0).optional(),
   convergenceAnalysis: ConvergenceAnalysisSchema.optional(),

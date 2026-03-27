@@ -4,14 +4,14 @@ import { useReducedMotion, motion } from "framer-motion";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
-const DOCUMENTS = [
-  { label: "FDA DELAY: 102M DEATHS", cid: "bafy...k7qR3" },
-  { label: "BUDGET: $2.72T MILITARY", cid: "bafy...xW9m2" },
-  { label: "TRIAL #4,847: MALARIA", cid: "bafy...pN4d8" },
-  { label: "WELFARE: 83 PROGRAMS", cid: "bafy...vT6j1" },
+const SNAPSHOTS = [
+  { label: "WISHOCRACY AGGREGATION", detail: "us-federal | 847 participants", cid: "bafy...k7qR3" },
+  { label: "POLICY ANALYSIS", detail: "12 categories | Grade B+", cid: "bafy...xW9m2" },
+  { label: "HEALTH ANALYSIS", detail: "N-of-1 | 180 days | encrypted", cid: "bafy...pN4d8" },
+  { label: "BUDGET OPTIMIZATION", detail: "$6.75T analyzed", cid: "bafy...vT6j1" },
 ] as const;
 
-/** Storacha slide — immutable evidence vault */
+/** Storacha slide — immutable evidence vault with CID chain */
 export default function StorachaSlide() {
   const reduced = useReducedMotion();
 
@@ -24,7 +24,7 @@ export default function StorachaSlide() {
         transition={{ duration: 0.4 }}
         className={`${ARCADE} text-xl sm:text-2xl md:text-3xl text-foreground uppercase mb-8`}
       >
-        STORACHA: IMMUTABLE EVIDENCE
+        STORACHA: IMMUTABLE EVIDENCE CHAIN
       </motion.h2>
 
       {/* Vault container */}
@@ -37,27 +37,43 @@ export default function StorachaSlide() {
         {/* Vault header */}
         <div className="border-4 border-background/30 bg-background/10 p-2 mb-4">
           <p className={`${ARCADE} text-xs sm:text-sm text-background uppercase tracking-wider`}>
-            IPFS VAULT &mdash; CONTENT-ADDRESSED STORAGE
+            IPFS VAULT &mdash; CONTENT-ADDRESSED &middot; CHAINED
           </p>
         </div>
 
-        {/* Document rows */}
-        <div className="space-y-3">
-          {DOCUMENTS.map((doc, i) => (
-            <motion.div
-              key={doc.cid}
-              initial={reduced ? false : { x: -30, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.15, duration: 0.3 }}
-              className="border-4 border-background/30 bg-background/5 p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
-            >
-              <span className={`${ARCADE} text-[10px] sm:text-xs text-background uppercase`}>
-                {doc.label}
-              </span>
-              <span className="font-mono text-[10px] text-brutal-cyan">
-                {doc.cid}
-              </span>
-            </motion.div>
+        {/* Snapshot rows with chain arrows */}
+        <div className="space-y-1">
+          {SNAPSHOTS.map((snap, i) => (
+            <div key={snap.cid}>
+              {i > 0 && (
+                <motion.div
+                  initial={reduced ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 + i * 0.15 - 0.05, duration: 0.2 }}
+                  className="flex justify-center py-0.5"
+                >
+                  <span className={`${ARCADE} text-xs text-brutal-cyan`}>&#x2191; previousCid</span>
+                </motion.div>
+              )}
+              <motion.div
+                initial={reduced ? false : { x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 + i * 0.15, duration: 0.3 }}
+                className="border-4 border-background/30 bg-background/5 p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
+              >
+                <div className="flex flex-col items-start">
+                  <span className={`${ARCADE} text-[10px] sm:text-xs text-background uppercase`}>
+                    {snap.label}
+                  </span>
+                  <span className="font-mono text-[9px] text-background/60">
+                    {snap.detail}
+                  </span>
+                </div>
+                <span className="font-mono text-[10px] text-brutal-cyan">
+                  {snap.cid}
+                </span>
+              </motion.div>
+            </div>
           ))}
         </div>
 
@@ -70,7 +86,7 @@ export default function StorachaSlide() {
           style={{ animation: "access-denied-pulse 1.5s step-end infinite" }}
         >
           <p className={`${ARCADE} text-sm sm:text-base text-brutal-red-foreground uppercase`}>
-            &#x1F6AB; ACCESS DENIED
+            &#x1F6AB; CHAIN VERIFIED &middot; TAMPER-PROOF
           </p>
         </motion.div>
       </motion.div>
@@ -82,9 +98,9 @@ export default function StorachaSlide() {
         transition={{ delay: 1.5, duration: 0.4 }}
         className={`${ARCADE} text-xs sm:text-sm text-foreground leading-relaxed max-w-lg`}
       >
-        Content-addressed. Immutable. Permanent.
+        Each record links to the last. Break the chain?
         <br />
-        No government can delete it.
+        The hash won&apos;t match.
       </motion.p>
 
       {/* Footer */}

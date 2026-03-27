@@ -1399,9 +1399,9 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dgao",
     narration:
-      "Every data point. Every budget. Every vote. Every death. Stored where no government can delete it, no lobbyist can edit it, and no administration can classify it. Your species has a long history of losing inconvenient evidence. This evidence has no address. It has a hash. Try deleting mathematics.",
+      "Every data point. Every budget. Every vote. Every death. Stored where no government can delete it, no lobbyist can edit it, and no administration can classify it. Each record links to the one before it — an unbreakable chain. Try deleting mathematics.",
     visual:
-      "Pixel art — a Sierra vault/archive room. Pixel-art filing cabinets, but instead of drawers they have glowing IPFS content-addressed blocks. Each block has a CID hash visible. A pixel government official tries to reach for a block — a force field repels them. A \"CONTENT-ADDRESSED\" badge pulses. Storacha and IPFS/Filecoin logos visible. A pixel document labeled \"FDA DELAY: 102M DEATHS\" sits in a block — immutable, permanent, unfalsifiable.",
+      "Pixel art — a Sierra vault/archive room. Four glowing IPFS content-addressed blocks chained together with visible links: WISHOCRACY AGGREGATION, POLICY ANALYSIS, HEALTH ANALYSIS, BUDGET OPTIMIZATION. Each block has a bafy... CID hash. Chain arrows connect them via previousCid links. A pixel government official tries to reach for a block — a force field repels them. Storacha and IPFS/Filecoin logos visible.",
     score: 5_200_000_000,
     showQuestMeters: true,
     sierraVerbs: [
@@ -1413,7 +1413,12 @@ RECURSIVE EXPONENTIAL THEFT`,
       {
         verb: "LOOK AT vault",
         response:
-          "Every outcome. Every budget. Every vote. Every death. Permanent. Public. Immutable. On my planet, this is called a filing cabinet. On yours, it is called radical transparency.",
+          "Four types of evidence. Preference aggregations. Policy analyses. Health outcomes. Budget optimisations. Each one chained to the last via CID links. Break the chain? The hash won't match. On my planet, this is called a filing cabinet. On yours, it is called radical transparency.",
+      },
+      {
+        verb: "VERIFY chain",
+        response:
+          "Pick any CID. Follow the previousCid link backwards. Every record, every timestamp, every jurisdiction — mathematically verifiable. No login required. No permission. Just a hash and an internet connection. Your species calls this trustless. I call it obvious.",
       },
     ],
   },

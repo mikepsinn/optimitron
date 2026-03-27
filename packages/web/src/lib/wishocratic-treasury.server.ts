@@ -126,6 +126,7 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
       const result = await storeLinkedAggregation(storachaClient, {
         jurisdictionId: "us-federal",
         participantCount: summary.totalUsers,
+        verifiedParticipantCount: summary.verifiedUsers,
         preferenceWeights,
       });
 

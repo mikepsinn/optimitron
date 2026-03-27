@@ -32,6 +32,7 @@ export interface WishocracyCommunityCategory {
 export interface WishocracyCommunitySummary {
   averageAllocations: Record<WishocraticItemId, number>;
   totalUsers: number;
+  verifiedUsers: number;
   totalAllocations: number;
   topCategories: WishocracyCommunityCategory[];
 }
@@ -94,6 +95,7 @@ function dedupeLatestAllocations(
 
 export function buildWishocracyCommunitySummary(
   allocations: WishocraticStoredAllocation[],
+  verifiedUserIds: ReadonlySet<string> = new Set(),
 ): WishocracyCommunitySummary {
   const averageAllocations = createEmptyAverageAllocations();
   const allocationsByUser = dedupeLatestAllocations(allocations);
@@ -102,14 +104,17 @@ export function buildWishocracyCommunitySummary(
     return {
       averageAllocations,
       totalUsers: 0,
+      verifiedUsers: 0,
       totalAllocations: 0,
       topCategories: [],
     };
   }
 
   let totalAllocations = 0;
-  for (const userComparisons of allocationsByUser.values()) {
+  let verifiedUsers = 0;
+  for (const [userId, userComparisons] of allocationsByUser.entries()) {
     totalAllocations += userComparisons.length;
+    if (verifiedUserIds.has(userId)) verifiedUsers++;
     const userAllocations = calculateAllocationsFromPairwise(userComparisons);
 
     for (const categoryId of Object.keys(WISHOCRATIC_ITEMS) as WishocraticItemId[]) {
@@ -124,6 +129,7 @@ export function buildWishocracyCommunitySummary(
   return {
     averageAllocations,
     totalUsers: allocationsByUser.size,
+    verifiedUsers,
     totalAllocations,
     topCategories: buildTopCategories(averageAllocations),
   };
@@ -131,18 +137,26 @@ export function buildWishocracyCommunitySummary(
 
 export async function getWishocracyCommunitySummary(): Promise<WishocracyCommunitySummary> {
   try {
-    const allocations = await prisma.wishocraticAllocation.findMany({
-      select: {
-        userId: true,
-        itemAId: true,
-        itemBId: true,
-        allocationA: true,
-        allocationB: true,
-        updatedAt: true,
-      },
-    });
+    const [allocations, verifiedVerifications] = await Promise.all([
+      prisma.wishocraticAllocation.findMany({
+        select: {
+          userId: true,
+          itemAId: true,
+          itemBId: true,
+          allocationA: true,
+          allocationB: true,
+          updatedAt: true,
+        },
+      }),
+      prisma.personhoodVerification.findMany({
+        where: { status: "VERIFIED", deletedAt: null },
+        select: { userId: true },
+        distinct: ["userId"],
+      }),
+    ]);
 
-    return buildWishocracyCommunitySummary(allocations);
+    const verifiedUserIds = new Set(verifiedVerifications.map((v) => v.userId));
+    return buildWishocracyCommunitySummary(allocations, verifiedUserIds);
   } catch (error) {
     logger.error("Failed to load wishocracy community summary", error);
     return buildWishocracyCommunitySummary([]);
