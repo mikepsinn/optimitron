@@ -116,7 +116,7 @@ export function SlideMisalignedProof() {
         className="opacity-15"
       />
 
-      <div className="w-full max-w-7xl mx-auto space-y-6">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Title */}
         <div className="text-center">
           <div className="font-pixel text-xs text-red-400/60 tracking-widest">

@@ -73,7 +73,7 @@ export function SlidePersonalUpside() {
     <SlideBase act={3} className="text-emerald-400">
       <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center">
+        <h1 className="font-pixel text-xl md:text-3xl text-amber-400 text-center">
           💾 SAVE SLOTS — CHOOSE YOUR TIMELINE
         </h1>
 
@@ -87,16 +87,16 @@ export function SlidePersonalUpside() {
               {/* Slot Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="font-pixel text-xs text-zinc-500">
+                  <span className="font-pixel text-sm md:text-base text-zinc-500">
                     SLOT {i + 1}:
                   </span>
-                  <span className={`font-pixel text-xs ${slot.textColor}`}>
+                  <span className={`font-pixel text-sm md:text-base ${slot.textColor}`}>
                     {slot.title}
                   </span>
                 </div>
                 {slot.tag && (
                   <span
-                    className={`font-pixel text-sm ${slot.tagColor} ${
+                    className={`font-pixel text-base md:text-lg ${slot.tagColor} ${
                       i === 1 ? "animate-pulse" : ""
                     }`}
                   >
@@ -108,10 +108,10 @@ export function SlidePersonalUpside() {
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <div className="font-pixel text-xs text-zinc-600 mb-1">
+                  <div className="font-pixel text-sm text-zinc-600 mb-1">
                     LIFETIME INCOME
                   </div>
-                  <div className={`font-pixel text-xs ${slot.textColor}`}>
+                  <div className={`font-pixel text-sm md:text-base ${slot.textColor}`}>
                     {formatCurrency(slot.lifetimeIncome)}{" "}
                     {slot.lifetimeLabel && (
                       <span className="text-zinc-500">
@@ -121,18 +121,18 @@ export function SlidePersonalUpside() {
                   </div>
                 </div>
                 <div>
-                  <div className="font-pixel text-xs text-zinc-600 mb-1">
+                  <div className="font-pixel text-sm text-zinc-600 mb-1">
                     HALE GAIN
                   </div>
-                  <div className={`font-pixel text-xs ${slot.textColor}`}>
+                  <div className={`font-pixel text-sm md:text-base ${slot.textColor}`}>
                     {slot.haleGain}
                   </div>
                 </div>
                 <div>
-                  <div className="font-pixel text-xs text-zinc-600 mb-1">
+                  <div className="font-pixel text-sm text-zinc-600 mb-1">
                     DYSFUNCTION TAX
                   </div>
-                  <div className={`font-pixel text-xs ${slot.textColor}`}>
+                  <div className={`font-pixel text-sm md:text-base ${slot.textColor}`}>
                     {slot.dysfunctionTax}
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export function SlidePersonalUpside() {
         </div>
 
         {/* Bottom Line */}
-        <p className="font-pixel text-sm md:text-xs text-zinc-500 text-center italic">
+        <p className="font-pixel text-sm md:text-base text-zinc-500 text-center italic">
           You are currently on Slot 1. You chose it by not choosing.
         </p>
       </div>

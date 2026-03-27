@@ -98,7 +98,7 @@ export function SlideReplaceFed() {
         }
       `}</style>
 
-      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center gap-4">
+      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4">
 
         {/* Phase 1 — Title */}
         <div

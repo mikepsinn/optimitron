@@ -83,7 +83,7 @@ export function SlideTheBug() {
         }
       `}</style>
 
-      <div className="flex flex-col items-center justify-center gap-5 max-w-5xl mx-auto w-full">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto w-full">
         {/* Phase 1: Bug report header */}
         {phase >= 1 && (
           <div className="w-full bg-zinc-900 border border-green-500/50 rounded-lg overflow-hidden row-enter">

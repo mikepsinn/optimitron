@@ -33,7 +33,7 @@ export function SlideGameTitle() {
 
   return (
     <SlideBase act={1} className="text-amber-400">
-      <div className="flex flex-col items-center justify-center gap-8 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-8 max-w-[1700px] mx-auto">
         {/* Main Title */}
         <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center leading-relaxed tracking-wide">
           THE EARTH OPTIMIZATION GAME

@@ -80,7 +80,7 @@ export function SlidePolicyEngine() {
         }
       `}</style>
 
-      <div className="flex flex-col items-center gap-5 w-full max-w-5xl mx-auto">
+      <div className="flex flex-col items-center gap-5 w-full max-w-[1700px] mx-auto">
 
         {/* Phase 1 — Title */}
         <div

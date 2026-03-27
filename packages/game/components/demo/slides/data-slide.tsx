@@ -100,7 +100,7 @@ export function DataSlide({ config }: DataSlideProps) {
 
   return (
     <SlideBase>
-      <div className="flex flex-col items-center justify-center gap-6 max-w-5xl w-full px-4">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] w-full px-4">
         {/* Chapter heading if present */}
         {config.chapter && (
           <div className="font-pixel text-xs sm:text-sm uppercase tracking-[0.3em] text-[var(--sierra-accent)] opacity-70">

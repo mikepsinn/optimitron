@@ -76,7 +76,7 @@ export function SlideGovernmentsAreAI() {
 
       {/* CRT Monitor Frame */}
       <div
-        className={`w-full max-w-7xl mx-auto transition-transform duration-100 ${
+        className={`w-full max-w-[1700px] mx-auto transition-transform duration-100 ${
           shaking ? "animate-[screen-shake_0.5s_ease-in-out]" : ""
         }`}
       >

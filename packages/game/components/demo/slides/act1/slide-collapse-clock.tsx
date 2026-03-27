@@ -35,7 +35,7 @@ export function SlideCollapseClock() {
 
   return (
     <SlideBase act={1} className="text-amber-500">
-      <div className="w-full max-w-7xl mx-auto space-y-6">
+      <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Title */}
         <h1 className="font-pixel text-lg md:text-2xl text-amber-400 text-center">
           THE ECONOMIC COLLAPSE CLOCK

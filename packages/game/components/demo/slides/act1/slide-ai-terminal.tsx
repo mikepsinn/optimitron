@@ -59,7 +59,7 @@ export function SlideAITerminal() {
       </div>
 
       {/* Terminal window */}
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-[1700px] mx-auto">
         {/* Terminal header */}
         <div className="bg-zinc-800 border-b border-zinc-700 px-4 py-2 flex items-center gap-2 rounded-t-lg">
           <div className="w-3 h-3 rounded-full bg-red-500" />

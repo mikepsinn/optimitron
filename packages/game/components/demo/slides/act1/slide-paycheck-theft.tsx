@@ -44,7 +44,7 @@ export function SlidePaycheckTheft() {
         THEY&apos;RE STEALING YOUR PAYCHECK
       </h1>
 
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-[1700px] mx-auto">
         {/* Sankey-style flow visualization */}
         <div className="relative h-64 md:h-80">
           {/* Your paycheck (left side) */}

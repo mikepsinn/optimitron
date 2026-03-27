@@ -46,7 +46,7 @@ export function SlideDeathCounter() {
 
   return (
     <SlideBase act={1} className="text-red-500">
-      <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center gap-4 relative h-full">
+      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4 relative h-full">
         {/* Top: "BUGS IN YOUR MEAT SOFTWARE / KILL" */}
         <div
           className={`text-center transition-opacity duration-1000 ${

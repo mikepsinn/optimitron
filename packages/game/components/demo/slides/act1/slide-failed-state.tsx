@@ -52,7 +52,7 @@ export function SlideFailedState() {
       </h1>
 
       {/* City visualization */}
-      <div className="relative w-full max-w-7xl aspect-video bg-zinc-900/50 border border-zinc-800 rounded-lg overflow-hidden">
+      <div className="relative w-full max-w-[1700px] aspect-video bg-zinc-900/50 border border-zinc-800 rounded-lg overflow-hidden">
         {/* Sky gradient that desaturates */}
         <div
           className="absolute inset-0 transition-all duration-1000"
@@ -126,7 +126,7 @@ export function SlideFailedState() {
       </div>
 
       {/* World map showing collapse */}
-      <div className="mt-6 w-full max-w-7xl">
+      <div className="mt-6 w-full max-w-[1700px]">
         <div className="font-pixel text-xs text-zinc-500 mb-2 text-center">
           NATIONS ENTERING FAILED STATE STATUS
         </div>

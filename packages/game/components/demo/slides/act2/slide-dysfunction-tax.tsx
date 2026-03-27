@@ -72,18 +72,18 @@ export function SlideDysfunctionTax() {
         {/* CRT Bug Report Title */}
         <div className="w-full bg-zinc-900 border border-red-500/50 rounded-lg overflow-hidden">
           <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2 flex items-center gap-2">
-            <span className="text-base">🐛</span>
-            <span className="font-pixel text-xs md:text-sm text-red-400">
+            <span className="text-lg">🐛</span>
+            <span className="font-pixel text-sm md:text-base text-red-400">
               BUG REPORT: pluralistic_ignorance.exe
             </span>
           </div>
 
           <div className="p-4 space-y-1">
-            <div className="font-pixel text-sm text-zinc-500">
+            <div className="font-pixel text-base text-zinc-500">
               Status:{" "}
               <span className="text-red-400 animate-pulse">ACTIVE</span>
             </div>
-            <div className="font-pixel text-sm text-zinc-500">
+            <div className="font-pixel text-base text-zinc-500">
               Severity: <span className="text-red-400">CRITICAL</span>
             </div>
           </div>
@@ -97,7 +97,7 @@ export function SlideDysfunctionTax() {
                 return (
                   <div
                     key={i}
-                    className="font-pixel text-sm text-zinc-600 text-center"
+                    className="font-pixel text-base text-zinc-600 text-center"
                   >
                     {item.label}
                   </div>
@@ -112,14 +112,14 @@ export function SlideDysfunctionTax() {
                   }`}
                 >
                   <span
-                    className={`font-pixel text-sm md:text-xs ${
+                    className={`font-pixel text-base md:text-lg ${
                       item.isTotal ? "text-red-400" : "text-zinc-400"
                     }`}
                   >
                     {item.label}
                   </span>
                   <span
-                    className={`font-pixel text-sm md:text-base ${
+                    className={`font-pixel text-base md:text-xl ${
                       item.isTotal ? "text-red-400" : "text-amber-400"
                     }`}
                   >
@@ -136,7 +136,7 @@ export function SlideDysfunctionTax() {
 
             {/* GDP percentage */}
             {visibleLines >= LINE_ITEMS.length && (
-              <div className="text-center font-pixel text-sm text-zinc-500 pt-1">
+              <div className="text-center font-pixel text-base text-zinc-500 pt-1">
                 (88% of global GDP)
               </div>
             )}
@@ -146,7 +146,7 @@ export function SlideDysfunctionTax() {
         {/* Typewriter footer */}
         <div className="h-8 flex items-center">
           {showFooter && (
-            <p className="font-pixel text-sm md:text-xs text-zinc-500 text-center italic">
+            <p className="font-pixel text-sm md:text-sm text-zinc-500 text-center italic">
               {footerText}
               <span className="animate-pulse">▊</span>
             </p>

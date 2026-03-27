@@ -50,7 +50,7 @@ export function SlideBase({ children, className, act }: SlideBaseProps) {
       />
 
       {/* Content */}
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-4 md:p-8">
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-6 md:px-12 py-4 md:py-6">
         {children}
       </div>
     </div>

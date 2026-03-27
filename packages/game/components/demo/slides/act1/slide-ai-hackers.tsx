@@ -37,7 +37,7 @@ export function SlideAIHackers() {
       </div>
 
       {/* Robot multiplication visualization */}
-      <div className="relative w-full max-w-7xl aspect-video bg-black/50 border border-purple-500/30 rounded-lg overflow-hidden">
+      <div className="relative w-full max-w-[1700px] aspect-video bg-black/50 border border-purple-500/30 rounded-lg overflow-hidden">
         {/* Grid of robots */}
         <div className="absolute inset-0 flex flex-wrap items-center justify-center content-center gap-1 p-4">
           {robots.map((_, i) => (

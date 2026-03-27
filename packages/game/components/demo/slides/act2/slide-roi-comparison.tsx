@@ -24,7 +24,7 @@ export function SlideRoiComparison() {
 
   return (
     <SlideBase act={2} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-8 w-full max-w-5xl mx-auto">
+      <div className="flex flex-col items-center justify-center gap-8 w-full max-w-[1700px] mx-auto">
 
         {/* Investment windows */}
         <div

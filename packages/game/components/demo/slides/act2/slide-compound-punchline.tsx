@@ -80,7 +80,7 @@ export function SlideCompoundPunchline() {
 
   return (
     <SlideBase act={2}>
-      <div className="flex flex-col gap-5 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col gap-5 w-full max-w-[1700px] mx-auto">
         {/* Phase 1: Title */}
         {phase >= 1 && (
           <h1 className="font-pixel text-sm md:text-lg text-amber-400 text-center slide-fade-in">

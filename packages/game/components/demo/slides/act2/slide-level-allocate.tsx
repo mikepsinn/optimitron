@@ -43,38 +43,38 @@ export function SlideLevelAllocate() {
     <SlideBase act={2} className="text-emerald-400">
       {/* Level header */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-xs text-emerald-300/60 mb-1">LEVEL 1</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-emerald-400">
+        <div className="font-pixel text-sm md:text-base text-emerald-300/60 mb-1">LEVEL 1</div>
+        <h1 className="font-pixel text-2xl md:text-3xl text-emerald-400">
           ALLOCATE
         </h1>
-        <div className="font-terminal text-sm text-zinc-400 mt-2">
+        <div className="font-terminal text-base md:text-lg text-zinc-400 mt-2">
           Direct funding to research priorities
         </div>
       </div>
 
       <div className="w-full max-w-7xl mx-auto space-y-6">
         {/* Allocation interface */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.map((cat) => {
             const allocation = allocations[cat.id] || 0;
             return (
               <div
                 key={cat.id}
-                className="bg-black/40 border border-zinc-700 p-3 rounded transition-all duration-300"
+                className="bg-black/40 border border-zinc-700 p-4 rounded transition-all duration-300"
                 style={{
                   borderColor: allocation > 0 ? cat.color : undefined,
                   opacity: allocation > 0 ? 1 : 0.5,
                 }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">{cat.icon}</span>
-                  <span className="font-pixel text-sm text-zinc-300 truncate">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">{cat.icon}</span>
+                  <span className="font-pixel text-base md:text-lg text-zinc-300 truncate">
                     {cat.label}
                   </span>
                 </div>
-                
+
                 {/* Allocation bar */}
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
                   <div
                     className="h-full transition-all duration-500"
                     style={{
@@ -83,9 +83,9 @@ export function SlideLevelAllocate() {
                     }}
                   />
                 </div>
-                
+
                 {/* Percentage */}
-                <div className="font-pixel text-xs text-right mt-1" style={{ color: cat.color }}>
+                <div className="font-pixel text-sm md:text-base text-right mt-2" style={{ color: cat.color }}>
                   {allocation}%
                 </div>
               </div>
@@ -96,8 +96,8 @@ export function SlideLevelAllocate() {
         {/* Total allocated */}
         <div className="text-center">
           <div className="inline-block bg-black/60 border border-emerald-500/30 px-6 py-3 rounded">
-            <div className="font-pixel text-xs text-emerald-300/60 mb-1">TOTAL ALLOCATED</div>
-            <div className="font-pixel text-2xl text-emerald-400">
+            <div className="font-pixel text-sm md:text-base text-emerald-300/60 mb-1">TOTAL ALLOCATED</div>
+            <div className="font-pixel text-3xl md:text-4xl text-emerald-400">
               {totalAllocated}%
             </div>
           </div>
@@ -106,27 +106,16 @@ export function SlideLevelAllocate() {
         {/* Completion message */}
         {showComplete && (
           <div className="text-center space-y-3 animate-fade-in">
-            <div className="font-pixel text-sm text-cyan-400">
+            <div className="font-pixel text-base md:text-lg text-cyan-400">
               ALLOCATION COMPLETE
             </div>
             <div className="flex justify-center gap-2">
-              <span className="font-pixel text-xs text-zinc-500">ITEM ACQUIRED:</span>
-              <span className="font-pixel text-xs text-amber-400">Budget Allocation</span>
+              <span className="font-pixel text-sm md:text-base text-zinc-500">ITEM ACQUIRED:</span>
+              <span className="font-pixel text-sm md:text-base text-amber-400">Budget Allocation</span>
               <span>📊</span>
             </div>
           </div>
         )}
-
-        {/* How it works */}
-        <div className="bg-black/30 border border-zinc-800 p-4 rounded">
-          <div className="font-pixel text-xs text-zinc-400 mb-2">HOW IT WORKS:</div>
-          <ul className="font-terminal text-xs text-zinc-500 space-y-1">
-            <li>• You decide where treaty funds go</li>
-            <li>• Allocations aggregated across all players</li>
-            <li>• Most popular categories receive more funding</li>
-            <li>• Your voice shapes global health research</li>
-          </ul>
-        </div>
       </div>
 
       <style jsx>{`

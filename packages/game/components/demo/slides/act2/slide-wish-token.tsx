@@ -46,7 +46,7 @@ export function SlideWishToken() {
     <SlideBase act={2} className="text-yellow-400">
       <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-xl text-yellow-400 text-center">
+        <h1 className="font-pixel text-xl md:text-2xl text-yellow-400 text-center">
           $WISH TOKEN — THREE REPLACEMENTS
         </h1>
 
@@ -57,24 +57,24 @@ export function SlideWishToken() {
               {/* Government side */}
               <div className="flex-1 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{r.gov.icon}</span>
-                  <span className="font-pixel text-xs text-red-400">{r.gov.name}</span>
+                  <span className="text-xl">{r.gov.icon}</span>
+                  <span className="font-pixel text-sm md:text-base text-red-400">{r.gov.name}</span>
                 </div>
-                <div className="font-terminal text-sm text-zinc-500">{r.gov.detail}</div>
+                <div className="font-terminal text-sm md:text-base text-zinc-500">{r.gov.detail}</div>
               </div>
 
               {/* Arrow */}
               <div className="flex items-center">
-                <span className="font-pixel text-lg text-yellow-500/60">→</span>
+                <span className="font-pixel text-xl text-yellow-500/60">→</span>
               </div>
 
               {/* Smart contract side */}
               <div className="flex-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{r.contract.icon}</span>
-                  <span className="font-pixel text-xs text-emerald-400">{r.contract.name}</span>
+                  <span className="text-xl">{r.contract.icon}</span>
+                  <span className="font-pixel text-sm md:text-base text-emerald-400">{r.contract.name}</span>
                 </div>
-                <div className="font-terminal text-sm text-zinc-400">{r.contract.detail}</div>
+                <div className="font-terminal text-sm md:text-base text-zinc-400">{r.contract.detail}</div>
               </div>
             </div>
           ))}
@@ -82,10 +82,10 @@ export function SlideWishToken() {
 
         {/* Bottom line */}
         <div className="text-center space-y-1">
-          <p className="font-pixel text-sm md:text-xs text-yellow-300">
+          <p className="font-pixel text-base md:text-lg text-yellow-300">
             Tax + Welfare + Money = 3 smart contracts.
           </p>
-          <p className="font-pixel text-xs text-zinc-500 italic">
+          <p className="font-pixel text-sm md:text-base text-zinc-500 italic">
             Your government uses 200,000 employees for this.
           </p>
         </div>

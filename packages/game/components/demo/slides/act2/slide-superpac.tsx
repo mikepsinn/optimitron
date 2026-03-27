@@ -15,12 +15,12 @@ export function SlideSuperpac() {
     <SlideBase act={2} className="text-yellow-400">
       <div className="flex flex-col items-center justify-center gap-5 max-w-7xl mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-lg md:text-2xl text-yellow-400 text-center">
+        <h1 className="font-pixel text-xl md:text-3xl text-yellow-400 text-center">
           THE ALIGNMENT SUPERPAC
         </h1>
 
         {/* Concept */}
-        <div className="font-terminal text-sm text-zinc-400 text-center">
+        <div className="font-terminal text-base md:text-lg text-zinc-400 text-center">
           Smart contract replaces lobbyists
         </div>
 
@@ -29,7 +29,7 @@ export function SlideSuperpac() {
           <div className="font-pixel text-2xl line-through decoration-red-500 decoration-2 opacity-60">
             🤵 LOBBYIST
           </div>
-          <div className="font-pixel text-xs text-emerald-400 mt-1">
+          <div className="font-pixel text-sm md:text-base text-emerald-400 mt-1">
             REPLACED BY SMART CONTRACT
           </div>
         </div>
@@ -46,9 +46,9 @@ export function SlideSuperpac() {
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className="font-pixel text-xs text-zinc-300">{p.name}</span>
+                <span className="font-pixel text-sm md:text-base text-zinc-300">{p.name}</span>
                 <span
-                  className={`font-pixel text-sm ${
+                  className={`font-pixel text-base md:text-lg ${
                     p.voted ? "text-emerald-400" : "text-red-400"
                   }`}
                 >
@@ -58,11 +58,11 @@ export function SlideSuperpac() {
               <div className="flex items-center gap-2">
                 {p.voted ? (
                   <>
-                    <span className="font-pixel text-sm">🪙🪙🪙</span>
-                    <span className="font-pixel text-sm text-yellow-400">FUNDED</span>
+                    <span className="font-pixel text-base">🪙🪙🪙</span>
+                    <span className="font-pixel text-base md:text-lg text-yellow-400">FUNDED</span>
                   </>
                 ) : (
-                  <span className="font-pixel text-sm text-zinc-600">NOTHING</span>
+                  <span className="font-pixel text-base md:text-lg text-zinc-600">NOTHING</span>
                 )}
               </div>
             </div>
@@ -71,13 +71,13 @@ export function SlideSuperpac() {
 
         {/* Key points */}
         <div className="space-y-1 text-center">
-          <div className="font-pixel text-sm text-emerald-400">
+          <div className="font-pixel text-base md:text-lg text-emerald-400">
             Vote for treaty → automatic funding
           </div>
-          <div className="font-pixel text-sm text-red-400/60">
+          <div className="font-pixel text-base md:text-lg text-red-400/60">
             Vote against → nothing
           </div>
-          <div className="font-pixel text-sm text-zinc-500 italic mt-2">
+          <div className="font-pixel text-sm md:text-base text-zinc-500 italic mt-2">
             No dinners. No lobbyists. No phone calls.
           </div>
         </div>

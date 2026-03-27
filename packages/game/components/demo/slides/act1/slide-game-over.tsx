@@ -34,7 +34,7 @@ export function SlideGameOver() {
         }}
       >
         {/* Static content that "freezes" */}
-        <div className="w-full max-w-7xl aspect-video bg-zinc-900/80 border border-zinc-700 p-8 relative">
+        <div className="w-full max-w-[1700px] aspect-video bg-zinc-900/80 border border-zinc-700 p-8 relative">
           {/* Frozen city scene */}
           <div className="grid grid-cols-5 gap-4 opacity-50">
             {["🏚️", "🏚️", "🏭", "🏥", "🏫"].map((e, i) => (

@@ -86,11 +86,11 @@ export function SlideLevelShare() {
     <SlideBase act={2} className="text-purple-400">
       {/* Level header */}
       <div className="text-center mb-4">
-        <div className="font-pixel text-xs text-purple-300/60 mb-1">LEVEL 3</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-purple-400">
+        <div className="font-pixel text-sm text-purple-300/60 mb-1">LEVEL 3</div>
+        <h1 className="font-pixel text-2xl md:text-4xl text-purple-400">
           SHARE
         </h1>
-        <div className="font-terminal text-sm text-zinc-400 mt-2">
+        <div className="font-terminal text-base md:text-lg text-zinc-400 mt-2">
           Spread the word, expand the network
         </div>
       </div>
@@ -143,7 +143,7 @@ export function SlideLevelShare() {
           </svg>
 
           {/* Stats overlay */}
-          <div className="absolute top-3 left-3 font-pixel text-xs">
+          <div className="absolute top-3 left-3 font-pixel text-sm md:text-base">
             <div className="text-purple-400">
               NETWORK: {nodes.length} nodes
             </div>
@@ -154,7 +154,7 @@ export function SlideLevelShare() {
 
           {/* Center label */}
           <div
-            className="absolute font-pixel text-sm text-purple-400 text-center"
+            className="absolute font-pixel text-base md:text-lg text-purple-400 text-center"
             style={{ left: "50%", top: "50%", transform: "translate(-50%, -150%)" }}
           >
             YOU
@@ -174,19 +174,19 @@ export function SlideLevelShare() {
               className="bg-black/40 border border-purple-500/30 p-3 rounded text-center hover:border-purple-500/60 transition-colors"
             >
               <div className="text-2xl mb-1">{method.icon}</div>
-              <div className="font-pixel text-xs text-purple-300">{method.label}</div>
-              <div className="font-pixel text-sm text-purple-400">{method.multiplier}</div>
+              <div className="font-pixel text-sm md:text-base text-purple-300">{method.label}</div>
+              <div className="font-pixel text-base md:text-lg text-purple-400">{method.multiplier}</div>
             </div>
           ))}
         </div>
 
         {/* Viral equation */}
         <div className="bg-black/30 border border-zinc-800 p-4 rounded text-center">
-          <div className="font-pixel text-xs text-zinc-500 mb-2">VIRAL COEFFICIENT</div>
-          <div className="font-pixel text-xl text-purple-400">
+          <div className="font-pixel text-sm md:text-base text-zinc-500 mb-2">VIRAL COEFFICIENT</div>
+          <div className="font-pixel text-2xl md:text-3xl text-purple-400">
             1 person → 3 people → 9 people → 27 people
           </div>
-          <div className="font-terminal text-xs text-zinc-500 mt-2">
+          <div className="font-terminal text-sm md:text-base text-zinc-500 mt-2">
             Each share multiplies impact exponentially
           </div>
         </div>
@@ -194,9 +194,9 @@ export function SlideLevelShare() {
         {/* Referral bonus */}
         <div className="flex items-center justify-center gap-4">
           <div className="text-center">
-            <div className="font-pixel text-xs text-amber-300/60">REFERRAL BONUS</div>
-            <div className="font-pixel text-lg text-amber-400">+10 VOTE points</div>
-            <div className="font-pixel text-xs text-zinc-500">per signup</div>
+            <div className="font-pixel text-sm md:text-base text-amber-300/60">REFERRAL BONUS</div>
+            <div className="font-pixel text-xl md:text-2xl text-amber-400">+10 VOTE points</div>
+            <div className="font-pixel text-sm md:text-base text-zinc-500">per signup</div>
           </div>
         </div>
       </div>
