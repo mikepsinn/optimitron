@@ -6,7 +6,7 @@
  * BLS (productivity), EPI (compensation)
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 /** Median household income measured in gold ounces — purchasing power */
 export const MEDIAN_INCOME_IN_GOLD_DETAILED: TimePoint[] = [

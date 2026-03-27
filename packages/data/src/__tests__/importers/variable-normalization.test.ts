@@ -6,14 +6,14 @@
  */
 import { describe, it, expect } from 'vitest';
 
-import { parseAppleHealthXML } from '../../importers/apple-health.js';
-import { parseFitbitExport } from '../../importers/fitbit.js';
-import { parseOuraExport } from '../../importers/oura.js';
-import { parseMyFitnessPalExport } from '../../importers/myfitnesspal.js';
-import { parseWithingsExport } from '../../importers/withings.js';
-import { parseGoogleFitExport } from '../../importers/google-fit.js';
-import { parseCronometerExport } from '../../importers/cronometer.js';
-import { parseStravaActivitiesCsv } from '../../importers/strava.js';
+import { parseAppleHealthXML } from '../../importers/apple-health';
+import { parseFitbitExport } from '../../importers/fitbit';
+import { parseOuraExport } from '../../importers/oura';
+import { parseMyFitnessPalExport } from '../../importers/myfitnesspal';
+import { parseWithingsExport } from '../../importers/withings';
+import { parseGoogleFitExport } from '../../importers/google-fit';
+import { parseCronometerExport } from '../../importers/cronometer';
+import { parseStravaActivitiesCsv } from '../../importers/strava';
 
 // ── Fitbit: "Daily Step Count" → "Steps" ──────────────────────────────────
 

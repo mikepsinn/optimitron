@@ -1,10 +1,10 @@
-import type { DerivedOecdMedianDisposableIncomePoint } from '../fetchers/oecd-income-distribution.js';
-import type { DerivedEurostatMedianDisposableIncomePoint } from '../fetchers/eurostat-income.js';
-import type { PIPCountryData } from '../fetchers/world-bank-pip.js';
+import type { DerivedOecdMedianDisposableIncomePoint } from '../fetchers/oecd-income-distribution';
+import type { DerivedEurostatMedianDisposableIncomePoint } from '../fetchers/eurostat-income';
+import type { PIPCountryData } from '../fetchers/world-bank-pip';
 import type {
   MedianIncomeSeriesMetadata,
   MedianIncomeSeriesRecord,
-} from './median-income-types.js';
+} from './median-income-types';
 
 export function buildPipMedianIncomeSeries(
   records: PIPCountryData[],
@@ -222,7 +222,7 @@ export function renderGeneratedMedianIncomeModule(
 import type {
   MedianIncomeSeriesMetadata,
   MedianIncomeSeriesRecord,
-} from '../datasets/median-income-types.js';
+} from '../datasets/median-income-types';
 
 export const MEDIAN_INCOME_SERIES_METADATA: MedianIncomeSeriesMetadata = ${JSON.stringify(metadata, null, 2)};
 

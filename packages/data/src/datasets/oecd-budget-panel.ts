@@ -864,7 +864,7 @@ const data: OECDBudgetPanelDataPoint[] = [
 
 // ─── Enrich with Median Income Data ──────────────────────────────────
 
-import { getBestAvailableMedianIncomeSeries } from './median-income-series.js';
+import { getBestAvailableMedianIncomeSeries } from './median-income-series';
 
 /** Build a lookup: "ISO3:YEAR" → median income value (real PPP) */
 function buildMedianIncomeLookup(): Map<string, number> {

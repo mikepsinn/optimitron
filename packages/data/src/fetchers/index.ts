@@ -1,13 +1,13 @@
 /**
  * Re-export all API data fetchers.
  */
-export * from './oecd.js';
-export * from './world-bank.js';
-export * from './who.js';
-export * from './fred.js';
-export * from './congress.js';
-export * from './usaspending.js';
-export * from './world-bank-pip.js';
-export * from './oecd-income-distribution.js';
-export * from './eurostat-income.js';
-export * from './median-income.js';
+export * from './oecd';
+export * from './world-bank';
+export * from './who';
+export * from './fred';
+export * from './congress';
+export * from './usaspending';
+export * from './world-bank-pip';
+export * from './oecd-income-distribution';
+export * from './eurostat-income';
+export * from './median-income';

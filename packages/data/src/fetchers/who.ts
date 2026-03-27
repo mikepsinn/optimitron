@@ -8,7 +8,7 @@
  * Endpoint:  https://ghoapi.azureedge.net/api/
  */
 
-import type { DataPoint, FetchOptions } from '../types.js';
+import type { DataPoint, FetchOptions } from '../types';
 
 const GHO_API_BASE = 'https://ghoapi.azureedge.net/api';
 const WHO_MAX_FETCH_ATTEMPTS = 3;

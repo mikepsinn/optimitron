@@ -7,7 +7,7 @@
  * Friedman & Schwartz "A Monetary History of the United States"
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 /** Real GDP per capita (1800-2024, in 2012 dollars) — shows massive growth WITHOUT the Fed */
 export const REAL_GDP_PER_CAPITA: TimePoint[] = [

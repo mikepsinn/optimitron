@@ -11,7 +11,7 @@
  * - EAG: Education at a Glance
  */
 
-import type { SpendingData, OutcomeData, FetchOptions } from '../types.js';
+import type { SpendingData, OutcomeData, FetchOptions } from '../types';
 
 const OECD_API_BASE = 'https://stats.oecd.org/SDMX-JSON/data';
 

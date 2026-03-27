@@ -1,25 +1,25 @@
 import {
   fetchEurostatMedianDisposableIncomeSeries,
-} from '../fetchers/eurostat-income.js';
+} from '../fetchers/eurostat-income';
 import {
   deriveOecdRealMedianDisposableIncome,
   fetchOECDIDDPoints,
   OECD_IDD_SELECTORS,
-} from '../fetchers/oecd-income-distribution.js';
+} from '../fetchers/oecd-income-distribution';
 import {
   GENERATED_MEDIAN_INCOME_SERIES,
   MEDIAN_INCOME_SERIES_METADATA,
-} from '../generated/median-income-series.js';
+} from '../generated/median-income-series';
 import {
   buildEurostatMedianIncomeSeries,
   buildOecdMedianIncomeSeries,
-} from './median-income-series-build.js';
+} from './median-income-series-build';
 import type {
   MedianIncomeSeriesQuery,
   MedianIncomeSeriesRecord,
-} from './median-income-types.js';
+} from './median-income-types';
 
-export * from './median-income-types.js';
+export * from './median-income-types';
 
 export { MEDIAN_INCOME_SERIES_METADATA };
 

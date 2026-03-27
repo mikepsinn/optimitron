@@ -3,7 +3,7 @@
  * Each dataset shows a category of death that could be reduced to near-zero with known interventions.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export interface PreventableDeathCategory {
   id: string;

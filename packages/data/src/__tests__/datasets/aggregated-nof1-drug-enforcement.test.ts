@@ -4,7 +4,7 @@ import {
   DEFAULT_AGGREGATED_NOF1_DRUG_ENFORCEMENT_PANEL_PATH,
   loadAggregatedNOf1DrugEnforcementPanel,
   parseAggregatedNOf1DrugEnforcementCsv,
-} from '../../datasets/aggregated-nof1-drug-enforcement.js';
+} from '../../datasets/aggregated-nof1-drug-enforcement';
 
 describe('aggregated-nof1-drug-enforcement dataset', () => {
   it('parses csv text into typed rows', () => {

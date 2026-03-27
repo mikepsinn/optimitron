@@ -1,4 +1,4 @@
-import type { FetchOptions } from '../types.js';
+import type { FetchOptions } from '../types';
 
 export type MedianIncomeConcept =
   | 'median_income'

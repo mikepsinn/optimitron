@@ -15,13 +15,13 @@ import {
   fetchBillSubjects,
   fetchBillVotes,
   fetchRollCallVote,
-} from '../../fetchers/congress.js';
+} from '../../fetchers/congress';
 import type {
   RawMemberListItem,
   RawMemberDetail,
   RawBillListItem,
   RawBillDetail,
-} from '../../fetchers/congress.js';
+} from '../../fetchers/congress';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

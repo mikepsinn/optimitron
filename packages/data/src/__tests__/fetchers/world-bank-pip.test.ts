@@ -7,7 +7,7 @@ import {
   parsePIPRecords,
   pickLatestPIPCountryData,
   type PIPResponse,
-} from '../../fetchers/world-bank-pip.js';
+} from '../../fetchers/world-bank-pip';
 
 const mockResponses: PIPResponse[] = [
   {

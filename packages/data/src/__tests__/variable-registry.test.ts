@@ -8,7 +8,7 @@ import {
   listPredictorsByDiscretionary,
   listVariablesByKind,
   listVariablesByScope,
-} from '../variable-registry.js';
+} from '../variable-registry';
 
 describe('variable registry', () => {
   it('validates against schema', () => {

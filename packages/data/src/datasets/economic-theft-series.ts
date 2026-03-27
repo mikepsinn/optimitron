@@ -8,7 +8,7 @@
  * Sources: EPI, Census Bureau, Macrotrends, FRED, BLS, FDIC, CRS.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 // ---------------------------------------------------------------------------
 // Types

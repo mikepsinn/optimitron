@@ -6,7 +6,7 @@ import {
   getUnitCategory,
   getUnitDefinition,
   UNIT_DEFINITIONS,
-} from '../unit-conversion.js';
+} from '../unit-conversion';
 
 // ---------------------------------------------------------------------------
 // normalizeUnit

@@ -3,7 +3,7 @@
  * Source: Capitol Trades, Unusual Whales, STOCK Act disclosures
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export interface CongressionalTradingStat {
   metric: string;

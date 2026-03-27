@@ -7,7 +7,7 @@ import {
   parseFitbitBodyFile,
   parseFitbitExport,
   summarizeFitbitExport,
-} from '../../importers/fitbit.js';
+} from '../../importers/fitbit';
 
 // ---------------------------------------------------------------------------
 // Sample data

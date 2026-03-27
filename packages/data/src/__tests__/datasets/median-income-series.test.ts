@@ -7,9 +7,9 @@ import {
   getBestAvailableMedianIncomeSeriesFromRecords,
   isStrictAfterTaxMedianIncomeRecord,
   rankMedianIncomeRecord,
-} from '../../datasets/median-income-series.js';
-import type { MedianIncomeSeriesRecord } from '../../datasets/median-income-types.js';
-import { OECD_IDD_SELECTORS } from '../../fetchers/oecd-income-distribution.js';
+} from '../../datasets/median-income-series';
+import type { MedianIncomeSeriesRecord } from '../../datasets/median-income-types';
+import { OECD_IDD_SELECTORS } from '../../fetchers/oecd-income-distribution';
 
 const sampleRecords: MedianIncomeSeriesRecord[] = [
   {

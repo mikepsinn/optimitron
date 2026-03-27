@@ -11,7 +11,7 @@
  * @see https://pip.worldbank.org
  */
 
-import type { FetchOptions } from '../types.js';
+import type { FetchOptions } from '../types';
 
 export type PIPWelfareType = 'income' | 'consumption';
 

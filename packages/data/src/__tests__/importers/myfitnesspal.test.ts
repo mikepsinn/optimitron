@@ -3,7 +3,7 @@ import {
   parseMyFitnessPalExport,
   parseMyFitnessPalExercise,
   summarizeMyFitnessPalExport,
-} from '../../importers/myfitnesspal.js';
+} from '../../importers/myfitnesspal';
 
 // ---------------------------------------------------------------------------
 // Sample data

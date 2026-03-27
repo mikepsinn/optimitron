@@ -4,7 +4,7 @@ import {
   autoDetectCsvColumns,
   detectDelimiter,
   summarizeGenericCsvImport,
-} from '../../importers/csv-generic.js';
+} from '../../importers/csv-generic';
 
 // ---------------------------------------------------------------------------
 // Sample data

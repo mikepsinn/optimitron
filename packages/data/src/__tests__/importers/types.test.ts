@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { buildImportSummary } from '../../importers/types.js';
-import type { ParsedHealthRecord } from '../../importers/apple-health.js';
+import { buildImportSummary } from '../../importers/types';
+import type { ParsedHealthRecord } from '../../importers/apple-health';
 
 describe('buildImportSummary', () => {
   it('returns empty summary for empty records', () => {

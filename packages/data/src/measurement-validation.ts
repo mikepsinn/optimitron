@@ -11,11 +11,11 @@
  * @see https://dfda-spec.warondisease.org
  */
 
-import { getUnitDefinition, normalizeUnit } from './unit-conversion.js';
+import { getUnitDefinition, normalizeUnit } from './unit-conversion';
 import {
   STANDARD_VARIABLES,
   type StandardVariableDefinition,
-} from './importers/standard-variable-names.js';
+} from './importers/standard-variable-names';
 
 // ---------------------------------------------------------------------------
 // Types

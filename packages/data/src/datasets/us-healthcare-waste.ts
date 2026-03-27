@@ -3,7 +3,7 @@
  * The US spends $4.5T/yr on healthcare and gets worse outcomes than countries spending 1/4 as much.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export interface HealthcareWasteCategory {
   id: string;

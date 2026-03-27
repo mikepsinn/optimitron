@@ -26,14 +26,14 @@
  * TODO: Port from legacy API — Air Quality connector
  * See https://github.com/mikepsinn/curedao-api/blob/main/app/DataSources/Connectors/AirQualityConnector.php
  */
-export * from './types.js';
-export * from './standard-variable-names.js';
-export * from './apple-health.js';
-export * from './fitbit.js';
-export * from './oura.js';
-export * from './myfitnesspal.js';
-export * from './withings.js';
-export * from './google-fit.js';
-export * from './cronometer.js';
-export * from './strava.js';
-export * from './csv-generic.js';
+export * from './types';
+export * from './standard-variable-names';
+export * from './apple-health';
+export * from './fitbit';
+export * from './oura';
+export * from './myfitnesspal';
+export * from './withings';
+export * from './google-fit';
+export * from './cronometer';
+export * from './strava';
+export * from './csv-generic';

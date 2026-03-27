@@ -34,7 +34,7 @@
  * innovation, and macroeconomic effects.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 // ---------------------------------------------------------------------------
 // Types

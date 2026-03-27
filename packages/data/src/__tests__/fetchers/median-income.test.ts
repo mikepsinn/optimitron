@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   fetchAfterTaxMedianIncomePpp,
   fetchStrictAfterTaxMedianIncomePpp,
-} from '../../fetchers/median-income.js';
-import * as medianIncomeDataset from '../../datasets/median-income-series.js';
+} from '../../fetchers/median-income';
+import * as medianIncomeDataset from '../../datasets/median-income-series';
 
 describe('Median Income Fetchers', () => {
   it('fetchAfterTaxMedianIncomePpp converts best-available records to DataPoint rows', async () => {

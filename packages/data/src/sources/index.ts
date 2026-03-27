@@ -1,2 +1,2 @@
-export * from './oecd.js';
-export * from './world-bank.js';
+export * from './oecd';
+export * from './world-bank';

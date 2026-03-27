@@ -7,8 +7,8 @@ import {
   fetchGDPGrowth,
   getFREDApiKey,
   FRED_SERIES,
-} from '../../fetchers/fred.js';
-import type { FREDObservation, FREDObservationsResponse } from '../../fetchers/fred.js';
+} from '../../fetchers/fred';
+import type { FREDObservation, FREDObservationsResponse } from '../../fetchers/fred';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

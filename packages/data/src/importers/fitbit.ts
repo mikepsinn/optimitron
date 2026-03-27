@@ -28,9 +28,9 @@
  * ```
  */
 
-import type { ParsedHealthRecord } from './apple-health.js';
-import { resolveVariableName } from './standard-variable-names.js';
-import { buildImportSummary, type ImportSummary } from './types.js';
+import type { ParsedHealthRecord } from './apple-health';
+import { resolveVariableName } from './standard-variable-names';
+import { buildImportSummary, type ImportSummary } from './types';
 
 // ---------------------------------------------------------------------------
 // Constants

@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.210Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** spendingBillions — unit: USD_2023_billions */
 export const GLOBAL_MILITARY_SPENDING_HISTORICAL_SPENDINGBILLIONS: TimePoint[] = [

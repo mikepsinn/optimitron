@@ -5,7 +5,7 @@ import {
   deflateAndPerCapita,
   CPI,
   POPULATION_MILLIONS,
-} from './deflate.js';
+} from './deflate';
 
 describe('deflateToRealDollars', () => {
   it('inflates 1980 dollars to be worth more in 2023 terms', () => {

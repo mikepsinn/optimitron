@@ -32,56 +32,59 @@
  */
 
 // Types
-export * from './types.js';
+export * from './types';
 
 // Data sources (legacy)
-export * from './sources/index.js';
+export * from './sources/index';
 
 // API fetchers (OECD, World Bank, WHO, FRED)
 // Exported as namespace to avoid name collisions with legacy sources
-export * as fetchers from './fetchers/index.js';
+export * as fetchers from './fetchers/index';
 
 // CSV loader (Gapminder-format parser).
 // NOT barrel-exported — contains Node.js APIs (node:fs, node:url) that break browser bundling.
 // Import directly when needed: import { parseGapminderCsv } from '@optimitron/data/csv-loader'
 
 // Economic data catalog
-export * from './catalog.js';
+export * from './catalog';
 
 // Health data importers (Apple Health, etc.)
-export * from './importers/index.js';
+export * from './importers/index';
 
 // Unit conversion system
-export * from './unit-conversion.js';
+export * from './unit-conversion';
 
 // Daily value aggregation
-export * from './daily-aggregation.js';
+export * from './daily-aggregation';
 
 // Measurement validation
-export * from './measurement-validation.js';
+export * from './measurement-validation';
 
 // Variable statistics (unit-level & global aggregation)
-export * from './variable-statistics.js';
+export * from './variable-statistics';
 
 // Canonical predictor/outcome registry for explorer workflows
-export * from './variable-registry.js';
+export * from './variable-registry';
 
 // Curated datasets (US federal budget, evidence-based policies)
-export * from './datasets/index.js';
+export * from './datasets/index';
+
+// Wishocratic items registry (jurisdiction-aware item lookup)
+export * from './wishocratic-items-registry';
 
 // Jurisdiction registry
-export * from './jurisdictions.js';
+export * from './jurisdictions';
 
 // Inflation-adjustment & per-capita conversion
-export * from './inflation-adjustment.js';
+export * from './inflation-adjustment';
 
 // Misc utilities
-export * from './utils/index.js';
+export * from './utils/index';
 
 // Economic model parameters, citations, and formatters (use @optimitron/data/parameters for full access)
-export type { Parameter, Citation, SourceType, Confidence, ParameterName } from './parameters/index.js';
-export type { FormatParameterOptions } from './parameters/index.js';
+export type { Parameter, Citation, SourceType, Confidence, ParameterName } from './parameters/index';
+export type { FormatParameterOptions } from './parameters/index';
 
 // Version
 export const VERSION = '0.1.0';
-export * from './pipelines/fetch-country-timeseries.js';
+export * from './pipelines/fetch-country-timeseries';

@@ -6,13 +6,13 @@
  * Add new jurisdictions by importing their data and registering here.
  */
 
-import { US_FEDERAL_BUDGET } from './datasets/us-federal-budget.js';
-import type { JurisdictionBudget } from './datasets/jurisdiction-budget.js';
-import type { WishocraticItemDefinition } from './datasets/us-wishocratic-items.js';
+import { US_FEDERAL_BUDGET } from './datasets/us-federal-budget';
+import type { JurisdictionBudget } from './datasets/jurisdiction-budget';
+import type { WishocraticItemDefinition } from './datasets/us-wishocratic-items';
 import {
   DEFAULT_WISHOCRATIC_ITEMS_JURISDICTION_CODE,
   WISHOCRATIC_ITEMS_BY_JURISDICTION,
-} from './wishocratic-items-registry.js';
+} from './wishocratic-items-registry';
 
 export interface JurisdictionData {
   /** Budget data with fiscal categories */

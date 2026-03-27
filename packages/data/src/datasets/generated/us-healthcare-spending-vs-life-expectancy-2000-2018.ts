@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.984Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** usHealthcareSpendingPerPerson — unit: auto */
 export const US_HEALTHCARE_SPENDING_VS_LIFE_EXPECTANCY_2000_2018_USHEALTHCARESPENDINGPERPERSON: TimePoint[] = [

@@ -19,7 +19,7 @@
  * @see https://dfda-spec.warondisease.org
  */
 
-import type { ParsedHealthRecord } from './importers/apple-health.js';
+import type { ParsedHealthRecord } from './importers/apple-health';
 
 // ---------------------------------------------------------------------------
 // Types

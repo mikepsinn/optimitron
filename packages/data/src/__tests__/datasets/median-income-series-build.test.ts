@@ -5,11 +5,11 @@ import {
   buildOecdMedianIncomeSeries,
   buildPipMedianIncomeSeries,
   renderGeneratedMedianIncomeModule,
-} from '../../datasets/median-income-series-build.js';
-import type { MedianIncomeSeriesMetadata } from '../../datasets/median-income-types.js';
-import type { DerivedEurostatMedianDisposableIncomePoint } from '../../fetchers/eurostat-income.js';
-import type { DerivedOecdMedianDisposableIncomePoint } from '../../fetchers/oecd-income-distribution.js';
-import type { PIPCountryData } from '../../fetchers/world-bank-pip.js';
+} from '../../datasets/median-income-series-build';
+import type { MedianIncomeSeriesMetadata } from '../../datasets/median-income-types';
+import type { DerivedEurostatMedianDisposableIncomePoint } from '../../fetchers/eurostat-income';
+import type { DerivedOecdMedianDisposableIncomePoint } from '../../fetchers/oecd-income-distribution';
+import type { PIPCountryData } from '../../fetchers/world-bank-pip';
 
 const pipRecords: PIPCountryData[] = [
   {

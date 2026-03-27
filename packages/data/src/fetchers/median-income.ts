@@ -1,9 +1,9 @@
 import {
   fetchPreferredMedianIncomeSeries,
   fetchStrictAfterTaxMedianIncomeSeries,
-} from '../datasets/median-income-series.js';
-import type { MedianIncomeSeriesRecord } from '../datasets/median-income-types.js';
-import type { DataPoint, FetchOptions } from '../types.js';
+} from '../datasets/median-income-series';
+import type { MedianIncomeSeriesRecord } from '../datasets/median-income-types';
+import type { DataPoint, FetchOptions } from '../types';
 
 function toMedianIncomeDataPoint(record: MedianIncomeSeriesRecord): DataPoint {
   const source =

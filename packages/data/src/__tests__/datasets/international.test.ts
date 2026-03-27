@@ -13,7 +13,7 @@ import {
   type CountryEducationData,
   type CountryCriminalJustice,
   type RankedCountry,
-} from '../../datasets/international-comparisons.js';
+} from '../../datasets/international-comparisons';
 import {
   POLICY_EXEMPLARS,
   getExemplarsByCategory,
@@ -21,7 +21,7 @@ import {
   getTotalOutcomeCount,
   getExemplarCategories,
   type PolicyExemplar,
-} from '../../datasets/policy-exemplars.js';
+} from '../../datasets/policy-exemplars';
 
 // ─── Valid ISO 3166-1 alpha-3 codes (superset including TWN) ─────────────────
 

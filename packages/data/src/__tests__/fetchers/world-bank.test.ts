@@ -9,8 +9,8 @@ import {
   fetchHealthExpenditure,
   fetchCO2Emissions,
   WB_INDICATOR_CODES,
-} from '../../fetchers/world-bank.js';
-import type { WBRecord, WBMeta } from '../../fetchers/world-bank.js';
+} from '../../fetchers/world-bank';
+import type { WBRecord, WBMeta } from '../../fetchers/world-bank';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

@@ -3,7 +3,7 @@ import {
   validateMeasurement,
   clampMeasurement,
   getValidRange,
-} from '../measurement-validation.js';
+} from '../measurement-validation';
 
 // ---------------------------------------------------------------------------
 // validateMeasurement — valid values

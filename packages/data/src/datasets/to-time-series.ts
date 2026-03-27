@@ -20,13 +20,13 @@ import {
   type CountryDrugPolicy,
   type CountryEducationData,
   type CountryCriminalJustice,
-} from './international-comparisons.js';
-import { US_FEDERAL_BUDGET } from './us-federal-budget.js';
-import type { BudgetCategory } from './jurisdiction-budget.js';
+} from './international-comparisons';
+import { US_FEDERAL_BUDGET } from './us-federal-budget';
+import type { BudgetCategory } from './jurisdiction-budget';
 import {
   OECD_BUDGET_PANEL,
   type OECDBudgetPanelDataPoint,
-} from './oecd-budget-panel.js';
+} from './oecd-budget-panel';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

@@ -6,32 +6,32 @@
  * keeping agency-specific content out of page files.
  */
 
-import { FDA_APPROVED_DRUG_DISASTERS, FDA_DRUG_DISASTER_SUMMARY } from "./us-fda-approved-drug-deaths.js";
-import { PHARMA_PATENT_STATS, DRUG_MANUFACTURING_VS_RETAIL } from "./us-pharma-patents.js";
-import { IRONIC_LAWS, type IronicLaw } from "./us-ironic-laws.js";
-import { GOVERNMENT_LIES, type GovernmentLie } from "./us-government-lies.js";
-import { LOBBYING_BY_INDUSTRY, type LobbyingIndustry } from "./us-lobbying.js";
-import { REVOLVING_DOOR_STATS, type RevolvingDoorStat } from "./us-revolving-door.js";
-import { CIA_COUPS } from "./us-cia-coups.js";
-import { HEALTHCARE_WASTE_CATEGORIES } from "./us-healthcare-waste.js";
-import { INSURER_DENIAL_RATES, DENIAL_SYSTEM_STATS } from "./us-insurance-denials.js";
-import { PREVENTABLE_DEATH_CATEGORIES } from "./us-preventable-deaths.js";
-import { CORPORATE_TAX_RATE_EFFECTIVE, ZERO_TAX_COMPANIES_2020 } from "./us-corporate-tax.js";
-import { IMMIGRATION_KEY_STATISTICS } from "./us-immigration-impact.js";
-import { US_OVERDOSE_DEATHS_HISTORICAL } from "./us-drug-war.js";
-import { US_HEALTHCARE_SPENDING_DATA } from "./us-healthcare-spending.js";
-import { US_INCARCERATION_DATA } from "./us-incarceration.js";
-import { US_POLICE_SPENDING_DATA } from "./us-police-spending.js";
-import { TARIFF_COLLATERAL_DAMAGE } from "./us-tariff-history.js";
-import { US_CLIMATE_SPENDING_DATA } from "./us-climate-spending.js";
-import { US_FOREIGN_AID_DATA } from "./us-foreign-aid.js";
-import { GOLD_WAGE_THEFT_SUMMARY } from "./us-gold-standard-wages.js";
-import { PRE_FED_SUMMARY, BANKING_PANICS_US_VS_CANADA } from "./us-pre-fed-prosperity.js";
-import { PRODUCTIVITY_VS_WAGES, WEALTH_DISTRIBUTION } from "./economic-theft-series.js";
-import { CEO_TO_WORKER_RATIO, HOME_PRICE_TO_INCOME, STUDENT_LOAN_DEBT, MEDICAL_BANKRUPTCY_PCT, VACANT_VS_HOMELESS } from "./us-inequality-detail.js";
-import { CONGRESSIONAL_TRADING_STATS } from "./us-congressional-trading.js";
-import type { FDAApprovedDrugDisaster } from "./us-fda-approved-drug-deaths.js";
-import type { CIACoup } from "./us-cia-coups.js";
+import { FDA_APPROVED_DRUG_DISASTERS, FDA_DRUG_DISASTER_SUMMARY } from "./us-fda-approved-drug-deaths";
+import { PHARMA_PATENT_STATS, DRUG_MANUFACTURING_VS_RETAIL } from "./us-pharma-patents";
+import { IRONIC_LAWS, type IronicLaw } from "./us-ironic-laws";
+import { GOVERNMENT_LIES, type GovernmentLie } from "./us-government-lies";
+import { LOBBYING_BY_INDUSTRY, type LobbyingIndustry } from "./us-lobbying";
+import { REVOLVING_DOOR_STATS, type RevolvingDoorStat } from "./us-revolving-door";
+import { CIA_COUPS } from "./us-cia-coups";
+import { HEALTHCARE_WASTE_CATEGORIES } from "./us-healthcare-waste";
+import { INSURER_DENIAL_RATES, DENIAL_SYSTEM_STATS } from "./us-insurance-denials";
+import { PREVENTABLE_DEATH_CATEGORIES } from "./us-preventable-deaths";
+import { CORPORATE_TAX_RATE_EFFECTIVE, ZERO_TAX_COMPANIES_2020 } from "./us-corporate-tax";
+import { IMMIGRATION_KEY_STATISTICS } from "./us-immigration-impact";
+import { US_OVERDOSE_DEATHS_HISTORICAL } from "./us-drug-war";
+import { US_HEALTHCARE_SPENDING_DATA } from "./us-healthcare-spending";
+import { US_INCARCERATION_DATA } from "./us-incarceration";
+import { US_POLICE_SPENDING_DATA } from "./us-police-spending";
+import { TARIFF_COLLATERAL_DAMAGE } from "./us-tariff-history";
+import { US_CLIMATE_SPENDING_DATA } from "./us-climate-spending";
+import { US_FOREIGN_AID_DATA } from "./us-foreign-aid";
+import { GOLD_WAGE_THEFT_SUMMARY } from "./us-gold-standard-wages";
+import { PRE_FED_SUMMARY, BANKING_PANICS_US_VS_CANADA } from "./us-pre-fed-prosperity";
+import { PRODUCTIVITY_VS_WAGES, WEALTH_DISTRIBUTION } from "./economic-theft-series";
+import { CEO_TO_WORKER_RATIO, HOME_PRICE_TO_INCOME, STUDENT_LOAN_DEBT, MEDICAL_BANKRUPTCY_PCT, VACANT_VS_HOMELESS } from "./us-inequality-detail";
+import { CONGRESSIONAL_TRADING_STATS } from "./us-congressional-trading";
+import type { FDAApprovedDrugDisaster } from "./us-fda-approved-drug-deaths";
+import type { CIACoup } from "./us-cia-coups";
 
 // ---------------------------------------------------------------------------
 // Types

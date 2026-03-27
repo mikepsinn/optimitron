@@ -8,7 +8,7 @@
  * SDMX REST spec: https://sdmx.org/wp-content/uploads/SDMX_2-1-1_SECTION_7_WebServicesGuidelines_2013-04.pdf
  */
 
-import type { DataPoint, FetchOptions } from '../types.js';
+import type { DataPoint, FetchOptions } from '../types';
 
 /** Base URL for the new OECD SDMX JSON API */
 const OECD_API_BASE = 'https://sdmx.oecd.org/public/rest';

@@ -1,4 +1,4 @@
-import { fetchPrivateConsumptionPpp } from './world-bank.js';
+import { fetchPrivateConsumptionPpp } from './world-bank';
 import {
   EUROSTAT_API_BASE,
   EUROSTAT_GEO_TO_ISO3,
@@ -6,14 +6,14 @@ import {
   EUROSTAT_MEDIAN_INCOME_DATASET,
   EUROSTAT_MEDIAN_INCOME_SOURCE_URL,
   ISO3_TO_EUROSTAT_GEO,
-} from './eurostat-income-shared.js';
+} from './eurostat-income-shared';
 import type {
   DerivedEurostatMedianDisposableIncomePoint,
   EurostatHicpPoint,
   EurostatJsonStatResponse,
   EurostatMedianIncomeLocalPoint,
-} from './eurostat-income-shared.js';
-import type { DataPoint, FetchOptions } from '../types.js';
+} from './eurostat-income-shared';
+import type { DataPoint, FetchOptions } from '../types';
 interface EurostatObservation {
   dimensions: Record<string, string>;
   value: number;
@@ -23,11 +23,11 @@ interface EurostatObservation {
 export {
   EUROSTAT_HICP_SOURCE_URL,
   EUROSTAT_MEDIAN_INCOME_SOURCE_URL,
-} from './eurostat-income-shared.js';
+} from './eurostat-income-shared';
 export type {
   DerivedEurostatMedianDisposableIncomePoint,
   EurostatJsonStatResponse,
-} from './eurostat-income-shared.js';
+} from './eurostat-income-shared';
 function decodeEurostatPosition(position: number, sizes: number[]): number[] {
   const coordinates = new Array(sizes.length).fill(0);
   let remainder = position;

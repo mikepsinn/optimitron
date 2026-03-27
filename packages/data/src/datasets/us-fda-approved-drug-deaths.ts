@@ -3,7 +3,7 @@
  * Shows that the efficacy review doesn't even prevent the harms it claims to prevent.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export interface FDAApprovedDrugDisaster {
   drug: string;

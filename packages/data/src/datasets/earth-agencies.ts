@@ -11,10 +11,10 @@
  * original arrays from agency-performance.ts and agency-historical-trends.ts.
  */
 
-import type { TimePoint, OutcomeSeries, AgencyGrade } from "./agency-performance.js";
-import type { AgencyHistoricalTrend } from "./agency-historical-trends.js";
-import { US_AGENCY_PERFORMANCE } from "./agency-performance.js";
-import { ALL_HISTORICAL_TRENDS } from "./agency-historical-trends.js";
+import type { TimePoint, OutcomeSeries, AgencyGrade } from "./agency-performance";
+import type { AgencyHistoricalTrend } from "./agency-historical-trends";
+import { US_AGENCY_PERFORMANCE } from "./agency-performance";
+import { ALL_HISTORICAL_TRENDS } from "./agency-historical-trends";
 
 // ---------------------------------------------------------------------------
 // Types

@@ -6,4 +6,4 @@ export {
   POPULATION_MILLIONS,
   MIN_YEAR,
   MAX_YEAR,
-} from './deflate.js';
+} from './deflate';

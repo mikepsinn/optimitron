@@ -5,8 +5,8 @@ import {
   extractEurostatHicpPoints,
   extractEurostatMedianIncomeLocalCurrencyPoints,
   type EurostatJsonStatResponse,
-} from '../../fetchers/eurostat-income.js';
-import type { DataPoint } from '../../types.js';
+} from '../../fetchers/eurostat-income';
+import type { DataPoint } from '../../types';
 
 const incomeJson: EurostatJsonStatResponse = {
   id: ['freq', 'age', 'sex', 'indic_il', 'unit', 'geo', 'time'],

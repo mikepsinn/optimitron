@@ -4,7 +4,7 @@ import {
   JurisdictionCodeSchema,
   TimePeriodSchema,
   DataPointSchema,
-} from '../index.js';
+} from '../index';
 
 describe('@optimitron/data smoke tests', () => {
   it('exports a version string', () => {

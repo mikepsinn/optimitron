@@ -11,7 +11,7 @@
  *   - FRED: M2 year-over-year change (US-specific higher resolution)
  */
 
-import type { DataPoint } from '../types.js';
+import type { DataPoint } from '../types';
 
 /**
  * Annual time series for one variable in one jurisdiction.

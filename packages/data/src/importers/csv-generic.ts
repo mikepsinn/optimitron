@@ -25,8 +25,8 @@
  * ```
  */
 
-import type { ParsedHealthRecord } from './apple-health.js';
-import { buildImportSummary, type ImportSummary, type GenericCsvOptions, type CsvColumnMapping } from './types.js';
+import type { ParsedHealthRecord } from './apple-health';
+import { buildImportSummary, type ImportSummary, type GenericCsvOptions, type CsvColumnMapping } from './types';
 
 // ---------------------------------------------------------------------------
 // Constants

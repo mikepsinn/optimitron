@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseOuraExport, summarizeOuraExport } from '../../importers/oura.js';
+import { parseOuraExport, summarizeOuraExport } from '../../importers/oura';
 
 // ---------------------------------------------------------------------------
 // Sample data

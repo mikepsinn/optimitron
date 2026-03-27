@@ -2,21 +2,15 @@
   "name": "@optimitron/data",
   "version": "0.1.0",
   "description": "Data fetchers for Optimitron - OECD, World Bank, Census, WHO, etc.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./parameters": {
-      "types": "./dist/parameters/index.d.ts",
-      "default": "./dist/parameters/index.js"
-    }
+    ".": "./src/index.ts",
+    "./parameters": "./src/parameters/index.ts"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "generate:median-income": "tsx ./scripts/generate-median-income-series.ts",

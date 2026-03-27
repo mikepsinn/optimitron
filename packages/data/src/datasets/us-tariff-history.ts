@@ -8,7 +8,7 @@
  * World Bank, BLS CPI
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 /** Effective US tariff rate 1821-2024 (duties collected / imports value) */
 export const US_TARIFF_RATE_HISTORICAL: TimePoint[] = [

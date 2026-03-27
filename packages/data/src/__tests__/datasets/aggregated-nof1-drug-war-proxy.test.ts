@@ -4,7 +4,7 @@ import {
   DEFAULT_AGGREGATED_NOF1_DRUG_WAR_PROXY_PANEL_PATH,
   loadAggregatedNOf1DrugWarProxyPanel,
   parseAggregatedNOf1DrugWarProxyCsv,
-} from '../../datasets/aggregated-nof1-drug-war-proxy.js';
+} from '../../datasets/aggregated-nof1-drug-war-proxy';
 
 describe('aggregated-nof1-drug-war-proxy dataset', () => {
   it('parses csv text into typed rows', () => {

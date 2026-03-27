@@ -3,7 +3,7 @@
  * from workers to shareholders, renters to landlords, patients to insurers.
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 /** CEO-to-worker compensation ratio */
 export const CEO_TO_WORKER_RATIO: TimePoint[] = [

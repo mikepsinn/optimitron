@@ -9,7 +9,7 @@
  * API docs: https://api.usaspending.gov/docs/endpoints
  */
 
-import type { DataPoint, FetchOptions, SpendingData } from '../types.js';
+import type { DataPoint, FetchOptions, SpendingData } from '../types';
 
 const API_BASE = 'https://api.usaspending.gov/api/v2';
 

@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.757Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** currentCurrencyThousands — unit: auto */
 export const GLOBAL_MILITARY_SPENDING_HISTORICAL_1816_2012_CURRENT_CURRENCY_CURRENTCURRENCYTHOUSANDS: TimePoint[] = [

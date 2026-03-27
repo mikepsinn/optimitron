@@ -7,7 +7,7 @@
  * API docs: https://fred.stlouisfed.org/docs/api/fred/
  */
 
-import type { DataPoint, FetchOptions } from '../types.js';
+import type { DataPoint, FetchOptions } from '../types';
 
 const FRED_API_BASE = 'https://api.stlouisfed.org/fred';
 

@@ -1,4 +1,4 @@
-import type { Parameter } from "./parameters-calculations-citations.js";
+import type { Parameter } from "./parameters-calculations-citations";
 
 const SUFFIXES: [number, string][] = [
   [1e15, "quadrillion"],

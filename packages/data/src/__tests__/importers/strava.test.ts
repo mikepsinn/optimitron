@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseStravaActivitiesCsv, summarizeStravaExport } from '../../importers/strava.js';
+import { parseStravaActivitiesCsv, summarizeStravaExport } from '../../importers/strava';
 
 // ---------------------------------------------------------------------------
 // Sample data

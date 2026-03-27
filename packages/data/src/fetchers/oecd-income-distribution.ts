@@ -1,4 +1,4 @@
-import type { FetchOptions } from '../types.js';
+import type { FetchOptions } from '../types';
 
 const OECD_IDD_LEGACY_BASE = 'https://stats.oecd.org/SDMX-JSON/data/IDD';
 

@@ -4,8 +4,8 @@ import {
   streamParseAppleHealthXML,
   getAppleHealthTypeMapping,
   summarizeAppleHealthExport,
-} from '../../importers/apple-health.js';
-import type { ParsedHealthRecord } from '../../importers/apple-health.js';
+} from '../../importers/apple-health';
+import type { ParsedHealthRecord } from '../../importers/apple-health';
 
 // ---------------------------------------------------------------------------
 // Test fixtures — valid Apple Health XML snippets

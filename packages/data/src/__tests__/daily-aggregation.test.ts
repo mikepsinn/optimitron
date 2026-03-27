@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { aggregateToDaily, type DailyAggregationConfig, type DailyValue } from '../daily-aggregation.js';
-import type { ParsedHealthRecord } from '../importers/apple-health.js';
+import { aggregateToDaily, type DailyAggregationConfig, type DailyValue } from '../daily-aggregation';
+import type { ParsedHealthRecord } from '../importers/apple-health';
 
 // ---------------------------------------------------------------------------
 // Test helpers

@@ -6,7 +6,7 @@
  * This test just ensures the legacy stub is explicit about being unimplemented.
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchOECDHealthExpenditure } from '../../sources/oecd.js';
+import { fetchOECDHealthExpenditure } from '../../sources/oecd';
 
 describe('sources/oecd — fetchOECDHealthExpenditure stub', () => {
   afterEach(() => {

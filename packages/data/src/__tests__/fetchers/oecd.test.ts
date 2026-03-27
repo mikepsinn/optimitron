@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { parseSDMXResponse, fetchOECDData, fetchOECDHealthExpenditure, fetchOECDEducationSpending, fetchOECDGdpPerCapita, OECD_DATASETS } from '../../fetchers/oecd.js';
-import type { SDMXJsonResponse } from '../../fetchers/oecd.js';
+import { parseSDMXResponse, fetchOECDData, fetchOECDHealthExpenditure, fetchOECDEducationSpending, fetchOECDGdpPerCapita, OECD_DATASETS } from '../../fetchers/oecd';
+import type { SDMXJsonResponse } from '../../fetchers/oecd';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.215Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** cpiAnnualAvg — unit: index */
 export const CPI_INFLATION_HISTORICAL_CPIANNUALAVG: TimePoint[] = [

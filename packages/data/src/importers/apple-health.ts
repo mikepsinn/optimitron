@@ -16,7 +16,7 @@
  * ```
  */
 
-import { resolveVariableName } from './standard-variable-names.js';
+import { resolveVariableName } from './standard-variable-names';
 
 // ---------------------------------------------------------------------------
 // Types

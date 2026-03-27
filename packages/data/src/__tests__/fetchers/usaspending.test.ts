@@ -10,13 +10,13 @@ import {
   fetchBudgetFunctionTimeSeries,
   fetchLatestBudgetBreakdown,
   BUDGET_FUNCTIONS,
-} from '../../fetchers/usaspending.js';
+} from '../../fetchers/usaspending';
 import type {
   SpendingExplorerResult,
   SpendingExplorerResponse,
   BudgetFunctionListResponse,
   BudgetSubfunctionListResponse,
-} from '../../fetchers/usaspending.js';
+} from '../../fetchers/usaspending';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

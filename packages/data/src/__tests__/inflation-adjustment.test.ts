@@ -7,7 +7,7 @@ import {
   toRealPerCapita,
   historicalToRealPerCapita,
   availableYears,
-} from '../inflation-adjustment.js';
+} from '../inflation-adjustment';
 
 // ---------------------------------------------------------------------------
 // getCpiForYear

@@ -10,8 +10,8 @@ import {
   getCrossCountryVariable,
   healthCountryToTimeSeries,
   oecdBudgetPanelToSpendingOutcome,
-} from '../../datasets/to-time-series.js';
-import { HEALTH_SYSTEM_COMPARISON } from '../../datasets/international-comparisons.js';
+} from '../../datasets/to-time-series';
+import { HEALTH_SYSTEM_COMPARISON } from '../../datasets/international-comparisons';
 
 describe('Dataset → TimeSeries converters', () => {
   describe('healthComparisonToTimeSeries', () => {

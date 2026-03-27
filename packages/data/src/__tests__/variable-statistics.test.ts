@@ -4,7 +4,7 @@ import {
   aggregateGlobalStatistics,
   type NOf1VariableStatistics,
   type GlobalVariableStatistics,
-} from '../variable-statistics.js';
+} from '../variable-statistics';
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
 

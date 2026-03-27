@@ -7,7 +7,7 @@
  * API docs: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
  */
 
-import type { DataPoint, FetchOptions } from '../types.js';
+import type { DataPoint, FetchOptions } from '../types';
 
 const WB_API_BASE = 'https://api.worldbank.org/v2';
 

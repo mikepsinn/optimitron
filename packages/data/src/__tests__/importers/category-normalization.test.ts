@@ -7,7 +7,7 @@ import {
   resolveVariableName,
   resolveVariableWithCategory,
   getStandardDefinition,
-} from '../../importers/standard-variable-names.js';
+} from '../../importers/standard-variable-names';
 
 // ─── resolveCategory ──────────────────────────────────────────────────
 

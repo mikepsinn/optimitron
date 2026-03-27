@@ -7,7 +7,7 @@ import {
   OECD_IDD_SELECTORS,
   selectPreferredOecdIddPoints,
   type OecdIddResponse,
-} from '../../fetchers/oecd-income-distribution.js';
+} from '../../fetchers/oecd-income-distribution';
 
 const mockOecdResponse: OecdIddResponse = {
   structure: {

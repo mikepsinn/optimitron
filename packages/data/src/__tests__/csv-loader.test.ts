@@ -3,7 +3,7 @@ import {
   parseGapminderCsv,
   CsvTimeSeriesSchema,
   type CsvTimeSeries,
-} from '../csv-loader.js';
+} from '../csv-loader';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 

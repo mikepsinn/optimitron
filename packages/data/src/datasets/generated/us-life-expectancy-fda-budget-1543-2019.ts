@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.213Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** lifeExpectancy — unit: years */
 export const US_LIFE_EXPECTANCY_FDA_BUDGET_HISTORICAL_LIFEEXPECTANCY: TimePoint[] = [

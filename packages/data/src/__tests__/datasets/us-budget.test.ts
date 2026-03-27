@@ -8,7 +8,7 @@ import {
   getSpendingCAGR,
   type BudgetCategory,
   type OutcomeMetric,
-} from '../../datasets/us-federal-budget.js';
+} from '../../datasets/us-federal-budget';
 import {
   US_POLICIES,
   getPoliciesByCategory,
@@ -17,7 +17,7 @@ import {
   getTotalPolicyCost,
   getTotalSourceCount,
   type USPolicyData,
-} from '../../datasets/us-policies.js';
+} from '../../datasets/us-policies';
 
 // ─── Budget Dataset Tests ────────────────────────────────────────────────────
 

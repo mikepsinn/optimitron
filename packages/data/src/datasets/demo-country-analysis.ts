@@ -12,8 +12,8 @@ import type { TimeSeries } from '@optimitron/optimizer';
 import {
   healthComparisonToTimeSeries,
   getCrossCountryVariable,
-} from './to-time-series.js';
-import { HEALTH_SYSTEM_COMPARISON } from './international-comparisons.js';
+} from './to-time-series';
+import { HEALTH_SYSTEM_COMPARISON } from './international-comparisons';
 
 /**
  * Analyze the relationship between healthcare spending and life expectancy

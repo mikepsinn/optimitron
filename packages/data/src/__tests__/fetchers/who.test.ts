@@ -6,8 +6,8 @@ import {
   fetchWHOHealthyLifeExpectancy,
   fetchWHOUHCIndex,
   GHO_INDICATOR_CODES,
-} from '../../fetchers/who.js';
-import type { GHORecord, GHOResponse } from '../../fetchers/who.js';
+} from '../../fetchers/who';
+import type { GHORecord, GHOResponse } from '../../fetchers/who';
 
 // ─── Mock data ──────────────────────────────────────────────────────
 

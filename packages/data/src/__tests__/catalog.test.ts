@@ -4,7 +4,7 @@ import {
   getCatalogByCategory,
   getCatalogEntry,
   getGapminderFilenames,
-} from '../catalog.js';
+} from '../catalog';
 
 describe('ECONOMIC_DATA_CATALOG', () => {
   it('contains a non-empty list of datasets', () => {

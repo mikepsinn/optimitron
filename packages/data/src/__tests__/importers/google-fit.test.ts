@@ -3,7 +3,7 @@ import {
   parseGoogleFitFile,
   parseGoogleFitExport,
   summarizeGoogleFitExport,
-} from '../../importers/google-fit.js';
+} from '../../importers/google-fit';
 
 // ---------------------------------------------------------------------------
 // Sample data

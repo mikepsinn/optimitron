@@ -3,7 +3,7 @@
  * Source: ITEP (Institute on Taxation & Economic Policy), IRS SOI, Fortune 500 reports
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export const CORPORATE_TAX_RATE_EFFECTIVE: TimePoint[] = [
   { year: 1950, value: 42, annotation: "Corporations paid a real share" },

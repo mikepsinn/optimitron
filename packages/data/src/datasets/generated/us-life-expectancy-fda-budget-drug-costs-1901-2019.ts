@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.992Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** usLifeExpectancy — unit: auto */
 export const US_LIFE_EXPECTANCY_FDA_BUDGET_DRUG_COSTS_1901_2019_USLIFEEXPECTANCY: TimePoint[] = [

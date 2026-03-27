@@ -3,7 +3,7 @@ import {
   parseCronometerExport,
   parseCronometerFoodDiary,
   summarizeCronometerExport,
-} from '../../importers/cronometer.js';
+} from '../../importers/cronometer';
 
 // ---------------------------------------------------------------------------
 // Sample data

@@ -12,7 +12,7 @@
  * - SH.XPD.CHEX.GD.ZS: Health expenditure (% GDP)
  */
 
-import type { DataPoint, HealthData, EconomicData, FetchOptions } from '../types.js';
+import type { DataPoint, HealthData, EconomicData, FetchOptions } from '../types';
 
 const WB_API_BASE = 'https://api.worldbank.org/v2';
 

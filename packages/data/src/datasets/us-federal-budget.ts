@@ -17,7 +17,7 @@
  * - "percentOfTotal" is of total federal outlays (~$6.9T FY2025 estimate)
  */
 
-import type { JurisdictionBudget, BudgetCategory, OutcomeMetric, HistoricalSpending } from './jurisdiction-budget.js';
+import type { JurisdictionBudget, BudgetCategory, OutcomeMetric, HistoricalSpending } from './jurisdiction-budget';
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 

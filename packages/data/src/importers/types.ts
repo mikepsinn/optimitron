@@ -12,7 +12,7 @@
 
 // Re-export the canonical ParsedHealthRecord from the Apple Health importer
 // so every importer uses the exact same interface.
-export type { ParsedHealthRecord } from './apple-health.js';
+export type { ParsedHealthRecord } from './apple-health';
 
 /** Summary statistics for an import run */
 export interface ImportSummary {

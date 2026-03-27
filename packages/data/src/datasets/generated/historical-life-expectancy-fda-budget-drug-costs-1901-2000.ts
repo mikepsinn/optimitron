@@ -4,7 +4,7 @@
  * Generated: 2026-03-24T01:31:46.773Z
  */
 
-import type { TimePoint } from "../agency-performance.js";
+import type { TimePoint } from "../agency-performance";
 
 /** lifeExpectancyPreFda — unit: auto */
 export const HISTORICAL_LIFE_EXPECTANCY_FDA_BUDGET_DRUG_COSTS_1901_2000_LIFEEXPECTANCYPREFDA: TimePoint[] = [

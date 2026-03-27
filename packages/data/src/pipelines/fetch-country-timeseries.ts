@@ -9,7 +9,7 @@
  * @see https://dfda-spec.warondisease.org — dFDA Specification
  */
 
-import type { DataPoint } from '../types.js';
+import type { DataPoint } from '../types';
 import type { TimeSeries, Measurement } from '@optimitron/optimizer';
 import {
   fetchLifeExpectancy, fetchGdpPerCapita, fetchHealthExpenditure,
@@ -19,9 +19,9 @@ import {
   fetchInfantMortality, fetchHomicideRate, fetchGniPerCapita,
   fetchGovDebt, fetchGovRevenue, fetchLaborForceParticipation,
   fetchCO2Emissions,
-} from '../fetchers/world-bank.js';
-import { fetchWHOLifeExpectancy, fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who.js';
-import { fetchFREDSeries } from '../fetchers/fred.js';
+} from '../fetchers/world-bank';
+import { fetchWHOLifeExpectancy, fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who';
+import { fetchFREDSeries } from '../fetchers/fred';
 
 // ─── Types ───────────────────────────────────────────────────────────
 

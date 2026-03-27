@@ -1,2 +1,2 @@
-export * from './parameters-calculations-citations.js';
-export * from './format-parameter.js';
+export * from './parameters-calculations-citations';
+export * from './format-parameter';

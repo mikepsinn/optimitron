@@ -3,7 +3,7 @@
  * Source: OpenSecrets (Center for Responsive Politics)
  */
 
-import type { TimePoint } from "./agency-performance.js";
+import type { TimePoint } from "./agency-performance";
 
 export interface LobbyingIndustry {
   industry: string;

@@ -7,7 +7,7 @@ import {
   parseWithingsHeartRateFile,
   parseWithingsExport,
   summarizeWithingsExport,
-} from '../../importers/withings.js';
+} from '../../importers/withings';
 
 // ---------------------------------------------------------------------------
 // Sample data

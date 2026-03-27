@@ -1,7 +1,7 @@
 import {
   US_WISHOCRATIC_ITEMS,
   getUSWishocraticAllocations,
-} from "./datasets/us-wishocratic-items.js";
+} from "./datasets/us-wishocratic-items";
 
 export const WISHOCRATIC_ITEMS_BY_JURISDICTION = {
   USA: {
