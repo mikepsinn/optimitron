@@ -19,7 +19,7 @@ import { SLIDES } from "../lib/demo/demo-config";
 const OUTPUT_DIR = join(process.cwd(), "presentation-recording");
 const NARRATION_DIR = join(process.cwd(), "public", "audio", "narration");
 const MANIFEST_PATH = join(NARRATION_DIR, "manifest.json");
-const BASE_URL = process.env.GAME_URL || "http://localhost:3334";
+const BASE_URL = process.env.GAME_URL || "http://localhost:4000";
 
 /** Get audio duration in seconds via ffprobe, or null if unavailable */
 function getAudioDuration(mp3Path: string): number | null {
