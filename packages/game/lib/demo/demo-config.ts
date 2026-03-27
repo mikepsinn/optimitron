@@ -674,10 +674,10 @@ RECURSIVE EXPONENTIAL THEFT`,
     narration:
       "Your civilisation wastes $101 trillion a year on problems everyone agrees should be fixed but nobody coordinates to fix. That is 88% of global GDP. This bug has been open for 113 years. No one has assigned it. On my planet, that developer would have been fired. On yours, they got re-elected.",
     visual:
-      "Pixel art — a Sierra bug report / system error screen. The screen flickers like a CRT crash. A bug report window displays: BUG REPORT: pluralistic_ignorance.exe, Status: ACTIVE, Severity: CRITICAL. Line items animate in one at a time with CountUp — Health innovation delays: $34T, Migration restrictions: $57T, Lead poisoning: $6T, Underfunded science: $4T. A running total at the bottom counts up in lockstep: $0... $34T... $91T... $97T... $101T. TOTAL ANNUAL COST: $101T. The final total pulses. \"88% of global GDP\" flashes red. \"This bug has been open for 113 years. No one has assigned it.\" typewriters in last — the punchline.",
+      "Pixel art — a Sierra bug report / system error screen. The screen flickers like a CRT crash. A bug report window displays: RECEIPT: political_dysfunction_tax.exe, Status: ACTIVE, Severity: CRITICAL. Line items animate in one at a time with CountUp — Health innovation delays: $34T, Migration restrictions: $57T, Lead poisoning: $6T, Underfunded science: $4T. A running total at the bottom counts up in lockstep: $0... $34T... $91T... $97T... $101T. TOTAL ANNUAL COST: $101T. The final total pulses. \"88% of global GDP\" flashes red. \"This bug has been open for 113 years. No one has assigned it.\" typewriters in last — the punchline.",
     asciiArt: `
 ┌──────────────────────────────────────────┐
-│  🐛 BUG REPORT: pluralistic_ignorance.exe │
+│  🐛 RECEIPT: political_dysfunction_tax.exe │
 │  Status: ACTIVE                          │
 │  Severity: CRITICAL                      │
 │                                          │
@@ -930,9 +930,9 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "That vote took thirty seconds. Your time cost six cents. The upside: fifteen point seven million dollars. Per person. That is a ratio of 245 million to one. On my planet we just call it arithmetic.",
+      "That vote took thirty seconds. Your time cost six cents. The upside: three thousand one hundred sixty-three dollars per VOTE point, plus the fund outperforming your retirement account. That is a ratio of 140,600 to one. On my planet we just call it arithmetic.",
     visual:
-      "Pixel art — Sierra merchant's shop. Wishonia behind counter in merchant robes. Left side: tiny copper pixel coin on velvet pad, \"$0.06 — 30 seconds of your time.\" Right side: comically enormous gold pile extending off-screen, \"$15,700,000 — lifetime income gain.\" Trade arrow between them. Flashing pixel text: \"EXCHANGE RATE: 245,000,000 : 1.\" Wishonia's portrait: one eyebrow raised.",
+      "Pixel art — Sierra merchant's shop. Left side: timer showing 15 minutes, \"vote + share with 10 friends.\" Right side: gold pile, \"$15.7M lifetime income gain.\" Trade arrow between them. Flashing pixel text: \"EXCHANGE RATE: 140,600 : 1.\"",
     score: 200_000_000,
     showQuestMeters: true,
     sierraVerbs: [
@@ -957,14 +957,14 @@ RECURSIVE EXPONENTIAL THEFT`,
     stageDirection:
       '[Quest notification: "LEVEL 3 — Get your friends to play. Tell two people."]',
     visual:
-      "Pixel art — split into two halves. LEFT — The Concrete Action: Pixel-art phone screen showing a text message thread. Player's message: \"Play this -> optimitron.com/r/player1\". Friends \"Sarah\" and \"Mike\" reply with \"I'm playing!\" Notifications pop: \"+1 VOTE POINT\" \"+1 VOTE POINT.\" Three platform icons below (text, WhatsApp, Twitter). A prize pool counter ticks up as each friend joins. RIGHT — The Comparison That Kills the Objection: A Sierra side-by-side comparison. REGULAR VOTING: Drive to polling station, Wait in line, 1 in 30M chance of being the tiebreaker, Winner ignores you, Cost: free, Reward: nothing, People who do this: 4B. PLAYING THIS GAME: Click buttons on website, 30 seconds, Each point worth $194K, Everyone gets 10x richer, Winner = you, Cost: free, Reward: $15.7M, People needed: 4B. The left card is greyed out and dull. The right card glows green. Chain-link drops into inventory slot 4.",
+      "Pixel art — split into two halves. LEFT — The Concrete Action: Pixel-art phone screen showing a text message thread. Player's message: \"Play this -> optimitron.com/r/player1\". Friends \"Sarah\" and \"Mike\" reply with \"I'm playing!\" Notifications pop: \"+1 VOTE POINT\" \"+1 VOTE POINT.\" Three platform icons below (text, WhatsApp, Twitter). A prize pool counter ticks up as each friend joins. RIGHT — The Comparison That Kills the Objection: A Sierra side-by-side comparison. REGULAR VOTING: Drive to polling station, Wait in line, 1 in 30M chance of being the tiebreaker, Winner ignores you, Cost: free, Reward: nothing, People who do this: 4B. PLAYING THIS GAME: Click buttons on website, 30 seconds, Each point worth $8,436, Everyone gets 10x richer, Winner = you, Cost: free, Reward: $15.7M, People needed: 4B. The left card is greyed out and dull. The right card glows green. Chain-link drops into inventory slot 4.",
     asciiArt: `
 ┌──────────────────────────┐  ┌──────────────────────────┐
 │  🗳 REGULAR VOTING        │  │  🎮 PLAYING THIS GAME    │
 │                          │  │                          │
 │  Drive to polling station│  │  Click buttons on website│
 │  Wait in line            │  │  30 seconds              │
-│  1 in 30M chance of      │  │  Each point worth $194K  │
+│  1 in 30M chance of      │  │  Each point worth $8,436  │
 │  being the tiebreaker    │  │  Everyone gets 10× richer│
 │  Winner ignores you      │  │  Winner = you            │
 │  Cost: free              │  │  Cost: free              │
@@ -998,7 +998,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     narration:
       "Rich people have a secret money club called VC that earns 17% returns on average. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called 'investor protection.' It protects you from having money. The prize pool gets you in. Side effect: curing all disease.",
     visual:
-      "Pixel art — Sierra merchant's investment counter. Two options side by side: YOUR RETIREMENT FUND (Old corporations, Rent-seeking/slow, Return: 8%/year, $100 -> $317 in 15 yrs, Side effect: nothing) vs PRIZE POOL (Innovative startups, High-growth/new, Return: 17%/year, $100 -> $1,110 in 15 yrs, Side effect: curing all disease). Right option glows green. Left looks grey and dull. The goal: build the biggest prize pool in history. So every player on Earth is incentivized to win.",
+      "Pixel art — Sierra merchant's investment counter. Two options side by side: YOUR RETIREMENT FUND (Old corporations, Rent-seeking/slow, Return: 8%/year, $100 -> $317 in 15 yrs, Side effect: nothing) vs PRIZE POOL (Innovative startups, High-growth/new, Return: 17%/year, $100 -> $1,106 in 15 yrs, Side effect: curing all disease). Right option glows green. Left looks grey and dull. The goal: build the biggest prize pool in history. So every player on Earth is incentivized to win.",
     asciiArt: `
 ┌──────────────────────────────────────────────────────┐
 │  💰 INVESTMENT COMPARISON                            │
@@ -1010,7 +1010,7 @@ RECURSIVE EXPONENTIAL THEFT`,
 │  │  Rent-seeking, slow    │  │  High-growth, new   │  │
 │  │  Return: 8% / year     │  │  Return: 17% / year │  │
 │  │                        │  │                    │  │
-│  │  $100 → $317 (15 yrs)  │  │  $100 → $1,110     │  │
+│  │  $100 → $317 (15 yrs)  │  │  $100 → $1,106     │  │
 │  │                        │  │  (15 yrs)          │  │
 │  │  Side effect: nothing  │  │  Side effect:       │  │
 │  │                        │  │  curing all disease │  │
@@ -1039,16 +1039,16 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 12,
     narration:
-      "Deposit $100. If Earth wins, your lifetime income goes up $15.7 million. You will not miss the $100. If Earth loses, you get $1,110 back. That is an 11x return on failure. Both paths pay. Your species has a word for this. A no-brainer. Which, given the circumstances, is fitting.",
+      "Deposit $100. If Earth wins, your lifetime income goes up $15.7 million. You will not miss the $100. If Earth loses, you get $1,106 back. That is a 11x return on failure. Both paths pay. Your species has a word for this. A no-brainer. Which, given the circumstances, is fitting.",
     visual:
-      "Pixel art — branching path (Sierra maze fork). Player's avatar at crossroads holding gold coin. Treasure chest at fork: \"PRIZE POOL SMART CONTRACT.\" Two paths: Left path — TARGETS HIT -> pixel utopia. Pool unlocks. VOTE holders split it. Right path — TARGETS MISSED -> pile of 11x gold. Your $100 -> $1,110 back. (11x over 15 years at 17%). BOTH paths glow green. No red path. No skull. Gold coin drops into inventory slot 5.",
+      "Pixel art — branching path (Sierra maze fork). Player's avatar at crossroads holding gold coin. Treasure chest at fork: \"PRIZE POOL SMART CONTRACT.\" Two paths: Left path — TARGETS HIT -> pixel utopia. Pool unlocks. VOTE holders split it. Right path — TARGETS MISSED -> pile of 11x gold. Your $100 -> $1,106 back. (11x over 15 years at 17%). BOTH paths glow green. No red path. No skull. Gold coin drops into inventory slot 5.",
     asciiArt: `
                      ┌─ 🌍 TARGETS HIT ──→ [pixel utopia]
                      │   Pool unlocks.
   YOU ($100) → [CHEST] ──┤   VOTE holders split it.
                      │
                      └─ ❌ TARGETS MISSED ─→ [pile of 11× gold]
-                         Your $100 → $1,110 back.
+                         Your $100 → $1,106 back.
                          (11× over 15 years at 17%)`,
     score: 800_000_000,
     inventory: getInventory("prize-mechanism"),
@@ -1071,9 +1071,9 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Every friend who plays earns you one VOTE point. Each point is worth $194,000. Two friends: $387,000. Ten friends: $1.9 million. Points cannot be bought. Only earned by getting real humans to care. Your species finally invented a currency backed by something useful.",
+      "Every friend who plays earns you one VOTE point. Each point is worth $8,436. Two friends: $16,873. Ten friends: $1.9 million. Points cannot be bought. Only earned by getting real humans to care. Your species finally invented a currency backed by something useful.",
     visual:
-      "Pixel art — Sierra character stats screen: VOTE POINT LEDGER. POINTS EARNED: 2 (from friends playing). VALUE PER POINT: $194,000. TOTAL IF HIT: $387,000. Friends Playing Table: 2 friends -> $387,000 / 5 friends -> $970,000 / 10 friends -> $1,940,000 / 50 friends -> $9,700,000. Warnings: Points are NON-TRADABLE. Cannot be purchased. Ever. Earned ONLY by getting friends to play. More players -> bigger pool -> bigger prize -> more incentive to make sure Earth wins. Two silver tokens drop into inventory slot 6. Flywheel line at bottom rendered as pixel-art cycle arrow.",
+      "Pixel art — Sierra character stats screen: VOTE POINT LEDGER. POINTS EARNED: 2 (from friends playing). VALUE PER POINT: $8,436. TOTAL IF HIT: $16,873. Friends Playing Table: 2 friends -> $16,873 / 5 friends -> $42,182 / 10 friends -> $84,363 / 50 friends -> $421,814. Warnings: Points are NON-TRADABLE. Cannot be purchased. Ever. Earned ONLY by getting friends to play. More players -> bigger pool -> bigger prize -> more incentive to make sure Earth wins. Two silver tokens drop into inventory slot 6. Flywheel line at bottom rendered as pixel-art cycle arrow.",
     asciiArt: `
 ┌────────────────────────────────────────────┐
 │  ⚔️ CHARACTER — VOTE POINT LEDGER          │
@@ -1083,16 +1083,16 @@ RECURSIVE EXPONENTIAL THEFT`,
 │  WEAPON:  Arithmetic                       │
 │                                            │
 │  POINTS EARNED:    2 (from friends playing)│
-│  VALUE PER POINT:  $194,000                │
-│  TOTAL IF HIT:     $387,000                │
+│  VALUE PER POINT:  $8,436                │
+│  TOTAL IF HIT:     $16,873                │
 │                                            │
 │  ┌──────────────────────────────────────┐  │
 │  │  FRIENDS PLAYING TABLE              │  │
 │  │  ───────────────────────────        │  │
-│  │  2 friends   →  $387,000            │  │
-│  │  5 friends   →  $970,000            │  │
-│  │  10 friends  →  $1,940,000          │  │
-│  │  50 friends  →  $9,700,000          │  │
+│  │  2 friends   →  $16,873            │  │
+│  │  5 friends   →  $42,182            │  │
+│  │  10 friends  →  $84,363          │  │
+│  │  50 friends  →  $421,814          │  │
 │  └──────────────────────────────────────┘  │
 │                                            │
 │  ⚠ Points are NON-TRADABLE.               │
@@ -1123,9 +1123,9 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "If humanity wins, your $100 deposit goes to VOTE holders. You also became a multimillionaire in a civilisation that cured all disease. You do not mourn the $100. If humanity loses, you get $1,110 back. The only way to lose is not to play. The break-even probability is 0.0067%. That means depositing is a good bet if you believe there is even a 1 in 15,000 chance this works. Two of three outcomes are wins. The third one is your fault.",
+      "If humanity wins, your $100 deposit goes to VOTE holders. You also became a multimillionaire in a civilisation that cured all disease. You do not mourn the $100. If humanity loses, you get $1,106 back. The only way to lose is not to play. The break-even probability is 0.0067%. That means depositing is a good bet if you believe there is even a 1 in 15,000 chance this works. Two of three outcomes are wins. The third one is your fault.",
     visual:
-      "Sierra summary/stats screen — three outcomes. WORKED EXAMPLE — $100 DEPOSIT + 2 FRIENDS PLAYING. Box 1 (glows brightest): HUMANITY WINS — Your deposit: goes to VOTE holders (not you). Your VOTE points: 2 x $194K = $387,000. Your lifetime income: +$15.7 MILLION. Everyone is 10x richer. You don't miss $100. NET: +$16,087,000. Box 2: HUMANITY MISSES (targets not hit) — VOTE points: expire ($0). Your deposit: $100 -> $1,110 (11x yield). Still outperforms your retirement fund (3.5x). NET: +$1,010. Box 3 (dim red): DID NOT PLAY — $0 returned. $0 earned. Still paying $12,600/yr dysfunction tax. Missed $15.7M in lifetime income. NET: -$15,700,000 (opportunity cost). Two out of three outcomes are wins. The third one is your fault.",
+      "Sierra summary/stats screen — three outcomes. WORKED EXAMPLE — $100 DEPOSIT + 2 FRIENDS PLAYING. Box 1 (glows brightest): HUMANITY WINS — Your deposit: goes to VOTE holders (not you). Your VOTE points: 2 x $8,436 = $16,873. Your lifetime income: +$15.7 MILLION. Everyone is 10x richer. You don't miss $100. NET: +$16,087,000. Box 2: HUMANITY MISSES (targets not hit) — VOTE points: expire ($0). Your deposit: $100 -> $1,106 (11x yield). Still outperforms your retirement fund (3.5x). NET: +$1,010. Box 3 (dim red): DID NOT PLAY — $0 returned. $0 earned. Still paying $12,600/yr dysfunction tax. Missed $15.7M in lifetime income. NET: -$15,700,000 (opportunity cost). Two out of three outcomes are wins. The third one is your fault.",
     asciiArt: `
 ┌─────────────────────────────────────────┐
 │  📊 THREE SCENARIOS ($100 + 2 friends)   │
@@ -1672,7 +1672,7 @@ RECURSIVE EXPONENTIAL THEFT`,
 │  Healthcare: $4.5T       Healthcare: $1.1T │
 │  Outcomes: ranked 37th   Outcomes: ranked 1st│
 │                                             │
-│  Defense: $886B          Defense: $200B     │
+│  Military: $886B         Military: $200B    │
 │  Wars since 1945: 13     Wars needed: 0     │
 │                                             │
 │  Education: $800B        Education: $600B   │

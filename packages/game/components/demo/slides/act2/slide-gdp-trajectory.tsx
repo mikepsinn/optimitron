@@ -3,13 +3,13 @@
 import { SlideBase } from "../slide-base";
 import { AnimatedLineChart } from "../../animations/animated-line-chart";
 import { AnimatedCounter } from "../../animations/animated-counter";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
 import {
-  GAME_PARAMS,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
   GDP_BASELINE_GROWTH_RATE,
   TREATY_TRAJECTORY_CAGR_YEAR_20,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_20,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 const currentGDPperCapita = Math.round(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value / 100) * 100;

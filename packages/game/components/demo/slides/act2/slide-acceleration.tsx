@@ -6,7 +6,7 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 const accelerationFactor = Math.round(DFDA_TRIAL_CAPACITY_MULTIPLIER.value * 10) / 10;

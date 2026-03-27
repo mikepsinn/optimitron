@@ -2,43 +2,24 @@
 
 import { SlideBase } from "../slide-base";
 import { ParticleEmitter } from "../../animations/particle-emitter";
+import {
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
-const DOUBLING_NUMBERS: (string | number)[] = [2, 4, 8, 16, 32, 64, 128, "...", "4,000,000,000"];
-
-function numberFontSize(index: number): string {
-  // Progressively larger as the chain grows
-  const sizes = [
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-xl",
-    "text-2xl md:text-3xl",
-  ];
-  return sizes[index] ?? "text-xl";
-}
+const LIVES_PER_VOTE = VOTER_LIVES_SAVED.value;
+const SUFFERING_HOURS_PER_VOTE = VOTER_SUFFERING_HOURS_PREVENTED.value;
+const SUFFERING_YEARS_PER_VOTE = Math.round(SUFFERING_HOURS_PER_VOTE / 8_760);
 
 export function SlideYoureIn() {
   const [phase, setPhase] = useState(0);
-  const [visibleNumbers, setVisibleNumbers] = useState(0);
-  const [punchlineLines, setPunchlineLines] = useState(0);
 
   useEffect(() => {
-    // Phase 1: confetti burst + banner
     const t1 = setTimeout(() => setPhase(1), 300);
-
-    // Phase 2: doubling chain starts appearing
     const t2 = setTimeout(() => setPhase(2), 2000);
-
-    // Phase 3: punchline text
-    const t3 = setTimeout(() => setPhase(3), 5000);
-
-    // Phase 4: action buttons
-    const t4 = setTimeout(() => setPhase(4), 6500);
+    const t3 = setTimeout(() => setPhase(3), 4000);
+    const t4 = setTimeout(() => setPhase(4), 6000);
 
     return () => {
       clearTimeout(t1);
@@ -48,41 +29,9 @@ export function SlideYoureIn() {
     };
   }, []);
 
-  // Stagger the doubling numbers in at 300ms each once phase 2 starts
-  useEffect(() => {
-    if (phase < 2) return;
-
-    let count = 0;
-    const interval = setInterval(() => {
-      count += 1;
-      setVisibleNumbers(count);
-      if (count >= DOUBLING_NUMBERS.length) {
-        clearInterval(interval);
-      }
-    }, 300);
-
-    return () => clearInterval(interval);
-  }, [phase]);
-
-  // Stagger punchline lines at 500ms each once phase 3 starts
-  useEffect(() => {
-    if (phase < 3) return;
-
-    let count = 0;
-    const interval = setInterval(() => {
-      count += 1;
-      setPunchlineLines(count);
-      if (count >= 3) {
-        clearInterval(interval);
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [phase]);
-
   return (
     <SlideBase act={2}>
-      {/* Confetti burst — fires immediately on phase 1 */}
+      {/* Confetti burst */}
       {phase >= 1 && (
         <ParticleEmitter
           emoji={["🎉", "🎊", "✨", "⭐"]}
@@ -100,75 +49,75 @@ export function SlideYoureIn() {
           <div className="text-center slide-fade-in">
             <div className="relative inline-block">
               <div className="vote-glow absolute inset-0 blur-lg opacity-40 rounded" />
-              <h1 className="relative font-pixel text-2xl md:text-4xl text-emerald-400">
+              <h1 className="relative font-pixel text-3xl md:text-5xl text-emerald-400">
                 🎉 VOTE RECORDED
               </h1>
             </div>
-            <p className="font-pixel text-xl md:text-2xl text-zinc-200 mt-3">
+            <p className="font-pixel text-xl md:text-3xl text-zinc-200 mt-3">
               Player #4,847 of 4,000,000,000 needed
             </p>
           </div>
         )}
 
-        {/* Phase 2: Doubling chain */}
+        {/* Phase 2: YOUR VOTE JUST... */}
         {phase >= 2 && (
-          <div className="w-full bg-black/40 border border-emerald-500/30 rounded p-4 slide-fade-in">
-            <div className="flex flex-wrap items-center justify-center gap-1">
-              {DOUBLING_NUMBERS.map((num, i) => {
-                if (i >= visibleNumbers) return null;
-                const isLast = i === DOUBLING_NUMBERS.length - 1;
-                return (
-                  <span key={i} className="flex items-center gap-1">
-                    <span
-                      className={`font-pixel number-pop ${numberFontSize(i)} ${
-                        isLast ? "text-emerald-400" : "text-zinc-300"
-                      }`}
-                    >
-                      {num}
-                    </span>
-                    {i < DOUBLING_NUMBERS.length - 1 && (
-                      <span className="font-pixel text-xl text-zinc-300">→</span>
-                    )}
-                  </span>
-                );
-              })}
+          <div className="w-full slide-fade-in">
+            <div className="font-pixel text-2xl md:text-3xl text-emerald-400 text-center mb-4">
+              YOUR VOTE JUST:
             </div>
-            {visibleNumbers >= DOUBLING_NUMBERS.length && (
-              <p className="font-pixel text-2xl text-emerald-400 text-center mt-3 slide-fade-in">
-                DOUBLINGS: 33
-              </p>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-5 text-center">
+                <div className="text-4xl md:text-5xl mb-2">❤️</div>
+                <div className="font-pixel text-3xl md:text-4xl text-emerald-400">
+                  {LIVES_PER_VOTE.toFixed(1)}
+                </div>
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-1">
+                  LIVES SAVED
+                </div>
+              </div>
+
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-5 text-center">
+                <div className="text-4xl md:text-5xl mb-2">⏱️</div>
+                <div className="font-pixel text-3xl md:text-4xl text-amber-400">
+                  {SUFFERING_YEARS_PER_VOTE.toLocaleString()}
+                </div>
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-1">
+                  YEARS OF SUFFERING PREVENTED
+                </div>
+              </div>
+
+              <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-5 text-center">
+                <div className="text-4xl md:text-5xl mb-2">💰</div>
+                <div className="font-pixel text-3xl md:text-4xl text-cyan-400">
+                  ${Math.round(LIVES_PER_VOTE * 150_000).toLocaleString()}
+                </div>
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-1">
+                  ECONOMIC VALUE CREATED
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Phase 3: Punchline lines */}
+        {/* Phase 3: Time investment */}
         {phase >= 3 && (
-          <div className="space-y-2 text-center">
-            {punchlineLines >= 1 && (
-              <p className="font-terminal text-2xl md:text-3xl text-zinc-200 slide-fade-in">
-                Your species invented this.
-              </p>
-            )}
-            {punchlineLines >= 2 && (
-              <p className="font-terminal text-2xl md:text-3xl text-zinc-200 slide-fade-in">
-                You call it &ldquo;going viral.&rdquo;
-              </p>
-            )}
-            {punchlineLines >= 3 && (
-              <p className="font-terminal text-2xl md:text-3xl text-amber-400 slide-fade-in">
-                We call it &ldquo;counting.&rdquo;
-              </p>
-            )}
+          <div className="text-center slide-fade-in space-y-2">
+            <div className="font-pixel text-2xl md:text-3xl text-zinc-200">
+              TIME INVESTED: <span className="text-emerald-400">30 SECONDS</span>
+            </div>
+            <div className="font-pixel text-xl md:text-2xl text-zinc-400">
+              Get 10 friends to vote (15 min) → multiply all numbers by 10
+            </div>
           </div>
         )}
 
-        {/* Phase 4: Decorative action buttons */}
+        {/* Phase 4: Action buttons */}
         {phase >= 4 && (
           <div className="flex gap-4 slide-fade-in">
-            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-2xl text-emerald-400 cursor-default">
+            <button className="border-2 border-emerald-500/50 px-6 py-3 rounded font-pixel text-xl md:text-2xl text-emerald-400 cursor-default">
               📋 COPY LINK
             </button>
-            <button className="border border-emerald-500/50 px-4 py-2 rounded font-pixel text-2xl text-emerald-400 cursor-default">
+            <button className="border-2 border-emerald-500/50 px-6 py-3 rounded font-pixel text-xl md:text-2xl text-emerald-400 cursor-default">
               📱 SHARE
             </button>
           </div>
@@ -177,36 +126,12 @@ export function SlideYoureIn() {
 
       <style jsx>{`
         @keyframes slide-fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .slide-fade-in {
           animation: slide-fade-in 0.4s ease-out forwards;
         }
-
-        @keyframes number-pop {
-          0% {
-            opacity: 0;
-            transform: scale(0.6);
-          }
-          60% {
-            transform: scale(1.15);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .number-pop {
-          animation: number-pop 0.25s ease-out forwards;
-        }
-
         .vote-glow {
           background: #34d399;
         }

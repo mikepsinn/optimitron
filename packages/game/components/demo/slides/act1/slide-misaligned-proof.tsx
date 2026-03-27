@@ -4,7 +4,8 @@ import { SlideBase } from "../slide-base";
 import { AnimatedCounter } from "../../animations/animated-counter";
 import { GlitchText } from "../../animations/glitch-text";
 import { ParticleEmitter } from "../../animations/particle-emitter";
-import { CUMULATIVE_MILITARY_SPENDING_FED_ERA, GAME_PARAMS, MONEY_PRINTER_WAR_DEATHS } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { CUMULATIVE_MILITARY_SPENDING_FED_ERA, MONEY_PRINTER_WAR_DEATHS } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 /** A single CRT monitor frame with scanlines */

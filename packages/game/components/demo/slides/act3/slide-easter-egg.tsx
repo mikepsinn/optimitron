@@ -22,37 +22,44 @@ export function SlideEasterEgg() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full">
         <div
           className={`
-            text-center font-terminal text-3xl md:text-5xl max-w-[1700px] px-8
+            text-center font-terminal max-w-[1700px] px-8
             transition-opacity duration-2000
             ${showText ? 'opacity-100' : 'opacity-0'}
           `}
           style={{ color: PALETTE_SEMANTIC[palette].foreground }}
         >
-          <p className="mb-8 leading-relaxed">
-            &quot;The best time to plant a tree was twenty years ago.
-            <br />
-            The second best time is now.&quot;
-          </p>
-
-          <p className="text-2xl md:text-4xl opacity-50 mb-12">
-            — Chinese Proverb
-          </p>
-
-          <div className="border-t border-current opacity-20 mb-8" />
-
-          <p className="text-2xl md:text-4xl opacity-70 mb-4">
+          <p className="text-2xl md:text-4xl opacity-70 mb-6">
             The Earth Optimization Game
           </p>
 
-          <p className="text-xl md:text-3xl opacity-50 mb-2">
-            A project for the Protocol Labs Genesis Hackathon
+          <div className="border-t border-current opacity-20 mb-6" />
+
+          <p className="text-xl md:text-3xl opacity-70 mb-2">
+            Made possible by
           </p>
 
-          <p className="text-xl md:text-3xl opacity-50 mb-8">
-            Built with hope for a better future.
-          </p>
+          <div className="space-y-4 mb-8">
+            <p className="text-2xl md:text-4xl opacity-90">
+              Protocol Labs &amp; Funding the Commons
+            </p>
+          </div>
 
-          <div className="text-2xl md:text-4xl opacity-30 font-mono">
+          <div className="border-t border-current opacity-20 mb-6" />
+
+          <p className="text-xl md:text-2xl opacity-50 mb-3">
+            Built with
+          </p>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xl md:text-2xl opacity-60 mb-8">
+            <span>Storacha</span>
+            <span>Hypercerts</span>
+            <span>World ID</span>
+            <span>Next.js</span>
+            <span>Solidity</span>
+            <span>Base</span>
+            <span>Aave</span>
+          </div>
+
+          <div className="text-xl md:text-3xl opacity-30 font-mono">
             v1.0.0 | 2026
           </div>
         </div>

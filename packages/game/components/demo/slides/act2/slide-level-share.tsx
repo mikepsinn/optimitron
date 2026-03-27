@@ -67,7 +67,7 @@ export function SlideLevelShare() {
           GET ALL YOUR FRIENDS TO PLAY
         </h1>
         <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
-          End pluralistic ignorance — show everyone what everyone already wants
+          Prove everyone wants to be rich and healthy. Then demanding it isn&apos;t crazy.
         </div>
       </div>
 
@@ -156,14 +156,15 @@ export function SlideLevelShare() {
         {/* Pluralistic ignorance punchline */}
         {showPunchline && (
           <div className="text-center space-y-3 animate-fade-in">
-            <div className="font-pixel text-xl md:text-2xl text-amber-400">
+            <div className="font-pixel text-2xl md:text-3xl text-amber-400">
               PLURALISTIC IGNORANCE BROKEN
             </div>
-            <div className="font-terminal text-xl md:text-2xl text-zinc-200 max-w-4xl mx-auto">
-              Everyone discovers that everyone else also wanted to cure disease
-              instead of manufacturing orphans. They just never asked.
+            <div className="font-terminal text-xl md:text-3xl text-zinc-200 max-w-5xl mx-auto leading-relaxed">
+              Once you prove 8 billion people all want to be rich and healthy,
+              demanding your government optimize for it stops sounding crazy.
+              It starts sounding obvious.
             </div>
-            <div className="font-pixel text-2xl md:text-3xl text-emerald-400 mt-2">
+            <div className="font-pixel text-2xl md:text-4xl text-emerald-400 mt-2">
               CONSENSUS UNLOCKED: 🧪 CURES &gt; 💣 ORPHANS
             </div>
           </div>

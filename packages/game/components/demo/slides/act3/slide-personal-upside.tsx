@@ -1,13 +1,13 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
 import {
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   TREATY_PERSONAL_UPSIDE_BLEND,
   TREATY_PROJECTED_HALE_YEAR_15,
   GLOBAL_HALE_CURRENT,
-  GAME_PARAMS,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
 const statusQuoLifetimeIncome = GAME_PARAMS.statusQuoLifetimeIncome;

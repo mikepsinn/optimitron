@@ -119,7 +119,7 @@ const initialState: DemoState = {
   incomeProgress: 0,
   showHelp: false,
   showChapterNav: false,
-  isRecordingMode: false,
+  isRecordingMode: true, // Chrome hidden by default — set false to show HUD/narrator
   isFullscreen: false,
   isMuted: false,
   masterVolume: 0.8,

@@ -1,6 +1,12 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { formatCurrency } from "@/lib/demo/formatters";
+
+const vcReturn = `${GAME_PARAMS.prizePoolFallbackMultiple.toFixed(1)}x`;
+const depositExample = 100;
+const returnOnFail = Math.round(depositExample * GAME_PARAMS.prizePoolFallbackMultiple);
 
 export function SlidePrizeMechanism() {
   return (
@@ -8,7 +14,7 @@ export function SlidePrizeMechanism() {
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400 text-center">
-          HOW THE PRIZE WORKS
+          HOW THE FUND WORKS
         </h1>
 
         {/* Flow Diagram */}
@@ -16,7 +22,7 @@ export function SlidePrizeMechanism() {
           {/* Entry */}
           <div className="flex justify-center">
             <div className="font-pixel text-xl md:text-2xl text-zinc-300 bg-zinc-900 border border-zinc-600 rounded px-4 py-2">
-              YOU ($100)
+              YOU (${depositExample})
             </div>
           </div>
 
@@ -28,7 +34,7 @@ export function SlidePrizeMechanism() {
           {/* Smart Contract */}
           <div className="flex justify-center">
             <div className="font-pixel text-xl md:text-3xl text-amber-400 bg-amber-500/10 border border-amber-500/40 rounded px-4 py-2">
-              PRIZE POOL SMART CONTRACT
+              VC-DIVERSIFIED FUND ({GAME_PARAMS.prizePoolROI}%/yr)
             </div>
           </div>
 
@@ -42,44 +48,38 @@ export function SlidePrizeMechanism() {
             {/* Path 1: Targets Hit */}
             <div className="bg-emerald-500/10 border-2 border-emerald-500/50 rounded-lg p-4 space-y-3 shadow-lg shadow-emerald-500/5">
               <div className="font-pixel text-xl md:text-3xl text-emerald-400 text-center">
-                🌍 TARGETS HIT
+                🌍 TREATY PASSES
               </div>
               <div className="space-y-2">
-                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
-                  Pool unlocks
-                </div>
-                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
-                  VOTE holders split it
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                  Pool unlocks for VOTE holders
                 </div>
                 <div className="font-pixel text-xl md:text-2xl text-emerald-400">
-                  $194K per friend
+                  {formatCurrency(GAME_PARAMS.valuePerVotePoint)} per VOTE point
+                </div>
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                  + {vcReturn} fund growth
                 </div>
               </div>
             </div>
 
             {/* Path 2: Targets Missed */}
-            <div className="bg-emerald-500/5 border-2 border-emerald-500/30 rounded-lg p-4 space-y-3 shadow-lg shadow-emerald-500/5">
-              <div className="font-pixel text-xl md:text-3xl text-emerald-300 text-center">
-                ❌ TARGETS MISSED
+            <div className="bg-cyan-500/10 border-2 border-cyan-500/30 rounded-lg p-4 space-y-3 shadow-lg shadow-cyan-500/5">
+              <div className="font-pixel text-xl md:text-3xl text-cyan-400 text-center">
+                📈 TREATY FAILS
               </div>
               <div className="space-y-2">
-                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
-                  Your $100 →
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                  ${depositExample} →
                 </div>
-                <div className="font-pixel text-xl md:text-2xl text-emerald-400">
-                  $1,110 back
+                <div className="font-pixel text-xl md:text-2xl text-cyan-400">
+                  {formatCurrency(returnOnFail)} back
                 </div>
-                <div className="font-pixel text-xl md:text-3xl text-zinc-200">
-                  (11× over 15 years at 17%)
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                  ({vcReturn} over 15yr at {GAME_PARAMS.prizePoolROI}%)
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Both glow */}
-          <div className="flex justify-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-emerald-400/60 animate-pulse" />
-            <div className="w-3 h-3 rounded-full bg-emerald-400/60 animate-pulse" />
           </div>
         </div>
 

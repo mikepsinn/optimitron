@@ -1,7 +1,7 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@/lib/demo/parameters";
+import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 export function SlideRoiComparison() {

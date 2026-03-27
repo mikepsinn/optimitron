@@ -3,7 +3,8 @@
 import { SlideBase } from "../slide-base";
 import { AnimatedCounter } from "../../animations/animated-counter";
 import { ParticleEmitter } from "../../animations/particle-emitter";
-import { GAME_PARAMS, TREATY_PERSONAL_UPSIDE_BLEND } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { TREATY_PERSONAL_UPSIDE_BLEND } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 export function SlidePaycheckTheft() {

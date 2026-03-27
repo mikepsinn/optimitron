@@ -1,7 +1,7 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { DISEASE_BURDEN_GDP_DRAG_PCT } from "@/lib/demo/parameters";
+import { DISEASE_BURDEN_GDP_DRAG_PCT } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 // The slide's punchline: every disease cured makes the economy bigger.

@@ -105,10 +105,10 @@ export function SlideIPencil() {
 
           <div className="bg-black/40 border border-amber-500/30 rounded-lg p-4 text-center">
             <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
-              PRIZE POOL
+              PRIZE POOL (15yr)
             </div>
             <div className="font-pixel text-2xl md:text-3xl text-yellow-400">
-              {formatCurrency(GAME_PARAMS.prizePoolTotal)}
+              {formatCurrency(GAME_PARAMS.prizePoolAfter15yr)}
             </div>
           </div>
         </div>

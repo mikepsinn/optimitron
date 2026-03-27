@@ -35,22 +35,6 @@ export function SlidePrizePool() {
       </div>
 
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
-        {/* Prize pool amount */}
-        <div className="text-center">
-          <div className="font-pixel text-xl text-zinc-200 mb-2">CURRENT PRIZE POOL</div>
-          <div className="font-pixel text-4xl md:text-6xl text-amber-400">
-            <AnimatedCounter
-              end={50000000}
-              duration={2500}
-              format="currency"
-              decimals={0}
-            />
-          </div>
-          <div className="font-pixel text-xl text-zinc-200 mt-2">
-            and growing
-          </div>
-        </div>
-
         {/* Investment comparison chart */}
         <div className="bg-black/30 border border-amber-500/30 rounded p-4">
           <div className="font-pixel text-xl text-amber-400 mb-3">
@@ -62,12 +46,12 @@ export function SlidePrizePool() {
               { points: prizePoolData, color: "#f59e0b", label: "Prize Pool" },
             ]}
             width={600}
-            height={180}
+            height={220}
             animate
             duration={2500}
             showArea
             xAxisLabel="Years"
-            yAxisLabel="Value"
+            yAxisLabel="Portfolio Value ($)"
             formatY={(v) => `$${(v / 1000).toFixed(0)}K`}
           />
         </div>
@@ -76,17 +60,17 @@ export function SlidePrizePool() {
         {showComparison && (
           <div className="grid grid-cols-2 gap-4 animate-fade-in">
             <div className="bg-zinc-800/50 border border-zinc-700 p-4 rounded">
-              <div className="font-pixel text-xl text-zinc-200 mb-2">TRADITIONAL BONDS</div>
+              <div className="font-pixel text-xl text-zinc-200 mb-2">📊 INDEX FUNDS</div>
               <div className="font-pixel text-xl text-zinc-200">7% / year</div>
-              <div className="font-terminal text-2xl text-zinc-300 mt-2">
-                Safe but slow growth
+              <div className="font-terminal text-xl text-zinc-300 mt-2">
+                2.76x over 15 years
               </div>
             </div>
             <div className="bg-amber-500/10 border border-amber-500/50 p-4 rounded">
-              <div className="font-pixel text-xl text-amber-400 mb-2">TREATY PRIZE POOL</div>
-              <div className="font-pixel text-xl text-amber-400">10%+ / year</div>
-              <div className="font-terminal text-2xl text-amber-400 mt-2">
-                Returns + impact bonuses
+              <div className="font-pixel text-xl text-amber-400 mb-2">🚀 VC-DIVERSIFIED FUND</div>
+              <div className="font-pixel text-xl text-amber-400">{GAME_PARAMS.prizePoolROI}% / year</div>
+              <div className="font-terminal text-xl text-amber-400 mt-2">
+                {GAME_PARAMS.prizePoolFallbackMultiple}x over horizon
               </div>
             </div>
           </div>
@@ -98,32 +82,32 @@ export function SlidePrizePool() {
           <div className="font-pixel text-3xl text-amber-400">
             ${GAME_PARAMS.valuePerVotePoint.toLocaleString()}
           </div>
-          <div className="font-terminal text-2xl text-zinc-200 mt-2">
-            Expected lifetime value of each VOTE token
+          <div className="font-terminal text-xl text-zinc-200 mt-2">
+            $12.65T pool (1% of global AUM at 17%) ÷ 4B votes
           </div>
         </div>
 
         {/* Three outcomes */}
         <div className="grid grid-cols-3 gap-3 text-center">
           <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded">
-            <div className="text-xl mb-1">✓</div>
-            <div className="font-pixel text-2xl text-emerald-400">Treaty Passes</div>
-            <div className="font-pixel text-2xl text-zinc-200">10x return</div>
-          </div>
-          <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded">
-            <div className="text-xl mb-1">↗</div>
-            <div className="font-pixel text-2xl text-amber-400">Partial Success</div>
-            <div className="font-pixel text-2xl text-zinc-200">2x return</div>
+            <div className="text-xl mb-1">✅</div>
+            <div className="font-pixel text-xl text-emerald-400">Treaty Passes</div>
+            <div className="font-pixel text-xl text-zinc-200">VOTE point + 10.5x</div>
           </div>
           <div className="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded">
-            <div className="text-xl mb-1">↺</div>
-            <div className="font-pixel text-2xl text-cyan-400">No Progress</div>
-            <div className="font-pixel text-2xl text-zinc-200">1x (principal)</div>
+            <div className="text-xl mb-1">📈</div>
+            <div className="font-pixel text-xl text-cyan-400">Treaty Fails</div>
+            <div className="font-pixel text-xl text-zinc-200">10.5x VC return</div>
+          </div>
+          <div className="bg-zinc-500/10 border border-zinc-500/30 p-3 rounded">
+            <div className="text-xl mb-1">📊</div>
+            <div className="font-pixel text-xl text-zinc-300">Index Funds</div>
+            <div className="font-pixel text-xl text-zinc-400">2.76x (7%/yr)</div>
           </div>
         </div>
 
         <div className="text-center font-pixel text-xl text-emerald-400">
-          YOU CANNOT LOSE YOUR PRINCIPAL
+          THE FUND OUTPERFORMS INDEX FUNDS IN EVERY SCENARIO
         </div>
       </div>
 

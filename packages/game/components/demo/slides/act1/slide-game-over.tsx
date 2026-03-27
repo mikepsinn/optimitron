@@ -2,7 +2,8 @@
 
 import { SlideBase } from "../slide-base";
 import { GlitchText } from "../../animations/glitch-text";
-import { GAME_PARAMS, MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 export function SlideGameOver() {

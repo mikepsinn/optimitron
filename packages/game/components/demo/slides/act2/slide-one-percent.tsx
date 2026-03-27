@@ -5,7 +5,7 @@ import { AnimatedCounter } from "../../animations/animated-counter";
 import {
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   TREATY_ANNUAL_FUNDING,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 

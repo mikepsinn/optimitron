@@ -1,46 +1,14 @@
-// Re-exports sourced parameters from @optimitron/data and defines game-specific constants.
-// Slide components import Parameter objects directly from "@optimitron/data/parameters".
+// Game-specific constants and derived values.
+// Slides import data parameters directly from "@optimitron/data/parameters".
+// This file only exports things that live in the game package.
 
-// Re-export the Parameter type and formatting utilities so components can import from one place
-export type { Parameter } from "@optimitron/data/parameters";
-export { fmtParam, fmtRaw, formatParameter } from "@optimitron/data/parameters";
-
-// Re-export every data parameter used by slide components (single import point)
-export {
-  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-  DISEASE_BURDEN_GDP_DRAG_PCT,
-  ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT,
-  ECONOMIC_MULTIPLIER_MILITARY_SPENDING,
-  EFFICACY_LAG_YEARS,
-  EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
-  GDP_BASELINE_GROWTH_RATE,
-  GLOBAL_CYBERCRIME_CAGR,
-  GLOBAL_CYBERCRIME_COST_ANNUAL_2025,
-  GLOBAL_DESTRUCTIVE_ECONOMY_ANNUAL_2025,
-  GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
-  GLOBAL_DISEASE_DEATHS_DAILY,
-  GLOBAL_GDP_2025,
-  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
-  GLOBAL_HALE_CURRENT,
-  GLOBAL_HOUSEHOLD_WEALTH_USD,
-  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
-  GLOBAL_POPULATION_2024,
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  MONEY_PRINTER_WAR_DEATHS,
-  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-  TRADITIONAL_PHASE3_COST_PER_PATIENT,
-  TREATY_ANNUAL_FUNDING,
-  TREATY_PERSONAL_UPSIDE_BLEND,
-  TREATY_PROJECTED_HALE_YEAR_15,
-  TREATY_TRAJECTORY_AVG_INCOME_YEAR_20,
-  TREATY_TRAJECTORY_CAGR_YEAR_20,
-  TYPE_II_ERROR_COST_RATIO,
+import {
+  GLOBAL_INVESTABLE_ASSETS,
+  PRIZE_POOL_PARTICIPATION_RATE,
+  PRIZE_POOL_SIZE,
+  PRIZE_POOL_ANNUAL_RETURN,
+  PRIZE_POOL_HORIZON_MULTIPLE,
+  VOTE_TOKEN_VALUE,
 } from "@optimitron/data/parameters";
 
 /**
@@ -69,15 +37,17 @@ export const GAME_PARAMS = {
   currentTrialDuration: 10, // years per treatment
   acceleratedTrialDuration: 0.81, // years per treatment (12.3x faster)
 
-  // Game economics (prize pool, voting)
+  // Game economics (prize pool, voting) — derived from @optimitron/data parameters
   costPerVote: 0.06,
-  valuePerVotePoint: 194_000,
-  prizePoolMultiple: 10,
-  prizePoolROI: 17, // % per year
-  prizePoolFallbackMultiple: 11, // 11x back if targets missed
+  valuePerVotePoint: Math.round(VOTE_TOKEN_VALUE.value), // from PRIZE_POOL_SIZE / coordination target
+  globalInvestedAssets: GLOBAL_INVESTABLE_ASSETS.value, // $305T
+  prizePoolParticipationPct: PRIZE_POOL_PARTICIPATION_RATE.value * 100, // 1%
+  prizePoolInitial: GLOBAL_INVESTABLE_ASSETS.value * PRIZE_POOL_PARTICIPATION_RATE.value, // $3.05T
+  prizePoolROI: Math.round(PRIZE_POOL_ANNUAL_RETURN.value * 100), // 17%
+  prizePoolAfter15yr: Math.round(PRIZE_POOL_SIZE.value), // $33.75T
+  prizePoolFallbackMultiple: Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value * 100) / 100, // ~11.06x
   minimumDeposit: 100,
-  prizePoolTotal: 774_000_000_000_000,
-  exchangeRatio: 245_000_000, // 245 million to one
+  exchangeRatio: Math.round(VOTE_TOKEN_VALUE.value / 0.06), // value per point / cost per vote
 
   // Fictional / game-specific
   moroniaCorrelation: 94.7,
@@ -112,6 +82,8 @@ export const SCORE_PROGRESSION = {
 } as const;
 
 // Inventory items collected throughout the demo
+const votePointDisplay = `$${Math.round(VOTE_TOKEN_VALUE.value).toLocaleString()}`;
+
 export const INVENTORY_ITEMS = [
   {
     slot: 1,
@@ -151,8 +123,7 @@ export const INVENTORY_ITEMS = [
     icon: "gold-coin",
     emoji: "\u{1FA99}",
     name: "PRIZE DEPOSIT",
-    tooltip:
-      "$100 deposited. Earning 17%/yr. Grows 11\u00D7 even if targets missed.",
+    tooltip: `$100 deposited. Earning ${GAME_PARAMS.prizePoolROI}%/yr. Grows ${GAME_PARAMS.prizePoolFallbackMultiple}\u00D7 even if targets missed.`,
   },
   {
     slot: 6,
@@ -160,7 +131,7 @@ export const INVENTORY_ITEMS = [
     icon: "silver-pair",
     emoji: "\u{1F948}",
     name: "VOTE POINTS \u00D72",
-    tooltip: "$194K each if targets are hit. Earned by getting friends to play.",
+    tooltip: `${votePointDisplay} each if targets are hit. Earned by getting friends to play.`,
   },
   {
     slot: 7,

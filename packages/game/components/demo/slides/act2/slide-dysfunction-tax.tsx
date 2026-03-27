@@ -12,12 +12,12 @@ interface LineItem {
 }
 
 const LINE_ITEMS: LineItem[] = [
-  { label: "Health innovation delays", value: 34_000_000_000_000 },
-  { label: "Migration restrictions", value: 57_000_000_000_000 },
-  { label: "Lead poisoning", value: 6_000_000_000_000 },
-  { label: "Underfunded science", value: 4_000_000_000_000 },
-  { label: "─────────────────", value: 0, isSeparator: true },
-  { label: "TOTAL ANNUAL COST", value: 101_000_000_000_000, isTotal: true },
+  { label: "🏥 Health innovation delays", value: 34_000_000_000_000 },
+  { label: "🚧 Migration restrictions", value: 57_000_000_000_000 },
+  { label: "🧪 Lead poisoning", value: 6_000_000_000_000 },
+  { label: "🔬 Underfunded science", value: 4_000_000_000_000 },
+  { label: "─────────────────────────────────────", value: 0, isSeparator: true },
+  { label: "💀 TOTAL ANNUAL COST", value: 101_000_000_000_000, isTotal: true },
 ];
 
 export function SlideDysfunctionTax() {
@@ -26,7 +26,7 @@ export function SlideDysfunctionTax() {
   const [footerText, setFooterText] = useState("");
 
   const fullFooter =
-    "This bug has been open for 113 years. No one has assigned it.";
+    "Thank you for your payment. No refunds. No receipt.";
 
   useEffect(() => {
     // Reveal line items one at a time
@@ -71,20 +71,23 @@ export function SlideDysfunctionTax() {
       <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto">
         {/* CRT Bug Report Title */}
         <div className="w-full bg-zinc-900 border border-red-500/50 rounded-lg overflow-hidden">
-          <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2 flex items-center gap-2">
-            <span className="text-xl">🐛</span>
+          <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-3 flex items-center gap-2">
+            <span className="text-2xl">🧾</span>
             <span className="font-pixel text-xl md:text-3xl text-red-400">
-              BUG REPORT: pluralistic_ignorance.exe
+              RECEIPT: political_dysfunction_tax.exe
             </span>
           </div>
 
-          <div className="p-4 space-y-1">
+          <div className="p-4 space-y-1 border-b border-dashed border-zinc-700">
             <div className="font-pixel text-xl text-zinc-200">
-              Status:{" "}
+              🦠 Status:{" "}
               <span className="text-red-400 animate-pulse">ACTIVE</span>
             </div>
             <div className="font-pixel text-xl text-zinc-200">
-              Severity: <span className="text-red-400">CRITICAL</span>
+              ⚠️ Severity: <span className="text-red-400">CRITICAL</span>
+            </div>
+            <div className="font-pixel text-xl text-zinc-200">
+              📅 Duration: <span className="text-amber-400">113 years</span>
             </div>
           </div>
 

@@ -8,7 +8,7 @@ import { ProgressRing } from "../../animations/progress-ring";
 import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   GLOBAL_DISEASE_DEATHS_DAILY,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { formatNumber } from "@/lib/demo/formatters";
 import { useDemoStore } from "@/lib/demo/store";
 import { PALETTE_SEMANTIC } from "@/lib/demo/palette";

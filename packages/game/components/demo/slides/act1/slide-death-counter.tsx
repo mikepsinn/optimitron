@@ -2,7 +2,8 @@
 
 import { SlideBase } from "../slide-base";
 import { AnimatedCounter } from "../../animations/animated-counter";
-import { GAME_PARAMS, GLOBAL_DISEASE_DEATHS_DAILY } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 const TOTAL_TOWERS = GAME_PARAMS.september11Equivalent; // 59

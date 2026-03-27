@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { SlideBase } from "../slide-base";
-import { GLOBAL_HOUSEHOLD_WEALTH_USD, GAME_PARAMS } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { GLOBAL_HOUSEHOLD_WEALTH_USD } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
 const publicWealth = GLOBAL_HOUSEHOLD_WEALTH_USD.value;
 const defenceWealth = GAME_PARAMS.defenceWealth;
 
-const PUBLIC_ROWS = 6;
-const PUBLIC_COLS = 8;
-const TOTAL_PUBLIC = PUBLIC_ROWS * PUBLIC_COLS;
+const PUBLIC_COLS = 10;
+const TOTAL_PUBLIC = 90; // 90 public emojis : 1 lobbyist = 90:1 ratio
+const PUBLIC_ROWS = Math.ceil(TOTAL_PUBLIC / PUBLIC_COLS);
 
 const RATIO = Math.round(publicWealth / defenceWealth);
 
@@ -139,15 +140,14 @@ export function SlideTheMismatch() {
               </div>
             </div>
 
-            {/* RIGHT: The Lobbyists */}
+            {/* RIGHT: The Lobbyists — 1 emoji to show 90:1 ratio */}
             <div className="flex flex-col items-center justify-center gap-3 p-3 bg-slate-900/60 border border-red-500/30 rounded">
-              <div className="flex gap-2">
-                <span className="text-2xl md:text-3xl">🤵</span>
-                <span className="text-2xl md:text-3xl">🤵</span>
-                <span className="text-2xl md:text-3xl">🤵</span>
-              </div>
+              <div className="text-5xl md:text-7xl">🤵</div>
               <div className="font-pixel text-xl text-red-400 tracking-widest">
                 LOBBYISTS
+              </div>
+              <div className="font-pixel text-lg text-zinc-400">
+                (1 for every 90 of you)
               </div>
             </div>
           </div>

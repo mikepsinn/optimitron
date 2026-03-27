@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useDemoStore } from "@/lib/demo/store";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
 import {
   GLOBAL_POPULATION_2024,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_HALE_CURRENT,
   TREATY_PROJECTED_HALE_YEAR_15,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
-  GAME_PARAMS,
-} from "@/lib/demo/parameters";
+} from "@optimitron/data/parameters";
 import { formatNumber } from "@/lib/demo/formatters";
 import { cn } from "@/lib/utils";
 

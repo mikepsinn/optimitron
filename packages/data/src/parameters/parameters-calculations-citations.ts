@@ -1139,6 +1139,17 @@ export const GLOBAL_HOUSEHOLD_WEALTH_USD: Parameter = {
   confidence: "high",
 };
 
+export const GLOBAL_INVESTABLE_ASSETS: Parameter = {
+  value: 305000000000000.0,
+  parameterName: "GLOBAL_INVESTABLE_ASSETS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_investable_assets",
+  unit: "USD",
+  displayName: "Global Investable Financial Assets",
+  description: "Total global financial wealth (2024): equities, bonds, cash/deposits, and investment funds. Excludes real estate and physical assets. This is the addressable capital pool for PRIZE deposits.",
+  sourceType: "external",
+  confidence: "high",
+};
+
 export const GLOBAL_LIFE_EXPECTANCY_2024: Parameter = {
   value: 79.0,
   parameterName: "GLOBAL_LIFE_EXPECTANCY_2024",
@@ -5173,19 +5184,6 @@ export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
   latex: "M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}",
 };
 
-export const PRIZE_POOL_POTENTIAL_MAX_SIZE: Parameter = {
-  value: 774478948852447.2,
-  parameterName: "PRIZE_POOL_POTENTIAL_MAX_SIZE",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_potential_max_size",
-  unit: "USD",
-  displayName: "PRIZE Pool Potential Max Size",
-  description: "Potential maximum terminal PRIZE pool size if the global retirement asset base compounds through the wishocratic fund over the resolution horizon.",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "GLOBAL_RETIREMENT_ASSETS × PRIZE_POOL_HORIZON_MULTIPLE",
-  latex: "Pool_{max} = Assets_{retire} \\times M_{pool}",
-};
-
 export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
   value: 1804405541315.2495,
   parameterName: "PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL",
@@ -5197,6 +5195,19 @@ export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
   confidence: "high",
   formula: "GLOBAL_COORDINATION_TARGET_SUPPORTERS × RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET / PRIZE_POOL_HORIZON_MULTIPLE",
   latex: "\\begin{gathered}\nP_{retire-eq} \\\\\n= \\frac{N_{coord} \\times V_{claim,target}}{M_{pool}}\n\\end{gathered}",
+};
+
+export const PRIZE_POOL_SIZE: Parameter = {
+  value: 33745154199999.484,
+  parameterName: "PRIZE_POOL_SIZE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_size",
+  unit: "USD",
+  displayName: "PRIZE Pool Size",
+  description: "Terminal PRIZE pool size: global investable assets × participation rate × compound multiple over the resolution horizon.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "GLOBAL_INVESTABLE_ASSETS × PRIZE_POOL_PARTICIPATION_RATE × PRIZE_POOL_HORIZON_MULTIPLE",
+  latex: "Pool = Assets_{invest} \\times R_{pool} \\times M_{pool}",
 };
 
 export const RECOVERY_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
@@ -6271,29 +6282,29 @@ export const VOTER_SUFFERING_HOURS_PREVENTED: Parameter = {
 };
 
 export const VOTE_2_CLAIMS_PAYOUT: Parameter = {
-  value: 387239.4744262236,
+  value: 16872.577099999744,
   parameterName: "VOTE_2_CLAIMS_PAYOUT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_2_claims_payout",
   unit: "USD",
   displayName: "VOTE Payout for 2 Claims",
-  description: "Potential payout for a depositor who recruits 2 verified participants (earning 2 VOTE claims) if the PRIZE pool reaches its canonical potential max size. This is a recruiter example, not the system-wide average claim denominator.",
+  description: "Payout for a depositor who recruits 2 verified participants (earning 2 VOTE claims). CI range reflects participation uncertainty.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "2 × VOTE_TOKEN_POTENTIAL_VALUE",
-  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$194K \\times 2 = \\$387K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool_{max}}{N_{coord}}\n\\\\[0.5em]\n\\text{where } Pool_{max} = Assets_{retire} \\times M_{pool}\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home}\n\\\\[0.5em]\n\\text{where } \\alpha_{crowd} = S_{alloc} \\times (Acc_{crowd} - Acc_{expert}) = 8\\% \\times (91\\% - 65\\%) = 2.08\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln(0.50 / r_{destruct:GDP})}{\\ln(1 + g_{destruct} - g_{GDP})}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } N_{coord} = N_{global} \\times R_{coord}\n\\end{gathered}",
+  formula: "2 × VOTE_TOKEN_VALUE",
+  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$8.44K \\times 2 = \\$16.9K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{coord}}\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool}\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home}\n\\\\[0.5em]\n\\text{where } \\alpha_{crowd} = S_{alloc} \\times (Acc_{crowd} - Acc_{expert}) = 8\\% \\times (91\\% - 65\\%) = 2.08\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln(0.50 / r_{destruct:GDP})}{\\ln(1 + g_{destruct} - g_{GDP})}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } N_{coord} = N_{global} \\times R_{coord}\n\\end{gathered}",
 };
 
-export const VOTE_TOKEN_POTENTIAL_VALUE: Parameter = {
-  value: 193619.7372131118,
-  parameterName: "VOTE_TOKEN_POTENTIAL_VALUE",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_token_potential_value",
+export const VOTE_TOKEN_VALUE: Parameter = {
+  value: 8436.288549999872,
+  parameterName: "VOTE_TOKEN_VALUE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_token_value",
   unit: "USD",
-  displayName: "VOTE Token Potential Value",
-  description: "Potential value of a single VOTE claim if the PRIZE pool reaches its canonical potential max size. Denominator is the modeled global coordination target, not the lower forecast participation path.",
+  displayName: "VOTE Point Value",
+  description: "Value of a single VOTE claim based on the modeled PRIZE pool size (investable assets × participation rate × horizon multiple). CI range reflects participation uncertainty (0.1%-10%).",
   sourceType: "calculated",
   confidence: "high",
-  formula: "PRIZE_POOL_POTENTIAL_MAX_SIZE / GLOBAL_COORDINATION_TARGET_SUPPORTERS",
-  latex: "V_{vote} = \\frac{Pool_{max}}{N_{coord}}",
+  formula: "PRIZE_POOL_SIZE / GLOBAL_COORDINATION_TARGET_SUPPORTERS",
+  latex: "V_{vote} = \\frac{Pool}{N_{coord}}",
 };
 
 export const WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY: Parameter = {
@@ -7713,6 +7724,18 @@ export const PRE_1962_VALIDATION_YEARS: Parameter = {
   formula: "1960 - 1883",
 };
 
+export const PRIZE_POOL_PARTICIPATION_RATE: Parameter = {
+  value: 0.01,
+  parameterName: "PRIZE_POOL_PARTICIPATION_RATE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_participation_rate",
+  unit: "percent",
+  displayName: "PRIZE Pool Participation Rate",
+  description: "Fraction of global investable financial assets that flow into the PRIZE pool. 1% central estimate parallels the 1% Treaty ask: 1% of your weapons money, 1% of your savings.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.001, 0.1],
+};
+
 export const QALYS_PER_COVID_DEATH_AVERTED: Parameter = {
   value: 5.0,
   parameterName: "QALYS_PER_COVID_DEATH_AVERTED",
@@ -8090,6 +8113,7 @@ export const parameters = {
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_HALE_CURRENT,
   GLOBAL_HOUSEHOLD_WEALTH_USD,
+  GLOBAL_INVESTABLE_ASSETS,
   GLOBAL_LIFE_EXPECTANCY_2024,
   GLOBAL_MEDIAN_AGE_2024,
   GLOBAL_MED_RESEARCH_SPENDING,
@@ -8390,8 +8414,8 @@ export const parameters = {
   PRAGMATIC_TRIAL_COST_PER_QALY,
   PRIZE_POOL_ANNUAL_RETURN,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  PRIZE_POOL_POTENTIAL_MAX_SIZE,
   PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL,
+  PRIZE_POOL_SIZE,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   RECOVERY_TRIAL_TOTAL_QALYS_GENERATED,
   RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT,
@@ -8475,7 +8499,7 @@ export const parameters = {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
   VOTE_2_CLAIMS_PAYOUT,
-  VOTE_TOKEN_POTENTIAL_VALUE,
+  VOTE_TOKEN_VALUE,
   WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY,
   WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR,
   WILLING_TRIAL_PARTICIPANTS_GLOBAL,
@@ -8594,6 +8618,7 @@ export const parameters = {
   PEACE_DIVIDEND_DIRECT_FISCAL_SAVINGS,
   PHARMA_PHASE_2_3_COST_BARRIER,
   PRE_1962_VALIDATION_YEARS,
+  PRIZE_POOL_PARTICIPATION_RATE,
   QALYS_PER_COVID_DEATH_AVERTED,
   RD_SPILLOVER_MULTIPLIER,
   SAFE_COMPOUNDS_COUNT,
@@ -10560,10 +10585,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 609,
-  external: 204,
+  total: 611,
+  external: 205,
   calculated: 282,
-  definitions: 123,
+  definitions: 124,
   citations: 142,
 } as const;
 

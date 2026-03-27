@@ -1,7 +1,8 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { GLOBAL_HOUSEHOLD_WEALTH_USD, GAME_PARAMS } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { GLOBAL_HOUSEHOLD_WEALTH_USD } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
 const GRID_ROWS = 5;

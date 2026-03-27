@@ -1,45 +1,53 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { TREATY_TRAJECTORY_AVG_INCOME_YEAR_20 } from "@/lib/demo/parameters";
+import { GAME_PARAMS } from "@/lib/demo/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
-// 20yr projection at 2.5% status quo rate: 18700 * 1.025^20 ≈ 30,600
-// The spec calls this ~$20,100 so we use that directly as the "do nothing" endpoint
-const DO_NOTHING_VALUE = 20_100;
+const fallbackMultiple = GAME_PARAMS.prizePoolFallbackMultiple;
+const fundReturnOn100 = Math.round(100 * fallbackMultiple);
 
-// Wishonia best-case trajectory GDP per capita (game constant, not in @optimitron/data)
-const WISHONIA_GDP_PER_CAPITA = 1_160_000;
-const treatyGDPperCapita = Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20.value / 1000) * 1000;
+// From prize-docs.md — per-person lifetime wealth trajectories
+// Optimal governance: Switzerland-level outcomes applied globally
+// 1% Treaty: treaty objectives met, $27B/yr redirected to clinical trials
+// Prize fail: treaty fails but fund still returns 10.54x via VC-diversified portfolio (15yr @ 17%)
+// Do nothing: status quo 2.5% growth trajectory
 
 const BARS = [
   {
-    label: "BEST CASE (26%)",
-    value: WISHONIA_GDP_PER_CAPITA,
+    label: "🌍 OPTIMAL GOVERNANCE",
+    sublabel: "Switzerland-level outcomes for all",
+    value: 528_000,
+    annualReturn: "8.2%",
     widthPct: 100,
     colorBar: "bg-amber-400",
     colorText: "text-amber-400",
   },
   {
-    label: "EXPECTED (17.9%)",
-    value: treatyGDPperCapita,
-    widthPct: 29,
+    label: "🧪 1% TREATY TRAJECTORY",
+    sublabel: "$27B/yr → clinical trials",
+    value: 149_000,
+    annualReturn: "5.4%",
+    widthPct: 28,
     colorBar: "bg-emerald-400",
     colorText: "text-emerald-400",
   },
   {
-    label: "WORST CASE (11%)",
-    // spec value — 18700 * 1.11^20 is higher, but brief uses $81K
-    value: 81_000,
-    widthPct: 7,
+    label: "💰 FUND RETURN (IF TREATY FAILS)",
+    sublabel: `$100 at ${GAME_PARAMS.prizePoolROI}% VC return`,
+    value: fundReturnOn100,
+    annualReturn: `${fallbackMultiple}x`,
+    widthPct: 4,
     colorBar: "bg-cyan-400",
     colorText: "text-cyan-400",
   },
   {
-    label: "DO NOTHING (2.5%)",
-    value: DO_NOTHING_VALUE,
-    widthPct: 1.7,
+    label: "😐 DO NOTHING",
+    sublabel: "Status quo trajectory",
+    value: 20_100,
+    annualReturn: "2.5%",
+    widthPct: 3.8,
     colorBar: "bg-zinc-500",
     colorText: "text-zinc-200",
   },
@@ -47,30 +55,22 @@ const BARS = [
 
 export function SlideCompoundPunchline() {
   const [phase, setPhase] = useState(0);
-  // Track which bars have animated in (0 = none, 1..4 = each bar sequentially)
   const [barsVisible, setBarsVisible] = useState(0);
 
   useEffect(() => {
-    // Phase 1: title
     const t1 = setTimeout(() => setPhase(1), 500);
 
-    // Phase 2: bars staggered at 400ms each, starting at 1500ms
     setTimeout(() => setPhase(2), 1500);
     const b1 = setTimeout(() => setBarsVisible(1), 1500);
     const b2 = setTimeout(() => setBarsVisible(2), 1900);
     const b3 = setTimeout(() => setBarsVisible(3), 2300);
     const b4 = setTimeout(() => setBarsVisible(4), 2700);
 
-    // Phase 3: highlight box
     const t3 = setTimeout(() => setPhase(3), 4500);
-
-    // Phase 4: deadpan footnotes
-    const t4 = setTimeout(() => setPhase(4), 6000);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t3);
-      clearTimeout(t4);
       clearTimeout(b1);
       clearTimeout(b2);
       clearTimeout(b3);
@@ -80,15 +80,15 @@ export function SlideCompoundPunchline() {
 
   return (
     <SlideBase act={2}>
-      <div className="flex flex-col gap-5 w-full max-w-[1700px] mx-auto">
-        {/* Phase 1: Title */}
+      <div className="flex flex-col gap-4 w-full max-w-[1700px] mx-auto">
+        {/* Title */}
         {phase >= 1 && (
           <h1 className="font-pixel text-xl md:text-2xl text-amber-400 text-center slide-fade-in">
             🧮 WHAT COMPOUND INTEREST THINKS ABOUT YOUR POLITICS
           </h1>
         )}
 
-        {/* Phase 2: Bars */}
+        {/* Bars */}
         {phase >= 2 && (
           <div className="space-y-3 slide-fade-in">
             {BARS.map((bar, i) => {
@@ -98,22 +98,23 @@ export function SlideCompoundPunchline() {
                   key={bar.label}
                   className={`bg-zinc-900 border border-zinc-700 rounded p-2 md:p-3 ${visible ? "slide-fade-in" : "opacity-0"}`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className={`font-pixel text-xl ${bar.colorText}`}>
-                      {bar.label}
-                    </span>
-                    <span className={`font-pixel text-xl md:text-2xl ${bar.colorText}`}>
+                  <div className="flex items-start justify-between mb-1">
+                    <div>
+                      <div className={`font-pixel text-lg md:text-xl ${bar.colorText}`}>
+                        {bar.label}
+                      </div>
+                      <div className="font-terminal text-base md:text-lg text-zinc-400">
+                        {bar.sublabel}
+                      </div>
+                    </div>
+                    <span className={`font-pixel text-xl md:text-2xl ${bar.colorText} shrink-0 ml-2`}>
                       {formatCurrency(bar.value)} / person
                     </span>
                   </div>
-                  <div className="h-8 md:h-10 bg-zinc-800 rounded overflow-hidden">
+                  <div className="h-6 md:h-8 bg-zinc-800 rounded overflow-hidden">
                     <div
                       className={`h-full ${bar.colorBar} rounded bar-fill`}
-                      style={
-                        {
-                          "--target-width": `${bar.widthPct}%`,
-                        } as React.CSSProperties
-                      }
+                      style={{ "--target-width": `${bar.widthPct}%` } as React.CSSProperties}
                     />
                   </div>
                 </div>
@@ -122,50 +123,31 @@ export function SlideCompoundPunchline() {
           </div>
         )}
 
-        {/* Phase 3: Punchline highlight */}
+        {/* Punchline */}
         {phase >= 3 && (
           <div className="bg-cyan-500/15 border-2 border-cyan-500/50 rounded-lg p-4 slide-fade-in">
-            <p className="font-pixel text-xl md:text-2xl text-cyan-400 animate-pulse text-center">
-              WORST CASE IS 4× BETTER THAN DOING NOTHING
+            <p className="font-pixel text-xl md:text-2xl text-cyan-400 text-center">
+  
+              EVEN IF THE TREATY FAILS, YOUR $100 BECOMES ${fundReturnOn100.toLocaleString()}
             </p>
-          </div>
-        )}
-
-        {/* Phase 4: Deadpan footnotes */}
-        {phase >= 4 && (
-          <div className="flex justify-between slide-fade-in px-1">
-            <span className="font-terminal text-xl text-emerald-400">
-              Math consulted: yes
-            </span>
-            <span className="font-terminal text-xl text-zinc-200">
-              Politicians consulted: not required
-            </span>
+            <p className="font-terminal text-lg md:text-xl text-zinc-200 text-center mt-1">
+              {fallbackMultiple}x return vs 2.76x in index funds. You literally cannot lose.
+            </p>
           </div>
         )}
       </div>
 
       <style jsx>{`
         @keyframes slide-fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .slide-fade-in {
           animation: slide-fade-in 0.4s ease-out forwards;
         }
-
         @keyframes bar-fill {
-          from {
-            width: 0%;
-          }
-          to {
-            width: var(--target-width);
-          }
+          from { width: 0%; }
+          to { width: var(--target-width); }
         }
         .bar-fill {
           animation: bar-fill 1.5s ease-out forwards;
