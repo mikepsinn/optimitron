@@ -830,7 +830,7 @@ export const SEGMENTS: DemoSegment[] = [
     tags: ["feature"],
     act: "II-armory",
     scoreAdd: 5_400_000_000,
-    narration: `Every claim of impact gets a Hypercert — a verifiable, on-chain attestation that says exactly what was done, by whom, with what result. No more we spent the money on healthcare with no proof it worked. Every clinical trial funded by the treaty gets a Hypercert. Every life saved is attested. Every dollar tracked from deposit to outcome. If a charity tells you they saved ten thousand lives, you ask for the Hypercert. If they do not have one, they did not save ten thousand lives.`,
+    narration: `Every claim of impact gets a Hypercert — a verifiable attestation published to AT Protocol that says exactly what was done, by whom, with what result. Recruit verified voters — Hypercert. Fund the prize pool — Hypercert. Score a politician's alignment with citizen preferences — Hypercert. Activity claims, measurements, evaluations. Permanent. Auditable. On Bluesky. If someone tells you they recruited a thousand voters, you ask for the Hypercert. If they do not have one, they did not recruit a thousand voters.`,
   },
   {
     id: "script-armory-wish",

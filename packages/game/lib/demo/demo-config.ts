@@ -1423,21 +1423,21 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dgao",
     narration:
-      "On your planet, proving you saved lives works on the honour system. 'We spent the money on healthcare.' Did it work? 'Trust us.' On Wishonia, every claim of impact gets a receipt. If a charity tells you they saved ten thousand lives, you ask for the Hypercert. If they do not have one, they did not save ten thousand lives. Your species calls this 'radical accountability.' We call it 'a receipt.'",
+      "On your planet, proving you did something useful works on the honour system. 'I recruited voters.' How many verified? 'Trust me.' On Wishonia, every claim of impact gets a receipt — published to a protocol no one controls. You recruit verified voters, you get a Hypercert. You fund the prize pool, you get a Hypercert. A politician votes against citizen preferences, that gets a Hypercert too. Permanent. Auditable. On Bluesky. Your species calls this 'radical accountability.' We call it 'a receipt.'",
     visual:
-      "Pixel art — Sierra achievement/badge screen. A grid of Hypercert badges, each one a pixel-art certificate with: trial name, patients treated, outcome measured, CID hash linking to Storacha data. One badge animates being minted: \"TRIAL #4,847: Malaria vaccine pragmatic trial. 12,000 patients. 94% efficacy. Verified on-chain.\" A pixel stamp of approval lands on it. The badge links visually to a Storacha block from the previous slide — the data backing the claim.",
+      "Pixel art — Sierra achievement/badge screen. A grid of Hypercert badges: one for voter recruitment (7 verified voters, 58.3% rate), one for a $500 PRIZE pool deposit, one for politician alignment scoring (87% alignment, 14 votes compared). Each badge shows AT Protocol URIs and measurement data. One badge animates being minted with a stamp of approval.",
     score: 5_400_000_000,
     showQuestMeters: true,
     sierraVerbs: [
       {
         verb: "VERIFY claim",
         response:
-          "Verifiable. Auditable. On-chain. The opposite of 'trust me, we spent it wisely.'",
+          "Every Hypercert is an AT Protocol record — activity claim, measurements, evaluation. Published to Bluesky. Content-addressed. The opposite of 'trust me, we spent it wisely.'",
       },
       {
         verb: "LOOK AT badge",
         response:
-          "This Hypercert says 12,000 people received a malaria vaccine. The clinical data is content-addressed on Storacha. The funding trail is on-chain in Solidity. Every link is auditable. Your current system's equivalent is a PDF that says 'trust us.'",
+          "This Hypercert says you recruited seven verified voters. Verification rate: 58.3%. Method: World ID personhood verification. Published to AT Protocol. Your current system's equivalent is a spreadsheet someone emailed once and then lost.",
       },
     ],
   },

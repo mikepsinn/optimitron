@@ -5,32 +5,32 @@ import { useEffect, useState } from "react";
 
 const YOUR_ACTIONS = [
   {
-    action: "VOTED in the 1% Treaty Referendum",
+    action: "RECRUITED 7 verified voters",
     emoji: "✊",
-    hypercert: "Recruited 2 verified voters for the 1% Treaty",
-    impact: "2 signatures toward 4B goal",
+    hypercert: "Voter Recruitment: 7 verified, 12 total, 58.3% verification rate",
+    impact: "Published to AT Protocol — permanent, auditable",
     color: "emerald",
   },
   {
-    action: "DEPOSITED $100 to Prize Pool",
+    action: "DEPOSITED $500 to Prize Pool",
     emoji: "💰",
-    hypercert: "Funded Trial #4,847 — Malaria vaccine — 94% efficacy",
-    impact: "12,000 patients enrolled",
+    hypercert: "PRIZE Pool Contribution: $500 USDC — funding the campaign",
+    impact: "On-chain deposit + AT Protocol attestation",
     color: "amber",
   },
   {
-    action: "SHARED with 2 friends",
-    emoji: "🔗",
-    hypercert: "Referral chain: 2 → 8 → 32 verified voters",
-    impact: "5 doublings of the network",
+    action: "SCORED 87% Alignment on Rep. Smith",
+    emoji: "🔍",
+    hypercert: "Citizen Alignment: 14 votes compared, 412 participants",
+    impact: "Politician accountability, verifiable on Bluesky",
     color: "purple",
   },
 ];
 
 const colorMap: Record<string, { bg: string; border: string; text: string }> = {
-  emerald: { bg: "bg-emerald-500/10", border: "border-emerald-500/40", text: "text-emerald-400" },
-  amber: { bg: "bg-amber-500/10", border: "border-amber-500/40", text: "text-amber-400" },
-  purple: { bg: "bg-purple-500/10", border: "border-purple-500/40", text: "text-purple-400" },
+  emerald: { bg: "bg-brutal-cyan/10", border: "border-brutal-cyan/40", text: "text-brutal-cyan" },
+  amber: { bg: "bg-brutal-yellow/10", border: "border-brutal-yellow/40", text: "text-brutal-yellow" },
+  purple: { bg: "bg-brutal-pink/10", border: "border-brutal-pink/40", text: "text-brutal-pink" },
 };
 
 export function SlideHypercerts() {
@@ -121,12 +121,12 @@ export function SlideHypercerts() {
               <div className="font-pixel text-xl text-zinc-200">VERIFIABLE</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl">💎</div>
-              <div className="font-pixel text-xl text-zinc-200">TRADEABLE</div>
+              <div className="text-3xl">🦋</div>
+              <div className="font-pixel text-xl text-zinc-200">ON BLUESKY</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl">🌐</div>
-              <div className="font-pixel text-xl text-zinc-200">ON IPFS</div>
+              <div className="text-3xl">📊</div>
+              <div className="font-pixel text-xl text-zinc-200">AUDITABLE</div>
             </div>
           </div>
         )}
