@@ -6,6 +6,8 @@ export * from './create-evaluation.js';
 export * from './create-attachment.js';
 export * from './policy-bundle.js';
 export * from './alignment-bundle.js';
+export * from './referral-bundle.js';
+export * from './deposit-bundle.js';
 export * from './publish.js';
 export * from './read.js';
 

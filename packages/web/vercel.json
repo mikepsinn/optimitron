@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/aggregate-relationships",
       "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/referral-hypercert-publish",
+      "schedule": "0 */12 * * *"
     }
   ]
 }

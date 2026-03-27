@@ -1,83 +1,154 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
+import { useEffect, useState } from "react";
 
-const badges = [
-  { id: "trial-2301", label: "TRIAL #2,301", result: "HIV prophylaxis", efficacy: "89%", color: "purple" },
-  { id: "trial-3112", label: "TRIAL #3,112", result: "TB rapid diagnostic", efficacy: "97%", color: "blue" },
-  { id: "trial-4847", label: "TRIAL #4,847", result: "Malaria vaccine", efficacy: "94%", featured: true, color: "emerald" },
-  { id: "trial-5200", label: "TRIAL #5,200", result: "Alzheimer gene therapy", efficacy: "72%", color: "cyan" },
-  { id: "trial-6033", label: "TRIAL #6,033", result: "Diabetes reversal", efficacy: "91%", color: "yellow" },
-  { id: "trial-7891", label: "TRIAL #7,891", result: "Cancer immunotherapy", efficacy: "86%", color: "orange" },
+const YOUR_ACTIONS = [
+  {
+    action: "VOTED in the 1% Treaty Referendum",
+    emoji: "✊",
+    hypercert: "Recruited 2 verified voters for the 1% Treaty",
+    impact: "2 signatures toward 4B goal",
+    color: "emerald",
+  },
+  {
+    action: "DEPOSITED $100 to Prize Pool",
+    emoji: "💰",
+    hypercert: "Funded Trial #4,847 — Malaria vaccine — 94% efficacy",
+    impact: "12,000 patients enrolled",
+    color: "amber",
+  },
+  {
+    action: "SHARED with 2 friends",
+    emoji: "🔗",
+    hypercert: "Referral chain: 2 → 8 → 32 verified voters",
+    impact: "5 doublings of the network",
+    color: "purple",
+  },
 ];
 
 const colorMap: Record<string, { bg: string; border: string; text: string }> = {
-  purple: { bg: "bg-purple-500/10", border: "border-purple-500/30", text: "text-purple-400" },
-  blue: { bg: "bg-blue-500/10", border: "border-blue-500/30", text: "text-blue-400" },
-  emerald: { bg: "bg-emerald-500/15", border: "border-emerald-500/50", text: "text-emerald-400" },
-  cyan: { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-400" },
-  yellow: { bg: "bg-yellow-500/10", border: "border-yellow-500/30", text: "text-yellow-400" },
-  orange: { bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-400" },
+  emerald: { bg: "bg-emerald-500/10", border: "border-emerald-500/40", text: "text-emerald-400" },
+  amber: { bg: "bg-amber-500/10", border: "border-amber-500/40", text: "text-amber-400" },
+  purple: { bg: "bg-purple-500/10", border: "border-purple-500/40", text: "text-purple-400" },
 };
 
 export function SlideHypercerts() {
+  const [phase, setPhase] = useState(0);
+  const [visibleCards, setVisibleCards] = useState(0);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    timers.push(setTimeout(() => setPhase(1), 500));
+    timers.push(setTimeout(() => setPhase(2), 1500));
+    YOUR_ACTIONS.forEach((_, i) => {
+      timers.push(setTimeout(() => setVisibleCards(i + 1), 2000 + i * 800));
+    });
+    timers.push(setTimeout(() => setPhase(3), 5000));
+    timers.push(setTimeout(() => setPhase(4), 7000));
+
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   return (
     <SlideBase act={2} className="text-purple-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
+      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto w-full">
         {/* Title */}
-        <h1 className="font-pixel text-2xl md:text-4xl text-purple-400 text-center">
-          HYPERCERTS: VERIFIABLE IMPACT
+        <h1
+          className="font-pixel text-3xl md:text-5xl text-purple-400 text-center transition-opacity duration-500"
+          style={{ opacity: phase >= 1 ? 1 : 0 }}
+        >
+          🏆 YOUR IMPACT, ON-CHAIN
         </h1>
 
-        {/* Badge grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full">
-          {badges.map((badge) => {
-            const colors = colorMap[badge.color];
+        {/* Subtitle */}
+        <div
+          className="font-terminal text-xl md:text-2xl text-zinc-200 text-center transition-opacity duration-500"
+          style={{ opacity: phase >= 2 ? 1 : 0 }}
+        >
+          Every action you take mints a <span className="text-purple-400 font-pixel">Hypercert</span> —
+          permanent, verifiable proof of your contribution
+        </div>
+
+        {/* Action → Hypercert cards */}
+        <div className="w-full space-y-4">
+          {YOUR_ACTIONS.slice(0, visibleCards).map((item, i) => {
+            const colors = colorMap[item.color];
             return (
               <div
-                key={badge.id}
-                className={`${colors.bg} border ${
-                  badge.featured ? "border-2 " + colors.border : colors.border
-                } rounded-lg p-3 text-center ${badge.featured ? "ring-1 ring-emerald-400/20" : ""}`}
+                key={i}
+                className={`${colors.bg} border-2 ${colors.border} rounded-lg p-5 flex items-start gap-5 card-in`}
               >
-                <div className="font-pixel text-xl text-zinc-200 mb-1">{badge.label}</div>
-                <div className={`font-pixel text-xl ${colors.text}`}>{badge.result}</div>
-                <div className="font-pixel text-xl text-zinc-300 mt-1">{badge.efficacy}</div>
-                {badge.featured && (
-                  <div className="font-pixel text-xl text-emerald-400 mt-1 animate-pulse">
-                    VERIFIED ON-CHAIN
+                {/* Emoji */}
+                <div className="text-4xl md:text-5xl shrink-0">{item.emoji}</div>
+
+                {/* Content */}
+                <div className="flex-1 space-y-1">
+                  <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                    YOU {item.action.toUpperCase()}
                   </div>
-                )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="font-pixel text-xl text-purple-400">HYPERCERT:</span>
+                    <span className={`font-terminal text-xl md:text-2xl ${colors.text}`}>
+                      {item.hypercert}
+                    </span>
+                  </div>
+                  <div className="font-terminal text-xl text-zinc-300">
+                    Verified impact: {item.impact}
+                  </div>
+                </div>
+
+                {/* On-chain badge */}
+                <div className="shrink-0 text-center">
+                  <div className="text-3xl">⛓️</div>
+                  <div className="font-pixel text-xl text-emerald-400">ON-CHAIN</div>
+                </div>
               </div>
             );
           })}
         </div>
 
-        {/* Featured badge detail */}
-        <div className="bg-emerald-500/10 border-2 border-emerald-500/40 rounded-lg p-4 w-full">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="font-pixel text-2xl">🏆</span>
-            <div className="font-pixel text-xl text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">
-              MINTING NOW
+        {/* Properties */}
+        {phase >= 3 && (
+          <div className="flex justify-center gap-6 md:gap-10 card-in">
+            <div className="text-center">
+              <div className="text-3xl">🔒</div>
+              <div className="font-pixel text-xl text-zinc-200">PERMANENT</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl">🔍</div>
+              <div className="font-pixel text-xl text-zinc-200">VERIFIABLE</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl">💎</div>
+              <div className="font-pixel text-xl text-zinc-200">TRADEABLE</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl">🌐</div>
+              <div className="font-pixel text-xl text-zinc-200">ON IPFS</div>
             </div>
           </div>
-          <div className="font-terminal text-xl text-zinc-300 leading-relaxed">
-            <span className="text-emerald-400 font-pixel">TRIAL #4,847:</span>{" "}
-            Malaria vaccine pragmatic trial. 12,000 patients. 94% efficacy. Verified on-chain.
-          </div>
-          <div className="mt-2 flex items-center gap-2">
-            <span className="font-pixel text-xl">✅</span>
-            <span className="font-pixel text-xl text-emerald-400">STAMP OF APPROVAL</span>
-          </div>
-        </div>
+        )}
 
-        {/* Key text */}
-        <p className="font-pixel text-xl md:text-2xl text-zinc-200 text-center italic max-w-3xl leading-relaxed">
-          If a charity tells you they saved ten thousand lives, you ask for the
-          Hypercert. If they do not have one, they did not save ten thousand
-          lives.
-        </p>
+        {/* Punchline */}
+        {phase >= 4 && (
+          <p className="font-pixel text-xl md:text-2xl text-zinc-200 text-center italic max-w-4xl leading-relaxed card-in">
+            If a charity tells you they saved ten thousand lives, you ask for the
+            Hypercert. If they do not have one, they did not save ten thousand lives.
+          </p>
+        )}
       </div>
+
+      <style jsx>{`
+        @keyframes card-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .card-in {
+          animation: card-in 0.4s ease-out forwards;
+        }
+      `}</style>
     </SlideBase>
   );
 }

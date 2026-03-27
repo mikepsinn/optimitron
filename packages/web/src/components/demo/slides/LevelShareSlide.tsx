@@ -2,7 +2,12 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
-import { VOTE_TOKEN_VALUE, fmtParam } from "@optimitron/data/parameters";
+import {
+  VOTE_TOKEN_VALUE,
+  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+  fmtParam,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -19,9 +24,9 @@ const GAME_ITEMS = [
   "Click buttons on website",
   "30 seconds",
   `Each point worth ${fmtParam(VOTE_TOKEN_VALUE)}`,
-  "Everyone gets 10× richer",
+  `Everyone gets ${Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value)}× richer`,
   "Cost: free",
-  "Reward: $15.7M",
+  `Reward: ${fmtParam(TREATY_PERSONAL_UPSIDE_BLEND)}`,
 ];
 
 /** Level share slide — regular voting vs playing this game, side by side */

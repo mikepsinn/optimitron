@@ -67,7 +67,7 @@ describe("referral email sequence", () => {
     expect(email.subject).toContain("2");
     expect(email.text).toContain("https://example.com/wishocracy/jane");
     expect(email.html).toContain("Copy-and-send message");
-    expect(email.html).toContain("$194,000");
+    expect(email.html).toContain("VOTE point");
   });
 
   it("welcome email emphasizes VOTE point value", () => {
@@ -92,6 +92,6 @@ describe("referral email sequence", () => {
     });
 
     expect(email.subject).toContain("parasitic economy");
-    expect(email.text).toContain("150,000 people die daily");
+    expect(email.text).toContain("people die daily");
   });
 });

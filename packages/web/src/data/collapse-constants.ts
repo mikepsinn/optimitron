@@ -6,12 +6,15 @@
  */
 
 import {
+  GDP_BASELINE_GROWTH_RATE,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_CYBERCRIME_COST_ANNUAL_2025,
   GLOBAL_CYBERCRIME_CAGR,
   GLOBAL_GDP_2025,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
+  TREATY_TRAJECTORY_CAGR_YEAR_20,
+  WISHONIA_TRAJECTORY_CAGR_YEAR_20,
 } from "@optimitron/data/parameters";
 
 // ── Base constants ──────────────────────────────────────────────────
@@ -31,10 +34,11 @@ export const DESTRUCTIVE_CAGR = GLOBAL_CYBERCRIME_CAGR.value;
 /** Global GDP baseline in trillions (2024) */
 export const GLOBAL_GDP_T = GLOBAL_GDP_2025.value / 1e12;
 
-/** Productive economy compound annual growth rate (~3% real growth) */
-export const PRODUCTIVE_CAGR = 0.03;
+/** Productive economy compound annual growth rate (GDP_BASELINE_GROWTH_RATE from parameters) */
+export const PRODUCTIVE_CAGR = GDP_BASELINE_GROWTH_RATE.value;
 
 /** Collapse threshold: destructive/GDP ratio (Soviet precedent 20-25%) */
+// TODO: parameterize — no matching parameter in parameters-calculations-citations.ts yet
 export const COLLAPSE_RATIO = 0.25;
 
 /** Baseline date for all projections */
@@ -43,16 +47,18 @@ export const BASELINE_DATE = new Date("2024-01-01T00:00:00Z");
 /** Number of years to project in the trajectory chart */
 export const PROJECTION_YEARS = 20;
 
-/** 1% Treaty scenario: destructive CAGR drops to 17.9% of baseline */
-export const TREATY_CAGR = 0.179;
+/** 1% Treaty scenario: CAGR implied by Treaty Trajectory GDP over 20 years */
+export const TREATY_CAGR = TREATY_TRAJECTORY_CAGR_YEAR_20.value;
 
-/** Wishonia full optimization scenario: destructive CAGR drops to 25.4% of baseline */
-export const WISHONIA_CAGR = 0.254;
+/** Wishonia full optimization scenario: CAGR implied by Wishonia Trajectory GDP over 20 years */
+export const WISHONIA_CAGR = WISHONIA_TRAJECTORY_CAGR_YEAR_20.value;
 
 /** Political Dysfunction Tax per year in USD (page hero stat) */
 export const DYSFUNCTION_TAX_PER_YEAR = POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value;
 
 /** Average cost of a clinical trial (NIH estimate, Phase I-III) */
+// TODO: parameterize — closest parameter is PHASE_3_TRIAL_COST_MIN ($20M) or
+// CLINICAL_TRIAL_COST_PER_APPROVED_DRUG ($1.2B). Neither matches this $50M figure.
 export const CLINICAL_TRIAL_COST = 50e6; // $50M
 
 const SECONDS_PER_YEAR = 365.25 * 86_400;

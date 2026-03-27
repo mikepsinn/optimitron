@@ -2,6 +2,7 @@ import {
   VOTE_TOKEN_VALUE,
   PRIZE_POOL_ANNUAL_RETURN,
   GLOBAL_DISEASE_DEATHS_DAILY,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   fmtParam,
   fmtRaw,
 } from "@optimitron/data/parameters";
@@ -13,6 +14,7 @@ const FOLLOW_UP_DELAYS_MS = [0, 24 * HOUR_MS, 96 * HOUR_MS] as const;
 const voteValue = fmtParam(VOTE_TOKEN_VALUE);
 const annualReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
 const dailyDeaths = fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value);
+const lifetimeGain = fmtParam(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA);
 
 export const REFERRAL_EMAIL_SEQUENCE_LENGTH = FOLLOW_UP_DELAYS_MS.length;
 
@@ -90,7 +92,7 @@ function getMainCopy(step: number, referralCount: number) {
   }
 
   if (step === 1) {
-    return `Every recruit increases the value of your existing VOTE points. More players → bigger prize fund → higher per-point payout. If the plan fails, depositors still get ${annualReturn} annual returns. If it succeeds, everyone gets $14.7M richer. Either way, the numbers work. But only if enough people play.`;
+    return `Every recruit increases the value of your existing VOTE points. More players → bigger prize fund → higher per-point payout. If the plan fails, depositors still get ${annualReturn} annual returns. If it succeeds, everyone gets ${lifetimeGain} richer. Either way, the numbers work. But only if enough people play.`;
   }
 
   if (referralCount === 0) {

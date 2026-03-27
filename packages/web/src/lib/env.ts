@@ -67,6 +67,10 @@ const serverSchema = z.object({
   ATPROTO_PASSWORD: z.string().optional(),
   ATPROTO_PDS_URL: z.string().optional(),
 
+  // ── Storacha (IPFS) ──────────────────────────────────────────────
+  STORACHA_KEY: z.string().optional(),
+  STORACHA_PROOF: z.string().optional(),
+
   // ── Cron / misc ───────────────────────────────────────────────────
   CRON_SECRET: z.string().optional(),
   PUSH_BATCH_SIZE: z.string().optional(),

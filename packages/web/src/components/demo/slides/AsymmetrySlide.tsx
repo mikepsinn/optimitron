@@ -2,10 +2,13 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
+import { TREATY_PERSONAL_UPSIDE_BLEND } from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
+const upsideRaw = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
+const exchangeRate = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 0.06);
 
-/** Asymmetry slide — $0.06 vs $15.7M trade, maximum visual contrast */
+/** Asymmetry slide — $0.06 vs TREATY_PERSONAL_UPSIDE_BLEND trade, maximum visual contrast */
 export default function AsymmetrySlide() {
   const reduced = useReducedMotion();
 
@@ -53,7 +56,7 @@ export default function AsymmetrySlide() {
           className="border-4 border-primary bg-brutal-yellow px-6 py-6 sm:px-10 sm:py-10 md:px-16 md:py-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-shrink-0"
         >
           <p className={`${ARCADE} text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-none`}>
-            $<CountUp value={15700000} duration={2.5} />
+            $<CountUp value={upsideRaw} duration={2.5} />
           </p>
           <p className={`${ARCADE} text-xs sm:text-sm md:text-base text-foreground uppercase mt-2`}>
             LIFETIME INCOME GAIN
@@ -72,7 +75,7 @@ export default function AsymmetrySlide() {
           EXCHANGE RATE
         </p>
         <p className={`${ARCADE} text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-brutal-pink leading-none`}>
-          <CountUp value={245000000} duration={3} /> : 1
+          <CountUp value={exchangeRate} duration={3} /> : 1
         </p>
       </motion.div>
 

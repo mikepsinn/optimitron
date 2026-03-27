@@ -5,9 +5,15 @@ import {
   VOTE_TOKEN_VALUE,
   VOTE_2_CLAIMS_PAYOUT,
   PRIZE_POOL_HORIZON_MULTIPLE,
+  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
   fmtParam,
   fmtRaw,
 } from "@optimitron/data/parameters";
+
+const upsideFormatted = fmtParam(TREATY_PERSONAL_UPSIDE_BLEND);
+const upsideRaw = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
+const netWin = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value + VOTE_2_CLAIMS_PAYOUT.value - 100);
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -48,15 +54,15 @@ export default function PrizeFreeOptionSlide() {
             </p>
             <p className="text-sm font-bold text-foreground">
               Your lifetime income:{" "}
-              <span className="text-brutal-cyan">+$15.7 MILLION</span>
+              <span className="text-brutal-cyan">+{upsideFormatted}</span>
             </p>
             <p className="text-sm font-bold text-muted-foreground">
-              Everyone is 10&times; richer. You don&apos;t miss $100.
+              Everyone is {Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value)}&times; richer. You don&apos;t miss $100.
             </p>
           </div>
           <div className="mt-3 border-t-2 border-brutal-cyan pt-2">
             <p className={`${ARCADE} text-base sm:text-lg text-brutal-cyan`}>
-              NET: +$16,087,000
+              NET: +${netWin.toLocaleString("en-US")}
             </p>
           </div>
         </motion.div>
@@ -108,12 +114,12 @@ export default function PrizeFreeOptionSlide() {
               Still paying $12,600/yr dysfunction tax.
             </p>
             <p className="text-sm font-bold text-muted-foreground">
-              Missed $15.7M in lifetime income.
+              Missed {upsideFormatted} in lifetime income.
             </p>
           </div>
           <div className="mt-2 border-t-2 border-muted-foreground pt-2">
             <p className={`${ARCADE} text-sm text-brutal-red`}>
-              NET: -$15,700,000 (opportunity cost)
+              NET: -${upsideRaw.toLocaleString("en-US")} (opportunity cost)
             </p>
           </div>
         </motion.div>

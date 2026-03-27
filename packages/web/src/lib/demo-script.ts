@@ -41,6 +41,7 @@ import {
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+  TREATY_PERSONAL_UPSIDE_BLEND,
 } from "@optimitron/data/parameters";
 // Precompute for narration strings (spoken-word, so use full words not abbreviations)
 const deathsDaily = Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value).toLocaleString();
@@ -65,6 +66,7 @@ const oldQueue = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const newQueue = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
 const drugWarCostB = Math.round(US_GOV_WASTE_DRUG_WAR.value / 1e9);
 const treatyGainM = (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value / 1e6).toFixed(1);
+const personalUpsideM = (TREATY_PERSONAL_UPSIDE_BLEND.value / 1e6).toFixed(1);
 
 export type SierraAct =
   | "I"
@@ -737,11 +739,11 @@ export const SEGMENTS: DemoSegment[] = [
     act: "II-money",
     scoreAdd: 800_000_000,
     inventoryAdd: { id: "prize-deposit", name: "PRIZE DEPOSIT", icon: "🪙" },
-    narration: `Deposit one hundred dollars. Two things can happen. If Earth hits its targets by twenty forty, the pool unlocks and VOTE point holders split it — every friend you got to play is now worth one hundred and ninety-four thousand dollars to you. If Earth misses, depositors get their money back plus all the yield that accrued — one hundred dollars becomes one thousand one hundred and ten. Both paths pay. There is no path where you lose.`,
+    narration: `Deposit one hundred dollars into the VC-diversified fund. Two things can happen. If Earth hits its targets, the pool unlocks and VOTE point holders split it. If Earth misses, your hundred dollars still grew at seventeen percent a year — eleven times your money back. Both paths pay. There is no path where you lose.`,
   },
   {
     id: "script-6c-vote-value",
-    title: "$194K Per Point",
+    title: "VOTE Point Value",
     componentId: "vote-point-value",
     bgColor: "yellow",
     tags: ["financial"],
@@ -858,7 +860,7 @@ export const SEGMENTS: DemoSegment[] = [
     tags: ["financial", "cta"],
     act: "II-climax",
     scoreAdd: 6_000_000_000,
-    inventoryAdd: { id: "claim", name: "$15.7M CLAIM", icon: "📋" },
+    inventoryAdd: { id: "claim", name: `$${personalUpsideM}M CLAIM`, icon: "📋" },
     narration: `If the one percent Treaty passes, your lifetime income gains are fifteen point seven million dollars. Per person. Not per country. Per person. You currently lose twelve thousand six hundred dollars a year to political dysfunction — that is your share of the one hundred and one trillion dollar bug. This is not philanthropy. This is the largest investment opportunity in the history of your species. And the cost of not playing is fifteen point seven million dollars.`,
   },
   {

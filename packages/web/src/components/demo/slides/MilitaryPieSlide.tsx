@@ -3,7 +3,11 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ScanLines } from "@/components/animations/GlitchText";
 import { MilitaryVsTrialsPie } from "@/components/shared/MilitaryVsTrialsPie";
-import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
+import {
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 
@@ -29,8 +33,8 @@ export default function MilitaryPieSlide() {
         <MilitaryVsTrialsPie
           militaryPct={milPct}
           trialsPct={trialPct}
-          militaryDollars={2.24e12}
-          trialsDollars={3.7e9}
+          militaryDollars={GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value}
+          trialsDollars={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value}
           size={500}
           militaryLabel="Capacity for Mass Murder"
         />

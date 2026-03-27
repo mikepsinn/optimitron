@@ -3,9 +3,17 @@
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { PulseGlow } from "@/components/animations/PulseGlow";
-import { GLOBAL_DISEASE_DEATHS_DAILY, fmtRaw } from "@optimitron/data/parameters";
+import {
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
+  fmtRaw,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
+
+const livesSaved = Math.round(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value);
+const accelerationYears = Math.round(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS.value);
 
 /** Lives Saved slide — Act III emotional peak, 10.7 billion lives */
 export default function LivesSavedSlide() {
@@ -21,7 +29,7 @@ export default function LivesSavedSlide() {
       >
         <PulseGlow color="rgba(0, 200, 200, 0.6)" className="inline-block p-4">
           <p className={`${ARCADE} text-7xl sm:text-8xl md:text-9xl text-foreground leading-none`}>
-            <CountUp value={10_700_000_000} duration={3.5} />
+            <CountUp value={livesSaved} duration={3.5} />
           </p>
         </PulseGlow>
       </motion.div>
@@ -43,7 +51,7 @@ export default function LivesSavedSlide() {
         transition={{ delay: 2.0, duration: 0.5 }}
         className={`${ARCADE} text-xs sm:text-sm text-foreground leading-relaxed max-w-lg`}
       >
-        {fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value)} deaths/day &times; 212 years of acceleration &times; 33.8% avoidable
+        {fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value)} deaths/day &times; {accelerationYears} years of acceleration &times; 33.8% avoidable
       </motion.p>
     </div>
   );

@@ -72,6 +72,7 @@ export interface PostWeightsResult {
   totalAllocations: number;
   itemCount: number;
   txHash?: string;
+  storachaCid?: string;
   error?: string;
 }
 
@@ -105,6 +106,36 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
     };
   }
 
+  // ── Publish aggregation snapshot to Storacha (IPFS) ────────────────
+  let storachaCid: string | undefined;
+  try {
+    const { getStorachaClient } = await import("@/lib/storacha");
+    const storachaClient = await getStorachaClient();
+
+    if (storachaClient) {
+      const { storeLinkedAggregation } = await import("@optimitron/storage");
+
+      const preferenceWeights = Object.entries(summary.averageAllocations)
+        .filter(([, pct]) => pct > 0)
+        .map(([itemId, pct]) => ({
+          itemId,
+          weight: pct / 100,
+          label: WISHOCRATIC_ITEMS[itemId as WishocraticItemId]?.name,
+        }));
+
+      const result = await storeLinkedAggregation(storachaClient, {
+        jurisdictionId: "us-federal",
+        participantCount: summary.totalUsers,
+        preferenceWeights,
+      });
+
+      storachaCid = result.cid;
+      logger.info(`Aggregation snapshot published to Storacha: ${storachaCid}`);
+    }
+  } catch (storachaError) {
+    logger.error("Failed to publish to Storacha — continuing", storachaError);
+  }
+
   const wishocraticTreasuryAddress = serverEnv.WISHOCRATIC_TREASURY_ADDRESS as `0x${string}` | undefined;
   const deployerKey = serverEnv.DEPLOYER_PRIVATE_KEY as `0x${string}` | undefined;
   const rpcUrl = serverEnv.SEPOLIA_RPC_URL;
@@ -129,6 +160,7 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
       totalParticipants: summary.totalUsers,
       totalAllocations: summary.totalAllocations,
       itemCount: ids.length,
+      storachaCid,
     };
   }
 
@@ -168,6 +200,7 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
       totalAllocations: summary.totalAllocations,
       itemCount: ids.length,
       txHash,
+      storachaCid,
     };
   } catch (error) {
     logger.error("Failed to post weights on-chain", error);
@@ -176,6 +209,7 @@ export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult
       totalParticipants: summary.totalUsers,
       totalAllocations: summary.totalAllocations,
       itemCount: ids.length,
+      storachaCid,
       error: String(error),
     };
   }

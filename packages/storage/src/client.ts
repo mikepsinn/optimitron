@@ -109,6 +109,30 @@ export async function createStorachaClient(
   return Storacha.create(options);
 }
 
+/**
+ * Create a Storacha client for serverless / ephemeral environments (e.g. Vercel Functions).
+ * Uses an ed25519 key + UCAN delegation proof instead of email-based login.
+ *
+ * @param key  - Ed25519 private key string (from `STORACHA_KEY`)
+ * @param proof - UCAN delegation proof string (from `STORACHA_PROOF`)
+ */
+export async function createServerlessClient(
+  key: string,
+  proof: string,
+): Promise<StorachaClient> {
+  const { StoreMemory } = await import('@storacha/client/stores/memory');
+  const { Signer } = await import('@storacha/client/principal/ed25519');
+  const ProofModule = await import('@storacha/client/proof');
+
+  const principal = Signer.parse(key);
+  const client = await Storacha.create({ principal, store: new StoreMemory() });
+  const parsedProof = await ProofModule.parse(proof);
+  const space = await client.addSpace(parsedProof);
+  await client.setCurrentSpace(space.did());
+
+  return client;
+}
+
 export function buildJurisdictionSpaceName(
   jurisdictionId: string,
   prefix = 'optimitron',

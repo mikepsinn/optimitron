@@ -2,8 +2,14 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
+import {
+  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
+const treatyIncome = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
+const treatyMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
 
 const SLOTS = [
   {
@@ -29,10 +35,10 @@ const SLOTS = [
     textColor: "text-foreground",
     shadow: "shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]",
     scale: "scale-100",
-    income: 15_700_000,
+    income: treatyIncome,
     incomePrefix: "$",
     incomeSuffix: "",
-    multiplier: " (12\u00D7)",
+    multiplier: ` (${treatyMultiplier}\u00D7)`,
     hale: "+6.5 years",
     dysfunction: "eliminated",
   },
@@ -51,9 +57,9 @@ const SLOTS = [
     hale: "+15.7 years",
     dysfunction: "what is that",
   },
-] as const;
+];
 
-/** Personal Upside slide — $15.7M climax with three save-game slots */
+/** Personal Upside slide — TREATY_PERSONAL_UPSIDE_BLEND climax with three save-game slots */
 export default function PersonalUpsideSlide() {
   const reduced = useReducedMotion();
 
