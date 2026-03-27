@@ -98,7 +98,7 @@ export function SlideReplaceFed() {
         }
       `}</style>
 
-      <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center gap-4">
+      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center gap-4">
 
         {/* Phase 1 — Title */}
         <div
@@ -106,7 +106,7 @@ export function SlideReplaceFed() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <h1 className="font-pixel text-lg md:text-2xl text-emerald-400">
+          <h1 className="font-pixel text-xl md:text-3xl text-emerald-400">
             🏦 CENTRAL BANK REPLACEMENT
           </h1>
         </div>
@@ -117,10 +117,10 @@ export function SlideReplaceFed() {
 
             {/* LEFT — Federal Reserve */}
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-              <div className="font-pixel text-xs md:text-sm text-red-400 text-center mb-0.5 tracking-widest">
+              <div className="font-pixel text-sm md:text-base text-red-400 text-center mb-0.5 tracking-widest">
                 FEDERAL RESERVE
               </div>
-              <div className="font-pixel text-xs text-zinc-500 text-center mb-3">
+              <div className="font-pixel text-sm text-zinc-500 text-center mb-3">
                 (1913–present)
               </div>
 
@@ -130,15 +130,15 @@ export function SlideReplaceFed() {
                     key={row.label}
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
-                    <div className="font-pixel text-xs text-zinc-500 mb-1">
+                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1">
                       {row.label}
                     </div>
                     {row.leftBlank ? (
-                      <div className="font-pixel text-xs md:text-sm text-zinc-700 select-none">
+                      <div className="font-pixel text-sm md:text-base text-zinc-700 select-none">
                         &mdash;
                       </div>
                     ) : (
-                      <div className="font-pixel text-xs md:text-sm text-red-400 line-through">
+                      <div className="font-pixel text-sm md:text-base text-red-400 line-through">
                         {row.left}
                       </div>
                     )}
@@ -149,11 +149,11 @@ export function SlideReplaceFed() {
 
             {/* RIGHT — Smart Contract */}
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <div className="font-pixel text-xs md:text-sm text-emerald-400 text-center mb-0.5 tracking-widest">
+              <div className="font-pixel text-sm md:text-base text-emerald-400 text-center mb-0.5 tracking-widest">
                 SMART CONTRACT
               </div>
               {/* spacer to mirror the "(1913–present)" line */}
-              <div className="font-pixel text-xs text-zinc-500 text-center mb-3 invisible">
+              <div className="font-pixel text-sm text-zinc-500 text-center mb-3 invisible">
                 &nbsp;
               </div>
 
@@ -164,16 +164,16 @@ export function SlideReplaceFed() {
                     className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
                   >
                     {/* Mirror label for alignment */}
-                    <div className="font-pixel text-xs text-zinc-500 mb-1 invisible">
+                    <div className="font-pixel text-sm md:text-base text-zinc-500 mb-1 invisible">
                       {row.label}
                     </div>
                     {row.isCode ? (
-                      <div className="font-terminal text-xs md:text-sm text-red-400">
+                      <div className="font-terminal text-sm md:text-base text-red-400">
                         <span className="line-through">{row.label.replace(":", "")}</span>
                         {" "}REMOVED
                       </div>
                     ) : (
-                      <div className={`font-pixel text-xs md:text-sm text-emerald-400 ${row.rightClass ?? ""}`}>
+                      <div className={`font-pixel text-sm md:text-base text-emerald-400 ${row.rightClass ?? ""}`}>
                         {row.right}
                       </div>
                     )}
@@ -192,12 +192,12 @@ export function SlideReplaceFed() {
           }`}
         >
           <div className="bg-black/80 border border-zinc-700 rounded p-4 font-terminal">
-            <div className="text-xs md:text-sm text-emerald-400">
+            <div className="text-base md:text-lg text-emerald-400">
               {TYPEWRITER_TEXT.slice(0, typedChars)}
               <span className={`${showCursor ? "opacity-100" : "opacity-0"}`}>_</span>
             </div>
             {showError && (
-              <div className="text-xs md:text-sm text-red-400 mt-1 fade-in">
+              <div className="text-base md:text-lg text-red-400 mt-1 fade-in">
                 ERROR: print() is not a function
               </div>
             )}
@@ -210,10 +210,10 @@ export function SlideReplaceFed() {
             phase >= 5 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <p className="font-terminal text-sm text-zinc-400">
+          <p className="font-terminal text-base md:text-lg text-zinc-400">
             Your engineers will appreciate this.
           </p>
-          <p className="font-terminal text-sm text-zinc-400">
+          <p className="font-terminal text-base md:text-lg text-zinc-400">
             Your central bankers will not.
           </p>
         </div>
