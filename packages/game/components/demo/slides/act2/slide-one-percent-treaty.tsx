@@ -38,7 +38,7 @@ export function SlideOnePercentTreaty() {
     <SlideBase act={2} className="text-emerald-400">
       {/* Title */}
       <h1 className="font-pixel text-xl md:text-2xl text-emerald-400 text-center mb-8">
-        THE 1% SOLUTION
+        THE 1% TREATY
       </h1>
 
       <div className="w-full max-w-[1700px] mx-auto space-y-8">
@@ -78,26 +78,26 @@ export function SlideOnePercentTreaty() {
             REALLOCATION SLIDER
           </div>
           
-          <div className="relative h-12 bg-zinc-900 border border-zinc-700 rounded overflow-hidden">
+          <div className="relative h-12 bg-zinc-900 border border-zinc-700 rounded flex">
             {/* Military portion */}
             <div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 to-red-500 transition-all duration-100"
+              className="relative bg-gradient-to-r from-red-600 to-red-500 transition-all duration-100 flex items-center justify-center overflow-hidden rounded-l"
               style={{ width: `${100 - sliderValue}%` }}
             >
-              <div className="absolute inset-0 flex items-center justify-center font-pixel text-xl text-white/80">
+              <span className="font-pixel text-xl text-white/80 whitespace-nowrap">
                 Military: {(100 - sliderValue).toFixed(1)}%
-              </div>
+              </span>
             </div>
-            
-            {/* Trials portion */}
+
+            {/* Trials portion — min-width so label is always readable */}
             <div
-              className="absolute inset-y-0 right-0 bg-gradient-to-r from-emerald-600 to-emerald-500 transition-all duration-100"
-              style={{ width: `${sliderValue}%` }}
+              className="relative bg-gradient-to-r from-emerald-600 to-emerald-500 transition-all duration-100 flex items-center justify-center overflow-visible rounded-r"
+              style={{ width: `${Math.max(sliderValue, 0.5)}%`, minWidth: sliderValue > 0.3 ? "120px" : "0px" }}
             >
-              {sliderValue > 0.5 && (
-                <div className="absolute inset-0 flex items-center justify-center font-pixel text-xl text-white/80">
+              {sliderValue > 0.3 && (
+                <span className="font-pixel text-xl text-white/80 whitespace-nowrap">
                   Trials: {sliderValue.toFixed(1)}%
-                </div>
+                </span>
               )}
             </div>
           </div>

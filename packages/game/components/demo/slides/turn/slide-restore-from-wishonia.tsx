@@ -17,22 +17,17 @@ export function SlideRestoreFromWishonia() {
     setTimeout(() => {
       setPhase(1);
       setPalette("vga"); // INSTANT palette shift!
+      setScore(0);
     }, 1000);
-    
-    // Phase 2: Score reset
+
+    // Phase 2: Quest meters appear
     setTimeout(() => {
       setPhase(2);
-      setScore(0);
-    }, 2000);
-    
-    // Phase 3: Quest meters appear
-    setTimeout(() => {
-      setPhase(3);
       showQuestMeters();
-    }, 3000);
-    
-    // Phase 4: Hopeful message
-    setTimeout(() => setPhase(4), 4000);
+    }, 2500);
+
+    // Phase 3: CTA
+    setTimeout(() => setPhase(3), 3500);
   }, [setPalette, setScore, showQuestMeters]);
 
   return (
@@ -75,7 +70,7 @@ export function SlideRestoreFromWishonia() {
             </div>
 
             <h1 className="font-pixel text-3xl md:text-6xl text-cyan-400">
-              SAVE RESTORED
+              EARTH RESTORED
             </h1>
 
             <div className="font-pixel text-2xl md:text-4xl text-emerald-400">
@@ -84,21 +79,11 @@ export function SlideRestoreFromWishonia() {
           </div>
         )}
 
-        {/* Score reset (phase 2+) */}
+        {/* Quest meters preview (phase 2+) */}
         {phase >= 2 && (
-          <div className="animate-slide-up">
-            <div className="inline-block bg-black/60 border-2 border-cyan-500/50 px-8 py-5">
-              <div className="font-pixel text-2xl md:text-3xl text-cyan-400">SCORE RESET</div>
-              <div className="font-pixel text-3xl md:text-4xl text-cyan-400">0 / 8,000,000,000</div>
-            </div>
-          </div>
-        )}
-
-        {/* Quest meters preview (phase 3+) */}
-        {phase >= 3 && (
           <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto animate-slide-up">
             <div className="bg-black/60 border border-emerald-500/30 p-5 text-left">
-              <div className="font-pixel text-2xl md:text-3xl text-emerald-400">QUEST: HALE</div>
+              <div className="font-pixel text-2xl md:text-3xl text-emerald-400">QUEST: HEALTHY LIFE YEARS</div>
               <div className="font-pixel text-3xl md:text-4xl text-emerald-400">63.3 yrs</div>
               <div className="font-pixel text-xl md:text-2xl text-emerald-400">Target: 69.8 yrs</div>
             </div>
@@ -110,15 +95,15 @@ export function SlideRestoreFromWishonia() {
           </div>
         )}
 
-        {/* Hopeful message (phase 4+) */}
-        {phase >= 4 && (
-          <div className="animate-fade-in">
+        {/* CTA (phase 3+) */}
+        {phase >= 3 && (
+          <div className="animate-fade-in space-y-4">
             <div className="font-terminal text-2xl md:text-3xl text-cyan-400">
               A different timeline is possible.
             </div>
-            <div className="font-pixel text-2xl md:text-4xl text-cyan-400 mt-4">
-              LET&apos;S BEGIN THE QUEST
-            </div>
+            <button className="font-pixel text-xl md:text-3xl text-black bg-cyan-400 hover:bg-cyan-300 px-8 py-4 border-4 border-cyan-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
+              INITIATE EARTH OPTIMIZATION PROTOCOL
+            </button>
           </div>
         )}
       </div>

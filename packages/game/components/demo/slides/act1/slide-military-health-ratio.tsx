@@ -41,10 +41,7 @@ export function SlideMilitaryHealthRatio() {
 
   return (
     <SlideBase act={1} className="text-red-400">
-      {/* Title */}
-      <h1 className="font-pixel text-2xl md:text-4xl text-red-400 mb-8 text-center">
-        GLOBAL SPENDING PRIORITIES
-      </h1>
+      {/* Title removed — the bars ARE the title */}
 
       {/* Two counters racing */}
       <div className="w-full max-w-[1700px] mx-auto space-y-8">
@@ -137,15 +134,11 @@ export function SlideMilitaryHealthRatio() {
             showRatio ? "opacity-100 scale-100" : "opacity-0 scale-90"
           }`}
         >
-          <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mb-2">
-            THE RATIO
-          </div>
           <div className="font-pixel text-6xl md:text-9xl text-red-500 animate-pulse">
             {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}:1
           </div>
           <div className="font-pixel text-xl md:text-2xl text-zinc-200 mt-4">
-            For every $1 spent on clinical trials,<br />
-            ${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} goes to military
+            ${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} spent on orphan manufacturing for every $1 on clinical trials.
           </div>
         </div>
       </div>

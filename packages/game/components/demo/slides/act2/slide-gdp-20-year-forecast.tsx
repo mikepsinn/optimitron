@@ -2,185 +2,183 @@
 
 import { SlideBase } from "../slide-base";
 import { AnimatedLineChart } from "../../animations/animated-line-chart";
-import { AnimatedCounter } from "../../animations/animated-counter";
-import { GAME_PARAMS } from "@/lib/demo/parameters";
+import { formatCurrency } from "@/lib/demo/formatters";
 import {
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15,
+  CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
   GDP_BASELINE_GROWTH_RATE,
-  TREATY_TRAJECTORY_CAGR_YEAR_20,
+  GLOBAL_HALE_CURRENT,
+  TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_20,
+  TREATY_TRAJECTORY_CAGR_YEAR_20,
+  TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+  WISHONIA_HALE_GAIN_YEAR_15,
+  WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20,
+  WISHONIA_TRAJECTORY_CAGR_YEAR_20,
+  WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
+  WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
 } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
+
+/* ── Derived values ──────────────────────────────────────────────── */
 
 const currentGDPperCapita = Math.round(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value / 100) * 100;
 const statusQuoRate = GDP_BASELINE_GROWTH_RATE.value * 100;
 const treatyRate = Math.round(TREATY_TRAJECTORY_CAGR_YEAR_20.value * 1000) / 10;
-const wishoniaRate = GAME_PARAMS.wishoniaRate;
-const projectedGDPperCapita_treaty = Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20.value / 1000) * 1000;
-// Wishonia best-case trajectory GDP per capita (game constant, not in @optimitron/data)
-const wishoniaGDPperCapita = 1_160_000;
+const wishoniaRate = Math.round(WISHONIA_TRAJECTORY_CAGR_YEAR_20.value * 1000) / 10;
+
+const treatyHaleGain = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
+const wishoniaHaleGain = Math.round(WISHONIA_HALE_GAIN_YEAR_15.value * 10) / 10;
+
+const treatyMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
+const wishoniaMultiplier = Math.round(WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
+
+interface TrajectoryStats {
+  label: string;
+  color: string;
+  textColor: string;
+  bgColor: string;
+  borderColor: string;
+  growth: string;
+  gdpPerCapita2045: string;
+  lifetimeIncome: string;
+  multiplier: string;
+  hale: string;
+}
+
+const TRAJECTORIES: TrajectoryStats[] = [
+  {
+    label: "STATUS QUO",
+    color: "#ef4444",
+    textColor: "text-red-400",
+    bgColor: "bg-red-500/10",
+    borderColor: "border-red-500/30",
+    growth: `${statusQuoRate}%`,
+    gdpPerCapita2045: formatCurrency(Math.round(currentGDPperCapita * Math.pow(1 + statusQuoRate / 100, 20))),
+    lifetimeIncome: formatCurrency(Math.round(CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value)),
+    multiplier: "1×",
+    hale: `${GLOBAL_HALE_CURRENT.value.toFixed(1)} yrs`,
+  },
+  {
+    label: "1% TREATY",
+    color: "#22c55e",
+    textColor: "text-emerald-400",
+    bgColor: "bg-emerald-500/10",
+    borderColor: "border-emerald-500/30",
+    growth: `${treatyRate}%`,
+    gdpPerCapita2045: formatCurrency(Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20.value)),
+    lifetimeIncome: formatCurrency(Math.round(TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value)),
+    multiplier: `${treatyMultiplier}×`,
+    hale: `+${treatyHaleGain} yrs`,
+  },
+  {
+    label: "WISHONIA",
+    color: "#eab308",
+    textColor: "text-yellow-400",
+    bgColor: "bg-yellow-500/10",
+    borderColor: "border-yellow-500/30",
+    growth: `${wishoniaRate}%`,
+    gdpPerCapita2045: formatCurrency(Math.round(WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20.value)),
+    lifetimeIncome: formatCurrency(Math.round(WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value)),
+    multiplier: `${wishoniaMultiplier}×`,
+    hale: `+${wishoniaHaleGain} yrs`,
+  },
+];
 
 export function SlideGdp20YearForecast() {
-  const [showLoop, setShowLoop] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setShowLoop(true), 2500);
+    const timer = setTimeout(() => setShowStats(true), 2800);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Generate GDP trajectory data
-  const baselineData = Array.from({ length: 30 }, (_, i) => ({
+  const baselineData = Array.from({ length: 21 }, (_, i) => ({
     x: 2025 + i,
     y: currentGDPperCapita * Math.pow(1 + statusQuoRate / 100, i),
   }));
 
-  const optimizedData = Array.from({ length: 30 }, (_, i) => ({
+  const treatyData = Array.from({ length: 21 }, (_, i) => ({
     x: 2025 + i,
     y: currentGDPperCapita * Math.pow(1 + treatyRate / 100, i),
   }));
 
-  const wishoniaData = Array.from({ length: 30 }, (_, i) => ({
+  const wishoniaData = Array.from({ length: 21 }, (_, i) => ({
     x: 2025 + i,
     y: currentGDPperCapita * Math.pow(1 + wishoniaRate / 100, i),
   }));
 
   return (
     <SlideBase act={2} className="text-amber-400">
-      {/* Title */}
-      <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center mb-6">
-        COMPOUND RETURNS
+      <style jsx>{`
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeSlideUp 0.5s ease-out forwards; }
+      `}</style>
+
+      <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center mb-4">
+        📈 COMPOUND RETURNS — SAME PLANET, DIFFERENT SLIDER
       </h1>
 
-      <div className="w-full max-w-[1700px] mx-auto space-y-6">
-        {/* GDP Chart */}
+      <div className="w-full max-w-[1700px] mx-auto space-y-4">
+        {/* Chart */}
         <div className="bg-black/30 border border-amber-500/30 rounded p-4">
           <AnimatedLineChart
             lines={[
               { points: baselineData, color: "#ef4444", label: "Status Quo", dashed: true },
-              { points: optimizedData, color: "#22c55e", label: "1% Treaty" },
+              { points: treatyData, color: "#22c55e", label: "1% Treaty" },
               { points: wishoniaData, color: "#eab308", label: "Wishonia" },
             ]}
             width={500}
-            height={220}
+            height={200}
             animate
             duration={2500}
             showArea
+            showGrid
             xAxisLabel="Year"
             yAxisLabel="GDP/Capita"
-            formatY={(v) => `$${(v / 1000).toFixed(0)}K`}
+            formatY={(v) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}K`}
+            formatX={(v) => Math.round(v).toString()}
           />
         </div>
 
-        {/* Key numbers */}
-        <div className="grid grid-cols-3 gap-3 md:gap-6">
-          <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded">
-            <div className="font-pixel text-xl text-red-400 mb-2">2055: STATUS QUO</div>
-            <div className="font-pixel text-3xl md:text-4xl text-red-400">
-              <AnimatedCounter
-                end={currentGDPperCapita * Math.pow(1 + statusQuoRate / 100, 30)}
-                duration={2000}
-                format="currency"
-                decimals={0}
-              />
-            </div>
-            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
-          </div>
+        {/* Stats cards — appear after chart finishes drawing */}
+        <div
+          className={`grid grid-cols-3 gap-3 transition-all duration-700 ${
+            showStats ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          {TRAJECTORIES.map((t) => (
+            <div
+              key={t.label}
+              className={`${t.bgColor} border ${t.borderColor} rounded p-3 space-y-2`}
+            >
+              <div className={`font-pixel text-lg md:text-xl ${t.textColor} text-center`}>
+                {t.label}
+              </div>
 
-          <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
-            <div className="font-pixel text-xl text-emerald-400 mb-2">2055: 1% TREATY</div>
-            <div className="font-pixel text-3xl md:text-4xl text-emerald-400">
-              <AnimatedCounter
-                end={projectedGDPperCapita_treaty}
-                duration={2000}
-                format="currency"
-                decimals={0}
-              />
-            </div>
-            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
-          </div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                <div className="font-pixel text-xs text-zinc-500">GROWTH</div>
+                <div className={`font-pixel text-sm md:text-base ${t.textColor} text-right`}>{t.growth}</div>
 
-          <div className="text-center p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
-            <div className="font-pixel text-xl text-yellow-400 mb-2">2055: WISHONIA</div>
-            <div className="font-pixel text-3xl md:text-4xl text-yellow-400">
-              <AnimatedCounter
-                end={wishoniaGDPperCapita}
-                duration={2000}
-                format="currency"
-                decimals={0}
-              />
+                <div className="font-pixel text-xs text-zinc-500">2045 INCOME</div>
+                <div className={`font-pixel text-sm md:text-base ${t.textColor} text-right`}>{t.gdpPerCapita2045}</div>
+
+                <div className="font-pixel text-xs text-zinc-500">LIFETIME</div>
+                <div className={`font-pixel text-sm md:text-base ${t.textColor} text-right`}>
+                  {t.lifetimeIncome} <span className="text-zinc-400">({t.multiplier})</span>
+                </div>
+
+                <div className="font-pixel text-xs text-zinc-500">HALE</div>
+                <div className={`font-pixel text-sm md:text-base ${t.textColor} text-right`}>{t.hale}</div>
+              </div>
             </div>
-            <div className="font-pixel text-xl text-zinc-200 mt-1">per capita</div>
-          </div>
+          ))}
         </div>
-
-        {/* Compounding loop visualization */}
-        {showLoop && (
-          <div className="flex flex-col items-center space-y-4 animate-fade-in">
-            <div className="font-pixel text-xl text-amber-400">
-              THE VIRTUOUS CYCLE
-            </div>
-            
-            {/* Circular loop diagram */}
-            <div className="relative w-64 h-64">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                {/* Circular arrow path */}
-                <path
-                  d="M 50 10 A 40 40 0 1 1 49 10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-amber-500"
-                />
-                {/* Animated arrow head */}
-                <circle r="4" fill="#f59e0b">
-                  <animateMotion
-                    dur="4s"
-                    repeatCount="indefinite"
-                    path="M 50 10 A 40 40 0 1 1 49 10"
-                  />
-                </circle>
-              </svg>
-
-              {/* Loop labels */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 text-center">
-                <div className="text-xl">💰</div>
-                <div className="font-pixel text-xl text-amber-400">Investment</div>
-              </div>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 text-center">
-                <div className="text-xl">🧪</div>
-                <div className="font-pixel text-xl text-emerald-400">Research</div>
-              </div>
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
-                <div className="text-xl">💊</div>
-                <div className="font-pixel text-xl text-cyan-400">Treatments</div>
-              </div>
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 text-center">
-                <div className="text-xl">📈</div>
-                <div className="font-pixel text-xl text-purple-400">Productivity</div>
-              </div>
-
-              {/* Center */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="font-pixel text-2xl text-amber-400">{treatyRate}%</div>
-              </div>
-            </div>
-
-            <div className="font-terminal text-xl text-zinc-200 text-center max-w-3xl">
-              Healthier people are more productive, generating more tax revenue,
-              funding more research, creating a self-reinforcing cycle of prosperity
-            </div>
-          </div>
-        )}
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
-      `}</style>
     </SlideBase>
   );
 }

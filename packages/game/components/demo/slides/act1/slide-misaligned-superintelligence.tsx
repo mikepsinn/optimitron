@@ -7,15 +7,16 @@ import { useEffect, useState } from "react";
 
 const bootLines = [
   { text: "🖥️ SYSTEM: GOVERNMENT.EXE v1776", delay: 300 },
-  { text: "🤖 TYPE: ARTIFICIAL SUPERINTELLIGENCE", delay: 800 },
-  { text: "👤 CREATED BY: HUMANS", delay: 1300 },
-  { text: "🎯 PURPOSE: PROMOTE GENERAL WELFARE", delay: 1800 },
+  { text: "🤖 TYPE: COLLECTIVE SUPERINTELLIGENCE", delay: 800 },
+  { text: "👤 CREATED BY: YOU", delay: 1300 },
+  { text: "📜 MANDATE: \"PROMOTE THE GENERAL WELFARE\"", delay: 1800 },
+  { text: "💰 CONTROLS: $50 TRILLION / 8 BILLION LIVES", delay: 2300 },
 ];
 
 const corruptedLines = [
-  { text: "→ 🗳️ RE-ELECTION PROBABILITY", delay: 7000 },
-  { text: "→ 💰 CAMPAIGN CONTRIBUTIONS", delay: 7500 },
-  { text: "→ 🏦 WEALTH EXTRACTION", delay: 8000 },
+  { text: "→ 🗳️ RE-ELECTION PROBABILITY", delay: 7500 },
+  { text: "→ 💰 CAMPAIGN CONTRIBUTIONS", delay: 8000 },
+  { text: "→ 🏦 WEALTH EXTRACTION", delay: 8500 },
 ];
 
 export function SlideMisalignedSuperintelligence() {
@@ -33,21 +34,21 @@ export function SlideMisalignedSuperintelligence() {
     });
 
     // Phase 2: Objective function box
-    setTimeout(() => setShowObjective(true), 2800);
+    setTimeout(() => setShowObjective(true), 3300);
 
     // Phase 3: Corruption
     setTimeout(() => {
       setShaking(true);
       setTimeout(() => setShaking(false), 600);
-    }, 5800);
-    setTimeout(() => setShowCorruption(true), 6200);
+    }, 6300);
+    setTimeout(() => setShowCorruption(true), 6700);
 
     corruptedLines.forEach((line, i) => {
       setTimeout(() => setVisibleCorrupt(i + 1), line.delay);
     });
 
     // Phase 4: Warning
-    setTimeout(() => setShowWarning(true), 9500);
+    setTimeout(() => setShowWarning(true), 10000);
   }, []);
 
   return (
@@ -118,7 +119,7 @@ export function SlideMisalignedSuperintelligence() {
                       showCorruption ? "text-red-400" : "text-green-400"
                     }`}
                   >
-                    OBJECTIVE FUNCTION:
+                    YOU BUILT IT TO:
                   </div>
 
                   {/* Original objectives */}
@@ -129,7 +130,7 @@ export function SlideMisalignedSuperintelligence() {
                         : "text-green-400"
                     }`}
                   >
-                    ❤️ MAXIMISE MEDIAN HEALTH
+                    ❤️ MAXIMISE MEDIAN HEALTHY LIFE YEARS
                   </div>
                   <div
                     className={`transition-all duration-500 ${
@@ -138,7 +139,7 @@ export function SlideMisalignedSuperintelligence() {
                         : "text-green-400"
                     }`}
                   >
-                    💎 MAXIMISE MEDIAN WEALTH
+                    💎 MAXIMISE MEDIAN INCOME
                   </div>
 
                   {/* Status line */}
@@ -170,7 +171,7 @@ export function SlideMisalignedSuperintelligence() {
                 {showCorruption && (
                   <div className="mt-4 pt-3 border-t border-red-500/30 font-terminal text-2xl md:text-3xl space-y-1">
                     <div className="font-pixel text-2xl md:text-3xl text-red-400 mb-2">
-                      OBJECTIVE FUNCTION: [OVERWRITTEN]
+                      IT ACTUALLY OPTIMISES FOR:
                     </div>
                     {corruptedLines.slice(0, visibleCorrupt).map((line, i) => (
                       <div key={i} className="text-red-400">
@@ -182,12 +183,14 @@ export function SlideMisalignedSuperintelligence() {
               </div>
             )}
 
-            {/* Blinking cursor */}
-            <div className="mt-4 font-terminal text-green-400">
-              <span className="animate-[sierra-blink_1s_step-end_infinite]">
-                _
-              </span>
-            </div>
+            {/* Blinking cursor — only before corruption */}
+            {!showCorruption && (
+              <div className="mt-4 font-terminal text-green-400">
+                <span className="animate-[sierra-blink_1s_step-end_infinite]">
+                  _
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

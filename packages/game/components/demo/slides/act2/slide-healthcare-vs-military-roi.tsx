@@ -1,176 +1,179 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
+
+/**
+ * Left side: money burns away (shrinking stack).
+ * Right side: money compounds (growing stack that multiplies).
+ */
+
+// Generate positions for coin stacks
+const BURN_COINS = 12;
+const MULTIPLY_ROUNDS = 5; // 1 → 2 → 4 → 8 → 16
 
 export function SlideHealthcareVsMilitaryRoi() {
   const [phase, setPhase] = useState(0);
+  const [burnCount, setBurnCount] = useState(BURN_COINS);
+  const [multiplyPower, setMultiplyPower] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 500);
-    const t2 = setTimeout(() => setPhase(2), 1500);
-    const t3 = setTimeout(() => setPhase(3), 3500);
-    const t4 = setTimeout(() => setPhase(4), 5000);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-    };
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    timers.push(setTimeout(() => setPhase(1), 500));
+    timers.push(setTimeout(() => setPhase(2), 1500));
+
+    // Burn animation: coins disappear one by one
+    timers.push(setTimeout(() => setPhase(3), 2500));
+    for (let i = 0; i < BURN_COINS; i++) {
+      timers.push(
+        setTimeout(() => setBurnCount((prev) => Math.max(0, prev - 1)), 2500 + i * 200)
+      );
+    }
+
+    // Multiply animation: coins double each round
+    for (let i = 0; i <= MULTIPLY_ROUNDS; i++) {
+      timers.push(setTimeout(() => setMultiplyPower(i), 2500 + i * 600));
+    }
+
+    return () => timers.forEach(clearTimeout);
   }, []);
 
-  const coins = ["💰", "💰", "💰", "💰", "💰"];
+  const multiplyCount = Math.pow(2, multiplyPower);
 
   return (
-    <SlideBase act={2} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-8 w-full max-w-[1700px] mx-auto">
+    <SlideBase act={2}>
+      <style jsx>{`
+        @keyframes fade-up {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fade-up 0.4s ease-out forwards; }
 
-        {/* Investment windows */}
-        <div
-          className={`grid grid-cols-2 gap-4 w-full transition-all duration-700 ${
-            phase >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          {/* Military card */}
-          <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-red-500/30 rounded">
-            <div className="font-pixel text-xl md:text-2xl text-red-400 tracking-widest">MILITARY</div>
-            <div className="text-5xl md:text-6xl">⚔️</div>
+        @keyframes burn {
+          0%   { opacity: 1; transform: scale(1); filter: brightness(1); }
+          40%  { opacity: 1; transform: scale(1.1); filter: brightness(1.5) hue-rotate(-20deg); }
+          100% { opacity: 0; transform: scale(0.3) translateY(10px); filter: brightness(2) hue-rotate(-40deg); }
+        }
+        .burn-out {
+          animation: burn 0.4s ease-out forwards;
+        }
 
-            {/* Bar track */}
-            <div className="w-full space-y-2">
-              <div className="relative h-8 bg-zinc-900 border border-zinc-700 rounded overflow-hidden">
-                <div
-                  className="absolute inset-y-0 left-0 bar-military rounded"
-                  style={{ width: phase >= 2 ? "60%" : "0%" }}
-                />
+        @keyframes coin-pop {
+          from { opacity: 0; transform: scale(0.3); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        .coin-pop {
+          animation: coin-pop 0.3s ease-out forwards;
+        }
+
+        @keyframes fire-flicker {
+          0%, 100% { opacity: 0.7; transform: translateY(0) scale(1); }
+          25% { opacity: 1; transform: translateY(-2px) scale(1.1); }
+          50% { opacity: 0.8; transform: translateY(-1px) scale(0.95); }
+          75% { opacity: 1; transform: translateY(-3px) scale(1.05); }
+        }
+        .fire-flicker { animation: fire-flicker 0.6s ease-in-out infinite; }
+      `}</style>
+
+      <div className="flex flex-col items-center gap-6 w-full max-w-[1700px] mx-auto">
+        {/* Cards side by side */}
+        {phase >= 1 && (
+          <div className="grid grid-cols-2 gap-6 w-full fade-up">
+            {/* MILITARY — money burns */}
+            <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-red-500/30 rounded">
+              <div className="font-pixel text-xl md:text-2xl text-red-400 tracking-widest">MILITARY</div>
+              <div className="text-4xl">⚔️</div>
+
+              <div className="font-pixel text-3xl md:text-4xl text-red-400 text-center">
+                $1 IN → $0.60 OUT
               </div>
-              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center">60% of container</div>
-            </div>
 
-            <div className="font-pixel text-3xl md:text-4xl text-red-400 text-center">
-              $1 IN → $0.60 OUT
-            </div>
-          </div>
+              {/* Coin grid with burn effect */}
+              {phase >= 2 && (
+                <div className="relative w-full flex flex-col items-center gap-2">
+                  {/* Fire underneath */}
+                  {phase >= 3 && burnCount < BURN_COINS && (
+                    <div className="flex justify-center gap-1 fire-flicker">
+                      <span className="text-2xl">🔥</span>
+                      <span className="text-3xl">🔥</span>
+                      <span className="text-2xl">🔥</span>
+                    </div>
+                  )}
 
-          {/* Healthcare card */}
-          <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-emerald-500/30 rounded">
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400 tracking-widest">HEALTHCARE</div>
-            <div className="text-5xl md:text-6xl">💊</div>
-
-            {/* Bar track — 180% represented visually at full width + overflow indicator */}
-            <div className="w-full space-y-2">
-              <div className="relative h-8 bg-zinc-900 border border-zinc-700 rounded overflow-hidden">
-                <div
-                  className="absolute inset-y-0 left-0 bar-healthcare rounded"
-                  style={{ width: phase >= 2 ? "100%" : "0%" }}
-                />
-                {phase >= 2 && (
-                  <div className="absolute inset-0 flex items-center justify-end pr-2">
-                    <span className="font-pixel text-xl md:text-3xl text-emerald-900 font-bold">+80%→</span>
+                  {/* Coin stack */}
+                  <div className="flex flex-wrap justify-center gap-2 min-h-[80px]">
+                    {Array.from({ length: BURN_COINS }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`text-3xl transition-all ${
+                          i >= burnCount ? "burn-out" : ""
+                        }`}
+                      >
+                        💰
+                      </span>
+                    ))}
                   </div>
-                )}
-              </div>
-              <div className="font-pixel text-xl md:text-3xl text-zinc-200 text-center">180% — overflows bar</div>
+
+                  {/* Remaining count */}
+                  {phase >= 3 && (
+                    <div className="font-pixel text-lg text-red-400">
+                      {burnCount} OF {BURN_COINS} REMAINING
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="font-pixel text-3xl md:text-4xl text-emerald-400 text-center">
-              $1 IN → $1.80 OUT
-            </div>
-          </div>
-        </div>
+            {/* HEALTHCARE — money multiplies */}
+            <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-emerald-500/30 rounded">
+              <div className="font-pixel text-xl md:text-2xl text-emerald-400 tracking-widest">HEALTHCARE</div>
+              <div className="text-4xl">💊</div>
 
-        {/* Coin animations */}
-        {phase >= 3 && (
-          <div className="grid grid-cols-2 gap-4 w-full">
-            {/* Military: coins falling into pit */}
-            <div className="relative h-20 overflow-hidden flex justify-center">
-              {coins.map((coin, i) => (
-                <span
-                  key={i}
-                  className="coin-fall absolute text-2xl"
-                  style={{ animationDelay: `${i * 0.12}s`, left: `${20 + i * 12}%` }}
-                >
-                  {coin}
-                </span>
-              ))}
-              <div className="absolute bottom-0 w-full text-center font-pixel text-xl md:text-3xl text-red-400">
-                ▼ PIT ▼
+              <div className="font-pixel text-3xl md:text-4xl text-emerald-400 text-center">
+                $1 IN → $1.80 OUT
               </div>
-            </div>
 
-            {/* Healthcare: coins floating up */}
-            <div className="relative h-20 overflow-hidden flex justify-center">
-              {coins.map((coin, i) => (
-                <span
-                  key={i}
-                  className="coin-rise absolute text-2xl"
-                  style={{ animationDelay: `${i * 0.12}s`, left: `${20 + i * 12}%` }}
-                >
-                  {coin}
-                </span>
-              ))}
-              <div className="absolute top-0 w-full text-center font-pixel text-xl md:text-3xl text-emerald-400">
-                ▲ MULTIPLY ▲
-              </div>
+              {/* Multiplying coins */}
+              {phase >= 2 && (
+                <div className="relative w-full flex flex-col items-center gap-2">
+                  {/* Multiplier badge */}
+                  {multiplyPower > 0 && (
+                    <div className="font-pixel text-xl text-emerald-300">
+                      ×{multiplyCount}
+                    </div>
+                  )}
+
+                  {/* Growing coin grid */}
+                  <div className="flex flex-wrap justify-center gap-1 min-h-[80px]">
+                    {Array.from({ length: Math.min(multiplyCount, 32) }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="text-2xl coin-pop"
+                        style={{ animationDelay: `${(i % 8) * 50}ms` }}
+                      >
+                        💰
+                      </span>
+                    ))}
+                    {multiplyCount > 32 && (
+                      <span className="font-pixel text-lg text-emerald-400 self-center">
+                        +{multiplyCount - 32} more
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Compound label */}
+                  {multiplyPower >= MULTIPLY_ROUNDS && (
+                    <div className="font-pixel text-lg text-emerald-400">
+                      COMPOUND GROWTH
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
-
-        {/* Punchline */}
-        <div
-          className={`text-center space-y-2 transition-all duration-700 ${
-            phase >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <div className="font-terminal text-3xl md:text-4xl text-zinc-300">
-            YOUR SPECIES CHOSE THE BOTTOM ONE.
-          </div>
-          <div className="font-pixel text-5xl md:text-6xl text-red-500 punchline-pulse">
-            {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} TIMES.
-          </div>
-        </div>
       </div>
-
-      <style jsx>{`
-        .bar-military {
-          background: linear-gradient(to right, #dc2626, #ef4444);
-          transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .bar-healthcare {
-          background: linear-gradient(to right, #059669, #10b981);
-          transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes coin-fall {
-          0%   { transform: translateY(-8px); opacity: 1; }
-          80%  { opacity: 1; }
-          100% { transform: translateY(56px); opacity: 0; }
-        }
-        .coin-fall {
-          animation: coin-fall 0.9s ease-in infinite;
-          bottom: auto;
-          top: 0;
-        }
-
-        @keyframes coin-rise {
-          0%   { transform: translateY(40px); opacity: 0; }
-          20%  { opacity: 1; }
-          100% { transform: translateY(-16px); opacity: 0; }
-        }
-        .coin-rise {
-          animation: coin-rise 0.9s ease-out infinite;
-          bottom: 0;
-        }
-
-        @keyframes punchline-pulse {
-          0%, 100% { opacity: 1; }
-          50%      { opacity: 0.55; }
-        }
-        .punchline-pulse {
-          animation: punchline-pulse 1.2s ease-in-out infinite;
-        }
-      `}</style>
     </SlideBase>
   );
 }

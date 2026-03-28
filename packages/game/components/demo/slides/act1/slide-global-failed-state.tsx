@@ -57,9 +57,9 @@ export function SlideGlobalFailedState() {
         <div
           className="absolute inset-0 transition-all duration-1000"
           style={{
-            background: `linear-gradient(to bottom, 
-              hsl(220, ${Math.max(0, 50 - decayProgress * 0.5)}%, ${Math.max(5, 20 - decayProgress * 0.15)}%), 
-              hsl(220, ${Math.max(0, 30 - decayProgress * 0.3)}%, ${Math.max(2, 10 - decayProgress * 0.1)}%))`,
+            background: `linear-gradient(to bottom,
+              hsl(220, ${Math.max(0, 50 - decayProgress * 0.5)}%, ${Math.max(10, 20 - decayProgress * 0.1)}%),
+              hsl(220, ${Math.max(0, 30 - decayProgress * 0.3)}%, ${Math.max(6, 12 - decayProgress * 0.06)}%))`,
           }}
         />
 
@@ -70,7 +70,7 @@ export function SlideGlobalFailedState() {
             <div
               key={el.id}
               className={`absolute transition-all duration-500 ${
-                failed ? "grayscale opacity-30" : "opacity-100"
+                failed ? "grayscale opacity-60" : "opacity-100"
               }`}
               style={{
                 left: `${el.x}%`,
@@ -81,7 +81,7 @@ export function SlideGlobalFailedState() {
               <div className="text-6xl md:text-8xl lg:text-9xl relative">
                 {el.emoji}
                 {failed && (
-                  <span className="absolute inset-0 flex items-center justify-center text-red-500 text-7xl md:text-9xl lg:text-[10rem]">
+                  <span className="absolute inset-0 flex items-center justify-center text-red-400 text-7xl md:text-9xl lg:text-[10rem]">
                     ✕
                   </span>
                 )}

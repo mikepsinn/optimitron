@@ -2,7 +2,6 @@
 
 import { SlideBase } from "../slide-base";
 import { GlitchText } from "../../animations/glitch-text";
-import { GAME_PARAMS } from "@/lib/demo/parameters";
 import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
@@ -45,7 +44,7 @@ export function SlideGameOverMoronia() {
             ))}
           </div>
           <div className="text-center mt-4 text-zinc-300 font-pixel text-xl">
-            MORONIA - YEAR 2040
+            EARTH - YEAR 2040
           </div>
         </div>
       </div>
@@ -68,12 +67,12 @@ export function SlideGameOverMoronia() {
           />
           
           <div className="mt-8 font-pixel text-2xl md:text-4xl text-red-400 animate-pulse">
-            CIVILIZATION HAS COLLAPSED
+            YOUR CIVILIZATION HAS COLLAPSED
           </div>
 
           <div className="mt-4 font-pixel text-xl md:text-2xl text-zinc-200 max-w-4xl text-center space-y-1">
-            <div>Moronia allocated {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}&times; more to weapons than curing disease.</div>
-            <div>Correlation with Earth: {GAME_PARAMS.moroniaCorrelation}%.</div>
+            <div>You allocated {Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)}&times; more to weapons than curing disease.</div>
+            <div>The math was not on your side.</div>
           </div>
 
           {/* Restore game option */}
