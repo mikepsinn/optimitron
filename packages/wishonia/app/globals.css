@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@keyframes wishonia-bob {
+  0%   { transform: rotate(-2deg) translateY(0); }
+  40%  { transform: rotate(-2deg) translateY(0); }
+  60%  { transform: rotate(2deg) translateY(-2px); }
+  100% { transform: rotate(2deg) translateY(-2px); }
+}

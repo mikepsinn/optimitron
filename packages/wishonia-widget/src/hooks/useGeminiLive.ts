@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AudioBufferQueue } from "../audio/audio-buffer-queue";
+import { WISHONIA_VOICE, WISHONIA_SPEAKING_INSTRUCTIONS, WISHONIA_LIVE_MODEL } from "../core/voice-config";
 
 export interface UseGeminiLiveOptions {
   /** URL to fetch ephemeral token (GET → { token: string }) */
@@ -45,8 +46,6 @@ export interface UseGeminiLiveReturn {
   setVolume: (v: number) => void;
 }
 
-const DEFAULT_MODEL = "gemini-3.1-flash-live-preview";
-const DEFAULT_VOICE = "Kore";
 const AUDIO_SAMPLE_RATE = 24000; // Gemini Live outputs 24kHz PCM
 
 /** Decode base64 string to Uint8Array */
@@ -74,9 +73,9 @@ export function useGeminiLive(
 ): UseGeminiLiveReturn {
   const {
     tokenEndpoint,
-    voice = DEFAULT_VOICE,
-    speakingInstructions,
-    model = DEFAULT_MODEL,
+    voice = WISHONIA_VOICE,
+    speakingInstructions = WISHONIA_SPEAKING_INSTRUCTIONS,
+    model = WISHONIA_LIVE_MODEL,
     autoConnect = true,
     volume = 0.8,
   } = options;
