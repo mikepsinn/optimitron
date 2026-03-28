@@ -11,7 +11,8 @@
     "./datasets/us-wishocratic-items": "./src/datasets/us-wishocratic-items.ts",
     "./datasets/government-report-cards": "./src/datasets/government-report-cards.ts",
     "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts",
-    "./datasets/median-income-series": "./src/datasets/median-income-series.ts"
+    "./datasets/median-income-series": "./src/datasets/median-income-series.ts",
+    "./datasets/international-comparisons": "./src/datasets/international-comparisons.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

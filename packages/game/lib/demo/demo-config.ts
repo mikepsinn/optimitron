@@ -1318,27 +1318,26 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dih/discoveries",
     narration:
-      "The RECOVERY trial tested 6 treatments on 48,000 patients for $500 each instead of the usual $41,000. Eighty-two times cheaper. During a pandemic. While panicking. Your species does its best medical research when terrified and disorganised, which suggests your normal system is somehow worse than panic. The decentralised version does this permanently. $929 per patient. 12.3 times more capacity. No eight-year queue.",
+      "Right now, your doctor picks treatments based on that drug rep who brought good donuts in 2003, something they half-remember from medical school, whatever the insurance company allows, and vibes. This is called evidence-based medicine, which contains the word evidence the same way grape soda contains the word grape. Food has nutrition labels. Cigarettes have warning labels. Your drugs have 40-page inserts written by lawyers having seizures, which nobody reads, including your doctor. The decentralised FDA produces Outcome Labels — what actually happens when real humans take a drug. And Treatment Rankings — every treatment ranked by what actually worked, not what had the best sales team. Forty-four times cheaper. Twelve times more capacity. Zero queue.",
     visual:
-      "Pixel art — the same waiting room, but transformed. The queue is gone. Patients walk in one door and out another. The ticket counter now displays real-time trial results. Everything is faster, cheaper, and nobody is dying in a chair.",
+      "Two panels side by side. LEFT: an Outcome Label for Atorvastatin showing outcome bars (LDL -43%, Cardiovascular Risk -36%, HDL +5%) and side effects (Muscle Pain 8.2%, Liver Enzymes 1.2%) — like a nutrition label for drugs. RIGHT: Treatment Rankings for High Cholesterol showing 3 treatments ranked by effectiveness with safety and confidence scores. Kicker: 44x cheaper. 12.3x more capacity. Zero queue.",
     asciiArt: `
 ┌─────────────────────────────────────────────┐
 │  🧪 DECENTRALIZED FDA                        │
 │                                             │
-│  Same trials. No waiting room.              │
+│  OUTCOME LABEL              TREATMENT RANK  │
+│  ─────────────              ──────────────  │
+│  Atorvastatin 20mg          High Cholesterol│
 │                                             │
-│             BEFORE         AFTER            │
-│  ────────   ──────         ─────            │
-│  Cost:      $41,000        $929             │
-│  Wait:      8.2 years      now              │
-│  Capacity:  1.9M/yr        23.4M/yr         │
-│  Queue:     yes            what queue       │
-│  Lobby:     required       not applicable   │
-│  Code:      no             auditable        │
+│  LDL Cholesterol  ████ -43% 1. Atorvastatin │
+│  CV Risk          ███  -36%    87% eff      │
+│  HDL              █    +5%  2. Rosuvastatin │
+│                                84% eff      │
+│  Side Effects:              3. Ezetimibe    │
+│  Muscle Pain: 8.2%             62% eff      │
+│  Liver Enzymes: 1.2%                        │
 │                                             │
-│  "It's the same thing but without the       │
-│   part where everyone dies."                │
-│               — Wishonia                    │
+│  44x cheaper. 12.3x capacity. Zero queue.  │
 └─────────────────────────────────────────────┘`,
     score: 4_200_000_000,
     showQuestMeters: true,
@@ -1346,7 +1345,7 @@ RECURSIVE EXPONENTIAL THEFT`,
       {
         verb: "USE decentralized FDA",
         response:
-          "Same patients, real conditions, real data, no eight-year queue. The technology exists. The only thing missing was the funding. That is what the 1% Treaty provides.",
+          "For every 1 person your FDA protects from a dangerous drug, 3,070 people die waiting for a safe one locked in the approval cabinet. It's a lifeguard who confirms the life preserver floats, then locks it in a cabinet for years while a billion people drown in line for two life jackets.",
       },
     ],
   },
@@ -1397,21 +1396,16 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "This SuperPAC has no lobbyists, no dinners, no phone calls. Just a smart contract that reads your voting record and pays accordingly. Vote for cures? Money. Vote for bombs? Nothing. The lobbyist has been replaced by four lines of code. The code does not accept bribes. The code does not have a favourite restaurant. Your species will find this upsetting.",
+      "Here is how it works. Eight billion citizens rank their priorities through pairwise comparisons. The algorithm compares every politician's actual voting record against those preferences and produces an alignment score. Ten percent of treaty revenue flows into a SuperPAC smart contract. The contract reads the scores and allocates campaign funding automatically. Vote with citizens? Money. Vote against them? Nothing. No lobbyists. No dinners. No phone calls. Just arithmetic and a blockchain.",
     visual:
-      "Pixel art — the Leaderboard from the earlier slide, but now gold coins rain from the top of the screen. They flow to the highest-ranked politicians — more coins for higher alignment scores. The lowest-ranked get nothing; their rows dim. Where a lobbyist NPC would normally stand, a pixel gear/brain icon labeled \"SMART CONTRACT\" has replaced them. In the corner, a crossed-out pixel lobbyist sits holding an empty dinner invitation, looking confused. A Solidity logo pulses on the smart contract. The PoliticalIncentiveAllocator contract name is visible.",
+      "4-step algorithm pipeline at top: Citizens rank priorities (pairwise) → Compare to voting record (every bill) → Alignment score (on-chain) → Fund or defund (10% of treaty revenue). Below: politician leaderboard with alignment scores and FUNDED/NOTHING status. High-aligned get coins, low-aligned get nothing. Punchline: No dinners. No lobbyists. No phone calls.",
     score: 4_700_000_000,
     showQuestMeters: true,
     sierraVerbs: [
       {
-        verb: "TALK TO lobbyist",
-        response:
-          "The lobbyist has been replaced by a smart contract. It does not accept dinner invitations. Or bribes. Or phone calls. It reads voting records and allocates funds. Automatically.",
-      },
-      {
         verb: "LOOK AT algorithm",
         response:
-          "One input: did you vote to help people or did you vote to kill them? One output: campaign funding or nothing. Your species made this complicated. It is not.",
+          "Citizens rank priorities via pairwise comparisons. The contract compares each politician's voting record against those preferences. Alignment score. Automatic funding. No human in the loop. No dinner required.",
       },
     ],
   },
@@ -1450,9 +1444,9 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dgao",
     narration:
-      "On your planet, proving you did something useful works on the honour system. 'I recruited voters.' How many verified? 'Trust me.' On Wishonia, every claim of impact gets a receipt — published to a protocol no one controls. You recruit verified voters, you get a Hypercert. You fund the prize pool, you get a Hypercert. A politician votes against citizen preferences, that gets a Hypercert too. Permanent. Auditable. On Bluesky. Your species calls this 'radical accountability.' We call it 'a receipt.'",
+      "On your planet, proving you did something useful works on the honour system. 'I recruited voters.' How many verified? 'Trust me.' On Wishonia, every claim of impact gets a receipt — published to a protocol no one controls. You recruit verified voters, you get a Hypercert. You fund the prize pool, you get a Hypercert. You rank 142 budget priorities so the algorithm knows what you actually want, you get a Hypercert. Permanent. Auditable. On Bluesky. Your species calls this 'radical accountability.' We call it 'a receipt.'",
     visual:
-      "Pixel art — Sierra achievement/badge screen. A grid of Hypercert badges: one for voter recruitment (7 verified voters, 58.3% rate), one for a $500 PRIZE pool deposit, one for politician alignment scoring (87% alignment, 14 votes compared). Each badge shows AT Protocol URIs and measurement data. One badge animates being minted with a stamp of approval.",
+      "Pixel art — Sierra achievement/badge screen. A grid of Hypercert badges: one for voter recruitment (7 verified voters, 58.3% rate), one for a $500 PRIZE pool deposit, one for completing 142 pairwise preference comparisons across 8 budget categories. Each badge shows AT Protocol URIs and measurement data. One badge animates being minted with a stamp of approval.",
     score: 5_400_000_000,
     showQuestMeters: true,
     sierraVerbs: [
@@ -1667,29 +1661,28 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     ctaUrl: "/agencies/domb",
     narration:
-      "The Optimal Budget Generator. Feed it spending data and outcomes for 34 categories. It finds the point of diminishing returns for each one. Singapore spends a quarter of what America spends on healthcare. Their people live six years longer. Less money. Better outcomes. On every single line item.",
+      "The Optimal Budget Generator. Feed it spending data and outcomes across countries. It finds the cheapest high performer for each category. Singapore spends three thousand per person on healthcare. America spends twelve thousand. Singapore lives six and a half years longer. Every dollar past the diminishing returns curve is not healthcare. It is paperwork.",
     visual:
-      "Pixel art — a Sierra budget control panel. Two columns: USA CURRENT (red, crumbling) and USA OPTIMIZED (green, gleaming). Each row animates: the current number shrinks while the outcome improves. The total spent goes DOWN. The outcomes go UP. A line at the bottom: DIFFICULTY: looking at the data.",
+      "Pixel art — a Sierra budget control panel. Three columns: USA CURRENT (red), CHEAPEST HIGH PERFORMER (green), and OVERSPEND ratio (amber). Each row animates with the comparison. Healthcare: USA $12.6K vs Singapore $3K, 4.2× overspend. Military: $886B vs $271B deterrence floor, 3.3× overspend. Education: 4.9% GDP vs Singapore 2.9% GDP, 1.7× overspend. Summary: more money, worse outcomes vs less money, better outcomes. Footer: DIFFICULTY: looking at the data.",
     asciiArt: `
-┌─────────────────────────────────────────────┐
-│  💰 OPTIMAL BUDGET GENERATOR                 │
-│                                             │
-│  🇺🇸 USA (CURRENT)        🇺🇸 USA (OPTIMIZED) │
-│  ────────────────        ──────────────── │
-│  Healthcare: $4.5T       Healthcare: $1.1T │
-│  Outcomes: ranked 37th   Outcomes: ranked 1st│
-│                                             │
-│  Military: $886B         Military: $200B    │
-│  Wars since 1945: 13     Wars needed: 0     │
-│                                             │
-│  Education: $800B        Education: $600B   │
-│  Test scores: declining  Test scores: +40%  │
-│                                             │
-│  TOTAL SPENT: more       TOTAL SPENT: less  │
-│  OUTCOMES:    worse      OUTCOMES:    better │
-│                                             │
-│  DIFFICULTY: looking at the data            │
-└─────────────────────────────────────────────┘`,
+┌──────────────────────────────────────────────────────┐
+│  💰 OPTIMAL BUDGET GENERATOR                          │
+│                                                      │
+│          🇺🇸 USA (CURRENT)  CHEAPEST HIGH    OVERSPEND│
+│                             PERFORMER                │
+│  ──────────────────────────────────────────────────── │
+│  🏥 Health  $12.6K/person   🇸🇬 $3.0K/person    4.2× │
+│             77.5 yrs LE         84.1 yrs LE          │
+│                                                      │
+│  ⚔️ Military $886B          🛡️ $271B            3.3× │
+│             0.6× mult           realloc → 7× ROI     │
+│                                                      │
+│  📚 Edu     4.9% GDP        🇸🇬 2.9% GDP        1.7× │
+│             PISA 465            PISA 575             │
+│                                                      │
+│  PATTERN: more $, worse     less $, better           │
+│  DIFFICULTY: looking at the data                     │
+└──────────────────────────────────────────────────────┘`,
     score: 5_100_000_000,
     showQuestMeters: true,
     sierraVerbs: [
@@ -2021,7 +2014,7 @@ export const SCORE_DESCRIPTIONS: Record<string, string> = {
   "hale-leaderboard-by-country": "Accountability layer active. Real HALE data.",
   "fda-approval-delay-8yr": "The queue is the killer.",
   "decentralized-fda": "Same trials, no waiting room.",
-  "optimal-budget-generator": "Less money, better outcomes. Every line.",
+  "optimal-budget-generator": "Less money, better outcomes. Every category.",
   "decentralized-irs": "74,000 pages → 4 lines of code.",
   "decentralized-welfare": "83 programs → 1 smart contract.",
   "decentralized-federal-reserve": "print(money): FUNCTION REMOVED.",

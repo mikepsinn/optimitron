@@ -19,10 +19,10 @@ const YOUR_ACTIONS = [
     color: "amber",
   },
   {
-    action: "SCORED 87% Alignment on Rep. Smith",
-    emoji: "🔍",
-    hypercert: "Citizen Alignment: 14 votes compared, 412 participants",
-    impact: "Politician accountability, verifiable on Bluesky",
+    action: "COMPLETED 142 PREFERENCE COMPARISONS",
+    emoji: "⚖️",
+    hypercert: "Citizen Preferences: 142 pairwise comparisons, 8 budget categories ranked",
+    impact: "Policy signal contributed — published to AT Protocol",
     color: "purple",
   },
 ];
