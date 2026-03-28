@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { VotePosition } from "@optimitron/db";
+import { ActivityType, VotePosition } from "@optimitron/db";
 import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 import { serverEnv } from "@/lib/env";
 import { grantWishes } from "@/lib/wishes.server";
@@ -73,6 +73,27 @@ export async function POST(
       },
     });
 
+    let activityId: string | undefined;
+    try {
+      const activity = await prisma.activity.create({
+        data: {
+          userId,
+          type: ActivityType.VOTED_REFERENDUM,
+          description: "",
+          entityType: "Referendum",
+          entityId: referendum.id,
+          metadata: JSON.stringify({
+            answer,
+            referendumId: referendum.id,
+            referendumSlug: referendum.slug,
+          }),
+        },
+      });
+      activityId = activity.id;
+    } catch (activityError) {
+      console.error("[REFERENDUM VOTE] Activity log error:", activityError);
+    }
+
     // Queue VOTE token mint if user has verified World ID + wallet
     let voteTokenMint = null;
     try {
@@ -125,6 +146,7 @@ export async function POST(
         userId,
         reason: "REFERENDUM_VOTE",
         amount: 2,
+        activityId,
         dedupeKey: referendum.id,
       });
       if (wishResult) wishesEarned = wishResult.amount;

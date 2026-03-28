@@ -7,6 +7,7 @@ import {
   type Parameter,
   type Citation,
 } from "@optimitron/data/parameters";
+import { Latex } from "@/components/ui/latex";
 interface StatProps {
   /** The parameter to display. */
   param: Parameter;
@@ -116,6 +117,15 @@ export function Stat({ param, format, figures = 3, showUnit = false, className =
               {param.description}
             </span>
           )}
+          {param.latex ? (
+            <span className="my-2 block overflow-x-auto">
+              <Latex block>{param.latex}</Latex>
+            </span>
+          ) : param.formula ? (
+            <span className="my-1 block">
+              <code className="bg-muted px-1 py-0.5 text-[10px]">{param.formula}</code>
+            </span>
+          ) : null}
           <span className="flex items-center gap-2 text-[10px] text-muted-foreground">
             {param.confidence && (
               <span className={`inline-block rounded px-1.5 py-0.5 font-bold uppercase ${
