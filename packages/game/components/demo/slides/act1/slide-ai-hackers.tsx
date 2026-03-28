@@ -84,6 +84,10 @@ export function SlideAIHackers() {
 
       {/* Robot singularity visualization — steep exponential curve */}
       <div className="relative w-full max-w-[1700px] aspect-[2.2/1] bg-black/50 border border-purple-500/30 rounded-lg overflow-hidden">
+        {/* Chart title */}
+        <div className="absolute top-3 left-4 z-10 font-pixel text-xl text-purple-400/80 tracking-wider">
+          AUTONOMOUS HACKER GESTATION PERIOD
+        </div>
         {/* Exponential curve of robots */}
         <div className="absolute inset-0">
           {robotPositions.slice(0, displayCount).map((pos, i) => (

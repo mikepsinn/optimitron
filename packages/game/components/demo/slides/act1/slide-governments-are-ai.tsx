@@ -6,16 +6,16 @@ import { ParticleEmitter } from "../../animations/particle-emitter";
 import { useEffect, useState } from "react";
 
 const bootLines = [
-  { text: "> SYSTEM: GOVERNMENT.EXE v1776", delay: 300 },
-  { text: "> TYPE: ARTIFICIAL SUPERINTELLIGENCE", delay: 800 },
-  { text: "> CREATED BY: HUMANS", delay: 1300 },
-  { text: "> PURPOSE: PROMOTE GENERAL WELFARE", delay: 1800 },
+  { text: "🖥️ SYSTEM: GOVERNMENT.EXE v1776", delay: 300 },
+  { text: "🤖 TYPE: ARTIFICIAL SUPERINTELLIGENCE", delay: 800 },
+  { text: "👤 CREATED BY: HUMANS", delay: 1300 },
+  { text: "🎯 PURPOSE: PROMOTE GENERAL WELFARE", delay: 1800 },
 ];
 
 const corruptedLines = [
-  { text: "→ RE-ELECTION PROBABILITY", delay: 7000 },
-  { text: "→ CAMPAIGN CONTRIBUTIONS", delay: 7500 },
-  { text: "→ WEALTH EXTRACTION", delay: 8000 },
+  { text: "→ 🗳️ RE-ELECTION PROBABILITY", delay: 7000 },
+  { text: "→ 💰 CAMPAIGN CONTRIBUTIONS", delay: 7500 },
+  { text: "→ 🏦 WEALTH EXTRACTION", delay: 8000 },
 ];
 
 export function SlideGovernmentsAreAI() {
@@ -95,7 +95,7 @@ export function SlideGovernmentsAreAI() {
             <div className="absolute inset-0 pointer-events-none animate-[crt-flicker_0.1s_infinite] opacity-[0.03]" />
 
             {/* Boot text */}
-            <div className="font-terminal text-xl md:text-3xl space-y-2">
+            <div className="font-terminal text-2xl md:text-3xl space-y-2">
               {bootLines.slice(0, visibleBoot).map((line, i) => (
                 <div key={i} className="text-green-400">
                   {line.text}
@@ -112,9 +112,9 @@ export function SlideGovernmentsAreAI() {
                     : "border-green-500/60 bg-green-500/5"
                 }`}
               >
-                <div className="font-terminal text-xl md:text-2xl space-y-1">
+                <div className="font-terminal text-2xl md:text-3xl space-y-1">
                   <div
-                    className={`font-pixel text-2xl mb-2 ${
+                    className={`font-pixel text-2xl md:text-3xl mb-2 ${
                       showCorruption ? "text-red-400" : "text-green-400"
                     }`}
                   >
@@ -129,7 +129,7 @@ export function SlideGovernmentsAreAI() {
                         : "text-green-400"
                     }`}
                   >
-                    MAXIMISE MEDIAN HEALTH
+                    ❤️ MAXIMISE MEDIAN HEALTH
                   </div>
                   <div
                     className={`transition-all duration-500 ${
@@ -138,11 +138,11 @@ export function SlideGovernmentsAreAI() {
                         : "text-green-400"
                     }`}
                   >
-                    MAXIMISE MEDIAN WEALTH
+                    💎 MAXIMISE MEDIAN WEALTH
                   </div>
 
-                  {/* Status bar */}
-                  <div className="flex items-center gap-2 mt-3">
+                  {/* Status line */}
+                  <div className="flex items-center gap-3 mt-3">
                     <span
                       className={`font-pixel text-2xl ${
                         showCorruption ? "text-red-400" : "text-green-400"
@@ -150,25 +150,17 @@ export function SlideGovernmentsAreAI() {
                     >
                       STATUS:
                     </span>
-                    <div className="flex-1 h-3 bg-zinc-900 border border-zinc-700 overflow-hidden">
-                      <div
-                        className={`h-full transition-colors duration-500 ${
-                          showCorruption
-                            ? "bg-red-500 animate-pulse"
-                            : "bg-green-500"
-                        }`}
-                        style={{ width: "100%" }}
-                      />
-                    </div>
                     <span
                       className={`font-pixel text-2xl ${
                         showCorruption ? "text-red-400" : "text-green-400"
                       }`}
                     >
                       {showCorruption ? (
-                        <GlitchText text="MISALIGNED" intensity="high" />
+                        <>
+                          ⚠️ <GlitchText text="MISALIGNED" intensity="high" />
+                        </>
                       ) : (
-                        "ACTIVE"
+                        "✅ ACTIVE"
                       )}
                     </span>
                   </div>
@@ -176,8 +168,8 @@ export function SlideGovernmentsAreAI() {
 
                 {/* Corrupted objectives */}
                 {showCorruption && (
-                  <div className="mt-4 pt-3 border-t border-red-500/30 font-terminal text-xl md:text-2xl space-y-1">
-                    <div className="font-pixel text-2xl text-red-400 mb-2">
+                  <div className="mt-4 pt-3 border-t border-red-500/30 font-terminal text-2xl md:text-3xl space-y-1">
+                    <div className="font-pixel text-2xl md:text-3xl text-red-400 mb-2">
                       OBJECTIVE FUNCTION: [OVERWRITTEN]
                     </div>
                     {corruptedLines.slice(0, visibleCorrupt).map((line, i) => (

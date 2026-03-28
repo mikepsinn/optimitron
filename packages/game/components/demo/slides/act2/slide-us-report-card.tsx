@@ -1,0 +1,157 @@
+"use client";
+
+import { SlideBase } from "../slide-base";
+import { AnimatedCounter } from "../../animations/animated-counter";
+import {
+  POLITICIAN_SCORECARDS,
+  SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO,
+  BUDGET_ITEMS,
+} from "@optimitron/data/datasets/us-politician-scorecards";
+import { useEffect, useState } from "react";
+
+// Pick 6 politicians spanning parties for the display
+const DISPLAY_POLITICIANS = POLITICIAN_SCORECARDS.slice(0, 6);
+
+const gradeColor: Record<string, string> = {
+  A: "text-emerald-400 bg-emerald-500/20",
+  B: "text-cyan-400 bg-cyan-500/20",
+  C: "text-amber-400 bg-amber-500/20",
+  D: "text-orange-400 bg-orange-500/20",
+  F: "text-red-400 bg-red-500/20",
+  "—": "text-zinc-400 bg-zinc-500/20",
+};
+
+function formatBillions(val: number): string {
+  if (val >= 1e9) return `$${(val / 1e9).toFixed(0)}B`;
+  if (val >= 1e6) return `$${(val / 1e6).toFixed(0)}M`;
+  return `$${val.toLocaleString()}`;
+}
+
+export function SlideUsReportCard() {
+  const [showRatio, setShowRatio] = useState(false);
+  const [visibleRows, setVisibleRows] = useState(0);
+  const [showPunchline, setShowPunchline] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setShowRatio(true), 500);
+
+    DISPLAY_POLITICIANS.forEach((_, i) => {
+      setTimeout(() => setVisibleRows(i + 1), 2500 + i * 300);
+    });
+
+    setTimeout(() => setShowPunchline(true), 2500 + DISPLAY_POLITICIANS.length * 300 + 500);
+  }, []);
+
+  return (
+    <SlideBase act={2} className="text-cyan-400">
+      <div className="w-full max-w-[1700px] mx-auto space-y-4">
+        {/* Title */}
+        <div className="text-center">
+          <h1 className="font-pixel text-3xl md:text-4xl text-cyan-400">
+            🇺🇸 US CONGRESSIONAL REPORT CARD
+          </h1>
+          <div className="font-terminal text-xl text-zinc-400 mt-1">
+            For every $1 on clinical trials, Congress spends...
+          </div>
+        </div>
+
+        {/* Giant ratio */}
+        <div
+          className={`text-center transition-all duration-700 ${
+            showRatio ? "opacity-100 scale-100" : "opacity-0 scale-75"
+          }`}
+        >
+          <div className="font-pixel text-6xl md:text-8xl text-red-500">
+            {showRatio && (
+              <AnimatedCounter
+                end={SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO}
+                duration={2000}
+                format="number"
+              />
+            )}
+            <span className="text-4xl md:text-5xl text-red-400">:1</span>
+          </div>
+          <div className="font-terminal text-xl text-zinc-400 mt-1">
+            ...on the military
+          </div>
+          <div className="font-pixel text-xl text-zinc-500 mt-1">
+            {formatBillions(BUDGET_ITEMS.NDAA_DEFENSE)} NDAA / {formatBillions(BUDGET_ITEMS.NIH_CLINICAL_TRIALS)} NIH trials
+          </div>
+        </div>
+
+        {/* Politician table */}
+        <div className="bg-black/40 border border-cyan-500/30 rounded overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cyan-500/10 border-b border-cyan-500/30">
+            <div className="col-span-4 font-pixel text-xl text-cyan-400">NAME</div>
+            <div className="col-span-2 font-pixel text-xl text-cyan-400">PARTY</div>
+            <div className="col-span-3 font-pixel text-xl text-cyan-400">RATIO</div>
+            <div className="col-span-1 font-pixel text-xl text-cyan-400">GRADE</div>
+            <div className="col-span-2 font-pixel text-xl text-cyan-400">MIL $</div>
+          </div>
+
+          {DISPLAY_POLITICIANS.map((pol, i) => (
+            <div
+              key={pol.id}
+              className={`grid grid-cols-12 gap-2 px-4 py-2 border-b border-zinc-800/50 items-center transition-all duration-500 ${
+                i < visibleRows ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+              }`}
+            >
+              {/* Name */}
+              <div className="col-span-4">
+                <span className="font-pixel text-xl text-zinc-200">{pol.name}</span>
+              </div>
+
+              {/* Party */}
+              <div className="col-span-2">
+                <span
+                  className={`font-pixel text-xl ${
+                    pol.party === "Democrat"
+                      ? "text-blue-400"
+                      : pol.party === "Republican"
+                      ? "text-red-400"
+                      : "text-amber-400"
+                  }`}
+                >
+                  {pol.party === "Democrat" ? "D" : pol.party === "Republican" ? "R" : "I"}
+                </span>
+              </div>
+
+              {/* Ratio */}
+              <div className="col-span-3">
+                <span className="font-pixel text-xl text-zinc-200">
+                  {pol.militaryToTrialsRatio.toLocaleString()}:1
+                </span>
+              </div>
+
+              {/* Grade */}
+              <div className="col-span-1">
+                <span className={`font-pixel text-xl px-2 py-0.5 rounded ${gradeColor[pol.grade]}`}>
+                  {pol.grade}
+                </span>
+              </div>
+
+              {/* Military $ voted for */}
+              <div className="col-span-2">
+                <span className="font-pixel text-xl text-red-400">
+                  {formatBillions(pol.destructiveDollarsVotedFor)}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Punchline */}
+        <div
+          className={`text-center transition-all duration-700 ${
+            showPunchline ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          <div className="font-pixel text-xl md:text-2xl text-amber-400">
+            Both parties voted for this. It is not a left-right problem. It is a math problem.
+          </div>
+        </div>
+      </div>
+    </SlideBase>
+  );
+}

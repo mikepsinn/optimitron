@@ -100,9 +100,9 @@ export interface DemoActions {
 
 const CHAPTER_STARTS = {
   act1: 0,
-  turn: 9, // Moronia + Wishonia
-  act2: 11,
-  act3: 48, // After i-pencil + cured-disease + the-switch
+  turn: 10, // Moronia + Wishonia (shifted +1 for body-count)
+  act2: 12,
+  act3: 50, // After i-pencil + cured-disease + the-switch (shifted +2 for body-count + us-report-card)
 };
 
 const initialState: DemoState = {

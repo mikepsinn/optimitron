@@ -83,6 +83,8 @@ export function SlideDeathCounter() {
       </div>
 
       <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4 relative h-full z-10">
+        {/* Dark translucent card so text is readable over skulls */}
+        <div className="bg-foreground/85 backdrop-blur-sm rounded-md px-12 py-10 flex flex-col items-center gap-4 border-2 border-red-500/30 shadow-[0_0_40px_rgba(239,68,68,0.15)]">
         {/* Top: "BUGS IN YOUR MEAT SOFTWARE / KILL" */}
         <div
           className={`text-center transition-opacity duration-1000 ${
@@ -165,6 +167,7 @@ export function SlideDeathCounter() {
           </div>
         </div>
 
+        </div>{/* end translucent card */}
       </div>
     </SlideBase>
   );

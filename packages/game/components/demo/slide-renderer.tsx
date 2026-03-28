@@ -14,6 +14,7 @@ import { SlideFailedState } from "./slides/act1/slide-failed-state";
 import { SlideAIHackers } from "./slides/act1/slide-ai-hackers";
 import { SlidePaycheckTheft } from "./slides/act1/slide-paycheck-theft";
 import { SlideGameOver } from "./slides/act1/slide-game-over";
+import { SlideBodyCount } from "./slides/act1/slide-body-count";
 
 // Turn
 import { SlideWishoniaRestore } from "./slides/turn/slide-wishonia-restore";
@@ -48,6 +49,7 @@ import { SlideCannotLose } from "./slides/act2/slide-cannot-lose";
 // Act II slides - Part 4: Accountability
 import { SlideLeaderboard } from "./slides/act2/slide-leaderboard";
 import { SlideChangedMetric } from "./slides/act2/slide-changed-metric";
+import { SlideUsReportCard } from "./slides/act2/slide-us-report-card";
 
 // Act II slides - Part 5: The Armory
 import { SlideFdaQueue } from "./slides/act2/slide-fda-queue";
@@ -80,6 +82,7 @@ const slideComponents: Record<string, React.ComponentType> = {
   "cold-open": SlideDeathCounter,
   "governments-are-ai": SlideGovernmentsAreAI,
   "war-spending": SlideMisalignedProof,
+  "body-count": SlideBodyCount,
   "paycheck-heist": SlidePaycheckTheft,
   "game-title": SlideGameTitle,
   "ratio-604": SlideRatio,
@@ -121,6 +124,7 @@ const slideComponents: Record<string, React.ComponentType> = {
   // Act II - Part 4: Accountability
   "arsonist-board": SlideLeaderboard,
   "track-record": SlideChangedMetric,
+  "us-report-card": SlideUsReportCard,
 
   // Act II - Part 5: The Armory
   "fda-queue": SlideFdaQueue,

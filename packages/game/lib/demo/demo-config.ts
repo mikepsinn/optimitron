@@ -141,6 +141,16 @@ export const SLIDES: SlideConfig[] = [
     ],
   },
   {
+    id: "body-count",
+    act: "act1",
+    duration: 10,
+    narration:
+      "Here is the body count. Since World War II, the United States has killed 4.5 million people. China: 2 million. Russia: 1.5 million. Nobody held a referendum on any of it. The data comes from their own military records. They wrote it down. Then they filed it. Then they increased the budget.",
+    visual:
+      "Ranked list of governments by post-WWII military deaths caused. Rows stagger in one by one. Death counts animate up. US highlighted at #1. Skull particle drizzle. Footer: COMBINED: X,XXX,XXX dead. 0 referendums held.",
+    score: 0,
+  },
+  {
     id: "paycheck-heist",
     act: "act1",
     duration: 10,
@@ -1199,6 +1209,18 @@ RECURSIVE EXPONENTIAL THEFT`,
     ],
   },
   {
+    id: "us-report-card",
+    act: "act2",
+    duration: 10,
+    narration:
+      "Your Congress spent $886 billion on the military this year. And $810 million on clinical trials. That is a ratio of 1,094 to 1. For every dollar spent trying to stop diseases from killing you, 1,094 dollars on new ways to kill other people's children. Both parties voted for this. It is not a left-right problem. It is a math problem.",
+    visual:
+      "Giant animated counter: 1,094:1. Below: table of 6 politicians spanning parties with name, party, ratio, grade. Color-coded grades. Punchline: Both parties voted for this.",
+    score: 3_500_000_000,
+    showQuestMeters: true,
+    ctaUrl: "/governments/US/politicians",
+  },
+  {
     id: "arsonist-board",
     act: "act2",
     duration: 10,
@@ -1964,13 +1986,13 @@ RECURSIVE EXPONENTIAL THEFT`,
 // Chapter markers for navigation
 export const CHAPTERS = [
   { id: "act1", name: "Act I: The Horror", slideIndex: 0 },
-  { id: "turn", name: "The Turn", slideIndex: 9 },
-  { id: "act2-1", name: "The Solution", slideIndex: 11 },
-  { id: "act2-2", name: "The Game", slideIndex: 21 },
-  { id: "act2-3", name: "The Money", slideIndex: 27 },
-  { id: "act2-4", name: "Accountability", slideIndex: 31 },
-  { id: "act2-5", name: "The Armory", slideIndex: 33 },
-  { id: "act3", name: "Act III: Endgame", slideIndex: 48 },
+  { id: "turn", name: "The Turn", slideIndex: 10 },
+  { id: "act2-1", name: "The Solution", slideIndex: 12 },
+  { id: "act2-2", name: "The Game", slideIndex: 22 },
+  { id: "act2-3", name: "The Money", slideIndex: 28 },
+  { id: "act2-4", name: "Accountability", slideIndex: 32 },
+  { id: "act2-5", name: "The Armory", slideIndex: 35 },
+  { id: "act3", name: "Act III: Endgame", slideIndex: 50 },
 ];
 
 // ============================================

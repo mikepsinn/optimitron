@@ -6,12 +6,18 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  DFDA_FIRST_TREATMENTS_PER_YEAR,
+  DFDA_TRIAL_COST_REDUCTION_PCT,
 } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
 const accelerationFactor = Math.round(DFDA_TRIAL_CAPACITY_MULTIPLIER.value * 10) / 10;
 const currentDurationAllDiseases = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const acceleratedDurationAllDiseases = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
+const currentFirstTreatments = Math.round(NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value);
+const acceleratedFirstTreatments = Math.round(DFDA_FIRST_TREATMENTS_PER_YEAR.value);
+const costReductionPct = Math.round(DFDA_TRIAL_COST_REDUCTION_PCT.value * 100);
 
 export function SlideAcceleration() {
   const [showRace, setShowRace] = useState(false);
@@ -67,6 +73,12 @@ export function SlideAcceleration() {
             <div className="font-pixel text-2xl text-zinc-200 mt-1">
               to cure ALL diseases
             </div>
+            <div className="font-pixel text-2xl text-red-400 mt-3">
+              {currentFirstTreatments} diseases/yr
+            </div>
+            <div className="font-pixel text-xl text-zinc-400 mt-1">
+              get first treatment
+            </div>
           </div>
 
           {/* Fast hourglass */}
@@ -78,6 +90,12 @@ export function SlideAcceleration() {
             </div>
             <div className="font-pixel text-2xl text-zinc-200 mt-1">
               to cure ALL diseases
+            </div>
+            <div className="font-pixel text-2xl text-emerald-400 mt-3">
+              {acceleratedFirstTreatments} diseases/yr
+            </div>
+            <div className="font-pixel text-xl text-zinc-400 mt-1">
+              get first treatment
             </div>
           </div>
         </div>
@@ -145,21 +163,22 @@ export function SlideAcceleration() {
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
             <div className="font-pixel text-2xl text-cyan-400">
-              <AnimatedCounter end={1000} duration={2000} suffix="+" />
+              <AnimatedCounter end={acceleratedFirstTreatments} duration={2000} />
             </div>
-            <div className="font-pixel text-2xl text-zinc-200">Treatments/year</div>
+            <div className="font-pixel text-2xl text-zinc-200">First treatments/year</div>
+            <div className="font-pixel text-xl text-zinc-400">(vs {currentFirstTreatments} now)</div>
           </div>
           <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
             <div className="font-pixel text-2xl text-emerald-400">
-              <AnimatedCounter end={90} duration={2000} suffix="%" />
+              <AnimatedCounter end={costReductionPct} duration={2000} suffix="%" />
             </div>
             <div className="font-pixel text-2xl text-zinc-200">Cost reduction</div>
           </div>
           <div className="text-center p-3 bg-amber-500/10 border border-amber-500/30 rounded">
             <div className="font-pixel text-2xl text-amber-400">
-              <AnimatedCounter end={147} duration={2000} prefix="$" suffix="M" />
+              {accelerationFactor}x
             </div>
-            <div className="font-pixel text-2xl text-zinc-200">Per life saved</div>
+            <div className="font-pixel text-2xl text-zinc-200">Trial capacity</div>
           </div>
         </div>
 

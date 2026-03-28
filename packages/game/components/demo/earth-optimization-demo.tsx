@@ -12,6 +12,35 @@ import { BootScreen } from "./boot-screen";
 import { SLIDES } from "@/lib/demo/demo-config";
 import { cn } from "@/lib/utils";
 
+/** Running death counter — "X humans terminated since this presentation began" */
+function DeathCounter() {
+  const [count, setCount] = useState(0);
+  const [startTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    // ~1 death per 0.6 seconds (150,000 per day / 86,400s ≈ 1.736/s)
+    const DEATHS_PER_MS = 1 / 600;
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      setCount(Math.floor(elapsed * DEATHS_PER_MS));
+    }, 600);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  return (
+    <div className="fixed top-4 right-4 z-50 flex items-center gap-2 text-right">
+      <div>
+        <div className="font-pixel text-sm text-red-500 tabular-nums">
+          💀 {count.toLocaleString()} HUMANS TERMINATED
+        </div>
+        <div className="font-pixel text-xs text-red-500/70">
+          SINCE THIS PRESENTATION BEGAN
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EarthOptimizationDemo() {
   const [booted, setBooted] = useState(false);
   const { 
@@ -121,13 +150,8 @@ export function EarthOptimizationDemo() {
         {/* Control panel (hidden in recording mode) */}
         <ControlPanel />
 
-        {/* Recording mode indicator */}
-        {isRecordingMode && (
-          <div className="fixed top-4 right-4 z-50 flex items-center gap-2 animate-pulse">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <span className="font-pixel text-xs text-red-500">REC</span>
-          </div>
-        )}
+        {/* Death counter — replaces REC indicator */}
+        <DeathCounter />
 
         {/* Navigation hint */}
         {!isRecordingMode && (

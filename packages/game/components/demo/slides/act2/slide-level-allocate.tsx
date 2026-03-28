@@ -176,7 +176,7 @@ export function SlideLevelAllocate() {
               3 comparisons → mathematically optimal budget.
             </div>
             <div className="font-pixel text-xl md:text-2xl text-amber-400">
-              No committees. No lobbying. Just math.
+              No lobbying. Just citizen preference allocations.
             </div>
           </div>
         )}
