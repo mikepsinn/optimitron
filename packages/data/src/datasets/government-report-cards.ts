@@ -971,13 +971,3 @@ export function getGovernmentsByIncome(): GovernmentMetrics[] {
     (a, b) => b.gdpPerCapita.value - a.gdpPerCapita.value,
   );
 }
-
-/** Compute military-to-health-spending ratio for a government */
-export function getMilitaryToHealthRatio(gov: GovernmentMetrics): number | null {
-  if (!gov.healthSpendingPerCapita.value || !gov.gdpPerCapita.value) return null;
-  const gdpTotal = gov.militarySpendingAnnual.value / (gov.militaryPctGDP.value / 100);
-  const population = gdpTotal / gov.gdpPerCapita.value;
-  const healthTotal = gov.healthSpendingPerCapita.value * population;
-  if (healthTotal <= 0) return null;
-  return gov.militarySpendingAnnual.value / healthTotal;
-}
