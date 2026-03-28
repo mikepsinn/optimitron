@@ -11,7 +11,8 @@
     "record": "tsx scripts/record-presentation.ts",
     "merge:audio": "tsx scripts/merge-audio.ts",
     "generate:readme": "tsx scripts/generate-readme.ts",
-    "screenshot": "tsx scripts/screenshot-slides.ts"
+    "screenshot": "tsx scripts/screenshot-slides.ts",
+    "screenshot:watch": "tsx scripts/watch-screenshots.ts"
   },
   "dependencies": {
     "@google/genai": "^1.46.0",
