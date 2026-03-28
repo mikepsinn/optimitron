@@ -5,6 +5,7 @@ import { Card } from "@/components/retroui/Card"
 import type { DashboardSocialAccount } from "@/types/dashboard"
 import { FaGithub, FaXTwitter, FaDiscord, FaTelegram, FaEthereum } from "react-icons/fa6"
 import { signIn } from "next-auth/react"
+import { useAccount, useConnect, useDisconnect } from "wagmi"
 import type { ReactNode } from "react"
 
 interface ConnectedAccountsCardProps {
@@ -59,14 +60,44 @@ const PLATFORMS: PlatformRow[] = [
 ]
 
 export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAccountsCardProps) {
+  const { address, isConnected } = useAccount()
+  const { connect, connectors } = useConnect()
+  const { disconnect } = useDisconnect()
+
   const getAccount = (platform: string) =>
     socialAccounts.find((sa) => sa.platform === platform)
 
-  const handleConnect = async (provider: string) => {
+  const handleConnectSocial = async (provider: string) => {
     await signIn(provider.toLowerCase(), { callbackUrl: "/dashboard" })
   }
 
-  const handleDisconnect = async (platform: string) => {
+  const handleConnectWallet = async (platform: string) => {
+    const connector = connectors[0]
+    if (!connector) return
+
+    connect(
+      { connector },
+      {
+        onSuccess: async (data) => {
+          const walletAddress = data.accounts[0]
+          if (!walletAddress) return
+
+          try {
+            await fetch("/api/social-accounts/connect-wallet", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ platform, walletAddress }),
+            })
+            onRefresh()
+          } catch (error) {
+            console.error("Failed to save wallet connection:", error)
+          }
+        },
+      },
+    )
+  }
+
+  const handleDisconnect = async (platform: string, isWallet: boolean) => {
     try {
       const response = await fetch("/api/social-accounts/disconnect", {
         method: "POST",
@@ -75,6 +106,9 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
       })
 
       if (response.ok) {
+        if (isWallet && isConnected) {
+          disconnect()
+        }
         onRefresh()
       } else {
         console.error("Failed to disconnect account")
@@ -82,6 +116,17 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
     } catch (error) {
       console.error("Error disconnecting account:", error)
     }
+  }
+
+  const getWalletDisplayValue = (row: PlatformRow) => {
+    const account = getAccount(row.key)
+    if (account?.walletAddress) {
+      return `${account.walletAddress.slice(0, 6)}...${account.walletAddress.slice(-4)}`
+    }
+    if (isConnected && address) {
+      return `${address.slice(0, 6)}...${address.slice(-4)}`
+    }
+    return "Not connected"
   }
 
   return (
@@ -96,13 +141,16 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
         <div className="space-y-3">
           {PLATFORMS.map((row) => {
             const account = getAccount(row.key)
-            const displayValue = account
-              ? row.isWallet
-                ? account.walletAddress
-                  ? `${account.walletAddress.slice(0, 6)}...${account.walletAddress.slice(-4)}`
-                  : "Connected"
-                : account.username || "Connected"
-              : "Not connected"
+            const isWalletConnected = row.isWallet && (!!account || (isConnected && !!address))
+            const isSocialConnected = !row.isWallet && !!account
+
+            const displayValue = row.isWallet
+              ? getWalletDisplayValue(row)
+              : account
+                ? account.username || "Connected"
+                : "Not connected"
+
+            const connected = isWalletConnected || isSocialConnected
 
             return (
               <div key={row.key} className="flex items-center justify-between p-4 border-4 border-primary bg-background">
@@ -116,11 +164,17 @@ export function ConnectedAccountsCard({ socialAccounts, onRefresh }: ConnectedAc
                 <Button
                   variant="outline"
                   className="border-4 border-primary bg-transparent"
-                  onClick={() =>
-                    account ? handleDisconnect(row.key) : handleConnect(row.key)
-                  }
+                  onClick={() => {
+                    if (connected) {
+                      void handleDisconnect(row.key, row.isWallet)
+                    } else if (row.isWallet) {
+                      void handleConnectWallet(row.key)
+                    } else {
+                      void handleConnectSocial(row.key)
+                    }
+                  }}
                 >
-                  {account ? "Disconnect" : "Connect"}
+                  {connected ? "Disconnect" : "Connect"}
                 </Button>
               </div>
             )

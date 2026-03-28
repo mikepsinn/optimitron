@@ -11,7 +11,7 @@ interface DemoLoginButtonProps {
 }
 
 export function DemoLoginButton({
-  callbackUrl = ROUTES.wishocracy,
+  callbackUrl = ROUTES.dashboard,
   className,
 }: DemoLoginButtonProps) {
   const [loading, setLoading] = useState(false);

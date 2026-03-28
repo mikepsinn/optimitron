@@ -20,7 +20,7 @@ function getAuthErrorMessage(error: string | null) {
 
 function SignInContent() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? ROUTES.wishocracy;
+  const callbackUrl = searchParams.get("callbackUrl") ?? ROUTES.dashboard;
   const referralCode = searchParams.get("ref");
   const initialError = getAuthErrorMessage(searchParams.get("error"));
 

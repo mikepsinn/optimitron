@@ -23,7 +23,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({
-  callbackUrl = ROUTES.wishocracy,
+  callbackUrl = ROUTES.dashboard,
   referralCode,
   initialError = null,
   compact = false,

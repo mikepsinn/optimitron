@@ -77,7 +77,7 @@ export function getPolicyPath(name: string): string {
 }
 
 export function getSignInPath(
-  callbackUrl: string = ROUTES.wishocracy,
+  callbackUrl: string = ROUTES.dashboard,
   options?: { referralCode?: string | null },
 ): string {
   const searchParams = new URLSearchParams({ callbackUrl });
@@ -378,7 +378,7 @@ export interface NavSection {
 }
 
 export const navSections: NavSection[] = [
-  { id: "play", label: "Play", items: [wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
+  { id: "play", label: "Play", items: [dashboardLink, profileLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
   { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
   { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, studiesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
