@@ -10,7 +10,7 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   GLOBAL_DISEASE_DEATHS_DAILY,
 } from "@optimitron/data/parameters";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 
 export const metadata = getRouteMetadata(moroniaLink);
 
@@ -109,7 +109,7 @@ export default function MoroniaPage() {
           </h2>
           <div className="border border-red-900/30 bg-black/60 backdrop-blur-sm p-8 text-center">
             <div className="text-6xl sm:text-7xl font-black text-red-500">
-              <Stat param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={(p) => String(Math.round(p.value))} /> : 1
+              <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={(p) => String(Math.round(p.value))} /> : 1
             </div>
             <p className="text-lg font-bold text-white/60 mt-4 max-w-2xl mx-auto">
               For every paper spent on curing disease, {ratio} papers went to

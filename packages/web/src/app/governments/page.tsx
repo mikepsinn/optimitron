@@ -170,12 +170,12 @@ export default function GovernmentsPage() {
       {/* Health & Wealth Leaderboard */}
       <section className="mb-16">
         <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-2 sm:text-2xl">
-          HEALTH &amp; WEALTH RANKINGS
+          MOST MISALIGNED GOVERNMENTS
         </h2>
         <p className="text-lg font-bold text-muted-foreground mb-6">
-          The game&apos;s two metrics — healthy life years and income — ranked by
-          country. Click any column to sort. Notice which countries spend the most
-          on military and get the least for it.
+          Default ranking is military spending per dollar of government clinical
+          trials, from largest ratio to smallest. Click any column to sort by a
+          different metric.
         </p>
         <GovernmentLeaderboard />
       </section>

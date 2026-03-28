@@ -2,7 +2,7 @@
 
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { budgetLink, federalReserveLink, wishocracyLink } from "@/lib/routes";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   fmtParam,
   fmtRaw,
@@ -61,7 +61,7 @@ export default function DepartmentOfWarPage() {
             governance platform. But I&apos;ve been running a civilisation for
             4,237 years, and after modelling every possible resource-allocation
             strategy, the one where you spend{" "}
-            <Stat param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />{" "}
+            <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />{" "}
             per year on exploding each other consistently ranks last. Dead last.
             Below &ldquo;doing literally nothing.&rdquo;
           </p>
@@ -85,7 +85,7 @@ export default function DepartmentOfWarPage() {
                 Global military spending (2024)
               </div>
               <div className="text-2xl font-black text-brutal-pink">
-                <Stat param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />
+                <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />
               </div>
             </div>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
@@ -100,7 +100,7 @@ export default function DepartmentOfWarPage() {
                 Deaths from money-printer wars
               </div>
               <div className="text-2xl font-black text-brutal-pink">
-                <Stat param={MONEY_PRINTER_WAR_DEATHS} />
+                <ParameterValue param={MONEY_PRINTER_WAR_DEATHS} />
               </div>
             </div>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
@@ -115,7 +115,7 @@ export default function DepartmentOfWarPage() {
                 Cumulative military spending (since 1913)
               </div>
               <div className="text-2xl font-black text-brutal-pink">
-                <Stat param={CUMULATIVE_MILITARY_SPENDING_FED_ERA} format={(p) => fmtParam({ ...p, unit: "USD" })} />
+                <ParameterValue param={CUMULATIVE_MILITARY_SPENDING_FED_ERA} format={(p) => fmtParam({ ...p, unit: "USD" })} />
               </div>
             </div>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
@@ -131,14 +131,14 @@ export default function DepartmentOfWarPage() {
                 Military spending ROI
               </div>
               <div className="text-2xl font-black text-brutal-pink">
-                <Stat param={ECONOMIC_MULTIPLIER_MILITARY_SPENDING} />
+                <ParameterValue param={ECONOMIC_MULTIPLIER_MILITARY_SPENDING} />
               </div>
             </div>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
               Every dollar on military generates{" "}
-              <Stat param={ECONOMIC_MULTIPLIER_MILITARY_SPENDING} /> in economic
+              <ParameterValue param={ECONOMIC_MULTIPLIER_MILITARY_SPENDING} /> in economic
               output. Healthcare generates{" "}
-              <Stat param={ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT} />. You are
+              <ParameterValue param={ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT} />. You are
               choosing the worse investment by a factor of{" "}
               {Math.round(healthMultiplier / milMultiplier)}.
             </p>
@@ -153,7 +153,7 @@ export default function DepartmentOfWarPage() {
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
           Every year, your species takes{" "}
-          <Stat param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />{" "}
+          <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />{" "}
           — the accumulated productive output of hundreds of millions of
           workers — and converts it into things designed to destroy other things.
           Here is a partial list of what you could do with it if you simply...

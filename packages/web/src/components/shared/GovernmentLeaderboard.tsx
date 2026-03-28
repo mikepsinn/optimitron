@@ -12,6 +12,8 @@ import {
 import { Tooltip } from "@/components/retroui/Tooltip";
 import {
   GOVERNMENT_LEADERBOARD_COLUMN_META,
+  GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC,
+  GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY,
   type GovernmentLeaderboardSortKey,
 } from "./governmentLeaderboardColumns";
 
@@ -31,11 +33,11 @@ function ratioColor(
 ): string {
   if (ratio === null) return "text-muted-foreground";
   if (denominator === "trials") {
-    if (ratio < 250) return "text-brutal-cyan";
+    if (ratio < 250) return "text-foreground";
     if (ratio < 1000) return "text-foreground";
     return "text-brutal-red";
   }
-  if (ratio < 20) return "text-brutal-cyan";
+  if (ratio < 20) return "text-foreground";
   if (ratio < 100) return "text-foreground";
   return "text-brutal-red";
 }
@@ -47,18 +49,22 @@ function formatRatio(ratio: number): string {
 }
 
 const rankColumnWidthClass = "w-14 min-w-14";
-const countryColumnWidthClass = "min-w-[12rem]";
+const countryColumnWidthClass = "min-w-[10rem]";
 const stickyRankHeaderClass =
-  "sticky left-0 z-30 bg-background";
+  "";
 const stickyCountryHeaderClass =
-  "sticky left-14 z-30 border-r-4 border-primary bg-background";
+  "sticky left-0 z-30 border-r-4 border-primary bg-background";
 const stickyRankCellClass =
-  "sticky left-0 z-10 bg-background group-hover:bg-muted";
+  "";
 const stickyCountryCellClass =
-  "sticky left-14 z-10 border-r-4 border-primary bg-background group-hover:bg-muted";
+  "sticky left-0 z-10 border-r-4 border-primary bg-background group-hover:bg-muted";
 
 function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
   switch (key) {
+    case "country": return 0;
+    case "rank":
+      return getMilitaryToGovernmentClinicalTrialRatio(gov) ?? 999_999_999;
+    case "killed": return gov.militaryDeathsCaused.value;
     case "hale": return gov.hale?.value ?? 0;
     case "lifeExpectancy": return gov.lifeExpectancy.value;
     case "gdpPerCapita": return gov.gdpPerCapita.value;
@@ -82,6 +88,7 @@ interface SortableHeaderProps {
   activeSortKey: SortKey;
   sortAsc: boolean;
   headerClass: string;
+  align?: "left" | "right";
   onSort: (key: SortKey) => void;
 }
 
@@ -90,18 +97,21 @@ function SortableHeader({
   activeSortKey,
   sortAsc,
   headerClass,
+  align = "right",
   onSort,
 }: SortableHeaderProps) {
   const meta = GOVERNMENT_LEADERBOARD_COLUMN_META[sortKey];
   const indicator =
     activeSortKey === sortKey ? (sortAsc ? " ↑" : " ↓") : "";
+  const alignmentClass = align === "left" ? "text-left" : "text-right";
+  const justifyClass = align === "left" ? "justify-start" : "justify-end";
 
   return (
     <th
-      className={`p-3 text-right ${headerClass}`}
+      className={`p-3 ${alignmentClass} ${headerClass}`}
       onClick={() => onSort(sortKey)}
     >
-      <div className="inline-flex items-center justify-end gap-1">
+      <div className={`inline-flex items-center gap-1 ${justifyClass}`}>
         <span>{meta.label}{indicator}</span>
         <Tooltip>
           <Tooltip.Trigger asChild>
@@ -135,11 +145,19 @@ interface GovernmentLeaderboardProps {
 }
 
 export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLeaderboardProps) {
-  const [sortKey, setSortKey] = useState<SortKey>("hale");
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>(
+    GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY,
+  );
+  const [sortAsc, setSortAsc] = useState(
+    GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC,
+  );
 
   const allGovs = getGovernmentsByHALE();
   const sorted = [...allGovs].sort((a, b) => {
+    if (sortKey === "country") {
+      const comparison = a.name.localeCompare(b.name);
+      return sortAsc ? comparison : -comparison;
+    }
     const diff = getSortValue(b, sortKey) - getSortValue(a, sortKey);
     return sortAsc ? -diff : diff;
   });
@@ -150,7 +168,7 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
       setSortAsc(!sortAsc);
     } else {
       setSortKey(key);
-      setSortAsc(false);
+      setSortAsc(key === "country");
     }
   };
 
@@ -163,16 +181,35 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
         <table className="w-full">
           <thead>
             <tr className="border-b-4 border-primary">
-              <th
-                className={`p-3 text-left text-xs font-black uppercase text-muted-foreground ${rankColumnWidthClass} ${stickyRankHeaderClass}`}
-              >
-                #
-              </th>
-              <th
-                className={`p-3 text-left text-xs font-black uppercase text-muted-foreground ${countryColumnWidthClass} ${stickyCountryHeaderClass}`}
-              >
-                Country
-              </th>
+              <SortableHeader
+                sortKey="country"
+                activeSortKey={sortKey}
+                sortAsc={sortAsc}
+                headerClass={`${headerClass} ${countryColumnWidthClass} ${stickyCountryHeaderClass}`}
+                align="left"
+                onSort={handleSort}
+              />
+              <SortableHeader
+                sortKey="trialRatio"
+                activeSortKey={sortKey}
+                sortAsc={sortAsc}
+                headerClass={headerClass}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                sortKey="rank"
+                activeSortKey={sortKey}
+                sortAsc={sortAsc}
+                headerClass={`${headerClass} ${rankColumnWidthClass} ${stickyRankHeaderClass}`}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                sortKey="killed"
+                activeSortKey={sortKey}
+                sortAsc={sortAsc}
+                headerClass={headerClass}
+                onSort={handleSort}
+              />
               <SortableHeader
                 sortKey="hale"
                 activeSortKey={sortKey}
@@ -215,13 +252,6 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                 </>
               )}
               <SortableHeader
-                sortKey="trialRatio"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
-              <SortableHeader
                 sortKey="researchRatio"
                 activeSortKey={sortKey}
                 sortAsc={sortAsc}
@@ -241,21 +271,26 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                   key={gov.code}
                   className="group border-b-2 border-primary last:border-b-0 hover:bg-muted transition-colors"
                 >
-                  <td
-                    className={`p-3 font-black text-muted-foreground ${rankColumnWidthClass} ${stickyRankCellClass}`}
-                  >
-                    {i + 1}
-                  </td>
                   <td className={`p-3 ${countryColumnWidthClass} ${stickyCountryCellClass}`}>
                     <Link
                       href={`/governments/${gov.code}`}
                       className="hover:text-brutal-pink transition-colors"
                     >
-                      <span className="text-xl mr-2">{gov.flag}</span>
                       <span className="font-black text-foreground">{gov.name}</span>
                     </Link>
                   </td>
-                  <td className="p-3 text-right font-black text-brutal-cyan">
+                  <td className={`p-3 text-right font-black ${ratioColor(clinicalTrialRatio, "trials")}`}>
+                    {clinicalTrialRatio !== null ? formatRatio(clinicalTrialRatio) : "—"}
+                  </td>
+                  <td
+                    className={`p-3 text-right font-black text-muted-foreground ${rankColumnWidthClass} ${stickyRankCellClass}`}
+                  >
+                    {i + 1}
+                  </td>
+                  <td className="p-3 text-right font-black text-foreground">
+                    {gov.militaryDeathsCaused.value.toLocaleString()}
+                  </td>
+                  <td className="p-3 text-right font-black text-foreground">
                     {gov.hale?.value.toFixed(1) ?? "—"}
                   </td>
                   {!compact && (
@@ -276,9 +311,6 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                       </td>
                     </>
                   )}
-                  <td className={`p-3 text-right font-black ${ratioColor(clinicalTrialRatio, "trials")}`}>
-                    {clinicalTrialRatio !== null ? formatRatio(clinicalTrialRatio) : "—"}
-                  </td>
                   <td className={`p-3 text-right font-black ${ratioColor(medicalResearchRatio, "research")}`}>
                     {medicalResearchRatio !== null ? formatRatio(medicalResearchRatio) : "—"}
                   </td>

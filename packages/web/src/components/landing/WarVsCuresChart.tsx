@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/section-container";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   fmtParam,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
@@ -59,7 +59,7 @@ export function WarVsCuresChart() {
             >
               <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">Military</div>
               <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-pink">
-                <Stat param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />
+                <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} format={(p) => fmtParam({ ...p, unit: "USD" })} />
               </div>
             </motion.div>
             <motion.div
@@ -89,7 +89,7 @@ export function WarVsCuresChart() {
             >
               <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">Medical Research</div>
               <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-cyan">
-                <Stat param={GLOBAL_MED_RESEARCH_SPENDING} format={(p) => fmtParam({ ...p, unit: "USD" })} />
+                <ParameterValue param={GLOBAL_MED_RESEARCH_SPENDING} format={(p) => fmtParam({ ...p, unit: "USD" })} />
               </div>
             </motion.div>
             <div className="flex items-center gap-4">

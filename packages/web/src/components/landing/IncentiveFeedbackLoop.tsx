@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { StepReveal } from "@/components/animations/StepReveal";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -197,7 +197,7 @@ export function IncentiveFeedbackLoop() {
           </span>
         </div>
         <p className="text-sm font-bold text-muted-foreground mt-1">
-          <Stat param={{...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} />–<Stat param={{...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} /> per-capita income gains across adopting jurisdictions.
+          <ParameterValue param={{...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} />–<ParameterValue param={{...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} /> per-capita income gains across adopting jurisdictions.
           Bondholders&apos; assets appreciate. Politicians win elections. Citizens live longer.
         </p>
       </motion.div>

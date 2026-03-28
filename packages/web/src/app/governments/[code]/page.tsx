@@ -12,7 +12,7 @@ import {
 } from "@optimitron/data";
 import { GameCTA } from "@/components/ui/game-cta";
 import { BrutalCard } from "@/components/ui/brutal-card";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
@@ -151,7 +151,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
               {gov.hale?.value.toFixed(1) ?? "—"}
             </div>
             <div className="text-lg font-bold text-foreground">
-              Global average: <Stat param={GLOBAL_HALE_CURRENT} /> &middot; Treaty target: <Stat param={TREATY_PROJECTED_HALE_YEAR_15} />
+              Global average: <ParameterValue param={GLOBAL_HALE_CURRENT} /> &middot; Treaty target: <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
             </div>
             {haleGap !== null && haleGap > 0 && (
               <div className="text-base font-bold text-muted-foreground mt-1">

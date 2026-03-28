@@ -337,7 +337,7 @@ Project-specific components that wrap RetroUI primitives with domain styling.
 | `ArcadeTag` | `arcade-tag.tsx` | Arcade-font labels/badges |
 | `CTASection` | `cta-section.tsx` | Full CTA section wrapper |
 | `CheckmarkList` | `checkmark-list.tsx` | Bulleted list with checkmarks |
-| `Stat` | `stat.tsx` | Inline parameter display (pulls from parameters-calculations-citations) |
+| `ParameterValue` | `../shared/ParameterValue.tsx` | Inline parameter display with hover popover (citations, LaTeX, confidence) |
 
 ### Border Weight
 - **RetroUI components use `border-2`** — this is the default for all RetroUI primitives

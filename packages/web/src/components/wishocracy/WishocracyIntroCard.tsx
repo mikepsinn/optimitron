@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
-import { Stat } from "@/components/ui/stat"
+import { ParameterValue } from "@/components/shared/ParameterValue"
 import { US_FEDERAL_SPENDING_2024 } from "@optimitron/data/parameters"
 
 interface WishocracyIntroCardProps {
@@ -28,7 +28,7 @@ export function WishocracyIntroCard({ show, isLoading, onStart }: WishocracyIntr
                 Wishocracy
               </h1>
               <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-6">
-                Your government spends <Stat param={{...US_FEDERAL_SPENDING_2024, unit: "USD"}} /> a year and nobody asked you how. Let&apos;s fix that.
+                Your government spends <ParameterValue param={{...US_FEDERAL_SPENDING_2024, unit: "USD"}} /> a year and nobody asked you how. Let&apos;s fix that.
               </p>
               <p className="text-center mb-4 text-muted-foreground">
                 I&apos;m going to show you pairs of budget categories. Pick which one matters more. It takes about four minutes. On my planet this is called &ldquo;governance.&rdquo; Here it seems to be called &ldquo;radical.&rdquo;

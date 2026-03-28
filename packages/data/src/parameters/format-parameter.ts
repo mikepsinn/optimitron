@@ -120,6 +120,43 @@ export function formatConfidenceInterval(param: Parameter): string | null {
   return `${lowFormatted} – ${highFormatted}`
 }
 
+/**
+ * Format a parameter value WITHOUT the unit suffix/prefix.
+ * Surrounding text usually provides context, so the unit is stripped.
+ *
+ * Keeps "$" prefix and "%" suffix since they're integral to the number.
+ * Strips trailing unit words like "deaths", "years", "deaths/year".
+ *
+ *   fmtParamValueOnly({ value: 2.72e12, unit: "USD" })     → "$2.72 trillion"
+ *   fmtParamValueOnly({ value: 0.861, unit: "percentage" }) → "86.1%"
+ *   fmtParamValueOnly({ value: 604, unit: "ratio" })        → "604"
+ *   fmtParamValueOnly({ value: 97e6, unit: "deaths" })      → "97.0 million"
+ */
+export function fmtParamValueOnly(param: Parameter, figures = 3): string {
+  const unit = (param.unit ?? "").toLowerCase();
+
+  // Percentages: keep the % since it's integral to the number
+  if (unit === "percentage" || unit === "rate" || unit === "percent") {
+    return fmtParam(param, figures);
+  }
+
+  const full = fmtParam(param, figures);
+
+  // Strip trailing "x" from ratios
+  if (unit === "ratio" || unit === "x" || unit === "multiplier") {
+    return full.replace(/x$/, "").trim();
+  }
+
+  // Strip trailing unit words (e.g., " deaths", " years", " deaths/year")
+  if (unit && !unit.startsWith("usd")) {
+    const unitWord = unit.split("/")[0]!;
+    const regex = new RegExp(`\\s+${unitWord}.*$`, "i");
+    return full.replace(regex, "").trim();
+  }
+
+  return full;
+}
+
 export function getParameterValue(
   param: Parameter,
   transform?: "round" | "floor" | "ceil" | "percentage"

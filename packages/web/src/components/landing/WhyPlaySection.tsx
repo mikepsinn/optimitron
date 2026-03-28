@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   fmtParam,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
@@ -29,7 +29,7 @@ export function WhyPlaySection() {
           {/* Card 1: Global Failed State */}
           <BrutalCard bgColor="red" shadowSize={8} padding="lg">
             <div className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-red-foreground mb-2">
-              <Stat param={DESTRUCTIVE_ECONOMY_35PCT_YEAR} />
+              <ParameterValue param={DESTRUCTIVE_ECONOMY_35PCT_YEAR} />
             </div>
             <h3 className="text-2xl sm:text-3xl font-black uppercase text-brutal-red-foreground mb-3">
               Global Failed State
@@ -56,7 +56,7 @@ export function WhyPlaySection() {
             <p className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">
               {fmtParam({ ...GLOBAL_DISEASE_DEATHS_DAILY, unit: "" })}{" "}
               deaths/day from treatable diseases. Your share:{" "}
-              <Stat param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} />
+              <ParameterValue param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} />
               /yr.
             </p>
           </BrutalCard>
@@ -71,7 +71,7 @@ export function WhyPlaySection() {
             </h3>
             <p className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">
               1% of military &rarr; clinical trials.{" "}
-              <Stat param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
+              <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
               lives saved. ROI: essentially infinite.
             </p>
           </BrutalCard>

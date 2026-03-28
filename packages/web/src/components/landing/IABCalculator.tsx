@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -159,7 +159,7 @@ export function IABCalculator() {
           </div>
           <div className="text-xs text-muted-foreground font-bold space-y-1">
             <p>
-              Base <Stat param={VICTORY_BOND_ANNUAL_RETURN_PCT} format={(p) => `${(p.value * 100).toFixed(0)}%`} /> revenue share
+              Base <ParameterValue param={VICTORY_BOND_ANNUAL_RETURN_PCT} format={(p) => `${(p.value * 100).toFixed(0)}%`} /> revenue share
               of treaty flows — multiplied by your verified referral votes.
               Plus your personal lifetime income increases by{" "}
               <span className="font-bold text-muted-foreground">

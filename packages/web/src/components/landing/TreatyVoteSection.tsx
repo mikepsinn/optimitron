@@ -4,7 +4,7 @@ import { Card } from "@/components/retroui/Card";
 import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Button } from "@/components/retroui/Button";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { useState, useEffect, useRef } from "react";
 import { Square, CheckSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -390,7 +390,7 @@ export default function TreatyVoteSection() {
                   Humanity spends{" "}
                   <br className="hidden sm:block" />
                   <span className="text-brutal-pink">
-                    $<Stat param={MILITARY_VS_MEDICAL_RESEARCH_RATIO} />
+                    $<ParameterValue param={MILITARY_VS_MEDICAL_RESEARCH_RATIO} />
                   </span>{" "}
                   {VOTE_SECTION.realityCheck}
                 </p>

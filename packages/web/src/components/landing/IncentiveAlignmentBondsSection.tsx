@@ -11,7 +11,7 @@ import {
   contractsSourceLink,
   prizeLink,
 } from "@/lib/routes";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
@@ -75,7 +75,7 @@ export function IncentiveAlignmentBondsSection() {
               <p className="text-sm text-foreground leading-relaxed font-bold mb-3">
                 Treaty passes → $27B/yr flows in. 80% funds pragmatic clinical trials.
                 10% returns to bondholders. 10% funds politicians ranked by Alignment Score.
-                <Stat param={{...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} />–<Stat param={{...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} /> per-capita income gains across adopting jurisdictions.
+                <ParameterValue param={{...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} />–<ParameterValue param={{...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"}} /> per-capita income gains across adopting jurisdictions.
               </p>
               <div className="p-3 bg-muted border border-primary">
                 <p className="text-xs font-bold text-muted-foreground">

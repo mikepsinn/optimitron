@@ -15,7 +15,7 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
 } from "@optimitron/data/parameters";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 const graveyardStats = [
   {
     value: 95,
@@ -52,7 +52,7 @@ export function InvisibleGraveyardSection() {
             The Invisible Graveyard
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            <Stat param={GLOBAL_DISEASE_DEATHS_DAILY} /> people die every day from treatable diseases. Not untreatable.
+            <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> people die every day from treatable diseases. Not untreatable.
             Treatable. You just have not gotten around to testing the treatments yet.
             At your current pace, clearing the backlog takes {Math.round(DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value)} years.
           </p>
@@ -79,7 +79,7 @@ export function InvisibleGraveyardSection() {
         <ScrollReveal delay={0.4}>
           <div className="p-8 border-4 border-brutal-yellow bg-brutal-yellow shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
             <div className="text-3xl sm:text-4xl font-black text-foreground mb-2">
-              <Stat param={{...DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE, unit: "USD"}} />
+              <ParameterValue param={{...DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE, unit: "USD"}} />
             </div>
             <p className="text-foreground font-bold max-w-xl mx-auto mb-1">
               Economic value of lives lost to regulatory delay. At 15 new treatments

@@ -11,7 +11,7 @@ import {
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
 } from "@optimitron/data/parameters";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 const milSpendFmt = fmtParam({ ...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD" });
 const milToTrialsRatio = Math.round(
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /
@@ -54,8 +54,8 @@ export function PoliticalDysfunctionTaxSection() {
             The $<CountUp value={Math.round(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value / 1e12)} className="text-brutal-red-foreground" /> Trillion Stupidity Tax
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            Your civilisation loses <Stat param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} /> per year to governance dysfunction.
-            That is <Stat param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} /> per human per year in pure waste. Your overhead is almost
+            Your civilisation loses <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} /> per year to governance dysfunction.
+            That is <ParameterValue param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} /> per human per year in pure waste. Your overhead is almost
             equal to your entire economic output. My toaster runs more efficiently.
           </p>
         </ScrollReveal>
@@ -84,7 +84,7 @@ export function PoliticalDysfunctionTaxSection() {
               $<CountUp value={Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value)} className="text-brutal-red-foreground" />/person/year
             </div>
             <p className="text-background font-bold max-w-xl mx-auto">
-              Every human on Earth pays <Stat param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} /> per year in governance dysfunction.
+              Every human on Earth pays <ParameterValue param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} /> per year in governance dysfunction.
               Not in taxes — in waste. The taxes are on top of that.
             </p>
             <NavItemLink

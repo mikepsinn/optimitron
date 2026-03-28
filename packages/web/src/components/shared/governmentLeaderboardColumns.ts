@@ -1,4 +1,7 @@
 export type GovernmentLeaderboardSortKey =
+  | "country"
+  | "rank"
+  | "killed"
   | "hale"
   | "lifeExpectancy"
   | "gdpPerCapita"
@@ -12,10 +15,27 @@ export interface GovernmentLeaderboardColumnMeta {
   description: string;
 }
 
+export const GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY: GovernmentLeaderboardSortKey =
+  "trialRatio";
+
+export const GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC = false;
+
 export const GOVERNMENT_LEADERBOARD_COLUMN_META: Record<
   GovernmentLeaderboardSortKey,
   GovernmentLeaderboardColumnMeta
 > = {
+  country: {
+    label: "Country",
+    description: "Country name. Click to sort alphabetically.",
+  },
+  rank: {
+    label: "#",
+    description: "Current table rank. Clicking here sorts by the default Mil/Trials ranking.",
+  },
+  killed: {
+    label: "Killed",
+    description: "Estimated total people killed by that government's military actions over the period used in this dataset.",
+  },
   hale: {
     label: "HALE",
     description: "Healthy life expectancy at birth: expected years lived in full health, not just total lifespan.",

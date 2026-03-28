@@ -82,7 +82,7 @@ export default function NPVAnalysisSection() {
                   </div>
                   <div className="flex justify-between">
                     <span>Annual Operations</span>
-                    <span className="font-black"><ParameterValue param={DFDA_ANNUAL_OPEX} format={{ includeUnit: true }} /></span>
+                    <span className="font-black"><ParameterValue param={DFDA_ANNUAL_OPEX} showUnit /></span>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function NPVAnalysisSection() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Max Annual Savings</span>
-                    <span className="font-black"><ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} format={{ includeUnit: true }} /></span>
+                    <span className="font-black"><ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} showUnit /></span>
                   </div>
                   <div className="flex justify-between">
                     <span>From Cost Reduction</span>

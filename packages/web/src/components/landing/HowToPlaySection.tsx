@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   fmtParam,
   VOTE_TOKEN_VALUE,
@@ -101,7 +101,7 @@ export function HowToPlaySection() {
         {/* Bottom stat */}
         <div className="text-center p-6 border-4 border-primary bg-brutal-cyan shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-4xl sm:text-5xl font-black text-foreground mb-2">
-            <Stat param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
+            <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
             Lives Saved
           </div>
           <p className="text-lg sm:text-xl font-bold text-foreground">

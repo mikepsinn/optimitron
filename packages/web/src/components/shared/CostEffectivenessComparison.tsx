@@ -8,7 +8,7 @@ import {
   BED_NETS_COST_PER_DALY,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
 } from "@optimitron/data/parameters";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CountUp } from "@/components/animations/CountUp";
 import { BrutalCard } from "@/components/ui/brutal-card";
@@ -48,7 +48,7 @@ export function CostEffectivenessComparison() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "hidden" }}
           >
-            <span className="text-sm font-black text-foreground whitespace-nowrap"><Stat param={BED_NETS_COST_PER_DALY} />/DALY</span>
+            <span className="text-sm font-black text-foreground whitespace-nowrap"><ParameterValue param={BED_NETS_COST_PER_DALY} />/DALY</span>
           </motion.div>
         </div>
         <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export function CostEffectivenessComparison() {
             transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "visible", minWidth: 0 }}
           >
-            <span className="text-sm font-black text-foreground whitespace-nowrap"><Stat param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /></span>
+            <span className="text-sm font-black text-foreground whitespace-nowrap"><ParameterValue param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /></span>
           </motion.div>
         </div>
       </div>

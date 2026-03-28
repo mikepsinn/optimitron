@@ -16,7 +16,7 @@ export default function LeaderboardSlide() {
         transition={{ duration: 0.4 }}
         className={`${ARCADE} text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-foreground mb-8 text-center`}
       >
-        HIGH SCORES
+        MOST MISALIGNED
       </motion.h2>
       <motion.div
         initial={reduced ? false : { opacity: 0, y: 30 }}

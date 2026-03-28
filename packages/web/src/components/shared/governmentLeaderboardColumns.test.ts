@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   GOVERNMENT_LEADERBOARD_COLUMN_META,
+  GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC,
+  GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY,
   type GovernmentLeaderboardSortKey,
 } from "./governmentLeaderboardColumns";
 
@@ -12,11 +14,14 @@ describe("government leaderboard column metadata", () => {
     ) as GovernmentLeaderboardSortKey[];
 
     expect(keys.sort()).toEqual([
+      "country",
       "gdpPerCapita",
       "hale",
       "healthSpending",
+      "killed",
       "lifeExpectancy",
       "militarySpending",
+      "rank",
       "researchRatio",
       "trialRatio",
     ]);
@@ -38,5 +43,10 @@ describe("government leaderboard column metadata", () => {
     expect(
       GOVERNMENT_LEADERBOARD_COLUMN_META.lifeExpectancy.description,
     ).toContain("Total life expectancy");
+  });
+
+  it("defaults to sorting by clinical trial misalignment descending", () => {
+    expect(GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY).toBe("trialRatio");
+    expect(GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC).toBe(false);
   });
 });

@@ -3,7 +3,6 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { Stat } from "@/components/ui/stat";
 import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
@@ -35,7 +34,7 @@ export function HowToWinSection() {
         {/* Country leaderboard preview */}
         <div className="mb-6">
           <p className="text-lg sm:text-xl font-black text-foreground uppercase mb-4 text-center">
-            Where Does Your Country Rank?
+            Most Misaligned Governments
           </p>
           <GovernmentLeaderboard limit={5} compact />
           <div className="mt-3 text-center">
@@ -80,7 +79,7 @@ export function HowToWinSection() {
             <p className="text-lg sm:text-xl font-bold text-foreground">
               Depositors split the pool.{" "}
               <span className="text-brutal-pink font-black">
-                <Stat param={PRIZE_POOL_HORIZON_MULTIPLE} />x
+                <ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} />x
               </span>{" "}
               return. Still beats a retirement account.
             </p>

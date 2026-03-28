@@ -15,7 +15,7 @@ import {
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   EFFICACY_LAG_YEARS,
 } from "@optimitron/data/parameters";
-import { Stat } from "@/components/ui/stat";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 const comparisons = [
   {
     label: "Cost per Patient",
@@ -59,7 +59,7 @@ export function DecentralizedFDASection() {
             Your Decentralized FDA
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-            Your FDA makes treatments wait <Stat param={EFFICACY_LAG_YEARS} /> AFTER they&apos;ve been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths.
+            Your FDA makes treatments wait <ParameterValue param={EFFICACY_LAG_YEARS} /> AFTER they&apos;ve been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths.
           </p>
         </motion.div>
 
@@ -172,7 +172,7 @@ export function DecentralizedFDASection() {
               <span className="text-xs font-black px-2 py-0.5 bg-foreground text-background">
                 Stage 2
               </span>
-              <span className="text-xs font-black">~<Stat param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /></span>
+              <span className="text-xs font-black">~<ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /></span>
             </div>
             <p className="text-sm text-foreground font-bold">
               Pragmatic trials in routine care. Same doctors, same clinics, real patients. Rigorous evidence at human scale.
