@@ -81,7 +81,7 @@ interface EarthOption {
 const EARTHS: EarthOption[] = [
   {
     label: "EARTH B",
-    subtitle: "SOMALIA, BUT EVERYWHERE",
+    subtitle: "PARASITIC ECONOMY DEVOURS PRODUCTIVE ECONOMY",
     tag: "[LOADED]",
     borderColor: "border-red-600/60",
     bgColor: "bg-red-950/40",
@@ -96,7 +96,7 @@ const EARTHS: EarthOption[] = [
   },
   {
     label: "1% TREATY",
-    subtitle: "CONSERVATIVE REFORM",
+    subtitle: "MINIMUM ACCEPTABLE GOVERNANCE",
     tag: "◄◄◄",
     borderColor: "border-emerald-500/60",
     bgColor: "bg-emerald-500/10",
@@ -111,7 +111,7 @@ const EARTHS: EarthOption[] = [
   },
   {
     label: "EARTH A",
-    subtitle: "EVERYONE GETS RICH",
+    subtitle: "OPTIMAL GOVERNANCE",
     tag: "",
     borderColor: "border-amber-500/60",
     bgColor: "bg-amber-500/10",
@@ -122,7 +122,7 @@ const EARTHS: EarthOption[] = [
     haleGain: `+${wishoniaHaleGain} yrs`,
     gdp2045: wishoniaGdp2045,
     growth: wishoniaGrowth,
-    dysfunctionTax: `what is that`,
+    dysfunctionTax: `eliminated`,
   },
 ];
 
@@ -196,7 +196,7 @@ export function SlidePersonalIncome3Timelines() {
                 </div>
                 <div>
                   <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
-                    HALE
+                    HEALTHY YEARS
                   </div>
                   <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
                     {earth.haleGain}

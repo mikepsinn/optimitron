@@ -85,7 +85,7 @@ export function SlideEarthOptimizationGame() {
         {phase >= 1 && (
           <div className="text-center space-y-2 fade-up">
             <div className="font-pixel text-base md:text-xl text-red-400 tracking-widest">
-              🌍 WISHONIA ENTERTAINMENT SYSTEMS PRESENTS 🌍
+              🌍 WISHONIA OPTIMIZATION SYSTEMS PRESENTS 🌍
             </div>
             <h1 className="font-pixel text-4xl md:text-7xl text-amber-400 leading-relaxed tracking-wide title-glow">
               THE EARTH
@@ -160,7 +160,7 @@ export function SlideEarthOptimizationGame() {
 
         {/* Retro copyright */}
         <div className="font-pixel text-xs text-zinc-600 text-center tracking-wider">
-          © 4237 WISHONIA ENTERTAINMENT SYSTEMS — ALL SPECIES RESERVED
+          © 4237 WISHONIA OPTIMIZATION SYSTEMS — ALL SPECIES RESERVED
         </div>
       </div>
     </SlideBase>

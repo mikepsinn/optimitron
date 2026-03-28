@@ -106,7 +106,7 @@ export function SlideInflationWageTheft() {
       <div className="flex flex-col items-center gap-3 max-w-[1700px] mx-auto w-full">
         {/* Title */}
         <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center">
-          🧾 THE INVISIBLE THEFT
+          🧾 THE BEIGE CRIME
         </h1>
 
         {/* Paycheck draining counter */}
