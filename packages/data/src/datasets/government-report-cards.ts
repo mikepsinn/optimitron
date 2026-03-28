@@ -905,6 +905,47 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Hydrate medianIncome from the canonical generated median income series,
+// replacing spotty manual entries with the best available after-tax PPP data.
+// ---------------------------------------------------------------------------
+import { getBestAvailableMedianIncomeSeries } from './median-income-series';
+
+const ISO2_TO_ISO3: Record<string, string> = {
+  US: "USA", RU: "RUS", CN: "CHN", GB: "GBR", IL: "ISR", SA: "SAU",
+  SG: "SGP", FR: "FRA", TR: "TUR", IN: "IND", PK: "PAK", ET: "ETH",
+  IR: "IRN", JP: "JPN", DE: "DEU", AU: "AUS", CA: "CAN", KR: "KOR",
+};
+
+for (const gov of GOVERNMENTS) {
+  const iso3 = ISO2_TO_ISO3[gov.code];
+  if (!iso3) continue;
+
+  // Try strict after-tax PPP first
+  let records = getBestAvailableMedianIncomeSeries({
+    jurisdictions: [iso3],
+    isAfterTax: true,
+    purchasingPower: "ppp",
+  });
+
+  // Fallback to any PPP record
+  if (records.length === 0) {
+    records = getBestAvailableMedianIncomeSeries({
+      jurisdictions: [iso3],
+      purchasingPower: "ppp",
+    });
+  }
+
+  if (records.length > 0) {
+    const best = records[0];
+    gov.medianIncome = {
+      value: Math.round(best.value),
+      source: `${best.source} ${best.year}${best.isAfterTax ? " (after-tax)" : ""} PPP`,
+      url: best.sourceUrl,
+    };
+  }
+}
+
 /** Get a government by ISO code */
 export function getGovernment(code: string): GovernmentMetrics | undefined {
   return GOVERNMENTS.find((g) => g.code === code);

@@ -10,7 +10,8 @@
     "./parameters": "./src/parameters/index.ts",
     "./datasets/us-wishocratic-items": "./src/datasets/us-wishocratic-items.ts",
     "./datasets/government-report-cards": "./src/datasets/government-report-cards.ts",
-    "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts"
+    "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts",
+    "./datasets/median-income-series": "./src/datasets/median-income-series.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
