@@ -943,9 +943,6 @@ importers:
       '@google/genai':
         specifier: ^1.46.0
         version: 1.46.0
-      '@optimitron/wishonia-widget':
-        specifier: workspace:*
-        version: link:../wishonia-widget
       next:
         specifier: 16.2.0
         version: 16.2.0(@playwright/test@1.58.2)(react-dom@19.2.4)(react@19.2.4)
