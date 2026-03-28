@@ -1725,7 +1725,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 12,
     narration:
-      "Nobody knows how to make a pencil. The wood comes from Washington, the graphite from South America, the rubber from Malaya. Thousands of people who do not speak the same language, who might hate one another if they ever met. No one gave orders. The price system turned their selfishness into pencils. Your species does this billions of times a day without noticing.",
+      "Look at this pencil. There is not a single person in the world who can make this pencil. The wood comes from a tree in Washington. To cut that tree took a saw. To make the saw took steel. To make steel took iron ore. The graphite comes from mines in South America. The rubber from Malaya. Thousands of people cooperated to make this pencil. People who don't speak the same language. Who might hate each other if they ever met. No one sitting in a central office gave orders. No master mind planned it. The price system — and nothing else — turned their selfishness into pencils. Your species does this billions of times a day without noticing. And yet you think you need a committee to cure a disease.",
     visual:
       "Pixel art — a Sierra \"I, Pencil\" sequence. A pixel pencil sits in the center of the screen. Zoom lines expand outward from it showing the supply chain: a pixel lumberjack in Washington, a pixel miner in South America, a pixel rubber tapper in Malaya, a pixel factory worker assembling. None of them know each other. Lines connect them all to the pencil. A counter ticks: STRANGERS COOPERATING: 1,000... 10,000... 100,000. The pencil assembles itself from the contributions.",
     asciiArt: `
@@ -1748,8 +1748,9 @@ RECURSIVE EXPONENTIAL THEFT`,
 │  Result: pencil                             │
 └─────────────────────────────────────────────┘`,
     onScreen: [
-      { text: "NOBODY KNOWS HOW TO MAKE A PENCIL", size: "large", animation: "fadeIn" },
-      { text: "THOUSANDS OF STRANGERS. NO COORDINATOR.", size: "medium", animation: "fadeIn" },
+      { text: "I, PENCIL", size: "large", animation: "fadeIn" },
+      { text: "SUPPLY CHAIN DIAGRAM: WOOD → SAW → STEEL → IRON ORE → GRAPHITE → RUBBER → BRASS → PAINT", size: "small", animation: "stagger" },
+      { text: "STRANGERS COOPERATING: 100,000. CENTRAL PLANNER: NONE.", size: "medium", animation: "fadeIn" },
       { text: "THE PRICE SYSTEM DID IT.", size: "medium", animation: "fadeIn", color: "gold" },
     ],
     score: 5_800_000_000,
@@ -1758,7 +1759,7 @@ RECURSIVE EXPONENTIAL THEFT`,
       {
         verb: "LOOK AT pencil",
         response:
-          "Nobody knows how to make this. Thousands of people each contribute one step. No one gave orders. The price system turned their selfishness into pencils.",
+          "The wood is from Washington. The graphite from South America. The rubber from Malaya. Thousands of strangers who will never meet. No central planner. No master mind. Cost: twenty-five cents. Method: everyone wanted money.",
       },
     ],
   },
@@ -1920,7 +1921,14 @@ RECURSIVE EXPONENTIAL THEFT`,
     narration:
       "150,000 deaths per day. Faster trials and earlier access to proven treatments compress the timeline by 212 years. A third of those deaths are avoidable with earlier cures. Multiply it out. 10.7 billion lives. More than every human alive today. Every share, every vote, every conversation moves the number. The math is patient. The diseases are not.",
     visual:
-      "Pixel art — planet from the Cold Open returns, but transforming. Cemetery crosses being replaced one by one — each cross morphs into a tiny pixel person standing up, grey to green. The replacement accelerates as the narration builds — slow at first, then hundreds at once. Center of screen: a massive CountUp ticks from 0 to 10,700,000,000 over the full duration of the narration. The number starts small and the font size GROWS as the count increases — by 1 billion it's large, by 10 billion it fills the screen. The planet's palette shifts from EGA dark to VGA bright in sync with the counter. Quest meters approach full. The death ticker in the HUD visibly slows — the gap between ticks widening as the count climbs. By the end, the planet is the Wishonia paradise from the Restore slide.",
+      "Skulls transform to smiles around the border. Center: massive animated counter ticking to 10.7B lives saved. Below: six stat boxes showing the optimized world — $2.7T murder budget, $27.2B 1% redirect, 10.7B lives saved, +6.5 healthy years, +$14.7M income gain per person, 12× richer. Celebration particles (stars, sparkles, confetti) rain upward.",
+    onScreen: [
+      { text: "1% MILITARY → 12.3× CLINICAL TRIAL CAPACITY", size: "label", animation: "fadeIn" },
+      { text: "LIVES SAVED OVER 100 YEARS", size: "large", animation: "fadeIn" },
+      { text: "10,700,000,000", size: "giant", animation: "countUp", color: "green", source: "dFDA.livesSaved" },
+      { text: "$2.7T/yr murder budget → $27.2B/yr to clinical trials", size: "small", animation: "fadeIn" },
+      { text: "+6.5 healthy years · +$14.7M income · 12× richer", size: "small", animation: "fadeIn", color: "green" },
+    ],
     score: 7_500_000_000,
     showQuestMeters: true,
     sierraVerbs: [

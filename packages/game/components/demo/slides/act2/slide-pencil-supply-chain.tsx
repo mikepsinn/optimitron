@@ -1,122 +1,226 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { GAME_PARAMS } from "@/lib/demo/parameters";
-import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
-// Pre-generate brain positions scattered around edges (avoiding center content)
-const BRAIN_COUNT = 50;
-const brainPositions = Array.from({ length: BRAIN_COUNT }, (_, i) => {
-  // Distribute around edges: top strip, bottom strip, left strip, right strip
-  const zone = i % 4;
-  switch (zone) {
-    case 0: // top
-      return { x: Math.random() * 100, y: Math.random() * 18 };
-    case 1: // bottom
-      return { x: Math.random() * 100, y: 82 + Math.random() * 18 };
-    case 2: // left
-      return { x: Math.random() * 12, y: 18 + Math.random() * 64 };
-    default: // right
-      return { x: 88 + Math.random() * 12, y: 18 + Math.random() * 64 };
-  }
-});
-
-const BRAIN_EMOJIS = ["🧠", "👤", "🧑‍🔬", "👩‍⚕️", "🧑‍💻", "👨‍🏫"];
+/**
+ * Supply chain nodes — each represents a link in the pencil's creation.
+ * Positioned radially around the central pencil.
+ */
+const SUPPLY_CHAIN = [
+  { emoji: "🪵", label: "WOOD", location: "Washington", angle: 220 },
+  { emoji: "🪚", label: "SAW", location: "Oregon", angle: 260 },
+  { emoji: "⚙️", label: "STEEL", location: "Pennsylvania", angle: 300 },
+  { emoji: "⛏️", label: "IRON ORE", location: "Minnesota", angle: 340 },
+  { emoji: "✏️", label: "GRAPHITE", location: "South America", angle: 20 },
+  { emoji: "🌿", label: "RUBBER", location: "Malaya", angle: 60 },
+  { emoji: "🔧", label: "BRASS", location: "???", angle: 100 },
+  { emoji: "🎨", label: "PAINT", location: "???", angle: 140 },
+] as const;
 
 export function SlidePencilSupplyChain() {
-  const [brainsVisible, setBrainsVisible] = useState(0);
+  const [phase, setPhase] = useState(0);
+  const [nodesVisible, setNodesVisible] = useState(0);
+  const [cooperatingCount, setCooperatingCount] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBrainsVisible((prev) => {
-        if (prev >= BRAIN_COUNT) {
-          clearInterval(interval);
-          return BRAIN_COUNT;
-        }
-        return prev + 2;
-      });
-    }, 60);
-    return () => clearInterval(interval);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    // Phase 1: Title
+    timers.push(setTimeout(() => setPhase(1), 400));
+    // Phase 2: Central pencil
+    timers.push(setTimeout(() => setPhase(2), 1200));
+    // Phase 3: Supply chain nodes appear one by one
+    timers.push(setTimeout(() => setPhase(3), 2000));
+    // Phase 4: Counter + punchline
+    timers.push(setTimeout(() => setPhase(4), 6000));
+    // Phase 5: Final line
+    timers.push(setTimeout(() => setPhase(5), 8500));
+
+    return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Stagger supply chain nodes appearing
+  useEffect(() => {
+    if (phase < 3) return;
+    const interval = setInterval(() => {
+      setNodesVisible((prev) => {
+        if (prev >= SUPPLY_CHAIN.length) {
+          clearInterval(interval);
+          return SUPPLY_CHAIN.length;
+        }
+        return prev + 1;
+      });
+    }, 400);
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // Count up "strangers cooperating"
+  useEffect(() => {
+    if (phase < 4) return;
+    const target = 100_000;
+    const steps = 60;
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      // Exponential ease-out for dramatic ramp
+      const progress = 1 - Math.pow(1 - step / steps, 3);
+      setCooperatingCount(Math.round(target * progress));
+      if (step >= steps) clearInterval(interval);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [phase]);
+
   return (
-    <SlideBase act={2} className="text-amber-400">
-      {/* Brain emojis popping up around edges */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {brainPositions.slice(0, brainsVisible).map((pos, i) => (
-          <span
-            key={i}
-            className="absolute text-2xl md:text-3xl animate-bounce"
-            style={{
-              left: `${pos.x}%`,
-              top: `${pos.y}%`,
-              transform: "translate(-50%, -50%)",
-              animationDelay: `${(i * 137) % 2000}ms`,
-              animationDuration: `${2000 + (i * 97) % 1500}ms`,
-              opacity: 0.5 + (i % 3) * 0.15,
-            }}
-          >
-            {BRAIN_EMOJIS[i % BRAIN_EMOJIS.length]}
-          </span>
-        ))}
-      </div>
+    <SlideBase act={2}>
+      <style jsx>{`
+        @keyframes fade-up {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fade-up 0.5s ease-out forwards; }
+        @keyframes node-appear {
+          from { opacity: 0; transform: scale(0.3); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        .node-appear { animation: node-appear 0.4s ease-out forwards; }
+        @keyframes line-draw {
+          from { stroke-dashoffset: 200; }
+          to   { stroke-dashoffset: 0; }
+        }
+        .line-draw {
+          stroke-dasharray: 200;
+          animation: line-draw 0.6s ease-out forwards;
+        }
+        @keyframes pulse-glow {
+          0%, 100% { filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.4)); }
+          50%      { filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8)); }
+        }
+        .pencil-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        @keyframes count-pulse {
+          0%, 100% { transform: scale(1); }
+          50%      { transform: scale(1.05); }
+        }
+        .count-pulse { animation: count-pulse 0.8s ease-in-out infinite; }
+      `}</style>
 
-      <div className="relative z-10 flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
+      <div className="flex flex-col items-center justify-center gap-4 w-full max-w-[1700px] mx-auto">
         {/* Title */}
-        <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center">
-          BILLIONS OF BRAINS
-        </h1>
+        {phase >= 1 && (
+          <h1 className="font-pixel text-2xl md:text-4xl text-amber-400 text-center fade-up">
+            I, PENCIL
+          </h1>
+        )}
 
-        {/* Central pencil → test tube icon */}
-        <div className="flex items-center justify-center gap-4">
-          <span className="text-5xl md:text-6xl">✏️</span>
-          <span className="font-pixel text-3xl md:text-4xl text-amber-500">→</span>
-          <span className="text-5xl md:text-6xl">🧪</span>
-        </div>
+        {/* Central supply chain diagram */}
+        {phase >= 2 && (
+          <div className="relative fade-up" style={{ width: 600, height: 400 }}>
+            {/* SVG lines from center to nodes */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              viewBox="0 0 600 400"
+              fill="none"
+            >
+              {SUPPLY_CHAIN.slice(0, nodesVisible).map((node, i) => {
+                const rad = (node.angle * Math.PI) / 180;
+                const cx = 300;
+                const cy = 190;
+                const radius = 160;
+                const nx = cx + Math.cos(rad) * radius;
+                const ny = cy + Math.sin(rad) * radius;
+                return (
+                  <line
+                    key={i}
+                    x1={cx}
+                    y1={cy}
+                    x2={nx}
+                    y2={ny}
+                    stroke="#fbbf24"
+                    strokeWidth={1.5}
+                    opacity={0.5}
+                    className="line-draw"
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  />
+                );
+              })}
+            </svg>
 
-        {/* Supply chain text */}
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 text-center">
-          <p className="font-terminal text-2xl md:text-4xl text-zinc-200 leading-relaxed">
-            Nobody knows how to make a pencil. Millions of people each doing one
-            tiny step.
+            {/* Central pencil */}
+            <div
+              className="absolute pencil-glow flex items-center justify-center"
+              style={{
+                left: "50%",
+                top: "47%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <span className="text-6xl md:text-7xl">✏️</span>
+            </div>
+
+            {/* Supply chain nodes */}
+            {SUPPLY_CHAIN.slice(0, nodesVisible).map((node, i) => {
+              const rad = (node.angle * Math.PI) / 180;
+              const radius = 160;
+              const nx = 300 + Math.cos(rad) * radius;
+              const ny = 190 + Math.sin(rad) * radius;
+              return (
+                <div
+                  key={i}
+                  className="absolute node-appear flex flex-col items-center"
+                  style={{
+                    left: nx,
+                    top: ny,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <span className="text-2xl md:text-3xl">{node.emoji}</span>
+                  <span className="font-pixel text-xs md:text-sm text-amber-400 whitespace-nowrap">
+                    {node.label}
+                  </span>
+                  <span className="font-terminal text-xs text-zinc-400 whitespace-nowrap">
+                    {node.location}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Strangers cooperating counter */}
+        {phase >= 4 && (
+          <div className="flex flex-col items-center gap-3 fade-up">
+            <div className="bg-black/40 border border-amber-500/30 rounded-lg px-8 py-3 text-center">
+              <div className="font-pixel text-lg md:text-xl text-zinc-300 mb-1">
+                STRANGERS COOPERATING
+              </div>
+              <div className="font-pixel text-3xl md:text-4xl text-amber-400 count-pulse">
+                {cooperatingCount.toLocaleString()}
+              </div>
+            </div>
+
+            <div className="flex gap-8 text-center">
+              <div>
+                <div className="font-pixel text-sm text-zinc-400">CENTRAL PLANNER</div>
+                <div className="font-pixel text-xl text-red-400">NONE</div>
+              </div>
+              <div>
+                <div className="font-pixel text-sm text-zinc-400">MASTER MIND</div>
+                <div className="font-pixel text-xl text-red-400">NONE</div>
+              </div>
+              <div>
+                <div className="font-pixel text-sm text-zinc-400">COST</div>
+                <div className="font-pixel text-xl text-emerald-400">$0.25</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Punchline */}
+        {phase >= 5 && (
+          <p className="font-pixel text-xl md:text-2xl text-amber-300 text-center fade-up">
+            THE PRICE SYSTEM DID IT.
           </p>
-        </div>
-
-        {/* Counter displays */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-          <div className="bg-black/40 border border-amber-500/30 rounded-lg p-4 text-center">
-            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
-              BRAINS INCENTIVIZED
-            </div>
-            <div className="font-pixel text-2xl md:text-3xl text-amber-400">
-              4,000,000,000
-            </div>
-          </div>
-
-          <div className="bg-black/40 border border-amber-500/30 rounded-lg p-4 text-center">
-            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
-              VOTE POINT VALUE
-            </div>
-            <div className="font-pixel text-2xl md:text-3xl text-emerald-400">
-              {formatCurrency(GAME_PARAMS.valuePerVotePoint)}
-            </div>
-          </div>
-
-          <div className="bg-black/40 border border-amber-500/30 rounded-lg p-4 text-center">
-            <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-2">
-              PRIZE POOL (15yr)
-            </div>
-            <div className="font-pixel text-2xl md:text-3xl text-yellow-400">
-              {formatCurrency(GAME_PARAMS.prizePoolAfter15yr)}
-            </div>
-          </div>
-        </div>
-
-        {/* Key text */}
-        <p className="font-pixel text-2xl md:text-3xl text-zinc-200 text-center italic">
-          You do not need a plan. You need an incentive.
-        </p>
+        )}
       </div>
     </SlideBase>
   );

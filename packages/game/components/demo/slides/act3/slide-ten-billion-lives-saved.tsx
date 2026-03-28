@@ -10,8 +10,8 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
-  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
 } from "@optimitron/data/parameters";
+import { formatNumber } from "@/lib/demo/formatters";
 import { useDemoStore } from "@/lib/demo/store";
 import { PALETTE_SEMANTIC } from "@/lib/demo/palette";
 
@@ -21,7 +21,6 @@ const onePercent = militarySpending * 0.01;
 const incomeGain = TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value;
 const haleGain = TREATY_HALE_GAIN_YEAR_15.value;
 const incomeMultiplier = TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value;
-const dysfunctionCost = POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value;
 
 // Border emoji positions — evenly around all 4 edges, inset so they don't clip
 const BORDER_COUNT = 80;
