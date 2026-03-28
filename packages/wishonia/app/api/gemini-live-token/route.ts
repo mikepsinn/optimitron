@@ -1,8 +1,10 @@
 import { GoogleGenAI, Modality } from "@google/genai";
+import { WISHONIA_VOICE_PROMPT } from "@/lib/wishonia-chat";
 
 /**
  * Centralized ephemeral token endpoint for Gemini Live API.
  * Any site embedding Wishonia can call this to get a short-lived token.
+ * Also returns the voice system prompt for the live session.
  * CORS enabled via next.config.mjs headers.
  */
 export async function GET() {
@@ -31,7 +33,10 @@ export async function GET() {
       },
     });
 
-    return Response.json({ token: token.name });
+    return Response.json({
+      token: token.name,
+      systemPrompt: WISHONIA_VOICE_PROMPT,
+    });
   } catch (err) {
     console.error("[gemini-live-token] Failed to create token:", err);
     return Response.json(

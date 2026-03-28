@@ -8,10 +8,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.0",
     "@google/genai": "^1.46.0",
+    "ai": "^4.3.0",
     "next": "16.2.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",

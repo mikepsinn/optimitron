@@ -5,6 +5,7 @@
 export interface ChatMessage {
   role: "user" | "wishonia";
   text: string;
+  visuals?: Record<string, unknown> | null;
 }
 
 export interface Chat {

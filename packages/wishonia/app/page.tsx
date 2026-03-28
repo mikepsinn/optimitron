@@ -3,112 +3,128 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { WishoniaNarrator } from "@/lib/widget/components/WishoniaNarrator";
 import type { Expression } from "@/lib/widget/types";
-import {
-  loadChats, saveChats, createChat, deleteChat, updateChatTitle,
-  type Chat, type ChatMessage,
-} from "@/lib/chat-storage";
+import { useStreamingChat } from "@/hooks/useStreamingChat";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { useTTS } from "@/hooks/useTTS";
+import { useVoiceMode } from "@/hooks/useVoiceMode";
+import { ChatMessage } from "@/components/ChatMessage";
 
 const WELCOME = "Hello. I have been running my planet for 4,237 years. I ended war in year 12. Your species is still arguing about it. Ask me anything.";
 
+/** Extract [expression:X] tag from text and return the expression + clean text. */
+function extractExpression(text: string): { expression: Expression; cleanText: string } {
+  const match = text.match(/\[expression:(\w+)\]/);
+  const expression = (match?.[1] ?? "happy") as Expression;
+  const cleanText = text.replace(/\[expression:\w+\]/g, "").trim();
+  return { expression, cleanText };
+}
+
 export default function ChatPage(): React.JSX.Element {
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [currentSpeech, setCurrentSpeech] = useState(WELCOME);
   const [expression, setExpression] = useState<Expression>("neutral");
-  const [isThinking, setIsThinking] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const userScrolledUpRef = useRef(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load chats on mount
-  useEffect(() => {
-    const saved = loadChats();
-    if (saved.length > 0) {
-      setChats(saved);
-      setActiveChatId(saved[0]!.id);
+  const chat = useStreamingChat();
+
+  // TTS with voice mode chaining
+  const tts = useTTS();
+
+  // Voice input
+  const voiceResultHandler = useCallback((transcript: string) => {
+    if (voiceMode.isActive) {
+      voiceMode.handleVoiceResult(transcript);
     } else {
-      const first = createChat();
-      setChats([first]);
-      setActiveChatId(first.id);
+      setInput(transcript);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activeChat = chats.find((c) => c.id === activeChatId);
-  const messages = activeChat?.messages ?? [];
+  const voiceInput = useVoiceInput(voiceResultHandler);
 
+  // Voice mode loop
+  const voiceMode = useVoiceMode({
+    sendMessage: chat.sendMessage,
+    startListening: voiceInput.startListening,
+    stopListening: voiceInput.stopListening,
+    playTTS: tts.play,
+    stopTTS: tts.stop,
+    isStreaming: chat.isStreaming,
+  });
+
+  // Init chats on mount
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
-
-  const persistChats = useCallback((updated: Chat[]) => {
-    setChats(updated);
-    saveChats(updated);
+    chat.initChats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleNewChat() {
-    const c = createChat();
-    const updated = [c, ...chats];
-    persistChats(updated);
-    setActiveChatId(c.id);
-    setCurrentSpeech(WELCOME);
-    setExpression("neutral");
-    setSidebarOpen(false);
-  }
+  // Auto-scroll unless user scrolled up
+  useEffect(() => {
+    if (!userScrolledUpRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chat.messages.length, chat.streamingText]);
 
-  function handleDeleteChat(id: string) {
-    const updated = deleteChat(chats, id);
-    persistChats(updated);
-    if (activeChatId === id) {
-      setActiveChatId(updated[0]?.id ?? null);
+  // Track user scroll
+  const handleScroll = useCallback(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const threshold = 100;
+    userScrolledUpRef.current = el.scrollHeight - el.scrollTop - el.clientHeight > threshold;
+  }, []);
+
+  // Update expression from completed messages
+  useEffect(() => {
+    if (!chat.isStreaming && chat.messages.length > 0) {
+      const lastMsg = chat.messages[chat.messages.length - 1];
+      if (lastMsg?.role === "wishonia") {
+        const { expression: expr, cleanText } = extractExpression(lastMsg.text);
+        setExpression(expr);
+        setCurrentSpeech(cleanText);
+      }
+    }
+  }, [chat.isStreaming, chat.messages]);
+
+  // Set thinking expression while streaming
+  useEffect(() => {
+    if (chat.isStreaming) {
+      setExpression("thinking");
+    }
+  }, [chat.isStreaming]);
+
+  async function handleSend() {
+    const text = input.trim();
+    if (!text || chat.isStreaming) return;
+    setInput("");
+    userScrolledUpRef.current = false;
+    const response = await chat.sendMessage(text);
+    if (response) {
+      const { expression: expr, cleanText } = extractExpression(response);
+      setExpression(expr);
+      setCurrentSpeech(cleanText);
     }
   }
 
   function handleSelectChat(id: string) {
-    setActiveChatId(id);
-    const chat = chats.find((c) => c.id === id);
-    const lastWishonia = [...(chat?.messages ?? [])].reverse().find((m) => m.role === "wishonia");
-    if (lastWishonia) setCurrentSpeech(lastWishonia.text);
+    chat.handleSelectChat(id);
+    const selected = chat.chats.find((c) => c.id === id);
+    const lastWishonia = [...(selected?.messages ?? [])].reverse().find((m) => m.role === "wishonia");
+    if (lastWishonia) {
+      const { expression: expr, cleanText } = extractExpression(lastWishonia.text);
+      setExpression(expr);
+      setCurrentSpeech(cleanText);
+    }
     setSidebarOpen(false);
   }
 
-  async function handleSend() {
-    const text = input.trim();
-    if (!text || isThinking || !activeChat) return;
-
-    setInput("");
-    const userMsg: ChatMessage = { role: "user", text };
-    const updatedMessages = [...activeChat.messages, userMsg];
-    let updatedChat = { ...activeChat, messages: updatedMessages };
-    updatedChat = updateChatTitle(updatedChat);
-    const updatedChats = chats.map((c) => (c.id === activeChat.id ? updatedChat : c));
-    persistChats(updatedChats);
-
-    setIsThinking(true);
-    setExpression("thinking");
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: updatedMessages }),
-      });
-
-      const data = (await res.json()) as { reply: string; expression?: string };
-      const reply = data.reply;
-      const wishoniaMsg: ChatMessage = { role: "wishonia", text: reply };
-
-      const finalChat = { ...updatedChat, messages: [...updatedMessages, wishoniaMsg] };
-      persistChats(updatedChats.map((c) => (c.id === activeChat.id ? finalChat : c)));
-      setCurrentSpeech(reply);
-      setExpression((data.expression as Expression) ?? "happy");
-    } catch {
-      const fallback: ChatMessage = { role: "wishonia", text: "Your internet appears to be as reliable as your governance systems." };
-      const finalChat = { ...updatedChat, messages: [...updatedMessages, fallback] };
-      persistChats(updatedChats.map((c) => (c.id === activeChat.id ? finalChat : c)));
-      setExpression("eyeroll");
-    } finally {
-      setIsThinking(false);
-    }
+  function handleNewChat() {
+    chat.handleNewChat();
+    setCurrentSpeech(WELCOME);
+    setExpression("neutral");
+    setSidebarOpen(false);
   }
 
   return (
@@ -137,7 +153,6 @@ export default function ChatPage(): React.JSX.Element {
         style={{
           width: 260, background: "#111", borderRight: "1px solid rgba(54,226,248,0.1)",
           display: "flex", flexDirection: "column", flexShrink: 0, zIndex: 20,
-          ...(sidebarOpen ? {} : {}),
         }}
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
       >
@@ -150,22 +165,22 @@ export default function ChatPage(): React.JSX.Element {
           </button>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
-          {chats.map((chat) => (
+          {chat.chats.map((c) => (
             <div
-              key={chat.id}
-              onClick={() => handleSelectChat(chat.id)}
+              key={c.id}
+              onClick={() => handleSelectChat(c.id)}
               style={{
                 padding: "10px 12px", margin: "2px 8px", borderRadius: 0, cursor: "pointer",
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                background: chat.id === activeChatId ? "rgba(54,226,248,0.08)" : "transparent",
-                color: chat.id === activeChatId ? "#36E2F8" : "#888",
+                background: c.id === chat.activeChatId ? "rgba(54,226,248,0.08)" : "transparent",
+                color: c.id === chat.activeChatId ? "#36E2F8" : "#888",
               }}
             >
               <span style={{ fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                {chat.title}
+                {c.title}
               </span>
               <button
-                onClick={(e) => { e.stopPropagation(); handleDeleteChat(chat.id); }}
+                onClick={(e) => { e.stopPropagation(); chat.handleDeleteChat(c.id); }}
                 style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: 16, padding: "0 4px", flexShrink: 0 }}
               >
                 &times;
@@ -185,34 +200,62 @@ export default function ChatPage(): React.JSX.Element {
           <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0, background: "linear-gradient(135deg, #C6CBF5, #d100b1)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Wishonia
           </h1>
-          <a href="/embed" style={{ fontSize: 12, color: "#555", textDecoration: "none" }}>Embed &rarr;</a>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            {/* Voice mode toggle */}
+            {voiceInput.isSupported && (
+              <button
+                onClick={voiceMode.toggle}
+                title={voiceMode.isActive ? "Stop voice mode" : "Start voice mode"}
+                style={{
+                  background: voiceMode.isActive ? "rgba(54,226,248,0.15)" : "none",
+                  border: voiceMode.isActive ? "1px solid rgba(54,226,248,0.3)" : "1px solid transparent",
+                  borderRadius: 0, padding: "4px 10px", cursor: "pointer",
+                  color: voiceMode.isActive ? "#36E2F8" : "#555", fontSize: 13,
+                }}
+              >
+                {voiceMode.isActive ? "🎙️ Voice ON" : "🎙️ Voice"}
+              </button>
+            )}
+            <a href="/embed" style={{ fontSize: 12, color: "#555", textDecoration: "none" }}>Embed &rarr;</a>
+          </div>
         </header>
 
         {/* Chat + Character */}
         <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative", zIndex: 1 }}>
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+          <div
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            style={{ flex: 1, overflowY: "auto", padding: 20 }}
+          >
             {/* Welcome message */}
-            <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
-              <div style={{ maxWidth: "75%", padding: "10px 14px", borderRadius: 0, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#C6CBF5", fontSize: 14, lineHeight: 1.6 }}>
-                {WELCOME}
-              </div>
-            </div>
+            <ChatMessage role="wishonia" text={WELCOME} />
 
-            {messages.map((msg, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", marginBottom: 12 }}>
-                <div style={{
-                  maxWidth: "75%", padding: "10px 14px", borderRadius: 0, fontSize: 14, lineHeight: 1.6,
-                  ...(msg.role === "user"
-                    ? { background: "rgba(209,0,177,0.12)", border: "1px solid rgba(209,0,177,0.25)", color: "#e0d0e8" }
-                    : { background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#C6CBF5" }),
-                }}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
+            {chat.messages.map((msg, i) => {
+              const isLastWishonia = msg.role === "wishonia" && i === chat.messages.length - 1;
+              return (
+                <ChatMessage
+                  key={i}
+                  role={msg.role}
+                  text={msg.text}
+                  visuals={isLastWishonia ? chat.pendingVisuals : undefined}
+                  onPlayTTS={tts.play}
+                  isTTSPlaying={tts.isPlaying}
+                />
+              );
+            })}
 
-            {isThinking && (
+            {/* Streaming message */}
+            {chat.isStreaming && chat.streamingText && (
+              <ChatMessage
+                role="wishonia"
+                text={chat.streamingText}
+                isStreaming
+              />
+            )}
+
+            {/* Thinking indicator (before first chunk arrives) */}
+            {chat.isStreaming && !chat.streamingText && (
               <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
                 <div style={{ padding: "10px 14px", borderRadius: 0, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#555", fontSize: 14 }}>
                   <span style={{ animation: "pulse 1.5s infinite" }}>thinking...</span>
@@ -230,7 +273,7 @@ export default function ChatPage(): React.JSX.Element {
               tokenEndpoint="/api/gemini-live-token"
               text={currentSpeech}
               expression={expression}
-              bodyPose={isThinking ? "thinking" : "presenting"}
+              bodyPose={chat.isStreaming ? "thinking" : "presenting"}
               size={140}
               position="custom"
               style={{ position: "relative" }}
@@ -241,32 +284,48 @@ export default function ChatPage(): React.JSX.Element {
         {/* Input bar */}
         <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(54,226,248,0.1)", position: "relative", zIndex: 1 }}>
           <div style={{ display: "flex", gap: 8, maxWidth: 800 }}>
+            {/* Voice input button */}
+            {voiceInput.isSupported && (
+              <button
+                onClick={voiceInput.isListening ? voiceInput.stopListening : voiceInput.startListening}
+                title={voiceInput.isListening ? "Stop listening" : "Voice input"}
+                style={{
+                  padding: "12px 14px", borderRadius: 0, cursor: "pointer", fontSize: 16,
+                  background: voiceInput.isListening ? "rgba(54,226,248,0.15)" : "#111",
+                  border: voiceInput.isListening ? "1px solid rgba(54,226,248,0.3)" : "1px solid rgba(54,226,248,0.15)",
+                  color: voiceInput.isListening ? "#36E2F8" : "#888",
+                }}
+              >
+                🎤
+              </button>
+            )}
+
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask Wishonia anything..."
-              disabled={isThinking}
+              placeholder={voiceInput.isListening ? "Listening..." : "Ask Wishonia anything..."}
+              disabled={chat.isStreaming}
               style={{ flex: 1, padding: "12px 16px", background: "#111", border: "1px solid rgba(54,226,248,0.15)", borderRadius: 0, color: "#ececec", fontSize: 14, outline: "none" }}
             />
+
             <button
-              onClick={handleSend}
-              disabled={isThinking}
+              onClick={chat.isStreaming ? chat.stopStreaming : handleSend}
               style={{
-                padding: "12px 24px", borderRadius: 0, fontSize: 14, fontWeight: 600, cursor: isThinking ? "not-allowed" : "pointer",
-                background: isThinking ? "#222" : "rgba(209,0,177,0.2)",
-                border: "1px solid rgba(209,0,177,0.4)",
-                color: isThinking ? "#555" : "#d100b1",
+                padding: "12px 24px", borderRadius: 0, fontSize: 14, fontWeight: 600, cursor: "pointer",
+                background: chat.isStreaming ? "rgba(54,226,248,0.15)" : "rgba(209,0,177,0.2)",
+                border: chat.isStreaming ? "1px solid rgba(54,226,248,0.3)" : "1px solid rgba(209,0,177,0.4)",
+                color: chat.isStreaming ? "#36E2F8" : "#d100b1",
               }}
             >
-              Send
+              {chat.isStreaming ? "Stop" : "Send"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Responsive styles */}
+      {/* Styles */}
       <style>{`
         @media (max-width: 800px) {
           .sidebar { position: fixed !important; left: 0; top: 0; bottom: 0; transform: translateX(-100%); transition: transform 0.2s; }
@@ -275,6 +334,30 @@ export default function ChatPage(): React.JSX.Element {
           .character-panel { display: none !important; }
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .chat-markdown p { margin: 0 0 8px 0; }
+        .chat-markdown p:last-child { margin-bottom: 0; }
+        .chat-markdown strong { color: #ececec; }
+        .chat-markdown a { color: #d100b1; text-decoration: underline; }
+        .chat-markdown a:hover { color: #36E2F8; }
+        .chat-markdown .chat-codeblock {
+          background: rgba(0,0,0,0.3); padding: 10px 14px; margin: 8px 0;
+          overflow-x: auto; font-size: 12px; font-family: 'Menlo', 'Monaco', monospace;
+          border: 1px solid rgba(54,226,248,0.1);
+        }
+        .chat-markdown .chat-inline-code {
+          background: rgba(54,226,248,0.08); padding: 1px 5px;
+          font-family: 'Menlo', 'Monaco', monospace; font-size: 12px;
+        }
+        .chat-markdown .chat-h3 { font-size: 16px; font-weight: 700; color: #36E2F8; margin: 12px 0 6px; }
+        .chat-markdown .chat-h4 { font-size: 14px; font-weight: 700; color: #C6CBF5; margin: 10px 0 4px; }
+        .chat-markdown .chat-blockquote {
+          border-left: 3px solid rgba(209,0,177,0.4); padding-left: 12px;
+          color: #888; margin: 8px 0; font-style: italic;
+        }
+        .chat-markdown .chat-list { margin: 4px 0; padding-left: 20px; }
+        .chat-markdown .chat-list li { margin: 2px 0; }
+        .chat-markdown .chat-latex-pending { font-family: 'Menlo', monospace; font-size: 13px; color: #d100b1; }
+        .chat-markdown .chat-latex-display { display: block; text-align: center; margin: 8px 0; }
       `}</style>
     </div>
   );
