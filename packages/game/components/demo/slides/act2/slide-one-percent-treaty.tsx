@@ -4,12 +4,18 @@ import { SlideBase } from "../slide-base";
 import { AnimatedCounter } from "../../animations/animated-counter";
 import {
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   TREATY_ANNUAL_FUNDING,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
 } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
 const militaryGlobal = GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value;
+const trialsGlobal = GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value;
+const ratio = MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value;
+const currentMilitaryPct = (ratio / (ratio + 1)) * 100; // ~99.83%
+const currentTrialsPct = (1 / (ratio + 1)) * 100; // ~0.17%
 const onePercentMilitary = TREATY_ANNUAL_FUNDING.value;
 
 export function SlideOnePercentTreaty() {
@@ -52,7 +58,7 @@ export function SlideOnePercentTreaty() {
               {formatCurrency(militaryGlobal)}
             </div>
             <div className="font-pixel text-2xl text-zinc-200 mt-1">
-              100% to military
+              {currentMilitaryPct.toFixed(1)}% to military
             </div>
           </div>
 

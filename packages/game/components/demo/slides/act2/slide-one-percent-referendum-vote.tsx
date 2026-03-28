@@ -120,6 +120,13 @@ export function SlideOnePercentReferendumVote() {
                 className="absolute inset-y-0 w-1 bg-white/80 transition-all duration-100"
                 style={{ left: `${militaryDisplay}%`, transform: "translateX(-50%)" }}
               />
+              {/* Animated hand cursor */}
+              <div
+                className="absolute -bottom-6 transition-all duration-100 text-2xl"
+                style={{ left: `${militaryDisplay}%`, transform: "translateX(-50%)" }}
+              >
+                👆
+              </div>
             </div>
 
             {/* Labels under bar */}

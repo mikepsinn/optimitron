@@ -112,14 +112,14 @@ export function SlideInflationWageTheft() {
         {/* Paycheck draining counter */}
         <div className="flex items-center justify-center gap-6 w-full">
           <div className="text-center">
-            <div className="font-pixel text-sm text-zinc-500">YOUR PAYCHECK</div>
+            <div className="font-pixel text-base md:text-lg text-zinc-500">YOUR PAYCHECK</div>
             <div className="font-pixel text-2xl md:text-3xl text-amber-400">
               ${paycheck.toLocaleString()}/yr
             </div>
           </div>
           <div className="font-pixel text-2xl text-zinc-600">→</div>
           <div className="text-center">
-            <div className="font-pixel text-sm text-zinc-500">AFTER DYSFUNCTION TAX</div>
+            <div className="font-pixel text-base md:text-lg text-zinc-500">AFTER DYSFUNCTION TAX</div>
             <div
               className={`font-pixel text-2xl md:text-3xl transition-colors duration-300 ${
                 remaining < paycheck * 0.5
@@ -154,15 +154,15 @@ export function SlideInflationWageTheft() {
               >
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{item.emoji}</span>
-                  <span className="font-pixel text-sm md:text-base text-zinc-300">
+                  <span className="font-pixel text-base md:text-lg text-zinc-300">
                     {item.label}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-pixel text-xs text-zinc-500">
+                  <span className="font-pixel text-base text-zinc-500">
                     {item.totalFormatted}
                   </span>
-                  <span className="font-pixel text-sm md:text-base text-red-400 min-w-[80px] text-right">
+                  <span className="font-pixel text-base md:text-lg text-red-400 min-w-[80px] text-right">
                     −${item.perPerson.toLocaleString()}/yr
                   </span>
                 </div>

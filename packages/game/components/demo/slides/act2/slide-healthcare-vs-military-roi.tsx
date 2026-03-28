@@ -82,10 +82,10 @@ export function SlideHealthcareVsMilitaryRoi() {
           <div className="grid grid-cols-2 gap-6 w-full fade-up">
             {/* MILITARY — money burns */}
             <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-red-500/30 rounded">
-              <div className="font-pixel text-xl md:text-2xl text-red-400 tracking-widest">MILITARY</div>
-              <div className="text-4xl">⚔️</div>
+              <div className="font-pixel text-2xl md:text-3xl text-red-400 tracking-widest">MILITARY</div>
+              <div className="text-5xl">⚔️</div>
 
-              <div className="font-pixel text-3xl md:text-4xl text-red-400 text-center">
+              <div className="font-pixel text-4xl md:text-5xl text-red-400 text-center">
                 $1 IN → $0.60 OUT
               </div>
 
@@ -117,7 +117,7 @@ export function SlideHealthcareVsMilitaryRoi() {
 
                   {/* Remaining count */}
                   {phase >= 3 && (
-                    <div className="font-pixel text-lg text-red-400">
+                    <div className="font-pixel text-xl md:text-2xl text-red-400">
                       {burnCount} OF {BURN_COINS} REMAINING
                     </div>
                   )}
@@ -127,10 +127,10 @@ export function SlideHealthcareVsMilitaryRoi() {
 
             {/* HEALTHCARE — money multiplies */}
             <div className="flex flex-col items-center gap-4 p-6 bg-black/40 border border-emerald-500/30 rounded">
-              <div className="font-pixel text-xl md:text-2xl text-emerald-400 tracking-widest">HEALTHCARE</div>
-              <div className="text-4xl">💊</div>
+              <div className="font-pixel text-2xl md:text-3xl text-emerald-400 tracking-widest">CLINICAL TRIALS</div>
+              <div className="text-5xl">🧪</div>
 
-              <div className="font-pixel text-3xl md:text-4xl text-emerald-400 text-center">
+              <div className="font-pixel text-4xl md:text-5xl text-emerald-400 text-center">
                 $1 IN → $1.80 OUT
               </div>
 
@@ -139,7 +139,7 @@ export function SlideHealthcareVsMilitaryRoi() {
                 <div className="relative w-full flex flex-col items-center gap-2">
                   {/* Multiplier badge */}
                   {multiplyPower > 0 && (
-                    <div className="font-pixel text-xl text-emerald-300">
+                    <div className="font-pixel text-2xl md:text-3xl text-emerald-300">
                       ×{multiplyCount}
                     </div>
                   )}
@@ -164,7 +164,7 @@ export function SlideHealthcareVsMilitaryRoi() {
 
                   {/* Compound label */}
                   {multiplyPower >= MULTIPLY_ROUNDS && (
-                    <div className="font-pixel text-lg text-emerald-400">
+                    <div className="font-pixel text-xl md:text-2xl text-emerald-400">
                       COMPOUND GROWTH
                     </div>
                   )}

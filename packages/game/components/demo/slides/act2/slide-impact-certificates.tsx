@@ -85,16 +85,16 @@ export function SlideImpactCertificates() {
 
                 {/* Content */}
                 <div className="flex-1 space-y-1">
-                  <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+                  <div className="font-pixel text-2xl md:text-3xl text-zinc-200">
                     YOU {item.action.toUpperCase()}
                   </div>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="font-pixel text-xl text-purple-400">HYPERCERT:</span>
+                    <span className="font-pixel text-xl md:text-2xl text-purple-400">HYPERCERT:</span>
                     <span className={`font-terminal text-xl md:text-2xl ${colors.text}`}>
                       {item.hypercert}
                     </span>
                   </div>
-                  <div className="font-terminal text-xl text-zinc-300">
+                  <div className="font-terminal text-xl md:text-2xl text-zinc-300">
                     Verified impact: {item.impact}
                   </div>
                 </div>
@@ -131,13 +131,6 @@ export function SlideImpactCertificates() {
           </div>
         )}
 
-        {/* Punchline */}
-        {phase >= 4 && (
-          <p className="font-pixel text-xl md:text-2xl text-zinc-200 text-center italic max-w-4xl leading-relaxed card-in">
-            If a charity tells you they saved ten thousand lives, you ask for the
-            Hypercert. If they do not have one, they did not save ten thousand lives.
-          </p>
-        )}
       </div>
 
       <style jsx>{`

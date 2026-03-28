@@ -258,10 +258,10 @@ export function SlideOptimalBudgetGenerator() {
           </div>
         )}
 
-        {/* Phase 4: Deadpan footer */}
+        {/* Phase 4: Subtitle */}
         {phase >= 4 && (
-          <p className="font-terminal text-2xl md:text-4xl text-zinc-200 text-center fade-in">
-            DIFFICULTY: looking at the data
+          <p className="font-terminal text-xl md:text-2xl text-zinc-300 text-center fade-in max-w-[1200px]">
+            Identifies the highest-performing, lowest-spending countries to map the efficient frontier of public policy.
           </p>
         )}
       </div>

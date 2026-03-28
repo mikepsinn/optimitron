@@ -131,7 +131,7 @@ export function SlideIpfsImmutableStorage() {
               👤 8 BILLION CITIZENS
             </div>
             <div
-              className="font-terminal text-base md:text-lg mt-1"
+              className="font-terminal text-lg md:text-xl mt-1"
               style={{ color: palette.muted }}
             >
               🔒 AES-GCM-256 encrypted — only you hold the key
@@ -164,19 +164,19 @@ export function SlideIpfsImmutableStorage() {
                     <div className="text-3xl">{card.icon}</div>
                     <div>
                       <div
-                        className="font-pixel text-lg md:text-xl"
+                        className="font-pixel text-xl md:text-2xl"
                         style={{ color }}
                       >
                         {card.label}
                       </div>
                       <div
-                        className="font-terminal text-base md:text-lg mt-1"
+                        className="font-terminal text-lg md:text-xl mt-1"
                         style={{ color: palette.foreground }}
                       >
                         {card.description}
                       </div>
                       <div
-                        className="font-terminal text-sm md:text-base mt-0.5"
+                        className="font-terminal text-base md:text-lg mt-0.5"
                         style={{ color: palette.muted }}
                       >
                         {card.detail}
@@ -219,7 +219,7 @@ export function SlideIpfsImmutableStorage() {
               </span>
             </div>
             <div
-              className="font-terminal text-base md:text-lg text-center mt-2"
+              className="font-terminal text-lg md:text-xl text-center mt-2"
               style={{ color: palette.muted }}
             >
               Decentralized. Immutable. No login to verify.

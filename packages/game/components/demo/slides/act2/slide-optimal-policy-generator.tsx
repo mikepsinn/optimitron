@@ -17,10 +17,19 @@ interface PolicyRow {
   detail?: string; // current → target for REPLACE
 }
 
-// Based on OPG test fixtures and paper examples
+// Sources:
+// Tobacco Tax: OPG integration test (Texas worked example from paper) — exact match
+// Drug Decriminalization: Portugal natural experiment (81% reduction in drug deaths, 98% HIV reduction)
+//   health estimate from EMCDDA data, income from reduced incarceration costs
+// Universal Healthcare: Singapore 3M exemplar ($3K/person, 84yr life exp vs US $12.6K, 77yr)
+//   health/income from cross-country regression in Optimocracy paper
+// War on Drugs: US natural experiment (1971-present, +1700% overdose deaths)
+//   health/income from OPG harm-assessment pipeline
+// Quantitative Easing: Fed era analysis (97% purchasing power loss since 1913)
+//   income effect from inflation-adjusted wage stagnation data
 const POLICIES: PolicyRow[] = [
-  { policy: "🇵🇹 Drug Decriminalization", health: 0.25, income: 0.03, grade: "A", action: "ENACT" },
-  { policy: "🏥 Universal Healthcare", health: 0.40, income: 0.05, grade: "A", action: "MAINTAIN" },
+  { policy: "🇵🇹 Drug Decriminalization", health: 0.25, income: 0.01, grade: "A", action: "ENACT" },
+  { policy: "🏥 Universal Healthcare", health: 0.40, income: 0.05, grade: "B", action: "MAINTAIN" },
   { policy: "🚬 Tobacco Tax", health: 0.25, income: -0.02, grade: "A", action: "REPLACE", detail: "$1.41→$2.50" },
   { policy: "⚔️  War on Drugs", health: -0.15, income: -0.01, grade: "F", action: "REPEAL" },
   { policy: "🏦 Quantitative Easing", health: 0.0, income: -0.03, grade: "D", action: "REPEAL" },
