@@ -14,6 +14,7 @@ import { SlideMilitaryHealthRatio } from "./slides/act1/slide-military-health-ra
 import { SlideEconomicCollapseClock } from "./slides/act1/slide-economic-collapse-clock";
 import { SlideGlobalFailedState } from "./slides/act1/slide-global-failed-state";
 import { SlideAiHackerSpiral } from "./slides/act1/slide-ai-hacker-spiral";
+import { SlideAiHackerBreach } from "./slides/act1/slide-ai-hacker-breach";
 import { SlideGameOverMoronia } from "./slides/act1/slide-game-over-moronia";
 
 // Turn
@@ -80,6 +81,7 @@ const slideComponents: Record<string, React.ComponentType> = {
   "economic-collapse-clock": SlideEconomicCollapseClock,
   "global-failed-state": SlideGlobalFailedState,
   "ai-hacker-spiral": SlideAiHackerSpiral,
+  "ai-hacker-breach": SlideAiHackerBreach,
   "game-over-moronia": SlideGameOverMoronia,
 
   // Turn

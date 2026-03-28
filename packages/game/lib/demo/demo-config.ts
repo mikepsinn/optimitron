@@ -333,6 +333,18 @@ RECURSIVE EXPONENTIAL THEFT`,
     ],
   },
   {
+    id: "ai-hacker-breach",
+    act: "act1",
+    duration: 10,
+    narration:
+      "That just happened. Well, a simulation of it. A real AI hacker would not have shown you the terminal. It would not have introduced itself. It would have taken 4.7 seconds and you would have noticed six months later when your bank called.",
+    visual:
+      "Full-screen breach takeover. Red flashing. Fake terminal scrolls: nmap scan, password extraction, webcam capture. Punchline: Relax. That was fake. But it took 4.7 seconds. An AI hacker would not have told you.",
+    score: 3_000_000_000,
+    showQuestMeters: false,
+    sierraVerbs: [],
+  },
+  {
     id: "game-over-moronia",
     act: "act1",
     duration: 10,
