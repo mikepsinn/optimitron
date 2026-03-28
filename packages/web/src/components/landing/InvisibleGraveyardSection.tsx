@@ -1,11 +1,11 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CountUp } from "@/components/animations/CountUp";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { invisibleGraveyardPaperLink, dfdaSpecPaperLink } from "@/lib/routes";
 import {
-  fmtParam,
   EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE,
@@ -16,7 +16,7 @@ import {
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-const graveyardStats = [
+const graveyardStats: { value: number; suffix: string; label: string; detail: ReactNode }[] = [
   {
     value: 95,
     suffix: "%",
@@ -27,19 +27,19 @@ const graveyardStats = [
     value: EFFICACY_LAG_YEARS.value,
     suffix: " years",
     label: "Post-Safety Delay",
-    detail: `The FDA makes treatments wait ${EFFICACY_LAG_YEARS.value} years AFTER they have been proven safe. Just sitting there. Being safe. While people die.`,
+    detail: <>The FDA makes treatments wait <ParameterValue param={EFFICACY_LAG_YEARS} /> years AFTER they have been proven safe. Just sitting there. Being safe. While people die.</>,
   },
   {
     value: Math.round(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL.value / 1e6),
     suffix: "M deaths",
     label: "Historical Efficacy Lag",
-    detail: `${Math.round(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL.value / 1e6)} million people have died waiting for treatments that were already proven safe but had not yet cleared the efficacy queue.`,
+    detail: <><ParameterValue param={EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL} format={(p) => String(Math.round(p.value / 1e6))} /> million people have died waiting for treatments that were already proven safe but had not yet cleared the efficacy queue.</>,
   },
   {
     value: +(CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE.value * 100).toFixed(2),
     suffix: "%",
     label: "Trial Capacity Used",
-    detail: `${(CURRENT_TRIAL_SLOTS_AVAILABLE.value / 1e6).toFixed(1)} million trial slots per year. 1.08 billion willing participants. You are using ${(CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE.value * 100).toFixed(2)}% of available capacity. On my planet this would be a crime.`,
+    detail: <><ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} format={(p) => (p.value / 1e6).toFixed(1)} /> million trial slots per year. 1.08 billion willing participants. You are using <ParameterValue param={CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE} format={(p) => (p.value * 100).toFixed(2)} />% of available capacity. On my planet this would be a crime.</>,
   },
 ];
 
@@ -54,7 +54,7 @@ export function InvisibleGraveyardSection() {
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
             <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> people die every day from treatable diseases. Not untreatable.
             Treatable. You just have not gotten around to testing the treatments yet.
-            At your current pace, clearing the backlog takes {Math.round(DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value)} years.
+            At your current pace, clearing the backlog takes <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} format={(p) => String(Math.round(p.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value))} /> years.
           </p>
         </ScrollReveal>
 
@@ -83,7 +83,7 @@ export function InvisibleGraveyardSection() {
             </div>
             <p className="text-foreground font-bold max-w-xl mx-auto mb-1">
               Economic value of lives lost to regulatory delay. At 15 new treatments
-              per year, your {Math.round(DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value)}-year queue means most of these diseases will outlive
+              per year, your <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} format={(p) => String(Math.round(p.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value))} />-year queue means most of these diseases will outlive
               your civilisation. Which, given your other numbers, might not be very long.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">

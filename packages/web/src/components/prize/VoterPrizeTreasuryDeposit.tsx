@@ -259,10 +259,19 @@ export function VoterPrizeTreasuryDeposit() {
 
   useEffect(() => {
     if (isDepositConfirmed) {
+      // Track deposit for wish points before clearing amount
+      if (depositHash && amount) {
+        const depositUsd = Number(formatUnits(parseUnits(stripCommas(amount), USDC_DECIMALS), USDC_DECIMALS));
+        fetch("/api/prize/deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ txHash: depositHash, depositUsd }),
+        }).catch(() => {});
+      }
       setStep("idle");
       setAmount("");
     }
-  }, [isDepositConfirmed]);
+  }, [isDepositConfirmed, depositHash, amount]);
 
   useEffect(() => {
     if (isClaimConfirmed) setStep("idle");

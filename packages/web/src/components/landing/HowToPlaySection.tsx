@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -5,7 +6,6 @@ import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
-  fmtParam,
   VOTE_TOKEN_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
@@ -13,12 +13,12 @@ import {
 } from "@optimitron/data/parameters";
 import { CTA, TAGLINES } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
-const steps = [
+const steps: { number: string; title: string; body: ReactNode; color: "pink" | "cyan" | "yellow"; ctas: { label: string; href: string }[] }[] = [
   {
     number: "1",
     title: "Vote & Allocate",
     body: "Answer the question. Tell us where you'd spend the money. 2 minutes. You're a player now.",
-    color: "pink" as const,
+    color: "pink",
     ctas: [
       { label: CTA.answerTheQuestion, href: "#vote" },
       { label: CTA.makeAllocation, href: ROUTES.wishocracy },
@@ -28,21 +28,21 @@ const steps = [
     number: "2",
     title: "Get Your Link",
     body: "Sign in and get your referral URL. Every verified voter you bring in earns you 1 VOTE point.",
-    color: "cyan" as const,
+    color: "cyan",
     ctas: [{ label: "Sign In", href: "#vote" }],
   },
   {
     number: "3",
     title: "Play With Friends",
-    body: `Share your link with 2 friends. They each share with 2 more. 28 rounds of this = ${Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6)}M people = tipping point. Each VOTE point worth ${fmtParam(VOTE_TOKEN_VALUE)}+ if targets are hit.`,
-    color: "yellow" as const,
+    body: <>Share your link with 2 friends. They each share with 2 more. 28 rounds of this = <ParameterValue param={TREATY_CAMPAIGN_VOTING_BLOC_TARGET} format={(p) => `${Math.round(p.value / 1e6)}M`} /> people = tipping point. Each VOTE point worth <ParameterValue param={VOTE_TOKEN_VALUE} showUnit />+ if targets are hit.</>,
+    color: "yellow",
     ctas: [],
   },
   {
     number: "4",
     title: "Deposit",
-    body: `Put money in the prize fund. If the plan works, VOTE holders get paid. If it doesn't, you get ${PRIZE_POOL_HORIZON_MULTIPLE.value.toFixed(1)}x back. You literally cannot lose your principal.`,
-    color: "pink" as const,
+    body: <>Put money in the prize fund. If the plan works, VOTE holders get paid. If it doesn&apos;t, you get <ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} format={(p) => p.value.toFixed(1)} />x back. You literally cannot lose your principal.</>,
+    color: "pink",
     ctas: [{ label: CTA.insertCoin, href: "/prize" }],
   },
 ];

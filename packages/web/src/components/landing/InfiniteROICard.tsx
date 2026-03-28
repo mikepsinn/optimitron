@@ -27,13 +27,13 @@ export function InfiniteROICard() {
     <Card className="bg-brutal-pink border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12">
       <div className="flex flex-col items-center gap-3 mb-4 text-brutal-pink-foreground">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase text-center">The Math That Broke Excel</h3>
-        <p className="font-bold text-center">A {roiFormatted} Return on Investment</p>
+        <p className="font-bold text-center">A <ParameterValue param={TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /> Return on Investment</p>
         <ImpactExplainer className="h-9 w-9 border-primary text-brutal-pink-foreground bg-brutal-pink" label="Show impact math" />
       </div>
 
       <p className="text-base font-bold text-brutal-pink-foreground">
-        A {campaignCostFormatted} campaign yields{" "}
-        <span className="text-background text-2xl font-black">{totalValueFormatted}</span> in health value.
+        A <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} /> campaign yields{" "}
+        <span className="text-background text-2xl font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE} /></span> in health value.
       </p>
 
       <div className="bg-brutal-yellow border-4 border-primary p-4 my-4">

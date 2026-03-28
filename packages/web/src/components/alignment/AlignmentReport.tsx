@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, BarChart3, ExternalLink, Scale, Shield, Sparkles, Target } from "lucide-react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
@@ -88,6 +89,15 @@ export function AlignmentReport({
     publicMode && ownerLabel
       ? `Alignment Report for ${ownerLabel}`
       : "Personal Politician Report";
+
+  // Track alignment check for wish points (fire once when report is ready)
+  const trackedRef = useRef(false);
+  useEffect(() => {
+    if (state.status === "ready" && !publicMode && !trackedRef.current) {
+      trackedRef.current = true;
+      fetch("/api/alignment/check", { method: "POST" }).catch(() => {});
+    }
+  }, [state.status, publicMode]);
 
   if (state.status === "empty") {
     return (

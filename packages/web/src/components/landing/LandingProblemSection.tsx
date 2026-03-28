@@ -1,5 +1,4 @@
 import {
-  fmtParam,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   GLOBAL_DISEASE_DEATHS_DAILY,
@@ -30,12 +29,9 @@ export function LandingProblemSection() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-muted-foreground">
             Your governments spend{" "}
-            {fmtParam({ ...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD" })}{" "}
+            <ParameterValue param={{...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD"}} showUnit />{" "}
             per year on weapons and{" "}
-            {fmtParam({
-              ...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
-              unit: "USD",
-            })}{" "}
+            <ParameterValue param={{...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL, unit: "USD"}} showUnit />{" "}
             on testing medicines. That&apos;s a{" "}
             <span className="text-brutal-yellow font-black">
               {milToTrialsRatio.toLocaleString()}:1
@@ -55,11 +51,7 @@ export function LandingProblemSection() {
             <div className="space-y-6">
               <div>
                 <div className="text-3xl font-black text-brutal-yellow">
-                  {fmtParam({
-                    ...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-                    unit: "USD",
-                  })}
-                  /yr
+                  <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} showUnit />/yr
                 </div>
                 <p className="mt-1 text-sm font-bold text-muted-foreground">
                   Global political dysfunction tax — what misaligned governance
@@ -69,8 +61,7 @@ export function LandingProblemSection() {
               </div>
               <div>
                 <div className="text-2xl font-black text-brutal-yellow">
-                  {fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL)}
-                  /person
+                  <ParameterValue param={{...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL, unit: "USD"}} showUnit />/person
                 </div>
                 <p className="mt-1 text-sm font-bold text-muted-foreground">
                   That&apos;s your share. You are paying this whether you know
@@ -99,15 +90,12 @@ export function LandingProblemSection() {
               </div>
               <div>
                 <div className="text-2xl font-black text-brutal-yellow">
-                  {fmtParam({
-                    ...EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
-                    unit: "deaths",
-                  })}
+                  <ParameterValue param={{...EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL, unit: "deaths"}} showUnit />
                 </div>
                 <p className="mt-1 text-sm font-bold text-muted-foreground">
                   People who died waiting for treatments that were already
                   proven safe — stuck in{" "}
-                  {fmtParam(EFFICACY_LAG_YEARS)} of
+                  <ParameterValue param={EFFICACY_LAG_YEARS} showUnit /> of
                   efficacy testing. Just sitting there. Being safe.
                 </p>
               </div>
@@ -119,11 +107,8 @@ export function LandingProblemSection() {
           <div className="border-4 border-brutal-yellow bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-center text-sm font-bold text-foreground">
               On my planet, when a system kills{" "}
-              {fmtParam({...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""})} people a day and costs{" "}
-              {fmtParam({
-                ...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-                unit: "USD",
-              })}{" "}
+              <ParameterValue param={{...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""}} /> people a day and costs{" "}
+              <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} showUnit />{" "}
               a year, we don&apos;t call it &ldquo;politics.&rdquo; We call it a
               bug. And we fix it.
             </p>

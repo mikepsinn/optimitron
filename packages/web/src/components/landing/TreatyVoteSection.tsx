@@ -26,7 +26,6 @@ import {
   getTreatyWishocraticAllocation,
 } from "@/lib/treaty-vote";
 
-const militaryToMedicalRatioFormatted = `$${MILITARY_VS_MEDICAL_RESEARCH_RATIO.value.toFixed(2)}`;
 const militarySpendingPct = Math.round(
   (MILITARY_VS_MEDICAL_RESEARCH_RATIO.value /
     (MILITARY_VS_MEDICAL_RESEARCH_RATIO.value + 1)) *

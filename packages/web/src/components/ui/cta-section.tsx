@@ -5,7 +5,7 @@ export type CTABgColor = "pink" | "yellow" | "cyan" | "black" | "foreground" | "
 
 export interface CTASectionProps {
   heading: React.ReactNode
-  description?: string
+  description?: React.ReactNode
   bgColor?: CTABgColor
   children: React.ReactNode
   className?: string

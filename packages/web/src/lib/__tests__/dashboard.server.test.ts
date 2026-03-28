@@ -13,6 +13,10 @@ vi.mock("@/lib/prisma", () => ({
     referendumVote: {
       count: vi.fn(),
     },
+    wishPoint: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+    },
   },
 }));
 
@@ -23,6 +27,8 @@ vi.mock("next-auth", () => ({
 
 vi.mock("@/lib/wishes.server", () => ({
   getWishBalance: vi.fn(),
+  getWishReasonLabel: vi.fn((reason: string) => reason),
+  getWishReasonEmoji: vi.fn(() => "⭐"),
 }))
 
 // Mock auth
@@ -113,7 +119,11 @@ describe("getDashboardData", () => {
     vi.mocked(prisma.activity.count).mockResolvedValueOnce(3);
     vi.mocked(prisma.user.count).mockResolvedValueOnce(0);
     vi.mocked(prisma.referendumVote.count).mockResolvedValueOnce(42);
-    vi.mocked(getWishBalance).mockResolvedValueOnce(7)
+    vi.mocked(getWishBalance).mockResolvedValueOnce(7);
+    vi.mocked(prisma.wishPoint.findMany).mockResolvedValueOnce([
+      { reason: "DAILY_CHECKIN" },
+    ] as any);
+    vi.mocked(prisma.wishPoint.findFirst).mockResolvedValueOnce(null);
 
     const result = await getDashboardData("user-1");
 
@@ -131,5 +141,12 @@ describe("getDashboardData", () => {
     expect(result.organizations.created[0]?.memberCount).toBe(5);
     expect(result.globalProgress).toBeDefined();
     expect(result.globalProgress.current).toBeGreaterThanOrEqual(0);
+    expect(result.questChecklist).toHaveLength(10);
+    // REFERRAL should be completed because referralCount > 0
+    const referralQuest = result.questChecklist.find((q) => q.reason === "REFERRAL");
+    expect(referralQuest?.completed).toBe(true);
+    // KYC should be coming soon
+    const kycQuest = result.questChecklist.find((q) => q.reason === "KYC_COMPLETION");
+    expect(kycQuest?.comingSoon).toBe(true);
   });
 });

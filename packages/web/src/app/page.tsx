@@ -25,11 +25,11 @@ import {
 import { GameCTA } from "@/components/ui/game-cta";
 import { CTA, TAGLINES } from "@/lib/messaging";
 import {
-  fmtParam,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   VOTE_TOKEN_VALUE,
   GLOBAL_COORDINATION_TARGET_SUPPORTERS,
 } from "@optimitron/data/parameters";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 export const metadata: Metadata = {
   title: "Optimitron — The Earth Optimization Game",
   description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,
@@ -179,7 +179,7 @@ export default function Home() {
       {/* ── 8. Final CTA ── */}
       <CTASection
         heading="The Clock Is Running"
-        description={`The parasitic economy hits 35% of GDP by ${Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value)}. Your VOTE points are worth ${fmtParam(VOTE_TOKEN_VALUE)} if ${(GLOBAL_COORDINATION_TARGET_SUPPORTERS.value / 1e9).toFixed(0)} billion people play. Worth nothing if they don't.`}
+        description={<>The parasitic economy hits 35% of GDP by <ParameterValue param={DESTRUCTIVE_ECONOMY_35PCT_YEAR} format={(p) => String(Math.round(p.value))} />. Your VOTE points are worth <ParameterValue param={VOTE_TOKEN_VALUE} showUnit /> if <ParameterValue param={GLOBAL_COORDINATION_TARGET_SUPPORTERS} format={(p) => `${(p.value / 1e9).toFixed(0)} billion`} /> people play. Worth nothing if they don&apos;t.</>}
         bgColor="yellow"
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

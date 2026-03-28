@@ -9,7 +9,6 @@ import {
   TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR,
   LIFE_EXTENSION_YEARS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
-  formatParameter,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue"
 import { IMPACT_PER_VOTE } from "@/lib/impact-ledger"
@@ -23,13 +22,6 @@ export default function VoteImpactSection() {
   const livesSaved = IMPACT_PER_VOTE.lives.toFixed(1)
   const sufferingYears = (IMPACT_PER_VOTE.sufferingHours / 8760).toFixed(0)
   const economicValue = `$${(IMPACT_PER_VOTE.economicValue / 1_000_000).toFixed(1)}M`
-  const efficacyLag = EFFICACY_LAG_YEARS.value.toFixed(1)
-
-  const treatyFunding = formatParameter(TREATY_ANNUAL_FUNDING)
-  const trialCapacityMultiplier = Math.round(DFDA_TRIAL_CAPACITY_MULTIPLIER.value)
-  const cumulativeYears = Math.round(TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR.value)
-  const lifeExtensionYears = Math.round(LIFE_EXTENSION_YEARS.value)
-  const timelineShift = Math.round(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS.value)
 
   return (
     <SectionContainer bgColor="pink">
@@ -61,10 +53,10 @@ export default function VoteImpactSection() {
 
           <div className="max-w-3xl mx-auto space-y-4">
             <p className="text-lg sm:text-xl font-bold">
-              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-brutal-pink font-black" />/year scales trial capacity <span className="text-brutal-pink font-black">{trialCapacityMultiplier}X</span>, achieving <span className="text-brutal-pink font-black">{cumulativeYears} years</span> of progress in <span className="text-brutal-pink font-black">{lifeExtensionYears}</span>
+              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-brutal-pink font-black" />/year scales trial capacity <span className="text-brutal-pink font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={(p) => `${Math.round(p.value)}`} />X</span>, achieving <span className="text-brutal-pink font-black"><ParameterValue param={TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR} format={(p) => `${Math.round(p.value)}`} /> years</span> of progress in <span className="text-brutal-pink font-black"><ParameterValue param={LIFE_EXTENSION_YEARS} format={(p) => `${Math.round(p.value)}`} /></span>
             </p>
             <p className="text-base sm:text-lg font-bold opacity-80">
-              Through a {timelineShift}-year average timeline shift: {trialCapacityMultiplier}x trial capacity + eliminating {efficacyLag}-year regulatory delays
+              Through a <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} format={(p) => `${Math.round(p.value)}`} />-year average timeline shift: <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={(p) => `${Math.round(p.value)}`} />x trial capacity + eliminating <ParameterValue param={EFFICACY_LAG_YEARS} format={(p) => p.value.toFixed(1)} />-year regulatory delays
             </p>
           </div>
         </BrutalCard>

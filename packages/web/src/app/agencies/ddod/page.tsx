@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { budgetLink, federalReserveLink, wishocracyLink } from "@/lib/routes";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -18,7 +19,7 @@ const milMultiplier = ECONOMIC_MULTIPLIER_MILITARY_SPENDING.value;
 const healthMultiplier = ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT.value;
 const totalAlt = 150e9 + 20e9 + GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL.value + 45e9;
 
-const couldHaveBought = [
+const couldHaveBought: { instead: string; price: React.ReactNode; ratio: string }[] = [
   {
     instead: "Clean water for every human on Earth",
     price: "$150 billion (one-time)",
@@ -31,7 +32,7 @@ const couldHaveBought = [
   },
   {
     instead: "Fund all global clinical trials",
-    price: `${fmtParam(GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL, 3).replace("$", "$")}/yr`,
+    price: (<><ParameterValue param={GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL} showUnit figures={3} />/yr</>),
     ratio: `${((GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL.value / milSpend) * 100).toFixed(1)}% of military spending. You spend more on military bands.`,
   },
   {
