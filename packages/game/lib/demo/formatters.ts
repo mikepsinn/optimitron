@@ -76,10 +76,12 @@ export function formatLargeNumber(n: number): {
   full: string;
 } {
   if (n >= 1_000_000_000_000) {
+    const t = n / 1_000_000_000_000;
+    const formatted = t % 1 === 0 ? t.toFixed(0) : t.toFixed(1);
     return {
-      value: (n / 1_000_000_000_000).toFixed(2),
+      value: formatted,
       suffix: "T",
-      full: `${(n / 1_000_000_000_000).toFixed(2)}T`,
+      full: `${formatted}T`,
     };
   }
   if (n >= 1_000_000_000) {

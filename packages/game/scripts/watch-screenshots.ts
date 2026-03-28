@@ -16,10 +16,10 @@
  * Requires dev server running: pnpm dev
  */
 
-import { watch } from "fs";
+import { watch, readFileSync } from "fs";
 import { join, basename } from "path";
 import { execSync } from "child_process";
-import { readdirSync, statSync } from "fs";
+import { createHash } from "crypto";
 
 const ROOT = process.cwd();
 const SLIDES_DIR = join(ROOT, "components", "demo", "slides");
@@ -32,22 +32,31 @@ let pendingAll = false;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 const DEBOUNCE_MS = 2000;
 
+// Content hash tracking — only trigger on actual content changes
+const fileHashes = new Map<string, string>();
+
+function hashFile(filepath: string): string | null {
+  try {
+    const content = readFileSync(filepath, "utf-8");
+    return createHash("md5").update(content).digest("hex");
+  } catch {
+    return null;
+  }
+}
+
+function hasContentChanged(filepath: string): boolean {
+  const newHash = hashFile(filepath);
+  if (!newHash) return false;
+  const oldHash = fileHashes.get(filepath);
+  if (oldHash === newHash) return false;
+  fileHashes.set(filepath, newHash);
+  return true;
+}
+
 /** Extract slide ID from filename: "slide-foo-bar.tsx" → "foo-bar" */
 function fileToSlideId(filename: string): string | null {
   const match = basename(filename).match(/^slide-(.+)\.tsx$/);
   return match ? match[1] : null;
-}
-
-/** Recursively get all directories to watch */
-function getWatchDirs(dir: string): string[] {
-  const dirs = [dir];
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) {
-      dirs.push(...getWatchDirs(full));
-    }
-  }
-  return dirs;
 }
 
 function scheduleScreenshot() {
@@ -82,8 +91,12 @@ function scheduleScreenshot() {
 }
 
 function handleChange(filepath: string) {
+  // Check if content actually changed (ignore fs noise)
+  if (!hasContentChanged(filepath)) return;
+
   // Config or parameters → re-screenshot everything
   if (filepath === CONFIG_FILE || filepath === PARAMS_FILE) {
+    console.log(`  Config changed: ${basename(filepath)}`);
     pendingAll = true;
     scheduleScreenshot();
     return;
@@ -98,12 +111,22 @@ function handleChange(filepath: string) {
   }
 }
 
+// Seed initial hashes so first run doesn't trigger everything
+function seedHashes() {
+  for (const file of [CONFIG_FILE, PARAMS_FILE]) {
+    const hash = hashFile(file);
+    if (hash) fileHashes.set(file, hash);
+  }
+}
+
 // Start watching
+seedHashes();
 console.log("👁️  Watching for slide changes...");
 console.log(`   Slides: ${SLIDES_DIR}`);
 console.log(`   Config: ${CONFIG_FILE}`);
 console.log(`   Params: ${PARAMS_FILE}`);
-console.log(`   Debounce: ${DEBOUNCE_MS}ms\n`);
+console.log(`   Debounce: ${DEBOUNCE_MS}ms`);
+console.log(`   Using content hashing (ignores fs noise)\n`);
 
 // Watch slide directories (fs.watch is recursive on Windows)
 watch(SLIDES_DIR, { recursive: true }, (_event, filename) => {
