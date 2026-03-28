@@ -6,6 +6,7 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 
 const nextConfig = {
   transpilePackages: ['@optimitron/data'],
+  serverExternalPackages: ['@storacha/client', 'multiformats'],
   output: isStaticExport ? 'export' : undefined,
   basePath: isStaticExport ? '/optimitron' : '',
   outputFileTracingRoot: path.resolve(__dirname, "../.."),

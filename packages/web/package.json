@@ -5,7 +5,7 @@
   "scripts": {
     "ensure-env": "node -e \"const fs=require('fs'),p=require('path'),t=p.resolve('.env'),s=p.resolve('../../.env');if(!fs.existsSync(t)&&fs.existsSync(s)){try{fs.symlinkSync(s,t,'file')}catch{fs.copyFileSync(s,t)}}\"",
     "build:db-client": "pnpm --dir ../.. --filter @optimitron/db prisma:generate",
-    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optimitron/db --filter @optimitron/optimizer --filter @optimitron/wishocracy --filter @optimitron/opg --filter @optimitron/obg --filter @optimitron/data --filter @optimitron/chat-ui --filter @optimitron/storage build",
+    "build:workspace-deps": "pnpm --dir ../.. -r --filter @optimitron/db --filter @optimitron/optimizer --filter @optimitron/wishocracy --filter @optimitron/opg --filter @optimitron/obg --filter @optimitron/data --filter @optimitron/chat-ui --filter @optimitron/storage --filter @optimitron/hypercerts build",
     "kill-port": "node -e \"try{require('child_process').execSync('npx kill-port 3001',{stdio:'ignore'})}catch{}\"",
     "dev": "pnpm run kill-port && pnpm run ensure-env && pnpm run build:workspace-deps && next dev --port 3001",
     "build": "pnpm run ensure-env && pnpm run build:workspace-deps && next build",
