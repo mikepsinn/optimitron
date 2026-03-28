@@ -126,12 +126,9 @@ describe("getDashboardData", () => {
     expect(result.stats.rank).toBe(1);
     expect(result.badges).toHaveLength(1);
     expect(result.badges[0]?.name).toBe("First Comparison");
-    expect(result.linkedAuthProviderIds).toEqual(["google"]);
-    expect(result.socialAccounts).toHaveLength(1);
     expect(result.activities).toHaveLength(1);
     expect(result.organizations.created).toHaveLength(1);
     expect(result.organizations.created[0]?.memberCount).toBe(5);
-    expect(result.notificationPreferences).toHaveLength(1);
     expect(result.globalProgress).toBeDefined();
     expect(result.globalProgress.current).toBeGreaterThanOrEqual(0);
   });

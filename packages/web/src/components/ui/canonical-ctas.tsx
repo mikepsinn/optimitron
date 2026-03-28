@@ -53,10 +53,10 @@ export function EarthGameCTA({ size = "lg", className }: CanonicalCTAProps) {
   );
 }
 
-/** Links to /profile — "Report Your Census Data" */
+/** Links to /census — "Report Your Census Data" */
 export function CensusDataCTA({ size = "lg", className }: CanonicalCTAProps) {
   return (
-    <GameCTA href={ROUTES.profile} variant="secondary" size={size} className={className}>
+    <GameCTA href={ROUTES.census} variant="secondary" size={size} className={className}>
       Report Your Census Data
     </GameCTA>
   );

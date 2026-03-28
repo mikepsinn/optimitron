@@ -110,7 +110,7 @@ export function ConnectedAccountsCard({
     socialAccounts.find((sa) => sa.platform === platform)
 
   const handleConnectSocial = async (provider: string) => {
-    await signIn(provider.toLowerCase(), { callbackUrl: "/dashboard" })
+    await signIn(provider.toLowerCase(), { callbackUrl: "/profile" })
   }
 
   const handleDisconnectAuth = async (providerId: string) => {

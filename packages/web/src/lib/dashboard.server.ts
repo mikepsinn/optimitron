@@ -29,12 +29,7 @@ export async function getDashboardData(
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      accounts: {
-        where: { deletedAt: null },
-        select: { provider: true },
-      },
       badges: true,
-      socialAccounts: true,
       activities: {
         orderBy: { createdAt: "desc" },
         take: 10,
@@ -57,7 +52,6 @@ export async function getDashboardData(
         },
         orderBy: { createdAt: "desc" },
       },
-      notificationPreferences: true,
     },
   });
 
@@ -122,16 +116,6 @@ export async function getDashboardData(
       description: getBadgeDescription(badge.type),
       earned: true,
     })),
-    linkedAuthProviderIds: Array.from(
-      new Set(user.accounts.map((account) => account.provider.toLowerCase())),
-    ),
-    socialAccounts: user.socialAccounts.map((sa) => ({
-      platform: sa.platform,
-      username: sa.username,
-      walletAddress: sa.walletAddress,
-      isPrimary: sa.isPrimary,
-      verifiedAt: sa.verifiedAt,
-    })),
     activities: user.activities.map((activity) => ({
       id: activity.id,
       type: activity.type,
@@ -153,11 +137,6 @@ export async function getDashboardData(
         createdAt: org.createdAt,
       })),
     },
-    notificationPreferences: user.notificationPreferences.map((pref) => ({
-      type: pref.type,
-      channel: pref.channel,
-      enabled: pref.enabled,
-    })),
     globalProgress: {
       current: globalProgressPct,
       target: targetPct,

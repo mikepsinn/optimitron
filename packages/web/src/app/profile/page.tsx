@@ -1,9 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { ProfileHub } from "@/components/profile/ProfileHub";
-import { ArcadeTag } from "@/components/ui/arcade-tag";
+import { ProfileIdentityClient } from "@/components/profile/ProfileIdentityClient";
 import { authOptions } from "@/lib/auth";
-import { getProfilePageData } from "@/lib/profile.server";
+import { getProfileIdentityData } from "@/lib/profile-identity.server";
 import { getSignInPath, profileLink, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
@@ -17,16 +16,20 @@ export default async function ProfilePage() {
     redirect(getSignInPath(ROUTES.profile));
   }
 
-  const initialData = await getProfilePageData(userId);
+  const data = await getProfileIdentityData(userId);
 
-  if (!initialData) {
+  if (!data) {
     redirect(getSignInPath(ROUTES.profile));
   }
 
+  const availableAuthProviderIds = authOptions.providers.map((provider) => provider.id);
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <ArcadeTag className="mb-4">Player Profile</ArcadeTag>
-      <ProfileHub initialData={initialData} />
-    </div>
+    <ProfileIdentityClient
+      initialUser={data.user}
+      socialAccounts={data.socialAccounts}
+      availableAuthProviderIds={availableAuthProviderIds}
+      linkedAuthProviderIds={data.linkedAuthProviderIds}
+    />
   );
 }

@@ -5,7 +5,7 @@ export default withAuth({
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     authorized: ({ req, token }) => {
-      const authPaths = [ROUTES.dashboard, ROUTES.profile, "/admin"];
+      const authPaths = [ROUTES.dashboard, ROUTES.profile, ROUTES.census, ROUTES.settings, "/admin"];
       const requiresAuth = authPaths.some((p) =>
         req.nextUrl.pathname.startsWith(p)
       );

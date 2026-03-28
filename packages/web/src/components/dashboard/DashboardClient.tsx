@@ -1,17 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/retroui/Button"
 import { LogOut } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { ArcadeTag } from "@/components/ui/arcade-tag"
 import { buildUserReferralUrl } from "@/lib/url"
 import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
 import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard"
-import { ProfileCard } from "@/components/dashboard/ProfileCard"
 import { ReferralGoalCard } from "@/components/dashboard/ReferralGoalCard"
-import { NotificationPreferencesCard } from "@/components/dashboard/NotificationPreferencesCard"
 import { GlobalProgressCard } from "@/components/dashboard/GlobalProgressCard"
 import { StatsOverview } from "@/components/dashboard/StatsOverview"
 import { BadgesSection } from "@/components/dashboard/BadgesSection"
@@ -19,32 +15,17 @@ import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard"
 import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
-import { EmailSignatureCard } from "@/components/dashboard/EmailSignatureCard"
-import { ConnectedAccountsCard } from "@/components/dashboard/ConnectedAccountsCard"
 import { StickyShareFooter } from "@/components/dashboard/StickyShareFooter"
-import { PlayerNameBanner } from "@/components/dashboard/PlayerNameBanner"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function DashboardClient({
-  availableAuthProviderIds,
   initialData,
   leaderboard,
 }: {
-  availableAuthProviderIds: string[]
   initialData: DashboardData
   leaderboard: LeaderboardEntry[]
 }) {
-  const router = useRouter()
-  const [user, setUser] = useState(initialData.user)
-  const referralLink = buildUserReferralUrl(user)
-
-  useEffect(() => {
-    setUser(initialData.user)
-  }, [initialData.user])
-
-  const refreshDashboard = () => {
-    router.refresh()
-  }
+  const referralLink = buildUserReferralUrl(initialData.user)
 
   return (
     <>
@@ -70,32 +51,15 @@ export function DashboardClient({
             </div>
           </div>
 
-          {/* Player Name Banner */}
-          <PlayerNameBanner
-            user={user}
-            referralLink={referralLink}
-            onUserChange={setUser}
-            onRefresh={refreshDashboard}
-          />
-
           {/* Impact Ledger */}
           <div className="mb-8" id="impact-ledger">
             <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
           </div>
 
-          {/* Referral Link + Profile */}
+          {/* Referral Link + Referral Goal */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <ReferralLinkCard referralLink={referralLink} className="h-full" id="referral" />
-            <ProfileCard user={user} onUserChange={setUser} onRefresh={refreshDashboard} />
-          </div>
-
-          {/* Referral Goal + Notification Preferences */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <ReferralGoalCard stats={initialData.stats} />
-            <NotificationPreferencesCard
-              preferences={initialData.notificationPreferences}
-              onRefresh={refreshDashboard}
-            />
           </div>
 
           {/* Global Progress */}
@@ -112,7 +76,7 @@ export function DashboardClient({
             {leaderboard.length > 0 && (
               <LeaderboardCard
                 leaderboard={leaderboard}
-                user={user}
+                user={initialData.user}
                 stats={initialData.stats}
               />
             )}
@@ -126,17 +90,6 @@ export function DashboardClient({
 
           {/* Share Templates */}
           <ShareTemplatesCard referralLink={referralLink} />
-
-          {/* Email Signature */}
-          <EmailSignatureCard referralLink={referralLink} userName={user.name} />
-
-          {/* Connected Accounts */}
-          <ConnectedAccountsCard
-            availableAuthProviderIds={availableAuthProviderIds}
-            linkedAuthProviderIds={initialData.linkedAuthProviderIds}
-            socialAccounts={initialData.socialAccounts}
-            onRefresh={refreshDashboard}
-          />
         </div>
       </div>
       <StickyShareFooter referrals={initialData.stats.referrals} referralLink={referralLink} />

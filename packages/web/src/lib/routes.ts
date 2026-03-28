@@ -47,6 +47,8 @@ export const ROUTES = {
   // Player
   profile: "/profile",
   dashboard: "/dashboard",
+  census: "/census",
+  settings: "/settings",
   transmit: "/transmit",
   // Futures
   wishonia: "/wishonia",
@@ -262,7 +264,21 @@ export const profileLink: NavItem = {
   href: ROUTES.profile,
   label: "Profile",
   emoji: "🧭",
-  description: "Your permanent record of giving a damn. Check-ins, reports, and evidence you tried.",
+  description: "Your name, your face, your connected accounts. The bit where you tell the system who you are.",
+};
+
+export const censusLink: NavItem = {
+  href: ROUTES.census,
+  label: "Census",
+  emoji: "📋",
+  description: "Your permanent record of giving a damn. Check-ins, location, demographics, and evidence you tried.",
+};
+
+export const settingsLink: NavItem = {
+  href: ROUTES.settings,
+  label: "Settings",
+  emoji: "⚙️",
+  description: "Notification preferences, account toggles, and other knobs your species inexplicably needs labelled.",
 };
 
 export const appLinks: NavItem[] = [
@@ -381,7 +397,7 @@ export interface NavSection {
 }
 
 export const navSections: NavSection[] = [
-  { id: "play", label: "Play", items: [dashboardLink, profileLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
+  { id: "play", label: "Play", items: [dashboardLink, profileLink, censusLink, settingsLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
   { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
   { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, studiesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
@@ -393,6 +409,8 @@ export const footerAppLinks: NavItem[] = [
   alignmentLink,
   dashboardLink,
   profileLink,
+  censusLink,
+  settingsLink,
   trackLink,
   aboutLink,
 ];

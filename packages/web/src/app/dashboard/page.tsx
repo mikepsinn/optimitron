@@ -20,11 +20,9 @@ export default async function DashboardPage() {
     getDashboardData(userId),
     getTopReferrers(),
   ]);
-  const availableAuthProviderIds = authOptions.providers.map((provider) => provider.id);
 
   return (
     <DashboardClient
-      availableAuthProviderIds={availableAuthProviderIds}
       initialData={initialData}
       leaderboard={leaderboard}
     />

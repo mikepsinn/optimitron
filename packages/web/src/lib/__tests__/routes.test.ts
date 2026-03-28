@@ -62,7 +62,7 @@ describe("navigation routes", () => {
 
   it("builds sign-in links from canonical routes", () => {
     expect(getSignInPath()).toBe(
-      `/auth/signin?callbackUrl=${encodeURIComponent(ROUTES.wishocracy)}`,
+      `/auth/signin?callbackUrl=${encodeURIComponent(ROUTES.dashboard)}`,
     );
     expect(getSignInPath(ROUTES.alignment)).toBe(
       `/auth/signin?callbackUrl=${encodeURIComponent(ROUTES.alignment)}`,
@@ -85,6 +85,8 @@ describe("navigation routes", () => {
         ROUTES.alignment,
         ROUTES.dashboard,
         ROUTES.profile,
+        ROUTES.census,
+        ROUTES.settings,
         ROUTES.about,
       ]),
     );

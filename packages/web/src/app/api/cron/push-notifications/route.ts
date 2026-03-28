@@ -108,7 +108,7 @@ export async function GET(request: Request) {
           title: "How are you feeling?",
           body: "Take a moment to rate your health and happiness today.",
           tag: "daily-checkin",
-          url: ROUTES.profile,
+          url: ROUTES.census,
           actions: [
             { action: "rate", title: "Rate Now" },
             { action: "chat", title: "Open Chat" },
