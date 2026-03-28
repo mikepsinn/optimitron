@@ -6,7 +6,7 @@ import { LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { ArcadeTag } from "@/components/ui/arcade-tag"
-import { buildPrizeReferralUrl } from "@/lib/url"
+import { buildUserReferralUrl } from "@/lib/url"
 import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
 import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard"
 import { ProfileCard } from "@/components/dashboard/ProfileCard"
@@ -34,7 +34,7 @@ export function DashboardClient({
 }) {
   const router = useRouter()
   const [user, setUser] = useState(initialData.user)
-  const referralLink = buildPrizeReferralUrl(user.username || user.referralCode)
+  const referralLink = buildUserReferralUrl(user)
 
   useEffect(() => {
     setUser(initialData.user)

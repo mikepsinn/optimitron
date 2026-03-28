@@ -4,7 +4,6 @@ import {
   buildReferralUrl,
   buildUserAlignmentUrl,
   buildUserReferralUrl,
-  buildPrizeReferralUrl,
   buildReferendumReferralUrl,
 } from "@/lib/url";
 import { ROUTES } from "@/lib/routes";
@@ -31,12 +30,6 @@ describe("url helpers", () => {
     ).toBe(`https://example.com${ROUTES.alignment}/jane`);
     expect(buildAlignmentUrl("REF123", "https://example.com")).toBe(
       `https://example.com${ROUTES.alignment}/REF123`,
-    );
-  });
-
-  it("builds prize referral links with ?ref=", () => {
-    expect(buildPrizeReferralUrl("friend-123", "https://example.com")).toBe(
-      `https://example.com${ROUTES.prize}?ref=friend-123`,
     );
   });
 

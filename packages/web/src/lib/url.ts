@@ -62,11 +62,3 @@ export function buildReferendumReferralUrl(
   return identifier ? `${base}?ref=${identifier}` : base;
 }
 
-/** Build a prize referral link: /prize?ref=identifier */
-export function buildPrizeReferralUrl(
-  identifier?: string | null,
-  baseUrl: string = getBaseUrl(),
-): string {
-  const base = `${baseUrl}${ROUTES.prize}`;
-  return identifier ? `${base}?ref=${identifier}` : base;
-}

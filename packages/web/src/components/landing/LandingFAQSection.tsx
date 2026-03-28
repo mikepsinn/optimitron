@@ -1,3 +1,5 @@
+"use client";
+
 import { Accordion } from "@/components/retroui/Accordion";
 import {
   fmtParam,

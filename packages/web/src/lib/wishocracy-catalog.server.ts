@@ -39,16 +39,16 @@ export async function ensureWishocraticItemsExist(
     return;
   }
 
-  const jurisdiction = await prisma.jurisdiction.findUnique({
+  const jurisdiction = await prisma.jurisdiction.upsert({
     where: { code: DEFAULT_WISHOCRACY_JURISDICTION_CODE },
+    update: {},
+    create: {
+      name: "United States",
+      type: "COUNTRY",
+      code: DEFAULT_WISHOCRACY_JURISDICTION_CODE,
+    },
     select: { id: true },
   });
-
-  if (!jurisdiction) {
-    throw new Error(
-      `Wishocracy jurisdiction not found: ${DEFAULT_WISHOCRACY_JURISDICTION_CODE}`,
-    );
-  }
 
   await Promise.all(
     uniqueIds.map((itemId) => {

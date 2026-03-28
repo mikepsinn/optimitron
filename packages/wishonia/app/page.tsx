@@ -144,7 +144,7 @@ export default function ChatPage(): React.JSX.Element {
         <div style={{ padding: 12, borderBottom: "1px solid rgba(54,226,248,0.1)" }}>
           <button
             onClick={handleNewChat}
-            style={{ width: "100%", padding: "10px 16px", background: "rgba(209,0,177,0.15)", border: "1px solid rgba(209,0,177,0.3)", borderRadius: 8, color: "#d100b1", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+            style={{ width: "100%", padding: "10px 16px", background: "rgba(209,0,177,0.15)", border: "1px solid rgba(209,0,177,0.3)", borderRadius: 0, color: "#d100b1", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
           >
             + New Chat
           </button>
@@ -155,7 +155,7 @@ export default function ChatPage(): React.JSX.Element {
               key={chat.id}
               onClick={() => handleSelectChat(chat.id)}
               style={{
-                padding: "10px 12px", margin: "2px 8px", borderRadius: 6, cursor: "pointer",
+                padding: "10px 12px", margin: "2px 8px", borderRadius: 0, cursor: "pointer",
                 display: "flex", justifyContent: "space-between", alignItems: "center",
                 background: chat.id === activeChatId ? "rgba(54,226,248,0.08)" : "transparent",
                 color: chat.id === activeChatId ? "#36E2F8" : "#888",
@@ -194,7 +194,7 @@ export default function ChatPage(): React.JSX.Element {
           <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
             {/* Welcome message */}
             <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
-              <div style={{ maxWidth: "75%", padding: "10px 14px", borderRadius: 12, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#C6CBF5", fontSize: 14, lineHeight: 1.6 }}>
+              <div style={{ maxWidth: "75%", padding: "10px 14px", borderRadius: 0, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#C6CBF5", fontSize: 14, lineHeight: 1.6 }}>
                 {WELCOME}
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function ChatPage(): React.JSX.Element {
             {messages.map((msg, i) => (
               <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", marginBottom: 12 }}>
                 <div style={{
-                  maxWidth: "75%", padding: "10px 14px", borderRadius: 12, fontSize: 14, lineHeight: 1.6,
+                  maxWidth: "75%", padding: "10px 14px", borderRadius: 0, fontSize: 14, lineHeight: 1.6,
                   ...(msg.role === "user"
                     ? { background: "rgba(209,0,177,0.12)", border: "1px solid rgba(209,0,177,0.25)", color: "#e0d0e8" }
                     : { background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#C6CBF5" }),
@@ -214,7 +214,7 @@ export default function ChatPage(): React.JSX.Element {
 
             {isThinking && (
               <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
-                <div style={{ padding: "10px 14px", borderRadius: 12, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#555", fontSize: 14 }}>
+                <div style={{ padding: "10px 14px", borderRadius: 0, background: "#1a1a2e", border: "1px solid rgba(54,226,248,0.15)", color: "#555", fontSize: 14 }}>
                   <span style={{ animation: "pulse 1.5s infinite" }}>thinking...</span>
                 </div>
               </div>
@@ -248,13 +248,13 @@ export default function ChatPage(): React.JSX.Element {
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Ask Wishonia anything..."
               disabled={isThinking}
-              style={{ flex: 1, padding: "12px 16px", background: "#111", border: "1px solid rgba(54,226,248,0.15)", borderRadius: 8, color: "#ececec", fontSize: 14, outline: "none" }}
+              style={{ flex: 1, padding: "12px 16px", background: "#111", border: "1px solid rgba(54,226,248,0.15)", borderRadius: 0, color: "#ececec", fontSize: 14, outline: "none" }}
             />
             <button
               onClick={handleSend}
               disabled={isThinking}
               style={{
-                padding: "12px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: isThinking ? "not-allowed" : "pointer",
+                padding: "12px 24px", borderRadius: 0, fontSize: 14, fontWeight: 600, cursor: isThinking ? "not-allowed" : "pointer",
                 background: isThinking ? "#222" : "rgba(209,0,177,0.2)",
                 border: "1px solid rgba(209,0,177,0.4)",
                 color: isThinking ? "#555" : "#d100b1",

@@ -9,7 +9,7 @@ import { ShareTemplatesCard } from "@/components/prize/ShareTemplatesCard";
 import { Progress } from "@/components/retroui/Progress";
 import { Tooltip } from "@/components/retroui/Tooltip";
 import { WorldIdVerificationCard } from "@/components/personhood/WorldIdVerificationCard";
-import { buildPrizeReferralUrl } from "@/lib/url";
+import { buildUserReferralUrl } from "@/lib/url";
 import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
@@ -107,8 +107,7 @@ export function CitizenDashboard() {
   const user = session?.user as
     | { username?: string; referralCode?: string }
     | undefined;
-  const username = user?.username ?? user?.referralCode ?? null;
-  const referralUrl = buildPrizeReferralUrl(username);
+  const referralUrl = buildUserReferralUrl(user);
 
   // Loading
   if (status === "loading" || loading) {

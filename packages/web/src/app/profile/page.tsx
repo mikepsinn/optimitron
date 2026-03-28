@@ -19,6 +19,10 @@ export default async function ProfilePage() {
 
   const initialData = await getProfilePageData(userId);
 
+  if (!initialData) {
+    redirect(getSignInPath(ROUTES.profile));
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <ArcadeTag className="mb-4">Player Profile</ArcadeTag>

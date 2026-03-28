@@ -68,9 +68,9 @@ interface UpsertMeasurementInput {
   value: number;
 }
 
-export async function getProfilePageData(userId: string): Promise<ProfilePageData> {
+export async function getProfilePageData(userId: string): Promise<ProfilePageData | null> {
   const [user, measurements] = await Promise.all([
-    prisma.user.findUniqueOrThrow({
+    prisma.user.findUnique({
       where: { id: userId },
       select: profileUserSelect,
     }),
@@ -102,6 +102,10 @@ export async function getProfilePageData(userId: string): Promise<ProfilePageDat
       take: 60,
     }),
   ]);
+
+  if (!user) {
+    return null;
+  }
 
   const history = buildDailyCheckInHistory(
     measurements.map((measurement) => ({
