@@ -57,23 +57,23 @@ export function SlideDominantAssuranceContract() {
                 🌍 TARGETS HIT
               </div>
               <div className="space-y-1">
-                <div className="font-pixel text-lg md:text-xl text-zinc-200">
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
                   🏆 Pool unlocks for VOTE holders
                 </div>
-                <div className="font-pixel text-lg md:text-xl text-emerald-400">
+                <div className="font-pixel text-xl md:text-2xl text-emerald-400">
                   {formatCurrency(GAME_PARAMS.valuePerVotePoint)} per VOTE point
                 </div>
-                <div className="font-pixel text-lg md:text-xl text-zinc-200">
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
                   + {vcReturn} fund growth
                 </div>
                 <div className="border-t border-emerald-500/30 pt-2 mt-2">
-                  <div className="font-pixel text-sm md:text-base text-zinc-400 mb-1">
+                  <div className="font-pixel text-base md:text-xl text-zinc-400 mb-1">
                     YOUR PERSONAL UPSIDE:
                   </div>
-                  <div className="font-pixel text-lg md:text-xl text-emerald-300">
+                  <div className="font-pixel text-xl md:text-2xl text-emerald-300">
                     💰 +{lifetimeIncomeGain} lifetime income
                   </div>
-                  <div className="font-pixel text-lg md:text-xl text-emerald-300">
+                  <div className="font-pixel text-xl md:text-2xl text-emerald-300">
                     ❤️ +{haleGain} healthy years
                   </div>
                 </div>
@@ -86,17 +86,17 @@ export function SlideDominantAssuranceContract() {
                 📉 TARGETS MISSED
               </div>
               <div className="space-y-1">
-                <div className="font-pixel text-lg md:text-xl text-zinc-200">
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
                   💵 ${depositExample} →
                 </div>
-                <div className="font-pixel text-lg md:text-xl text-cyan-400">
+                <div className="font-pixel text-xl md:text-2xl text-cyan-400">
                   {formatCurrency(returnOnFail)} back
                 </div>
-                <div className="font-pixel text-lg md:text-xl text-zinc-200">
+                <div className="font-pixel text-xl md:text-2xl text-zinc-200">
                   ({vcReturn} over 15yr at {GAME_PARAMS.prizePoolROI}%)
                 </div>
                 <div className="border-t border-cyan-500/20 pt-2 mt-2">
-                  <div className="font-pixel text-sm md:text-base text-zinc-400">
+                  <div className="font-pixel text-base md:text-xl text-zinc-400">
                     YOUR $100 STILL BEAT THE S&P 500
                   </div>
                 </div>

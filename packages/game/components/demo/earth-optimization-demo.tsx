@@ -10,6 +10,7 @@ import { ControlPanel } from "./controls/control-panel";
 
 import { BootScreen } from "./boot-screen";
 import { SLIDES } from "@/lib/demo/demo-config";
+import { getExpressionForSlide } from "@/lib/demo/wishonia-expressions";
 import { cn } from "@/lib/utils";
 
 /** Running death counter — "X humans terminated since this presentation began" */
@@ -53,9 +54,12 @@ export function EarthOptimizationDemo() {
 
   const goToSlide = useDemoStore((s) => s.goToSlide);
 
-  // Get current slide narration
+  // Get current slide narration and expression
   const currentSlideConfig = SLIDES[currentSlide];
   const narrationText = currentSlideConfig?.narration || "";
+  const { expression: wishoniaExpression, bodyPose: wishoniaBodyPose } = currentSlideConfig
+    ? getExpressionForSlide(currentSlideConfig)
+    : { expression: "neutral" as const, bodyPose: "idle" as const };
 
   const handleBootComplete = useCallback(() => {
     setBooted(true);
@@ -135,7 +139,12 @@ export function EarthOptimizationDemo() {
       >
         {/* Main slide area */}
         <div className="absolute inset-0">
-          <SierraChrome narrationText={narrationText} slideId={currentSlideConfig?.id}>
+          <SierraChrome
+            narrationText={narrationText}
+            slideId={currentSlideConfig?.id}
+            expression={wishoniaExpression}
+            bodyPose={wishoniaBodyPose}
+          >
             <SlideRenderer />
           </SierraChrome>
         </div>

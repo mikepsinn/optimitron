@@ -31,6 +31,7 @@ interface AnimatedLineChartProps {
   yAxisLabel?: string;
   formatY?: (value: number) => string;
   formatX?: (value: number) => string;
+  yMinOverride?: number;
 }
 
 export function AnimatedLineChart({
@@ -48,6 +49,7 @@ export function AnimatedLineChart({
   yAxisLabel,
   formatY = (v) => v.toString(),
   formatX,
+  yMinOverride,
 }: AnimatedLineChartProps) {
   const [progress, setProgress] = useState(animate ? 0 : 1);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -60,7 +62,7 @@ export function AnimatedLineChart({
   const allPoints = lines.flatMap((l) => l.points);
   const xMin = Math.min(...allPoints.map((p) => p.x));
   const xMax = Math.max(...allPoints.map((p) => p.x));
-  const yMin = Math.min(...allPoints.map((p) => p.y), 0);
+  const yMin = yMinOverride !== undefined ? yMinOverride : Math.min(...allPoints.map((p) => p.y), 0);
   const yMax = Math.max(...allPoints.map((p) => p.y));
 
   const scaleX = (x: number) =>

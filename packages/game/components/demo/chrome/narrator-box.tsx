@@ -1,16 +1,22 @@
 "use client";
 
-// Cache bust: v3
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDemoStore } from "@/lib/demo/store";
 import { SFX } from "@/lib/demo/audio";
 import { cn } from "@/lib/utils";
+import { WishoniaNarrator } from "@optimitron/wishonia-widget/narration";
+
+const SPEAKING_INSTRUCTIONS =
+  "Generate a patient, warm voice explaining something counterintuitive to someone smart. " +
+  "Not condescending. Respects the listener's intelligence. Slightly quick.";
 
 interface NarratorBoxProps {
   text?: string;
   slideId?: string;
   characterSpeed?: number;
   onComplete?: () => void;
+  expression?: string;
+  bodyPose?: string;
 }
 
 /** Cached manifest — fetched once */
@@ -34,9 +40,9 @@ async function getManifest() {
 }
 
 /**
- * Hook to play narration audio for the current slide
+ * Hook to play narration audio for the current slide (MP3 fallback)
  */
-function useNarrationAudio(slideId?: string) {
+function useNarrationAudio(slideId?: string, enabled = true) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { isMuted, voiceVolume, masterVolume, isPlaying } = useDemoStore();
 
@@ -66,7 +72,7 @@ function useNarrationAudio(slideId?: string) {
       audioRef.current = null;
     }
 
-    if (!slideId) return;
+    if (!slideId || !enabled) return;
 
     let cancelled = false;
 
@@ -95,62 +101,19 @@ function useNarrationAudio(slideId?: string) {
         audioRef.current = null;
       }
     };
-  }, [slideId]); // Only re-run when slide changes
-}
-
-/**
- * Wishonia Portrait - Pixel art character portrait
- */
-function WishoniaPortrait() {
-  const [isBlinking, setIsBlinking] = useState(false);
-
-  useEffect(() => {
-    const blinkInterval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setIsBlinking(true);
-        setTimeout(() => setIsBlinking(false), 150);
-      }
-    }, 2000);
-    return () => clearInterval(blinkInterval);
-  }, []);
-
-  return (
-    <div className={cn(
-      "narrator-portrait relative overflow-hidden",
-      "w-12 h-12 md:w-16 md:h-16",
-      "flex-shrink-0"
-    )}>
-      <div className="absolute inset-0 bg-[#1a1a2e] flex items-center justify-center">
-        <div className="relative w-10 h-10 md:w-12 md:h-12">
-          <div className="absolute inset-1 bg-[#e8c4a0] rounded-sm" />
-          <div className={cn(
-            "absolute top-3 left-2 w-2 h-2 bg-[#2a2a4a] rounded-sm transition-all",
-            isBlinking && "h-0.5"
-          )} />
-          <div className={cn(
-            "absolute top-3 right-2 w-2 h-2 bg-[#2a2a4a] rounded-sm transition-all",
-            isBlinking && "h-0.5"
-          )} />
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-3 h-1 bg-[#8b4513] rounded-sm" />
-          <div className="absolute top-0 left-0 right-0 h-2 bg-[#4a3728] rounded-t-sm" />
-        </div>
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
-    </div>
-  );
+  }, [slideId, enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /**
  * Typewriter Text - Character by character reveal
- * NOTE: This component uses displayText prop, NOT text
  */
-function TypewriterText({ 
+function TypewriterText({
   displayText,
-  speed = 30, 
-  onComplete 
-}: { 
-  displayText: string; 
-  speed?: number; 
+  speed = 30,
+  onComplete
+}: {
+  displayText: string;
+  speed?: number;
   onComplete?: () => void;
 }) {
   const [output, setOutput] = useState("");
@@ -161,28 +124,28 @@ function TypewriterText({
     // Reset state
     setOutput("");
     setDone(false);
-    
+
     // If empty or undefined, complete immediately
     if (!displayText || displayText.length === 0) {
       setDone(true);
       setTypewriterComplete(true);
       return;
     }
-    
+
     setTyping(true);
     setTypewriterComplete(false);
 
     let charIndex = 0;
     const totalChars = displayText.length;
-    
+
     const timer = setInterval(() => {
       if (charIndex < totalChars) {
         setOutput(displayText.slice(0, charIndex + 1));
-        
+
         if (!isMuted && charIndex % 3 === 0) {
           try { SFX.typewriter(); } catch { /* ignore */ }
         }
-        
+
         charIndex++;
       } else {
         clearInterval(timer);
@@ -210,14 +173,21 @@ function TypewriterText({
 /**
  * Main Narrator Box Component
  */
-export function NarratorBox({ text = "", slideId, characterSpeed = 30, onComplete }: NarratorBoxProps) {
-  const { palette, isRecordingMode } = useDemoStore();
+export function NarratorBox({
+  text = "",
+  slideId,
+  characterSpeed = 30,
+  onComplete,
+  expression,
+  bodyPose,
+}: NarratorBoxProps) {
+  const { palette, isRecordingMode, isMuted, masterVolume, voiceVolume, liveTtsEnabled } = useDemoStore();
   const [key, setKey] = useState(0);
 
-  // Play narration audio
-  useNarrationAudio(slideId);
-  
-  // Always ensure text is a string - this is passed to TypewriterText as displayText
+  // MP3 fallback: only active when live TTS is disabled
+  useNarrationAudio(slideId, !liveTtsEnabled);
+
+  // Always ensure text is a string
   const safeText = text ?? "";
 
   useEffect(() => {
@@ -237,12 +207,48 @@ export function NarratorBox({ text = "", slideId, characterSpeed = 30, onComplet
         "p-3 md:p-4",
         "min-h-[80px] md:min-h-[100px]"
       )}>
-        <WishoniaPortrait />
-        
+        {/* Animated Wishonia character — replaces old pixel portrait */}
+        <div className={cn(
+          "narrator-portrait relative",
+          "w-12 h-12 md:w-16 md:h-16",
+          "flex-shrink-0 flex items-center justify-center"
+        )}>
+          {liveTtsEnabled ? (
+            <WishoniaNarrator
+              tokenEndpoint="/api/gemini-live-token"
+              text={safeText}
+              voice="Kore"
+              speakingInstructions={SPEAKING_INSTRUCTIONS}
+              expression={expression as Parameters<typeof WishoniaNarrator>[0]["expression"]}
+              bodyPose={bodyPose as Parameters<typeof WishoniaNarrator>[0]["bodyPose"]}
+              size={40}
+              position="custom"
+              style={{ position: "relative" }}
+              volume={masterVolume * voiceVolume}
+              muted={isMuted}
+              onNarrationEnd={() => {
+                useDemoStore.getState().setNarrationEnded(true);
+              }}
+            />
+          ) : (
+            // Static fallback when live TTS is off — just the character, no audio
+            <WishoniaNarrator
+              tokenEndpoint=""
+              text=""
+              expression={expression as Parameters<typeof WishoniaNarrator>[0]["expression"]}
+              bodyPose={bodyPose as Parameters<typeof WishoniaNarrator>[0]["bodyPose"]}
+              size={40}
+              position="custom"
+              style={{ position: "relative" }}
+              muted
+            />
+          )}
+        </div>
+
         <div className="flex-1 flex items-center">
-          <TypewriterText 
+          <TypewriterText
             key={key}
-            displayText={safeText} 
+            displayText={safeText}
             speed={characterSpeed}
             onComplete={onComplete}
           />

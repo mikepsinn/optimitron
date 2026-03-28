@@ -113,11 +113,11 @@ export function SlideDiseaseCureSupplyChain() {
           style={{ opacity: phase >= 4 ? 1 : 0 }}
         >
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-1">
-            <span className="font-terminal text-xl text-zinc-300">
-              People who know each other: <span className="font-pixel text-xl text-amber-400">none</span>
+            <span className="font-terminal text-2xl md:text-3xl text-zinc-300">
+              People who know each other: <span className="font-pixel text-2xl md:text-3xl text-amber-400">none</span>
             </span>
-            <span className="font-terminal text-xl text-zinc-300">
-              Orders given: <span className="font-pixel text-xl text-amber-400">zero</span>
+            <span className="font-terminal text-2xl md:text-3xl text-zinc-300">
+              Orders given: <span className="font-pixel text-2xl md:text-3xl text-amber-400">zero</span>
             </span>
           </div>
           <div className="font-pixel text-2xl md:text-4xl text-amber-400">

@@ -65,7 +65,7 @@ export function SlideCompoundGrowthScenarios() {
         {/* Title */}
         {phase >= 1 && (
           <h1 className="font-pixel text-xl md:text-2xl text-amber-400 text-center slide-fade-in">
-            🧮 WHAT COMPOUND INTEREST THINKS ABOUT YOUR POLITICS
+            PLEASE SELECT AN EARTH
           </h1>
         )}
 

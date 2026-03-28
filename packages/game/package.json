@@ -12,11 +12,13 @@
     "merge:audio": "tsx scripts/merge-audio.ts",
     "generate:readme": "tsx scripts/generate-readme.ts",
     "screenshot": "tsx scripts/screenshot-slides.ts",
-    "screenshot:watch": "tsx scripts/watch-screenshots.ts"
+    "screenshot:watch": "tsx scripts/watch-screenshots.ts",
+    "copy:sprites": "cp -r ../wishonia-widget/sprites/tier0/* public/sprites/wishonia/"
   },
   "dependencies": {
     "@google/genai": "^1.46.0",
     "@optimitron/data": "workspace:*",
+    "@optimitron/wishonia-widget": "workspace:*",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.12",
     "@radix-ui/react-alert-dialog": "1.1.15",

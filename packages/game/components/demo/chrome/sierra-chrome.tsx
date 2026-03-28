@@ -15,6 +15,8 @@ interface SierraChromeProps {
   onVerbSelect?: (verb: VerbType) => void;
   activeVerb?: VerbType;
   showVerbBar?: boolean;
+  expression?: string;
+  bodyPose?: string;
   children: React.ReactNode;
 }
 
@@ -29,6 +31,8 @@ export function SierraChrome({
   onVerbSelect,
   activeVerb,
   showVerbBar = true,
+  expression,
+  bodyPose,
   children,
 }: SierraChromeProps) {
   const { palette, isRecordingMode } = useDemoStore();
@@ -76,6 +80,8 @@ export function SierraChrome({
             text={narrationText}
             slideId={slideId}
             onComplete={onNarrationComplete}
+            expression={expression}
+            bodyPose={bodyPose}
           />
 
           {/* Verb Bar + Inventory */}

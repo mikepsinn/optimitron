@@ -86,19 +86,6 @@ export function SlideDysfunctionTax101t() {
             </span>
           </div>
 
-          <div className="p-4 space-y-1 border-b border-dashed border-zinc-700">
-            <div className="font-pixel text-xl text-zinc-200">
-              🦠 Status:{" "}
-              <span className="text-red-400 animate-pulse">ACTIVE</span>
-            </div>
-            <div className="font-pixel text-xl text-zinc-200">
-              ⚠️ Severity: <span className="text-red-400">CRITICAL</span>
-            </div>
-            <div className="font-pixel text-xl text-zinc-200">
-              📅 Duration: <span className="text-amber-400">113 years</span>
-            </div>
-          </div>
-
           {/* Line Items */}
           <div className="px-4 pb-4 space-y-3">
             {LINE_ITEMS.map((item, i) => {
@@ -145,12 +132,6 @@ export function SlideDysfunctionTax101t() {
               );
             })}
 
-            {/* GDP percentage */}
-            {visibleLines >= LINE_ITEMS.length && (
-              <div className="text-center font-pixel text-xl text-zinc-200 pt-1">
-                (88% of global GDP)
-              </div>
-            )}
           </div>
         </div>
 

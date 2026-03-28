@@ -31,7 +31,7 @@ export function SlideEconomicCollapseClock() {
   const [glitchIntensity, setGlitchIntensity] = useState(0);
   const [flashState, setFlashState] = useState("");
   const [screenCrack, setScreenCrack] = useState(0);
-  const animRef = useRef<ReturnType<typeof setInterval>>();
+  const animRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];

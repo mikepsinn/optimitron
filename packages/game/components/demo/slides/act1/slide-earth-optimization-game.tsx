@@ -85,7 +85,7 @@ export function SlideEarthOptimizationGame() {
         {phase >= 1 && (
           <div className="text-center space-y-2 fade-up">
             <div className="font-pixel text-base md:text-xl text-red-400 tracking-widest">
-              🌍 WISHONIA OPTIMIZATION SYSTEMS PRESENTS 🌍
+              🌍 WISHONIA PRESENTS 🌍
             </div>
             <h1 className="font-pixel text-4xl md:text-7xl text-amber-400 leading-relaxed tracking-wide title-glow">
               THE EARTH

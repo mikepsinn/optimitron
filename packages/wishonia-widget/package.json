@@ -7,19 +7,27 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./narration": "./dist/narration.js",
     "./styles": "./dist/styles/wishonia.css"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "build": "tsup src/index.ts src/narration.ts --format esm,cjs --dts --clean",
     "optimize-sprites": "tsx scripts/optimize-sprites.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "peerDependencies": {
+    "@google/genai": ">=1.46.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
+  "peerDependenciesMeta": {
+    "@google/genai": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@google/genai": "^1.46.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "react": "^18.2.0",

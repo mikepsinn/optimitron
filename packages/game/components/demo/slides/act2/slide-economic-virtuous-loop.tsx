@@ -51,11 +51,11 @@ function LoopCircle({
 
   return (
     <div className={`flex flex-col items-center gap-2 transition-opacity duration-700 ${dimmed ? "opacity-30" : ""}`}>
-      <div className={`font-pixel text-lg md:text-xl ${textColor} uppercase tracking-widest`}>
+      <div className={`font-pixel text-xl md:text-2xl ${textColor} uppercase tracking-widest`}>
         {isGreen ? "Virtuous Version" : "Your Species Version"}
       </div>
 
-      <div className="relative" style={{ width: 320, height: 320 }}>
+      <div className="relative" style={{ width: 420, height: 420 }}>
         {/* SVG ring + animated dot */}
         <svg
           viewBox="0 0 200 200"
@@ -121,15 +121,15 @@ function LoopCircle({
             className="absolute flex flex-col items-center"
             style={positions[i]}
           >
-            <span className="text-2xl">{s.emoji}</span>
-            <span className={`font-pixel text-xs md:text-sm ${textColor} whitespace-nowrap px-2 py-0.5 rounded ${bgColor} border ${borderColor}`}>
+            <span className="text-3xl">{s.emoji}</span>
+            <span className={`font-pixel text-base md:text-lg ${textColor} whitespace-nowrap px-2 py-1 rounded ${bgColor} border ${borderColor}`}>
               {s.label}
             </span>
           </div>
         ))}
       </div>
 
-      <div className={`font-terminal text-sm ${textColor}`}>
+      <div className={`font-terminal text-lg md:text-xl ${textColor}`}>
         {subtitle}
       </div>
     </div>

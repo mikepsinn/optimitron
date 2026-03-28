@@ -74,30 +74,30 @@ export function SlideDecentralizedFda() {
             {/* LEFT — Outcome Label */}
             <div className="bg-zinc-900/80 border border-cyan-500/30 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="font-pixel text-lg md:text-xl text-cyan-400">
+                <div className="font-pixel text-xl md:text-2xl text-cyan-400">
                   OUTCOME LABEL
                 </div>
-                <div className="font-terminal text-xs text-zinc-400 bg-cyan-500/10 px-2 py-1 rounded">
+                <div className="font-terminal text-base text-zinc-400 bg-cyan-500/10 px-2 py-1 rounded">
                   {OUTCOME_LABEL.tag}
                 </div>
               </div>
 
-              <div className="font-pixel text-base md:text-lg text-zinc-200 mb-3">
+              <div className="font-pixel text-lg md:text-2xl text-zinc-200 mb-3">
                 {OUTCOME_LABEL.treatment}
               </div>
 
               {/* Outcomes with bars */}
-              <div className="space-y-2 mb-3">
+              <div className="space-y-3 mb-3">
                 {OUTCOME_LABEL.outcomes.map((o) => (
-                  <div key={o.name} className="flex items-center gap-2">
-                    <span className="font-terminal text-sm text-zinc-300 w-[140px] shrink-0">{o.name}</span>
-                    <div className="flex-1 h-3 bg-zinc-800 rounded-full overflow-hidden">
+                  <div key={o.name} className="flex items-center gap-3">
+                    <span className="font-terminal text-base md:text-lg text-zinc-300 w-[160px] shrink-0">{o.name}</span>
+                    <div className="flex-1 h-4 bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-emerald-400 rounded-full bar-fill"
                         style={{ width: `${Math.abs(o.change)}%` }}
                       />
                     </div>
-                    <span className="font-pixel text-sm text-emerald-400 w-[60px] text-right">
+                    <span className="font-pixel text-base md:text-lg text-emerald-400 w-[70px] text-right">
                       {o.change > 0 ? "+" : ""}{o.change}%
                     </span>
                   </div>
@@ -106,28 +106,28 @@ export function SlideDecentralizedFda() {
 
               {/* Side effects */}
               <div className="border-t border-zinc-700 pt-2 mb-2">
-                <div className="font-terminal text-xs text-zinc-400 mb-1">SIDE EFFECTS</div>
-                <div className="flex gap-3">
+                <div className="font-terminal text-base text-zinc-400 mb-1">SIDE EFFECTS</div>
+                <div className="flex gap-4">
                   {OUTCOME_LABEL.sideEffects.map((se) => (
                     <div key={se.name} className="flex items-center gap-1">
-                      <span className="font-terminal text-sm text-zinc-300">{se.name}:</span>
-                      <span className="font-pixel text-sm text-amber-400">{se.pct}%</span>
+                      <span className="font-terminal text-base md:text-lg text-zinc-300">{se.name}:</span>
+                      <span className="font-pixel text-base md:text-lg text-amber-400">{se.pct}%</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="font-terminal text-xs text-zinc-500">
+              <div className="font-terminal text-base text-zinc-500">
                 {OUTCOME_LABEL.source}
               </div>
             </div>
 
             {/* RIGHT — Treatment Rankings */}
             <div className="bg-zinc-900/80 border border-cyan-500/30 rounded-lg p-4">
-              <div className="font-pixel text-lg md:text-xl text-cyan-400 mb-3">
+              <div className="font-pixel text-xl md:text-2xl text-cyan-400 mb-2">
                 TREATMENT RANKINGS
               </div>
-              <div className="font-terminal text-sm text-zinc-400 mb-3">
+              <div className="font-terminal text-base md:text-lg text-zinc-400 mb-3">
                 High Cholesterol — ranked by effectiveness
               </div>
 
@@ -135,23 +135,23 @@ export function SlideDecentralizedFda() {
                 {TREATMENT_RANKINGS.map((t) => (
                   <div
                     key={t.rank}
-                    className={`flex items-center gap-3 p-2 rounded border ${
+                    className={`flex items-center gap-3 p-3 rounded border ${
                       t.rank === 1
                         ? "bg-emerald-500/10 border-emerald-500/30"
                         : "bg-zinc-800/50 border-zinc-700/30"
                     }`}
                   >
-                    <div className={`font-pixel text-xl w-8 h-8 rounded-full flex items-center justify-center ${
+                    <div className={`font-pixel text-xl w-9 h-9 rounded-full flex items-center justify-center ${
                       t.rank === 1 ? "bg-emerald-400 text-zinc-900" : "bg-zinc-700 text-zinc-300"
                     }`}>
                       {t.rank}
                     </div>
                     <div className="flex-1">
-                      <div className="font-pixel text-sm md:text-base text-zinc-200">{t.name}</div>
+                      <div className="font-pixel text-base md:text-xl text-zinc-200">{t.name}</div>
                       <div className="flex gap-3 mt-1">
-                        <span className="font-terminal text-xs text-emerald-400">{t.effectiveness}% effective</span>
-                        <span className="font-terminal text-xs text-cyan-400">{t.safety}% safe</span>
-                        <span className="font-terminal text-xs text-zinc-400">{t.confidence}% confidence</span>
+                        <span className="font-terminal text-base text-emerald-400">{t.effectiveness}% effective</span>
+                        <span className="font-terminal text-base text-cyan-400">{t.safety}% safe</span>
+                        <span className="font-terminal text-base text-zinc-400">{t.confidence}% confidence</span>
                       </div>
                     </div>
                   </div>
@@ -164,10 +164,10 @@ export function SlideDecentralizedFda() {
         {/* Contrast callout */}
         {phase >= 3 && (
           <div className="text-center fade-in space-y-1">
-            <div className="font-terminal text-base md:text-lg text-zinc-400">
+            <div className="font-terminal text-lg md:text-xl text-zinc-400">
               Your drugs have 40-page inserts written by lawyers having seizures.
             </div>
-            <div className="font-terminal text-lg md:text-xl text-cyan-300">
+            <div className="font-terminal text-xl md:text-2xl text-cyan-300">
               These tell you what actually happens when real humans take a drug.
             </div>
           </div>

@@ -90,7 +90,14 @@ export function SlideCongressMilitaryTrialsRatio() {
             >
               {/* Name */}
               <div className="col-span-4">
-                <span className="font-pixel text-xl text-zinc-200">{pol.name}</span>
+                <a
+                  href={`https://optimitron.com/governments/US/politicians/${pol.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-pixel text-xl text-zinc-200 hover:text-cyan-400 transition-colors"
+                >
+                  {pol.name}
+                </a>
               </div>
 
               {/* Party */}

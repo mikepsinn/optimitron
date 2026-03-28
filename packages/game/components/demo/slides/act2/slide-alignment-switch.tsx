@@ -117,6 +117,7 @@ export function SlideAlignmentSwitch() {
                   delay={200}
                   showArea
                   showGrid
+                  formatX={(v) => `${Math.round(v)}`}
                   formatY={(v) => `$${Math.round(v / 1000)}K`}
                   xAxisLabel="Year"
                   yAxisLabel="Income"
@@ -156,6 +157,8 @@ export function SlideAlignmentSwitch() {
                   delay={400}
                   showArea
                   showGrid
+                  yMinOverride={55}
+                  formatX={(v) => `${Math.round(v)}`}
                   formatY={(v) => `${v.toFixed(0)} yrs`}
                   xAxisLabel="Year"
                   yAxisLabel="HALE"

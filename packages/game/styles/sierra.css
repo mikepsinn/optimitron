@@ -531,6 +531,15 @@
   border: 2px solid var(--sierra-narrator-border);
   image-rendering: pixelated;
   background: var(--sierra-black);
+  overflow: visible;
+}
+
+/* Wishonia character bobbing animation */
+@keyframes wishonia-bob {
+  0%   { transform: rotate(-2deg) translateY(0); }
+  40%  { transform: rotate(-2deg) translateY(0); }
+  60%  { transform: rotate(2deg) translateY(-2px); }
+  100% { transform: rotate(2deg) translateY(-2px); }
 }
 
 .narrator-text {

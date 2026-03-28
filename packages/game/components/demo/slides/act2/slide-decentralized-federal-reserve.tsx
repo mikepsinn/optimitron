@@ -73,11 +73,11 @@ export function SlideDecentralizedFederalReserve() {
             {/* Header row */}
             <div className="grid grid-cols-[1fr_1fr_1fr] border-b-2 border-zinc-600 pb-3 mb-2">
               <div />
-              <div className="font-pixel text-xl md:text-2xl text-red-400 text-center tracking-widest">
+              <div className="font-pixel text-2xl md:text-3xl text-red-400 text-center tracking-widest">
                 FED
-                <div className="font-pixel text-sm text-zinc-400">(1913-present)</div>
+                <div className="font-pixel text-base text-zinc-400">(1913-present)</div>
               </div>
-              <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center tracking-widest">
+              <div className="font-pixel text-2xl md:text-3xl text-emerald-400 text-center tracking-widest">
                 SMART CONTRACT
               </div>
             </div>
@@ -87,17 +87,17 @@ export function SlideDecentralizedFederalReserve() {
               {ROWS.map((row, i) => (
                 <div
                   key={row.label}
-                  className={`grid grid-cols-[1fr_1fr_1fr] items-center py-2 border-b border-zinc-800 ${
+                  className={`grid grid-cols-[1fr_1fr_1fr] items-start py-2 border-b border-zinc-800 ${
                     i < visibleRows ? "fade-in" : "opacity-0"
                   }`}
                 >
                   {/* Label */}
-                  <div className="font-pixel text-base md:text-lg text-zinc-300">
+                  <div className="font-pixel text-lg md:text-xl text-zinc-300 break-words">
                     {row.label}
                   </div>
                   {/* FED value */}
                   <div
-                    className={`font-pixel text-base md:text-lg text-center ${
+                    className={`font-pixel text-lg md:text-xl text-center break-words ${
                       row.fedBad ? "text-red-400" : "text-zinc-200"
                     }`}
                   >
@@ -105,7 +105,7 @@ export function SlideDecentralizedFederalReserve() {
                   </div>
                   {/* Contract value */}
                   <div
-                    className={`font-pixel text-base md:text-lg text-center ${
+                    className={`font-pixel text-lg md:text-xl text-center break-words ${
                       row.contractGood ? "text-emerald-400" : "text-zinc-200"
                     }`}
                   >

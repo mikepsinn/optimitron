@@ -76,10 +76,10 @@ export function SlideDecentralizedWelfare() {
             {/* Header row */}
             <div className="grid grid-cols-[1.2fr_1fr_1fr] border-b-2 border-zinc-600 pb-3 mb-2">
               <div />
-              <div className="font-pixel text-xl md:text-2xl text-red-400 text-center tracking-widest">
+              <div className="font-pixel text-2xl md:text-3xl text-red-400 text-center tracking-widest">
                 CURRENT
               </div>
-              <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center tracking-widest">
+              <div className="font-pixel text-2xl md:text-3xl text-emerald-400 text-center tracking-widest">
                 REPLACEMENT
               </div>
             </div>
@@ -94,19 +94,19 @@ export function SlideDecentralizedWelfare() {
                   }`}
                 >
                   {/* Label */}
-                  <div className="font-pixel text-base md:text-lg text-zinc-300">
+                  <div className="font-pixel text-lg md:text-xl text-zinc-300 break-words">
                     {row.label}
                   </div>
                   {/* Current value */}
-                  <div className="font-pixel text-base md:text-lg text-center text-red-400">
+                  <div className="font-pixel text-lg md:text-xl text-center text-red-400 break-words">
                     {row.current}
                   </div>
                   {/* Replacement value */}
                   <div
-                    className={`font-pixel text-center text-emerald-400 ${
+                    className={`font-pixel text-center text-emerald-400 break-words ${
                       row.isPunchline
-                        ? "text-lg md:text-xl border border-emerald-400/40 rounded px-2 py-0.5 inline-block"
-                        : "text-base md:text-lg"
+                        ? "text-xl md:text-2xl border border-emerald-400/40 rounded px-2 py-0.5 inline-block"
+                        : "text-lg md:text-xl"
                     }`}
                   >
                     {row.replacement}

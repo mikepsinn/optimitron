@@ -48,6 +48,9 @@ export interface DemoState {
 
   // Audio state
   narrationEnded: boolean;
+
+  // Live TTS
+  liveTtsEnabled: boolean;
 }
 
 export interface DemoActions {
@@ -94,6 +97,9 @@ export interface DemoActions {
   // Audio
   setNarrationEnded: (ended: boolean) => void;
 
+  // Live TTS
+  setLiveTtsEnabled: (enabled: boolean) => void;
+
   // Reset
   reset: () => void;
 }
@@ -130,6 +136,7 @@ const initialState: DemoState = {
   isTyping: false,
   typewriterComplete: false,
   narrationEnded: false,
+  liveTtsEnabled: true,
 };
 
 export const useDemoStore = create<DemoState & DemoActions>()(
@@ -228,6 +235,9 @@ export const useDemoStore = create<DemoState & DemoActions>()(
 
     // Audio
     setNarrationEnded: (ended) => set({ narrationEnded: ended }),
+
+    // Live TTS
+    setLiveTtsEnabled: (enabled) => set({ liveTtsEnabled: enabled }),
 
     // Reset
     reset: () => set(initialState),
