@@ -62,7 +62,7 @@ function ProgressBar({
         />
       </div>
       {/* Legend */}
-      <div className="flex justify-between font-pixel text-sm md:text-lg">
+      <div className="flex justify-between font-pixel text-lg md:text-xl">
         <span className="text-zinc-400">▮ {currentLabel}</span>
         <span className="text-emerald-400">│ {treatyLabel}</span>
         <span className="text-amber-400">│ {optimalLabel}</span>
@@ -74,19 +74,19 @@ function ProgressBar({
 export function SlideWinConditionsHaleIncome() {
   return (
     <SlideBase act={2} className="text-amber-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1700px] mx-auto w-full">
         {/* Title */}
-        <h1 className="font-pixel text-xl md:text-3xl text-amber-400 text-center">
+        <h1 className="font-pixel text-3xl md:text-5xl text-amber-400 text-center">
           📖 QUEST LOG — EARTH OPTIMIZATION
         </h1>
 
-        <div className="w-full space-y-5">
+        <div className="w-full space-y-6">
           {/* Objective 1: HALE */}
-          <div className="bg-zinc-900/80 border border-amber-500/30 rounded-lg p-4 space-y-2">
-            <div className="font-pixel text-xl md:text-2xl text-amber-400">
+          <div className="bg-zinc-900/80 border border-amber-500/30 rounded-lg p-6 space-y-3">
+            <div className="font-pixel text-2xl md:text-3xl text-amber-400">
               ❤️ OBJECTIVE 1: HEALTHY LIFE EXPECTANCY
             </div>
-            <div className="flex flex-wrap gap-x-6 font-pixel text-lg md:text-xl text-zinc-200">
+            <div className="flex flex-wrap gap-x-8 font-pixel text-xl md:text-2xl text-zinc-200">
               <span>Current: <span className="text-zinc-300">{currentHALE} yrs</span></span>
               <span>Treaty: <span className="text-emerald-400">{treatyHALE} yrs</span></span>
               <span>Optimal: <span className="text-amber-400">{optimalHALE} yrs</span></span>
@@ -104,11 +104,11 @@ export function SlideWinConditionsHaleIncome() {
           </div>
 
           {/* Objective 2: Income */}
-          <div className="bg-zinc-900/80 border border-amber-500/30 rounded-lg p-4 space-y-2">
-            <div className="font-pixel text-xl md:text-2xl text-amber-400">
+          <div className="bg-zinc-900/80 border border-amber-500/30 rounded-lg p-6 space-y-3">
+            <div className="font-pixel text-2xl md:text-3xl text-amber-400">
               💰 OBJECTIVE 2: GLOBAL MEDIAN INCOME
             </div>
-            <div className="flex flex-wrap gap-x-6 font-pixel text-lg md:text-xl text-zinc-200">
+            <div className="flex flex-wrap gap-x-8 font-pixel text-xl md:text-2xl text-zinc-200">
               <span>Current: <span className="text-zinc-300">{formatCurrency(currentIncome)}/yr</span></span>
               <span>Treaty: <span className="text-emerald-400">{formatCurrency(treatyIncome)}/yr</span></span>
               <span>Optimal: <span className="text-amber-400">{formatCurrency(optimalIncome)}/yr</span></span>
@@ -126,16 +126,16 @@ export function SlideWinConditionsHaleIncome() {
           </div>
 
           {/* Deadline & Reward */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded">
-              <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-1">⏰ DEADLINE</div>
-              <div className="font-pixel text-2xl md:text-3xl text-red-400">2040</div>
-              <div className="font-pixel text-xl md:text-2xl text-zinc-200">(14 years)</div>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="text-center p-5 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mb-2">⏰ DEADLINE</div>
+              <div className="font-pixel text-4xl md:text-5xl text-red-400">2040</div>
+              <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mt-1">(14 years)</div>
             </div>
-            <div className="text-center p-3 bg-emerald-500/10 border border-emerald-500/30 rounded">
-              <div className="font-pixel text-xl md:text-2xl text-zinc-200 mb-1">🏆 REWARD</div>
-              <div className="font-pixel text-2xl md:text-3xl text-emerald-400">8B</div>
-              <div className="font-pixel text-xl md:text-2xl text-zinc-200">lives aligned</div>
+            <div className="text-center p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mb-2">🏆 REWARD</div>
+              <div className="font-pixel text-4xl md:text-5xl text-emerald-400">8B</div>
+              <div className="font-pixel text-2xl md:text-3xl text-zinc-200 mt-1">lives aligned</div>
             </div>
           </div>
         </div>

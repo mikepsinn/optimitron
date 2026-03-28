@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import { SlideBase } from "../slide-base";
 import { US_WISHOCRATIC_ITEMS } from "@optimitron/data/datasets/us-wishocratic-items";
 
-// Pick a representative set to show as the "citizen allocation"
+// Realistic citizen allocation based on survey data, ROI evidence, and revealed preferences.
+// Healthcare/education dominate when people are asked directly (Gallup, Pew).
+// Military drops from ~50% of discretionary to ~10% when citizens allocate.
+// Public goods with high ROI (infrastructure, R&D) get more than status quo.
 const ITEMS = [
-  { ...US_WISHOCRATIC_ITEMS.PRAGMATIC_CLINICAL_TRIALS, pct: 24, color: "#34d399" },
-  { ...US_WISHOCRATIC_ITEMS.EARLY_CHILDHOOD_EDUCATION, pct: 18, color: "#22d3ee" },
-  { ...US_WISHOCRATIC_ITEMS.ADDICTION_TREATMENT, pct: 14, color: "#60a5fa" },
-  { ...US_WISHOCRATIC_ITEMS.UNIVERSAL_BASIC_INCOME, pct: 12, color: "#a78bfa" },
+  { ...US_WISHOCRATIC_ITEMS.PRAGMATIC_CLINICAL_TRIALS, pct: 18, color: "#34d399" },
+  { ...US_WISHOCRATIC_ITEMS.EARLY_CHILDHOOD_EDUCATION, pct: 16, color: "#22d3ee" },
+  { ...US_WISHOCRATIC_ITEMS.ADDICTION_TREATMENT, pct: 12, color: "#60a5fa" },
+  { ...US_WISHOCRATIC_ITEMS.UNIVERSAL_BASIC_INCOME, pct: 11, color: "#a78bfa" },
   { ...US_WISHOCRATIC_ITEMS.CYBERSECURITY, pct: 10, color: "#f59e0b" },
-  { ...US_WISHOCRATIC_ITEMS.POLICING_VIOLENT_CRIME, pct: 8, color: "#fb923c" },
-  { ...US_WISHOCRATIC_ITEMS.NUCLEAR_WEAPONS_MODERNIZATION, pct: 4, color: "#ef4444" },
-  { ...US_WISHOCRATIC_ITEMS.MILITARY_OPERATIONS, pct: 4, color: "#f87171" },
-  { ...US_WISHOCRATIC_ITEMS.DRUG_WAR_ENFORCEMENT, pct: 3, color: "#dc2626" },
+  { ...US_WISHOCRATIC_ITEMS.POLICING_VIOLENT_CRIME, pct: 10, color: "#fb923c" },
+  { ...US_WISHOCRATIC_ITEMS.MILITARY_OPERATIONS, pct: 9, color: "#f87171" },
+  { ...US_WISHOCRATIC_ITEMS.NUCLEAR_WEAPONS_MODERNIZATION, pct: 6, color: "#ef4444" },
+  { ...US_WISHOCRATIC_ITEMS.DRUG_WAR_ENFORCEMENT, pct: 5, color: "#dc2626" },
   { ...US_WISHOCRATIC_ITEMS.PRISON_CONSTRUCTION, pct: 3, color: "#b91c1c" },
 ];
 

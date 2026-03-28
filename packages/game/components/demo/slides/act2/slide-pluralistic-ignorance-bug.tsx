@@ -64,19 +64,19 @@ export function SlidePluralisticIgnoranceBug() {
         {phase >= 1 && (
           <div className="w-full bg-zinc-900 border border-green-500/50 rounded-lg overflow-hidden row-enter">
             <div className="bg-green-500/10 border-b border-green-500/30 px-4 py-2 flex items-center gap-2">
-              <span className="text-3xl">🐛</span>
-              <span className="font-terminal text-2xl md:text-4xl text-green-400">
+              <span className="text-4xl">🐛</span>
+              <span className="font-terminal text-3xl md:text-5xl text-green-400">
                 BUG: pluralistic_ignorance
               </span>
             </div>
-            <div className="px-4 py-2 flex gap-6">
-              <span className="font-terminal text-lg md:text-2xl text-zinc-200">
+            <div className="px-4 py-3 flex gap-6">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 FILED: <span className="text-zinc-200">1965</span>
               </span>
-              <span className="font-terminal text-lg md:text-2xl text-zinc-200">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 SEVERITY: <span className="text-red-400 animate-pulse">EXTINCTION</span>
               </span>
-              <span className="font-terminal text-lg md:text-2xl text-zinc-200">
+              <span className="font-terminal text-xl md:text-3xl text-zinc-200">
                 ASSIGNEE: <span className="text-zinc-200">nobody</span>
               </span>
             </div>
@@ -85,7 +85,7 @@ export function SlidePluralisticIgnoranceBug() {
 
         {/* Person rows — each thinks they're alone */}
         {phase >= 2 && (
-          <div className="w-full space-y-1.5">
+          <div className="w-full space-y-2">
             {PERSONS.slice(0, visibleRows).map((person, i) => {
               const isEllipsis = person.label === "...";
               const isRevealed = phase >= 3;
@@ -93,7 +93,7 @@ export function SlidePluralisticIgnoranceBug() {
 
               if (isEllipsis) {
                 return (
-                  <div key={i} className="font-terminal text-xl text-zinc-500 pl-4 row-enter">
+                  <div key={i} className="font-terminal text-2xl text-zinc-500 pl-4 row-enter">
                     &nbsp;&nbsp;&nbsp;...
                   </div>
                 );
@@ -102,19 +102,19 @@ export function SlidePluralisticIgnoranceBug() {
               return (
                 <div
                   key={i}
-                  className={`flex items-start gap-2 px-3 py-1 rounded row-enter ${
+                  className={`flex items-start gap-3 px-4 py-2 rounded row-enter ${
                     isLast ? "border border-green-500/20 bg-green-500/5" : ""
                   }`}
                 >
-                  <span className="text-xl md:text-2xl shrink-0">👤</span>
+                  <span className="text-2xl md:text-3xl shrink-0">👤</span>
                   {isRevealed && (
-                    <span className="checkmark-pop text-green-400 text-xl shrink-0 mt-0.5">✓</span>
+                    <span className="checkmark-pop text-green-400 text-2xl shrink-0 mt-0.5">✓</span>
                   )}
-                  <div className="font-terminal text-lg md:text-xl">
+                  <div className="font-terminal text-xl md:text-2xl">
                     <span className="text-zinc-200">{person.label}: </span>
                     <span className="text-green-400">&quot;{person.thought}&quot;</span>
                     <br />
-                    <span className="text-zinc-500 text-base md:text-lg">
+                    <span className="text-zinc-500 text-lg md:text-xl">
                       {isRevealed ? (
                         <GlitchText
                           text="(thinks: EVERYONE agrees)"

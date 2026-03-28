@@ -111,18 +111,17 @@ export function SlidePublicVsLobbyist90to1() {
 
         {/* Phase 2: The two sides */}
         {phase >= 2 && (
-          <div className="grid grid-cols-2 gap-4 w-full fade-slide-up">
-            {/* LEFT: The Public */}
-            <div className="flex flex-col items-center gap-2 p-3 bg-slate-900/60 border border-emerald-500/30 rounded">
-              {/* 6×8 emoji grid */}
+          <div className="grid grid-cols-[2fr_1fr] gap-6 w-full fade-slide-up">
+            {/* LEFT: The Public — larger emojis with more horizontal room */}
+            <div className="flex flex-col items-center gap-3 p-4 bg-slate-900/60 border border-emerald-500/30 rounded">
               <div
-                className="grid gap-0.5"
+                className="grid gap-1"
                 style={{ gridTemplateColumns: `repeat(${PUBLIC_COLS}, 1fr)` }}
               >
                 {Array.from({ length: TOTAL_PUBLIC }).map((_, i) => (
                   <span
                     key={i}
-                    className="text-xl md:text-3xl leading-none"
+                    className="text-4xl md:text-5xl leading-none"
                     style={{
                       opacity: i < visiblePublic ? 1 : 0,
                       animation:
@@ -135,19 +134,16 @@ export function SlidePublicVsLobbyist90to1() {
                   </span>
                 ))}
               </div>
-              <div className="font-pixel text-xl text-emerald-400 tracking-widest mt-1">
+              <div className="font-pixel text-2xl text-emerald-400 tracking-widest mt-1">
                 THE PUBLIC
               </div>
             </div>
 
-            {/* RIGHT: The Lobbyists — 1 emoji to show 90:1 ratio */}
-            <div className="flex flex-col items-center justify-center gap-3 p-3 bg-slate-900/60 border border-red-500/30 rounded">
-              <div className="text-5xl md:text-7xl">🤵</div>
-              <div className="font-pixel text-xl text-red-400 tracking-widest">
+            {/* RIGHT: The Lobbyists — 1 emoji, same size as public emojis */}
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-slate-900/60 border border-red-500/30 rounded">
+              <div className="text-4xl md:text-5xl">🤵</div>
+              <div className="font-pixel text-2xl text-red-400 tracking-widest">
                 LOBBYISTS
-              </div>
-              <div className="font-pixel text-lg text-zinc-400">
-                (1 for every 90 of you)
               </div>
             </div>
           </div>
@@ -155,12 +151,9 @@ export function SlidePublicVsLobbyist90to1() {
 
         {/* Phase 3: Stats below each side */}
         {phase >= 3 && (
-          <div className="grid grid-cols-2 gap-4 w-full fade-slide-up">
+          <div className="grid grid-cols-[2fr_1fr] gap-6 w-full fade-slide-up">
             {/* Public stats */}
             <div className="space-y-1 text-center">
-              <div className="font-pixel text-xl text-zinc-200">
-                8,000,000,000 people
-              </div>
               <div className="font-pixel text-xl md:text-3xl text-emerald-400">
                 {formatCurrency(publicWealth)}
               </div>
@@ -171,9 +164,6 @@ export function SlidePublicVsLobbyist90to1() {
 
             {/* Lobbyist stats */}
             <div className="space-y-1 text-center">
-              <div className="font-pixel text-xl text-zinc-200">
-                ~50,000 people
-              </div>
               <div className="font-pixel text-xl md:text-3xl text-red-400">
                 {formatCurrency(defenceWealth)}
               </div>

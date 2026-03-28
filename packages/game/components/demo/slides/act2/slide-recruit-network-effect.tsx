@@ -66,7 +66,7 @@ export function SlideRecruitNetworkEffect() {
         <h1 className="font-pixel text-2xl md:text-4xl text-purple-400">
           GET ALL YOUR FRIENDS TO PLAY
         </h1>
-        <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
+        <div className="font-terminal text-2xl md:text-4xl text-zinc-200 mt-2">
           Prove everyone wants to be rich and healthy. Then demanding it isn&apos;t crazy.
         </div>
       </div>

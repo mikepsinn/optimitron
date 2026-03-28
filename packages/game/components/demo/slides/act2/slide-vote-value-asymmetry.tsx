@@ -2,11 +2,17 @@
 
 import { SlideBase } from "../slide-base";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
-import { TREATY_PERSONAL_UPSIDE_BLEND } from "@optimitron/data/parameters";
+import {
+  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_HALE_GAIN_YEAR_15,
+  VOTE_TOKEN_VALUE,
+} from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
 const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 100_000) * 100_000;
+const haleGain = TREATY_HALE_GAIN_YEAR_15.value;
+const votePointValue = Math.round(VOTE_TOKEN_VALUE.value);
 
 export function SlideVoteValueAsymmetry() {
   const [flashVisible, setFlashVisible] = useState(true);
@@ -72,6 +78,28 @@ export function SlideVoteValueAsymmetry() {
           </div>
         </div>
 
+        {/* Additional gains */}
+        <div className="grid grid-cols-2 gap-4 w-full">
+          <div className="flex flex-col items-center gap-2 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+            <div className="text-3xl md:text-4xl">🏥</div>
+            <div className="font-pixel text-2xl md:text-4xl text-emerald-400">
+              +{haleGain.toFixed(1)} yrs
+            </div>
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+              extra healthy life
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+            <div className="text-3xl md:text-4xl">🎫</div>
+            <div className="font-pixel text-2xl md:text-4xl text-cyan-400">
+              {formatCurrency(votePointValue)}
+            </div>
+            <div className="font-pixel text-xl md:text-2xl text-zinc-200">
+              per VOTE point if treaty passes
+            </div>
+          </div>
+        </div>
+
         {/* Exchange Rate - Flashing */}
         <div
           className="font-pixel text-xl md:text-3xl text-center px-6 py-3 bg-amber-500/10 border border-amber-500/40 rounded"
@@ -81,12 +109,6 @@ export function SlideVoteValueAsymmetry() {
           <span className="text-amber-300">
             {GAME_PARAMS.exchangeRatio.toLocaleString()} : 1
           </span>
-        </div>
-
-        {/* Bottom clarifier */}
-        <div className="font-terminal text-xl md:text-2xl text-zinc-200 text-center max-w-4xl">
-          This is not a donation. This is the expected return on 15 minutes
-          of texting your friends a link.
         </div>
       </div>
     </SlideBase>

@@ -53,9 +53,7 @@ export function SlideViralDoublingTo4b() {
                 🎉 VOTE RECORDED
               </h1>
             </div>
-            <p className="font-pixel text-xl md:text-3xl text-zinc-200 mt-3">
-              Player #4,847 of 4,000,000,000 needed
-            </p>
+            <p className="font-pixel text-xl md:text-3xl text-zinc-200 mt-3" />
           </div>
         )}
 
@@ -105,7 +103,7 @@ export function SlideViralDoublingTo4b() {
             <div className="font-pixel text-2xl md:text-3xl text-zinc-200">
               TIME INVESTED: <span className="text-emerald-400">30 SECONDS</span>
             </div>
-            <div className="font-pixel text-xl md:text-2xl text-zinc-400">
+            <div className="font-pixel text-2xl md:text-3xl text-zinc-400">
               Get 10 friends to vote (15 min) → multiply all numbers by 10
             </div>
           </div>

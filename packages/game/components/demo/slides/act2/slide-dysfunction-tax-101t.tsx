@@ -12,12 +12,20 @@ interface LineItem {
 }
 
 const LINE_ITEMS: LineItem[] = [
-  { label: "🏥 Health innovation delays", value: 34_000_000_000_000 },
+  // Global opportunity costs
   { label: "🚧 Migration restrictions", value: 57_000_000_000_000 },
+  { label: "🏥 Health innovation delays", value: 34_000_000_000_000 },
   { label: "🧪 Lead poisoning", value: 6_000_000_000_000 },
   { label: "🔬 Underfunded science", value: 4_000_000_000_000 },
+  // Direct waste (US alone)
+  { label: "🏠 Housing/zoning restrictions", value: 1_400_000_000_000 },
+  { label: "🩺 Healthcare admin inefficiency", value: 1_200_000_000_000 },
+  { label: "💣 Military overspend", value: 615_000_000_000 },
+  { label: "📋 Regulatory red tape", value: 580_000_000_000 },
+  { label: "📝 Tax compliance burden", value: 546_000_000_000 },
+  { label: "⛽ Fossil fuel subsidies", value: 1_300_000_000_000 },
   { label: "─────────────────────────────────────", value: 0, isSeparator: true },
-  { label: "💀 TOTAL ANNUAL COST", value: 101_000_000_000_000, isTotal: true },
+  { label: "💀 TOTAL ANNUAL COST", value: 106_641_000_000_000, isTotal: true },
 ];
 
 export function SlideDysfunctionTax101t() {
@@ -35,12 +43,12 @@ export function SlideDysfunctionTax101t() {
       timers.push(
         setTimeout(() => {
           setVisibleLines(i + 1);
-        }, 800 + i * 700)
+        }, 800 + i * 500)
       );
     });
 
     // Start typewriter after all lines shown
-    const footerDelay = 800 + LINE_ITEMS.length * 700 + 600;
+    const footerDelay = 800 + LINE_ITEMS.length * 500 + 600;
     timers.push(
       setTimeout(() => {
         setShowFooter(true);

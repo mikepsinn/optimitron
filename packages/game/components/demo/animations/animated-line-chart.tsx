@@ -30,6 +30,7 @@ interface AnimatedLineChartProps {
   xAxisLabel?: string;
   yAxisLabel?: string;
   formatY?: (value: number) => string;
+  formatX?: (value: number) => string;
 }
 
 export function AnimatedLineChart({
@@ -46,6 +47,7 @@ export function AnimatedLineChart({
   xAxisLabel,
   yAxisLabel,
   formatY = (v) => v.toString(),
+  formatX,
 }: AnimatedLineChartProps) {
   const [progress, setProgress] = useState(animate ? 0 : 1);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -176,6 +178,26 @@ export function AnimatedLineChart({
           >
             {formatY(yMin)}
           </text>
+        </g>
+      )}
+
+      {/* X-axis tick labels */}
+      {showLabels && formatX && (
+        <g className="text-current/60" fontSize="8">
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+            const val = xMin + (xMax - xMin) * ratio;
+            return (
+              <text
+                key={`xt-${ratio}`}
+                x={padding.left + chartWidth * ratio}
+                y={padding.top + chartHeight + 14}
+                textAnchor="middle"
+                dominantBaseline="hanging"
+              >
+                {formatX(val)}
+              </text>
+            );
+          })}
         </g>
       )}
 

@@ -106,7 +106,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Since 1913, your governments have printed $170 trillion and used it to kill 97 million of you in wars nobody asked you if you wanted to have. On my planet, we call that a bug. Your species calls it foreign policy.",
+      "Since 1913, your governments have printed $170 trillion and used it to kill 97 million of you in wars nobody asked you if you wanted to have. If cancer had oil reserves, you would have cured it by 2003. Instead, you spent the repair money on murder tubes that cost more than countries. On my planet, we call that a bug. Your species calls it foreign policy.",
     visual:
       'Same command bridge. One monitor displays a CountUp from $0 to $170,000,000,000,000 labeled "CUMULATIVE MILITARY SPENDING SINCE 1913." Another scrolls a list of wars with death tolls ticking upward, totaling 97,000,000. The central monitor pulses: "MISALIGNED OBJECTIVE FUNCTION \u2014 RUNNING."',
     asciiArt: `
@@ -246,7 +246,7 @@ export const SLIDES: SlideConfig[] = [
       {
         verb: "USE test tube",
         response:
-          "You cannot. It is being crushed by $2.72 trillion of military hardware.",
+          "You cannot. It is being crushed by $2.72 trillion of military hardware. If cancer had oil reserves, you would have cured it by 2003.",
       },
     ],
   },
@@ -337,7 +337,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act1",
     duration: 10,
     narration:
-      "Moronia was a planet that spent 604 times more on weapons than on curing disease. It no longer exists. Their allocation ratio correlates with yours at 94.7%.",
+      "Moronia was a planet that spent 604 times more on weapons than on curing disease. Year 2033: destructive economy hit 25 percent of GDP. Year 2040: parasitic economy hit 50 percent. Year 2043: water wars went nuclear. Year 2045: cockroaches evolved intelligence. Year 2050: cockroaches found this manual. Very confused. Moronia no longer exists. Their allocation ratio correlated with yours at 94.7%.",
     visual:
       'Pixel art — barren, cracked planet surface. Red-black sky. Shattered buildings. Leafless pixel trees. Craters. Ash drifting. After narration, screen FREEZES. Sierra death jingle plays. Image desaturates to greyscale. Death dialog drops in with GAME OVER, three buttons: RESTORE / RESTART / QUIT. Score resets to 0. Death counter keeps ticking.',
     asciiArt: `
@@ -413,7 +413,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 1: The Solution",
     narration:
-      "Redirect 1% of the global murder budget to clinical trials. That is $27 billion a year. Going from 99% bombs to 98% bombs. The explosion manufacturers keep 98% of their budget and do not even notice.",
+      "Nobody accidentally builds an aircraft carrier. Building a nuclear bomb requires mass spectrometers, centrifuge cascades, and the most precise engineering your species has ever attempted. Not building a nuclear bomb requires nothing. Rocks do it every day. Rocks have managed to live peacefully alongside different colored rocks for thousands of years. You are not asking for peace. You are asking for 1% fewer bombs. Redirect 1% of the global murder budget to clinical trials. $27 billion a year. Going from 99% bombs to 98% bombs.",
     visual:
       'Pixel art — Wishonia\'s control room. Massive wall-mounted lever with display: "MILITARY: 99%" / "CURES: 1%". Animated pixel hand nudges it one notch. Display updates: "MILITARY: 98%" / "CURES: 2%." The slot is one pixel different. Comic "that\'s it?" pause. Pixel-art scroll "1% TREATY" drops into inventory slot 1 with "cha-ching." Quest meter for INCOME nudges slightly.',
     score: 100_000,
@@ -574,26 +574,25 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Compound interest does not care about your politics. It does not care about your party. The pessimistic estimate is 11%. The optimistic is 26%. Even the worst case is four times better than doing nothing. Your species has been arguing about this for decades. The math resolved it in one equation.",
+      "Compound interest does not care about your politics. It does not care about your party. Redirect 1% of military spending to clinical trials and median income goes from $20,000 to $149,000 per person. That is 7.4 times more wealth from one slider adjustment. Same planet. Same people. Different allocation. The math resolved it in one equation. Your species has been arguing about it for decades.",
     visual:
-      "A single clean display showing four outcomes stacked vertically. The worst-case bar is dramatically larger than the do-nothing bar. A highlighted box pulses: WORST CASE IS 4x BETTER THAN DOING NOTHING.",
+      "Three horizontal bars comparing per-person wealth trajectories: Optimal Governance ($528K), 1% Treaty ($149K), Do Nothing ($20K). The treaty bar is dramatically larger than do-nothing. Punchline: 1% REALLOCATION → 7.4x MORE WEALTH PER PERSON.",
     asciiArt: `
 ┌─────────────────────────────────────────────┐
 │  🧮 WHAT COMPOUND INTEREST THINKS            │
 │     ABOUT YOUR POLITICS                     │
 │                                             │
-│  Best case (26%):   $1,160,000 / person     │
-│  Expected (17.9%):  $339,000 / person       │
-│  Worst case (11%):  $81,000 / person        │
-│  Do nothing (2.5%): $20,100 / person        │
+│  Optimal governance: $528,000 / person      │
+│  1% Treaty:          $149,000 / person      │
+│  Do nothing:         $20,100 / person       │
 │                                             │
 │  ┌───────────────────────────────────┐      │
-│  │ WORST CASE IS 4× BETTER THAN     │      │
-│  │ DOING NOTHING                     │      │
+│  │ 1% REALLOCATION → 7.4× MORE     │      │
+│  │ WEALTH PER PERSON                 │      │
 │  └───────────────────────────────────┘      │
 │                                             │
-│  Math consulted: yes                        │
-│  Politicians consulted: not required        │
+│  Same planet. Same people.                  │
+│  Different slider position.                 │
 └─────────────────────────────────────────────┘`,
     score: 2_000_000,
     showQuestMeters: true,
@@ -1006,7 +1005,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 3: The Money",
     narration:
-      "Rich people have a secret money club called VC that earns 17% returns on average. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called 'investor protection.' It protects you from having money. The prize pool gets you in. Side effect: curing all disease.",
+      "Rich people have a secret money club called VC that earns 17% returns on average. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called investor protection. It protects you from having money. The prize pool gets you in. Side effect: curing all disease. Value each life-year saved at $150,000, multiply across the global disease burden, and the return is 84.8 million to one. Your calculator will display an error, emit a tiny electronic scream, and attempt to leave the desk. This is correct.",
     visual:
       "Pixel art — Sierra merchant's investment counter. Two options side by side: YOUR RETIREMENT FUND (Old corporations, Rent-seeking/slow, Return: 8%/year, $100 -> $317 in 15 yrs, Side effect: nothing) vs PRIZE POOL (Innovative startups, High-growth/new, Return: 17%/year, $100 -> $1,106 in 15 yrs, Side effect: curing all disease). Right option glows green. Left looks grey and dull. The goal: build the biggest prize pool in history. So every player on Earth is incentivized to win.",
     asciiArt: `
@@ -1215,7 +1214,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     narration:
       "Your Congress spent $886 billion on the military this year. And $810 million on clinical trials. That is a ratio of 1,094 to 1. For every dollar spent trying to stop diseases from killing you, 1,094 dollars on new ways to kill other people's children. Both parties voted for this. It is not a left-right problem. It is a math problem.",
     visual:
-      "Giant animated counter: 1,094:1. Below: table of 6 politicians spanning parties with name, party, ratio, grade. Color-coded grades. Punchline: Both parties voted for this.",
+      "Giant animated counter: 1,094:1. Below: table of 6 politicians spanning parties with name, party, military $, trials $, ratio. Color-coded by spending direction. Punchline: Both parties voted for this.",
     score: 3_500_000_000,
     showQuestMeters: true,
     ctaUrl: "/governments/US/politicians",
@@ -1274,7 +1273,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     chapter: "Part 5: The Armory",
     ctaUrl: "/agencies/dih/discoveries",
     narration:
-      "Your FDA makes treatments wait 8.2 years after they have already been proven safe. Just sitting there. Being safe. While 102 million of you died in the queue. For every 1 person protected from a dangerous drug, 3,070 die waiting for a safe one locked in the approval cabinet. It is like a lifeguard who confirms the life preserver floats, then locks it in a cabinet for years to study its buoyancy profile while a billion people drown in line for the two available life jackets.",
+      "Vioxx killed 55,000 people from heart attacks. The FDA approved it. When patients started dying, someone filled out a PDF form. A PDF. Then they faxed it. Five years and tens of thousands of corpses later, someone noticed a pattern. This is your safety system. Meanwhile, your FDA makes treatments wait 8.2 years after they have already been proven safe. Just sitting there. Being safe. For every 1 person protected from a dangerous drug, 3,070 die waiting for a safe one locked in the approval cabinet. It is a lifeguard who confirms the life preserver floats, then locks it in a cabinet while a billion people drown in line for two life jackets.",
     visual:
       "Pixel art — a Sierra waiting room. Rows of pixel patients sitting in chairs, some slumping over. A ticket counter displays \"NOW SERVING: nobody.\" A shelf behind the counter holds rows of approved drugs, gathering pixel dust. A clock on the wall shows 8.2 years passing in fast-forward.",
     asciiArt: `
@@ -1354,7 +1353,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Campaign cost: one billion. The treaty generates twenty-seven billion per year. Eighty percent goes to clinical trials. Ten percent back to bond holders. Ten percent to the alignment SuperPAC. The split is enforced on-chain. No human touches the money. On your planet, that is the only way to keep money from disappearing.",
+      "Your grandparents funded World War Two by buying war bonds. Four percent returns and a world without Nazis. You are proposing the same thing. Campaign cost: one billion. The treaty generates twenty-seven billion per year. Eighty percent to clinical trials. Ten percent back to bond holders — that is 272% annual returns. Ten percent to the alignment SuperPAC. The split is enforced on-chain. No human touches the money. Grandma's war bonds paid 4%. Yours pay 272%. Grandma would be furious if she had not died of cancer.",
     visual:
       "Pixel art — Sierra merchant/crafting screen. An NPC \"IAB TRADER\" behind a counter. A flow diagram: INCENTIVE ALIGNMENT BONDS — CRAFTING RECIPE. INPUT: BONDS: $1 BILLION (Solidity smart contract). TREATY PASSES -> $27B/yr inflow. OUTPUT (annual, enforced on-chain): 80% TRIALS $21.6B / 10% BOND HOLDERS $2.7B / 10% ALIGNMENT SUPERPAC $2.7B. Campaign cost: $1B. Annual return: $27B. Forever. Solidity contract icon visible on the bond. Hypercert badge on the trials output. The output slots glow as they fill.",
     asciiArt: `
@@ -1396,7 +1395,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 8,
     narration:
-      "Here is how it works. Eight billion citizens rank their priorities through pairwise comparisons. The algorithm compares every politician's actual voting record against those preferences and produces an alignment score. Ten percent of treaty revenue flows into a SuperPAC smart contract. The contract reads the scores and allocates campaign funding automatically. Vote with citizens? Money. Vote against them? Nothing. No lobbyists. No dinners. No phone calls. Just arithmetic and a blockchain.",
+      "The NRA already perfected this technology. They give politicians a letter grade and your senators are more afraid of a bad mark than a mass shooting. You are plagiarising their system and replacing guns with not dying from diseases. Eight billion citizens rank priorities through pairwise comparisons. The algorithm compares every politician's voting record against those preferences. Alignment score. Ten percent of treaty revenue flows into a SuperPAC smart contract that allocates campaign funding automatically. Vote with citizens? Money. Vote against? Nothing. Lobbyists do not have beliefs. They have clients. You are giving them a better client.",
     visual:
       "4-step algorithm pipeline at top: Citizens rank priorities (pairwise) → Compare to voting record (every bill) → Alignment score (on-chain) → Fund or defund (10% of treaty revenue). Below: politician leaderboard with alignment scores and FUNDED/NOTHING status. High-aligned get coins, low-aligned get nothing. Punchline: No dinners. No lobbyists. No phone calls.",
     score: 4_700_000_000,
@@ -1415,9 +1414,13 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dgao",
     narration:
-      "Every data point. Every budget. Every vote. Every death. Stored where no government can delete it, no lobbyist can edit it, and no administration can classify it. Each record links to the one before it — an unbreakable chain. Try deleting mathematics.",
+      "Eight billion people. Their priorities. Their health outcomes. Every policy grade. Every budget preference. Encrypted so only the owner can read it. Aggregated so the Optimitron can act on it. Stored on a decentralized network where no government can delete it, no lobbyist can edit it, and no administration can classify it. Your species stores its census data on servers controlled by the people being graded. We store ours where the math is the only authority.",
     visual:
-      "Pixel art — a Sierra vault/archive room. Four glowing IPFS content-addressed blocks chained together with visible links: WISHOCRACY AGGREGATION, POLICY ANALYSIS, HEALTH ANALYSIS, BUDGET OPTIMIZATION. Each block has a bafy... CID hash. Chain arrows connect them via previousCid links. A pixel government official tries to reach for a block — a force field repels them. Storacha and IPFS/Filecoin logos visible.",
+      "Vertical data pipeline. Top: '8 BILLION CITIZENS' source bar with encryption indicator (AES-GCM-256). Middle: 2x2 grid of four data type cards — Citizen Priorities (pairwise rankings), Policy Grades (A-F welfare scores), Health Evidence (N-of-1 results), Encrypted Submissions (individual data, owner-only decryption). Bottom: STORACHA + IPFS destination bar. Down-arrows connect each layer. Punchline: 'Your species stores its census data on servers controlled by the people being graded.'",
+    onScreen: [
+      { text: "THE DECENTRALIZED CENSUS", size: "large", animation: "fadeIn", color: "yellow" },
+      { text: "8 BILLION CITIZENS → ENCRYPTED → STORACHA + IPFS", size: "small", animation: "fadeIn" },
+    ],
     score: 5_200_000_000,
     showQuestMeters: true,
     sierraVerbs: [
@@ -1427,14 +1430,14 @@ RECURSIVE EXPONENTIAL THEFT`,
           "ACCESS DENIED. Content-addressed storage cannot be altered. That is the point. Your government's legal team has been notified and is reportedly quite upset.",
       },
       {
-        verb: "LOOK AT vault",
+        verb: "LOOK AT data",
         response:
-          "Four types of evidence. Preference aggregations. Policy analyses. Health outcomes. Budget optimisations. Each one chained to the last via CID links. Break the chain? The hash won't match. On my planet, this is called a filing cabinet. On yours, it is called radical transparency.",
+          "Four types. Citizen priorities — pairwise-ranked by real humans. Policy grades — every law scored A through F by welfare impact. Health evidence — N-of-1 trial results with evidence grades. And encrypted individual submissions that only the owner can decrypt. All on IPFS. All permanent. Your current system stores its report cards on the teacher's laptop.",
       },
       {
-        verb: "VERIFY chain",
+        verb: "DECRYPT submission",
         response:
-          "Pick any CID. Follow the previousCid link backwards. Every record, every timestamp, every jurisdiction — mathematically verifiable. No login required. No permission. Just a hash and an internet connection. Your species calls this trustless. I call it obvious.",
+          "AES-GCM-256 encryption. The key lives with the citizen, not the government. You can verify the aggregate without seeing any individual's data. On my planet, this is called obvious. On yours, it is called cryptography and requires a conference.",
       },
     ],
   },
@@ -1834,7 +1837,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 12,
     chapter: "Act III: The Endgame",
     narration:
-      "If the treaty passes, your lifetime income goes up by $15.7 million. Per person. Not per country. Per. Person. You are currently losing $12,600 a year to a system bug nobody has assigned. This is not charity. This is the most lopsided trade your species has ever been offered. And the cost of not taking it is $15.7 million.",
+      "If the treaty passes, your lifetime income goes up by $15.7 million. Per person. Not per country. Per. Person. Communism took over half your planet and collapsed in a single human lifetime. Without fax machines. It required mass murder and was a terrible idea. You have the internet and an idea that mainly requires people to click a button and then receive money. By 2048, your children ask what war means. You change the subject. The cost of not taking this deal is $15.7 million.",
     visual:
       "Pixel art — three Sierra save-game slots, each with tiny pixel scene and stats. Slot 1 (Status Quo) actively desaturates — the pixel city gets smoggier, buildings crumble slightly, pixel people hunch over, numbers CountUp to depressing values, [LOADED] tag blinks accusingly. Slot 2 (1% Treaty) actively brightens — parks bloom with green pixels, hospital lights turn on, pixel people stand taller, $15.7M CountUps from $0 in golden text, ◄◄◄ arrow pulses. Slot 3 (Wishonia Trajectory) gleams impossibly — the Wishonia paradise rendered in miniature, every pixel radiating, $54.3M in white-gold. The visual hierarchy makes Slot 1 feel like a mistake and Slot 2 feel like an obvious upgrade. Glowing deed drops into inventory slot 7.",
     asciiArt: `

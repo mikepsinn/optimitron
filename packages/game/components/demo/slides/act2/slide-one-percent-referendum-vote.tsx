@@ -3,10 +3,10 @@
 import { SlideBase } from "../slide-base";
 import { useDemoStore } from "@/lib/demo/store";
 import { INVENTORY_ITEMS } from "@/lib/demo/parameters";
-import { MILITARY_VS_MEDICAL_RESEARCH_RATIO } from "@optimitron/data/parameters";
+import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
-const militaryRatio = MILITARY_VS_MEDICAL_RESEARCH_RATIO.value;
+const militaryRatio = MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value;
 const militaryPct = Math.round((militaryRatio / (militaryRatio + 1)) * 100);
 
 export function SlideOnePercentReferendumVote() {
@@ -73,7 +73,7 @@ export function SlideOnePercentReferendumVote() {
         {phase >= 1 && (
           <div className="text-center animate-fade-in">
             <div className="font-pixel text-xl md:text-2xl text-red-400">
-              CURRENT REALITY: ${militaryRatio.toFixed(2)} on military for every $1 on clinical trials
+              CURRENT REALITY: ${Math.round(militaryRatio)} on military for every $1 on clinical trials
             </div>
           </div>
         )}

@@ -93,7 +93,7 @@ export function SlidePairwiseBudgetAllocation() {
         <h1 className="font-pixel text-2xl md:text-4xl text-emerald-400">
           PAIRWISE ALLOCATION
         </h1>
-        <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
+        <div className="font-terminal text-2xl md:text-4xl text-zinc-200 mt-2">
           Compare two priorities. Drag to split funding. Repeat.
         </div>
       </div>
@@ -169,15 +169,10 @@ export function SlidePairwiseBudgetAllocation() {
         {/* Completion */}
         {phase >= 5 && (
           <div className="text-center space-y-3 animate-fade-in">
-            <div className="font-pixel text-2xl md:text-3xl text-cyan-400">
+            <div className="font-pixel text-3xl md:text-4xl text-cyan-400">
               ALLOCATION COMPLETE
             </div>
-            <div className="font-terminal text-xl md:text-2xl text-zinc-200">
-              3 comparisons → mathematically optimal budget.
-            </div>
-            <div className="font-pixel text-xl md:text-2xl text-amber-400">
-              No lobbying. Just citizen preference allocations.
-            </div>
+
           </div>
         )}
       </div>

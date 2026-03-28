@@ -52,6 +52,7 @@ export function SlidePrizePoolVsIndexFund() {
             showArea
             xAxisLabel="Years"
             yAxisLabel="Portfolio Value ($)"
+            formatX={(v) => `Yr ${Math.round(v)}`}
             formatY={(v) => `$${(v / 1000).toFixed(0)}K`}
           />
         </div>

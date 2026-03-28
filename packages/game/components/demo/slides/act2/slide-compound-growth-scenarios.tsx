@@ -1,17 +1,12 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { GAME_PARAMS } from "@/lib/demo/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
-const fallbackMultiple = GAME_PARAMS.prizePoolFallbackMultiple;
-const fundReturnOn100 = Math.round(100 * fallbackMultiple);
-
-// From prize-docs.md — per-person lifetime wealth trajectories
+// From prize-docs.md — per-person lifetime wealth trajectories (15-year horizon)
 // Optimal governance: Switzerland-level outcomes applied globally
 // 1% Treaty: treaty objectives met, $27B/yr redirected to clinical trials
-// Prize fail: treaty fails but fund still returns 10.54x via VC-diversified portfolio (15yr @ 17%)
 // Do nothing: status quo 2.5% growth trajectory
 
 const BARS = [
@@ -19,7 +14,6 @@ const BARS = [
     label: "🌍 OPTIMAL GOVERNANCE",
     sublabel: "Switzerland-level outcomes for all",
     value: 528_000,
-    annualReturn: "8.2%",
     widthPct: 100,
     colorBar: "bg-amber-400",
     colorText: "text-amber-400",
@@ -28,25 +22,14 @@ const BARS = [
     label: "🧪 1% TREATY TRAJECTORY",
     sublabel: "$27B/yr → clinical trials",
     value: 149_000,
-    annualReturn: "5.4%",
     widthPct: 28,
     colorBar: "bg-emerald-400",
     colorText: "text-emerald-400",
   },
   {
-    label: "💰 FUND RETURN (IF TREATY FAILS)",
-    sublabel: `$100 at ${GAME_PARAMS.prizePoolROI}% VC return`,
-    value: fundReturnOn100,
-    annualReturn: `${fallbackMultiple}x`,
-    widthPct: 4,
-    colorBar: "bg-cyan-400",
-    colorText: "text-cyan-400",
-  },
-  {
     label: "😐 DO NOTHING",
     sublabel: "Status quo trajectory",
     value: 20_100,
-    annualReturn: "2.5%",
     widthPct: 3.8,
     colorBar: "bg-zinc-500",
     colorText: "text-zinc-200",
@@ -64,9 +47,8 @@ export function SlideCompoundGrowthScenarios() {
     const b1 = setTimeout(() => setBarsVisible(1), 1500);
     const b2 = setTimeout(() => setBarsVisible(2), 1900);
     const b3 = setTimeout(() => setBarsVisible(3), 2300);
-    const b4 = setTimeout(() => setBarsVisible(4), 2700);
 
-    const t3 = setTimeout(() => setPhase(3), 4500);
+    const t3 = setTimeout(() => setPhase(3), 3800);
 
     return () => {
       clearTimeout(t1);
@@ -74,7 +56,6 @@ export function SlideCompoundGrowthScenarios() {
       clearTimeout(b1);
       clearTimeout(b2);
       clearTimeout(b3);
-      clearTimeout(b4);
     };
   }, []);
 
@@ -103,7 +84,7 @@ export function SlideCompoundGrowthScenarios() {
                       <div className={`font-pixel text-lg md:text-xl ${bar.colorText}`}>
                         {bar.label}
                       </div>
-                      <div className="font-terminal text-base md:text-lg text-zinc-400">
+                      <div className="font-terminal text-lg md:text-xl text-zinc-400">
                         {bar.sublabel}
                       </div>
                     </div>
@@ -125,13 +106,12 @@ export function SlideCompoundGrowthScenarios() {
 
         {/* Punchline */}
         {phase >= 3 && (
-          <div className="bg-cyan-500/15 border-2 border-cyan-500/50 rounded-lg p-4 slide-fade-in">
-            <p className="font-pixel text-xl md:text-2xl text-cyan-400 text-center">
-  
-              EVEN IF THE TREATY FAILS, YOUR $100 BECOMES ${fundReturnOn100.toLocaleString()}
+          <div className="bg-emerald-500/15 border-2 border-emerald-500/50 rounded-lg p-4 slide-fade-in">
+            <p className="font-pixel text-xl md:text-2xl text-emerald-400 text-center">
+              1% REALLOCATION → 7.4x MORE WEALTH PER PERSON
             </p>
-            <p className="font-terminal text-lg md:text-xl text-zinc-200 text-center mt-1">
-              {fallbackMultiple}x return vs 2.76x in index funds. You literally cannot lose.
+            <p className="font-terminal text-xl md:text-2xl text-zinc-200 text-center mt-1">
+              $149K vs $20K. Same planet. Same people. Different slider position.
             </p>
           </div>
         )}

@@ -12,15 +12,6 @@ import { useEffect, useState } from "react";
 // Pick 6 politicians spanning parties for the display
 const DISPLAY_POLITICIANS = POLITICIAN_SCORECARDS.slice(0, 6);
 
-const gradeColor: Record<string, string> = {
-  A: "text-emerald-400 bg-emerald-500/20",
-  B: "text-cyan-400 bg-cyan-500/20",
-  C: "text-amber-400 bg-amber-500/20",
-  D: "text-orange-400 bg-orange-500/20",
-  F: "text-red-400 bg-red-500/20",
-  "—": "text-zinc-400 bg-zinc-500/20",
-};
-
 function formatBillions(val: number): string {
   if (val >= 1e9) return `$${(val / 1e9).toFixed(0)}B`;
   if (val >= 1e6) return `$${(val / 1e6).toFixed(0)}M`;
@@ -84,10 +75,10 @@ export function SlideCongressMilitaryTrialsRatio() {
           {/* Header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cyan-500/10 border-b border-cyan-500/30">
             <div className="col-span-4 font-pixel text-xl text-cyan-400">NAME</div>
-            <div className="col-span-2 font-pixel text-xl text-cyan-400">PARTY</div>
-            <div className="col-span-3 font-pixel text-xl text-cyan-400">RATIO</div>
-            <div className="col-span-1 font-pixel text-xl text-cyan-400">GRADE</div>
-            <div className="col-span-2 font-pixel text-xl text-cyan-400">MIL $</div>
+            <div className="col-span-1 font-pixel text-xl text-cyan-400">PARTY</div>
+            <div className="col-span-3 font-pixel text-xl text-cyan-400 text-right">MIL $</div>
+            <div className="col-span-2 font-pixel text-xl text-cyan-400 text-right">TRIALS $</div>
+            <div className="col-span-2 font-pixel text-xl text-cyan-400 text-right">RATIO</div>
           </div>
 
           {DISPLAY_POLITICIANS.map((pol, i) => (
@@ -103,7 +94,7 @@ export function SlideCongressMilitaryTrialsRatio() {
               </div>
 
               {/* Party */}
-              <div className="col-span-2">
+              <div className="col-span-1">
                 <span
                   className={`font-pixel text-xl ${
                     pol.party === "Democrat"
@@ -117,24 +108,30 @@ export function SlideCongressMilitaryTrialsRatio() {
                 </span>
               </div>
 
-              {/* Ratio */}
-              <div className="col-span-3">
-                <span className="font-pixel text-xl text-zinc-200">
-                  {pol.militaryToTrialsRatio.toLocaleString()}:1
-                </span>
-              </div>
-
-              {/* Grade */}
-              <div className="col-span-1">
-                <span className={`font-pixel text-xl px-2 py-0.5 rounded ${gradeColor[pol.grade]}`}>
-                  {pol.grade}
-                </span>
-              </div>
-
               {/* Military $ voted for */}
-              <div className="col-span-2">
-                <span className="font-pixel text-xl text-red-400">
+              <div className="col-span-3 text-right">
+                <span className={`font-pixel text-xl ${
+                  pol.destructiveDollarsVotedFor > 0 ? "text-red-400" : "text-cyan-400"
+                }`}>
                   {formatBillions(pol.destructiveDollarsVotedFor)}
+                </span>
+              </div>
+
+              {/* Trials $ voted for */}
+              <div className="col-span-2 text-right">
+                <span className={`font-pixel text-xl ${
+                  pol.clinicalTrialDollarsVotedFor > 0 ? "text-cyan-400" : "text-zinc-500"
+                }`}>
+                  {formatBillions(pol.clinicalTrialDollarsVotedFor)}
+                </span>
+              </div>
+
+              {/* Ratio */}
+              <div className="col-span-2 text-right">
+                <span className={`font-pixel text-xl ${
+                  pol.militaryToTrialsRatio >= 100 ? "text-red-400" : pol.militaryToTrialsRatio <= 1 ? "text-cyan-400" : "text-zinc-200"
+                }`}>
+                  {pol.militaryToTrialsRatio === 0 ? "0:1" : pol.militaryToTrialsRatio === 1 ? "1:1" : `${pol.militaryToTrialsRatio.toLocaleString()}:1`}
                 </span>
               </div>
             </div>
