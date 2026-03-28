@@ -1526,26 +1526,18 @@ RECURSIVE EXPONENTIAL THEFT`,
       "Pixel art — a Sierra government office with long queues and stamping bureaucrats on the left. On the right, a single clean terminal that just says DEPOSITED. No queue. No forms. No office.",
     asciiArt: `
 ┌─────────────────────────────────────────────┐
-│  🏛 WELFARE REPLACEMENT                      │
+│  🏛️ WELFARE REPLACEMENT                      │
 │                                             │
-│  CURRENT SYSTEM:                            │
-│  Programs:          83                      │
-│  Agencies:          6                       │
-│  Application forms: hundreds                │
-│  Wait time:         months                  │
-│  Deciding if you                            │
-│  deserve to eat:    committee               │
-│                                             │
-│  REPLACEMENT:                               │
-│  Programs:          1                       │
-│  Agencies:          0                       │
-│  Application forms: 0                       │
-│  Wait time:         0                       │
-│  Deciding if you                            │
-│  deserve to eat:    you're human, yes       │
+│                CURRENT     REPLACEMENT      │
+│  ──────────────────────────────────────     │
+│  Programs       83          1              │
+│  Agencies       6           0              │
+│  Forms          Hundreds    0              │
+│  Wait time      Months      0              │
+│  Bureaucrats    Thousands   0              │
+│  Deserve food?  Committee   You're human   │
 │                                             │
 │  METHOD: UBI via World ID (automatic)       │
-│  BUREAUCRATS NEEDED: null                   │
 └─────────────────────────────────────────────┘`,
     score: 5_500_000_000,
     showQuestMeters: true,
@@ -1563,40 +1555,30 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dtreasury/dfed",
     narration:
-      "Your central bank destroyed 97% of the dollar since 1913. This smart contract maintains zero percent inflation by anchoring to productivity growth. It cannot print money to fund wars because it does not have a print function.",
+      "Twelve unelected humans meet eight times a year to decide how much your money is worth. Since 1913 they have destroyed 97 percent of the dollar's value. When they print new money, it goes to banks and asset holders first. Everyone else gets the inflation. This smart contract replaces them with an algorithm. Zero percent inflation, anchored to productivity growth. New money distributed equally to every human via UBI. No meetings. No favourites. No 97 percent.",
     visual:
-      "Pixel art — a Sierra bank vault. On the left, a pixel money printer running endlessly, dollars dissolving as they come out. On the right, a locked terminal with the print function visibly deleted from the code.",
+      "3-column comparison table: Label | FED | Smart Contract. Rows stagger in. Clean, data-forward layout. No pixel art — the numbers speak for themselves.",
     asciiArt: `
 ┌─────────────────────────────────────────────┐
-│  🏦 CENTRAL BANK REPLACEMENT                 │
+│  🏦 A DECENTRALIZED FEDERAL RESERVE          │
 │                                             │
-│  FEDERAL RESERVE (1913-present):            │
-│  Dollar value destroyed:  97%               │
-│  Wars funded:             all of them       │
-│  Citizens consulted:      0                 │
-│  Audit results:           "no"              │
-│                                             │
-│  SMART CONTRACT:                            │
-│  Inflation target:        0%                │
-│  Anchored to:             productivity      │
-│  print(money):            FUNCTION REMOVED  │
-│  fund(war):               FUNCTION REMOVED  │
-│  Audit results:           view source       │
-│                                             │
-│  "It cannot print money to fund wars        │
-│   because it does not have a print          │
-│   function."                                │
-│                                             │
-│  Your engineers will appreciate this.       │
-│  Your central bankers will not.             │
+│              FED          SMART CONTRACT    │
+│  ──────────────────────────────────────     │
+│  Who decides  12 unelected  Algorithm      │
+│  New $ goes   Banks/assets  Everyone (UBI) │
+│  Inflation    97% destroyed 0% (automatic) │
+│  Consulted    0             8,000,000,000  │
+│  Tax filing   70,000 pages  0.5% auto-tax  │
+│  Auditable    Never         View source    │
+│  Wars funded  All of them   0              │
 └─────────────────────────────────────────────┘`,
     score: 5_600_000_000,
     showQuestMeters: true,
     sierraVerbs: [
       {
-        verb: "PRINT money",
+        verb: "LOOK AT fed",
         response:
-          "ERROR: print() is not a function. This is by design. Your central bankers are reportedly quite upset.",
+          "Twelve people. Eight meetings a year. 97% of your currency destroyed. New money goes to banks first, inflation goes to everyone else. On my planet we call this 'theft with a spreadsheet.'",
       },
     ],
   },
@@ -1606,32 +1588,30 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 8,
     ctaUrl: "/agencies/dcbo",
     narration:
-      "The Optimal Policy Generator. It looks at what every country tried and what actually happened. Not which policies were popular. Which ones moved the numbers. It does not have a favourite party. It does not have donors. It has arithmetic.",
+      "The Optimal Policy Generator. It looks at what every country tried and what actually happened. Not which policies were popular. Which ones moved the numbers. How many healthy years did they add? What did they do to income? Each policy gets a grade — A through F — based on Bradford Hill causal criteria. Nine dimensions of evidence, weighted by experimental quality. It does not have a favourite party. It does not have donors. It has arithmetic.",
     visual:
-      "Pixel art — Wishonia's workshop. A large machine with input slot and output tray. Clean, transparent. Not a black box — a looking machine.",
+      "Table with five columns: Policy, Health (years gained), Income (pp/yr), Grade (A-F), and Action (ENACT/MAINTAIN/REPLACE/REPEAL). Rows animate in one by one. Tobacco tax row shows current→target ($1.41→$2.50). Health/income values are green for positive, red for negative — showing trade-offs clearly. War on Drugs gets an F grade and REPEAL. Punchline: 'Ranked by what actually happened. Not by who donated.'",
     asciiArt: `
-┌─────────────────────────────────────────────┐
-│  🔬 OPTIMAL POLICY GENERATOR                 │
-│                                             │
-│  INPUT:  What every country tried           │
-│  OUTPUT: What actually worked               │
-│                                             │
-│  DOES NOT CARE ABOUT:                       │
-│  ☐ Party affiliation                        │
-│  ☐ Ideology                                 │
-│  ☐ Campaign donations                       │
-│  ☐ Feelings                                 │
-│                                             │
-│  CARES ABOUT:                               │
-│  ☑ Did the number go up or down             │
-│                                             │
-│  Your species has a word for this.          │
-│  "Controversial."                           │
-│  On my planet we call it "looking."         │
-└─────────────────────────────────────────────┘`,
+┌────────────────────────────────────────────────────────────────┐
+│  🔬 OPTIMAL POLICY GENERATOR                                   │
+│                                                                │
+│  POLICY                  HEALTH    INCOME   GRADE   ACTION     │
+│  ─────────────────────   ───────   ──────   ─────   ────────   │
+│  🇵🇹 Drug Decrim          +0.25yr   +0.03pp   A     ✅ ENACT   │
+│  🏥 Universal Healthcare  +0.40yr   +0.05pp   A     ✅ MAINTAIN│
+│  🚬 Tobacco Tax           +0.25yr   -0.02pp   A     🔄 REPLACE│
+│     ($1.41→$2.50)                                              │
+│  ⚔️  War on Drugs         -0.15yr   -0.01pp   F     ❌ REPEAL  │
+│  🏦 Quantitative Easing   +0.00yr   -0.03pp   D     ❌ REPEAL  │
+│                                                                │
+│  Health = healthy life-years · Income = growth pp/yr           │
+│  Grade = A-F evidence strength (Bradford Hill causal criteria) │
+│                                                                │
+│  Ranked by what actually happened. Not by who donated.         │
+└────────────────────────────────────────────────────────────────┘`,
     onScreen: [
       { text: "OPTIMAL POLICY GENERATOR", size: "large", animation: "fadeIn", color: "green" },
-      { text: "RANKED BY CAUSAL IMPACT", size: "medium", animation: "fadeIn", color: "green" },
+      { text: "POLICY · HEALTH · INCOME · GRADE · ACTION", size: "small", animation: "fadeIn" },
     ],
     score: 4_900_000_000,
     showQuestMeters: true,
@@ -1727,25 +1707,25 @@ RECURSIVE EXPONENTIAL THEFT`,
     narration:
       "Look at this pencil. There is not a single person in the world who can make this pencil. The wood comes from a tree in Washington. To cut that tree took a saw. To make the saw took steel. To make steel took iron ore. The graphite comes from mines in South America. The rubber from Malaya. Thousands of people cooperated to make this pencil. People who don't speak the same language. Who might hate each other if they ever met. No one sitting in a central office gave orders. No master mind planned it. The price system — and nothing else — turned their selfishness into pencils. Your species does this billions of times a day without noticing. And yet you think you need a committee to cure a disease.",
     visual:
-      "Pixel art — a Sierra \"I, Pencil\" sequence. A pixel pencil sits in the center of the screen. Zoom lines expand outward from it showing the supply chain: a pixel lumberjack in Washington, a pixel miner in South America, a pixel rubber tapper in Malaya, a pixel factory worker assembling. None of them know each other. Lines connect them all to the pencil. A counter ticks: STRANGERS COOPERATING: 1,000... 10,000... 100,000. The pencil assembles itself from the contributions.",
+      "Central pencil with radial supply chain nodes connected by lines. Nodes appear one at a time: Wood (Washington), Saw (Oregon), Steel (Pennsylvania), Iron Ore (Minnesota), Graphite (South America), Rubber (Malaya), Brass, Paint. Counter ticks up: STRANGERS COOPERATING: 100,000. Stats: CENTRAL PLANNER: NONE / MASTER MIND: NONE / COST: $0.25. Punchline: THE PRICE SYSTEM DID IT.",
     asciiArt: `
 ┌─────────────────────────────────────────────┐
 │  ✏️ I, PENCIL                                │
 │                                             │
-│  🪵 Washington     → wood                   │
-│  ⛏️ South America  → graphite               │
-│  🌿 Malaya         → rubber                 │
-│  🔧 ???            → brass ferrule           │
-│  🎨 ???            → paint                   │
+│  🪵 Washington  🪚 Oregon   ⚙️ Pennsylvania │
+│       \\            |           /            │
+│        \\           |          /             │
+│  ⛏️ Minnesota ──── ✏️ ──── 🌿 Malaya       │
+│        /           |          \\             │
+│       /            |           \\            │
+│  🔧 ???        🎨 ???                       │
 │                                             │
-│  People cooperating:         thousands      │
-│  People who speak same language: some       │
-│  People who like each other:     unknown    │
-│  Central coordinator:            none       │
+│  STRANGERS COOPERATING: 100,000            │
+│  CENTRAL PLANNER: NONE                     │
+│  MASTER MIND: NONE                         │
+│  COST: $0.25                               │
 │                                             │
-│  Cost: $0.25                                │
-│  Method: everyone wanted money              │
-│  Result: pencil                             │
+│  THE PRICE SYSTEM DID IT.                  │
 └─────────────────────────────────────────────┘`,
     onScreen: [
       { text: "I, PENCIL", size: "large", animation: "fadeIn" },

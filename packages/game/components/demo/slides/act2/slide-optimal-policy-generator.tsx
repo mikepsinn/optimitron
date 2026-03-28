@@ -2,19 +2,28 @@
 
 import { SlideBase } from "../slide-base";
 import { useEffect, useState } from "react";
+import { useDemoStore } from "@/lib/demo/store";
+import { PALETTE_SEMANTIC, type PaletteMode } from "@/lib/demo/palette";
+
+type Action = "ENACT" | "MAINTAIN" | "REPLACE" | "REPEAL";
+type EvidenceGrade = "A" | "B" | "C" | "D" | "F";
 
 interface PolicyRow {
   policy: string;
-  ccs: number;
-  action: "ENACT" | "MAINTAIN" | "REPLACE" | "REPEAL";
+  health: number; // years gained/lost
+  income: number; // pp/yr change
+  grade: EvidenceGrade;
+  action: Action;
+  detail?: string; // current → target for REPLACE
 }
 
+// Based on OPG test fixtures and paper examples
 const POLICIES: PolicyRow[] = [
-  { policy: "🇵🇹 Drug Decriminalization", ccs: 0.87, action: "ENACT" },
-  { policy: "🏥 Universal Healthcare",    ccs: 0.82, action: "MAINTAIN" },
-  { policy: "📚 School Choice Programs",  ccs: 0.64, action: "REPLACE" },
-  { policy: "⚔️  War on Drugs",           ccs: 0.12, action: "REPEAL" },
-  { policy: "🏦 Quantitative Easing",     ccs: 0.19, action: "REPEAL" },
+  { policy: "🇵🇹 Drug Decriminalization", health: 0.25, income: 0.03, grade: "A", action: "ENACT" },
+  { policy: "🏥 Universal Healthcare", health: 0.40, income: 0.05, grade: "A", action: "MAINTAIN" },
+  { policy: "🚬 Tobacco Tax", health: 0.25, income: -0.02, grade: "A", action: "REPLACE", detail: "$1.41→$2.50" },
+  { policy: "⚔️  War on Drugs", health: -0.15, income: -0.01, grade: "F", action: "REPEAL" },
+  { policy: "🏦 Quantitative Easing", health: 0.0, income: -0.03, grade: "D", action: "REPEAL" },
 ];
 
 const ROW_STAGGER_MS = 500;
@@ -23,31 +32,7 @@ const PHASE_2_MS = 1500;
 const PHASE_3_START_MS = PHASE_2_MS + 400;
 const PHASE_4_MS = PHASE_3_START_MS + POLICIES.length * ROW_STAGGER_MS + 800;
 
-function actionColor(action: PolicyRow["action"]): string {
-  switch (action) {
-    case "ENACT":
-    case "MAINTAIN":
-      return "text-emerald-400";
-    case "REPLACE":
-      return "text-amber-400";
-    case "REPEAL":
-      return "text-red-400";
-  }
-}
-
-function actionBadgeBg(action: PolicyRow["action"]): string {
-  switch (action) {
-    case "ENACT":
-    case "MAINTAIN":
-      return "bg-emerald-950 border border-emerald-700";
-    case "REPLACE":
-      return "bg-amber-950 border border-amber-700";
-    case "REPEAL":
-      return "bg-red-950 border border-red-800";
-  }
-}
-
-function actionIcon(action: PolicyRow["action"]): string {
+function actionIcon(action: Action): string {
   switch (action) {
     case "ENACT":
     case "MAINTAIN":
@@ -59,9 +44,45 @@ function actionIcon(action: PolicyRow["action"]): string {
   }
 }
 
+function formatEffect(value: number, unit: string): string {
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value.toFixed(2)}${unit}`;
+}
+
+type Palette = (typeof PALETTE_SEMANTIC)[PaletteMode];
+
+function effectColor(
+  value: number,
+  palette: Palette,
+): string {
+  if (value > 0) return palette.success;
+  if (value < 0) return palette.danger;
+  return palette.muted;
+}
+
+function gradeColor(
+  grade: EvidenceGrade,
+  palette: Palette,
+): string {
+  switch (grade) {
+    case "A":
+      return palette.success;
+    case "B":
+      return palette.primary;
+    case "C":
+      return palette.accent;
+    case "D":
+      return palette.danger;
+    case "F":
+      return palette.danger;
+  }
+}
+
 export function SlideOptimalPolicyGenerator() {
   const [phase, setPhase] = useState(0);
   const [visibleRows, setVisibleRows] = useState(0);
+  const { palette: paletteMode } = useDemoStore();
+  const palette = PALETTE_SEMANTIC[paletteMode];
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -82,6 +103,18 @@ export function SlideOptimalPolicyGenerator() {
 
     return () => timers.forEach(clearTimeout);
   }, []);
+
+  function actionColor(action: Action): string {
+    switch (action) {
+      case "ENACT":
+      case "MAINTAIN":
+        return palette.success;
+      case "REPLACE":
+        return palette.accent;
+      case "REPEAL":
+        return palette.danger;
+    }
+  }
 
   return (
     <SlideBase act={2}>
@@ -110,54 +143,108 @@ export function SlideOptimalPolicyGenerator() {
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400">
+          <h1
+            className="font-pixel text-3xl md:text-5xl"
+            style={{ color: palette.success }}
+          >
             🔬 OPTIMAL POLICY GENERATOR
           </h1>
         </div>
 
         {/* Phase 2+ — Table */}
         {phase >= 2 && (
-          <div className="w-full bg-black/40 border border-zinc-700 rounded fade-in">
+          <div
+            className="w-full rounded fade-in"
+            style={{
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: `1px solid ${palette.border}`,
+            }}
+          >
 
             {/* Column headers */}
-            <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 px-4 pt-3 pb-2 border-b border-zinc-700">
-              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest">
-                POLICY
+            <div
+              className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 px-4 pt-3 pb-2"
+              style={{ borderBottom: `1px solid ${palette.border}` }}
+            >
+              <div className="font-pixel text-lg md:text-2xl uppercase tracking-widest" style={{ color: palette.muted }}>
+                Policy
               </div>
-              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest text-center w-28 md:w-40">
-                EVIDENCE
+              <div className="font-pixel text-lg md:text-2xl uppercase tracking-widest text-center w-28 md:w-36" style={{ color: palette.muted }}>
+                Health
               </div>
-              <div className="font-pixel text-xl md:text-3xl text-zinc-400 uppercase tracking-widest text-center w-32 md:w-44">
-                ACTION
+              <div className="font-pixel text-lg md:text-2xl uppercase tracking-widest text-center w-28 md:w-36" style={{ color: palette.muted }}>
+                Income
+              </div>
+              <div className="font-pixel text-lg md:text-2xl uppercase tracking-widest text-center w-16 md:w-24" style={{ color: palette.muted }}>
+                Grade
+              </div>
+              <div className="font-pixel text-lg md:text-2xl uppercase tracking-widest text-center w-32 md:w-44" style={{ color: palette.muted }}>
+                Action
               </div>
             </div>
 
             {/* Data rows */}
-            <div className="divide-y divide-zinc-800">
+            <div>
               {POLICIES.map((row, i) => {
                 if (i >= visibleRows) return null;
 
                 return (
                   <div
                     key={row.policy}
-                    className="grid grid-cols-[1fr_auto_auto] gap-x-4 px-4 py-3 items-center fade-in"
+                    className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 px-4 py-3 items-center fade-in"
+                    style={{ borderBottom: i < POLICIES.length - 1 ? `1px solid ${palette.border}20` : undefined }}
                   >
-                    {/* Policy name */}
-                    <div className="font-pixel text-xl md:text-3xl text-zinc-100">
-                      {row.policy}
+                    {/* Policy name + detail */}
+                    <div>
+                      <div className="font-pixel text-lg md:text-2xl" style={{ color: palette.foreground }}>
+                        {row.policy}
+                      </div>
+                      {row.detail && (
+                        <div className="font-terminal text-sm md:text-base mt-0.5" style={{ color: palette.muted }}>
+                          {row.detail}
+                        </div>
+                      )}
                     </div>
 
-                    {/* CCS score */}
-                    <div className="text-center w-28 md:w-40">
-                      <span className={`font-pixel text-xl md:text-3xl ${actionColor(row.action)}`}>
-                        {row.ccs.toFixed(2)}
+                    {/* Health effect */}
+                    <div className="text-center w-28 md:w-36">
+                      <span
+                        className="font-pixel text-lg md:text-2xl"
+                        style={{ color: effectColor(row.health, palette) }}
+                      >
+                        {formatEffect(row.health, " yrs")}
+                      </span>
+                    </div>
+
+                    {/* Income effect */}
+                    <div className="text-center w-28 md:w-36">
+                      <span
+                        className="font-pixel text-lg md:text-2xl"
+                        style={{ color: effectColor(row.income, palette) }}
+                      >
+                        {formatEffect(row.income, " pp")}
+                      </span>
+                    </div>
+
+                    {/* Evidence grade */}
+                    <div className="text-center w-16 md:w-24">
+                      <span
+                        className="font-pixel text-xl md:text-3xl font-bold"
+                        style={{ color: gradeColor(row.grade, palette) }}
+                      >
+                        {row.grade}
                       </span>
                     </div>
 
                     {/* Action badge */}
                     <div className="flex justify-center w-32 md:w-44">
                       <span
-                        className={`font-pixel text-xl md:text-3xl px-2 py-0.5 rounded ${actionColor(row.action)} ${actionBadgeBg(row.action)}`}
+                        className="font-pixel text-lg md:text-2xl px-2 py-0.5 rounded border"
+                        style={{
+                          color: actionColor(row.action),
+                          borderColor: actionColor(row.action),
+                          backgroundColor: `${actionColor(row.action)}15`,
+                        }}
                       >
                         {actionIcon(row.action)} {row.action}
                       </span>
@@ -167,11 +254,11 @@ export function SlideOptimalPolicyGenerator() {
               })}
             </div>
 
-            {/* CCS label — appears after all rows */}
+            {/* Legend — appears after all rows */}
             {phase >= 3 && visibleRows >= POLICIES.length && (
-              <div className="border-t border-zinc-800 px-4 py-2 fade-in">
-                <span className="font-terminal text-xl text-zinc-500">
-                  CCS = Causal Confidence Score
+              <div className="px-4 py-2 fade-in" style={{ borderTop: `1px solid ${palette.border}20` }}>
+                <span className="font-terminal text-base md:text-lg" style={{ color: palette.muted }}>
+                  Health = healthy life-years gained · Income = income growth pp/yr · Grade = A-F evidence strength
                 </span>
               </div>
             )}
@@ -180,7 +267,10 @@ export function SlideOptimalPolicyGenerator() {
 
         {/* Phase 4 — Punchline */}
         {phase >= 4 && (
-          <p className="font-terminal text-2xl md:text-4xl text-zinc-200 text-center fade-in gentle-pulse">
+          <p
+            className="font-terminal text-2xl md:text-4xl text-center fade-in gentle-pulse"
+            style={{ color: palette.foreground }}
+          >
             Ranked by what actually happened. Not by who donated.
           </p>
         )}
