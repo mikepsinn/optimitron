@@ -50,9 +50,18 @@ import {
   type OECDCategoryMapping,
 } from '@optimitron/data';
 import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
+import { getBestAvailableMedianIncomeSeries } from '@optimitron/data/datasets/median-income-series';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../../web/src/data');
+
+// Pull latest after-tax median income PPP from canonical source
+const usIncomeRecords = getBestAvailableMedianIncomeSeries({
+  jurisdictions: ['USA'],
+  isAfterTax: true,
+  purchasingPower: 'ppp',
+});
+const usMedianIncome = usIncomeRecords.length > 0 ? Math.round(usIncomeRecords[0].value) : 59_540;
 
 // Jurisdiction config — change to generate for any country
 const JURISDICTION = {
@@ -60,7 +69,7 @@ const JURISDICTION = {
   name: 'United States',
   population: 339_000_000,
   households: 133_000_000,
-  medianIncome: 59_540,
+  medianIncome: usMedianIncome,
 };
 const US_POPULATION = JURISDICTION.population;
 

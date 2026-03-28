@@ -139,7 +139,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: { value: 4.9, source: "World Bank 2022", url: "https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS" },
     militaryToEducationRatio: { value: 0.69, source: "Calculated: 3.4% military / 4.9% education" },
     gdpPerCapita: { value: 80_035, source: "World Bank 2023" },
-    medianIncome: { value: 74_580, source: "Census Bureau 2023" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 123, source: "CBO 2024" },
   },
   {
@@ -272,7 +272,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: null,
     militaryToEducationRatio: null,
     gdpPerCapita: { value: 55_800, source: "World Bank PPP 2023" },
-    medianIncome: { value: 39_000, source: "ONS 2023" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 101, source: "IMF 2024" },
   },
   {
@@ -402,7 +402,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: null,
     militaryToEducationRatio: null,
     gdpPerCapita: { value: 133_737, source: "World Bank PPP 2023" },
-    medianIncome: { value: 54_000, source: "MOM 2023" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 168, source: "IMF 2024 (mostly internal/reserves)" },
   },
   {
@@ -728,7 +728,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: { value: 3.4, source: "OECD 2022" },
     militaryToEducationRatio: { value: 0.35, source: "Calculated: 1.2% military / 3.4% education" },
     gdpPerCapita: { value: 33_950, source: "World Bank 2023" },
-    medianIncome: { value: 28_700, source: "OECD median equivalised 2022" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 264, source: "IMF 2024" },
   },
   {
@@ -771,7 +771,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: null,
     militaryToEducationRatio: null,
     gdpPerCapita: { value: 52_824, source: "World Bank 2023" },
-    medianIncome: { value: 35_500, source: "OECD median equivalised 2022" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 64, source: "IMF 2024" },
   },
   {
@@ -814,7 +814,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: null,
     militaryToEducationRatio: null,
     gdpPerCapita: { value: 65_099, source: "World Bank 2023" },
-    medianIncome: { value: 42_000, source: "ABS median equivalised 2022" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 51, source: "IMF 2024" },
   },
   {
@@ -857,7 +857,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: null,
     militaryToEducationRatio: null,
     gdpPerCapita: { value: 53_247, source: "World Bank 2023" },
-    medianIncome: { value: 38_000, source: "Statistics Canada median after-tax 2022" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 107, source: "IMF 2024" },
   },
   {
@@ -900,7 +900,7 @@ export const GOVERNMENTS: GovernmentMetrics[] = [
     educationSpendingPctGDP: { value: 4.7, source: "OECD 2022" },
     militaryToEducationRatio: { value: 0.60, source: "Calculated: 2.8% military / 4.7% education" },
     gdpPerCapita: { value: 32_423, source: "World Bank 2023" },
-    medianIncome: { value: 27_500, source: "KOSIS median equivalised 2022" },
+    medianIncome: null, // hydrated from canonical median-income-series
     debtPctGDP: { value: 54, source: "IMF 2024" },
   },
 ];

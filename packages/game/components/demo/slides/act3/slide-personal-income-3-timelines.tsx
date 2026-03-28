@@ -1,136 +1,211 @@
 "use client";
 
 import { SlideBase } from "../slide-base";
-import { GAME_PARAMS } from "@/lib/demo/parameters";
 import {
-  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  TREATY_PERSONAL_UPSIDE_BLEND,
-  TREATY_PROJECTED_HALE_YEAR_15,
+  CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
+  CURRENT_TRAJECTORY_GDP_YEAR_20,
+  DESTRUCTIVE_ECONOMY_25PCT_YEAR,
+  DESTRUCTIVE_ECONOMY_35PCT_YEAR,
+  GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
+  GLOBAL_GDP_2025,
   GLOBAL_HALE_CURRENT,
+  GDP_BASELINE_GROWTH_RATE,
+  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+  TREATY_HALE_GAIN_YEAR_15,
+  TREATY_TRAJECTORY_CAGR_YEAR_20,
+  TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
+  TREATY_TRAJECTORY_GDP_YEAR_20,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+  WISHONIA_HALE_GAIN_YEAR_15,
+  WISHONIA_PROJECTED_HALE_YEAR_15,
+  WISHONIA_TRAJECTORY_CAGR_YEAR_20,
+  WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME,
+  WISHONIA_TRAJECTORY_GDP_YEAR_20,
+  WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
 } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
-const statusQuoLifetimeIncome = GAME_PARAMS.statusQuoLifetimeIncome;
-const annualDysfunctionTax = Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value / 100) * 100;
-const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 100_000) * 100_000;
-const haleGain = Math.round((TREATY_PROJECTED_HALE_YEAR_15.value - GLOBAL_HALE_CURRENT.value) * 10) / 10;
-const wishoniaLifetimeIncome = GAME_PARAMS.wishoniaLifetimeIncome;
+/* ── Derived values ──────────────────────────────────────────────── */
 
-interface SaveSlot {
-  title: string;
+const statusQuoLifetimeIncome = Math.round(CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value);
+const treatyLifetimeIncome = Math.round(TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value);
+const wishoniaLifetimeIncome = Math.round(WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME.value);
+
+const treatyMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
+const wishoniaMultiplier = Math.round(WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
+
+const treatyHaleGain = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
+const wishoniaHaleGain = Math.round(WISHONIA_HALE_GAIN_YEAR_15.value * 10) / 10;
+
+const annualDysfunctionTax = Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value / 100) * 100;
+const destructivePctGdp = Math.round(GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP.value * 100);
+const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value);
+const instabilityYear = Math.round(DESTRUCTIVE_ECONOMY_25PCT_YEAR.value);
+
+const statusQuoGrowth = `${(GDP_BASELINE_GROWTH_RATE.value * 100).toFixed(1)}%`;
+const treatyGrowth = `${(TREATY_TRAJECTORY_CAGR_YEAR_20.value * 100).toFixed(1)}%`;
+const wishoniaGrowth = `${(WISHONIA_TRAJECTORY_CAGR_YEAR_20.value * 100).toFixed(1)}%`;
+
+/* ── Format GDP numbers for display ──────────────────────────────── */
+
+function formatGdp(value: number): string {
+  if (value >= 1e15) return `$${(value / 1e15).toFixed(1)}Q`;
+  if (value >= 1e12) return `$${(value / 1e12).toFixed(0)}T`;
+  return formatCurrency(value);
+}
+
+const statusQuoGdp2045 = formatGdp(CURRENT_TRAJECTORY_GDP_YEAR_20.value);
+const treatyGdp2045 = formatGdp(TREATY_TRAJECTORY_GDP_YEAR_20.value);
+const wishoniaGdp2045 = formatGdp(WISHONIA_TRAJECTORY_GDP_YEAR_20.value);
+
+/* ── Earth options ───────────────────────────────────────────────── */
+
+interface EarthOption {
+  label: string;
+  subtitle: string;
   tag: string;
   borderColor: string;
   bgColor: string;
   textColor: string;
   tagColor: string;
   lifetimeIncome: number;
-  lifetimeLabel: string;
+  incomeMultiplier: string;
   haleGain: string;
+  gdp2045: string;
+  growth: string;
   dysfunctionTax: string;
 }
 
-const SAVE_SLOTS: SaveSlot[] = [
+const EARTHS: EarthOption[] = [
   {
-    title: "STATUS QUO",
+    label: "EARTH B",
+    subtitle: "SOMALIA, BUT EVERYWHERE",
     tag: "[LOADED]",
-    borderColor: "border-zinc-600",
-    bgColor: "bg-zinc-800/50",
-    textColor: "text-zinc-200",
-    tagColor: "text-zinc-200",
+    borderColor: "border-red-600/60",
+    bgColor: "bg-red-950/40",
+    textColor: "text-red-400",
+    tagColor: "text-red-300",
     lifetimeIncome: statusQuoLifetimeIncome,
-    lifetimeLabel: "",
-    haleGain: "+0 years",
+    incomeMultiplier: "",
+    haleGain: `${GLOBAL_HALE_CURRENT.value.toFixed(1)} yrs`,
+    gdp2045: statusQuoGdp2045,
+    growth: statusQuoGrowth,
     dysfunctionTax: `-${formatCurrency(annualDysfunctionTax)}/yr`,
   },
   {
-    title: "1% TREATY",
+    label: "1% TREATY",
+    subtitle: "CONSERVATIVE REFORM",
     tag: "◄◄◄",
     borderColor: "border-emerald-500/60",
     bgColor: "bg-emerald-500/10",
     textColor: "text-emerald-400",
     tagColor: "text-emerald-400",
-    lifetimeIncome: personalLifetimeLoss,
-    lifetimeLabel: "(12×)",
-    haleGain: `+${haleGain} years`,
+    lifetimeIncome: treatyLifetimeIncome,
+    incomeMultiplier: `(${treatyMultiplier}×)`,
+    haleGain: `+${treatyHaleGain} yrs`,
+    gdp2045: treatyGdp2045,
+    growth: treatyGrowth,
     dysfunctionTax: "eliminated",
   },
   {
-    title: "OPTIMAL GOVERNANCE + IABs",
+    label: "EARTH A",
+    subtitle: "EVERYONE GETS RICH",
     tag: "",
     borderColor: "border-amber-500/60",
     bgColor: "bg-amber-500/10",
     textColor: "text-amber-400",
     tagColor: "text-amber-400",
     lifetimeIncome: wishoniaLifetimeIncome,
-    lifetimeLabel: "(40×)",
-    haleGain: "+15.7 years",
-    dysfunctionTax: "what is that",
+    incomeMultiplier: `(${wishoniaMultiplier}×)`,
+    haleGain: `+${wishoniaHaleGain} yrs`,
+    gdp2045: wishoniaGdp2045,
+    growth: wishoniaGrowth,
+    dysfunctionTax: `what is that`,
   },
 ];
 
 export function SlidePersonalIncome3Timelines() {
   return (
     <SlideBase act={3} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
+      <div className="flex flex-col items-center justify-center gap-4 max-w-[1700px] mx-auto">
         {/* Title */}
         <h1 className="font-pixel text-3xl md:text-5xl text-amber-400 text-center">
-          CHOOSE YOUR TIMELINE
+          PLEASE SELECT AN EARTH
         </h1>
 
-        {/* Save Slots */}
-        <div className="w-full space-y-4">
-          {SAVE_SLOTS.map((slot, i) => (
+        {/* Earth Options */}
+        <div className="w-full space-y-3">
+          {EARTHS.map((earth, i) => (
             <div
               key={i}
-              className={`${slot.bgColor} border-2 ${slot.borderColor} rounded-lg p-4 space-y-3`}
+              className={`${earth.bgColor} border-2 ${earth.borderColor} rounded-lg p-4 space-y-2`}
             >
-              {/* Slot Header */}
+              {/* Header */}
               <div className="flex items-center justify-between">
-                <div>
-                  <span className={`font-pixel text-xl md:text-3xl ${slot.textColor}`}>
-                    {slot.title}
+                <div className="flex items-center gap-3">
+                  <span className={`font-pixel text-xl md:text-3xl ${earth.textColor}`}>
+                    {earth.label}
+                  </span>
+                  <span className={`font-pixel text-sm md:text-lg text-zinc-400`}>
+                    {earth.subtitle}
                   </span>
                 </div>
-                {slot.tag && (
+                {earth.tag && (
                   <span
-                    className={`font-pixel text-xl md:text-2xl ${slot.tagColor} ${
+                    className={`font-pixel text-xl md:text-2xl ${earth.tagColor} ${
                       i === 1 ? "animate-pulse" : ""
                     }`}
                   >
-                    {slot.tag}
+                    {earth.tag}
                   </span>
                 )}
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-3">
                 <div>
-                  <div className="font-pixel text-xl text-zinc-300 mb-1">
+                  <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
                     LIFETIME INCOME
                   </div>
-                  <div className={`font-pixel text-xl md:text-3xl ${slot.textColor}`}>
-                    {formatCurrency(slot.lifetimeIncome)}{" "}
-                    {slot.lifetimeLabel && (
-                      <span className="text-zinc-200">
-                        {slot.lifetimeLabel}
+                  <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
+                    {formatCurrency(earth.lifetimeIncome)}{" "}
+                    {earth.incomeMultiplier && (
+                      <span className="text-zinc-200 text-sm md:text-lg">
+                        {earth.incomeMultiplier}
                       </span>
                     )}
                   </div>
                 </div>
                 <div>
-                  <div className="font-pixel text-xl text-zinc-300 mb-1">
-                    HALE GAIN
+                  <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
+                    GDP 2045
                   </div>
-                  <div className={`font-pixel text-xl md:text-3xl ${slot.textColor}`}>
-                    {slot.haleGain}
+                  <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
+                    {earth.gdp2045}
                   </div>
                 </div>
                 <div>
-                  <div className="font-pixel text-xl text-zinc-300 mb-1">
+                  <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
+                    GROWTH
+                  </div>
+                  <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
+                    {earth.growth}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
+                    HALE
+                  </div>
+                  <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
+                    {earth.haleGain}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-pixel text-xs md:text-base text-zinc-400 mb-1">
                     DYSFUNCTION TAX
                   </div>
-                  <div className={`font-pixel text-xl md:text-3xl ${slot.textColor}`}>
-                    {slot.dysfunctionTax}
+                  <div className={`font-pixel text-lg md:text-2xl ${earth.textColor}`}>
+                    {earth.dysfunctionTax}
                   </div>
                 </div>
               </div>
@@ -138,7 +213,10 @@ export function SlidePersonalIncome3Timelines() {
           ))}
         </div>
 
-        {/* Bottom line removed */}
+        {/* Collapse warning for Earth B */}
+        <div className="font-pixel text-xs md:text-sm text-red-400/70 text-center">
+          EARTH B: DESTRUCTIVE ECONOMY AT {destructivePctGdp}% GDP — INSTABILITY BY {instabilityYear} — COLLAPSE THRESHOLD BY {collapseYear}
+        </div>
       </div>
     </SlideBase>
   );

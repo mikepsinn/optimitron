@@ -47,25 +47,21 @@ export function SlideFinalCallToAction() {
               backgroundColor: `${palette.accent}10`,
             }}
           >
-            <div className="flex justify-between gap-8 text-2xl md:text-3xl">
+            <div className="flex justify-between gap-8 text-3xl md:text-4xl">
               <span className="text-zinc-200">❤️ Lives saved:</span>
               <span style={{ color: palette.success }}>all of them</span>
             </div>
-            <div className="flex justify-between gap-8 text-2xl md:text-3xl">
+            <div className="flex justify-between gap-8 text-3xl md:text-4xl">
               <span className="text-zinc-200">🏥 HALE:</span>
               <span style={{ color: palette.success }}>69.8 years ✓</span>
             </div>
-            <div className="flex justify-between gap-8 text-2xl md:text-3xl">
+            <div className="flex justify-between gap-8 text-3xl md:text-4xl">
               <span className="text-zinc-200">💰 Income:</span>
               <span style={{ color: palette.success }}>$149,000 ✓</span>
             </div>
-            <div className="flex justify-between gap-8 text-2xl md:text-3xl">
+            <div className="flex justify-between gap-8 text-3xl md:text-4xl">
               <span className="text-zinc-200">⏱️ Time played:</span>
               <span className="text-zinc-300">3 minutes</span>
-            </div>
-            <div className="flex justify-between gap-8 text-2xl md:text-3xl">
-              <span className="text-zinc-200">🎒 Inventory:</span>
-              <span className="text-zinc-300">8/8</span>
             </div>
           </div>
 

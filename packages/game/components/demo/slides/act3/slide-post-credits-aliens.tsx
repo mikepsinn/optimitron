@@ -1,9 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { SlideBase } from "../slide-base";
 import { useDemoStore } from "@/lib/demo/store";
 import { PALETTE_SEMANTIC } from "@/lib/demo/palette";
+
+const SPONSORS = [
+  { name: "Protocol Labs", logo: "/images/logos/protocol-labs.svg" },
+  { name: "Funding the Commons", logo: "/images/logos/funding-the-commons.svg" },
+];
+
+const BUILT_WITH = [
+  { name: "Storacha", logo: "/images/logos/storacha.svg" },
+  { name: "Hypercerts", logo: "/images/logos/hypercerts.svg" },
+  { name: "World ID", logo: "/images/logos/worldcoin.svg" },
+  { name: "Next.js", logo: "/images/logos/nextjs.svg" },
+  { name: "Solidity", logo: "/images/logos/solidity.svg" },
+  { name: "Base", logo: "/images/logos/base.svg" },
+  { name: "Aave", logo: "/images/logos/aave.svg" },
+];
 
 export function SlidePostCreditsAliens() {
   const [showText, setShowText] = useState(false);
@@ -28,38 +44,52 @@ export function SlidePostCreditsAliens() {
           `}
           style={{ color: PALETTE_SEMANTIC[palette].foreground }}
         >
-          <p className="text-2xl md:text-4xl opacity-70 mb-6">
+          <p className="text-4xl md:text-6xl opacity-70 mb-8">
             The Earth Optimization Game
           </p>
 
-          <div className="border-t border-current opacity-20 mb-6" />
+          <div className="border-t border-current opacity-20 mb-8" />
 
-          <p className="text-xl md:text-3xl opacity-70 mb-2">
+          <p className="text-2xl md:text-4xl opacity-70 mb-4">
             Made possible by
           </p>
 
-          <div className="space-y-4 mb-8">
-            <p className="text-2xl md:text-4xl opacity-90">
-              Protocol Labs &amp; Funding the Commons
-            </p>
+          <div className="flex items-center justify-center gap-12 mb-10">
+            {SPONSORS.map((s) => (
+              <div key={s.name} className="flex flex-col items-center gap-3">
+                <Image
+                  src={s.logo}
+                  alt={s.name}
+                  width={80}
+                  height={80}
+                  className="brightness-0 invert opacity-90"
+                />
+                <span className="text-2xl md:text-4xl opacity-90">{s.name}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="border-t border-current opacity-20 mb-6" />
+          <div className="border-t border-current opacity-20 mb-8" />
 
-          <p className="text-xl md:text-2xl opacity-50 mb-3">
+          <p className="text-2xl md:text-3xl opacity-50 mb-5">
             Built with
           </p>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xl md:text-2xl opacity-60 mb-8">
-            <span>Storacha</span>
-            <span>Hypercerts</span>
-            <span>World ID</span>
-            <span>Next.js</span>
-            <span>Solidity</span>
-            <span>Base</span>
-            <span>Aave</span>
+          <div className="flex flex-wrap justify-center gap-x-10 gap-y-6 mb-10">
+            {BUILT_WITH.map((t) => (
+              <div key={t.name} className="flex flex-col items-center gap-2">
+                <Image
+                  src={t.logo}
+                  alt={t.name}
+                  width={48}
+                  height={48}
+                  className="brightness-0 invert opacity-70"
+                />
+                <span className="text-xl md:text-2xl opacity-60">{t.name}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="text-xl md:text-3xl opacity-30 font-mono">
+          <div className="text-2xl md:text-4xl opacity-30 font-mono">
             v1.0.0 | 2026
           </div>
         </div>

@@ -13,11 +13,20 @@ import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { EfficiencyAnalysis } from '@optimitron/obg';
 import { BudgetAnalysisOutputSchema, PolicyAnalysisOutputSchema, type BudgetCategoryOutput } from './generate-web-data.js';
+import { getBestAvailableMedianIncomeSeries } from '@optimitron/data/datasets/median-income-series';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB_DATA = resolve(__dirname, '../../web/src/data');
 const LEGISLATION_DIR = resolve(WEB_DATA, 'legislation');
 const SITE_DIR = resolve(__dirname, '../../../reports/site');
+
+// Pull latest after-tax median income PPP from canonical source
+const usIncomeRecords = getBestAvailableMedianIncomeSeries({
+  jurisdictions: ['USA'],
+  isAfterTax: true,
+  purchasingPower: 'ppp',
+});
+const usMedianIncome = usIncomeRecords.length > 0 ? Math.round(usIncomeRecords[0].value) : 59_540;
 
 // Jurisdiction config — parameterized so we can generate for any country
 const JURISDICTION = {
@@ -26,7 +35,7 @@ const JURISDICTION = {
   population: 339_000_000,
   adults: 258_000_000,
   currency: 'USD',
-  medianIncome: 59_540,
+  medianIncome: usMedianIncome,
 };
 
 // Clean old generated content (keep config files like package.json, .eleventy.js, _includes, _data)
