@@ -20,3 +20,13 @@ export const WISHONIA_TTS_MODEL = "gemini-2.5-flash-preview-tts";
 
 /** Gemini model for Live API streaming */
 export const WISHONIA_LIVE_MODEL = "gemini-3.1-flash-live-preview";
+
+/** Iconic Wishonia quotes — useful for demos, placeholders, and embed previews */
+export const WISHONIA_EXAMPLE_QUOTES = [
+  "Your species named your planet... dirt.",
+  "On Wishonia, governance takes about four minutes a week.",
+  "I looked up the last person on your planet who went around suggesting universal love and peace. You nailed him to a piece of wood.",
+  "The data existed. Nobody looked at it. The data did not have a lobbying firm.",
+  "It is like arguing about whether the patient is improving without taking the patient's pulse.",
+  "This is not incompetence. It is architecture.",
+];

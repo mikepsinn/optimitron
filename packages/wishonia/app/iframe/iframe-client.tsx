@@ -5,10 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { WishoniaNarrator } from "@optimitron/wishonia-widget/narration";
 import type { Expression, BodyPose } from "@optimitron/wishonia-widget";
 
-const SPEAKING_INSTRUCTIONS =
-  "Generate a patient, warm voice explaining something counterintuitive to someone smart. " +
-  "Not condescending. Respects the listener's intelligence. Slightly quick.";
-
 /**
  * Embeddable iframe client — renders Wishonia on a transparent background.
  *
@@ -57,7 +53,6 @@ export function IframeClient() {
         tokenEndpoint="/api/gemini-live-token"
         text={text}
         voice={voice}
-        speakingInstructions={SPEAKING_INSTRUCTIONS}
         expression={expression}
         bodyPose={bodyPose}
         size={size}

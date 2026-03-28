@@ -938,6 +938,43 @@ importers:
         specifier: ^1.2.0
         version: 1.6.1(@types/node@20.19.37)
 
+  packages/wishonia:
+    dependencies:
+      '@google/genai':
+        specifier: ^1.46.0
+        version: 1.46.0
+      '@optimitron/wishonia-widget':
+        specifier: workspace:*
+        version: link:../wishonia-widget
+      next:
+        specifier: 16.2.0
+        version: 16.2.0(@playwright/test@1.58.2)(react-dom@19.2.4)(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.2.0
+        version: 4.2.2
+      '@types/react':
+        specifier: 19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      postcss:
+        specifier: ^8.5
+        version: 8.5.8
+      tailwindcss:
+        specifier: ^4.2.0
+        version: 4.2.2
+      typescript:
+        specifier: 5.7.3
+        version: 5.7.3
+
   packages/wishonia-widget:
     devDependencies:
       '@google/genai':

@@ -10,10 +10,11 @@ export { useAmplitudeAnalyser } from "./hooks/useAmplitudeAnalyser";
 export { preloadTier0, preloadTier1, preloadSprites, getSpriteUrl } from "./core/sprite-loader";
 export { getHeadName, getIdleHead, amplitudeToViseme, CHAR_TO_VISEME, EXPRESSION_MOUTHS } from "./core/viseme-map";
 export { MOOD_PRESETS, getMoodPreset } from "./core/mood-presets";
-export { WISHONIA_VOICE, WISHONIA_SPEAKING_INSTRUCTIONS, WISHONIA_TTS_MODEL, WISHONIA_LIVE_MODEL } from "./core/voice-config";
+export { WISHONIA_VOICE, WISHONIA_SPEAKING_INSTRUCTIONS, WISHONIA_TTS_MODEL, WISHONIA_LIVE_MODEL, WISHONIA_EXAMPLE_QUOTES } from "./core/voice-config";
 
-// Types
+// Types and constants
 export type { Expression, MouthShape, BodyPose, AnimatorState } from "./types";
+export { EXPRESSIONS, BODY_POSES } from "./types";
 export type { WishoniaCharacterProps } from "./components/WishoniaCharacter";
 export type { WishoniaWidgetProps } from "./components/WishoniaWidget";
 export type { UseWishoniaAnimatorOptions, UseWishoniaAnimatorReturn } from "./hooks/useWishoniaAnimator";

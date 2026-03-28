@@ -2,29 +2,8 @@
 
 import { useState } from "react";
 import { WishoniaNarrator } from "@optimitron/wishonia-widget/narration";
+import { EXPRESSIONS, BODY_POSES, WISHONIA_EXAMPLE_QUOTES } from "@optimitron/wishonia-widget";
 import type { Expression, BodyPose } from "@optimitron/wishonia-widget";
-
-const EXPRESSIONS: Expression[] = [
-  "neutral", "happy", "excited", "sad", "annoyed", "skeptical",
-  "surprised", "eyeroll", "smirk", "thinking", "sideeye", "lookright",
-];
-
-const BODY_POSES: BodyPose[] = [
-  "idle", "presenting", "thinking", "arms-crossed", "counting",
-  "excited", "hand-chest", "hands-hips", "open-palms", "point-right",
-  "shrug", "wide-gesture", "listening", "fist", "palms-down",
-];
-
-const SPEAKING_INSTRUCTIONS =
-  "Generate a patient, warm voice explaining something counterintuitive to someone smart. " +
-  "Not condescending. Respects the listener's intelligence. Slightly quick.";
-
-const EXAMPLE_TEXTS = [
-  "Your species named your planet... dirt.",
-  "On Wishonia, governance takes about four minutes a week.",
-  "I looked up the last person on your planet who went around suggesting universal love and peace. You nailed him to a piece of wood.",
-  "The data existed. Nobody looked at it. The data did not have a lobbying firm.",
-];
 
 export default function DemoPage() {
   const [text, setText] = useState("");
@@ -82,7 +61,6 @@ export default function DemoPage() {
             tokenEndpoint="/api/gemini-live-token"
             text={text}
             voice="Kore"
-            speakingInstructions={SPEAKING_INSTRUCTIONS}
             expression={expression}
             bodyPose={bodyPose}
             size={140}
@@ -118,7 +96,7 @@ export default function DemoPage() {
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 4 }}>Examples:</label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-              {EXAMPLE_TEXTS.map((t, i) => (
+              {WISHONIA_EXAMPLE_QUOTES.map((t, i) => (
                 <button
                   key={i}
                   onClick={() => handleExample(t)}
