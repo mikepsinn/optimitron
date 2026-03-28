@@ -62,7 +62,7 @@ export function SlidePostCreditsAliens() {
                   alt={s.name}
                   width={80}
                   height={80}
-                  className="brightness-0 invert opacity-90"
+                  className="opacity-90"
                 />
                 <span className="text-2xl md:text-4xl opacity-90">{s.name}</span>
               </div>
@@ -82,7 +82,7 @@ export function SlidePostCreditsAliens() {
                   alt={t.name}
                   width={48}
                   height={48}
-                  className="brightness-0 invert opacity-70"
+                  className="opacity-80"
                 />
                 <span className="text-xl md:text-2xl opacity-60">{t.name}</span>
               </div>

@@ -5,20 +5,21 @@ import { useEffect, useState } from "react";
 
 interface Row {
   label: string;
-  left: string;
-  right: string;
+  current: string;
+  replacement: string;
   isPunchline?: boolean;
 }
 
 const ROWS: Row[] = [
-  { label: "Programs:", left: "83", right: "1" },
-  { label: "Agencies:", left: "6", right: "0" },
-  { label: "Application forms:", left: "hundreds", right: "0" },
-  { label: "Wait time:", left: "months", right: "0" },
+  { label: "Programs", current: "83", replacement: "1" },
+  { label: "Agencies", current: "6", replacement: "0" },
+  { label: "Application forms", current: "Hundreds", replacement: "0" },
+  { label: "Wait time", current: "Months", replacement: "0" },
+  { label: "Bureaucrats needed", current: "Thousands", replacement: "0" },
   {
-    label: "Deciding if you deserve to eat:",
-    left: "committee",
-    right: "you're human, yes",
+    label: "Deciding if you deserve to eat",
+    current: "Committee",
+    replacement: "You're human, yes",
     isPunchline: true,
   },
 ];
@@ -30,13 +31,9 @@ export function SlideDecentralizedWelfare() {
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
 
-    // Phase 1 (0.5s): Title
     timers.push(setTimeout(() => setPhase(1), 500));
-    // Phase 2 (1.5s): Column headers + cards
     timers.push(setTimeout(() => setPhase(2), 1500));
-    // Phase 3 (2s): Rows begin staggering in
     timers.push(setTimeout(() => setPhase(3), 2000));
-    // Phase 4 (5.5s): Bottom method panel
     timers.push(setTimeout(() => setPhase(4), 5500));
 
     return () => timers.forEach(clearTimeout);
@@ -46,7 +43,7 @@ export function SlideDecentralizedWelfare() {
     if (phase < 3) return;
     const timers: NodeJS.Timeout[] = [];
     ROWS.forEach((_, i) => {
-      timers.push(setTimeout(() => setVisibleRows(i + 1), i * 400));
+      timers.push(setTimeout(() => setVisibleRows(i + 1), i * 350));
     });
     return () => timers.forEach(clearTimeout);
   }, [phase]);
@@ -55,37 +52,14 @@ export function SlideDecentralizedWelfare() {
     <SlideBase act={2}>
       <style jsx>{`
         @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes strike-through {
-          from {
-            text-decoration-color: transparent;
-            opacity: 1;
-          }
-          to {
-            text-decoration-color: currentColor;
-            opacity: 0.5;
-          }
-        }
-        .fade-in {
-          animation: fade-in 0.4s ease-out forwards;
-        }
-        .struck {
-          text-decoration: line-through;
-          animation: strike-through 0.3s ease-out forwards;
-        }
+        .fade-in { animation: fade-in 0.4s ease-out forwards; }
       `}</style>
 
-      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-4">
-
-        {/* Phase 1 — Title */}
+      <div className="w-full max-w-[1400px] mx-auto flex flex-col items-center justify-center gap-6">
+        {/* Title */}
         <div
           className={`w-full text-center transition-opacity duration-700 ${
             phase >= 1 ? "opacity-100" : "opacity-0"
@@ -96,92 +70,65 @@ export function SlideDecentralizedWelfare() {
           </h1>
         </div>
 
-        {/* Phase 2 — Split comparison */}
+        {/* 3-column comparison table */}
         {phase >= 2 && (
-          <div className="w-full grid grid-cols-2 gap-4 fade-in">
-
-            {/* LEFT — Current System */}
-            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-              <div className="font-pixel text-xl md:text-3xl text-red-400 text-center mb-3 tracking-widest">
-                CURRENT SYSTEM
+          <div className="w-full fade-in">
+            {/* Header row */}
+            <div className="grid grid-cols-[1.2fr_1fr_1fr] border-b-2 border-zinc-600 pb-3 mb-2">
+              <div />
+              <div className="font-pixel text-xl md:text-2xl text-red-400 text-center tracking-widest">
+                CURRENT
               </div>
-
-              {/* Row labels + left values */}
-              <div className="space-y-3">
-                {ROWS.map((row, i) => (
-                  <div
-                    key={row.label}
-                    className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
-                  >
-                    <div className="font-pixel text-xl md:text-3xl text-zinc-200 mb-1">
-                      {row.label}
-                    </div>
-                    <div
-                      className={`font-pixel text-xl md:text-2xl text-red-400 ${
-                        i < visibleRows ? "struck" : ""
-                      }`}
-                    >
-                      {row.left}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* RIGHT — Replacement */}
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <div className="font-pixel text-xl md:text-3xl text-emerald-400 text-center mb-3 tracking-widest">
+              <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center tracking-widest">
                 REPLACEMENT
               </div>
-
-              {/* Row labels + right values */}
-              <div className="space-y-3">
-                {ROWS.map((row, i) => (
-                  <div
-                    key={row.label}
-                    className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
-                  >
-                    <div className="font-pixel text-xl md:text-3xl text-zinc-200 mb-1">
-                      {row.label}
-                    </div>
-                    <div
-                      className={`font-pixel text-emerald-400 ${
-                        row.isPunchline
-                          ? "text-2xl md:text-4xl"
-                          : "text-xl md:text-2xl"
-                      } ${
-                        row.isPunchline && i < visibleRows
-                          ? "border border-emerald-400/40 rounded px-2 py-0.5 inline-block"
-                          : ""
-                      }`}
-                    >
-                      {row.right}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
 
+            {/* Data rows */}
+            <div className="space-y-1">
+              {ROWS.map((row, i) => (
+                <div
+                  key={row.label}
+                  className={`grid grid-cols-[1.2fr_1fr_1fr] items-center py-2 border-b border-zinc-800 ${
+                    i < visibleRows ? "fade-in" : "opacity-0"
+                  }`}
+                >
+                  {/* Label */}
+                  <div className="font-pixel text-base md:text-lg text-zinc-300">
+                    {row.label}
+                  </div>
+                  {/* Current value */}
+                  <div className="font-pixel text-base md:text-lg text-center text-red-400">
+                    {row.current}
+                  </div>
+                  {/* Replacement value */}
+                  <div
+                    className={`font-pixel text-center text-emerald-400 ${
+                      row.isPunchline
+                        ? "text-lg md:text-xl border border-emerald-400/40 rounded px-2 py-0.5 inline-block"
+                        : "text-base md:text-lg"
+                    }`}
+                  >
+                    {row.replacement}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Phase 4 — Method panel */}
+        {/* Method panel */}
         <div
           className={`w-full transition-opacity duration-700 ${
             phase >= 4 ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-3 space-y-1">
-            <div className="font-pixel text-xl md:text-3xl text-emerald-400">
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-3">
+            <div className="font-pixel text-xl md:text-2xl text-emerald-400">
               METHOD: UBI via World ID (automatic)
-            </div>
-            <div className="font-pixel text-xl md:text-3xl text-emerald-400">
-              BUREAUCRATS NEEDED:{" "}
-              <span className="font-terminal text-emerald-300">null</span>
             </div>
           </div>
         </div>
-
       </div>
     </SlideBase>
   );

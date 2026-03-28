@@ -5,30 +5,25 @@ import { useEffect, useState } from "react";
 
 interface Row {
   label: string;
-  left: string;
-  right: string;
-  rightClass?: string;
-  isCode?: boolean;
-  leftBlank?: boolean;
+  fed: string;
+  contract: string;
+  fedBad?: boolean;
+  contractGood?: boolean;
 }
 
 const ROWS: Row[] = [
-  { label: "Dollar value destroyed:", left: "97%", right: "0%" },
-  { label: "Wars funded:", left: "all of them", right: "0" },
-  { label: "Citizens consulted:", left: "0", right: "8,000,000,000" },
-  { label: "Audit results:", left: "no", right: "view source", rightClass: "underline cursor-default" },
-  { label: "print(money):", left: "constantly", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: false },
-  { label: "fund(war):", left: "all of them", right: "FUNCTION REMOVED", rightClass: "text-red-400", isCode: true, leftBlank: false },
+  { label: "Who decides", fed: "12 unelected humans", contract: "Algorithm (open source)", fedBad: true, contractGood: true },
+  { label: "New money goes to", fed: "Banks & asset holders", contract: "Everyone (UBI)", fedBad: true, contractGood: true },
+  { label: "Inflation", fed: "97% of value destroyed", contract: "0% (automatic)", fedBad: true, contractGood: true },
+  { label: "Citizens consulted", fed: "0", contract: "8,000,000,000", fedBad: true, contractGood: true },
+  { label: "Tax filing", fed: "70,000 pages of code", contract: "0.5% auto-tax, no filing", fedBad: true, contractGood: true },
+  { label: "Auditable", fed: "No (never fully audited)", contract: "Yes (view source)", fedBad: true, contractGood: true },
+  { label: "Wars funded", fed: "All of them", contract: "0", fedBad: true, contractGood: true },
 ];
-
-const TYPEWRITER_TEXT = "> print(money)";
 
 export function SlideDecentralizedFederalReserve() {
   const [phase, setPhase] = useState(0);
   const [visibleRows, setVisibleRows] = useState(0);
-  const [typedChars, setTypedChars] = useState(0);
-  const [showCursor, setShowCursor] = useState(true);
-  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -36,187 +31,91 @@ export function SlideDecentralizedFederalReserve() {
     timers.push(setTimeout(() => setPhase(1), 500));
     timers.push(setTimeout(() => setPhase(2), 1500));
     timers.push(setTimeout(() => setPhase(3), 2000));
-    timers.push(setTimeout(() => setPhase(4), 5000));
-    timers.push(setTimeout(() => setPhase(5), 7000));
 
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Stagger rows once phase 3 starts
+  // Stagger rows
   useEffect(() => {
     if (phase < 3) return;
     const timers: NodeJS.Timeout[] = [];
     ROWS.forEach((_, i) => {
-      timers.push(setTimeout(() => setVisibleRows(i + 1), i * 400));
+      timers.push(setTimeout(() => setVisibleRows(i + 1), i * 350));
     });
     return () => timers.forEach(clearTimeout);
-  }, [phase]);
-
-  // Typewriter effect once phase 4 starts
-  useEffect(() => {
-    if (phase < 4) return;
-
-    setTypedChars(0);
-    setShowError(false);
-
-    const interval = setInterval(() => {
-      setTypedChars((prev) => {
-        if (prev >= TYPEWRITER_TEXT.length) {
-          clearInterval(interval);
-          setTimeout(() => setShowError(true), 400);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 60);
-
-    const cursorInterval = setInterval(() => {
-      setShowCursor((prev) => !prev);
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(cursorInterval);
-    };
   }, [phase]);
 
   return (
     <SlideBase act={2}>
       <style jsx>{`
         @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .fade-in {
-          animation: fade-in 0.4s ease-out forwards;
-        }
+        .fade-in { animation: fade-in 0.4s ease-out forwards; }
       `}</style>
 
-      <div className="w-full max-w-[1700px] mx-auto flex flex-col items-center justify-center gap-2">
-
-        {/* Phase 1 — Title */}
+      <div className="w-full max-w-[1400px] mx-auto flex flex-col items-center justify-center gap-6">
+        {/* Title */}
         <div
           className={`w-full text-center transition-opacity duration-700 ${
             phase >= 1 ? "opacity-100" : "opacity-0"
           }`}
         >
           <h1 className="font-pixel text-3xl md:text-5xl text-emerald-400">
-            🏦 CENTRAL BANK REPLACEMENT
+            🏦 A DECENTRALIZED FEDERAL RESERVE
           </h1>
         </div>
 
-        {/* Phase 2 — Split comparison */}
+        {/* 3-column comparison table */}
         {phase >= 2 && (
-          <div className="w-full grid grid-cols-2 gap-2 fade-in">
-
-            {/* LEFT — Federal Reserve */}
-            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-              <div className="font-pixel text-lg md:text-xl text-red-400 text-center mb-0.5 tracking-widest">
-                FEDERAL RESERVE
+          <div className="w-full fade-in">
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_1fr_1fr] border-b-2 border-zinc-600 pb-3 mb-2">
+              <div />
+              <div className="font-pixel text-xl md:text-2xl text-red-400 text-center tracking-widest">
+                FED
+                <div className="font-pixel text-sm text-zinc-400">(1913-present)</div>
               </div>
-              <div className="font-pixel text-lg text-zinc-200 text-center mb-2">
-                (1913–present)
-              </div>
-
-              <div className="space-y-1.5">
-                {ROWS.map((row, i) => (
-                  <div
-                    key={row.label}
-                    className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
-                  >
-                    <div className="font-pixel text-lg md:text-xl text-zinc-200 mb-0.5">
-                      {row.label}
-                    </div>
-                    {row.leftBlank ? (
-                      <div className="font-pixel text-lg md:text-xl text-zinc-700 select-none">
-                        &mdash;
-                      </div>
-                    ) : (
-                      <div className="font-pixel text-lg md:text-xl text-red-400 line-through">
-                        {row.left}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* RIGHT — Smart Contract */}
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <div className="font-pixel text-lg md:text-xl text-emerald-400 text-center mb-0.5 tracking-widest">
+              <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center tracking-widest">
                 SMART CONTRACT
               </div>
-              {/* spacer to mirror the "(1913–present)" line */}
-              <div className="font-pixel text-lg text-zinc-200 text-center mb-2 invisible">
-                &nbsp;
-              </div>
-
-              <div className="space-y-1.5">
-                {ROWS.map((row, i) => (
-                  <div
-                    key={row.label}
-                    className={`${i < visibleRows ? "fade-in" : "opacity-0"}`}
-                  >
-                    <div className="font-pixel text-lg md:text-xl text-zinc-200 mb-0.5">
-                      {row.label}
-                    </div>
-                    {row.isCode ? (
-                      <div className="font-terminal text-lg md:text-xl text-red-400">
-                        <span className="line-through">{row.label.replace(":", "")}</span>
-                        {" "}REMOVED
-                      </div>
-                    ) : (
-                      <div className={`font-pixel text-lg md:text-xl text-emerald-400 ${row.rightClass ?? ""}`}>
-                        {row.right}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
 
+            {/* Data rows */}
+            <div className="space-y-1">
+              {ROWS.map((row, i) => (
+                <div
+                  key={row.label}
+                  className={`grid grid-cols-[1fr_1fr_1fr] items-center py-2 border-b border-zinc-800 ${
+                    i < visibleRows ? "fade-in" : "opacity-0"
+                  }`}
+                >
+                  {/* Label */}
+                  <div className="font-pixel text-base md:text-lg text-zinc-300">
+                    {row.label}
+                  </div>
+                  {/* FED value */}
+                  <div
+                    className={`font-pixel text-base md:text-lg text-center ${
+                      row.fedBad ? "text-red-400" : "text-zinc-200"
+                    }`}
+                  >
+                    {row.fed}
+                  </div>
+                  {/* Contract value */}
+                  <div
+                    className={`font-pixel text-base md:text-lg text-center ${
+                      row.contractGood ? "text-emerald-400" : "text-zinc-200"
+                    }`}
+                  >
+                    {row.contract}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
-
-        {/* Phase 4 — Terminal block */}
-        <div
-          className={`w-full transition-opacity duration-700 ${
-            phase >= 4 ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="bg-black/80 border border-zinc-700 rounded p-3 font-terminal">
-            <div className="text-lg md:text-xl text-emerald-400">
-              {TYPEWRITER_TEXT.slice(0, typedChars)}
-              <span className={`${showCursor ? "opacity-100" : "opacity-0"}`}>_</span>
-            </div>
-            {showError && (
-              <div className="text-lg md:text-xl text-red-400 mt-1 fade-in">
-                ERROR: print() is not a function
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Phase 5 — Bottom text */}
-        <div
-          className={`w-full text-center transition-opacity duration-700 ${
-            phase >= 5 ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <p className="font-terminal text-lg md:text-xl text-zinc-200">
-            Your engineers will appreciate this.
-          </p>
-          <p className="font-terminal text-lg md:text-xl text-zinc-200">
-            Your central bankers will not.
-          </p>
-        </div>
-
       </div>
     </SlideBase>
   );
