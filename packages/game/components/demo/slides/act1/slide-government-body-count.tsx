@@ -15,10 +15,10 @@ const topCountries = allByBodyCount.slice(0, TOP_N);
 const totalDeaths = topCountries.reduce((sum, g) => sum + g.militaryDeathsCaused.value, 0);
 const maxDeaths = topCountries[0]?.militaryDeathsCaused.value ?? 1;
 
-/** Convert death count to skull string: 1 skull per 500k deaths */
+/** Convert death count to skull string: 1 skull per 250k deaths */
 function deathSkulls(deaths: number): string {
-  const count = Math.max(1, Math.round(deaths / 500_000));
-  return "💀".repeat(Math.min(count, 12));
+  const count = Math.max(1, Math.round(deaths / 250_000));
+  return "💀".repeat(Math.min(count, 20));
 }
 
 export function SlideGovernmentBodyCount() {
@@ -89,7 +89,7 @@ export function SlideGovernmentBodyCount() {
                     </div>
                   </div>
 
-                  <span className="font-pixel text-lg text-red-400 w-32 text-right shrink-0">
+                  <span className="font-pixel text-lg text-red-400 w-40 text-right shrink-0">
                     {i < visibleRows ? (
                       <AnimatedCounter
                         end={gov.militaryDeathsCaused.value}

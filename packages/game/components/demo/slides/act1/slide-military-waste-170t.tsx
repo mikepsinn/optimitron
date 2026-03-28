@@ -134,7 +134,7 @@ export function SlideMilitaryWaste170t() {
         </div>
 
         <div className="font-pixel text-lg text-red-400 tracking-widest text-center">
-          FAILURE ANALYSIS
+          WHERE YOUR MONEY WENT
         </div>
 
         {/* Three monitors */}
@@ -158,7 +158,7 @@ export function SlideMilitaryWaste170t() {
                 {GAME_PARAMS.dollarPurchasingPowerLost}%
               </div>
               <div className="font-pixel text-sm md:text-lg text-red-400 mt-1">
-                PURCHASING POWER DESTROYED
+                YOUR PAYCHECK SINCE 1913
               </div>
               <DollarDeclineChart progress={dollarScale} />
             </div>
@@ -173,7 +173,7 @@ export function SlideMilitaryWaste170t() {
                 KILLED IN WARS
               </div>
               <div className="font-pixel text-sm md:text-lg text-red-400 animate-pulse">
-                NO ONE VOTED FOR
+                NOBODY ASKED YOU ABOUT
               </div>
               <div className="text-2xl mt-2">⚰️💀⚰️💀⚰️</div>
             </div>
@@ -194,7 +194,7 @@ export function SlideMilitaryWaste170t() {
                   {untreatedDiseases.toLocaleString()}
                 </div>
                 <div className="font-pixel text-xs md:text-sm text-zinc-400">
-                  DISEASES WITHOUT TREATMENT
+                  DISEASES NOBODY BOTHERED TO CURE
                 </div>
               </div>
               <div className="text-center bg-emerald-500/5 rounded p-2">

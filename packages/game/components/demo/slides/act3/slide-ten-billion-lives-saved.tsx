@@ -147,7 +147,7 @@ export function SlideTenBillionLivesSaved() {
           </div>
 
           <div className="text-2xl md:text-4xl mt-4 opacity-80">
-            {formatNumber(livesSaved)} human lives
+            human lives
           </div>
         </div>
 
