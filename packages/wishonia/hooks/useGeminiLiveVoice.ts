@@ -11,8 +11,12 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import {
+  shouldForwardMicAudio,
+  type VoiceSessionState,
+} from "@/lib/voice-mode-utils";
 
-export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking";
+export type VoiceState = VoiceSessionState;
 
 export interface CompletedVoiceTurn {
   id: number;
@@ -113,9 +117,23 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
   const thinkingRef = useRef("");
   const turnIdRef = useRef(0);
   const mountedRef = useRef(true);
+  const stateRef = useRef<VoiceState>("idle");
+  const hasLocalSpeechRecognitionRef = useRef(false);
+  const micRoutingRef = useRef<boolean | null>(null);
+
+  const setVoiceState = useCallback((next: VoiceState) => {
+    stateRef.current = next;
+    if (mountedRef.current) setState(next);
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
+    hasLocalSpeechRecognitionRef.current =
+      "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
+    console.info(
+      "[voice-rag] local speech recognition",
+      hasLocalSpeechRecognitionRef.current ? "available" : "unavailable"
+    );
     return () => { mountedRef.current = false; };
   }, []);
 
@@ -194,6 +212,19 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
 
     worklet.port.onmessage = (e) => {
       if (!e.data.pcm16) return;
+      const shouldSendAudio = shouldForwardMicAudio(
+        hasLocalSpeechRecognitionRef.current,
+        stateRef.current
+      );
+      if (micRoutingRef.current !== shouldSendAudio) {
+        micRoutingRef.current = shouldSendAudio;
+        console.info(
+          "[voice-rag] mic audio routing",
+          shouldSendAudio ? "forwarding to Gemini Live" : "holding for local RAG",
+          { localSpeechRecognition: hasLocalSpeechRecognitionRef.current, state: stateRef.current }
+        );
+      }
+      if (!shouldSendAudio) return;
       const pcm16 = new Int16Array(e.data.pcm16);
       const resampled = downsample(pcm16, sampleRate, 16000);
       const b64 = int16ToBase64(resampled);
@@ -287,7 +318,8 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
     if (wsRef.current) return;
     if (!mountedRef.current) return;
 
-    setState("connecting");
+    console.info("[voice-rag] connecting Gemini Live");
+    setVoiceState("connecting");
 
     try {
       // 1. Get token
@@ -313,10 +345,15 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
       const callbacks: GeminiLiveCallbacks = {
         onReady: () => {
           setupDoneRef.current = true;
-          if (mountedRef.current) { setIsConnected(true); setState("listening"); }
+          console.info("[voice-rag] Gemini Live ready");
+          if (mountedRef.current) setIsConnected(true);
+          setVoiceState("listening");
         },
         onAudio: (b64) => {
-          if (mountedRef.current && state !== "speaking") setState("speaking");
+          if (stateRef.current !== "speaking") {
+            console.info("[voice-rag] Gemini audio started");
+            setVoiceState("speaking");
+          }
           playAudioChunk(b64);
         },
         onText: (text) => {
@@ -331,7 +368,8 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
         onModelTurnStarted: () => {
           spokenRef.current = "";
           thinkingRef.current = "";
-          if (mountedRef.current) setState("thinking");
+          console.info("[voice-rag] Gemini turn started");
+          setVoiceState("thinking");
           if (mountedRef.current) {
             setOutputTranscript("");
             setThinkingText("");
@@ -339,6 +377,7 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
           }
         },
         onTurnComplete: () => {
+          console.info("[voice-rag] Gemini turn complete, waiting for audio drain");
           pendingTurnCompleteRef.current = true;
           // Safety: if audio doesn't drain in 2s, force finalize
           drainTimerRef.current = setTimeout(() => {
@@ -353,11 +392,16 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
                 transcript: finalizedTranscript,
                 thinkingText: finalizedThinking,
               });
-              setState("listening");
             }
+            console.info("[voice-rag] Gemini turn finalized", {
+              transcriptChars: finalizedTranscript.length,
+              thinkingChars: finalizedThinking.length,
+            });
+            setVoiceState("listening");
           }, 2000);
         },
         onInterrupted: () => {
+          console.info("[voice-rag] Gemini playback interrupted");
           interruptPlayback();
           spokenRef.current = "";
           thinkingRef.current = "";
@@ -365,12 +409,13 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
             setCompletedTurn(null);
             setOutputTranscript("");
             setThinkingText("");
-            setState("listening");
           }
+          setVoiceState("listening");
         },
         onError: (err) => {
           console.error("[gemini-live-voice] Error:", err);
-          if (mountedRef.current) { setIsConnected(false); setState("idle"); }
+          if (mountedRef.current) setIsConnected(false);
+          setVoiceState("idle");
         },
       };
 
@@ -417,13 +462,15 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
       ws.onclose = () => {
         setupDoneRef.current = false;
         wsRef.current = null;
-        if (mountedRef.current) { setIsConnected(false); setState("idle"); }
+        console.info("[voice-rag] Gemini Live closed");
+        if (mountedRef.current) setIsConnected(false);
+        setVoiceState("idle");
       };
     } catch (err) {
       console.error("[gemini-live-voice] Connection failed:", err);
-      if (mountedRef.current) setState("idle");
+      setVoiceState("idle");
     }
-  }, [tokenEndpoint, initPlayback, initCapture, playAudioChunk, interruptPlayback, handleMessage, state]);
+  }, [tokenEndpoint, initPlayback, initCapture, playAudioChunk, interruptPlayback, handleMessage, setVoiceState]);
 
   const disconnect = useCallback(() => {
     // WebSocket
@@ -457,9 +504,10 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
     setOutputTranscript("");
     setThinkingText("");
     setCompletedTurn(null);
-    setState("idle");
+    setVoiceState("idle");
     spokenRef.current = "";
     thinkingRef.current = "";
+    micRoutingRef.current = null;
   }, []);
 
   // Cleanup on unmount

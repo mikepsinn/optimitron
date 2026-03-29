@@ -16,6 +16,8 @@ import { VisualCard } from "@/components/VisualCard";
 import { VolumeVisualizer } from "@/components/VolumeVisualizer";
 import { getShuffledQuips } from "@/lib/thinking-quips";
 import type { VisualsResult } from "@/lib/visuals-prompt";
+import { hasVisualContent } from "@/lib/visuals-utils";
+import { getVoiceInputPlaceholder } from "@/lib/voice-mode-utils";
 import { mergeSourceLinks, sourceLinksFromSearchResults, type SourceLink } from "@/lib/source-links";
 
 const WELCOME = "Hello. I have been running my planet for 4,237 years. I ended war in year 12. Your species is still arguing about it. Ask me anything.";
@@ -93,10 +95,9 @@ export default function ChatPage(): React.JSX.Element {
       setInput(transcript);
     },
     onFinalTranscript: (transcript) => {
-      // Continuous mode: route to voice mode handler
-      if (voiceMode.isActive) {
-        voiceMode.handleFinalTranscript(transcript);
-      }
+      // Route through useVoiceMode's internal active guard; the callback held
+      // by SpeechRecognition can lag behind the latest render.
+      voiceMode.handleFinalTranscript(transcript);
     },
   });
 
@@ -110,35 +111,75 @@ export default function ChatPage(): React.JSX.Element {
         sourceLinks: sourceLinksFromSearchResults(results),
         visuals: null,
       };
+      console.info("[voice-rag] appending RAG bubble", {
+        transcriptChars: transcript.length,
+        contextChars: ragContext.length,
+        resultCount: results.length,
+      });
       // Append RAG debug card to voice stream
       setVoiceStream((prev) => [...prev, { type: "rag", transcript, ragContext }]);
     },
     onUserMessage: (text) => {
       // Append user message to voice stream in order with the RAG/voice artifacts.
+      console.info("[voice-rag] appending user bubble", { transcriptChars: text.length });
       setVoiceStream((prev) => [...prev, { type: "user", text }]);
     },
     fetchVisuals: (question, ragContext) => {
-      // Fire visuals request — append to voice stream when it arrives
-      fetch("/api/visuals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, context: ragContext }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (!data.error) {
-            const visuals = data as VisualsResult;
-            voiceTurnMetaRef.current = {
-              visuals,
-              sourceLinks: mergeSourceLinks(
-                visuals.sourceLinks ?? [],
-                voiceTurnMetaRef.current.sourceLinks
-              ),
-            };
-            setVoiceStream((prev) => [...prev, { type: "visuals", data: visuals }]);
-          }
-        })
-        .catch(() => {});
+      void (async () => {
+        console.log("[VISUALS] fetching for:", question.substring(0, 50));
+
+        const res = await fetch("/api/visuals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            context: ragContext,
+          }),
+        });
+
+        console.log("[VISUALS] response status:", res.status);
+        if (!res.ok) {
+          console.warn("[VISUALS] null response");
+          return;
+        }
+
+        const data = (await res.json()) as VisualsResult | { error?: string };
+        if ("error" in data && data.error) {
+          console.error("[VISUALS] error:", data.error);
+          return;
+        }
+
+        const visuals = data as VisualsResult;
+        const fields = Object.keys(visuals).filter((key) => {
+          const value = visuals[key as keyof VisualsResult];
+          return value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0);
+        });
+        console.log("[VISUALS] populated fields:", fields.join(", ") || "(none)");
+
+        if (!hasVisualContent(visuals)) {
+          console.warn("[VISUALS] no renderable voice visuals returned");
+          return;
+        }
+
+        console.info("[voice-rag] voice visuals ready", {
+          questionChars: question.length,
+          contextChars: ragContext.length,
+        });
+        voiceTurnMetaRef.current = {
+          visuals,
+          sourceLinks: mergeSourceLinks(
+            visuals.sourceLinks ?? [],
+            voiceTurnMetaRef.current.sourceLinks
+          ),
+        };
+        setVoiceStream((prev) => [...prev, { type: "visuals", data: visuals }]);
+      })().catch((err) => {
+        if (err instanceof Error) {
+          console.error("[VISUALS] error:", err.message);
+          return;
+        }
+        console.error("[VISUALS] error:", err);
+      });
     },
   });
 
@@ -303,6 +344,7 @@ export default function ChatPage(): React.JSX.Element {
 
   function handleMicClick() {
     if (!hasInteracted.current) { hasInteracted.current = true; setShowSpeechBubble(false); }
+    console.info("[voice-rag] mic button clicked", { isActive: voiceMode.isActive });
     voiceMode.toggle();
   }
 
@@ -668,7 +710,7 @@ export default function ChatPage(): React.JSX.Element {
               type="text" value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder={voiceInput.isListening ? "Listening..." : "Ask Wishonia anything..."}
+              placeholder={getVoiceInputPlaceholder(voiceMode.isActive, voiceState)}
               disabled={chat.isStreaming}
               className="chat-input"
               style={{

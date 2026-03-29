@@ -12,6 +12,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { VoiceState } from "./useGeminiLiveVoice";
 import type { ScoredResult } from "@/lib/search";
+import { shouldResumeVoiceInput } from "@/lib/voice-mode-utils";
 
 interface VoiceModeOptions {
   /** Gemini Live voice hook */
@@ -60,17 +61,22 @@ export function useVoiceMode({
   const [isActive, setIsActive] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeRef = useRef(false);
+  const previousGeminiStateRef = useRef<VoiceState | null>(null);
   activeRef.current = isActive;
 
   const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => {
-      if (activeRef.current) deactivate();
+      if (activeRef.current) {
+        console.info("[voice-rag] idle timeout, stopping voice mode");
+        deactivate();
+      }
     }, VOICE_IDLE_MS);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activate = useCallback(async () => {
+    console.info("[voice-rag] activating voice mode");
     setIsActive(true);
     await geminiLive.connect();
     voiceInput.startListening();
@@ -78,6 +84,7 @@ export function useVoiceMode({
   }, [geminiLive, voiceInput, resetIdleTimer]);
 
   const deactivate = useCallback(() => {
+    console.info("[voice-rag] deactivating voice mode");
     setIsActive(false);
     voiceInput.stopListening();
     geminiLive.disconnect();
@@ -99,6 +106,7 @@ export function useVoiceMode({
   const handleFinalTranscript = useCallback((transcript: string) => {
     if (!activeRef.current) return;
     resetIdleTimer();
+    console.info("[voice-rag] final transcript", transcript);
 
     // Add user message to chat display
     onUserMessage?.(transcript);
@@ -111,6 +119,11 @@ export function useVoiceMode({
 
     // Client-side RAG search
     const { context: ragContext, results } = ragSearch(transcript);
+    console.info("[voice-rag] rag search", {
+      transcriptChars: transcript.length,
+      contextChars: ragContext.length,
+      resultCount: results.length,
+    });
 
     // Build combined prompt (matching transmit's sendRagToGemini)
     let combined = `The user just asked: "${transcript}"\n\n`;
@@ -123,6 +136,9 @@ export function useVoiceMode({
 
     // Send to Gemini Live
     geminiLive.sendText(combined);
+    console.info("[voice-rag] sent RAG-enriched text to Gemini Live", {
+      combinedChars: combined.length,
+    });
 
     // Show RAG debug card
     onRagSent?.({ transcript, ragContext, results });
@@ -133,7 +149,10 @@ export function useVoiceMode({
 
   // When Gemini finishes speaking, resume listening
   useEffect(() => {
-    if (isActive && geminiLive.state === "listening") {
+    const previousState = previousGeminiStateRef.current;
+    previousGeminiStateRef.current = geminiLive.state;
+    if (shouldResumeVoiceInput(isActive, previousState, geminiLive.state)) {
+      console.info("[voice-rag] Gemini returned to listening, resuming local speech recognition");
       voiceInput.resume();
       resetIdleTimer();
     }

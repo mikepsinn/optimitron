@@ -43,8 +43,14 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
   const accumulatorRef = useRef("");
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pausedRef = useRef(false);
+  const listeningRequestedRef = useRef(false);
+  const isListeningRef = useRef(false);
+  const onResultRef = useRef(onResult);
+  const onFinalTranscriptRef = useRef(onFinalTranscript);
   const continuousRef = useRef(continuous);
   continuousRef.current = continuous;
+  onResultRef.current = onResult;
+  onFinalTranscriptRef.current = onFinalTranscript;
 
   // Check support after hydration
   useEffect(() => {
@@ -54,13 +60,14 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
   }, []);
 
   const startListening = useCallback(() => {
-    if (!isSupported || isListening) return;
+    if (!isSupported || isListeningRef.current || recognitionRef.current) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const win = window as any;
     const Ctor = win["SpeechRecognition"] || win["webkitSpeechRecognition"];
     if (!Ctor) return;
 
+    listeningRequestedRef.current = true;
     accumulatorRef.current = "";
     setLiveTranscript("");
     pausedRef.current = false;
@@ -75,25 +82,34 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
           const raw = event.results[i][0]?.transcript ?? "";
-          const corrected = correctTranscript(raw);
+          const corrected = correctTranscript(raw.trim());
+          if (!corrected) continue;
 
           if (continuousRef.current) {
             // Continuous mode: accumulate + debounce
             accumulatorRef.current += (accumulatorRef.current ? " " : "") + corrected;
             setLiveTranscript(accumulatorRef.current);
+            console.info("[voice-rag] chunk", {
+              chunk: corrected,
+              accumulated: accumulatorRef.current,
+            });
 
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
               const finalText = accumulatorRef.current.trim();
               accumulatorRef.current = "";
+              debounceTimerRef.current = null;
               // Don't clear liveTranscript yet — keep it visible until the
               // message appears in the chat array. The caller clears it via
               // clearLiveTranscript() after confirming the message was added.
-              if (finalText) onFinalTranscript?.(finalText);
+              if (finalText) {
+                console.info("[voice-rag] debounce fired, sending", finalText);
+                onFinalTranscriptRef.current?.(finalText);
+              }
             }, debounceMs);
           } else {
             // Single-utterance mode
-            onResult?.(corrected);
+            onResultRef.current?.(corrected);
             setIsListening(false);
           }
         }
@@ -107,43 +123,68 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     };
 
     recognition.onend = () => {
-      if (continuousRef.current && !pausedRef.current && isListening) {
+      console.info("[voice-rag] local speech recognition ended", {
+        paused: pausedRef.current,
+        listeningRequested: listeningRequestedRef.current,
+      });
+      if (continuousRef.current && !pausedRef.current && listeningRequestedRef.current) {
         // Auto-restart in continuous mode
-        try { recognition.start(); } catch { /* already started */ }
+        console.info("[voice-rag] local speech recognition restarting");
+        try {
+          recognition.start();
+          isListeningRef.current = true;
+          setIsListening(true);
+        } catch {
+          recognitionRef.current = null;
+          isListeningRef.current = false;
+          setIsListening(false);
+        }
       } else {
+        recognitionRef.current = null;
+        isListeningRef.current = false;
         setIsListening(false);
       }
     };
 
     recognitionRef.current = recognition;
     recognition.start();
+    isListeningRef.current = true;
     setIsListening(true);
-  }, [isSupported, isListening, onResult, onFinalTranscript, debounceMs]);
+    console.info("[voice-rag] local speech recognition started");
+  }, [isSupported, debounceMs]);
 
   const stopListening = useCallback(() => {
     pausedRef.current = true;
+    listeningRequestedRef.current = false;
     if (debounceTimerRef.current) { clearTimeout(debounceTimerRef.current); debounceTimerRef.current = null; }
     recognitionRef.current?.stop();
     recognitionRef.current = null;
     accumulatorRef.current = "";
+    isListeningRef.current = false;
     setLiveTranscript("");
     setIsListening(false);
+    console.info("[voice-rag] local speech recognition stopped");
   }, []);
 
   /** Pause without cleaning up (for when AI is speaking) */
   const pause = useCallback(() => {
     pausedRef.current = true;
+    isListeningRef.current = false;
+    setIsListening(false);
     recognitionRef.current?.stop();
+    console.info("[voice-rag] local speech recognition paused");
   }, []);
 
   /** Resume after pause */
   const resume = useCallback(() => {
     if (!isSupported) return;
     pausedRef.current = false;
+    listeningRequestedRef.current = true;
     // Delay to avoid conflicts
     setTimeout(() => {
       if (!pausedRef.current) startListening();
     }, 200);
+    console.info("[voice-rag] local speech recognition resuming");
   }, [isSupported, startListening]);
 
   // Cleanup

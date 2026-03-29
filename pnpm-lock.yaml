@@ -983,6 +983,9 @@ importers:
       typescript:
         specifier: 5.7.3
         version: 5.7.3
+      vitest:
+        specifier: ^1.2.0
+        version: 1.6.1(jsdom@23.2.0)
 
   packages/wishonia-widget:
     devDependencies:
