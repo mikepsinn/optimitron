@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 4000",
+    "kill-port": "node -e \"try{require('child_process').execSync('npx kill-port 4000',{stdio:'ignore'})}catch{}\"",
+    "dev": "pnpm run kill-port && next dev --port 4000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
