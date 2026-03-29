@@ -1,12 +1,13 @@
 /**
- * Single chat message bubble with markdown rendering, TTS, and copy.
+ * Single chat message bubble with markdown rendering, source pills, TTS, and copy.
  */
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { renderMarkdown } from "@/lib/markdown";
 import { VisualCard } from "./VisualCard";
+import { SourcePills, extractSourceLinks } from "./SourcePills";
 import type { VisualsResult } from "@/lib/visuals-prompt";
 
 interface ChatMessageProps {
@@ -23,22 +24,25 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
 
+  // Strip expression tags
+  const rawText = text.replace(/\[expression:\w+\]/g, "").trim();
+
+  // Extract source links from completed wishonia messages
+  const { links, cleanText } = useMemo(() => {
+    if (role === "user" || isStreaming) return { links: [], cleanText: rawText };
+    return extractSourceLinks(rawText);
+  }, [role, isStreaming, rawText]);
+
   const handleCopy = useCallback(() => {
-    // Strip expression tags for clipboard
-    const clean = text.replace(/\[expression:\w+\]/g, "").trim();
-    navigator.clipboard.writeText(clean).then(() => {
+    navigator.clipboard.writeText(cleanText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
-  }, [text]);
+  }, [cleanText]);
 
   const handleTTS = useCallback(() => {
-    const clean = text.replace(/\[expression:\w+\]/g, "").trim();
-    onPlayTTS?.(clean);
-  }, [text, onPlayTTS]);
-
-  // Strip expression tags from display text
-  const displayText = text.replace(/\[expression:\w+\]/g, "").trim();
+    onPlayTTS?.(cleanText);
+  }, [cleanText, onPlayTTS]);
 
   const isUser = role === "user";
 
@@ -65,13 +69,11 @@ export function ChatMessage({
               }),
         }}>
           {isUser || isStreaming ? (
-            // Plain text for user messages and during streaming
-            <span>{displayText}</span>
+            <span>{isStreaming ? rawText : cleanText}</span>
           ) : (
-            // Markdown-rendered for completed wishonia messages
             <div
               className="chat-markdown"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(displayText) }}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(cleanText) }}
             />
           )}
           {isStreaming && (
@@ -79,8 +81,11 @@ export function ChatMessage({
           )}
         </div>
 
+        {/* Source pills */}
+        {links.length > 0 && <SourcePills links={links} />}
+
         {/* Action buttons for wishonia messages */}
-        {!isUser && !isStreaming && displayText && (
+        {!isUser && !isStreaming && cleanText && (
           <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
             <button
               onClick={handleTTS}
@@ -88,7 +93,7 @@ export function ChatMessage({
               style={{
                 background: "none", border: "none", cursor: "pointer",
                 fontSize: 14, color: isTTSPlaying ? "#36E2F8" : "#555",
-                padding: "2px 6px",
+                padding: "2px 6px", opacity: 0.6,
               }}
             >
               🔊
@@ -98,8 +103,8 @@ export function ChatMessage({
               title="Copy"
               style={{
                 background: "none", border: "none", cursor: "pointer",
-                fontSize: 14, color: copied ? "#36E2F8" : "#555",
-                padding: "2px 6px",
+                fontSize: 14, color: copied ? "#28a745" : "#555",
+                padding: "2px 6px", opacity: copied ? 1 : 0.6,
               }}
             >
               {copied ? "✓" : "📋"}

@@ -41,15 +41,29 @@ export function useStreamingChat() {
     chatsRef.current = updated;
   }, []);
 
+  function syncHash(id: string | null) {
+    if (typeof window === "undefined") return;
+    if (id) {
+      window.history.replaceState(null, "", `#${id}`);
+    } else {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }
+
   function initChats() {
     const saved = loadChats();
+    // Check URL hash for a specific chat ID
+    const hashId = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
     if (saved.length > 0) {
       setChats(saved);
-      setActiveChatId(saved[0]!.id);
+      const target = hashId && saved.find((c) => c.id === hashId) ? hashId : saved[0]!.id;
+      setActiveChatId(target);
+      syncHash(target);
     } else {
       const first = createChat();
       setChats([first]);
       setActiveChatId(first.id);
+      syncHash(first.id);
     }
   }
 
@@ -58,6 +72,7 @@ export function useStreamingChat() {
     const updated = [c, ...chatsRef.current];
     persistChats(updated);
     setActiveChatId(c.id);
+    syncHash(c.id);
     return c;
   }
 
@@ -65,12 +80,29 @@ export function useStreamingChat() {
     const updated = deleteChat(chatsRef.current, id);
     persistChats(updated);
     if (activeChatId === id) {
-      setActiveChatId(updated[0]?.id ?? null);
+      const newId = updated[0]?.id ?? null;
+      setActiveChatId(newId);
+      syncHash(newId);
     }
   }
 
   function handleSelectChat(id: string) {
     setActiveChatId(id);
+    syncHash(id);
+  }
+
+  /** Add a user message to the chat without triggering the text API (for voice mode). */
+  function addUserMessage(text: string): number {
+    const chatId = activeChatId;
+    const currentChat = chatsRef.current.find((c) => c.id === chatId);
+    if (!currentChat) return -1;
+
+    const userMsg: ChatMessage = { role: "user", text };
+    const updatedMessages = [...currentChat.messages, userMsg];
+    let updatedChat = { ...currentChat, messages: updatedMessages };
+    updatedChat = updateChatTitle(updatedChat);
+    persistChats(chatsRef.current.map((c) => c.id === chatId ? updatedChat : c));
+    return updatedMessages.length - 1; // index of the new user message
   }
 
   async function sendMessage(text: string) {
@@ -203,6 +235,7 @@ export function useStreamingChat() {
     streamingText,
     pendingVisuals,
     getVisualsForMessage,
+    addUserMessage,
     initChats,
     handleNewChat,
     handleDeleteChat,
