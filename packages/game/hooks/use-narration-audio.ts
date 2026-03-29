@@ -80,7 +80,13 @@ export function useNarrationAudio(slideId?: string, enabled = true): NarrationAu
     (async () => {
       const manifest = await getManifest();
       if (cancelled) return;
-      if (!manifest || !manifest[slideId]) {
+
+      // Check for playlist-specific audio first, then fall back to default
+      const { playlistId } = useDemoStore.getState();
+      const playlistKey = `${playlistId}--${slideId}`;
+      const manifestEntry = manifest?.[playlistKey] || manifest?.[slideId];
+
+      if (!manifest || !manifestEntry) {
         console.warn(`[narration] No MP3 for slide "${slideId}" — will use live TTS`);
         setHasMp3(false);
         return;
@@ -88,7 +94,7 @@ export function useNarrationAudio(slideId?: string, enabled = true): NarrationAu
 
       setHasMp3(true);
 
-      const url = `/audio/narration/${manifest[slideId].file}`;
+      const url = `/audio/narration/${manifestEntry.file}`;
       const audio = new Audio(url);
       audio.crossOrigin = "anonymous";
       audio.volume = isMuted ? 0 : masterVolume * voiceVolume;

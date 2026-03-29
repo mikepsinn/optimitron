@@ -24,10 +24,10 @@ function usePresenterSize() {
   useEffect(() => {
     function update() {
       const w = window.innerWidth;
-      if (w < 480) setSize(50);
-      else if (w < 768) setSize(70);
-      else if (w < 1024) setSize(90);
-      else setSize(110);
+      if (w < 480) setSize(70);
+      else if (w < 768) setSize(100);
+      else if (w < 1024) setSize(130);
+      else setSize(160);
     }
     update();
     window.addEventListener("resize", update);

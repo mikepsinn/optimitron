@@ -18,7 +18,14 @@ import { generateSpeech } from "../lib/demo/gemini-tts";
 
 // We need to import the SLIDES array. Since demo-config uses TS imports,
 // we rely on tsx to handle the transpilation.
-import { SLIDES } from "../lib/demo/demo-config";
+import { SLIDES, resolvePlaylist, PLAYLISTS } from "../lib/demo/demo-config";
+
+// Parse --playlist flag (e.g., --playlist=protocol-labs)
+// When set, generates audio only for that playlist's slides, using overridden narration.
+// Override audio files are named {playlistId}--{slideId}.mp3
+const playlistArg = process.argv.find((a) => a.startsWith("--playlist="));
+const playlistId = playlistArg?.split("=")[1] || null;
+const playlist = playlistId ? PLAYLISTS.find((p) => p.id === playlistId) : null;
 
 // Load .env file manually (dotenv not required — just parse it)
 function loadEnv() {
@@ -95,11 +102,15 @@ async function main() {
   let generated = 0;
   let cached = 0;
   let errors = 0;
-  const total = SLIDES.length;
 
-  console.log(`\n🎙️  Narration Generator — ${total} slides\n`);
+  // When --playlist is set, generate only for that playlist (with overrides applied)
+  const slidesToGenerate = playlistId ? resolvePlaylist(playlistId) : SLIDES;
+  const filePrefix = playlistId && playlist?.narrationOverrides ? `${playlistId}--` : "";
+  const total = slidesToGenerate.length;
 
-  for (const slide of SLIDES) {
+  console.log(`\n🎙️  Narration Generator — ${total} slides${playlistId ? ` (playlist: ${playlistId})` : ""}\n`);
+
+  for (const slide of slidesToGenerate) {
     const { id, narration } = slide;
     if (!narration || narration.trim().length === 0) {
       console.log(`  ⏭  ${id} — no narration, skipping`);
@@ -107,12 +118,13 @@ async function main() {
     }
 
     const hash = hashText(narration);
-    const mp3File = `${id}.mp3`;
+    const manifestKey = `${filePrefix}${id}`;
+    const mp3File = `${filePrefix}${id}.mp3`;
     const mp3Path = join(OUTPUT_DIR, mp3File);
 
     // Check cache
     if (
-      manifest[id]?.hash === hash &&
+      manifest[manifestKey]?.hash === hash &&
       existsSync(mp3Path)
     ) {
       cached++;
@@ -135,7 +147,7 @@ async function main() {
       if (existsSync(TEMP_WAV)) unlinkSync(TEMP_WAV);
 
       // Update manifest
-      manifest[id] = {
+      manifest[manifestKey] = {
         hash,
         file: mp3File,
         generatedAt: new Date().toISOString(),

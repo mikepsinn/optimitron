@@ -10,7 +10,7 @@
  */
 
 import { chromium } from "@playwright/test";
-import { existsSync, mkdirSync, readFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { execSync } from "child_process";
 import { join } from "path";
 
@@ -55,8 +55,9 @@ function computeWaitTimes(): Map<string, number> {
     const configDuration = Math.max(slide.duration || 8, 5);
     let waitMs = configDuration * 1000;
 
-    if (manifest?.[slide.id]) {
-      const mp3Path = join(NARRATION_DIR, manifest[slide.id].file);
+    const manifestKey = manifest?.[`${playlistId}--${slide.id}`] ? `${playlistId}--${slide.id}` : slide.id;
+    if (manifest?.[manifestKey]) {
+      const mp3Path = join(NARRATION_DIR, manifest[manifestKey].file);
       if (existsSync(mp3Path)) {
         const audioDuration = getAudioDuration(mp3Path);
         if (audioDuration !== null) {
@@ -104,11 +105,14 @@ async function main() {
   await page.goto(`${BASE_URL}/${urlParams}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(2000);
 
-  // Enable recording mode (hides controls)
+  // Enable recording mode (hides controls) and reset to trigger fresh audio on slide 0
   await page.evaluate(() => {
     const store = (window as any).__demoStore;
-    if (store) store.setState({ isRecordingMode: true });
+    if (store) {
+      store.setState({ isRecordingMode: true, currentSlide: -1 });
+    }
   });
+  await page.waitForTimeout(500);
 
   console.log(`  Playlist: ${playlistId}`);
   console.log(`  Total slides: ${activeSlides.length}`);
@@ -116,23 +120,55 @@ async function main() {
   console.log("");
 
   let totalWait = 0;
+  const slideTimestamps: { id: string; startMs: number; endMs: number }[] = [];
+  const recordingStart = Date.now();
 
-  // Navigate through each slide using store
+  // Navigate through each slide, wait for in-browser audio to finish
   for (let i = 0; i < activeSlides.length; i++) {
     const slide = activeSlides[i];
-    const waitMs = waitTimes.get(slide.id) || 8000;
+    const slideStart = Date.now();
 
-    // Set slide directly via store
+    // Set slide directly via store (resets narrationEnded to false)
     await page.evaluate((idx) => {
       const store = (window as any).__demoStore;
       if (store) store.setState({ currentSlide: idx, typewriterComplete: false, narrationEnded: false });
     }, i);
 
-    const slideNum = String(i + 1).padStart(2, "0");
-    console.log(`  [${slideNum}/${activeSlides.length}] ${slide.id} (${(waitMs / 1000).toFixed(1)}s)`);
+    // Wait for narrationEnded to become true (audio finished in browser),
+    // with a max timeout based on config duration + buffer
+    const maxWaitMs = Math.max((slide.duration || 8) * 1000, 5000) + 30_000;
+    const pollInterval = 200;
+    let waited = 0;
 
-    await page.waitForTimeout(waitMs);
-    totalWait += waitMs;
+    // First slide needs extra init time for audio hook to mount
+    const initDelay = i === 0 ? 2000 : 500;
+    await page.waitForTimeout(initDelay);
+    waited += initDelay;
+
+    while (waited < maxWaitMs) {
+      const ended = await page.evaluate(() => {
+        const store = (window as any).__demoStore;
+        return store?.getState()?.narrationEnded === true;
+      });
+      if (ended) break;
+      await page.waitForTimeout(pollInterval);
+      waited += pollInterval;
+    }
+
+    // Brief hold after narration ends (let last words breathe)
+    await page.waitForTimeout(500);
+
+    const elapsed = Date.now() - slideStart;
+    totalWait += elapsed;
+
+    slideTimestamps.push({
+      id: slide.id,
+      startMs: slideStart - recordingStart,
+      endMs: Date.now() - recordingStart,
+    });
+
+    const slideNum = String(i + 1).padStart(2, "0");
+    console.log(`  [${slideNum}/${activeSlides.length}] ${slide.id} (${(elapsed / 1000).toFixed(1)}s)`);
   }
 
   // Hold on final slide
@@ -166,6 +202,11 @@ async function main() {
     console.error(`  ffmpeg conversion failed: ${err.message}`);
     console.log(`  WebM still available at: ${webmPath}`);
   }
+
+  // Save timestamps for merge script
+  const timestampsPath = join(OUTPUT_DIR, `timestamps-${playlistId}.json`);
+  writeFileSync(timestampsPath, JSON.stringify(slideTimestamps, null, 2));
+  console.log(`  Timestamps: ${timestampsPath}`);
 
   const totalSec = Math.round(totalWait / 1000);
   console.log(`\n🎬 Done! Total duration: ~${Math.floor(totalSec / 60)}m ${totalSec % 60}s\n`);

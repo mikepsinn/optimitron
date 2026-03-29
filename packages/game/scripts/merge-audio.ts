@@ -65,51 +65,69 @@ async function main() {
     readFileSync(MANIFEST_PATH, "utf-8")
   );
 
-  console.log("\n🔊 Merging narration audio with video...\n");
+  // Load timestamps from recording (for precise alignment)
+  const timestampsPath = join(RECORDING_DIR, `timestamps-${playlistId}.json`);
+  let timestamps: { id: string; startMs: number; endMs: number }[] | null = null;
+  if (existsSync(timestampsPath)) {
+    timestamps = JSON.parse(readFileSync(timestampsPath, "utf-8"));
+    console.log(`  Using timestamps from recording for precise alignment\n`);
+  }
 
-  // Build ffmpeg concat file
-  // For each slide: narration MP3 + silence gap (2s between slides)
+  console.log("🔊 Merging narration audio with video...\n");
+
   const tempDir = join(RECORDING_DIR, "_temp_audio");
   mkdirSync(tempDir, { recursive: true });
 
   const concatEntries: string[] = [];
-  const silencePath = join(tempDir, "silence_0.5s.mp3");
-  generateSilence(silencePath, 0.5);
-
   let totalAudioDuration = 0;
 
   for (let i = 0; i < activeSlides.length; i++) {
     const slide = activeSlides[i];
-    const entry = manifest[slide.id];
+    const entry = manifest[`${playlistId}--${slide.id}`] || manifest[slide.id];
+    const ts = timestamps?.[i];
+
+    // How long this slide was visible in the video
+    const slideVisibleSec = ts
+      ? (ts.endMs - ts.startMs) / 1000
+      : Math.max(slide.duration || 8, 5);
 
     if (entry) {
       const mp3Path = join(NARRATION_DIR, entry.file);
       if (existsSync(mp3Path)) {
+        const audioDur = getAudioDuration(mp3Path);
+
         // Add narration
         concatEntries.push(`file '${mp3Path.replace(/\\/g, "/")}'`);
-        const dur = getAudioDuration(mp3Path);
-        totalAudioDuration += dur;
+        totalAudioDuration += audioDur;
 
-        // Add silence gap between slides (not after last)
-        if (i < activeSlides.length - 1) {
-          concatEntries.push(`file '${silencePath.replace(/\\/g, "/")}'`);
-          totalAudioDuration += 0.5;
+        // Fill remaining visible time with silence (the gap between audio end and slide transition)
+        const gap = slideVisibleSec - audioDur;
+        if (gap > 0.1) {
+          const gapSilence = join(tempDir, `gap_${slide.id}.mp3`);
+          generateSilence(gapSilence, gap);
+          concatEntries.push(`file '${gapSilence.replace(/\\/g, "/")}'`);
+          totalAudioDuration += gap;
         }
 
-        console.log(`  [${String(i + 1).padStart(2, "0")}] ${slide.id} (${dur.toFixed(1)}s)`);
+        console.log(`  [${String(i + 1).padStart(2, "0")}] ${slide.id} (${audioDur.toFixed(1)}s audio + ${Math.max(0, gap).toFixed(1)}s gap)`);
         continue;
       }
     }
 
-    // No audio for this slide — insert silence matching its duration
-    const slideDuration = Math.max(slide.duration || 8, 5);
+    // No audio — insert silence matching visible duration
     const slideSilence = join(tempDir, `silence_${slide.id}.mp3`);
-    generateSilence(slideSilence, slideDuration);
+    generateSilence(slideSilence, slideVisibleSec);
     concatEntries.push(`file '${slideSilence.replace(/\\/g, "/")}'`);
-    totalAudioDuration += slideDuration;
+    totalAudioDuration += slideVisibleSec;
 
-    console.log(`  [${String(i + 1).padStart(2, "0")}] ${slide.id} (silence ${slideDuration}s)`);
+    console.log(`  [${String(i + 1).padStart(2, "0")}] ${slide.id} (silence ${slideVisibleSec.toFixed(1)}s)`);
   }
+
+  // Add final hold silence (matches the 3s hold in the recording script)
+  const finalSilence = join(tempDir, "silence_final.mp3");
+  generateSilence(finalSilence, 3);
+  concatEntries.push(`file '${finalSilence.replace(/\\/g, "/")}'`);
+  totalAudioDuration += 3;
 
   // Write concat list
   const concatListPath = join(tempDir, "concat.txt");

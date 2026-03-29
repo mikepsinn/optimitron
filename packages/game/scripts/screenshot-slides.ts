@@ -18,9 +18,14 @@ import { chromium } from "@playwright/test";
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
-import { SLIDES } from "../lib/demo/demo-config";
+import { SLIDES, resolvePlaylist, type SlideConfig } from "../lib/demo/demo-config";
 
-const OUTPUT_DIR = join(process.cwd(), "presentation-recording", "screenshots");
+// Parse --playlist flag
+const playlistFlag = process.argv.find((a) => a.startsWith("--playlist="));
+const playlistId = playlistFlag?.split("=")[1] || "full";
+const playlistSlides: SlideConfig[] = resolvePlaylist(playlistId);
+
+const OUTPUT_DIR = join(process.cwd(), "presentation-recording", `screenshots-${playlistId}`);
 const BASE_URL = process.env.GAME_URL || "http://localhost:4000";
 
 const DESKTOP = { width: 1920, height: 1080 };
@@ -102,8 +107,8 @@ async function main() {
 
   // Filter slides
   const slides = only
-    ? SLIDES.filter((s) => only.includes(s.id))
-    : SLIDES;
+    ? playlistSlides.filter((s) => only.includes(s.id))
+    : playlistSlides;
 
   if (slides.length === 0) {
     console.error("ERROR: No slides matched --only filter");
@@ -117,8 +122,9 @@ async function main() {
   const context = await browser.newContext({ viewport: DESKTOP });
   const page = await context.newPage();
 
-  // Load page, skip boot, enable recording mode
-  await page.goto(`${BASE_URL}/?skipBoot`, { waitUntil: "networkidle" });
+  // Load page, skip boot, set playlist, enable recording mode
+  const urlParams = playlistId !== "full" ? `?skipBoot&playlist=${playlistId}` : "?skipBoot";
+  await page.goto(`${BASE_URL}/${urlParams}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(2000);
 
   await page.evaluate(() => {
@@ -129,7 +135,7 @@ async function main() {
   const results: { id: string; desktop: string; mobile?: string }[] = [];
 
   for (const slide of slides) {
-    const slideIndex = SLIDES.indexOf(slide);
+    const slideIndex = playlistSlides.indexOf(slide);
     const waitMs = waitOverride ?? animationWait(slide);
     const num = String(slides.indexOf(slide) + 1).padStart(2, "0");
 

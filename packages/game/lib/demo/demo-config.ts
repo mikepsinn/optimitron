@@ -1936,6 +1936,8 @@ export interface Playlist {
   description: string;
   targetDuration: number; // seconds
   slideIds: string[];
+  /** Optional narration overrides keyed by slide ID (replaces default narration text) */
+  narrationOverrides?: Record<string, string>;
 }
 
 export const PLAYLISTS: Playlist[] = [
@@ -1949,24 +1951,37 @@ export const PLAYLISTS: Playlist[] = [
   {
     id: "protocol-labs",
     name: "Protocol Labs Hackathon",
-    description: "IPFS, Storacha, Hypercerts, decentralized infrastructure",
+    description: "Problem → solution → game mechanics → tools → PL tech → endgame",
     targetDuration: 180,
+    narrationOverrides: (() => {
+      // Lazy-import to keep demo-config.ts clean
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { PROTOCOL_LABS_NARRATION } = require("./protocol-labs-overrides");
+      return PROTOCOL_LABS_NARRATION as Record<string, string>;
+    })(),
     slideIds: [
-      "daily-death-toll",
+      // Intro + Act I: The Horror (~45s)
+      "earth-optimization-game",
+      "military-waste-170t",
       "misaligned-superintelligence",
       "military-health-ratio",
       "game-over-moronia",
+      // The Turn (~10s)
       "restore-from-wishonia",
+      // The Solution (~30s) — treaty + acceleration merged
       "one-percent-treaty",
-      "trial-acceleration-12x",
-      "fda-approval-delay-8yr",
+      // The Game (~40s) — invest, share, Wishocracy, prize
+      "one-percent-referendum-vote",
+      "dominant-assurance-contract",
+      // The Tools (~50s)
       "decentralized-fda",
+      "optimal-policy-generator",
+      "optimal-budget-generator",
+      "incentive-alignment-bonds",
+      // Protocol Labs Tech (~25s)
       "ipfs-immutable-storage",
       "impact-certificates",
-      "optimal-policy-generator",
-      "drug-policy-natural-experiment",
-      "disease-cure-supply-chain",
-      "alignment-switch",
+      // Endgame (~15s)
       "ten-billion-lives-saved",
       "final-call-to-action",
       "post-credits-aliens",
@@ -2004,8 +2019,18 @@ export const DEFAULT_PLAYLIST_ID = "full";
 export function resolvePlaylist(playlistId: string): SlideConfig[] {
   const playlist = PLAYLISTS.find((p) => p.id === playlistId);
   if (!playlist || playlist.id === "full") return SLIDES;
+
+  const overrides = playlist.narrationOverrides;
   return playlist.slideIds
-    .map((id) => SLIDES.find((s) => s.id === id))
+    .map((id) => {
+      const slide = SLIDES.find((s) => s.id === id);
+      if (!slide) return null;
+      // Apply narration override if one exists for this slide
+      if (overrides?.[id]) {
+        return { ...slide, narration: overrides[id] };
+      }
+      return slide;
+    })
     .filter((s): s is SlideConfig => s != null);
 }
 

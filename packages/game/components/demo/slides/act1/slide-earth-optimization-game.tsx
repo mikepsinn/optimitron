@@ -61,6 +61,18 @@ export function SlideEarthOptimizationGame() {
           from { max-width: 0; }
           to   { max-width: 100%; }
         }
+        @keyframes dragFinger {
+          0%   { left: 50%; opacity: 0; }
+          10%  { left: 50%; opacity: 1; }
+          80%  { left: 98%; opacity: 1; }
+          90%  { left: 98%; opacity: 0.6; }
+          100% { left: 98%; opacity: 0; }
+        }
+        .drag-finger {
+          animation: dragFinger 2s ease-in-out forwards;
+          animation-delay: 0.8s;
+          opacity: 0;
+        }
         @keyframes sparkle {
           0%, 100% { opacity: 0; transform: scale(0); }
           50%      { opacity: 1; transform: scale(1); }
@@ -98,10 +110,10 @@ export function SlideEarthOptimizationGame() {
         {/* Allocation Slider */}
         {phase >= 1 && (
           <div className="w-full max-w-5xl space-y-3 fade-up">
-            <div className="relative h-14 bg-zinc-900 border-2 border-zinc-600 rounded overflow-hidden">
+            <div className="relative h-14 bg-zinc-900 border-2 border-zinc-600 rounded">
               {/* Explosions portion */}
               <div
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-700 to-red-600 transition-all duration-1000 ease-out flex items-center justify-center"
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-700 to-red-600 transition-all duration-1000 ease-out flex items-center justify-center overflow-hidden rounded-l"
                 style={{ width: phase >= 2 ? "99%" : "100%" }}
               >
                 <span className="font-pixel text-xl md:text-2xl text-white/90">
@@ -110,9 +122,18 @@ export function SlideEarthOptimizationGame() {
               </div>
               {/* Cures portion */}
               <div
-                className="absolute inset-y-0 right-0 bg-gradient-to-r from-emerald-600 to-emerald-500 transition-all duration-1000 ease-out"
+                className="absolute inset-y-0 right-0 bg-gradient-to-r from-emerald-600 to-emerald-500 transition-all duration-1000 ease-out overflow-hidden rounded-r"
                 style={{ width: phase >= 2 ? "1%" : "0%" }}
               />
+              {/* Dragging finger */}
+              {phase >= 2 && (
+                <div
+                  className="absolute -top-8 drag-finger z-10 pointer-events-none"
+                  style={{ fontSize: "2.2rem" }}
+                >
+                  👆
+                </div>
+              )}
             </div>
             <div className="flex justify-between font-pixel text-lg md:text-xl">
               <span className="text-red-400">💣 EXPLOSIONS</span>
