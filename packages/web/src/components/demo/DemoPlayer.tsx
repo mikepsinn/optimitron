@@ -93,7 +93,7 @@ function DemoPlayerInner({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on mount
   }, []);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(sierraMode);
   const [isMuted, setIsMuted] = useState(false);
   const [subtitle, setSubtitle] = useState(
     () => slides[0]?.narration ?? "",
@@ -114,6 +114,9 @@ function DemoPlayerInner({
   // Sync narration to Sierra chrome
   useNarrationSync(slide, isPlaying);
 
+  // Generation counter — increments on every slide/play change to cancel stale async work
+  const generationRef = useRef(0);
+
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -124,7 +127,7 @@ function DemoPlayerInner({
 
   // Stable callback — only recreated when slides change (playlist switch)
   const playSlideAudio = useCallback(
-    async (index: number) => {
+    async (index: number, generation: number) => {
       const s = slides[index]!;
       setSubtitle(s.narration);
 
@@ -133,6 +136,8 @@ function DemoPlayerInner({
       setIsLoadingAudio(true);
       try {
         const result = await getDemoAudio(s.id, s.narration);
+        // Bail if user navigated away while we were loading
+        if (generationRef.current !== generation) return;
         if (result) {
           const { audio, analyser } = result;
           audioRef.current = audio;
@@ -144,13 +149,22 @@ function DemoPlayerInner({
               setIsPlaying(false);
             }
           };
+          // Final check before playing
+          if (generationRef.current !== generation) {
+            audio.pause();
+            return;
+          }
           await audio.play();
         } else {
           // No audio — auto-advance after estimated duration
           const words = s.narration.split(/\s+/).length;
           const ms = (words / 150) * 60 * 1000;
           if (isPlayingRef.current && index < slides.length - 1) {
-            setTimeout(() => setCurrentIndex(index + 1), ms);
+            setTimeout(() => {
+              if (generationRef.current === generation) {
+                setCurrentIndex(index + 1);
+              }
+            }, ms);
           }
         }
       } catch {
@@ -164,9 +178,10 @@ function DemoPlayerInner({
   );
 
   useEffect(() => {
+    const gen = ++generationRef.current;
     stopAudio();
     if (isPlaying) {
-      void playSlideAudio(currentIndex);
+      void playSlideAudio(currentIndex, gen);
     } else {
       setSubtitle(slides[currentIndex]!.narration);
     }

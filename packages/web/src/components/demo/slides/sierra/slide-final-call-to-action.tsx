@@ -48,13 +48,13 @@ export function SlideFinalCallToAction() {
           className="text-5xl md:text-7xl lg:text-8xl font-pixel"
           style={{ color: palette.accent }}
         >
-          EARTH OPTIMIZED
+          PLAY NOW
         </div>
 
-        {/* Stats + QR side by side */}
-        <div className="flex items-start gap-8 md:gap-12 w-full max-w-[1600px] justify-center">
-          {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-4 md:gap-6 flex-1 max-w-[900px]">
+        {/* Left stats | QR Code | Right stats */}
+        <div className="flex items-center gap-6 md:gap-10 w-full max-w-[1600px] justify-center">
+          {/* Left column — 2 stats */}
+          <div className="flex flex-col gap-4 md:gap-6 flex-1 max-w-[400px]">
             <div
               className="rounded-lg border-2 p-4 md:p-5 text-center"
               style={{ borderColor: `${palette.success}40`, backgroundColor: `${palette.success}10` }}
@@ -78,35 +78,11 @@ export function SlideFinalCallToAction() {
                 HALE (+{haleGain.toFixed(1)} yrs)
               </div>
             </div>
-
-            <div
-              className="rounded-lg border-2 p-4 md:p-5 text-center"
-              style={{ borderColor: `${palette.success}40`, backgroundColor: `${palette.success}10` }}
-            >
-              <div className="text-3xl md:text-4xl mb-1">💰</div>
-              <div className="font-pixel text-3xl md:text-4xl" style={{ color: palette.success }}>
-                {formatCurrency(income)}/yr
-              </div>
-              <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-1">
-                income (+{formatCurrency(incomeGain)})
-              </div>
-            </div>
-
-            <div
-              className="rounded-lg border-2 p-4 md:p-5 text-center"
-              style={{ borderColor: `${palette.accent}40`, backgroundColor: `${palette.accent}10` }}
-            >
-              <div className="text-3xl md:text-4xl mb-1">⏱️</div>
-              <div className="font-pixel text-3xl md:text-4xl" style={{ color: palette.accent }}>
-                3 min
-              </div>
-              <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-1">time played</div>
-            </div>
           </div>
 
-          {/* QR Code */}
+          {/* Center — QR Code */}
           <div
-            className={`flex flex-col items-center justify-center transition-all duration-1000 ${
+            className={`flex flex-col items-center justify-center shrink-0 transition-all duration-1000 ${
               showQR ? "opacity-100 scale-100" : "opacity-0 scale-90"
             }`}
           >
@@ -129,6 +105,33 @@ export function SlideFinalCallToAction() {
               style={{ color: palette.primary }}
             >
               optimitron.com
+            </div>
+          </div>
+
+          {/* Right column — 2 stats */}
+          <div className="flex flex-col gap-4 md:gap-6 flex-1 max-w-[400px]">
+            <div
+              className="rounded-lg border-2 p-4 md:p-5 text-center"
+              style={{ borderColor: `${palette.success}40`, backgroundColor: `${palette.success}10` }}
+            >
+              <div className="text-3xl md:text-4xl mb-1">💰</div>
+              <div className="font-pixel text-3xl md:text-4xl" style={{ color: palette.success }}>
+                {formatCurrency(income)}/yr
+              </div>
+              <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-1">
+                income (+{formatCurrency(incomeGain)})
+              </div>
+            </div>
+
+            <div
+              className="rounded-lg border-2 p-4 md:p-5 text-center"
+              style={{ borderColor: `${palette.accent}40`, backgroundColor: `${palette.accent}10` }}
+            >
+              <div className="text-3xl md:text-4xl mb-1">⏱️</div>
+              <div className="font-pixel text-3xl md:text-4xl" style={{ color: palette.accent }}>
+                3 min
+              </div>
+              <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-1">time played</div>
             </div>
           </div>
         </div>

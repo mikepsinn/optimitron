@@ -882,7 +882,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["hook"],
     act: "I",
-    narration: "This is the Earth Optimization Game. Move the budget from the things that make you dead to the things that keep you alive. That is the entire game.",
+    narration: "The objective of the Earth Optimization Game is redirect humanity's resources from the things that make everyone poorer and deader to the things that make everyone healthier and wealthier.",
   },
   {
     id: "pl-170t",
@@ -1035,7 +1035,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "pink",
     tags: ["cta"],
     act: "III",
-    narration: "Go to optimitron.com and vote now.",
+    narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Gitcoin, Hypercerts, Storacha, Worldcoin, and Base.",
   },
 ];
 
@@ -1065,6 +1065,7 @@ export const PLAYLISTS: DemoPlaylist[] = [
     segmentIds: [
       // Intro + Problem (~35s)
       "pl-intro",
+      "pl-cta",
       "pl-170t",
       "pl-misaligned",
       "pl-ratio",
@@ -1087,7 +1088,6 @@ export const PLAYLISTS: DemoPlaylist[] = [
       // Endgame (~15s)
       "pl-lives",
       "pl-close",
-      "pl-cta",
     ],
   },
   {
