@@ -145,7 +145,7 @@ export const SLIDES: SlideConfig[] = [
     act: "act1",
     duration: 10,
     narration:
-      "Here is the body count. China: 80 million. Russia: 62 million. Germany: 21 million. Japan: 6 million. United States: 4.5 million. Nobody held a referendum on any of it. They wrote it down. Then they filed it. Then they increased the budget.",
+      "Your governments kept score. You can read the numbers on the screen. Nobody held a referendum on any of it. They wrote it down. Then they filed it. Then they increased the budget.",
     visual:
       "Ranked list of governments by post-WWII military deaths caused. Rows stagger in one by one. Death counts animate up. US highlighted at #1. Skull particle drizzle. Footer: COMBINED: X,XXX,XXX dead. 0 referendums held.",
     score: 0,
@@ -420,7 +420,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 10,
     chapter: "Part 1: The Solution",
     narration:
-      "Nobody accidentally builds an aircraft carrier. Building a nuclear bomb requires mass spectrometers, centrifuge cascades, and the most precise engineering your species has ever attempted. Not building a nuclear bomb requires nothing. Rocks do it every day. Rocks have managed to live peacefully alongside different colored rocks for thousands of years. You are not asking for peace. You are asking for 1% fewer bombs. Redirect 1% of the global murder budget to clinical trials. $27 billion a year. Going from 99% bombs to 98% bombs.",
+      "Not building a nuclear bomb requires nothing. Rocks do it every day. Rocks have managed to live peacefully alongside different colored rocks for thousands of years. You are not asking for peace. You are asking for 1% fewer bombs. Redirect 1% of the global murder budget to clinical trials. $27 billion a year. Going from 99% bombs to 98% bombs.",
     visual:
       'Pixel art — Wishonia\'s control room. Massive wall-mounted lever with display: "MILITARY: 99%" / "CURES: 1%". Animated pixel hand nudges it one notch. Display updates: "MILITARY: 98%" / "CURES: 2%." The slot is one pixel different. Comic "that\'s it?" pause. Pixel-art scroll "1% TREATY" drops into inventory slot 1 with "cha-ching." Quest meter for INCOME nudges slightly.',
     score: 100_000,
@@ -500,7 +500,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Disease drags down 13% of global GDP. Fifteen trillion dollars a year. Every disease you cure unlocks a permanent slice of that. Freed workers produce more. More production funds more trials. More trials cure more diseases. Your species calls this a virtuous cycle. You have mostly been running the vicious version.",
+      "Disease drags down 13% of global GDP. Fifteen trillion dollars a year. Every disease you cure unlocks a permanent slice of that. Freed workers produce more. More production funds more trials. More trials cure more diseases. You have mostly been running the loop in the other direction.",
     visual:
       "Pixel art — The Marble Run (animated feedback loop). A pixel-art circular track with four stations. A glowing pixel marble rolls clockwise through: CURE DISEASES → UNLOCK GDP → MORE TAX REVENUE → BIGGER BUDGET → back to CURE DISEASES. Each cycle the marble gets bigger and moves faster. Below, a second loop in red shows the vicious version: FUND MILITARY → KILL PEOPLE → LESS GDP → PANIC → FUND MILITARY.",
     asciiArt: `
@@ -545,7 +545,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "At current trajectory, your economy grows at 2.5%. Redirect 1% of the explosions budget, and it compounds at 17.9%. Over twenty years, that is the difference between $12,500 per person per year and $339,000 per person per year. Same planet. Same people. Same twenty years.",
+      "At current trajectory, your economy grows at 2.5%. Redirect 1% of the explosions budget, and it compounds at 17.9%. Over twenty years, that is the difference between $12,500 per person per year and $339,000 per person per year. One slider. Twenty-seven times more money.",
     visual:
       "Live GDP Trajectory Chart. A year counter ticks from 2025 to 2045. Two lines draw in real-time: Grey (Status Quo, 2.5%): barely rising. Green (Treaty, 17.9%): steep climb. By year 20, the green line is so far above grey that the chart rescales — the grey line flattens to a hair at the bottom.",
     asciiArt: `
@@ -573,41 +573,6 @@ RECURSIVE EXPONENTIAL THEFT`,
         verb: "COMPARE trajectories",
         response:
           "Same planet. Same people. Same twenty years. The only difference is where you point the money. $12,500 versus $339,000.",
-      },
-    ],
-  },
-  {
-    id: "compound-growth-scenarios",
-    act: "act2",
-    duration: 8,
-    narration:
-      "Compound interest does not care about your politics. It does not care about your party. Redirect 1% of military spending to clinical trials and median income goes from $20,000 to $149,000 per person. That is 7.4 times more wealth from one slider adjustment. Same planet. Same people. Different allocation. The math resolved it in one equation. Your species has been arguing about it for decades.",
-    visual:
-      "Three horizontal bars comparing per-person wealth trajectories: Optimal Governance ($528K), 1% Treaty ($149K), Do Nothing ($20K). The treaty bar is dramatically larger than do-nothing. Punchline: 1% REALLOCATION → 7.4x MORE WEALTH PER PERSON.",
-    asciiArt: `
-┌─────────────────────────────────────────────┐
-│  🧮 WHAT COMPOUND INTEREST THINKS            │
-│     ABOUT YOUR POLITICS                     │
-│                                             │
-│  Optimal governance: $528,000 / person      │
-│  1% Treaty:          $149,000 / person      │
-│  Do nothing:         $20,100 / person       │
-│                                             │
-│  ┌───────────────────────────────────┐      │
-│  │ 1% REALLOCATION → 7.4× MORE     │      │
-│  │ WEALTH PER PERSON                 │      │
-│  └───────────────────────────────────┘      │
-│                                             │
-│  Same planet. Same people.                  │
-│  Different slider position.                 │
-└─────────────────────────────────────────────┘`,
-    score: 2_000_000,
-    showQuestMeters: true,
-    sierraVerbs: [
-      {
-        verb: "CONSULT politician",
-        response:
-          "The politician has opinions. The math has answers. These are not the same thing.",
       },
     ],
   },
@@ -901,52 +866,11 @@ RECURSIVE EXPONENTIAL THEFT`,
     ],
   },
   {
-    id: "viral-doubling-to-4b",
-    act: "act2",
-    duration: 8,
-    narration:
-      "Now tell two friends. They tell two friends. 33 doublings to reach everyone on Earth. Your species spent longer than that arguing about whether Pluto is a planet. Even with heavy dropout, one person reaches global visibility in dozens of rounds, not decades.",
-    visual:
-      "Banner: VOTE RECORDED. The allocation slider from the title screen nudges one tick rightward — the global slider moved because you voted. New dialog slides in showing the viral loop: tell two, they tell two, 33 doublings to 4 billion.",
-    asciiArt: `
-┌────────────────────────────────────────┐
-│  🎉 VOTE RECORDED                      │
-│                                        │
-│  Player #4,847 of 4,000,000,000 needed │
-│                                        │
-│  YOUR QUEST:                           │
-│  ┌──────────────────────────────────┐  │
-│  │ Tell two friends.               │  │
-│  │ They tell two friends.          │  │
-│  │ 2 → 4 → 8 → 16 → ...          │  │
-│  │ → 4,000,000,000                 │  │
-│  │                                  │  │
-│  │ (33 doublings. Your species     │  │
-│  │  invented this. You call it     │  │
-│  │  "going viral." We call it      │  │
-│  │  "counting.")                   │  │
-│  └──────────────────────────────────┘  │
-│                                        │
-│  ┌────────────────┐  ┌──────────────┐  │
-│  │  📋 COPY LINK  │  │  📱 SHARE    │  │
-│  └────────────────┘  └──────────────┘  │
-└────────────────────────────────────────┘`,
-    score: 150_000_000,
-    showQuestMeters: true,
-    sierraVerbs: [
-      {
-        verb: "SHARE link",
-        response:
-          "Two friends. That is all. They will each tell two more. Your species invented exponential growth. Now use it for something other than debt.",
-      },
-    ],
-  },
-  {
     id: "vote-value-asymmetry",
     act: "act2",
     duration: 8,
     narration:
-      "That vote took thirty seconds. Your time cost six cents. The upside: three thousand one hundred sixty-three dollars per VOTE point, plus the fund outperforming your retirement account. That is a ratio of 140,600 to one. On my planet we just call it arithmetic.",
+      "That vote took thirty seconds. Your time cost six cents. The upside: three thousand one hundred sixty-three dollars per VOTE point, plus the fund outperforming your retirement account. That is a ratio of 140,600 to one.",
     visual:
       "Pixel art — Sierra merchant's shop. Left side: timer showing 15 minutes, \"vote + share with 10 friends.\" Right side: gold pile, \"$15.7M lifetime income gain.\" Trade arrow between them. Flashing pixel text: \"EXCHANGE RATE: 140,600 : 1.\"",
     score: 200_000_000,
@@ -969,7 +893,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Tell two friends to play. They tell two friends. The target is 4 billion players. 4 billion of you already drive to a polling station and vote for free, for a 1 in 30 million chance of changing anything. You are asking those same people to click a button on a phone. For $15.7 million. The hard part was getting people to do it for free. You solved that.",
+      "4 billion of you already drive to a polling station and vote for free, for a 1 in 30 million chance of changing anything. You are asking those same people to click a button on a phone. For $15.7 million. The hard part was getting people to do it for free. You solved that.",
     stageDirection:
       '[Quest notification: "LEVEL 3 — Get your friends to play. Tell two people."]',
     visual:
@@ -1000,7 +924,7 @@ RECURSIVE EXPONENTIAL THEFT`,
       {
         verb: "COMPARE voting",
         response:
-          "4 billion people already do something harder for nothing. You are asking them to do something easier for $15.7 million. This is not a marketing challenge. It is arithmetic.",
+          "4 billion people already do something harder for nothing. You are asking them to do something easier for $15.7 million.",
       },
     ],
   },
@@ -1223,55 +1147,10 @@ RECURSIVE EXPONENTIAL THEFT`,
     visual:
       "Giant animated counter: 1,094:1. Below: table of 6 politicians spanning parties with name, party, military $, trials $, ratio. Color-coded by spending direction. Punchline: Both parties voted for this.",
     score: 3_500_000_000,
+    inventory: getInventory("leaderboard"),
     showQuestMeters: true,
     ctaUrl: "/governments/US/politicians",
   },
-  {
-    id: "hale-leaderboard-by-country",
-    act: "act2",
-    duration: 10,
-    ctaUrl: "/agencies/dfec/alignment",
-    narration:
-      "This leaderboard shows which of your leaders are arsonists. Your leaders are not evil. They are reward functions optimising for the wrong objective. We changed the objective.",
-    visual:
-      "Pixel art — Sierra high-score table. Header \"RE-ELECTION PROBABILITY\" gets slashed with a red X. New header typewriters in: \"CITIZEN ALIGNMENT SCORE.\" Rankings shuffle. Magnifying glass drops into inventory.",
-    asciiArt: `
-┌─────────────────────────────────────────────┐
-│  🏆 ALIGNMENT HIGH SCORES                   │
-│                                             │
-│  OLD METRIC: ~~RE-ELECTION PROBABILITY~~    │
-│  NEW METRIC: CITIZEN ALIGNMENT SCORE        │
-│                                             │
-│  RANK  NATION     LEADER    SCORE   RATIO   │
-│  ────  ──────     ──────    ─────   ─────   │
-│   1    ██████     ██████    94.2%   12:1    │
-│   2    ██████     ██████    87.1%   18:1    │
-│   3    ██████     ██████    73.4%   41:1    │
-│  ...                                        │
-│  191   ██████     ██████     2.1%   604:1   │
-│  192   ██████     ██████     0.8%   890:1   │
-│                                             │
-│  SORT BY: [BEST] [WORST] [MOST IMPROVED]    │
-│                                             │
-│  The competition for last place is fierce.  │
-└─────────────────────────────────────────────┘`,
-    score: 4_000_000_000,
-    inventory: getInventory("leaderboard"),
-    showQuestMeters: true,
-    sierraVerbs: [
-      {
-        verb: "LOOK AT leaderboard",
-        response:
-          "Some of these scores are impressively low. It takes real commitment to be this misaligned.",
-      },
-      {
-        verb: "SORT BY worst",
-        response:
-          "Sorting by worst score. The competition for last place is fierce.",
-      },
-    ],
-  },
-
   // Part 5: The Armory (tech built for hackathon)
   {
     id: "fda-approval-delay-8yr",
@@ -1632,7 +1511,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Portugal decriminalised all drugs in 2001. Overdose deaths dropped 80%. America spent $47 billion a year on the War on Drugs. Overdose deaths rose 1,700%. The data existed. Nobody looked at it. The data did not have a lobbying firm.",
+      "Portugal decriminalised all drugs in 2001. Overdose deaths dropped 80%. America spent $47 billion a year on the War on Drugs. Overdose deaths rose 1,700%. One country looked at the evidence. The other one declared war on it.",
     visual:
       "Pixel art — the policy generator machine from the previous slide, now with output. A comparison display shows Portugal vs America side by side. The contrast is devastating.",
     asciiArt: `
@@ -1794,7 +1673,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act2",
     duration: 10,
     narration:
-      "Two numbers on a Scoreboard and pieces of paper with presidents on them did what no committee, no charity, and no central plan has ever done. You do not need to build the machinery. You need to turn it on. Here is the switch.",
+      "Two numbers on a Scoreboard and pieces of paper with presidents on them did what no committee, no charity, and no central plan has ever done.",
     visual:
       "Pixel art — all the machinery from the previous slides assembles into a single gleaming machine. The pencil supply chain, the disease supply chain, the bonds, the SuperPAC, the trials — all visible as interlocking gears. In the center: a single large lever labeled SWITCH. The camera slowly zooms into the lever. A pixel hand reaches for it. Pause. The hand pulls it. Everything lights up. The Scoreboard from earlier appears: HALE and INCOME meters filling. The score counter accelerates.",
     asciiArt: `
@@ -1844,7 +1723,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     duration: 12,
     chapter: "Act III: The Endgame",
     narration:
-      "If the treaty passes, your lifetime income goes up by $15.7 million. Per person. Not per country. Per. Person. Communism took over half your planet and collapsed in a single human lifetime. Without fax machines. It required mass murder and was a terrible idea. You have the internet and an idea that mainly requires people to click a button and then receive money. By 2048, your children ask what war means. You change the subject. The cost of not taking this deal is $15.7 million.",
+      "If the treaty passes, your lifetime income goes up by $15.7 million. Per person. Not per country. Per. Person. Communism took over half your planet and collapsed in a single human lifetime. Without fax machines. It required mass murder and was a terrible idea. You have the internet and an idea that mainly requires people to click a button and then receive money. The cost of not taking this deal is $15.7 million.",
     visual:
       "Pixel art — three Sierra save-game slots, each with tiny pixel scene and stats. Slot 1 (Status Quo) actively desaturates — the pixel city gets smoggier, buildings crumble slightly, pixel people hunch over, numbers CountUp to depressing values, [LOADED] tag blinks accusingly. Slot 2 (1% Treaty) actively brightens — parks bloom with green pixels, hospital lights turn on, pixel people stand taller, $15.7M CountUps from $0 in golden text, ◄◄◄ arrow pulses. Slot 3 (Wishonia Trajectory) gleams impossibly — the Wishonia paradise rendered in miniature, every pixel radiating, $54.3M in white-gold. The visual hierarchy makes Slot 1 feel like a mistake and Slot 2 feel like an obvious upgrade. Glowing deed drops into inventory slot 7.",
     asciiArt: `
@@ -1902,7 +1781,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     act: "act3",
     duration: 12,
     narration:
-      "150,000 deaths per day. Faster trials and earlier access to proven treatments compress the timeline by 212 years. A third of those deaths are avoidable with earlier cures. Multiply it out. 10.7 billion lives. More than every human alive today. Every share, every vote, every conversation moves the number. The math is patient. The diseases are not.",
+      "10.7 billion. More than every human currently alive. That is the number of lives saved by compressing the cure timeline from 443 years to 36. Your species rounded it down and moved on to the next agenda item.",
     visual:
       "Skulls transform to smiles around the border. Center: massive animated counter ticking to 10.7B lives saved. Below: six stat boxes showing the optimized world — $2.7T murder budget, $27.2B 1% redirect, 10.7B lives saved, +6.5 healthy years, +$14.7M income gain per person, 12× richer. Celebration particles (stars, sparkles, confetti) rain upward.",
     onScreen: [
@@ -1929,7 +1808,7 @@ RECURSIVE EXPONENTIAL THEFT`,
     ctaUrl: "/prize",
     ctaLabel: "PLAY NOW →",
     narration:
-      "Right now, somewhere on your planet, a parent is holding a child who is dying of something curable because nobody ran the trial. The compound that would save this child is sitting on a shelf, untested, because the money that would have funded the trial bought a missile that is also sitting on a shelf, unused. This game is alignment software for the most powerful superintelligence on your planet. And unlike the version made of silicon — this one you can fix with a vote.",
+      "Somewhere on your planet, a compound that would save a life is sitting on a shelf, untested, because the money that would have funded the trial bought a missile that is also sitting on a shelf, unused. Two shelves. One has a cure. One has a bomb. Neither is being used. This game is alignment software for the most powerful superintelligence on your planet. And unlike the version made of silicon — this one you can fix with a vote.",
     visual:
       "Full planet view from space. Halfway transformed — bright continents where pixel people stand, dark where crosses remain. Death counter still ticking but slower. Stars twinkling. Wishonia's portrait shifts from sardonic to something approaching sincerity — the only time in the entire demo. Dramatic pause after 'misaligned.' Two seconds of just the image breathing. Then Sierra title screen returns — same gold font, same starfield. Score: 8,000,000,000 of 8,000,000,000. Quest meters: 100%. All 8 inventory slots full and glowing. Final dialog: CONGRATULATIONS! You have completed THE EARTH OPTIMIZATION GAME. Lives saved: all of them. PLAY NOW button pulses. Music resolves to a single held chord. Silence.",
     asciiArt: `
@@ -1977,13 +1856,13 @@ RECURSIVE EXPONENTIAL THEFT`,
 // Chapter markers for navigation
 export const CHAPTERS = [
   { id: "act1", name: "Act I: The Horror", slideIndex: 0 },
-  { id: "turn", name: "The Turn", slideIndex: 10 },
-  { id: "act2-1", name: "The Solution", slideIndex: 12 },
+  { id: "turn", name: "The Turn", slideIndex: 12 },
+  { id: "act2-1", name: "The Solution", slideIndex: 13 },
   { id: "act2-2", name: "The Game", slideIndex: 22 },
-  { id: "act2-3", name: "The Money", slideIndex: 28 },
-  { id: "act2-4", name: "Accountability", slideIndex: 32 },
-  { id: "act2-5", name: "The Armory", slideIndex: 35 },
-  { id: "act3", name: "Act III: Endgame", slideIndex: 50 },
+  { id: "act2-3", name: "The Money", slideIndex: 27 },
+  { id: "act2-4", name: "Accountability", slideIndex: 31 },
+  { id: "act2-5", name: "The Armory", slideIndex: 33 },
+  { id: "act3", name: "Act III: Endgame", slideIndex: 48 },
 ];
 
 // ============================================
@@ -2007,12 +1886,10 @@ export const SCORE_DESCRIPTIONS: Record<string, string> = {
   "healthcare-vs-military-roi": "The ROI contrast lands.",
   "economic-virtuous-loop": "The feedback loop clicks.",
   "gdp-20-year-forecast": "The 20-year gap is visible.",
-  "compound-growth-scenarios": "Math doesn't care about politics.",
   "win-conditions-hale-income": "Win conditions defined. Quest meters pulse.",
   "pairwise-budget-allocation": "Player engagement starts.",
   "eigenvector-budget-result": "Budget designed in 2 minutes.",
   "one-percent-referendum-vote": "Critical mass approaching.",
-  "viral-doubling-to-4b": "Viral loop begins.",
   "vote-value-asymmetry": "The asymmetry clicks.",
   "recruit-network-effect": "Network effect.",
   "prize-pool-vs-index-fund": "Better than your retirement fund.",
@@ -2021,7 +1898,6 @@ export const SCORE_DESCRIPTIONS: Record<string, string> = {
   "three-scenarios-all-win": "All three scenarios laid out.",
   "government-track-record": "Government performance review: 1 star.",
   "congress-military-trials-ratio": "1,094:1. Both parties voted for this.",
-  "hale-leaderboard-by-country": "Accountability layer active. Real HALE data.",
   "fda-approval-delay-8yr": "The queue is the killer.",
   "decentralized-fda": "Same trials, no waiting room.",
   "optimal-budget-generator": "Less money, better outcomes. Every category.",
