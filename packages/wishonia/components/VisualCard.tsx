@@ -242,7 +242,7 @@ function ImageBlock({ src }: { src: string }) {
   );
 }
 
-export function VisualCard({ data }: { data: VisualsResult }) {
+export function VisualCard({ data }: { data: VisualsResult }): React.JSX.Element | null {
   const hasContent = data.keyFigure || data.latex || data.chartConfig ||
     data.table || data.mermaid || data.sourceLinks || data.image;
 
