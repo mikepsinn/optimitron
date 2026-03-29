@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev --port 4001",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "pnpm exec vitest run",
+    "test:watch": "pnpm exec vitest"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.0",
@@ -22,6 +24,7 @@
     "@types/react-dom": "19.2.3",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "vitest": "^1.2.0"
   }
 }

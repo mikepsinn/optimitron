@@ -11,6 +11,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { VoiceState } from "./useGeminiLiveVoice";
+import type { ScoredResult } from "@/lib/search";
 
 interface VoiceModeOptions {
   /** Gemini Live voice hook */
@@ -33,13 +34,17 @@ interface VoiceModeOptions {
     liveTranscript: string;
   };
   /** Client-side RAG search */
-  ragSearch: (query: string) => { context: string };
+  ragSearch: (query: string) => { context: string; results: ScoredResult[] };
   /** Callback when RAG is sent (to show debug card) */
-  onRagSent?: (data: { transcript: string; ragContext: string }) => void;
+  onRagSent?: (data: {
+    transcript: string;
+    ragContext: string;
+    results: ScoredResult[];
+  }) => void;
   /** Callback when user message should be added to chat */
   onUserMessage?: (text: string) => void;
   /** Fire visuals request in parallel (without triggering text chat API) */
-  fetchVisuals?: (question: string) => void;
+  fetchVisuals?: (question: string, ragContext: string) => void;
 }
 
 const VOICE_IDLE_MS = 60_000;
@@ -105,7 +110,7 @@ export function useVoiceMode({
     voiceInput.pause();
 
     // Client-side RAG search
-    const { context: ragContext } = ragSearch(transcript);
+    const { context: ragContext, results } = ragSearch(transcript);
 
     // Build combined prompt (matching transmit's sendRagToGemini)
     let combined = `The user just asked: "${transcript}"\n\n`;
@@ -120,10 +125,10 @@ export function useVoiceMode({
     geminiLive.sendText(combined);
 
     // Show RAG debug card
-    onRagSent?.({ transcript, ragContext });
+    onRagSent?.({ transcript, ragContext, results });
 
     // Fire visuals request in parallel (non-blocking)
-    fetchVisuals?.(transcript);
+    fetchVisuals?.(transcript, ragContext);
   }, [geminiLive, voiceInput, ragSearch, onRagSent, onUserMessage, fetchVisuals, resetIdleTimer]);
 
   // When Gemini finishes speaking, resume listening

@@ -13,21 +13,17 @@ import {
   type Chat, type ChatMessage,
 } from "@/lib/chat-storage";
 
-export interface StreamingMessage extends ChatMessage {
-  visuals?: VisualsResult | null;
-}
-
 export function useStreamingChat() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const [pendingVisuals, setPendingVisuals] = useState<VisualsResult | null>(null);
-  // Map of "chatId:messageIndex" → visuals for completed messages
-  const [visualsMap, setVisualsMap] = useState<Record<string, VisualsResult>>({});
   const abortRef = useRef<AbortController | null>(null);
   const chatsRef = useRef<Chat[]>([]);
-  const pendingVisualsRef = useRef<VisualsResult | null>(null);
+  const inflightRequestsRef = useRef<Record<string, { chatId: string; assistantIndex: number | null }>>({});
+  const resolvedVisualsRef = useRef<Record<string, VisualsResult | null>>({});
+  const activeRequestIdRef = useRef<string | null>(null);
 
   // Keep ref in sync for use in callbacks
   chatsRef.current = chats;
@@ -40,6 +36,23 @@ export function useStreamingChat() {
     saveChats(updated);
     chatsRef.current = updated;
   }, []);
+
+  const attachVisualsToMessage = useCallback(
+    (chatId: string, messageIndex: number, visuals: VisualsResult) => {
+      const updated = chatsRef.current.map((chat) => {
+        if (chat.id !== chatId) return chat;
+
+        const messages = chat.messages.map((message, index) =>
+          index === messageIndex ? { ...message, visuals } : message
+        );
+
+        return { ...chat, messages };
+      });
+
+      persistChats(updated);
+    },
+    [persistChats]
+  );
 
   function syncHash(id: string | null) {
     if (typeof window === "undefined") return;
@@ -108,9 +121,9 @@ export function useStreamingChat() {
   async function sendMessage(text: string) {
     if (!text.trim() || isStreaming) return;
 
-    const chatId = activeChatId;
-    const currentChat = chatsRef.current.find((c) => c.id === chatId);
+    const currentChat = chatsRef.current.find((c) => c.id === activeChatId);
     if (!currentChat) return;
+    const chatId = currentChat.id;
 
     // Add user message
     const userMsg: ChatMessage = { role: "user", text };
@@ -128,9 +141,12 @@ export function useStreamingChat() {
 
     const abort = new AbortController();
     abortRef.current = abort;
+    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    activeRequestIdRef.current = requestId;
+    inflightRequestsRef.current[requestId] = { chatId, assistantIndex: null };
+    resolvedVisualsRef.current[requestId] = null;
 
     // Fire visuals request in parallel
-    pendingVisualsRef.current = null;
     fetch("/api/visuals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -141,8 +157,18 @@ export function useStreamingChat() {
       .then((data) => {
         if (!data.error) {
           const v = data as VisualsResult;
-          setPendingVisuals(v);
-          pendingVisualsRef.current = v;
+          resolvedVisualsRef.current[requestId] = v;
+
+          if (activeRequestIdRef.current === requestId) {
+            setPendingVisuals(v);
+          }
+
+          const inflight = inflightRequestsRef.current[requestId];
+          if (inflight?.assistantIndex != null) {
+            attachVisualsToMessage(inflight.chatId, inflight.assistantIndex, v);
+            delete inflightRequestsRef.current[requestId];
+            delete resolvedVisualsRef.current[requestId];
+          }
         }
       })
       .catch(() => {
@@ -175,7 +201,8 @@ export function useStreamingChat() {
       }
 
       // Finalize: add wishonia message to chat
-      const wishoniaMsg: ChatMessage = { role: "wishonia", text: fullText };
+      const visuals = resolvedVisualsRef.current[requestId] ?? null;
+      const wishoniaMsg: ChatMessage = { role: "wishonia", text: fullText, visuals };
       const finalMessages = [...updatedMessages, wishoniaMsg];
       const finalChat = {
         ...updatedChat,
@@ -185,13 +212,14 @@ export function useStreamingChat() {
         chatsRef.current.map((c) => (c.id === chatId ? finalChat : c))
       );
 
-      // Persist visuals for this message
-      if (pendingVisualsRef.current && chatId) {
-        const msgIdx = finalMessages.length - 1;
-        setVisualsMap((prev) => ({
-          ...prev,
-          [`${chatId}:${msgIdx}`]: pendingVisualsRef.current!,
-        }));
+      const inflight = inflightRequestsRef.current[requestId];
+      if (inflight) {
+        inflight.assistantIndex = finalMessages.length - 1;
+      }
+
+      if (visuals) {
+        delete inflightRequestsRef.current[requestId];
+        delete resolvedVisualsRef.current[requestId];
       }
 
       return fullText;
@@ -209,21 +237,21 @@ export function useStreamingChat() {
       persistChats(
         chatsRef.current.map((c) => (c.id === chatId ? finalChat : c))
       );
+      delete inflightRequestsRef.current[requestId];
+      delete resolvedVisualsRef.current[requestId];
       return fallback.text;
     } finally {
       setIsStreaming(false);
       setStreamingText("");
       abortRef.current = null;
+      if (activeRequestIdRef.current === requestId) {
+        activeRequestIdRef.current = null;
+      }
     }
   }
 
   function stopStreaming() {
     abortRef.current?.abort();
-  }
-
-  function getVisualsForMessage(msgIndex: number): VisualsResult | null {
-    if (!activeChatId) return null;
-    return visualsMap[`${activeChatId}:${msgIndex}`] ?? null;
   }
 
   return {
@@ -234,7 +262,6 @@ export function useStreamingChat() {
     isStreaming,
     streamingText,
     pendingVisuals,
-    getVisualsForMessage,
     addUserMessage,
     initChats,
     handleNewChat,

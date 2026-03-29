@@ -9,12 +9,12 @@
 import { useEffect, useRef } from "react";
 import { useScript, useStylesheet } from "@/hooks/useScript";
 import type { VisualsResult } from "@/lib/visuals-prompt";
+import { normalizeManualUrl } from "@/lib/source-links";
 
 const KATEX_CSS = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css";
 const KATEX_JS = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js";
 const CHARTJS_JS = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
 const MERMAID_JS = "https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js";
-const MANUAL_BASE = "https://manual.warondisease.org";
 
 function KeyFigure({ data }: { data: NonNullable<VisualsResult["keyFigure"]> }) {
   return (
@@ -187,7 +187,7 @@ function SourceLinks({ links }: { links: NonNullable<VisualsResult["sourceLinks"
       {links.map((link, i) => (
         <a
           key={i}
-          href={link.url.startsWith("/") ? `${MANUAL_BASE}${link.url}` : link.url}
+          href={normalizeManualUrl(link.url)}
           target="_blank"
           rel="noopener"
           style={{
@@ -204,7 +204,7 @@ function SourceLinks({ links }: { links: NonNullable<VisualsResult["sourceLinks"
 }
 
 function ImageBlock({ src }: { src: string }) {
-  const url = src.startsWith("/") ? `${MANUAL_BASE}${src}` : src;
+  const url = normalizeManualUrl(src);
   return (
     <div style={{ textAlign: "center", marginTop: 8 }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}

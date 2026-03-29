@@ -14,6 +14,12 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking";
 
+export interface CompletedVoiceTurn {
+  id: number;
+  transcript: string;
+  thinkingText: string;
+}
+
 export interface UseGeminiLiveVoiceReturn {
   state: VoiceState;
   /** Connect to Gemini Live and start mic capture */
@@ -24,6 +30,10 @@ export interface UseGeminiLiveVoiceReturn {
   sendText: (text: string) => void;
   /** Transcript of what Gemini is saying (accumulates per turn) */
   outputTranscript: string;
+  /** Text-only reasoning that Gemini emitted during the turn */
+  thinkingText: string;
+  /** Finalized turn payload after Gemini finishes speaking */
+  completedTurn: CompletedVoiceTurn | null;
   /** Playback analyser for lip-sync */
   playbackAnalyser: AnalyserNode | null;
   /** Mic volume 0-1 for volume visualizer */
@@ -75,6 +85,8 @@ interface GeminiLiveCallbacks {
 export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceReturn {
   const [state, setState] = useState<VoiceState>("idle");
   const [outputTranscript, setOutputTranscript] = useState("");
+  const [thinkingText, setThinkingText] = useState("");
+  const [completedTurn, setCompletedTurn] = useState<CompletedVoiceTurn | null>(null);
   const [playbackAnalyser, setPlaybackAnalyser] = useState<AnalyserNode | null>(null);
   const [micVolume, setMicVolume] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
@@ -98,6 +110,8 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
   const pendingTurnCompleteRef = useRef(false);
   const drainTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const spokenRef = useRef("");
+  const thinkingRef = useRef("");
+  const turnIdRef = useRef(0);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -117,8 +131,18 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
           pendingTurnCompleteRef.current = false;
           if (drainTimerRef.current) { clearTimeout(drainTimerRef.current); drainTimerRef.current = null; }
           // Finalize turn — back to listening
+          const finalizedTranscript = spokenRef.current.trim();
+          const finalizedThinking = thinkingRef.current.trim();
           spokenRef.current = "";
-          if (mountedRef.current) setState("listening");
+
+          if (mountedRef.current) {
+            setCompletedTurn({
+              id: ++turnIdRef.current,
+              transcript: finalizedTranscript,
+              thinkingText: finalizedThinking,
+            });
+            setState("listening");
+          }
         }
       }
     };
@@ -295,28 +319,54 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
           if (mountedRef.current && state !== "speaking") setState("speaking");
           playAudioChunk(b64);
         },
-        onText: () => { /* chain-of-thought, ignore for now */ },
+        onText: (text) => {
+          thinkingRef.current += text;
+          if (mountedRef.current) setThinkingText(thinkingRef.current);
+        },
         onOutputTranscript: (text) => {
           spokenRef.current += text;
           if (mountedRef.current) setOutputTranscript(spokenRef.current);
         },
         onInputTranscript: () => { /* handled by local STT */ },
         onModelTurnStarted: () => {
+          spokenRef.current = "";
+          thinkingRef.current = "";
           if (mountedRef.current) setState("thinking");
+          if (mountedRef.current) {
+            setOutputTranscript("");
+            setThinkingText("");
+            setCompletedTurn(null);
+          }
         },
         onTurnComplete: () => {
           pendingTurnCompleteRef.current = true;
           // Safety: if audio doesn't drain in 2s, force finalize
           drainTimerRef.current = setTimeout(() => {
             pendingTurnCompleteRef.current = false;
+            const finalizedTranscript = spokenRef.current.trim();
+            const finalizedThinking = thinkingRef.current.trim();
             spokenRef.current = "";
-            if (mountedRef.current) setState("listening");
+
+            if (mountedRef.current) {
+              setCompletedTurn({
+                id: ++turnIdRef.current,
+                transcript: finalizedTranscript,
+                thinkingText: finalizedThinking,
+              });
+              setState("listening");
+            }
           }, 2000);
         },
         onInterrupted: () => {
           interruptPlayback();
           spokenRef.current = "";
-          if (mountedRef.current) { setOutputTranscript(""); setState("listening"); }
+          thinkingRef.current = "";
+          if (mountedRef.current) {
+            setCompletedTurn(null);
+            setOutputTranscript("");
+            setThinkingText("");
+            setState("listening");
+          }
         },
         onError: (err) => {
           console.error("[gemini-live-voice] Error:", err);
@@ -405,8 +455,11 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
     setPlaybackAnalyser(null);
     setMicVolume(0);
     setOutputTranscript("");
+    setThinkingText("");
+    setCompletedTurn(null);
     setState("idle");
     spokenRef.current = "";
+    thinkingRef.current = "";
   }, []);
 
   // Cleanup on unmount
@@ -420,6 +473,8 @@ export function useGeminiLiveVoice(tokenEndpoint: string): UseGeminiLiveVoiceRet
     disconnect,
     sendText,
     outputTranscript,
+    thinkingText,
+    completedTurn,
     playbackAnalyser,
     micVolume,
     isConnected,

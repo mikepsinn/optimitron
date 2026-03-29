@@ -2,10 +2,21 @@
  * Simple localStorage-based chat history.
  */
 
+import type { VisualsResult } from "./visuals-prompt";
+import type { SourceLink } from "./source-links";
+
+export interface RelevantImage {
+  path: string;
+  title?: string;
+}
+
 export interface ChatMessage {
   role: "user" | "wishonia";
   text: string;
-  visuals?: Record<string, unknown> | null;
+  visuals?: VisualsResult | null;
+  sourceLinks?: SourceLink[];
+  relevantImage?: RelevantImage | null;
+  thinkingText?: string | null;
 }
 
 export interface Chat {

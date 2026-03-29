@@ -7,11 +7,21 @@
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { VISUALS_SYSTEM_PROMPT, visualsSchema } from "@/lib/visuals-prompt";
+import { getImageIndex } from "@/lib/image-index-cache";
 import { getSearchIndex } from "@/lib/search-index-cache";
 import { searchContent } from "@/lib/search";
+import { findTopImageCandidates } from "@/lib/manual-images";
 
 export async function POST(request: Request) {
-  const { question } = (await request.json()) as { question: string };
+  const {
+    question,
+    context: providedContext,
+    imageOptions: providedImageOptions,
+  } = (await request.json()) as {
+    question: string;
+    context?: string;
+    imageOptions?: Array<{ path: string; title?: string; description?: string }>;
+  };
 
   if (!question) {
     return Response.json({ error: "question is required" }, { status: 400 });
@@ -19,12 +29,33 @@ export async function POST(request: Request) {
 
   // Server-side RAG for visual context
   const index = await getSearchIndex();
-  const { context } = searchContent(index, question);
+  const { context, results } = searchContent(index, question);
+  const resolvedContext = providedContext?.trim() || context;
+
+  let imageOptions = providedImageOptions ?? [];
+  if (imageOptions.length === 0) {
+    const imageIndex = await getImageIndex();
+    imageOptions = findTopImageCandidates(imageIndex, question, results, 3);
+  }
 
   const systemPrompt = VISUALS_SYSTEM_PROMPT.replace(
     "{context}",
-    context || "No specific book context available."
+    resolvedContext || "No specific book context available."
   );
+
+  let prompt = question;
+  if (imageOptions.length > 0) {
+    prompt +=
+      "\n\nAvailable image candidates:\n" +
+      imageOptions
+        .map(
+          (image) =>
+            `- ${image.path}${image.title ? ` (${image.title})` : ""}${
+              image.description ? `: ${image.description}` : ""
+            }`
+        )
+        .join("\n");
+  }
 
   try {
     const result = await generateObject({
@@ -38,7 +69,7 @@ export async function POST(request: Request) {
       }),
       schema: visualsSchema,
       system: systemPrompt,
-      prompt: question,
+      prompt,
     });
 
     return Response.json(result.object);

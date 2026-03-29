@@ -5,38 +5,10 @@
 
 "use client";
 
-const MANUAL_BASE = "https://manual.warondisease.org";
+import { type SourceLink, extractReadMoreLinks } from "@/lib/source-links";
 
-interface SourceLink {
-  title: string;
-  url: string;
-}
-
-/**
- * Extract "Read more: [title](url)" links from the response text.
- * Returns the links and the text with "Read more:" section stripped.
- */
 export function extractSourceLinks(text: string): { links: SourceLink[]; cleanText: string } {
-  const links: SourceLink[] = [];
-
-  // Find "Read more:" section (usually at the end)
-  const readMoreMatch = text.match(/Read more:[\s\S]*$/i);
-  if (!readMoreMatch) return { links: [], cleanText: text };
-
-  const readMoreSection = readMoreMatch[0];
-  const cleanText = text.slice(0, readMoreMatch.index).trim();
-
-  // Extract markdown links
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  let match;
-  while ((match = linkRegex.exec(readMoreSection)) !== null) {
-    let url = match[2]!;
-    // Normalize relative URLs
-    if (url.startsWith("/")) url = `${MANUAL_BASE}${url}`;
-    links.push({ title: match[1]!, url });
-  }
-
-  return { links, cleanText };
+  return extractReadMoreLinks(text);
 }
 
 export function SourcePills({ links }: { links: SourceLink[] }) {

@@ -30,15 +30,15 @@ export function IframeClient() {
       const data = e.data as Record<string, unknown>;
       if (!data || typeof data !== "object") return;
 
-      switch (data.type) {
+      switch (data["type"]) {
         case "wishonia:speak":
-          if (typeof data.text === "string") setText(data.text);
-          if (typeof data.expression === "string") setExpression(data.expression as Expression);
-          if (typeof data.bodyPose === "string") setBodyPose(data.bodyPose as BodyPose);
+          if (typeof data["text"] === "string") setText(data["text"]);
+          if (typeof data["expression"] === "string") setExpression(data["expression"] as Expression);
+          if (typeof data["bodyPose"] === "string") setBodyPose(data["bodyPose"] as BodyPose);
           break;
         case "wishonia:expression":
-          if (typeof data.expression === "string") setExpression(data.expression as Expression);
-          if (typeof data.bodyPose === "string") setBodyPose(data.bodyPose as BodyPose);
+          if (typeof data["expression"] === "string") setExpression(data["expression"] as Expression);
+          if (typeof data["bodyPose"] === "string") setBodyPose(data["bodyPose"] as BodyPose);
           break;
       }
     }

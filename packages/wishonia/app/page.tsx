@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { WishoniaNarrator } from "@/lib/widget/components/WishoniaNarrator";
+import { WishoniaWidget } from "@/lib/widget/components/WishoniaWidget";
 import type { Expression } from "@/lib/widget/types";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -12,9 +13,10 @@ import { useClientRag } from "@/hooks/useClientRag";
 import { ChatMessage } from "@/components/ChatMessage";
 import { RagDebugCard } from "@/components/RagDebugCard";
 import { VisualCard } from "@/components/VisualCard";
-import { renderMarkdown } from "@/lib/markdown";
 import { VolumeVisualizer } from "@/components/VolumeVisualizer";
 import { getShuffledQuips } from "@/lib/thinking-quips";
+import type { VisualsResult } from "@/lib/visuals-prompt";
+import { mergeSourceLinks, sourceLinksFromSearchResults, type SourceLink } from "@/lib/source-links";
 
 const WELCOME = "Hello. I have been running my planet for 4,237 years. I ended war in year 12. Your species is still arguing about it. Ask me anything.";
 
@@ -53,8 +55,8 @@ function StopIcon() {
 type VoiceStreamItem =
   | { type: "user"; text: string }
   | { type: "rag"; transcript: string; ragContext: string }
-  | { type: "visuals"; data: unknown }
-  | { type: "response"; text: string };
+  | { type: "visuals"; data: VisualsResult }
+  | { type: "response"; text: string; thinkingText?: string | null; sourceLinks?: SourceLink[] };
 
 export default function ChatPage(): React.JSX.Element {
   const [input, setInput] = useState("");
@@ -71,6 +73,10 @@ export default function ChatPage(): React.JSX.Element {
   const hasInteracted = useRef(false);
   const quipsRef = useRef<string[]>([]);
   const quipTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const voiceTurnMetaRef = useRef<{
+    sourceLinks: SourceLink[];
+    visuals: VisualsResult | null;
+  }>({ sourceLinks: [], visuals: null });
 
   const chat = useStreamingChat();
   const tts = useTTS();
@@ -99,26 +105,37 @@ export default function ChatPage(): React.JSX.Element {
     geminiLive,
     voiceInput,
     ragSearch: (query) => clientRag.search(query),
-    onRagSent: ({ transcript, ragContext }) => {
+    onRagSent: ({ transcript, ragContext, results }) => {
+      voiceTurnMetaRef.current = {
+        sourceLinks: sourceLinksFromSearchResults(results),
+        visuals: null,
+      };
       // Append RAG debug card to voice stream
       setVoiceStream((prev) => [...prev, { type: "rag", transcript, ragContext }]);
     },
     onUserMessage: (text) => {
-      // Append user message to voice stream (persists it to chat storage too)
-      chat.addUserMessage(text);
+      // Append user message to voice stream in order with the RAG/voice artifacts.
       setVoiceStream((prev) => [...prev, { type: "user", text }]);
     },
-    fetchVisuals: (question) => {
+    fetchVisuals: (question, ragContext) => {
       // Fire visuals request — append to voice stream when it arrives
       fetch("/api/visuals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, context: ragContext }),
       })
         .then((r) => r.json())
         .then((data) => {
           if (!data.error) {
-            setVoiceStream((prev) => [...prev, { type: "visuals", data }]);
+            const visuals = data as VisualsResult;
+            voiceTurnMetaRef.current = {
+              visuals,
+              sourceLinks: mergeSourceLinks(
+                visuals.sourceLinks ?? [],
+                voiceTurnMetaRef.current.sourceLinks
+              ),
+            };
+            setVoiceStream((prev) => [...prev, { type: "visuals", data: visuals }]);
           }
         })
         .catch(() => {});
@@ -133,12 +150,53 @@ export default function ChatPage(): React.JSX.Element {
       const lastIdx = prev.length - 1;
       if (lastIdx >= 0 && prev[lastIdx]!.type === "response") {
         const updated = [...prev];
-        updated[lastIdx] = { type: "response", text: geminiLive.outputTranscript };
+        updated[lastIdx] = {
+          type: "response",
+          text: geminiLive.outputTranscript,
+          sourceLinks: voiceTurnMetaRef.current.sourceLinks,
+        };
         return updated;
       }
-      return [...prev, { type: "response", text: geminiLive.outputTranscript }];
+      return [
+        ...prev,
+        {
+          type: "response",
+          text: geminiLive.outputTranscript,
+          sourceLinks: voiceTurnMetaRef.current.sourceLinks,
+        },
+      ];
     });
   }, [geminiLive.outputTranscript, voiceMode.isActive]);
+
+  useEffect(() => {
+    const turn = geminiLive.completedTurn;
+    if (!voiceMode.isActive || !turn) return;
+
+    setCurrentSpeech(turn.transcript);
+    setExpression("neutral");
+    setVoiceStream((prev) => {
+      const lastIdx = prev.length - 1;
+      if (lastIdx >= 0 && prev[lastIdx]!.type === "response") {
+        const updated = [...prev];
+        updated[lastIdx] = {
+          type: "response",
+          text: turn.transcript,
+          thinkingText: turn.thinkingText,
+          sourceLinks: voiceTurnMetaRef.current.sourceLinks,
+        };
+        return updated;
+      }
+      return [
+        ...prev,
+        {
+          type: "response",
+          text: turn.transcript,
+          thinkingText: turn.thinkingText,
+          sourceLinks: voiceTurnMetaRef.current.sourceLinks,
+        },
+      ];
+    });
+  }, [geminiLive.completedTurn, voiceMode.isActive]);
 
   // Init chats on mount
   useEffect(() => { chat.initChats(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
@@ -148,7 +206,14 @@ export default function ChatPage(): React.JSX.Element {
     if (!userScrolledUpRef.current) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chat.messages.length, chat.streamingText, voiceStream.length]);
+  }, [
+    chat.messages.length,
+    chat.streamingText,
+    chat.pendingVisuals,
+    voiceStream.length,
+    geminiLive.outputTranscript,
+    geminiLive.completedTurn?.id,
+  ]);
 
   const handleScroll = useCallback(() => {
     const el = messagesContainerRef.current;
@@ -213,6 +278,7 @@ export default function ChatPage(): React.JSX.Element {
 
   function handleSelectChat(id: string) {
     chat.handleSelectChat(id);
+    voiceTurnMetaRef.current = { sourceLinks: [], visuals: null };
     setVoiceStream([]);
     const selected = chat.chats.find((c) => c.id === id);
     const lastWishonia = [...(selected?.messages ?? [])].reverse().find((m) => m.role === "wishonia");
@@ -230,6 +296,7 @@ export default function ChatPage(): React.JSX.Element {
     setExpression("neutral");
     setSidebarOpen(false);
     setShowSpeechBubble(true);
+    voiceTurnMetaRef.current = { sourceLinks: [], visuals: null };
     setVoiceStream([]);
     hasInteracted.current = false;
   }
@@ -378,19 +445,32 @@ export default function ChatPage(): React.JSX.Element {
 
             {/* Text chat messages */}
             {chat.messages.map((msg, i) => {
-              const isLastWishonia = msg.role === "wishonia" && i === chat.messages.length - 1;
-              const visuals = chat.getVisualsForMessage(i) ?? (isLastWishonia ? chat.pendingVisuals : null);
               return (
-                <ChatMessage
-                  key={`msg-${i}`}
-                  role={msg.role}
-                  text={msg.text}
-                  visuals={visuals}
-                  onPlayTTS={tts.play}
-                  isTTSPlaying={tts.isPlaying}
-                />
+                <div key={`msg-${i}`}>
+                  <ChatMessage
+                    role={msg.role}
+                    text={msg.text}
+                    sourceLinks={msg.sourceLinks}
+                    relevantImage={msg.relevantImage}
+                    thinkingText={msg.thinkingText}
+                    onPlayTTS={tts.play}
+                    isTTSPlaying={tts.isPlaying}
+                  />
+                  {msg.role === "wishonia" && msg.visuals && (
+                    <div style={{ marginBottom: 12 }}>
+                      <VisualCard data={msg.visuals} />
+                    </div>
+                  )}
+                </div>
               );
             })}
+
+            {/* Text-mode visuals arrive independently, just like transmit. */}
+            {chat.isStreaming && chat.pendingVisuals && (
+              <div style={{ marginBottom: 12 }}>
+                <VisualCard data={chat.pendingVisuals} />
+              </div>
+            )}
 
             {/* Voice stream — items appended in order, like transmit's DOM */}
             {voiceStream.map((item, i) => {
@@ -428,17 +508,15 @@ export default function ChatPage(): React.JSX.Element {
               }
               if (item.type === "response") {
                 return (
-                  <div key={`vs-${i}`} style={{
-                    display: "flex", justifyContent: "flex-start", marginBottom: 12,
-                  }}>
-                    <div style={{
-                      maxWidth: "80%", padding: "14px 16px", borderRadius: 12, fontSize: 15, lineHeight: 1.7,
-                      background: "rgba(209,0,177,0.07)", border: "1px solid rgba(209,0,177,0.15)", color: "#d1d1d1",
-                    }}
-                      className="chat-markdown"
-                      dangerouslySetInnerHTML={{ __html: renderMarkdown(item.text) }}
-                    />
-                  </div>
+                  <ChatMessage
+                    key={`vs-${i}`}
+                    role="wishonia"
+                    text={item.text}
+                    sourceLinks={item.sourceLinks}
+                    thinkingText={item.thinkingText}
+                    onPlayTTS={tts.play}
+                    isTTSPlaying={tts.isPlaying}
+                  />
                 );
               }
               return null;
@@ -554,16 +632,27 @@ export default function ChatPage(): React.JSX.Element {
               </div>
             )}
             <div onClick={handleMicClick} style={{ cursor: "pointer" }}>
-              <WishoniaNarrator
-                tokenEndpoint="/api/gemini-live-token"
-                text={currentSpeech}
-                expression={expression}
-                bodyPose={chat.isStreaming || voiceState === "thinking" ? "thinking" : voiceState === "speaking" ? "presenting" : "idle"}
-                size={140}
-                position="custom"
-                style={{ position: "relative" }}
-                muted={!voiceMode.isActive}
-              />
+              {voiceMode.isActive ? (
+                <WishoniaWidget
+                  analyserNode={geminiLive.playbackAnalyser}
+                  expression={voiceState === "thinking" ? "thinking" : expression}
+                  bodyPose={voiceState === "thinking" ? "thinking" : voiceState === "speaking" ? "presenting" : voiceState === "listening" ? "listening" : "idle"}
+                  size={140}
+                  position="custom"
+                  style={{ position: "relative" }}
+                />
+              ) : (
+                <WishoniaNarrator
+                  tokenEndpoint="/api/gemini-live-token"
+                  text={currentSpeech}
+                  expression={expression}
+                  bodyPose={chat.isStreaming ? "thinking" : "idle"}
+                  size={140}
+                  position="custom"
+                  style={{ position: "relative" }}
+                  muted={false}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -6,21 +6,30 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { renderMarkdown } from "@/lib/markdown";
-import { VisualCard } from "./VisualCard";
-import { SourcePills, extractSourceLinks } from "./SourcePills";
-import type { VisualsResult } from "@/lib/visuals-prompt";
+import { SourcePills } from "./SourcePills";
+import type { SourceLink } from "@/lib/source-links";
+import {
+  extractReadMoreLinks,
+  mergeSourceLinks,
+  normalizeManualUrl,
+} from "@/lib/source-links";
 
 interface ChatMessageProps {
   role: "user" | "wishonia";
   text: string;
   isStreaming?: boolean;
-  visuals?: VisualsResult | null;
+  sourceLinks?: SourceLink[];
+  relevantImage?: {
+    path: string;
+    title?: string;
+  } | null;
+  thinkingText?: string | null;
   onPlayTTS?: (text: string) => void;
   isTTSPlaying?: boolean;
 }
 
 export function ChatMessage({
-  role, text, isStreaming, visuals, onPlayTTS, isTTSPlaying,
+  role, text, isStreaming, sourceLinks, relevantImage, thinkingText, onPlayTTS, isTTSPlaying,
 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
 
@@ -28,10 +37,15 @@ export function ChatMessage({
   const rawText = text.replace(/\[expression:\w+\]/g, "").trim();
 
   // Extract source links from completed wishonia messages
-  const { links, cleanText } = useMemo(() => {
+  const { links: extractedLinks, cleanText } = useMemo(() => {
     if (role === "user" || isStreaming) return { links: [], cleanText: rawText };
-    return extractSourceLinks(rawText);
+    return extractReadMoreLinks(rawText);
   }, [role, isStreaming, rawText]);
+
+  const links = useMemo(
+    () => mergeSourceLinks(sourceLinks ?? [], extractedLinks),
+    [sourceLinks, extractedLinks]
+  );
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(cleanText).then(() => {
@@ -45,6 +59,7 @@ export function ChatMessage({
   }, [cleanText, onPlayTTS]);
 
   const isUser = role === "user";
+  const relevantImageUrl = relevantImage ? normalizeManualUrl(relevantImage.path) : null;
 
   return (
     <div style={{
@@ -84,6 +99,41 @@ export function ChatMessage({
         {/* Source pills */}
         {links.length > 0 && <SourcePills links={links} />}
 
+        {!!relevantImageUrl && !isUser && (
+          <div style={{ marginTop: 10 }}>
+            <a href={relevantImageUrl} target="_blank" rel="noopener">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={relevantImageUrl}
+                alt={relevantImage?.title || ""}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: 280,
+                  borderRadius: 10,
+                  border: "1px solid rgba(54,226,248,0.15)",
+                  display: "block",
+                }}
+              />
+            </a>
+          </div>
+        )}
+
+        {!!thinkingText?.trim() && !isUser && !isStreaming && (
+          <details style={{ marginTop: 8, fontSize: 12, color: "#888" }}>
+            <summary style={{ cursor: "pointer" }}>Show thinking</summary>
+            <pre
+              style={{
+                marginTop: 8,
+                whiteSpace: "pre-wrap",
+                fontFamily: "inherit",
+                lineHeight: 1.5,
+              }}
+            >
+              {thinkingText}
+            </pre>
+          </details>
+        )}
+
         {/* Action buttons for wishonia messages */}
         {!isUser && !isStreaming && cleanText && (
           <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
@@ -111,9 +161,6 @@ export function ChatMessage({
             </button>
           </div>
         )}
-
-        {/* Visual supplements */}
-        {visuals && <VisualCard data={visuals} />}
       </div>
     </div>
   );
