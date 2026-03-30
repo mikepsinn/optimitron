@@ -1,0 +1,152 @@
+name: Web CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimitron_web_ci
+  NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+  NEXTAUTH_URL: http://127.0.0.1:3001
+  NEXT_PUBLIC_BASE_URL: http://127.0.0.1:3001
+  VERCEL_CLI_VERSION: 50.37.3
+
+jobs:
+  web-validate:
+    name: web-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: optimitron_web_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d optimitron_web_ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:deploy
+
+      - name: Typecheck web app
+        run: pnpm --filter @optimitron/web run typecheck
+
+      - name: Run web unit tests
+        run: pnpm --filter @optimitron/web run test
+
+      - name: Build web app
+        run: pnpm --filter @optimitron/web run build
+
+      - name: Install Playwright browser
+        run: pnpm --filter @optimitron/web exec playwright install --with-deps chromium
+
+      - name: Run smoke tests
+        env:
+          BASE_URL: http://127.0.0.1:3001
+        run: pnpm --filter @optimitron/web exec playwright test e2e/smoke.spec.ts --project=default
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-playwright-artifacts
+          path: |
+            packages/web/playwright-report
+            packages/web/public/img/screenshots
+          if-no-files-found: ignore
+
+  deploy-production:
+    name: deploy-production
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: web-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment_url }}
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Vercel configuration
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          test -n "$VERCEL_TOKEN" || { echo "Missing GitHub secret VERCEL_TOKEN"; exit 1; }
+          test -n "$VERCEL_ORG_ID" || { echo "Missing GitHub variable VERCEL_ORG_ID"; exit 1; }
+          test -n "$VERCEL_PROJECT_ID" || { echo "Missing GitHub variable VERCEL_PROJECT_ID"; exit 1; }
+
+      - name: Pull Vercel production settings
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --cwd packages/web --token "$VERCEL_TOKEN"
+
+      - name: Build Vercel production artifact
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --cwd packages/web --token "$VERCEL_TOKEN"
+
+      - name: Deploy production artifact
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          deployment_url="$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --cwd packages/web --token "$VERCEL_TOKEN" --yes | tail -n 1 | tr -d '\r')"
+          case "$deployment_url" in
+            https://*) ;;
+            *) deployment_url="https://$deployment_url" ;;
+          esac
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"

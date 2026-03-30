@@ -989,7 +989,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "sierra-three-scenarios-all-win",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If it misses, your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus 17 percent annual returns — your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
   },
   {
     id: "pl-prize",
@@ -1053,7 +1053,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "sierra-decentralized-welfare",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Globally, your species spends 13.5 trillion dollars a year on social protection programs. Between 400 and 675 billion of that is pure administration — case workers, applications, audits, fraud detection — all to decide who deserves to not starve. In America alone, 83 programs across 6 agencies burn through 100 billion a year in overhead. Universal basic income distributed automatically via World ID: one program. Zero agencies. Zero admin overhead. No one deciding whether you deserve to eat.",
+    narration: "Your species wastes up to 675 billion dollars a year on welfare administration — deciding who deserves to not starve. Universal basic income via World ID: one program. Zero admin. No one deciding whether you deserve to eat.",
   },
   {
     id: "pl-dfed",

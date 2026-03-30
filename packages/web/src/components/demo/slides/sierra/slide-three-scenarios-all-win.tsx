@@ -23,31 +23,31 @@ export function SlideThreeScenariosAllWin() {
         </div>
 
         <div className="grid grid-cols-3 gap-6 w-full">
-          {/* Treaty passes */}
+          {/* Metrics hit */}
           <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
             <div className="text-4xl mb-3">🌍</div>
             <div className="font-pixel text-xl md:text-2xl text-brutal-cyan mb-4">
-              TREATY PASSES
+              METRICS HIT
             </div>
             <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
               {voteValue}+
             </div>
             <div className="font-pixel text-lg text-muted-foreground mt-2">
-              VOTE points + returns
+              VOTE points pay out
             </div>
           </div>
 
-          {/* Treaty fails */}
+          {/* Humanity fails */}
           <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-6 text-center">
             <div className="text-4xl mb-3">📈</div>
             <div className="font-pixel text-xl md:text-2xl text-brutal-yellow mb-4">
-              TREATY FAILS
+              HUMANITY FAILS
             </div>
             <div className="font-pixel text-4xl md:text-6xl text-brutal-yellow">
               ${vcReturn.toLocaleString()}
             </div>
             <div className="font-pixel text-lg text-muted-foreground mt-2">
-              17%/yr beats your 401k
+              deposit back + 17%/yr returns
             </div>
           </div>
 
