@@ -2,6 +2,10 @@ import { ImageResponse } from "next/og";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
+import {
+  formatPoliticianOgDescriptor,
+  formatPoliticianOgRatio,
+} from "@/lib/politician-og";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -40,7 +44,12 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
   const total = p.militaryDollarsVotedFor + p.clinicalTrialDollarsVotedFor;
   const milPct = total > 0 ? (p.militaryDollarsVotedFor / total) * 100 : 50;
   const trialsPct = total > 0 ? (p.clinicalTrialDollarsVotedFor / total) * 100 : 50;
-  const ratioText = p.ratio >= 999_999 ? "∞" : `${p.ratio.toLocaleString()}:1`;
+  const ratioText = formatPoliticianOgRatio(p.ratio);
+  const descriptorText = formatPoliticianOgDescriptor([
+    p.party,
+    p.chamber,
+    p.state,
+  ]);
 
   // SVG pie chart using stroke-dasharray trick
   // Circle circumference = 2πr = 2π×90 ≈ 565.5
@@ -67,7 +76,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
           {p.name}
         </div>
         <div style={{ fontSize: 22, fontWeight: 700, color: "#888", marginTop: 8 }}>
-          {p.party} · {p.chamber} · {p.state}
+          {descriptorText}
         </div>
 
         {/* Stats */}
