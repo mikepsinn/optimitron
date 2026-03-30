@@ -1053,7 +1053,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "sierra-decentralized-welfare",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Your species wastes up to 675 billion dollars a year on welfare administration — deciding who deserves to not starve. Universal basic income via World ID: one program. Zero admin. No one deciding whether you deserve to eat.",
+    narration: "Your species already spends 13.5 trillion dollars a year on welfare to prevent starvation. Up to 675 billion of that is pure administrative waste. Universal basic income does the same job for 675 billion less bureaucracy.",
   },
   {
     id: "pl-dfed",
