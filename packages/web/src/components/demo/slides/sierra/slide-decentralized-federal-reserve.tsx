@@ -14,10 +14,7 @@ interface Row {
 const ROWS: Row[] = [
   { label: "Who decides", fed: "12 unelected humans", contract: "Algorithm (open source)", fedBad: true, contractGood: true },
   { label: "New money goes to", fed: "Banks & asset holders", contract: "Everyone (UBI)", fedBad: true, contractGood: true },
-  { label: "Inflation", fed: "97% of value destroyed", contract: "0% (automatic)", fedBad: true, contractGood: true },
-  { label: "Citizens consulted", fed: "0", contract: "8,000,000,000", fedBad: true, contractGood: true },
-  { label: "Tax filing", fed: "70,000 pages of code", contract: "0.5% auto-tax, no filing", fedBad: true, contractGood: true },
-  { label: "Auditable", fed: "No (never fully audited)", contract: "Yes (view source)", fedBad: true, contractGood: true },
+  { label: "Inflation since 1913", fed: "97% of value destroyed", contract: "0% (anchored to productivity)", fedBad: true, contractGood: true },
   { label: "Wars funded", fed: "All of them", contract: "0", fedBad: true, contractGood: true },
 ];
 

@@ -81,14 +81,19 @@ function DeathTicker() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1">
-      <span className="text-lg">💀</span>
-      <div className="flex flex-col gap-0.5">
-        <span className={`${ARCADE} text-xs text-brutal-red`}>
-          HUMANS LOST
-        </span>
-        <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2 px-2 py-1 justify-end text-right">
+      <div className="flex flex-col gap-0.5 items-end text-right">
+        <div className="flex items-center gap-1">
+          <span className="text-lg">💀</span>
           <span className={`${ARCADE} text-xs text-brutal-red tabular-nums`} ref={ref}>0</span>
+        </div>
+        <span className={`${ARCADE} text-xs text-brutal-red`}>
+          HUMANS 
+        </span>
+        <span className={`${ARCADE} text-xs text-brutal-red`}>
+          TERMINATED
+        </span>
+        <div className="flex items-center gap-1.5 justify-end">
           <span className={`${ARCADE} text-[10px] text-muted-foreground`}>THIS SESSION</span>
         </div>
       </div>

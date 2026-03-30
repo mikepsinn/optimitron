@@ -392,7 +392,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "how-to-play",
     bgColor: "cyan",
     tags: ["mechanism", "financial"],
-    narration: `VOTE points are earned by sharing your link. Each friend who votes gives you one point. Points are non-transferable and cannot be purchased. If targets are hit, each point could be worth ${votePointValue}. You are not recruiting. You are showing people the maths. Each person you tell proves one more person agrees and moves closer to the tipping point.`,
+    narration: `Vote Points are earned by sharing your link. Each friend who votes gives you one point. Points are non-transferable and cannot be purchased. If targets are hit, each point could be worth ${votePointValue}. You are not recruiting. You are showing people the maths. Each person you tell proves one more person agrees and moves closer to the tipping point.`,
   },
   {
     id: "prize-no-downside",
@@ -443,7 +443,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "prize-worked-example",
     bgColor: "pink",
     tags: ["financial", "mechanism"],
-    narration: `One hundred dollars deposited. Two friends recruited. If the targets are missed, your deposit grew to roughly one thousand one hundred dollars. If the targets are hit, your two VOTE points pay two times ${votePointValue} — that is three hundred and eighty-seven thousand dollars. The break-even probability is one in fifteen thousand. You do not need to be altruistic. You just need to be numerate.`,
+    narration: `One hundred dollars deposited. Two friends recruited. If the targets are missed, your deposit grew to roughly one thousand one hundred dollars. If the targets are hit, your two Vote Points pay two times ${votePointValue} — that is three hundred and eighty-seven thousand dollars. The break-even probability is one in fifteen thousand. You do not need to be altruistic. You just need to be numerate.`,
   },
   {
     id: "evidence-viral-doubling",
@@ -762,7 +762,7 @@ export const SEGMENTS: DemoSegment[] = [
     act: "II-money",
     scoreAdd: 1_000_000_000,
     inventoryAdd: { id: "vote-points", name: "VOTE POINTS ×2", icon: "🥈" },
-    narration: `Now for the VOTE points. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at seventeen percent instead of eight, the pool reaches seven hundred and seventy-four trillion dollars. Split across four billion players, each VOTE point is worth one hundred and ninety-four thousand dollars. Two friends playing: three hundred and eighty-seven thousand. Ten friends: one point nine million. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
+    narration: `Now for the Vote Points. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at seventeen percent instead of eight, the pool reaches seven hundred and seventy-four trillion dollars. Split across four billion players, each VOTE point is worth one hundred and ninety-four thousand dollars. Two friends playing: three hundred and eighty-seven thousand. Ten friends: one point nine million. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
   },
   {
     id: "script-6d-free-option",
@@ -772,7 +772,7 @@ export const SEGMENTS: DemoSegment[] = [
     tags: ["financial", "cta"],
     act: "II-money",
     scoreAdd: 1_500_000_000,
-    narration: `But wait — if humanity wins, does my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have VOTE points worth three hundred and eighty-seven thousand dollars — far more than your deposit. Second: if humanity wins, everyone is ten times richer. Your one hundred dollar deposit vanishes into a world where your lifetime income just increased by fifteen point seven million dollars. You do not mourn the one hundred dollars. You are too busy being a multimillionaire in a civilisation that cured all disease. The only way to lose is not to play.`,
+    narration: `But wait — if humanity wins, does my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have Vote Points worth three hundred and eighty-seven thousand dollars — far more than your deposit. Second: if humanity wins, everyone is ten times richer. Your one hundred dollar deposit vanishes into a world where your lifetime income just increased by fifteen point seven million dollars. You do not mourn the one hundred dollars. You are too busy being a multimillionaire in a civilisation that cured all disease. The only way to lose is not to play.`,
   },
   {
     id: "script-8b-metric",
@@ -862,7 +862,7 @@ export const SEGMENTS: DemoSegment[] = [
     tags: ["solution"],
     act: "II-armory",
     scoreAdd: 5_800_000_000,
-    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with VOTE points worth one hundred and ninety-four thousand dollars, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. The incentive is seven hundred and seventy-four trillion dollars. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
+    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with Vote Points worth one hundred and ninety-four thousand dollars, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. The incentive is seven hundred and seventy-four trillion dollars. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
   },
   {
     id: "script-7-personal-upside",
@@ -930,7 +930,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `These governments spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. 95 percent of diseases have zero approved treatments. Curing them all at current spending takes ${oldQueue} years. You will be dead in 80. I mention this not to be rude but because you seem weirdly calm about it.`,
+    narration: `These governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. 95 percent of diseases have zero approved treatments. Curing them all at current spending takes ${oldQueue} years. You will be dead in 80. I mention this not to be rude but because you seem weirdly calm about it.`,
   },
   {
     id: "pl-moronia",
@@ -1002,7 +1002,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "pink",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your VOTE points pay out. If it misses, your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If it misses, your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
   },
   {
     id: "pl-prize",
@@ -1059,6 +1059,33 @@ export const SEGMENTS: DemoSegment[] = [
     narration: "Now you know what everyone wants and what the optimal budget is. How do you get your politicians to actually do it? Incentive Alignment Bonds. Raise 1 billion dollars from investors. Use it to fund politicians who vote for the treaty and defund the ones who do not. When the treaty passes, bondholders get perpetual returns proportional to the treaty percentage. Politicians get electoral support proportional to it. Every investor and every politician becomes a permanent lobbyist for expanding it. The math does the lobbying.",
   },
   {
+    id: "pl-dirs",
+    title: "Decentralized IRS",
+    componentId: "sierra-decentralized-irs",
+    bgColor: "foreground",
+    tags: ["feature"],
+    act: "II-armory",
+    narration: "Your tax code is 74,000 pages. It costs 546 billion dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No loopholes. You cannot bribe a smart contract to give you a tax break.",
+  },
+  {
+    id: "pl-dwelfare",
+    title: "Decentralized Welfare",
+    componentId: "sierra-decentralized-welfare",
+    bgColor: "foreground",
+    tags: ["feature"],
+    act: "II-armory",
+    narration: "Your species runs 83 welfare programs across 6 agencies. The overhead is extraordinary. Universal basic income distributed automatically via World ID: one program. Zero agencies. No application form. No waiting list. No one deciding whether you deserve to eat.",
+  },
+  {
+    id: "pl-dfed",
+    title: "Decentralized Fed",
+    componentId: "sierra-decentralized-federal-reserve",
+    bgColor: "foreground",
+    tags: ["feature"],
+    act: "II-armory",
+    narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. Since 1913 they have destroyed 97 percent of the dollar's value. This smart contract replaces them with an algorithm. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI. No meetings. No favourites. No 97 percent.",
+  },
+  {
     id: "pl-storacha",
     title: "Storacha + IPFS",
     componentId: "sierra-ipfs-immutable-storage",
@@ -1092,7 +1119,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "pink",
     tags: ["cta"],
     act: "III",
-    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile is currently incinerating a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the invoice. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
+    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the invoice. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
   },
   {
     id: "pl-cta",
@@ -1154,6 +1181,10 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "pl-game",
       "pl-budget",
       "pl-iab",
+      // Optimal Governance Tools
+      "pl-dfed",
+      "pl-dirs",
+      "pl-dwelfare",
       // Protocol Labs Tech (~20s)
       "pl-storacha",
       "pl-hypercerts",
