@@ -939,7 +939,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["problem"],
     act: "turn",
-    narration: `The parasitic economy — cybercrime plus military spending — is growing at 15 percent per year. The productive economy is growing at 3. By ${collapseYear}, it becomes more rational to steal than to produce. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. Every civilisation that crossed 35 percent collapsed. But there is a save file.`,
+    narration: `The parasitic economy — cybercrime plus military spending — is growing at 15 percent per year. The productive economy is growing at 3. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. By ${collapseYear}, Earth crosses the same threshold. Think Somalia, but everywhere. But there is a save file.`,
   },
   {
     id: "pl-wishonia",

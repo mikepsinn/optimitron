@@ -83,13 +83,13 @@ async function tryManifest(slideId: string): Promise<HTMLAudioElement | null> {
 /**
  * Maps segment IDs to game slide IDs for manifest lookup.
  */
-const segmentToSlideId: Record<string, string> = {
+export const segmentToSlideId: Record<string, string> = {
   "pl-intro": "earth-optimization-game",
   "pl-170t": "military-waste-170t",
   "pl-misaligned": "misaligned-superintelligence",
   "pl-ratio": "military-health-ratio",
   "pl-moronia": "game-over-moronia",
-  "pl-wishonia": "compound-growth-scenarios",
+  "pl-wishonia": "restore-from-wishonia",
   "pl-treaty": "one-percent-treaty",
   "pl-game": "one-percent-referendum-vote",
   "pl-prize": "dominant-assurance-contract",

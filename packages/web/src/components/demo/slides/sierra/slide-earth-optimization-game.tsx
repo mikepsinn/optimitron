@@ -15,22 +15,40 @@ export function SlideEarthOptimizationGame() {
       setTimeout(() => {
         setPhase(2);
         setFingerVisible(true);
-        // Start dragging after a brief pause
+        // Sweep back and forth then settle
         setTimeout(() => {
-          const interval = setInterval(() => {
-            setCuresPct((prev) => {
-              if (prev >= 1) {
-                clearInterval(interval);
-                setFingerVisible(false);
-                return 1;
-              }
-              return prev + 0.02;
-            });
-          }, 30);
+          const keyframes = [
+            { target: 3, speed: 0.06 },
+            { target: 0.3, speed: 0.04 },
+            { target: 5, speed: 0.06 },
+            { target: 0.5, speed: 0.04 },
+            { target: 2, speed: 0.04 },
+            { target: 1, speed: 0.02 },
+          ];
+          let step = 0;
+          function animateToTarget() {
+            const kf = keyframes[step];
+            if (!kf) {
+              setPhase(3);
+              setTimeout(() => setPhase(4), 1000);
+              return;
+            }
+            const interval = setInterval(() => {
+              setCuresPct((prev) => {
+                const diff = kf.target - prev;
+                if (Math.abs(diff) < 0.03) {
+                  clearInterval(interval);
+                  step++;
+                  setTimeout(animateToTarget, 150);
+                  return kf.target;
+                }
+                return prev + Math.sign(diff) * kf.speed;
+              });
+            }, 30);
+          }
+          animateToTarget();
         }, 600);
       }, 1800),
-      setTimeout(() => setPhase(3), 3800),   // +$27B label
-      setTimeout(() => setPhase(4), 4800),   // Subtitle + press start
     ];
 
     const blinkInterval = setInterval(() => {
@@ -116,31 +134,33 @@ export function SlideEarthOptimizationGame() {
         {/* Allocation Slider */}
         {phase >= 1 && (
           <div className="w-full max-w-5xl space-y-3 fade-up">
-            <div className="relative h-14 bg-zinc-900 border-2 border-zinc-600 rounded">
-              {/* Explosions portion */}
-              <div
-                className="absolute inset-y-0 left-0 bg-brutal-red transition-all duration-100 flex items-center justify-center overflow-hidden rounded-l"
-                style={{ width: `${100 - curesPct}%` }}
-              >
-                <span className="font-pixel text-xl md:text-2xl text-brutal-red-foreground whitespace-nowrap">
-                  💥 {(100 - curesPct).toFixed(0)}% EXPLOSIONS 💥
-                </span>
+            <div className="relative mb-10">
+              <div className="relative h-14 bg-zinc-900 border-2 border-zinc-600 rounded">
+                {/* Explosions portion */}
+                <div
+                  className="absolute inset-y-0 left-0 bg-brutal-red transition-all duration-100 flex items-center justify-center overflow-hidden rounded-l"
+                  style={{ width: `${100 - curesPct}%` }}
+                >
+                  <span className="font-pixel text-xl md:text-2xl text-brutal-red-foreground whitespace-nowrap">
+                    💥 {(100 - curesPct).toFixed(0)}% EXPLOSIONS 💥
+                  </span>
+                </div>
+                {/* Cures portion */}
+                <div
+                  className="absolute inset-y-0 right-0 bg-brutal-cyan transition-all duration-100 overflow-hidden rounded-r"
+                  style={{ width: `${Math.max(curesPct, 0.2)}%` }}
+                />
               </div>
-              {/* Cures portion */}
-              <div
-                className="absolute inset-y-0 right-0 bg-brutal-cyan transition-all duration-100 overflow-hidden rounded-r"
-                style={{ width: `${Math.max(curesPct, 0.2)}%` }}
-              />
-              {/* Animated finger on the bar */}
+              {/* Finger below the bar */}
               {fingerVisible && (
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-all duration-100"
+                  className="absolute top-full mt-1 z-10 pointer-events-none transition-all duration-100"
                   style={{
                     left: `${100 - curesPct}%`,
-                    transform: `translateX(-50%) translateY(${curesPct > 0 ? "-30%" : "-50%"})`,
+                    transform: "translateX(-50%)",
                   }}
                 >
-                  <span className={`text-4xl ${curesPct === 0 ? "animate-bounce" : ""}`}>👆</span>
+                  <span className={`text-4xl ${curesPct === 0 ? "animate-bounce" : ""}`}>☝️</span>
                 </div>
               )}
             </div>

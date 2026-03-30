@@ -386,7 +386,7 @@ function DemoPlayerInner({
       {/* Wishonia character — bottom right, click to play */}
       {sierraMode && (
         <div
-          className="absolute -bottom-4 right-4 z-20 cursor-pointer"
+          className="absolute -bottom-4 -right-2 z-20 cursor-pointer"
           onClick={() => {
             if (!isPlaying) {
               setIsPlaying(true);

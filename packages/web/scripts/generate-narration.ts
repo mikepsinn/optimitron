@@ -25,7 +25,8 @@ import {
 } from "fs";
 import { join } from "path";
 import { execSync } from "child_process";
-import { SEGMENTS, getPlaylistSegments } from "../src/lib/demo-script";
+import { SEGMENTS, getPlaylistSegments, PLAYLISTS } from "../src/lib/demo-script";
+import { segmentToSlideId } from "../src/lib/demo-tts";
 
 // ---------------------------------------------------------------------------
 // Gemini TTS — inline to avoid cross-package dependency
@@ -150,31 +151,6 @@ function wavToMp3(wavPath: string, mp3Path: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Segment-to-manifest-key mapping (matches demo-tts.ts lookup)
-// ---------------------------------------------------------------------------
-
-const segmentToSlideId: Record<string, string> = {
-  "pl-intro": "earth-optimization-game",
-  "pl-170t": "military-waste-170t",
-  "pl-misaligned": "misaligned-superintelligence",
-  "pl-ratio": "military-health-ratio",
-  "pl-moronia": "game-over-moronia",
-  "pl-wishonia": "restore-from-wishonia",
-  "pl-treaty": "one-percent-treaty",
-  "pl-game": "one-percent-referendum-vote",
-  "pl-prize": "dominant-assurance-contract",
-  "pl-dfda": "decentralized-fda",
-  "pl-opg": "optimal-policy-generator",
-  "pl-obg": "optimal-budget-generator",
-  "pl-iab": "incentive-alignment-bonds",
-  "pl-storacha": "ipfs-immutable-storage",
-  "pl-hypercerts": "impact-certificates",
-  "pl-lives": "ten-billion-lives-saved",
-  "pl-close": "final-call-to-action",
-  "pl-cta": "post-credits-aliens",
-};
-
-// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -199,6 +175,47 @@ async function main() {
   const playlistId = playlistArg?.split("=")[1] || null;
 
   const segments = playlistId ? getPlaylistSegments(playlistId) : SEGMENTS;
+
+  // ── Validation: check TTS mappings ──────────────────────────────────
+  const segmentIds = new Set(SEGMENTS.map((s) => s.id));
+  const validationErrors: string[] = [];
+
+  // Check all playlist segments have TTS mappings
+  for (const playlist of PLAYLISTS) {
+    for (const segId of playlist.segmentIds) {
+      if (!segmentIds.has(segId)) {
+        validationErrors.push(
+          `Playlist "${playlist.id}" references segment "${segId}" which does not exist in SEGMENTS`,
+        );
+      }
+    }
+  }
+
+  // Check segments used in the target playlist have manifest keys
+  for (const seg of segments) {
+    if (!seg.narration?.trim()) continue;
+    const manifestKey = segmentToSlideId[seg.id] ?? seg.id;
+    // Warn if using segment ID as manifest key (no explicit mapping)
+    if (!segmentToSlideId[seg.id]) {
+      console.warn(
+        `  ⚠️  Segment "${seg.id}" has no entry in segmentToSlideId (demo-tts.ts). ` +
+        `Using "${seg.id}" as manifest key. Add it to segmentToSlideId to fix TTS lookup.`,
+      );
+    }
+  }
+
+  if (validationErrors.length > 0) {
+    console.error("\n❌ Validation errors:\n");
+    for (const err of validationErrors) {
+      console.error(`  • ${err}`);
+    }
+    console.error(
+      "\nFix these in:\n" +
+      "  - packages/web/src/lib/demo-script.ts (SEGMENTS / PLAYLISTS)\n" +
+      "  - packages/web/src/lib/demo-tts.ts (segmentToSlideId)\n",
+    );
+    process.exit(1);
+  }
 
   const manifest = loadManifest();
   let generated = 0;
@@ -308,6 +325,39 @@ async function main() {
 
   if (generated > 0) {
     console.log(`💡 ${generated} audio file(s) updated. Commit public/audio/narration/ to persist.\n`);
+  }
+
+  // ── Post-generation validation ──────────────────────────────────────
+  const postErrors: string[] = [];
+  for (const seg of segments) {
+    if (!seg.narration?.trim()) continue;
+    const manifestKey = segmentToSlideId[seg.id] ?? seg.id;
+    const entry = manifest[manifestKey];
+    if (!entry) {
+      postErrors.push(`Segment "${seg.id}" → manifest key "${manifestKey}" NOT in manifest`);
+      continue;
+    }
+    const mp3Path = join(OUTPUT_DIR, entry.file);
+    if (!existsSync(mp3Path)) {
+      postErrors.push(`Segment "${seg.id}" → file "${entry.file}" does NOT exist on disk`);
+    }
+    const expectedHash = hashText(seg.narration);
+    if (entry.hash !== expectedHash) {
+      postErrors.push(
+        `Segment "${seg.id}" → hash mismatch (manifest: ${entry.hash}, text: ${expectedHash}). ` +
+        `Audio is stale. Re-run this script.`,
+      );
+    }
+  }
+
+  if (postErrors.length > 0) {
+    console.error("⚠️  Post-generation warnings:\n");
+    for (const err of postErrors) {
+      console.error(`  • ${err}`);
+    }
+    console.error(
+      "\nTo fix: ensure segmentToSlideId in demo-tts.ts matches the manifest keys.\n",
+    );
   }
 }
 
