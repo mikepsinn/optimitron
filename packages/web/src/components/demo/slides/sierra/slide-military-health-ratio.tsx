@@ -42,7 +42,7 @@ export function SlideMilitaryHealthRatio() {
   return (
     <SierraSlideWrapper act={1} className="text-red-400">
       <div className="font-pixel text-2xl md:text-4xl text-zinc-200 text-center mb-6">
-        Your government spends ${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} on orphan manufacturing for every $1 they spend on testing which medicines work.
+        Your governments spend ${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} on orphan manufacturing for every $1 they spend on testing which medicines work.
       </div>
 
       <div className="w-full max-w-[1700px] mx-auto space-y-8">

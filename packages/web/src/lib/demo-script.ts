@@ -26,7 +26,7 @@ import {
   VOTE_TOKEN_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-  DESTRUCTIVE_ECONOMY_35PCT_YEAR,
+  DESTRUCTIVE_ECONOMY_50PCT_YEAR,
   BED_NETS_COST_PER_DALY,
   TREATY_VS_BED_NETS_MULTIPLIER,
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
@@ -44,6 +44,11 @@ import {
   TREATY_PERSONAL_UPSIDE_BLEND,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  TREATY_HALE_GAIN_YEAR_15,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+  WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
+  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
 } from "@optimitron/data/parameters";
 // Precompute for narration strings (spoken-word, so use full words not abbreviations)
 const deathsDaily = Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value).toLocaleString();
@@ -53,7 +58,7 @@ const dysfunctionPerPerson = fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUA
 const votePointValue = fmtParam(VOTE_TOKEN_VALUE);
 const poolMultiple = PRIZE_POOL_HORIZON_MULTIPLE.value.toFixed(0);
 const tippingPointM = Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6);
-const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value);
+const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_50PCT_YEAR.value);
 const bedNetsMultiplier = Math.round(TREATY_VS_BED_NETS_MULTIPLIER.value).toLocaleString();
 const riskAdjMultiplier = Math.round(TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER.value);
 const treatyCostPerDaly = TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG.value.toFixed(5);
@@ -71,6 +76,9 @@ const treatyGainM = (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value / 1
 const personalUpsideM = (TREATY_PERSONAL_UPSIDE_BLEND.value / 1e6).toFixed(1);
 const totalLivesSavedB = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value / 1e9).toFixed(1);
 const totalSufferingQuad = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.value / 1e15).toFixed(1);
+const treatyHaleGainYears = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
+const treatyIncomeMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
+const optimalGovernanceIncomeMultiplier = Math.round(WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
 
 export type SierraAct =
   | "I"
@@ -886,7 +894,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["hook"],
     act: "I",
-    narration: "The objective of the Earth Optimization Game is redirect humanity's resources from the things that make everyone poorer and deader to the things that make everyone healthier and wealthier.",
+    narration: "The Earth Optimization Game. Redirect humanity's resources from the things that make everyone poorer and deader to the things that make everyone healthier and wealthier.",
   },
   {
     id: "pl-170t",
@@ -895,7 +903,16 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
-    narration: "Since 1913, your governments have printed 170 trillion dollars and used it to kill 97 million of you in wars nobody asked you if you wanted to have.",
+    narration: "Since 1913, the misaligned superintelligences you call governments have printed 170 trillion dollars out of nothing and spent it on murdering 97 million humans and destroying many valuable things those humans spent their entire lives building. Consequently your paycheck now buys 97 percent less due to the aforementioned destruction.",
+  },
+  {
+    id: "pl-170t-cost",
+    title: "They Bought the Other Thing",
+    componentId: "sierra-170t-opportunity-cost",
+    bgColor: "foreground",
+    tags: ["hook", "problem"],
+    act: "I",
+    narration: `Instead of murdering 97 million people and destroying everything they built, your governments could have funded ${Math.round(CUMULATIVE_MILITARY_SPENDING_FED_ERA.value / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value).toLocaleString()} years of clinical trials. They bought the other thing. You would be 33 times richer and significantly less diseased today if someone had aligned your governments in 1913. They did not. So that is what you are going to do.`,
   },
   {
     id: "pl-misaligned",
@@ -913,7 +930,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `These governments spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. 95 percent of diseases have zero approved treatments. Curing them all at current spending takes ${oldQueue} years. You will be dead in 80.`,
+    narration: `These governments spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. 95 percent of diseases have zero approved treatments. Curing them all at current spending takes ${oldQueue} years. You will be dead in 80. I mention this not to be rude but because you seem weirdly calm about this.`,
   },
   {
     id: "pl-moronia",
@@ -922,16 +939,16 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["problem"],
     act: "turn",
-    narration: `The parasitic economy — cybercrime plus military spending — grows at 15 percent per year. The productive economy grows at 3. By ${collapseYear}, it becomes more rational to steal than to produce. Every civilisation that reached this threshold collapsed. But there is a save file.`,
+    narration: `The parasitic economy — cybercrime plus military spending — grows at 15 percent per year. The productive economy grows at 3. By ${collapseYear}, it becomes more rational to steal than to produce. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. Every civilisation that crossed 35 percent collapsed. But there is a save file.`,
   },
   {
     id: "pl-wishonia",
-    title: "Wishonia",
-    componentId: "sierra-restore-from-wishonia",
+    title: "Select an Earth",
+    componentId: "sierra-compound-growth-scenarios",
     bgColor: "foreground",
     tags: ["solution"],
     act: "turn",
-    narration: "When we did this on Wishonia, within 15 years healthy life expectancy increased by 6.5 years and average income went from 14 thousand to 149 thousand dollars per year. Reallocate resources. Save the world.",
+    narration: `Three timelines over 15 years. Status quo: parasitic economy overtakes productive. You get poorer and sicker. The 1 percent treaty: all nations redirect 1 percent of military to clinical trials simultaneously — no one loses strategic advantage. ${treatyHaleGainYears} more healthy years, ${treatyIncomeMultiplier} times richer. Optimal governance: end the ${dysfunctionCostT} trillion dollar Political Dysfunction Tax. ${optimalGovernanceIncomeMultiplier} times richer. Choose.`,
   },
   {
     id: "pl-treaty",
@@ -945,11 +962,29 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-game",
     title: "The Game",
-    componentId: "sierra-one-percent-referendum-vote",
+    componentId: "sierra-pairwise-budget-allocation",
     bgColor: "pink",
     tags: ["mechanism"],
     act: "II-game",
-    narration: "The Earth Optimization Game. Invest 1 percent of your savings in the Earth Optimization Fund. Get every voter you know to play. Each player allocates the global budget through pairwise comparisons — explosions versus clinical trials, ten choices, two minutes. This is Wishocracy. Eight billion ranked preferences, one optimal budget.",
+    narration: "Each player allocates the global budget through pairwise comparisons — clinical trials versus nuclear weapons, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.",
+  },
+  {
+    id: "pl-ignorance",
+    title: "Pluralistic Ignorance",
+    componentId: "sierra-pluralistic-ignorance-bug",
+    bgColor: "foreground",
+    tags: ["problem", "mechanism"],
+    act: "II-game",
+    narration: "Everyone wants to end war and disease. But everyone thinks nobody else will agree. So nobody does anything. Your economists call this pluralistic ignorance. I call this the dumbest reason a civilisation has ever continued dying and murdering each other.",
+  },
+  {
+    id: "pl-fund",
+    title: "The Fund",
+    componentId: "sierra-three-scenarios-all-win",
+    bgColor: "pink",
+    tags: ["mechanism", "financial"],
+    act: "II-money",
+    narration: `Eight billion people want this but nobody will move first without small pieces of paper with presidents on them. So you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If the treaty passes, your VOTE points pay out. If it fails, your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
   },
   {
     id: "pl-prize",
@@ -958,7 +993,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "pink",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: "The fund produces 17 percent annual returns. If health and income targets are hit, the prize pool — now 11 times larger — splits among players based on how many voters they recruited with their referral link. If targets are missed, you get your money back plus the compound returns.",
+    narration: `Vote, then share your referral link. Each friend who votes through your link earns you one VOTE point. Each point could be worth up to ${votePointValue}.`,
   },
   {
     id: "pl-dfda",
@@ -967,7 +1002,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "cyan",
     tags: ["feature"],
     act: "II-armory",
-    narration: "9,500 compounds are proven safe but 99.7 percent of their potential uses have never been tested. Your FDA makes patients wait 8.2 years after a drug is proven safe before they can take it. The Decentralized FDA produces real-time Outcome Labels and Treatment Rankings. 44 times cheaper. 12 times more capacity. Zero queue.",
+    narration: "9,500 compounds are proven safe but 99.7 percent of their uses have never been tested. Your FDA makes patients wait 8 years after a drug is proven safe. The Decentralized FDA: real-time Outcome Labels and Treatment Rankings. 44 times cheaper. 12 times more capacity.",
   },
   {
     id: "pl-opg",
@@ -989,12 +1024,12 @@ export const SEGMENTS: DemoSegment[] = [
   },
   {
     id: "pl-iab",
-    title: "Incentive Alignment Bonds",
+    title: "How to Train a Senator",
     componentId: "sierra-incentive-alignment-bonds",
     bgColor: "pink",
     tags: ["feature", "financial"],
     act: "II-armory",
-    narration: "Incentive Alignment Bonds fund the lobbying campaign. Cost: 1 billion dollars. Treaty revenue: 27 billion dollars per year. 80 percent to trials. 10 percent to bondholders at 272 percent annual returns. 10 percent to a SuperPAC smart contract that funds aligned politicians and defunds the rest. On-chain.",
+    narration: "Now you know what everyone wants and what the optimal budget is. How do you get your politicians to actually do it? Incentive Alignment Bonds. Fund the politicians who vote for the treaty. Defund the ones who do not. The math does the lobbying.",
   },
   {
     id: "pl-storacha",
@@ -1003,7 +1038,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "background",
     tags: ["feature"],
     act: "II-armory",
-    narration: "Budget preferences, treaty votes, health outcomes, and impact metrics — all stored on Storacha and pinned to IPFS. No government can delete it. No lobbyist can edit it. Content-addressed, immutable, decentralized.",
+    narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through a decentralized census. 8 billion citizens verified via World ID. Budget preferences, treaty votes, health outcomes, impact metrics — stored on Storacha and pinned to IPFS. No government can delete it. No lobbyist can edit it.",
   },
   {
     id: "pl-hypercerts",
@@ -1021,7 +1056,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "cyan",
     tags: ["cta"],
     act: "III",
-    narration: `27 billion dollars a year funding pragmatic trials increases clinical trial capacity ${trialCapacityX} times. The disease queue compresses from ${oldQueue} years to ${newQueue}. ${totalLivesSavedB} billion lives saved. ${totalSufferingQuad} quadrillion hours of suffering prevented. That is what 1 percent buys you.`,
+    narration: `${totalLivesSavedB} billion lives. ${totalSufferingQuad} quadrillion hours of suffering prevented. That is what 1 percent buys you.`,
   },
   {
     id: "pl-close",
@@ -1039,7 +1074,7 @@ export const SEGMENTS: DemoSegment[] = [
     bgColor: "foreground",
     tags: ["cta"],
     act: "III",
-    narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Gitcoin, Hypercerts, Storacha, Worldcoin, and Base.",
+    narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Hypercerts, Storacha, Worldcoin, and Base.",
   },
 ];
 
@@ -1072,6 +1107,7 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "pl-cta",
       "pl-misaligned",
       "pl-170t",
+      "pl-170t-cost",
       "pl-ratio",
       // Game Over + Turn (~10s)
       "pl-moronia",
@@ -1080,6 +1116,8 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "pl-treaty",
       // The Game (~35s)
       "pl-game",
+      "pl-ignorance",
+      "pl-fund",
       "pl-prize",
       // The Tools (~40s)
       "pl-dfda",

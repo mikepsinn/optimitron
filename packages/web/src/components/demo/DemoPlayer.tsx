@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   type DemoSegment,
@@ -16,11 +16,26 @@ import { useSierraTransition } from "./SierraTransition";
 // Wishonia character with lip-sync support
 import { WishoniaCharacter } from "@optimitron/wishonia-widget";
 
+// Preload common sprites on module load to avoid cancelled request churn
+const SPRITE_PATH = "/sprites/wishonia/";
+const PRELOAD_SPRITES = [
+  "neutral-small", "neutral-open", "neutral-closed", "neutral-frown",
+  "happy-small", "happy-open", "happy-closed",
+  "body-idle", "body-presenting",
+  "blink-smile",
+];
+if (typeof window !== "undefined") {
+  PRELOAD_SPRITES.forEach((name) => {
+    const img = new Image();
+    img.src = `${SPRITE_PATH}${name}.png`;
+  });
+}
+
 function WishoniaPresenter({ analyserNode }: { analyserNode: AnalyserNode | null }) {
   return (
     <WishoniaCharacter
       size={140}
-      spritePath="/sprites/wishonia/"
+      spritePath={SPRITE_PATH}
       spriteFormat="png"
       analyserNode={analyserNode}
     />
@@ -98,6 +113,12 @@ function DemoPlayerInner({
   const [forceLive, setForceLive] = useState(false);
   const forceLiveRef = useRef(forceLive);
   useEffect(() => { forceLiveRef.current = forceLive; }, [forceLive]);
+
+  // Recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordChunksRef = useRef<Blob[]>([]);
+  const displayStreamRef = useRef<MediaStream | null>(null);
   const [subtitle, setSubtitle] = useState(
     () => slides[0]?.narration ?? "",
   );
@@ -150,6 +171,13 @@ function DemoPlayerInner({
               setCurrentIndex(index + 1);
             } else {
               setIsPlaying(false);
+              // Auto-stop recording on last slide
+              if (mediaRecorderRef.current) {
+                mediaRecorderRef.current.stop();
+                mediaRecorderRef.current = null;
+                setIsRecording(false);
+                document.exitFullscreen?.().catch(() => {});
+              }
             }
           };
           // Final check before playing
@@ -231,6 +259,83 @@ function DemoPlayerInner({
     return () => window.removeEventListener("keydown", handler);
   }, [currentIndex, stopAudio, slides.length]);
 
+  // ── Recording via getDisplayMedia ──────────────────────────────────────
+  async function startRecording() {
+    try {
+      // Rewind to first slide and wait for it to render
+      stopAudio();
+      setCurrentIndex(0);
+      setIsMuted(false);
+      setIsPlaying(false);
+      await new Promise((r) => setTimeout(r, 1000));
+
+      // Request fullscreen for consistent 16:9 capture
+      await containerRef.current?.requestFullscreen?.().catch(() => {});
+      await new Promise((r) => setTimeout(r, 500));
+
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 },
+        },
+        audio: true,
+        // @ts-expect-error -- preferCurrentTab is Chrome 94+ only
+        preferCurrentTab: true,
+      });
+
+      const recorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
+          ? "video/webm;codecs=vp9,opus"
+          : "video/webm",
+      });
+
+      recordChunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(recordChunksRef.current, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `optimitron-demo-${new Date().toISOString().slice(0, 10)}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+        displayStreamRef.current?.getTracks().forEach((t) => t.stop());
+        displayStreamRef.current = null;
+      };
+
+      // If user stops sharing, stop recording
+      stream.getVideoTracks()[0]?.addEventListener("ended", () => {
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.stop();
+          mediaRecorderRef.current = null;
+          setIsRecording(false);
+          setIsPlaying(false);
+        }
+      });
+
+      displayStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      recorder.start(1000);
+      setIsRecording(true);
+
+      // Start playback
+      setIsPlaying(true);
+    } catch {
+      // User cancelled the share dialog
+    }
+  }
+
+  function stopRecording() {
+    mediaRecorderRef.current?.stop();
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+    setIsPlaying(false);
+    document.exitFullscreen?.().catch(() => {});
+  }
+
   const goTo = (index: number) => {
     stopAudio();
     setCurrentIndex(index);
@@ -245,7 +350,7 @@ function DemoPlayerInner({
 
   // Build slide content
   const slideContent = (
-    <div className={`absolute inset-0 ${bgClass}`}>
+    <div className="absolute inset-0 bg-foreground">
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.id}
@@ -253,9 +358,11 @@ function DemoPlayerInner({
           initial={reduced ? false : "initial"}
           animate={reduced ? { opacity: 1 } : "animate"}
           exit={reduced ? { opacity: 1 } : "exit"}
-          className="absolute inset-0 overflow-y-auto"
+          className={`absolute inset-0 overflow-y-auto ${bgClass}`}
         >
-          <SlideComponent />
+          <Suspense fallback={<div className={`absolute inset-0 ${bgClass}`} />}>
+            <SlideComponent />
+          </Suspense>
         </motion.div>
       </AnimatePresence>
 
@@ -307,11 +414,13 @@ function DemoPlayerInner({
           isPlaying={isPlaying}
           isMuted={isMuted}
           forceLive={forceLive}
+          isRecording={isRecording}
           onPrev={() => goTo(Math.max(0, currentIndex - 1))}
           onNext={() => goTo(Math.min(slides.length - 1, currentIndex + 1))}
           onTogglePlay={() => setIsPlaying((p) => !p)}
           onToggleMute={() => setIsMuted((m) => !m)}
           onToggleForceLive={() => setForceLive((f) => !f)}
+          onToggleRecord={() => isRecording ? stopRecording() : startRecording()}
           onGoTo={goTo}
         />
       </div>

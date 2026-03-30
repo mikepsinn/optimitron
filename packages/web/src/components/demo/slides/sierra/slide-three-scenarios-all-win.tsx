@@ -2,106 +2,70 @@
 
 import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
-import {
-  TREATY_PERSONAL_UPSIDE_BLEND,
-  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-} from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
-const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 100_000) * 100_000;
-const annualDysfunctionTax = Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value / 100) * 100;
-
-const contribution = 100;
-const vcReturn15yr = Math.round(contribution * GAME_PARAMS.prizePoolFallbackMultiple);
-const indexReturn15yr = Math.round(contribution * Math.pow(1.07, 15)); // index fund comparison
+const deposit = 100;
+const vcReturn = Math.round(deposit * GAME_PARAMS.prizePoolFallbackMultiple);
+const indexReturn = Math.round(deposit * Math.pow(1.07, 15));
+const voteValue = formatCurrency(GAME_PARAMS.valuePerVotePoint);
 
 export function SlideThreeScenariosAllWin() {
   return (
-    <SierraSlideWrapper act={2} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-5 max-w-[1700px] mx-auto">
-        {/* Title */}
-        <h1 className="font-pixel text-xl md:text-3xl text-zinc-300 text-center">
-          📊 WORKED EXAMPLE — $100 IN THE FUND
-        </h1>
+    <SierraSlideWrapper act={2} className="text-brutal-cyan">
+      <div className="flex flex-col items-center justify-center gap-8 max-w-[1500px] mx-auto">
+        <div className="text-center">
+          <div className="font-pixel text-2xl md:text-3xl text-muted-foreground mb-2">
+            HOW TO BRIBE HUMANITY INTO ACTUALLY DOING THIS
+          </div>
+          <h1 className="font-pixel text-2xl md:text-4xl text-brutal-yellow">
+            THE EARTH OPTIMIZATION PRIZE FUND
+          </h1>
+        </div>
 
-        {/* Three Boxes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-          {/* Box 1: Treaty Passes */}
-          <div className="bg-emerald-500/15 border-2 border-emerald-500/50 rounded-lg p-4 space-y-3">
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center">
-              ✅ TREATY PASSES
+        <div className="grid grid-cols-3 gap-6 w-full">
+          {/* Treaty passes */}
+          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 text-center">
+            <div className="text-4xl mb-3">🌍</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan mb-4">
+              TREATY PASSES
             </div>
-            <div className="space-y-2 font-pixel text-lg md:text-xl text-zinc-200">
-              <div>Your $100 grows at 17%/yr</div>
-              <div>
-                Plus VOTE point:{" "}
-                <span className="text-emerald-400">
-                  +{formatCurrency(GAME_PARAMS.valuePerVotePoint)}
-                </span>
-              </div>
-              <div>
-                Lifetime income gain:{" "}
-                <span className="text-emerald-400">
-                  +{formatCurrency(personalLifetimeLoss)}
-                </span>
-              </div>
+            <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
+              {voteValue}+
             </div>
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400 text-center pt-2 border-t border-emerald-500/20">
-              NET: +{formatCurrency(GAME_PARAMS.valuePerVotePoint + vcReturn15yr)}
+            <div className="font-pixel text-lg text-muted-foreground mt-2">
+              VOTE points + returns
             </div>
           </div>
 
-          {/* Box 2: Treaty Fails */}
-          <div className="bg-cyan-500/10 border-2 border-cyan-500/30 rounded-lg p-4 space-y-3">
-            <div className="font-pixel text-xl md:text-2xl text-cyan-400 text-center">
-              ✅ TREATY FAILS
+          {/* Treaty fails */}
+          <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-6 text-center">
+            <div className="text-4xl mb-3">📈</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow mb-4">
+              TREATY FAILS
             </div>
-            <div className="space-y-2 font-pixel text-lg md:text-xl text-zinc-200">
-              <div>VOTE points expire ($0)</div>
-              <div>
-                $100 at 17% → <span className="text-cyan-400">{formatCurrency(vcReturn15yr)}</span>
-              </div>
-              <div className="text-zinc-400">
-                (vs {formatCurrency(indexReturn15yr)} in index funds)
-              </div>
+            <div className="font-pixel text-4xl md:text-6xl text-brutal-yellow">
+              ${vcReturn.toLocaleString()}
             </div>
-            <div className="font-pixel text-xl md:text-2xl text-cyan-400 text-center pt-2 border-t border-cyan-500/20">
-              NET: +{formatCurrency(vcReturn15yr - contribution)}
-            </div>
-            <div className="font-pixel text-lg text-zinc-400 text-center">
-              Still beats your 401k by {((vcReturn15yr / indexReturn15yr - 1) * 100).toFixed(0)}%
+            <div className="font-pixel text-lg text-muted-foreground mt-2">
+              17%/yr beats your 401k
             </div>
           </div>
 
-          {/* Box 3: Did Not Play */}
-          <div className="bg-red-500/10 border-2 border-red-500/20 rounded-lg p-4 space-y-3 opacity-80">
-            <div className="font-pixel text-xl md:text-2xl text-red-400 text-center">
-              ❌ DID NOT PLAY
+          {/* Did not play */}
+          <div className="bg-muted border-2 border-brutal-red rounded-lg p-6 text-center opacity-60">
+            <div className="text-4xl mb-3">😐</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-red mb-4">
+              DID NOT PLAY
             </div>
-            <div className="space-y-2 font-pixel text-lg md:text-xl text-zinc-300">
-              <div>$100 stays in index funds</div>
-              <div>
-                Grows to{" "}
-                <span className="text-zinc-400">{formatCurrency(indexReturn15yr)}</span>
-              </div>
-              <div>
-                Still paying{" "}
-                {formatCurrency(annualDysfunctionTax)}/yr dysfunction tax
-              </div>
+            <div className="font-pixel text-4xl md:text-6xl text-zinc-400">
+              ${indexReturn}
             </div>
-            <div className="font-pixel text-xl md:text-2xl text-red-400 text-center pt-2 border-t border-red-500/10">
-              NET: -{formatCurrency(personalLifetimeLoss)}
-            </div>
-            <div className="font-pixel text-lg text-zinc-400 text-center">
-              (opportunity cost of inaction)
+            <div className="font-pixel text-lg text-muted-foreground mt-2">
+              index fund at 7%/yr
             </div>
           </div>
         </div>
 
-        {/* Bottom Line */}
-        <p className="font-pixel text-xl md:text-2xl text-zinc-200 text-center italic">
-          Two out of three outcomes are wins. The third one is your fault.
-        </p>
       </div>
     </SierraSlideWrapper>
   );

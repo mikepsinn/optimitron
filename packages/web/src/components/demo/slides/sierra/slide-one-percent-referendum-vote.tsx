@@ -13,7 +13,6 @@ export function SlideOnePercentReferendumVote() {
   const [phase, setPhase] = useState(0);
   const [sliderValue, setSliderValue] = useState(50); // starts at 50/50
   const [animating, setAnimating] = useState(false);
-  const [voted, setVoted] = useState(false);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -31,9 +30,6 @@ export function SlideOnePercentReferendumVote() {
     timers.push(setTimeout(() => {
       addInventoryItem(INVENTORY_ITEMS[2]);
     }, 3000));
-
-    // Click YES after slider settles (~9s)
-    timers.push(setTimeout(() => setVoted(true), 9000));
 
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
@@ -101,7 +97,7 @@ export function SlideOnePercentReferendumVote() {
           WISHOCRATIC PAIRWISE ALLOCATION
         </h1>
         <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
-          How should humanity split its budget?
+          How should your governments allocate their resources?
         </div>
       </div>
 
@@ -161,50 +157,9 @@ export function SlideOnePercentReferendumVote() {
             </div>
 
             {/* Labels under bar */}
-            <div className="flex justify-between mt-2">
-              <span className="font-pixel text-lg text-red-400">💣 EXPLOSIONS</span>
-              <span className="font-pixel text-lg text-emerald-400">🧪 CURES</span>
-            </div>
           </div>
         )}
 
-        {/* The question */}
-        {phase >= 3 && (
-          <div className="animate-fade-in">
-            <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-5">
-              <div className="font-pixel text-2xl md:text-3xl text-emerald-400 text-center mb-4">
-                THE REFERENDUM
-              </div>
-
-              <div className="space-y-3">
-                <div className={`p-3 border-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                  voted
-                    ? "border-emerald-400 bg-emerald-500/20 scale-[1.02]"
-                    : "border-brutal-cyan bg-muted"
-                }`}>
-                  <span className={`text-3xl transition-transform duration-200 ${
-                    voted ? "scale-75" : "animate-pulse"
-                  }`}>👉</span>
-                  <div className="w-6 h-6 border-2 border-brutal-cyan rounded flex items-center justify-center">
-                    {voted && <div className="w-4 h-4 bg-emerald-400 rounded-sm" />}
-                  </div>
-                  <div className={`font-pixel text-xl md:text-2xl ${voted ? "text-emerald-400" : "text-brutal-cyan"}`}>
-                    YES — Redirect 1% from military to clinical trials
-                  </div>
-                  {voted && <span className="text-2xl ml-auto">✅</span>}
-                </div>
-
-                <div className="p-3 border border-zinc-700 rounded flex items-center gap-3 opacity-40">
-                  <div className="w-8" />
-                  <div className="w-6 h-6 border-2 border-zinc-600 rounded" />
-                  <div className="font-pixel text-xl md:text-2xl text-zinc-200">
-                    NO — Keep manufacturing orphans
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
 

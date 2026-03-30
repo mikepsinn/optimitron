@@ -61,15 +61,6 @@ export function SlideMilitaryWaste170t() {
           <span className={`${line} ${dim}`}> LESS DUE TO THE AFOREMENTIONED DESTRUCTION</span>
         </div>
 
-        {/* Line 4: Punchline */}
-        <div className={`${fade(4)} pl-4`}>
-          <span className={`${line} text-emerald-400`}>
-            YOU WOULD BE </span>
-          <span className={`${big} text-emerald-400`}>{richerMultiple}x</span>
-          <span className={`${line} text-emerald-400`}>
-            {" "}RICHER TODAY IF SOMEONE HAD PROPERLY ALIGNED YOUR GOVERNMENTS WITH HUMANITY IN 1913. THEY DIDN&apos;T. SO THAT&apos;S WHAT YOU&apos;RE GOING TO DO.
-          </span>
-        </div>
       </div>
     </SierraSlideWrapper>
   );

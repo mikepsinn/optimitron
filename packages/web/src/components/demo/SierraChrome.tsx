@@ -5,43 +5,55 @@ import { motion, AnimatePresence, animate } from "framer-motion";
 import { useSierraGame } from "./SierraGameContext";
 import { DEATHS_PER_SECOND } from "@/data/collapse-constants";
 import { playCoinSound } from "@/lib/wish-sound";
+import {
+  GLOBAL_HALE_CURRENT,
+  TREATY_PROJECTED_HALE_YEAR_15,
+  GLOBAL_AVG_INCOME_2025,
+  TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
+} from "@optimitron/data/parameters";
 
 const ARCADE = "font-[family-name:var(--font-arcade)]";
 const TYPEWRITER_SPEED = 30; // chars per second
 
+const haleCurrent = GLOBAL_HALE_CURRENT.value.toFixed(1);
+const haleTarget = TREATY_PROJECTED_HALE_YEAR_15.value.toFixed(1);
+const incomeCurrent = `$${Math.round(GLOBAL_AVG_INCOME_2025.value / 1000)}K`;
+const incomeTarget = `$${Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value / 1000)}K`;
+
 // ---------------------------------------------------------------------------
-// Score Counter (top-left)
+// Quest Metrics (top-left) — HALE + Income with current → target
 // ---------------------------------------------------------------------------
 
-function ScoreCounter() {
-  const { state } = useSierraGame();
-  const ref = useRef<HTMLSpanElement>(null);
-  const prevScore = useRef(0);
-
-  useEffect(() => {
-    if (!ref.current || prevScore.current === state.score) return;
-    const controls = animate(prevScore.current, state.score, {
-      duration: 0.8,
-      ease: "easeOut",
-      onUpdate(v) {
-        if (ref.current)
-          ref.current.textContent = Math.floor(v).toLocaleString();
-      },
-    });
-    prevScore.current = state.score;
-    return () => controls.stop();
-  }, [state.score]);
+function QuestMetrics() {
+  const haleProgress = (GLOBAL_HALE_CURRENT.value / TREATY_PROJECTED_HALE_YEAR_15.value) * 100;
+  const incomeProgress = (GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value) * 100;
 
   return (
-    <div
-      className={`${ARCADE} text-xs sm:text-sm text-brutal-cyan px-3 py-1.5`}
-    >
-      <span className="text-muted-foreground">SCORE: </span>
-      <span ref={ref}>0</span>
-      <span className="text-muted-foreground">
-        {" "}
-        of {state.maxScore.toLocaleString()}
-      </span>
+    <div className="flex gap-3 px-2 py-1">
+      {/* HALE meter */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm">❤️</span>
+        <div className="flex flex-col gap-0.5">
+          <span className={`${ARCADE} text-[10px] text-brutal-cyan`}>
+            HALE {haleCurrent}→{haleTarget}
+          </span>
+          <div className="w-24 h-2 bg-zinc-800 border border-brutal-cyan/50 rounded-sm overflow-hidden">
+            <div className="h-full bg-brutal-cyan" style={{ width: `${haleProgress}%` }} />
+          </div>
+        </div>
+      </div>
+      {/* Income meter */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm">💰</span>
+        <div className="flex flex-col gap-0.5">
+          <span className={`${ARCADE} text-[10px] text-brutal-yellow`}>
+            INCOME {incomeCurrent}→{incomeTarget}
+          </span>
+          <div className="w-24 h-2 bg-zinc-800 border border-brutal-yellow/50 rounded-sm overflow-hidden">
+            <div className="h-full bg-brutal-yellow" style={{ width: `${incomeProgress}%` }} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -69,12 +81,17 @@ function DeathTicker() {
   }, []);
 
   return (
-    <div
-      className={`${ARCADE} text-xs sm:text-sm text-brutal-red px-3 py-1.5`}
-    >
-      <span className="mr-1">☠</span>
-      <span ref={ref}>0</span>
-      <span className="text-muted-foreground ml-1">HUMANS TERMINATED THIS SESSION</span>
+    <div className="flex items-center gap-1.5 px-2 py-1">
+      <span className="text-sm">💀</span>
+      <div className="flex flex-col gap-0.5">
+        <span className={`${ARCADE} text-[10px] text-brutal-red`}>
+          HUMANS LOST
+        </span>
+        <div className="flex items-center gap-1.5">
+          <span className={`${ARCADE} text-[10px] text-brutal-red tabular-nums`} ref={ref}>0</span>
+          <span className={`${ARCADE} text-[8px] text-muted-foreground`}>THIS SESSION</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -234,7 +251,7 @@ function VerbBar() {
         <button
           key={v.mode}
           onClick={() => dispatch({ type: "SET_CURSOR", mode: v.mode })}
-          className={`${ARCADE} text-[8px] sm:text-[10px] px-2 py-1 border-2 border-primary transition-colors ${
+          className={`${ARCADE} text-[10px] sm:text-[10px] px-2 py-1 border-2 border-primary transition-colors ${
             state.cursorMode === v.mode
               ? "bg-brutal-pink text-brutal-pink-foreground"
               : "bg-foreground text-muted-foreground hover:bg-muted"
@@ -316,7 +333,7 @@ export function SierraChrome({ children }: SierraChromeProps) {
       {/* Top bar: Score + Death ticker */}
       <div className="absolute top-0 left-0 right-0 z-30 flex justify-between items-start p-2 pointer-events-none">
         <div className="pointer-events-auto">
-          <ScoreCounter />
+          <QuestMetrics />
         </div>
         <div className="pointer-events-auto">
           <DeathTicker />

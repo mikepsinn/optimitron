@@ -2,61 +2,80 @@
 
 import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { formatCurrency } from "@/lib/demo/formatters";
+import {
+  GLOBAL_AVG_INCOME_2025,
+  TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
+  WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
+  DESTRUCTIVE_ECONOMY_50PCT_YEAR,
+  TREATY_HALE_GAIN_YEAR_15,
+  WISHONIA_HALE_GAIN_YEAR_15,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+} from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 
-// From prize-docs.md — per-person lifetime wealth trajectories (15-year horizon)
-// Optimal governance: Switzerland-level outcomes applied globally
-// 1% Treaty: treaty objectives met, $27B/yr redirected to clinical trials
-// Do nothing: status quo 2.5% growth trajectory
+const statusQuoIncome = Math.round(GLOBAL_AVG_INCOME_2025.value);
+const treatyIncome = Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value);
+const optimalIncome = Math.round(WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value);
+const globalDysfunctionCostT = Math.round(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value / 1e12);
+const collapseYearsLeft = Math.round(DESTRUCTIVE_ECONOMY_50PCT_YEAR.value) - new Date().getFullYear();
+const treatyHaleGain = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
+const wishoniaHaleGain = Math.round(WISHONIA_HALE_GAIN_YEAR_15.value * 10) / 10;
+const trialCapacityX = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
+const livesSavedB = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value / 1e9).toFixed(1);
 
-const BARS = [
+const DYSFUNCTION_TAX_URL = "https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html";
+
+interface BarData {
+  label: string;
+  detail: string;
+  value: number;
+  widthPct: number;
+  colorBar: string;
+  colorText: string;
+}
+
+const BARS: BarData[] = [
   {
-    label: "🌍 OPTIMAL GOVERNANCE",
-    sublabel: "Switzerland-level outcomes for all",
-    value: 528_000,
-    widthPct: 100,
-    colorBar: "bg-amber-400",
-    colorText: "text-amber-400",
-  },
-  {
-    label: "🧪 1% TREATY TRAJECTORY",
-    sublabel: "$27B/yr → clinical trials",
-    value: 149_000,
-    widthPct: 28,
-    colorBar: "bg-emerald-400",
-    colorText: "text-emerald-400",
-  },
-  {
-    label: "😐 DO NOTHING",
-    sublabel: "Status quo trajectory",
-    value: 20_100,
-    widthPct: 3.8,
+    label: "😐 STATUS QUO",
+    detail: `Parasitic economy overtakes productive in ${collapseYearsLeft} years`,
+    value: statusQuoIncome,
+    widthPct: (statusQuoIncome / optimalIncome) * 100,
     colorBar: "bg-zinc-500",
     colorText: "text-zinc-200",
   },
-] as const;
+  {
+    label: "🧪 1% TREATY",
+    detail: `+${treatyHaleGain} healthy yrs · ${trialCapacityX}× trial capacity · ${livesSavedB}B lives saved`,
+    value: treatyIncome,
+    widthPct: (treatyIncome / optimalIncome) * 100,
+    colorBar: "bg-brutal-cyan",
+    colorText: "text-brutal-cyan",
+  },
+  {
+    label: "🌍 OPTIMAL GOVERNANCE",
+    detail: `+${wishoniaHaleGain} healthy yrs`,
+    value: optimalIncome,
+    widthPct: 100,
+    colorBar: "bg-brutal-yellow",
+    colorText: "text-brutal-yellow",
+  },
+];
 
 export function SlideCompoundGrowthScenarios() {
   const [phase, setPhase] = useState(0);
   const [barsVisible, setBarsVisible] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 500);
-
-    setTimeout(() => setPhase(2), 1500);
-    const b1 = setTimeout(() => setBarsVisible(1), 1500);
-    const b2 = setTimeout(() => setBarsVisible(2), 1900);
-    const b3 = setTimeout(() => setBarsVisible(3), 2300);
-
-    const t3 = setTimeout(() => setPhase(3), 3800);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t3);
-      clearTimeout(b1);
-      clearTimeout(b2);
-      clearTimeout(b3);
-    };
+    const timers = [
+      setTimeout(() => setPhase(1), 500),
+      setTimeout(() => setPhase(2), 1500),
+      setTimeout(() => setBarsVisible(1), 2000),
+      setTimeout(() => setBarsVisible(2), 5000),
+      setTimeout(() => setBarsVisible(3), 8000),
+    ];
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
@@ -71,13 +90,14 @@ export function SlideCompoundGrowthScenarios() {
 
         {/* Bars */}
         {phase >= 2 && (
-          <div className="space-y-3 slide-fade-in">
+          <div className="space-y-4">
             {BARS.map((bar, i) => {
               const visible = barsVisible > i;
+              const isOptimal = i === 2;
               return (
                 <div
                   key={bar.label}
-                  className={`bg-zinc-900 border border-zinc-700 rounded p-2 md:p-3 ${visible ? "slide-fade-in" : "opacity-0"}`}
+                  className={`bg-muted border-2 border-primary rounded p-3 md:p-4 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
                 >
                   <div className="flex items-start justify-between mb-1">
                     <div>
@@ -85,11 +105,21 @@ export function SlideCompoundGrowthScenarios() {
                         {bar.label}
                       </div>
                       <div className="font-terminal text-lg md:text-xl text-zinc-400">
-                        {bar.sublabel}
+                        {isOptimal ? (
+                          <>
+                            End the ${globalDysfunctionCostT}T/yr{" "}
+                            <a href={DYSFUNCTION_TAX_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-brutal-yellow">
+                              Political Dysfunction Tax
+                            </a>
+                            {" · "}+{wishoniaHaleGain} healthy yrs
+                          </>
+                        ) : bar.detail}
                       </div>
                     </div>
                     <span className={`font-pixel text-xl md:text-2xl ${bar.colorText} shrink-0 ml-2`}>
-                      {formatCurrency(bar.value)} / person
+                      <a href="https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        {formatCurrency(bar.value)} / person / yr
+                      </a>
                     </span>
                   </div>
                   <div className="h-6 md:h-8 bg-zinc-800 rounded overflow-hidden">
@@ -101,18 +131,6 @@ export function SlideCompoundGrowthScenarios() {
                 </div>
               );
             })}
-          </div>
-        )}
-
-        {/* Punchline */}
-        {phase >= 3 && (
-          <div className="bg-emerald-500/15 border-2 border-emerald-500/50 rounded-lg p-4 slide-fade-in">
-            <p className="font-pixel text-xl md:text-2xl text-emerald-400 text-center">
-              1% REALLOCATION → 7.4x MORE WEALTH PER PERSON
-            </p>
-            <p className="font-terminal text-xl md:text-2xl text-zinc-200 text-center mt-1">
-              $149K vs $20K. Same planet. Same people. Different slider position.
-            </p>
           </div>
         )}
       </div>

@@ -18,9 +18,9 @@ const PAIRS = [
     allocationA: 78,
   },
   {
-    a: US_WISHOCRATIC_ITEMS.ADDICTION_TREATMENT,
-    b: US_WISHOCRATIC_ITEMS.FOSSIL_FUEL_SUBSIDIES,
-    allocationA: 71,
+    a: US_WISHOCRATIC_ITEMS.UNIVERSAL_BASIC_INCOME,
+    b: US_WISHOCRATIC_ITEMS.CORPORATE_WELFARE,
+    allocationA: 74,
   },
 ];
 
@@ -88,11 +88,10 @@ export function SlidePairwiseBudgetAllocation() {
     <SierraSlideWrapper act={2} className="text-emerald-400">
       {/* Level header */}
       <div className="text-center mb-4">
-        <div className="font-pixel text-xl md:text-2xl text-emerald-400 mb-1">LEVEL 1</div>
-        <h1 className="font-pixel text-2xl md:text-4xl text-emerald-400">
-          PAIRWISE ALLOCATION
+        <h1 className="font-pixel text-2xl md:text-4xl text-brutal-cyan">
+          MAKE YOUR WISHOCRATIC ALLOCATION
         </h1>
-        <div className="font-terminal text-2xl md:text-4xl text-zinc-200 mt-2">
+        <div className="font-terminal text-xl md:text-2xl text-zinc-200 mt-2">
           Compare two priorities. Drag to split funding. Repeat.
         </div>
       </div>
@@ -100,7 +99,7 @@ export function SlidePairwiseBudgetAllocation() {
       <div className="w-full max-w-[1700px] mx-auto space-y-5">
         {/* Pairwise comparison slider */}
         {phase >= 2 && (
-          <div className="bg-black/40 border-2 border-emerald-500/30 rounded-lg p-6 animate-fade-in">
+          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-6 animate-fade-in">
             {/* Pair counter */}
             <div className="font-pixel text-lg md:text-xl text-zinc-400 text-center mb-4">
               COMPARISON {activePair + 1} OF {PAIRS.length}
@@ -132,17 +131,17 @@ export function SlidePairwiseBudgetAllocation() {
             </div>
 
             {/* Visual slider bar */}
-            <div className="relative h-10 rounded overflow-hidden border-2 border-zinc-700">
+            <div className="relative h-10 rounded overflow-hidden border-2 border-primary">
               <div
-                className="absolute inset-y-0 left-0 bg-emerald-500/60 transition-all duration-100"
+                className="absolute inset-y-0 left-0 bg-brutal-cyan transition-all duration-100"
                 style={{ width: `${allocationA}%` }}
               />
               <div
-                className="absolute inset-y-0 right-0 bg-red-500/60 transition-all duration-100"
+                className="absolute inset-y-0 right-0 bg-brutal-red transition-all duration-100"
                 style={{ width: `${allocationB}%` }}
               />
               <div
-                className="absolute inset-y-0 w-1 bg-white/80 transition-all duration-100"
+                className="absolute inset-y-0 w-1 bg-foreground transition-all duration-100"
                 style={{ left: `${allocationA}%`, transform: "translateX(-50%)" }}
               />
             </div>

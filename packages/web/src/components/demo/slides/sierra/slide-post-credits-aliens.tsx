@@ -14,10 +14,7 @@ const BUILT_WITH = [
   { name: "Storacha", logo: "/images/logos/storacha.svg" },
   { name: "Hypercerts", logo: "/images/logos/hypercerts.svg" },
   { name: "World ID", logo: "/images/logos/worldcoin.svg" },
-  { name: "Next.js", logo: "/images/logos/nextjs.svg" },
-  { name: "Solidity", logo: "/images/logos/solidity.svg" },
   { name: "Base", logo: "/images/logos/base.svg" },
-  { name: "Aave", logo: "/images/logos/aave.svg" },
 ];
 
 export function SlidePostCreditsAliens() {

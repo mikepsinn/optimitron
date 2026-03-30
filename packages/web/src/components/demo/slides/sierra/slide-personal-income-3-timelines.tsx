@@ -11,6 +11,7 @@ import {
   GLOBAL_HALE_CURRENT,
   GDP_BASELINE_GROWTH_RATE,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   TREATY_ANNUAL_FUNDING,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_CAGR_YEAR_20,
@@ -39,6 +40,7 @@ const treatyHaleGain = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
 const wishoniaHaleGain = Math.round(WISHONIA_HALE_GAIN_YEAR_15.value * 10) / 10;
 
 const annualDysfunctionTax = Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value / 100) * 100;
+const globalDysfunctionCost = Math.round(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value / 1e12);
 const treatyRedirect = formatCurrency(Math.round(TREATY_ANNUAL_FUNDING.value));
 const destructivePctGdp = Math.round(GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP.value * 100);
 const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_35PCT_YEAR.value);
@@ -80,7 +82,7 @@ interface EarthOption {
 
 const EARTHS: EarthOption[] = [
   {
-    label: "EARTH B",
+    label: "STATUS QUO",
     subtitle: "PARASITIC ECONOMY DEVOURS PRODUCTIVE ECONOMY",
     tag: "[LOADED]",
     borderColor: "border-red-600/60",
@@ -110,8 +112,8 @@ const EARTHS: EarthOption[] = [
     dysfunctionTax: `${treatyRedirect}/yr redirected`,
   },
   {
-    label: "EARTH A",
-    subtitle: "OPTIMAL GOVERNANCE",
+    label: "OPTIMAL GOVERNANCE",
+    subtitle: `END THE $${globalDysfunctionCost}T/YR POLITICAL DYSFUNCTION TAX`,
     tag: "",
     borderColor: "border-amber-500/60",
     bgColor: "bg-amber-500/10",

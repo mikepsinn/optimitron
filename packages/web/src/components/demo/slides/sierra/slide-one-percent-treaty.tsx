@@ -34,12 +34,12 @@ export function SlideOnePercentTreaty() {
     timers.push(setTimeout(() => {
       setFingerPhase("dragging");
 
-      // Sweep: explore around then settle on treaty target (~1.2%)
+      // Sweep: explore around then settle on treaty target
       const keyframes = [
-        { target: 3, speed: 0.04 },
-        { target: 0.5, speed: 0.03 },
-        { target: 2.5, speed: 0.03 },
-        { target: treatyTrialsPct, speed: 0.02 },
+        { target: 2, speed: 0.04 },
+        { target: 0.3, speed: 0.03 },
+        { target: 1.5, speed: 0.03 },
+        { target: treatyTrialsPct, speed: 0.015 },
       ];
       let step = 0;
 
@@ -153,9 +153,11 @@ export function SlideOnePercentTreaty() {
               </div>
               <div className="text-center p-4 bg-muted border-2 border-brutal-yellow rounded">
                 <div className="font-pixel text-xl text-muted-foreground mb-1">TIME TO CURE ALL DISEASES</div>
-                <div className="font-pixel text-4xl md:text-6xl">
-                  <span className="text-brutal-red line-through">{oldQueue} yrs</span>
-                  <span className="text-brutal-cyan ml-3">{newQueue} yrs</span>
+                <div className="font-pixel text-4xl md:text-6xl text-brutal-red line-through">
+                  {oldQueue} yrs
+                </div>
+                <div className="font-pixel text-4xl md:text-6xl text-brutal-cyan">
+                  {newQueue} yrs
                 </div>
               </div>
             </div>

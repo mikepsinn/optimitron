@@ -30,62 +30,75 @@ export function SlideDominantAssuranceContract() {
   }, []);
 
   return (
-    <SierraSlideWrapper act={2} className="text-emerald-400">
-      <div className="flex flex-col items-center justify-center gap-6 max-w-[1200px] mx-auto">
+    <SierraSlideWrapper act={2} className="text-brutal-cyan">
+      <div className="flex flex-col items-center justify-center gap-6 max-w-[1400px] mx-auto">
         <h1
-          className="font-pixel text-2xl md:text-4xl text-emerald-400 text-center transition-opacity duration-500"
+          className="font-pixel text-2xl md:text-4xl text-brutal-cyan text-center transition-opacity duration-500"
           style={{ opacity: phase >= 1 ? 1 : 0 }}
         >
-          THE EARTH OPTIMIZATION PRIZE FUND
+          VOTE → SHARE → EARN
         </h1>
 
-        {/* Flow: deposits → growth → value per vote */}
+        {/* Flow: vote → share link → earn VOTE points → value */}
         <div
-          className="flex items-center justify-center gap-4 md:gap-6 transition-opacity duration-500"
+          className="flex items-center justify-center gap-3 md:gap-6 transition-opacity duration-500"
           style={{ opacity: phase >= 2 ? 1 : 0 }}
         >
-          <div className="text-center">
-            <div className="font-pixel text-3xl md:text-5xl text-cyan-400">${depositT}T</div>
-            <div className="font-terminal text-lg md:text-xl text-zinc-400">1% of global savings</div>
+          <div className="text-center p-4 bg-muted border-2 border-brutal-cyan rounded">
+            <div className="text-4xl mb-2">🗳️</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan">VOTE</div>
+            <div className="font-terminal text-sm md:text-lg text-muted-foreground">10 pairwise choices</div>
           </div>
-          <div className="font-pixel text-2xl text-zinc-500">→</div>
-          <div className="text-center">
-            <div className="font-pixel text-3xl md:text-5xl text-emerald-400">${poolT}T</div>
-            <div className="font-terminal text-lg md:text-xl text-zinc-400">17%/yr across VC sector</div>
+          <div className="font-pixel text-2xl text-muted-foreground">→</div>
+          <div className="text-center p-4 bg-muted border-2 border-brutal-pink rounded">
+            <div className="text-4xl mb-2">🔗</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-pink">SHARE LINK</div>
+            <div className="font-terminal text-sm md:text-lg text-muted-foreground">Get friends to vote</div>
           </div>
-          <div className="font-pixel text-2xl text-zinc-500">→</div>
-          <div className="text-center">
-            <div className="font-pixel text-3xl md:text-5xl text-amber-400">{voteValue}</div>
-            <div className="font-terminal text-lg md:text-xl text-zinc-400">per vote</div>
+          <div className="font-pixel text-2xl text-muted-foreground">→</div>
+          <div className="text-center p-4 bg-muted border-2 border-brutal-yellow rounded">
+            <div className="text-4xl mb-2">🏆</div>
+            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow">EARN VOTE POINTS</div>
+            <div className="font-terminal text-sm md:text-lg text-muted-foreground">1 point per voter recruited</div>
           </div>
+        </div>
+
+        {/* VOTE point value */}
+        <div
+          className="text-center transition-opacity duration-500"
+          style={{ opacity: phase >= 3 ? 1 : 0 }}
+        >
+          <div className="font-pixel text-lg text-muted-foreground mb-1">EACH VOTE POINT COULD BE WORTH UP TO</div>
+          <div className="font-pixel text-5xl md:text-7xl text-brutal-yellow">{voteValue}</div>
+          <div className="font-pixel text-lg text-muted-foreground mt-1">if the fund receives 1% of global savings and targets are hit</div>
         </div>
 
         {/* Two outcomes */}
         <div
           className="grid grid-cols-2 gap-6 w-full transition-opacity duration-500"
-          style={{ opacity: phase >= 3 ? 1 : 0 }}
+          style={{ opacity: phase >= 4 ? 1 : 0 }}
         >
-          <div className="bg-emerald-500/10 border-2 border-emerald-500/40 rounded-lg p-5 text-center space-y-2">
+          <div className="bg-muted border-2 border-brutal-cyan rounded-lg p-5 text-center space-y-2">
             <div className="text-4xl">🌍</div>
-            <div className="font-pixel text-xl md:text-2xl text-emerald-400">TARGETS HIT</div>
-            <div className="font-terminal text-lg md:text-xl text-zinc-300">
-              Pool splits by votes recruited
+            <div className="font-pixel text-xl md:text-2xl text-brutal-cyan">TARGETS HIT</div>
+            <div className="font-terminal text-lg md:text-xl text-zinc-200">
+              Prize pool splits by your VOTE points
             </div>
           </div>
-          <div className="bg-cyan-500/10 border-2 border-cyan-500/40 rounded-lg p-5 text-center space-y-2">
+          <div className="bg-muted border-2 border-brutal-yellow rounded-lg p-5 text-center space-y-2">
             <div className="text-4xl">📈</div>
-            <div className="font-pixel text-xl md:text-2xl text-cyan-400">TARGETS MISSED</div>
-            <div className="font-terminal text-lg md:text-xl text-zinc-300">
-              Money back + {multiple}× returns
+            <div className="font-pixel text-xl md:text-2xl text-brutal-yellow">TARGETS MISSED</div>
+            <div className="font-terminal text-lg md:text-xl text-zinc-200">
+              Keep your compound returns
             </div>
           </div>
         </div>
 
         <div
-          className="font-pixel text-xl md:text-2xl text-emerald-300 text-center transition-opacity duration-500"
-          style={{ opacity: phase >= 4 ? 1 : 0 }}
+          className="font-pixel text-xl md:text-2xl text-brutal-cyan text-center transition-opacity duration-500"
+          style={{ opacity: phase >= 5 ? 1 : 0 }}
         >
-          Both paths pay.
+          The only way to lose is not to play.
         </div>
       </div>
     </SierraSlideWrapper>

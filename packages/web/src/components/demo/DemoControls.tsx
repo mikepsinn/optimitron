@@ -8,11 +8,13 @@ interface DemoControlsProps {
   isPlaying: boolean;
   isMuted: boolean;
   forceLive: boolean;
+  isRecording: boolean;
   onPrev: () => void;
   onNext: () => void;
   onTogglePlay: () => void;
   onToggleMute: () => void;
   onToggleForceLive: () => void;
+  onToggleRecord: () => void;
   onGoTo: (index: number) => void;
 }
 
@@ -22,11 +24,13 @@ export function DemoControls({
   isPlaying,
   isMuted,
   forceLive,
+  isRecording,
   onPrev,
   onNext,
   onTogglePlay,
   onToggleMute,
   onToggleForceLive,
+  onToggleRecord,
 }: DemoControlsProps) {
   return (
     <div className="bg-transparent px-4 py-3">
@@ -70,6 +74,19 @@ export function DemoControls({
             )}
             <span className="font-pixel text-[10px]">
               {forceLive ? "LIVE" : "SAVED"}
+            </span>
+          </button>
+          <button
+            onClick={onToggleRecord}
+            className={`p-2 rounded transition-all flex items-center gap-1.5 ${
+              isRecording ? "bg-brutal-red text-brutal-red-foreground" : "bg-white/10 hover:bg-white/20"
+            }`}
+            aria-label={isRecording ? "Stop recording" : "Start recording"}
+            title={isRecording ? "Stop recording" : "Record demo"}
+          >
+            <Circle className={`w-4 h-4 ${isRecording ? "fill-current animate-pulse" : ""}`} />
+            <span className="font-pixel text-[10px]">
+              {isRecording ? "STOP" : "REC"}
             </span>
           </button>
         </div>
