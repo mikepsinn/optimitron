@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 interface PoliticianRow {
   politicianId: string;
@@ -20,7 +21,7 @@ interface PoliticianRow {
 type SortField = "rank" | "name" | "party" | "score" | "votesCompared";
 type SortDirection = "asc" | "desc";
 
-interface ScoreboardTableProps {
+interface AlignmentScoreTableProps {
   politicians: PoliticianRow[];
 }
 
@@ -36,7 +37,7 @@ function scoreBgClass(score: number): string {
   return "bg-brutal-red";
 }
 
-export function ScoreboardTable({ politicians }: ScoreboardTableProps) {
+export function AlignmentScoreTable({ politicians }: AlignmentScoreTableProps) {
   const [sortField, setSortField] = useState<SortField>("rank");
   const [sortDir, setSortDir] = useState<SortDirection>("asc");
 
@@ -115,13 +116,27 @@ export function ScoreboardTable({ politicians }: ScoreboardTableProps) {
                 #{pol.rank}
               </td>
               <td className="px-3 py-3">
-                <div className="text-sm font-black text-foreground">{pol.name}</div>
-                {pol.title ? (
-                  <div className="text-xs font-bold text-muted-foreground">
-                    {pol.title}
-                    {pol.district ? ` \u00B7 ${pol.district}` : ""}
+                <div className="flex items-center gap-2">
+                  {pol.externalId && (
+                    <Image
+                      src={`https://bioguide.congress.gov/bioguide/photo/${pol.externalId[0]?.toUpperCase() ?? "X"}/${pol.externalId}.jpg`}
+                      alt={pol.name}
+                      width={28}
+                      height={34}
+                      className="w-7 h-[34px] object-cover border-2 border-primary shrink-0"
+                      unoptimized
+                    />
+                  )}
+                  <div>
+                    <div className="text-sm font-black text-foreground">{pol.name}</div>
+                    {pol.title ? (
+                      <div className="text-xs font-bold text-muted-foreground">
+                        {pol.title}
+                        {pol.district ? ` \u00B7 ${pol.district}` : ""}
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
+                </div>
               </td>
               <td className="px-3 py-3 text-sm font-bold text-foreground">
                 {pol.party ?? "\u2014"}

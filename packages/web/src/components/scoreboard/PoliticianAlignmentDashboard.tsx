@@ -3,13 +3,13 @@
 import type { AggregateScoreData } from "@/lib/aggregate-alignment.server";
 import { PrizeCTA } from "@/components/prize/PrizeCTA";
 import { CitizenPrioritiesChart } from "./CitizenPrioritiesChart";
-import { ScoreboardTable } from "./ScoreboardTable";
+import { AlignmentScoreTable } from "./AlignmentScoreTable";
 
-interface ScoreboardDashboardProps {
+interface PoliticianAlignmentDashboardProps {
   data: AggregateScoreData;
 }
 
-export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
+export function PoliticianAlignmentDashboard({ data }: PoliticianAlignmentDashboardProps) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
@@ -92,7 +92,7 @@ export function ScoreboardDashboard({ data }: ScoreboardDashboardProps) {
           preferences. Not what they promise. What they do.
         </p>
         <div className="mt-6">
-          <ScoreboardTable politicians={data.politicians} />
+          <AlignmentScoreTable politicians={data.politicians} />
         </div>
       </section>
 

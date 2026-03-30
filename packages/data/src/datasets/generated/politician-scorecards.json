@@ -2,13 +2,6 @@
   "generatedAt": "2026-03-24T06:41:51.598Z",
   "congress": 118,
   "memberCount": 250,
-  "gradeDistribution": {
-    "A": 4,
-    "B": 15,
-    "C": 0,
-    "D": 0,
-    "F": 231
-  },
   "systemWideRatio": 1094,
   "scorecards": [
     {
@@ -20,7 +13,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 0,
-      "grade": "A",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -38,7 +30,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -51,7 +43,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 0,
-      "grade": "A",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -69,7 +60,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -82,7 +73,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 0,
-      "grade": "A",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -100,7 +90,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -113,7 +103,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 0,
-      "grade": "A",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -131,7 +120,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -144,7 +133,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -162,7 +150,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -175,7 +163,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -193,7 +180,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -206,7 +193,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -224,7 +210,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -237,7 +223,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -255,7 +240,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -268,7 +253,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -286,7 +270,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -299,7 +283,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -317,7 +300,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -330,7 +313,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -348,7 +330,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -361,7 +343,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -392,7 +373,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -423,7 +403,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -454,7 +433,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -485,7 +463,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -516,7 +493,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -547,7 +523,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -578,7 +553,6 @@
       "militaryDollarsVotedFor": 0,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 1,
-      "grade": "B",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -609,7 +583,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -627,7 +600,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -640,7 +613,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -658,7 +630,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -671,7 +643,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -689,7 +660,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -702,7 +673,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -720,7 +690,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -733,7 +703,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -751,7 +720,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -764,7 +733,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -782,7 +750,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -795,7 +763,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -813,7 +780,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -826,7 +793,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -844,7 +810,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -857,7 +823,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 1560900000,
       "ratio": 568,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -875,7 +840,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "YEA",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -888,7 +853,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -919,7 +883,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -950,7 +913,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -968,7 +930,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -981,7 +943,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -999,7 +960,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1012,7 +973,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1030,7 +990,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1043,7 +1003,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1061,7 +1020,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1074,7 +1033,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1092,7 +1050,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1105,7 +1063,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1123,7 +1080,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1136,7 +1093,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1154,7 +1110,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1167,7 +1123,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1185,7 +1140,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1198,7 +1153,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1216,7 +1170,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1229,7 +1183,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1247,7 +1200,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1260,7 +1213,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1278,7 +1230,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1291,7 +1243,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1309,7 +1260,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1322,7 +1273,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1340,7 +1290,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1353,7 +1303,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1371,7 +1320,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1384,7 +1333,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1402,7 +1350,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1415,7 +1363,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1433,7 +1380,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1446,7 +1393,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1464,7 +1410,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1477,7 +1423,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1495,7 +1440,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1508,7 +1453,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1526,7 +1470,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1539,7 +1483,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1557,7 +1500,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1570,7 +1513,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1588,7 +1530,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1601,7 +1543,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1619,7 +1560,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1632,7 +1573,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1650,7 +1590,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1663,7 +1603,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1681,7 +1620,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1694,7 +1633,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1712,7 +1650,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1725,7 +1663,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1743,7 +1680,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1756,7 +1693,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1774,7 +1710,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1787,7 +1723,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1805,7 +1740,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1818,7 +1753,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1836,7 +1770,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1849,7 +1783,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1867,7 +1800,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1880,7 +1813,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1898,7 +1830,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1911,7 +1843,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1929,7 +1860,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1942,7 +1873,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1960,7 +1890,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -1973,7 +1903,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -1991,7 +1920,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2004,7 +1933,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2022,20 +1950,19 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
     {
       "bioguideId": "L000570",
-      "name": "Luján, Ben Ray",
+      "name": "Luj\u00c3\u00a1n, Ben Ray",
       "party": "Democratic",
       "state": "New Mexico",
       "chamber": "Senate",
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2053,7 +1980,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2066,7 +1993,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2084,7 +2010,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2097,7 +2023,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2115,7 +2040,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2128,7 +2053,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2146,7 +2070,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2159,7 +2083,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2177,7 +2100,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2190,7 +2113,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2208,7 +2130,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2221,7 +2143,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2239,7 +2160,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2252,7 +2173,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2270,7 +2190,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2283,7 +2203,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2301,7 +2220,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2314,7 +2233,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2332,7 +2250,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2345,7 +2263,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2363,7 +2280,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2376,7 +2293,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2394,7 +2310,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2407,7 +2323,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2425,7 +2340,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2438,7 +2353,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2456,7 +2370,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2469,7 +2383,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2487,7 +2400,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2500,7 +2413,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2518,7 +2430,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2531,7 +2443,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2549,7 +2460,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2562,7 +2473,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2580,7 +2490,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2593,7 +2503,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2611,7 +2520,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2624,7 +2533,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2642,7 +2550,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2655,7 +2563,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2673,7 +2580,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2686,7 +2593,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2704,7 +2610,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2717,7 +2623,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2735,7 +2640,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2748,7 +2653,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2766,7 +2670,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2779,7 +2683,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2797,7 +2700,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2810,7 +2713,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2828,7 +2730,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2841,7 +2743,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2859,7 +2760,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2872,7 +2773,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2890,7 +2790,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2903,7 +2803,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2921,7 +2820,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2934,7 +2833,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2952,7 +2850,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2965,7 +2863,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -2983,7 +2880,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -2996,7 +2893,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3014,7 +2910,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3027,7 +2923,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3045,7 +2940,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3058,7 +2953,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3076,7 +2970,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3089,7 +2983,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3107,7 +3000,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3120,7 +3013,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3138,7 +3030,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3151,7 +3043,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3169,7 +3060,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NOT VOTING",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3182,7 +3073,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3200,7 +3090,7 @@
           "bill": "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
           "vote": "NAY",
           "amount": 47300000000,
-          "category": "health"
+          "category": "clinical_trials"
         }
       ]
     },
@@ -3213,7 +3103,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3244,7 +3133,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3275,7 +3163,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3306,7 +3193,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3337,7 +3223,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3368,7 +3253,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3399,7 +3283,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3430,7 +3313,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3461,7 +3343,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3492,7 +3373,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3523,7 +3403,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3554,7 +3433,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3585,7 +3463,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3616,7 +3493,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3647,7 +3523,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3678,7 +3553,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3709,7 +3583,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3740,7 +3613,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3771,7 +3643,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3802,7 +3673,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3833,7 +3703,6 @@
       "militaryDollarsVotedFor": 995300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3864,7 +3733,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3895,7 +3763,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3926,7 +3793,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3957,7 +3823,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -3988,7 +3853,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4019,7 +3883,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4050,7 +3913,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4081,7 +3943,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4112,7 +3973,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4143,7 +4003,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4174,7 +4033,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4205,7 +4063,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4236,7 +4093,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4267,7 +4123,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4298,7 +4153,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4329,7 +4183,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4360,7 +4213,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4391,7 +4243,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4422,7 +4273,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4453,7 +4303,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4484,7 +4333,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4515,7 +4363,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4546,7 +4393,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4577,7 +4423,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4608,7 +4453,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4639,7 +4483,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4670,7 +4513,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4701,7 +4543,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4732,7 +4573,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4763,7 +4603,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4794,7 +4633,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4825,7 +4663,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4856,7 +4693,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4887,7 +4723,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4918,7 +4753,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4949,7 +4783,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -4980,7 +4813,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5011,7 +4843,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5042,7 +4873,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5073,7 +4903,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5104,7 +4933,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5135,7 +4963,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5166,7 +4993,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5197,7 +5023,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5228,7 +5053,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5259,7 +5083,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5290,7 +5113,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5321,7 +5143,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5352,7 +5173,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5383,7 +5203,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5414,7 +5233,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5445,7 +5263,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5476,7 +5293,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5507,7 +5323,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5538,7 +5353,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5569,7 +5383,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5600,7 +5413,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5631,7 +5443,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5662,7 +5473,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5693,7 +5503,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5724,7 +5533,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5755,7 +5563,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5786,7 +5593,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5817,7 +5623,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5848,7 +5653,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5879,7 +5683,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5910,7 +5713,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5941,7 +5743,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -5972,7 +5773,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6003,7 +5803,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6034,7 +5833,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6065,7 +5863,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6096,7 +5893,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6127,7 +5923,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6158,7 +5953,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6189,7 +5983,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6220,7 +6013,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6251,7 +6043,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6282,7 +6073,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6313,7 +6103,6 @@
       "militaryDollarsVotedFor": 886000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6344,7 +6133,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6375,7 +6163,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6406,7 +6193,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6437,7 +6223,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6468,7 +6253,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6499,7 +6283,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6530,7 +6313,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6561,7 +6343,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6592,7 +6373,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6623,7 +6403,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6654,7 +6433,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6685,7 +6463,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6716,7 +6493,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6747,7 +6523,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6778,7 +6553,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6809,7 +6583,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6840,7 +6613,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6871,7 +6643,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6902,7 +6673,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6933,7 +6703,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6964,7 +6733,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -6995,7 +6763,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7026,7 +6793,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7057,7 +6823,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7088,7 +6853,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7119,7 +6883,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7150,7 +6913,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7181,7 +6943,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7212,7 +6973,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7243,7 +7003,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7274,7 +7033,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7305,7 +7063,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7336,7 +7093,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7367,7 +7123,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7398,7 +7153,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7429,7 +7183,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7460,7 +7213,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7491,7 +7243,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7522,7 +7273,6 @@
       "militaryDollarsVotedFor": 981000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7553,7 +7303,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7584,7 +7333,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7615,7 +7363,6 @@
       "militaryDollarsVotedFor": 900300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7646,7 +7393,6 @@
       "militaryDollarsVotedFor": 14300000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7677,7 +7423,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7708,7 +7453,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7739,7 +7483,6 @@
       "militaryDollarsVotedFor": 95000000000,
       "clinicalTrialDollarsVotedFor": 0,
       "ratio": 999999,
-      "grade": "F",
       "votes": [
         {
           "bill": "NDAA FY2024 ($886B)",
@@ -7770,11 +7513,10 @@
       "totalNIHSigned": 232000000000,
       "clinicalTrialPortion": 7656000000,
       "ratio": 549,
-      "grade": "F",
       "keyActions": [
-        "Started Iraq War based on fabricated WMD evidence — $2.4T total cost",
-        "Started Afghanistan War — $2.3T total cost",
-        "Signed PATRIOT Act — warrantless surveillance of all Americans",
+        "Started Iraq War based on fabricated WMD evidence \u00e2\u20ac\u201d $2.4T total cost",
+        "Started Afghanistan War \u00e2\u20ac\u201d $2.3T total cost",
+        "Signed PATRIOT Act \u00e2\u20ac\u201d warrantless surveillance of all Americans",
         "NIH budget doubling completed (2003) then flatlined"
       ]
     },
@@ -7785,11 +7527,10 @@
       "totalNIHSigned": 244000000000,
       "clinicalTrialPortion": 8052000000,
       "ratio": 633,
-      "grade": "F",
       "keyActions": [
         "Expanded drone warfare to 7 countries",
-        "Libya intervention — created failed state with open-air slave markets",
-        "Signed ACA — premiums increased 105%",
+        "Libya intervention \u00e2\u20ac\u201d created failed state with open-air slave markets",
+        "Signed ACA \u00e2\u20ac\u201d premiums increased 105%",
         "NIH hit by sequestration ($1.7B cut in 2013)"
       ]
     },
@@ -7800,12 +7541,11 @@
       "totalNIHSigned": 156000000000,
       "clinicalTrialPortion": 5148000000,
       "ratio": 563,
-      "grade": "F",
       "keyActions": [
         "Signed largest peacetime NDAA ($738B FY2020)",
         "Trade war tariffs cost $1,277/household/yr",
         "NIH budget increased to $41.7B (2020)",
-        "Operation Warp Speed — $18B for COVID vaccines (rare clinical trial investment)"
+        "Operation Warp Speed \u00e2\u20ac\u201d $18B for COVID vaccines (rare clinical trial investment)"
       ]
     },
     {
@@ -7815,12 +7555,11 @@
       "totalNIHSigned": 182000000000,
       "clinicalTrialPortion": 6006000000,
       "ratio": 566,
-      "grade": "F",
       "keyActions": [
-        "Signed $886B NDAA FY2024 — largest ever",
+        "Signed $886B NDAA FY2024 \u00e2\u20ac\u201d largest ever",
         "$95B supplemental for Ukraine + Israel military aid",
         "IRA included $80B IRS funding (later partially clawed back)",
-        "Afghanistan withdrawal — ended 20-year war"
+        "Afghanistan withdrawal \u00e2\u20ac\u201d ended 20-year war"
       ]
     }
   ]

@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getGovernment, GOVERNMENTS } from "@optimitron/data";
 import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
-import { ScoreboardDashboard } from "@/components/scoreboard/ScoreboardDashboard";
+import { PoliticianAlignmentDashboard } from "@/components/scoreboard/PoliticianAlignmentDashboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -46,7 +46,6 @@ function loadScorecardData(): {
     militaryDollarsVotedFor: number;
     clinicalTrialDollarsVotedFor: number;
     ratio: number;
-    grade: string;
   }>;
   presidents: Array<{
     name: string;
@@ -54,7 +53,6 @@ function loadScorecardData(): {
     totalMilitarySigned: number;
     clinicalTrialPortion: number;
     ratio: number;
-    grade: string;
     keyActions: string[];
   }>;
   systemWideRatio: number;
@@ -188,7 +186,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
               size="md"
             />
           </Container>
-          <ScoreboardDashboard data={alignmentData} />
+          <PoliticianAlignmentDashboard data={alignmentData} />
         </SectionContainer>
       )}
 

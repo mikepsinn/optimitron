@@ -45,6 +45,13 @@ const wasteBreakdown = [
   },
 ];
 
+const pieData = [
+  { name: "Healthcare", value: 34 },
+  { name: "Migration", value: 57 },
+  { name: "Science", value: 4 },
+  { name: "Lead/Pollution", value: 6 },
+];
+
 export function PoliticalDysfunctionTaxSection() {
   return (
     <section className="bg-brutal-red">
@@ -77,6 +84,20 @@ export function PoliticalDysfunctionTaxSection() {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Pie chart breakdown */}
+        <ScrollReveal delay={0.2}>
+          <div className="mb-12 flex justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
+              {pieData.map((item) => (
+                <div key={item.name} className="text-center p-4 border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="font-black text-3xl text-brutal-red">${item.value}T</div>
+                  <div className="font-bold text-sm text-muted-foreground mt-1">{item.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
           <div className="p-8 border-4 border-primary bg-brutal-red shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">

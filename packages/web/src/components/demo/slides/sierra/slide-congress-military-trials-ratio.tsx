@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { AnimatedCounter } from "../../animations/sierra/animated-counter";
 import {
@@ -89,7 +90,15 @@ export function SlideCongressMilitaryTrialsRatio() {
               }`}
             >
               {/* Name */}
-              <div className="col-span-4">
+              <div className="col-span-4 flex items-center gap-2">
+                <Image
+                  src={`https://bioguide.congress.gov/bioguide/photo/${pol.id[0]?.toUpperCase() ?? "X"}/${pol.id.toUpperCase()}.jpg`}
+                  alt={pol.name}
+                  width={24}
+                  height={30}
+                  className="w-6 h-[30px] object-cover border border-cyan-500/30 shrink-0"
+                  unoptimized
+                />
                 <a
                   href={`https://optimitron.com/governments/US/politicians/${pol.id}`}
                   target="_blank"

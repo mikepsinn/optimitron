@@ -14,7 +14,11 @@ import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySe
 import { PoliticalDysfunctionTaxSection } from "@/components/landing/PoliticalDysfunctionTaxSection";
 import { OptimizedGovernancePreview } from "@/components/landing/OptimizedGovernancePreview";
 import { GovernmentReportCardPreview } from "@/components/landing/GovernmentReportCardPreview";
-import { PoliticianLeaderboardPreview } from "@/components/landing/PoliticianLeaderboardPreview";
+import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
+import {
+  POLITICIAN_SCORECARDS,
+  SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO,
+} from "@optimitron/data/datasets/us-politician-scorecards";
 import { DemoPreview } from "@/components/landing/DemoPreview";
 import { OutcomeLabelsSection } from "@/components/dfda/OutcomeLabelsSection";
 import { ComparativeEffectivenessSection } from "@/components/dfda/ComparativeEffectivenessSection";
@@ -202,7 +206,34 @@ export default function Home() {
       <GovernmentReportCardPreview />
 
       {/* ── 14. Politician Leaderboard — mini table ── */}
-      <PoliticianLeaderboardPreview />
+      <SectionContainer bgColor="foreground" borderPosition="top" padding="lg">
+        <Container>
+          <SectionHeader
+            title="Politician Leaderboard"
+            subtitle="How your representatives actually vote vs what you actually wanted. The receipts."
+            size="lg"
+          />
+          <PoliticianScorecardTable
+            scorecards={POLITICIAN_SCORECARDS.map((p) => ({
+              bioguideId: p.id.toUpperCase(),
+              name: p.name,
+              party: p.party,
+              state: p.district ?? "",
+              chamber: p.chamber ?? "",
+              militaryDollarsVotedFor: p.destructiveDollarsVotedFor,
+              clinicalTrialDollarsVotedFor: p.clinicalTrialDollarsVotedFor,
+              ratio: p.militaryToTrialsRatio,
+            }))}
+            systemWideRatio={SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO}
+            limit={5}
+          />
+          <div className="mt-8 text-center">
+            <GameCTA href="/governments/US/politicians" variant="cyan">
+              See All Politicians
+            </GameCTA>
+          </div>
+        </Container>
+      </SectionContainer>
 
       {/* ── 15. Optimized Governance — agency grid ── */}
       <OptimizedGovernancePreview />

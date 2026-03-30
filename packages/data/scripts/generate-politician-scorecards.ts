@@ -31,7 +31,9 @@ const OUTPUT_FILE = join(OUTPUT_DIR, "politician-scorecards.json");
 interface BudgetBill {
   name: string;
   amount: number;
-  category: "military" | "health" | "enforcement";
+  category: "military" | "clinical_trials" | "enforcement";
+  /** URL to the bill on congress.gov or govtrack */
+  sourceUrl?: string;
   /** House vote: calendar year */
   houseYear?: number;
   /** House vote: roll call number */
@@ -45,44 +47,149 @@ interface BudgetBill {
 }
 
 const KEY_BILLS: BudgetBill[] = [
-  // NDAA FY2024 — final passage votes
+  // ═══════════════════════════════════════════════════════════════════
+  // FY2023 (117th Congress)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // NDAA FY2023 — H.R. 7776, $858B defense authorization
+  // House roll 516/2022 (H.Res. 1512 concurrence, 350-80)
+  // Senate vote 396/117-2 (83-11)
+  {
+    name: "NDAA FY2023 ($858B)",
+    amount: 858_000_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/117th-congress/house-bill/7776",
+    houseYear: 2022,
+    houseRollCall: 516,
+    senateCongress: 117,
+    senateSession: 2,
+    senateVoteNumber: 396,
+  },
+  // Omnibus FY2023 — H.R. 2617, defense portion (~$858B)
+  // House roll 549/2022 (225-201)
+  // Senate vote 421/117-2 (68-29)
+  {
+    name: "Omnibus FY2023 — Defense ($858B)",
+    amount: 858_000_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/117th-congress/house-bill/2617",
+    houseYear: 2022,
+    houseRollCall: 549,
+    senateCongress: 117,
+    senateSession: 2,
+    senateVoteNumber: 421,
+  },
+  // Omnibus FY2023 — H.R. 2617, NIH portion ($47.5B → $1.57B trials at 3.3%)
+  // Same roll call as above — a YEA on the omnibus funds both defense AND NIH
+  {
+    name: "Omnibus FY2023 — NIH ($47.5B)",
+    amount: 47_500_000_000,
+    category: "clinical_trials",
+    sourceUrl: "https://www.congress.gov/bill/117th-congress/house-bill/2617",
+    houseYear: 2022,
+    houseRollCall: 549,
+    senateCongress: 117,
+    senateSession: 2,
+    senateVoteNumber: 421,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // FY2024 (118th Congress)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // NDAA FY2024 — H.R. 2670, $886B defense authorization
+  // House roll 723/2023 (310-118)
+  // Senate vote 343/118-1 (87-13)
   {
     name: "NDAA FY2024 ($886B)",
     amount: 886_000_000_000,
     category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/2670",
     houseYear: 2023,
     houseRollCall: 723,
     senateCongress: 118,
     senateSession: 1,
     senateVoteNumber: 343,
   },
-  // Israel Security Supplemental (House only)
+  // Supplementals — House voted on these separately (April 20, 2024)
+  {
+    name: "Ukraine Security Supplemental ($60.8B)",
+    amount: 60_800_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/8035",
+    houseYear: 2024,
+    houseRollCall: 151, // H.R. 8035, 311-112
+  },
   {
     name: "Israel Security Supplemental ($14.3B)",
     amount: 14_300_000_000,
     category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/8034",
     houseYear: 2024,
-    houseRollCall: 168,
+    houseRollCall: 152, // H.R. 8034, 366-58
   },
-  // Ukraine + Israel + Taiwan Supplemental (April 2024)
+  {
+    name: "Indo-Pacific Security Supplemental ($8.1B)",
+    amount: 8_100_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/8036",
+    houseYear: 2024,
+    houseRollCall: 146, // H.R. 8036, 385-34
+  },
+  // Senate voted on the combined supplemental package (April 23, 2024)
   {
     name: "Ukraine/Israel/Taiwan Supplemental ($95B)",
     amount: 95_000_000_000,
     category: "military",
-    houseYear: 2024,
-    houseRollCall: 165,
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/815",
     senateCongress: 118,
     senateSession: 2,
-    senateVoteNumber: 132,
+    senateVoteNumber: 154, // H.R. 815 concurrence, 79-18
   },
-  // Labor-HHS Appropriations (includes NIH funding) — Senate only
+  // Omnibus FY2024 — H.R. 2882, defense portion (~$886B)
+  // House roll 102/2024 (286-134)
+  // Senate vote 114/118-2 (74-24)
   {
-    name: "Labor-HHS Appropriations FY2024 (includes NIH $47.3B)",
-    amount: 47_300_000_000,
-    category: "health",
+    name: "Omnibus FY2024 — Defense ($886B)",
+    amount: 886_000_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/2882",
+    houseYear: 2024,
+    houseRollCall: 102,
     senateCongress: 118,
     senateSession: 2,
-    senateVoteNumber: 64,
+    senateVoteNumber: 114,
+  },
+  // Omnibus FY2024 — H.R. 2882, NIH portion ($47.3B → $1.56B trials at 3.3%)
+  {
+    name: "Omnibus FY2024 — NIH ($47.3B)",
+    amount: 47_300_000_000,
+    category: "clinical_trials",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/2882",
+    houseYear: 2024,
+    houseRollCall: 102,
+    senateCongress: 118,
+    senateSession: 2,
+    senateVoteNumber: 114,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // FY2025 (118th Congress)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // NDAA FY2025 — H.R. 5009, $895B defense authorization
+  // House roll 500/2024 (281-140)
+  // Senate vote 325/118-2 (85-14)
+  {
+    name: "NDAA FY2025 ($895B)",
+    amount: 895_200_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/118th-congress/house-bill/5009",
+    houseYear: 2024,
+    houseRollCall: 500,
+    senateCongress: 118,
+    senateSession: 2,
+    senateVoteNumber: 325,
   },
 ];
 
@@ -298,8 +405,7 @@ interface MemberVoteRecord {
   militaryDollarsVotedFor: number;
   clinicalTrialDollarsVotedFor: number;
   ratio: number;
-  grade: string;
-  votes: Array<{ bill: string; vote: string; amount: number; category: string }>;
+  votes: Array<{ bill: string; vote: string; amount: number; category: string; sourceUrl?: string }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -406,13 +512,14 @@ async function main() {
         vote,
         amount: bill.amount,
         category: bill.category,
+        sourceUrl: bill.sourceUrl,
       });
 
       if (votedYea) {
         if (bill.category === "military" || bill.category === "enforcement") {
           militaryDollars += bill.amount;
         }
-        if (bill.category === "health") {
+        if (bill.category === "clinical_trials") {
           clinicalTrialDollars += bill.amount * CLINICAL_TRIAL_PCT_OF_NIH;
         }
       }
@@ -428,14 +535,6 @@ async function main() {
           ? Math.round(militaryDollars / clinicalTrialDollars)
           : 999_999;
 
-    // Grades computed but hidden on front end until vote coverage is complete
-    let grade: string;
-    if (ratio < 1) grade = "A";
-    else if (ratio < 2) grade = "B";
-    else if (ratio < 3) grade = "C";
-    else if (ratio < 4) grade = "D";
-    else grade = "F";
-
     scorecards.push({
       bioguideId,
       name: member.name ?? "Unknown",
@@ -445,7 +544,6 @@ async function main() {
       militaryDollarsVotedFor: militaryDollars,
       clinicalTrialDollarsVotedFor: clinicalTrialDollars,
       ratio,
-      grade,
       votes,
     });
   }
@@ -454,16 +552,6 @@ async function main() {
   scorecards.sort((a, b) => a.ratio - b.ratio);
 
   console.log(`  ${scorecards.length} scorecards computed\n`);
-
-  // Grade distribution
-  const grades = { A: 0, B: 0, C: 0, D: 0, F: 0 };
-  for (const s of scorecards) {
-    grades[s.grade as keyof typeof grades]++;
-  }
-  console.log("Grade distribution:");
-  for (const [g, count] of Object.entries(grades)) {
-    console.log(`  ${g}: ${count} (${((count / scorecards.length) * 100).toFixed(0)}%)`);
-  }
 
   // ─── Step 4: Presidential scorecards ───────────────────────────────
   console.log("\nStep 4: Computing presidential scorecards...");
@@ -475,7 +563,6 @@ async function main() {
     totalNIHSigned: number;
     clinicalTrialPortion: number;
     ratio: number;
-    grade: string;
     keyActions: string[];
   }
 
@@ -487,7 +574,7 @@ async function main() {
       totalMilitarySigned: 4_200_000_000_000,
       totalNIHSigned: 232_000_000_000,
       clinicalTrialPortion: 232_000_000_000 * NIH_TRIAL_PCT,
-      ratio: 0, grade: "",
+      ratio: 0,
       keyActions: [
         "Started Iraq War based on fabricated WMD evidence — $2.4T total cost",
         "Started Afghanistan War — $2.3T total cost",
@@ -501,7 +588,7 @@ async function main() {
       totalMilitarySigned: 5_100_000_000_000,
       totalNIHSigned: 244_000_000_000,
       clinicalTrialPortion: 244_000_000_000 * NIH_TRIAL_PCT,
-      ratio: 0, grade: "",
+      ratio: 0,
       keyActions: [
         "Expanded drone warfare to 7 countries",
         "Libya intervention — created failed state with open-air slave markets",
@@ -515,7 +602,7 @@ async function main() {
       totalMilitarySigned: 2_900_000_000_000,
       totalNIHSigned: 156_000_000_000,
       clinicalTrialPortion: 156_000_000_000 * NIH_TRIAL_PCT,
-      ratio: 0, grade: "",
+      ratio: 0,
       keyActions: [
         "Signed largest peacetime NDAA ($738B FY2020)",
         "Trade war tariffs cost $1,277/household/yr",
@@ -529,7 +616,7 @@ async function main() {
       totalMilitarySigned: 3_400_000_000_000,
       totalNIHSigned: 182_000_000_000,
       clinicalTrialPortion: 182_000_000_000 * NIH_TRIAL_PCT,
-      ratio: 0, grade: "",
+      ratio: 0,
       keyActions: [
         "Signed $886B NDAA FY2024 — largest ever",
         "$95B supplemental for Ukraine + Israel military aid",
@@ -543,20 +630,14 @@ async function main() {
     p.ratio = p.clinicalTrialPortion > 0
       ? Math.round(p.totalMilitarySigned / p.clinicalTrialPortion)
       : 999_999;
-    // Grades computed but hidden on front end until vote coverage is complete
-    if (p.ratio < 1) p.grade = "A";
-    else if (p.ratio < 2) p.grade = "B";
-    else if (p.ratio < 3) p.grade = "C";
-    else if (p.ratio < 4) p.grade = "D";
-    else p.grade = "F";
   }
 
   console.log("\nPresidential scorecards:");
-  console.log("Name                    | Military Signed | Trials Signed | Ratio      | Grade");
-  console.log("------------------------|-----------------|---------------|------------|------");
+  console.log("Name                    | Military Signed | Trials Signed | Ratio");
+  console.log("------------------------|-----------------|---------------|----------");
   for (const p of presidents) {
     console.log(
-      `${p.name.padEnd(24)}| $${(p.totalMilitarySigned / 1e12).toFixed(1)}T${" ".repeat(12)}| $${(p.clinicalTrialPortion / 1e9).toFixed(1)}B${" ".repeat(10)}| ${p.ratio.toLocaleString()}:1${" ".repeat(5)}| ${p.grade}`,
+      `${p.name.padEnd(24)}| $${(p.totalMilitarySigned / 1e12).toFixed(1)}T${" ".repeat(12)}| $${(p.clinicalTrialPortion / 1e9).toFixed(1)}B${" ".repeat(10)}| ${p.ratio.toLocaleString()}:1`,
     );
   }
 
@@ -565,7 +646,6 @@ async function main() {
     generatedAt: new Date().toISOString(),
     congress: 118,
     memberCount: scorecards.length,
-    gradeDistribution: grades,
     systemWideRatio: Math.round(886_000_000_000 / 810_000_000),
     scorecards,
     presidents,

@@ -21,6 +21,7 @@ interface PoliticianVote {
   vote: string;
   amount: number;
   category: string;
+  sourceUrl?: string;
 }
 
 interface PoliticianScore {
@@ -32,7 +33,6 @@ interface PoliticianScore {
   militaryDollarsVotedFor: number;
   clinicalTrialDollarsVotedFor: number;
   ratio: number;
-  grade: string;
   votes: PoliticianVote[];
 }
 
@@ -276,14 +276,29 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span className={`text-sm font-black ${
-                      v.category === "military" || v.category === "enforcement"
-                        ? "text-brutal-red-foreground"
-                        : "text-foreground"
-                    }`}>
-                      {v.bill}
-                    </span>
-                    <span className={`text-sm font-black ${
+                    {v.sourceUrl ? (
+                      <a
+                        href={v.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-sm font-black underline decoration-2 ${
+                          v.category === "military" || v.category === "enforcement"
+                            ? "text-brutal-red-foreground"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {v.bill}
+                      </a>
+                    ) : (
+                      <span className={`text-sm font-black ${
+                        v.category === "military" || v.category === "enforcement"
+                          ? "text-brutal-red-foreground"
+                          : "text-foreground"
+                      }`}>
+                        {v.bill}
+                      </span>
+                    )}
+                    <span className={`text-sm font-black shrink-0 ml-2 ${
                       v.category === "military" || v.category === "enforcement"
                         ? "text-brutal-red-foreground"
                         : "text-foreground"
@@ -309,10 +324,21 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                   className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-black text-foreground">
-                      {v.bill}
-                    </span>
-                    <span className="text-sm font-bold text-muted-foreground line-through">
+                    {v.sourceUrl ? (
+                      <a
+                        href={v.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-black text-foreground underline decoration-2"
+                      >
+                        {v.bill}
+                      </a>
+                    ) : (
+                      <span className="text-sm font-black text-foreground">
+                        {v.bill}
+                      </span>
+                    )}
+                    <span className="text-sm font-bold text-muted-foreground line-through shrink-0 ml-2">
                       {formatDollars(v.amount)}
                     </span>
                   </div>
@@ -334,10 +360,21 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                   className="border-2 border-muted bg-muted p-3"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-muted-foreground">
-                      {v.bill}
-                    </span>
-                    <span className="text-sm font-bold text-muted-foreground">
+                    {v.sourceUrl ? (
+                      <a
+                        href={v.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-bold text-muted-foreground underline"
+                      >
+                        {v.bill}
+                      </a>
+                    ) : (
+                      <span className="text-sm font-bold text-muted-foreground">
+                        {v.bill}
+                      </span>
+                    )}
+                    <span className="text-sm font-bold text-muted-foreground shrink-0 ml-2">
                       {v.vote}
                     </span>
                   </div>

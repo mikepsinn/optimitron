@@ -45,7 +45,6 @@ export interface PoliticianScorecard {
   militaryToTrialsRatio: number;
   militaryPctOfTotal: number;
   trialsPctOfTotal: number;
-  grade: "A" | "B" | "C" | "D" | "F" | "—";
   destructiveDollarsVotedFor: number;
   clinicalTrialDollarsVotedFor: number;
   constructiveDollarsVotedFor: number;
@@ -55,7 +54,7 @@ export interface PoliticianScorecard {
 export interface KeyVote {
   bill: string;
   amount: number;
-  category: "military" | "health" | "enforcement" | "other";
+  category: "military" | "clinical_trials" | "enforcement" | "other";
   vote: "YEA" | "NAY";
   sourceUrl?: string;
 }
@@ -73,8 +72,7 @@ interface GeneratedScorecard {
   militaryDollarsVotedFor: number;
   clinicalTrialDollarsVotedFor: number;
   ratio: number;
-  grade: string;
-  votes: { bill: string; vote: string; amount: number; category: string }[];
+  votes: { bill: string; vote: string; amount: number; category: string; sourceUrl?: string }[];
 }
 
 const scorecards = (generatedData as { scorecards: GeneratedScorecard[] }).scorecards;
@@ -96,7 +94,6 @@ function toScorecard(raw: GeneratedScorecard): PoliticianScorecard {
     militaryToTrialsRatio: raw.ratio,
     militaryPctOfTotal: total > 0 ? Math.round((mil / total) * 1000) / 10 : 0,
     trialsPctOfTotal: total > 0 ? Math.round((trials / total) * 1000) / 10 : 0,
-    grade: (raw.grade as PoliticianScorecard["grade"]) || "—",
     destructiveDollarsVotedFor: mil,
     clinicalTrialDollarsVotedFor: trials,
     constructiveDollarsVotedFor: trials, // simplified — trials ≈ constructive for this dataset
@@ -105,6 +102,7 @@ function toScorecard(raw: GeneratedScorecard): PoliticianScorecard {
       amount: v.amount,
       category: v.category as KeyVote["category"],
       vote: v.vote as KeyVote["vote"],
+      sourceUrl: v.sourceUrl,
     })),
   };
 }
