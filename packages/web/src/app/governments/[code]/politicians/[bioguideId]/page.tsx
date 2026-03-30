@@ -70,10 +70,18 @@ function formatRatio(ratio: number): string {
   return `${ratio.toLocaleString()}:1`;
 }
 
+export function generateStaticParams() {
+  const data = loadScorecardData();
+  return (data?.scorecards ?? []).map((s) => ({
+    code: "US",
+    bioguideId: s.bioguideId,
+  }));
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code, bioguideId } = await params;
   const data = loadScorecardData();
-  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId);
+  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
   const gov = getGovernment(code.toUpperCase());
 
   const title = politician
@@ -107,7 +115,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
   if (!gov) notFound();
 
   const data = loadScorecardData();
-  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId);
+  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
   if (!politician) notFound();
 
   const systemRatio = data?.systemWideRatio ?? 1094;

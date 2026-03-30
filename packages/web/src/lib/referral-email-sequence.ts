@@ -14,6 +14,10 @@ const HOUR_MS = 60 * 60 * 1000;
 const REFERRAL_TARGET = 3;
 const FOLLOW_UP_DELAYS_MS = [0, 24 * HOUR_MS, 96 * HOUR_MS] as const;
 
+/** Cron waits this long before retrying a step-0 send, giving the
+ *  welcome-email handler (signup / auth event) time to advance the step. */
+export const STEP_0_CRON_GRACE_MS = 10 * 60 * 1000;
+
 const voteValue = fmtParam(VOTE_TOKEN_VALUE);
 const annualReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
 const dailyDeaths = fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value);
@@ -129,6 +133,12 @@ export function getReferralSequenceAction(
   }
 
   if (state.referralEmailSequenceStep === 0) {
+    // The welcome-email handler sends step 0 synchronously during signup.
+    // Wait before the cron retries, so we don't double-send.
+    const ageMs = now.getTime() - state.createdAt.getTime();
+    if (ageMs < STEP_0_CRON_GRACE_MS) {
+      return null;
+    }
     return { type: "send", step: 0 };
   }
 

@@ -3,19 +3,42 @@ import {
   buildReferralSequenceEmail,
   getReferralSequenceAction,
   REFERRAL_EMAIL_SEQUENCE_LENGTH,
+  STEP_0_CRON_GRACE_MS,
 } from "../referral-email-sequence";
 
 describe("referral email sequence", () => {
-  it("sends the welcome email immediately", () => {
-    const action = getReferralSequenceAction({
-      createdAt: new Date("2026-03-10T00:00:00.000Z"),
-      newsletterSubscribed: true,
-      referralCount: 0,
-      referralEmailSequenceLastSentAt: null,
-      referralEmailSequenceStep: 0,
-    });
+  it("sends step 0 after grace period", () => {
+    const created = new Date("2026-03-10T00:00:00.000Z");
+    const now = new Date(created.getTime() + STEP_0_CRON_GRACE_MS + 1);
+    const action = getReferralSequenceAction(
+      {
+        createdAt: created,
+        newsletterSubscribed: true,
+        referralCount: 0,
+        referralEmailSequenceLastSentAt: null,
+        referralEmailSequenceStep: 0,
+      },
+      now,
+    );
 
     expect(action).toEqual({ type: "send", step: 0 });
+  });
+
+  it("skips step 0 during grace period to avoid duplicating welcome email", () => {
+    const created = new Date("2026-03-10T00:00:00.000Z");
+    const now = new Date(created.getTime() + STEP_0_CRON_GRACE_MS - 1);
+    const action = getReferralSequenceAction(
+      {
+        createdAt: created,
+        newsletterSubscribed: true,
+        referralCount: 0,
+        referralEmailSequenceLastSentAt: null,
+        referralEmailSequenceStep: 0,
+      },
+      now,
+    );
+
+    expect(action).toBeNull();
   });
 
   it("waits until the first follow-up is due", () => {

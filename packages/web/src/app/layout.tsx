@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { DM_Sans, Space_Mono, Source_Serif_4, Press_Start_2P } from "next/font/google";
+import { DM_Sans, Space_Mono, Source_Serif_4, Press_Start_2P, VT323 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
@@ -29,7 +29,12 @@ const pressStart2P = Press_Start_2P({
   weight: "400",
   variable: "--v0-font-press-start-2p",
 });
-const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.variable} ${pressStart2P.variable}`;
+const vt323 = VT323({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--v0-font-vt323",
+});
+const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.variable} ${pressStart2P.variable} ${vt323.variable}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(

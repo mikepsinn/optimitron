@@ -83,7 +83,7 @@ export default function Navbar() {
               <SheetTrigger asChild>
                 <button
                   type="button"
-                  className="border-4 border-primary bg-background p-2 hover:bg-foreground hover:text-background font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
+                  className="border-4 border-primary bg-background text-foreground p-2 hover:bg-foreground hover:text-background font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
                   aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5 stroke-[3px]" />

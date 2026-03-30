@@ -4,8 +4,7 @@
    FONT SETUP
    ======================================== */
 
-/* Press Start 2P loaded via next/font in layout.tsx — only VT323 needed here */
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+/* Both Press Start 2P and VT323 loaded via next/font in layout.tsx */
 
 /* ========================================
    CSS CUSTOM PROPERTIES - EGA PALETTE
@@ -88,7 +87,7 @@
 }
 
 .font-terminal {
-  font-family: 'VT323', monospace;
+  font-family: var(--v0-font-vt323), 'VT323', monospace;
   line-height: 1.4;
 }
 
@@ -545,7 +544,7 @@
 
 .narrator-text {
   flex: 1;
-  font-family: 'VT323', monospace;
+  font-family: var(--v0-font-vt323), 'VT323', monospace;
   font-size: 18px;
   line-height: 1.4;
   color: var(--sierra-white);

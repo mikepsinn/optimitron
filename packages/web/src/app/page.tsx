@@ -16,6 +16,8 @@ import { OptimizedGovernancePreview } from "@/components/landing/OptimizedGovern
 import { GovernmentReportCardPreview } from "@/components/landing/GovernmentReportCardPreview";
 import { PoliticianLeaderboardPreview } from "@/components/landing/PoliticianLeaderboardPreview";
 import { DemoPreview } from "@/components/landing/DemoPreview";
+import { OutcomeLabelsSection } from "@/components/dfda/OutcomeLabelsSection";
+import { ComparativeEffectivenessSection } from "@/components/dfda/ComparativeEffectivenessSection";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -181,6 +183,12 @@ export default function Home() {
       {/* ── 9. The Tool — Decentralized FDA ── */}
       <DecentralizedFDASection />
 
+      {/* ── 9b. Outcome Labels — what dFDA actually produces ── */}
+      <OutcomeLabelsSection />
+
+      {/* ── 9c. Treatment Rankings — ranked by what works ── */}
+      <ComparativeEffectivenessSection />
+
       {/* ── 10. The Incentive — IABs ── */}
       <IncentiveAlignmentBondsSection />
 
@@ -188,7 +196,7 @@ export default function Home() {
       <TwoFuturesSection />
 
       {/* ── 12. Watch the Demo — screenshot carousel ── */}
-      <DemoPreview />
+      {/* <DemoPreview /> */}
 
       {/* ── 13. Government Report Cards — mini leaderboard ── */}
       <GovernmentReportCardPreview />

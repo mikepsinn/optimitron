@@ -137,15 +137,39 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
       continue;
     }
 
+    // Claim by advancing the step BEFORE sending. If another cron
+    // invocation (or the welcome handler) already advanced, count === 0.
+    const nextStep = action.step + 1;
+    const { count } = await prisma.user.updateMany({
+      where: { id: user.id, referralEmailSequenceStep: action.step },
+      data: {
+        referralEmailSequenceStep: nextStep,
+        referralEmailSequenceLastSentAt: now,
+      },
+    });
+
+    if (count === 0) {
+      continue;
+    }
+
     try {
       const result = await sendReferralSequenceStep(user, referralCount, action.step);
-      if (result.status !== "sent") {
-        continue;
+      if (result.status === "sent") {
+        sent += 1;
       }
-
-      await advanceReferralSequence(user.id, action.step + 1, now);
-      sent += 1;
     } catch (error) {
+      // Roll back so the next cron run retries this step
+      await prisma.user
+        .updateMany({
+          where: { id: user.id, referralEmailSequenceStep: nextStep },
+          data: {
+            referralEmailSequenceStep: action.step,
+            referralEmailSequenceLastSentAt: user.referralEmailSequenceLastSentAt,
+          },
+        })
+        .catch((revertError) => {
+          console.error("[REFERRAL EMAIL] Revert failed", user.id, revertError);
+        });
       failures += 1;
       console.error("[REFERRAL EMAIL] Failed to send step", action.step, user.id, error);
     }
