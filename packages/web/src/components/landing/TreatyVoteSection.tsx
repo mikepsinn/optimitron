@@ -470,7 +470,7 @@ export default function TreatyVoteSection() {
                     </p>
                   </div>
                   <AuthForm
-                    callbackUrl="/#vote"
+                    callbackUrl="/dashboard"
                     referralCode={searchParams?.get("ref")}
                     compact={true}
                     emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
