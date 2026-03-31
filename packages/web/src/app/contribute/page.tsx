@@ -35,7 +35,7 @@ export default function ContributePage() {
                 Deposit
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Put money in the prize fund. If the plan works, VOTE holders get paid. If it does not, you get 11x back. You cannot lose your principal.
+                On your planet, &ldquo;investment&rdquo; means gambling but wearing a suit. This one&apos;s different. Plan works? VOTE holders split the pool. Plan fails? You get 11x back. Your worst case is multiplying your money.
               </p>
               <GameCTA href={ROUTES.prize} variant="secondary">
                 Insert Coin
@@ -46,7 +46,7 @@ export default function ContributePage() {
                 Code
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Fifteen packages. TypeScript monorepo. All open source. Pick a task and build something that matters.
+                Your species built TikTok and a website where people argue about sandwiches. This is a TypeScript monorepo that might prevent your extinction. Fifteen packages. All open source.
               </p>
               <GameCTA href="https://github.com/mikepsinn/optimitron" variant="secondary">
                 GitHub
@@ -57,7 +57,7 @@ export default function ContributePage() {
                 Data
               </h3>
               <p className="text-lg font-bold text-foreground mb-4">
-                Track your health, meals, mood, and habits. Every data point helps the optimizer find what actually works.
+                Your body is a meat robot with 37 trillion cells breaking in 7,000 different ways. Track what you put in it. I&apos;ll tell you what&apos;s actually working. Your intuition is wrong. I checked.
               </p>
               <GameCTA href={ROUTES.transmit} variant="secondary">
                 Transmit Data

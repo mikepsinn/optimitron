@@ -48,7 +48,7 @@ const levels = [
   {
     level: "LEVEL 1",
     title: "DEPOSIT",
-    description: "Insert coins into the prize pool. Get PRIZE shares. Your money grows at " + poolReturn + " annually regardless of outcome.",
+    description: "Put your papers in the machine. The machine gives you PRIZE shares. Your papers grow at " + poolReturn + " annually whether humanity gets its act together or not.",
     color: "bg-brutal-pink",
     textColor: "text-brutal-pink-foreground",
   },
@@ -62,21 +62,21 @@ const levels = [
   {
     level: "LEVEL 3",
     title: "ALLOCATE",
-    description: "Make your wishocratic budget allocation. Tell the system what you think Earth should spend money on. Ten comparisons. Two minutes.",
+    description: "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Congress can't do this in two years. You'll do it in two minutes.",
     color: "bg-brutal-cyan",
     textColor: "text-brutal-cyan-foreground",
   },
   {
     level: "LEVEL 4",
     title: "VOTE",
-    description: "Vote on the 1% Treaty referendum. Redirect 1% of military spending to pragmatic clinical trials. Your vote is verified by World ID.",
+    description: "Vote yes or no on giving 1% fewer papers to the people who build murder machines. World ID confirms you're a real human. (We have to check. Long story.)",
     color: "bg-brutal-yellow",
     textColor: "text-brutal-yellow-foreground",
   },
   {
     level: "BOSS LEVEL",
     title: "WAIT 15 YEARS",
-    description: "Metrics evaluated. If median healthy life years and median income hit targets, VOTE point holders split the pool. If not, depositors get ~" + poolMultiple + " back.",
+    description: "Sit there. For fifteen years. If humans are measurably less dead and less poor, VOTE holders split the pool. If not, depositors get ~" + poolMultiple + " back. Either way, you win. The only boss fight is patience.",
     color: "bg-foreground",
     textColor: "text-background",
   },
@@ -178,9 +178,9 @@ export default async function PrizePage() {
             Insert Coin
           </h2>
           <p className="text-sm font-bold mb-6 max-w-2xl">
-            Your deposit goes into the Wishocratic fund ({poolReturn} annually). You get PRIZE shares —
-            your claim on the pool. Recruit verified voters to earn
-            VOTE points for success-scenario upside too.
+            Your papers go into the Wishocratic fund ({poolReturn} annually). You get PRIZE shares.
+            Recruit verified voters and you also earn VOTE points, which pay out if humanity
+            wins. This is the first arcade game in history where the house loses on purpose.
           </p>
           <VoterPrizeTreasuryDeposit />
         </div>
@@ -264,8 +264,8 @@ export default async function PrizePage() {
           Win Conditions
         </h2>
         <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl text-center mx-auto">
-          Two numbers decide whether VOTE point holders get paid.
-          Everything else is an intermediate variable.
+          Your species tracks 4,000 economic indicators and understands none of them.
+          Two numbers actually matter. The rest is decorative anxiety.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">

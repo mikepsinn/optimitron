@@ -361,7 +361,7 @@ export default function MisconceptionsPage() {
         <div className="mt-10">
           <PrizeCTA
             headline="The evidence is clear. The only irrational response is to do nothing."
-            body="Every misconception above persists because of pluralistic ignorance. The 1% Treaty referendum proves demand for evidence-based governance. Deposit USDC, recruit verified voters, earn VOTE points."
+            body="Every misconception above persists because everyone assumes everyone else believes it. Eight billion people waiting for permission to want what they already want. The referendum is the moment they find out they are everyone."
             variant="pink"
           />
         </div>

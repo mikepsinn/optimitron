@@ -101,9 +101,10 @@ export default function DIhPage() {
               Not Clinical Trials
             </div>
             <p className="mt-3 text-xs font-bold leading-relaxed opacity-80">
-              Grant administration, overhead, intramural research programmes,
-              buildings, committees that review committees. $45.5 billion that
-              never touches a patient.
+              Grant administration, overhead, buildings, and committees that
+              review committees that review other committees. It&apos;s like a
+              fire department that spends 97% of its budget on the building
+              and 3% on water. $45.5 billion that never touches a patient.
             </p>
           </div>
           <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -122,8 +123,9 @@ export default function DIhPage() {
               dIH → Patient Subsidies
             </div>
             <p className="mt-3 text-xs font-bold text-muted-foreground leading-relaxed">
-              dIH flips the ratio. 97% goes to patient subsidies for pragmatic
-              trials. 3% to infrastructure. No grant committees.
+              dIH flips the ratio. 97% to patients. 3% to infrastructure.
+              No grant committees. No scientists spending half their careers
+              writing applications to ask permission to do science.
             </p>
           </div>
         </div>

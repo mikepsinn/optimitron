@@ -109,9 +109,9 @@ export default function IABPage() {
                 </h3>
               </div>
               <p className="text-sm font-bold leading-relaxed">
-                Perpetual payments to IAB holders, proportional to their
-                investment. This is why people buy the bonds — positive-EV
-                financial instrument, not a donation.
+                Your grandma bought war bonds that paid 4% and got dead Nazis.
+                You buy these and get 272% returns and dead diseases. Grandma
+                would be furious if she hadn&apos;t died of cancer.
               </p>
               <div className="mt-3 border-4 border-primary bg-background px-3 py-2 inline-block">
                 <span className="text-xs font-black uppercase text-muted-foreground">
@@ -130,10 +130,11 @@ export default function IABPage() {
                 </h3>
               </div>
               <p className="text-sm font-bold leading-relaxed">
-                Campaign funding for politicians who supported the treaty and
-                push for expansion. Politicians who vote with citizens get
-                funded. Those who don&apos;t, don&apos;t. Alignment scoring
-                makes it automatic.
+                The NRA gives politicians a letter grade and your senators
+                are more afraid of a bad mark than a mass shooting. Same
+                system, except &ldquo;guns&rdquo; is replaced with &ldquo;not
+                dying from diseases.&rdquo; Vote yes, get funded. Vote no,
+                watch your opponent get funded.
               </p>
               <div className="mt-3 border-2 border-border bg-background px-3 py-2 inline-block">
                 <span className="text-xs font-black uppercase text-muted-foreground">
@@ -180,9 +181,11 @@ export default function IABPage() {
               {`${fmtParam({...TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}–${fmtParam({...WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, unit: "USD"})}`}
             </div>
             <p className="text-xs font-bold mt-2">
-              Per-capita lifetime income gain from optimized resource allocation.
-              Bondholders also earn 10% of treaty revenue in perpetuity.
-              Everyone benefits from higher GDP.
+              Per-capita lifetime income gain. Turns out when you stop spending
+              papers on destruction and start spending them on production,
+              things get produced. Bondholders also collect 10% of treaty
+              revenue. Forever. Which is a long time. Unless you die of
+              preventable disease. Which you&apos;re fixing. So it works out.
             </p>
           </div>
         </div>
@@ -235,7 +238,7 @@ export default function IABPage() {
               </li>
             </ul>
             <p className="text-xs font-bold mt-3 opacity-80">
-              Purpose: Collapse pluralistic ignorance. Prove everyone wants this.
+              Purpose: Prove that 8 billion humans who prefer not dying aren&apos;t the weird ones.
             </p>
             <NavItemLink
               item={prizeLink}
@@ -268,7 +271,7 @@ export default function IABPage() {
               </li>
             </ul>
             <p className="text-xs font-bold mt-3 opacity-80">
-              Purpose: Fund the lobbying campaign. Turn proven demand into policy.
+              Purpose: Give papers to loud humans until politicians do useful things. (This is called &ldquo;lobbying.&rdquo;)
             </p>
             <span className="inline-flex items-center mt-4 text-sm font-black uppercase">
               You are here
@@ -303,9 +306,10 @@ export default function IABPage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground font-bold text-center mt-4">
-            The loop is self-reinforcing. As GDP rises from cured diseases,
-            the political cost of NOT expanding the treaty exceeds the cost of expanding it.
-            Bondholders earn more. Politicians who expand get funded. Everyone&apos;s income rises.
+            It&apos;s a dog chasing its tail, except the dog is capitalism and the
+            tail is made of cured diseases instead of corpses. Bondholders get richer.
+            Politicians who expand get funded. Healthy people earn more and spend more.
+            Nobody has to become a better person. The greed handles it.
           </p>
         </div>
       </section>

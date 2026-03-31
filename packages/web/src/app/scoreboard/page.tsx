@@ -151,9 +151,9 @@ export default async function ScoreboardPage() {
                 Deposit
               </h3>
               <p className="text-sm font-bold">
-                Put USDC into the prize pool. Get PRIZE shares. Your money grows
-                at {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years regardless
-                of outcome.
+                Put your papers in the machine. Get PRIZE shares. Your papers
+                grow at {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15 years whether
+                humanity figures it out or not.
               </p>
             </div>
             <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-5">
@@ -164,8 +164,9 @@ export default async function ScoreboardPage() {
                 Recruit
               </h3>
               <p className="text-sm font-bold">
-                Share your referral link. Every person who verifies support for
-                the 1% Treaty via World ID earns you 1 VOTE point.
+                Share your link. Every human who votes earns you 1 VOTE point.
+                It&apos;s a pyramid scheme where the thing at the top is not
+                dying from preventable diseases.
               </p>
             </div>
             <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-5">

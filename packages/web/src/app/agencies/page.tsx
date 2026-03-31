@@ -24,7 +24,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
         emoji: "🏛️",
         name: "dCongress",
         description:
-          "Direct democracy via pairwise comparisons and referendums. Budget allocation in two minutes. Legislation by direct vote.",
+          "Every citizen votes on the budget. Takes two minutes. Your Congress takes two years and still gets it wrong.",
         href: ROUTES.dcongress,
         earthEquivalent: "Congress",
         color: "yellow",
@@ -70,7 +70,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
         emoji: "💰",
         name: "dOMB",
         description:
-          "Optimal budget allocation using diminishing-returns modelling. The eigenvector asks everyone.",
+          "What should your government spend money on? I asked everyone and did the maths. Your current method is to let lobbyists decide over dinner.",
         href: ROUTES.domb,
         earthEquivalent: "Office of Management and Budget",
         color: "yellow",
@@ -79,7 +79,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
         emoji: "🔍",
         name: "dGAO",
         description:
-          "Every attestation on IPFS. Every fund distribution verifiable. The audit is the ledger.",
+          "Every number stored where nobody can quietly delete it. Your governments love deleting things. This system can't.",
         href: ROUTES.dgao,
         earthEquivalent: "Government Accountability Office",
         color: "background",
@@ -93,7 +93,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
         emoji: "🧬",
         name: "dIH",
         description:
-          "Pragmatic trials at 2% of the cost. 44x the speed. Real patients, real conditions, real data.",
+          "Same science, 30x cheaper, 44x faster. Your NIH spends 97% of its budget on things that aren't clinical trials. It's a fire department that budgets 3% for water.",
         href: ROUTES.dih,
         earthEquivalent: "National Institutes of Health + FDA",
         color: "pink",
@@ -189,8 +189,9 @@ export default function AgenciesIndexPage() {
           See How Earth Does It
         </h2>
         <p className="mx-auto mb-6 max-w-2xl text-lg font-bold opacity-80">
-          Every Earth government graded on spending vs outcomes. Spoiler: most
-          agencies get an F.
+          Every Earth government graded on spending vs outcomes. We publish
+          the results the same way you publish restaurant hygiene ratings.
+          Except you actually read those.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <GameCTA href="/governments" variant="primary" size="lg">

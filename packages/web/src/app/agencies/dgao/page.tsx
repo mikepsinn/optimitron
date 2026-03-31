@@ -15,7 +15,7 @@ const pipelineSteps = [
     number: 1,
     label: "Citizen Preferences",
     description:
-      "Citizens compare budget priorities in pairwise trade-offs via Wishocracy. Results are aggregated using eigenvector decomposition.",
+      "Citizens pick between two things. Then two more. Do this enough times and the maths tells you what everyone actually wants. Your current method is to let 535 people guess.",
     tech: "Storacha (IPFS)",
     techDetail: "Aggregated preference snapshots are content-addressed on IPFS — every version is immutable and linked to its predecessor.",
     color: "bg-brutal-pink",
@@ -27,7 +27,7 @@ const pipelineSteps = [
     number: 2,
     label: "Alignment Scoring",
     description:
-      "Politician voting records are compared against citizen preferences to compute a Citizen Alignment Score (0-100%).",
+      "We compare what your politicians actually voted for against what you actually wanted. The gap between those two numbers is called a 'Citizen Alignment Score.' It is usually depressing.",
     tech: "Hypercerts (AT Protocol)",
     techDetail: "Each alignment score is published as a Hypercert — an Activity claim with Measurements, Evaluations, and Attachments.",
     color: "bg-brutal-yellow",
@@ -39,7 +39,7 @@ const pipelineSteps = [
     number: 3,
     label: "Verifiable Storage",
     description:
-      "All Hypercert records and preference snapshots are stored on Storacha, making them content-addressed and tamper-proof.",
+      "Everything is stored where nobody can quietly delete it. Your governments love deleting things. This one can't.",
     tech: "Storacha Gateway",
     techDetail: "Every CID resolves to its exact data at {cid}.ipfs.storacha.link — no server can alter it after the fact.",
     color: "bg-brutal-cyan",
@@ -51,7 +51,7 @@ const pipelineSteps = [
     number: 4,
     label: "Incentive Alignment Bonds",
     description:
-      "Smart contracts read alignment scores and distribute $WISH tokens to politicians proportional to their citizen alignment.",
+      "Smart contracts read the scores and distribute money to politicians based on how much they actually did what voters wanted. Not how much they promised. Not how good their hair is. What they did.",
     tech: "$WISH ERC-20",
     techDetail: "A 0.5% transaction tax funds UBI distribution. Politicians earn $WISH by aligning with citizens, not donors.",
     color: "bg-brutal-cyan",
@@ -63,7 +63,7 @@ const pipelineSteps = [
     number: 5,
     label: "Universal Basic Income",
     description:
-      "The transaction tax accumulates in a treasury that distributes UBI to verified citizens. World ID prevents sybil attacks.",
+      "The 0.5% tax accumulates. Then it goes to everyone. Equally. Your current welfare system has 80+ programmes, costs $1.1 trillion to administer, and still loses people in the cracks. This one has a for-loop.",
     tech: "World ID + Smart Contracts",
     techDetail: "No welfare bureaucracy. No IRS. Automated redistribution funded by economic activity, not income tax.",
     color: "bg-brutal-pink",

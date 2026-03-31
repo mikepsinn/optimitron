@@ -155,9 +155,10 @@ export default function GovernmentsPage() {
           OPTIMISE THE GOVERNMENTS
         </h2>
         <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed">
-          These numbers do not have to stay this way. The Earth Optimization Game
-          lets you set priorities, rank policies by evidence, and hold your
-          government accountable with data instead of shouting.
+          These numbers do not have to stay this way. Every minute you
+          spend making that face at this page, 104 humans permanently stop.
+          The game lets you do something about it. It takes thirty seconds.
+          Your species spends longer choosing sandwich toppings.
         </p>
         <GameCTA href={ROUTES.wishocracy} variant="secondary" size="lg">
           Play the Game

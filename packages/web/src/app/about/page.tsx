@@ -213,8 +213,10 @@ export default function AboutPage() {
       <section className="mb-16">
         <h2 className="section-title">The Economic System</h2>
         <p className="text-sm text-muted-foreground mb-6 font-bold max-w-3xl">
-          Diagnosing the problem is step one. Funding the solution is step two.
-          Three separate mechanisms, three separate phases. Don&apos;t mix them up.
+          On your planet, nothing happens without small pieces of paper with
+          presidents on them. So here are three ways to make the papers flow in
+          the right direction. Three mechanisms, three phases. Don&apos;t mix them
+          up — your species has a habit of confusing different piles of money.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="card bg-brutal-pink text-brutal-pink-foreground border-primary">
