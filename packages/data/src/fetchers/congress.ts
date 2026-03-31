@@ -426,7 +426,7 @@ export async function fetchMembers(
     nextUrl = json.pagination?.next;
     // Append API key to pagination URL if needed
     if (nextUrl && congressApiKey && !nextUrl.includes('api_key')) {
-      const sep = nextUrl.includes('?') ? '&' : '?';
+      const sep: '&' | '?' = nextUrl.includes('?') ? '&' : '?';
       nextUrl = `${nextUrl}${sep}api_key=${congressApiKey}`;
     }
   }
