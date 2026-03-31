@@ -194,11 +194,11 @@ export default function DepartmentOfWarPage() {
         <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-foreground">
           How We Handle Conflict on My Planet
         </h2>
-        <div className="border-4 border-primary bg-foreground p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-lg font-black leading-relaxed text-background">
+        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-lg font-black leading-relaxed">
             We ended war in year twelve.
           </p>
-          <p className="mt-4 font-bold leading-relaxed text-background">
+          <p className="mt-4 font-bold leading-relaxed">
             Not through pacifism or moral awakening or a particularly moving
             speech. We just ran the numbers. War is a negative-sum game — every
             participant ends up with less than they started with, including the
@@ -206,7 +206,7 @@ export default function DepartmentOfWarPage() {
             continuing to wage war became roughly as popular as volunteering to
             set your own house on fire.
           </p>
-          <p className="mt-4 font-bold leading-relaxed text-muted-foreground">
+          <p className="mt-4 font-bold leading-relaxed opacity-80">
             Disputes still happen. We resolve them with data, binding
             arbitration, and an optimisation function that finds the allocation
             where both parties are measurably better off. It takes about six
