@@ -409,6 +409,7 @@ export async function fetchMembers(
 ): Promise<CongressMember[]> {
   const congressNum = congress ?? CURRENT_CONGRESS;
   const path = `/member/congress/${congressNum}`;
+  const congressApiKey = getCongressApiKey();
 
   // Paginate through all results (API max 250 per page, Congress has 535+ members)
   const allRaw: RawMemberListItem[] = [];
@@ -418,14 +419,15 @@ export async function fetchMembers(
   });
 
   while (nextUrl) {
-    const json = await fetchCongressJson<{ members: RawMemberListItem[]; pagination?: CongressPagination }>(nextUrl);
+    const json: { members: RawMemberListItem[]; pagination?: CongressPagination } | null =
+      await fetchCongressJson(nextUrl);
     if (!json?.members || json.members.length === 0) break;
     allRaw.push(...json.members);
     nextUrl = json.pagination?.next;
     // Append API key to pagination URL if needed
-    if (nextUrl && process.env.CONGRESS_API_KEY && !nextUrl.includes('api_key')) {
+    if (nextUrl && congressApiKey && !nextUrl.includes('api_key')) {
       const sep = nextUrl.includes('?') ? '&' : '?';
-      nextUrl = `${nextUrl}${sep}api_key=${process.env.CONGRESS_API_KEY}`;
+      nextUrl = `${nextUrl}${sep}api_key=${congressApiKey}`;
     }
   }
 

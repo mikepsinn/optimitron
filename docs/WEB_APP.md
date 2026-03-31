@@ -89,7 +89,17 @@ Important environment values:
 - Project root directory: `packages/web`
 - Build command: `pnpm run build`
 - Do not force static export
+- Automatic Git-based deployments from `main` are disabled in [`packages/web/vercel.json`](../packages/web/vercel.json)
+- Production deploys should run through GitHub Actions in [`.github/workflows/web-ci.yml`](../.github/workflows/web-ci.yml) after `web-validate` passes
 - Run `pnpm db:deploy` against production before first use
+
+Recommended GitHub/Vercel production gate:
+
+1. Set GitHub secret `VERCEL_TOKEN`
+2. Set GitHub repository variables `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`
+3. Protect `main` and require the `web-validate` check before merge
+4. Optionally add required reviewers to the GitHub `production` environment so deploys need explicit approval
+5. Keep Vercel project root pointed at `packages/web`
 
 Required production envs:
 

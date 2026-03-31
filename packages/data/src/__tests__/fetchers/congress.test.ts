@@ -536,6 +536,38 @@ describe('Congress Fetcher', () => {
       expect(callUrl).toContain('/member/congress/118');
     });
 
+    it('appends API key to pagination URLs when the next link omits it', async () => {
+      process.env['CONGRESS_API_KEY'] = 'test-key-abc';
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              members: [mockMemberListItem],
+              pagination: {
+                count: 2,
+                next: 'https://api.congress.gov/v3/member/congress/118?offset=250',
+              },
+            }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              members: [mockMemberListItem2],
+              pagination: { count: 2 },
+            }),
+        });
+      globalThis.fetch = fetchMock;
+
+      const members = await fetchMembers(118);
+
+      expect(members).toHaveLength(2);
+      expect(fetchMock.mock.calls[1]?.[0]).toBe(
+        'https://api.congress.gov/v3/member/congress/118?offset=250&api_key=test-key-abc',
+      );
+    });
+
     it('defaults to current congress when not specified', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
