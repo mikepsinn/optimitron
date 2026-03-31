@@ -2563,6 +2563,7 @@ enum VoteTokenMintStatus {
   FAILED
 }
 
+/// Type of user-facing receipt published through Hypercert / AT Protocol flows
 /// Links a referendum vote to an on-chain VOTE token mint.
 /// 1 VOTE per verified vote per referendum.
 model VoteTokenMint {

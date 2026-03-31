@@ -203,6 +203,16 @@ export async function getDashboardData(
       comingSoon: false,
     },
     {
+      reason: "HYPERCERT_MINT",
+      label: getWishReasonLabel("HYPERCERT_MINT"),
+      emoji: getWishReasonEmoji("HYPERCERT_MINT"),
+      wishesLabel: "3",
+      completed: completedSet.has("HYPERCERT_MINT"),
+      href: null,
+      anchor: null,
+      comingSoon: false,
+    },
+    {
       reason: "SHARE_REPORT",
       label: getWishReasonLabel("SHARE_REPORT"),
       emoji: getWishReasonEmoji("SHARE_REPORT"),

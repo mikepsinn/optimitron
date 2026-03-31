@@ -8,7 +8,7 @@ import { TLDRSection } from "@/components/landing/TLDRSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
 import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
-
+import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
 import { TwoFuturesSection } from "@/components/landing/TwoFuturesSection";
 import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySection";
 import { PoliticalDysfunctionTaxSection } from "@/components/landing/PoliticalDysfunctionTaxSection";
@@ -193,6 +193,9 @@ export default function Home() {
 
       {/* ── 8. The Solution — 1% Treaty ── */}
       <OnePercentTreatySection />
+
+      {/* ── 8b. Wishocracy Results — citizen vs government pie charts ── */}
+      <WishocracyPreview />
 
       {/* ── 9. The Tool — Decentralized FDA ── */}
       <DecentralizedFDASection />
