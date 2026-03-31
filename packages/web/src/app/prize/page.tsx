@@ -57,21 +57,21 @@ const levels = [
     title: "RECRUIT",
     description: "Share your referral link. Every person who verifies support for the 1% Treaty via World ID earns you 1 VOTE point. No deposit required.",
     color: "bg-brutal-yellow",
-    textColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     level: "LEVEL 3",
     title: "ALLOCATE",
     description: "Make your wishocratic budget allocation. Tell the system what you think Earth should spend money on. Ten comparisons. Two minutes.",
     color: "bg-brutal-cyan",
-    textColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     level: "LEVEL 4",
     title: "VOTE",
     description: "Vote on the 1% Treaty referendum. Redirect 1% of military spending to pragmatic clinical trials. Your vote is verified by World ID.",
     color: "bg-brutal-yellow",
-    textColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     level: "BOSS LEVEL",
@@ -134,27 +134,27 @@ export default async function PrizePage() {
       {/* GAME OVER CARDS — The Two Outcomes */}
       <section className="mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-brutal-yellow p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
               Game Over — You Lose
             </p>
-            <div className="font-mono text-3xl font-black text-foreground mb-3">
+            <div className="font-mono text-3xl font-black mb-3">
               ~{poolMultiple} BACK
             </div>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold leading-relaxed">
               Humanity stays stupid. Metrics miss the targets after 15 years.
               Your coins come back multiplied — {poolReturn} annual growth for
               15 years. Better than any retirement fund on your planet.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] mb-2 opacity-80">
               Game Over — You Win
             </p>
-            <div className="font-mono text-3xl font-black text-foreground mb-3">
+            <div className="font-mono text-3xl font-black mb-3">
               {incomeGain}+ INCOME
             </div>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold leading-relaxed">
               Humanity gets its act together. You lose the deposit. But your
               income just went up {incomeGain} per capita lifetime
               and you gained {haleGain} extra healthy years. You won&apos;t miss
@@ -268,21 +268,21 @@ export default async function PrizePage() {
           Everything else is an intermediate variable.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black text-foreground mb-2 uppercase">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-mono text-lg font-black mb-2 uppercase">
               Median Healthy Life Years
             </h3>
-            <p className="text-sm text-foreground leading-relaxed font-bold">
+            <p className="text-sm leading-relaxed font-bold">
               Not &ldquo;are you alive&rdquo; but &ldquo;are you alive and can you
               open a jar without crying.&rdquo; Median, not mean — one billionaire
               living to 120 doesn&apos;t mean your healthcare works.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black text-foreground mb-2 uppercase">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-mono text-lg font-black mb-2 uppercase">
               Median Real After-Tax Income
             </h3>
-            <p className="text-sm text-foreground leading-relaxed font-bold">
+            <p className="text-sm leading-relaxed font-bold">
               What can a normal person actually buy after the government&apos;s had
               its go at their paycheque? Not GDP — that counts arms dealing and
               divorce lawyers. This counts &ldquo;can you feed your kids.&rdquo;
@@ -310,20 +310,20 @@ export default async function PrizePage() {
             </Accordion.Header>
             <Accordion.Content className="px-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="border-4 border-primary bg-brutal-yellow p-4">
-                  <h4 className="font-mono font-black uppercase text-foreground text-xs mb-2">
+                <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+                  <h4 className="font-mono font-black uppercase text-xs mb-2">
                     Zero Insider Advantage
                   </h4>
-                  <p className="text-xs text-foreground font-bold leading-relaxed">
+                  <p className="text-xs font-bold leading-relaxed">
                     No team allocation. No founder tokens. No pre-sale. No admin
                     keys. Your $100 gets exactly the same terms as $100,000.
                   </p>
                 </div>
-                <div className="border-4 border-primary bg-brutal-cyan p-4">
-                  <h4 className="font-mono font-black uppercase text-foreground text-xs mb-2">
+                <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+                  <h4 className="font-mono font-black uppercase text-xs mb-2">
                     Fully On-Chain
                   </h4>
-                  <p className="text-xs text-foreground font-bold leading-relaxed">
+                  <p className="text-xs font-bold leading-relaxed">
                     Every deposit, every VOTE mint, every metric update — all
                     on-chain. No committees. No discretion. Just smart contracts
                     doing arithmetic. Code is open source on GitHub.
@@ -414,11 +414,11 @@ export default async function PrizePage() {
         </div>
 
         {/* Final CTA */}
-        <div className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-          <h2 className="font-pixel text-2xl font-black text-brutal-pink-foreground mb-3 uppercase">
+        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+          <h2 className="font-pixel text-2xl font-black mb-3 uppercase">
             Play the Game
           </h2>
-          <p className="text-background mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
+          <p className="mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
             The current cost of governance dysfunction is{" "}
             {fmtParam({...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"})} per year.
             The break-even probability is 0.0067%. You don&apos;t need to be

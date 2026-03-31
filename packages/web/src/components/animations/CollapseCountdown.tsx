@@ -70,9 +70,9 @@ export function CollapseCountdown({
   if (!mounted) {
     return (
       <div className={`text-center ${className}`}>
-        <div className="inline-block p-6 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(220,38,38,0.3)]">
-          <div className="text-5xl sm:text-6xl font-black text-brutal-red">—</div>
-          <div className="text-sm font-bold text-brutal-$1 mt-2 uppercase">
+        <div className="inline-block p-6 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-5xl sm:text-6xl font-black text-brutal-red-foreground">—</div>
+          <div className="text-sm font-bold text-brutal-red-foreground mt-2 uppercase">
             Until the destructive economy hits 25% of GDP
           </div>
         </div>
@@ -84,11 +84,11 @@ export function CollapseCountdown({
     const tl = computeTimeLeft(targetDate);
     return (
       <div className={`text-center ${className}`}>
-        <div className="inline-block p-6 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(220,38,38,0.3)]">
-          <div className="text-xl font-black text-brutal-red">
+        <div className="inline-block p-6 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-xl font-black text-brutal-red-foreground">
             Approximately {tl.years} years, {tl.days} days remaining
           </div>
-          <div className="text-sm font-bold text-brutal-$1 mt-2 uppercase">
+          <div className="text-sm font-bold text-brutal-red-foreground mt-2 uppercase">
             Until the destructive economy hits 25% of GDP
           </div>
         </div>
@@ -106,22 +106,22 @@ export function CollapseCountdown({
         {units.map((unit) => (
           <div
             key={unit}
-            className="flex flex-col items-center p-3 sm:p-4 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(220,38,38,0.3)] min-w-[4rem] sm:min-w-[5rem]"
+            className="flex flex-col items-center p-3 sm:p-4 bg-brutal-red border-4 border-brutal-red shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] min-w-[4rem] sm:min-w-[5rem]"
           >
             <span
               ref={refs[unit]}
-              className="text-3xl sm:text-4xl font-black text-brutal-red tabular-nums"
+              className="text-3xl sm:text-4xl font-black text-brutal-red-foreground tabular-nums"
               style={{ fontVariantNumeric: "tabular-nums" }}
             >
               —
             </span>
-            <span className="text-[10px] sm:text-xs font-bold text-brutal-$1 uppercase mt-1 tracking-wider">
+            <span className="text-[10px] sm:text-xs font-bold text-brutal-red-foreground uppercase mt-1 tracking-wider">
               {unit}
             </span>
           </div>
         ))}
       </div>
-      <div className="text-sm font-bold text-brutal-$1 mt-3 uppercase">
+      <div className="text-sm font-bold text-brutal-red-foreground mt-3 uppercase">
         Until the destructive economy hits 25% of GDP
       </div>
     </div>

@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   ConversationContext,
   parseWithRegex,
-  type ChatMessage,
   type ParsedMeasurement,
 } from "@optimitron/chat-ui";
 
@@ -41,27 +40,6 @@ describe("chat-ui integration", () => {
       // Message was added to context
       expect(ctx.getMessages()).toHaveLength(1);
       expect(ctx.getMessages()[0]!.role).toBe("user");
-    });
-  });
-
-  describe("ChatMessage type compatibility", () => {
-    it("text message shape is valid", () => {
-      const msg: ChatMessage = {
-        type: "text",
-        role: "user",
-        content: "hello",
-      };
-      expect(msg.type).toBe("text");
-    });
-
-    it("apiKey message shape is valid", () => {
-      const msg: ChatMessage = { type: "apiKey" };
-      expect(msg.type).toBe("apiKey");
-    });
-
-    it("mood message shape is valid", () => {
-      const msg: ChatMessage = { type: "mood", id: "m1" };
-      expect(msg.type).toBe("mood");
     });
   });
 });

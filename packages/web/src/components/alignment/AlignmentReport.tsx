@@ -493,7 +493,7 @@ export function AlignmentReport({
               key={pol.politicianId}
               className="border-4 border-primary bg-background p-3"
             >
-              <div className="text-xs font-black uppercase text-brutal-cyan-foreground">
+              <div className="text-xs font-black uppercase text-foreground">
                 {pol.name}
               </div>
               <div className="text-xs font-bold text-muted-foreground mt-1">

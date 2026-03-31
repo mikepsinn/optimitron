@@ -117,16 +117,16 @@ export function IABCalculator() {
           transition={{ duration: 0.2 }}
           className="p-5 border-4 border-primary bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
             If the Plan Fails
           </div>
-          <div className="text-3xl font-black text-foreground mb-1">
+          <div className="text-3xl font-black text-brutal-yellow-foreground mb-1">
             {formatUSD(failReturn)}
           </div>
-          <div className="text-sm font-bold text-muted-foreground mb-3">
+          <div className="text-sm font-bold text-brutal-yellow-foreground mb-3">
             +{formatUSD(failProfit)} profit ({FAIL_MULTIPLIER.toFixed(1)}x your money)
           </div>
-          <div className="text-xs text-muted-foreground font-bold space-y-1">
+          <div className="text-xs text-brutal-yellow-foreground font-bold space-y-1">
             <p>
               {POOL_RETURN_DISPLAY} annual Wishocratic fund return × {POOL_YEARS} years.
             </p>
@@ -134,7 +134,7 @@ export function IABCalculator() {
               Principal deployed in the Wishocratic fund.
               Returned with growth if threshold not met.
             </p>
-            <p className="font-bold text-muted-foreground pt-1">
+            <p className="font-bold pt-1">
               Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money.
             </p>
           </div>
@@ -148,26 +148,26 @@ export function IABCalculator() {
           transition={{ duration: 0.2 }}
           className="p-5 border-4 border-primary bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="text-xs font-black uppercase text-brutal-cyan-foreground mb-1">
             If the Plan Succeeds
           </div>
-          <div className="text-3xl font-black text-foreground mb-1">
+          <div className="text-3xl font-black text-brutal-cyan-foreground mb-1">
             {formatUSD(annualRevShare)}/yr base
           </div>
-          <div className="text-sm font-bold text-muted-foreground mb-3">
+          <div className="text-sm font-bold text-brutal-cyan-foreground mb-3">
             + vote-proportional bonus from verified referrals
           </div>
-          <div className="text-xs text-muted-foreground font-bold space-y-1">
+          <div className="text-xs text-brutal-cyan-foreground font-bold space-y-1">
             <p>
               Base <ParameterValue param={VICTORY_BOND_ANNUAL_RETURN_PCT} /> revenue share
               of treaty flows — multiplied by your verified referral votes.
               Plus your personal lifetime income increases by{" "}
-              <span className="font-bold text-muted-foreground">
+              <span className="font-bold">
                 {formatUSD(TREATY_INCOME_GAIN)}–{formatUSD(WISHONIA_INCOME_GAIN)}
               </span>{" "}
               — just for being alive when the treaty passes.
             </p>
-            <p className="font-bold text-muted-foreground pt-1">
+            <p className="font-bold pt-1">
               That&apos;s everyone. Not just bondholders. Everyone.
             </p>
           </div>

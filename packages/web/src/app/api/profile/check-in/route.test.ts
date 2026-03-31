@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
   saveDailyCheckIn: vi.fn(),
+  grantWishes: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -13,12 +14,18 @@ vi.mock("@/lib/profile.server", () => ({
   saveDailyCheckIn: mocks.saveDailyCheckIn,
 }));
 
+vi.mock("@/lib/wishes.server", () => ({
+  grantWishes: mocks.grantWishes,
+}));
+
 import { POST } from "./route";
 
 describe("profile daily check-in route", () => {
   beforeEach(() => {
     mocks.requireAuth.mockReset();
     mocks.saveDailyCheckIn.mockReset();
+    mocks.grantWishes.mockReset();
+    mocks.grantWishes.mockResolvedValue(null);
   });
 
   it("returns 401 when authentication fails", async () => {

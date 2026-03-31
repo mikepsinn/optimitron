@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
   getCurrentUser: vi.fn(),
   ensureWishocraticItemsExist: vi.fn(),
+  grantWishes: vi.fn(),
+  checkBadgesAfterWish: vi.fn(),
   findFirst: vi.fn(),
   findMany: vi.fn(),
   update: vi.fn(),
@@ -65,6 +67,14 @@ vi.mock("@/lib/wishocracy-catalog.server", () => ({
   ensureWishocraticItemsExist: mocks.ensureWishocraticItemsExist,
 }));
 
+vi.mock("@/lib/wishes.server", () => ({
+  grantWishes: mocks.grantWishes,
+}));
+
+vi.mock("@/lib/badges.server", () => ({
+  checkBadgesAfterWish: mocks.checkBadgesAfterWish,
+}));
+
 import { GET, POST, PATCH } from "./route";
 
 describe("wishocracy allocations route", () => {
@@ -74,6 +84,9 @@ describe("wishocracy allocations route", () => {
     mocks.getCurrentUser.mockReset();
     mocks.ensureWishocraticItemsExist.mockReset();
     mocks.ensureWishocraticItemsExist.mockResolvedValue(undefined);
+    mocks.grantWishes.mockReset();
+    mocks.grantWishes.mockResolvedValue(null);
+    mocks.checkBadgesAfterWish.mockReset();
     mocks.findFirst.mockReset();
     mocks.findMany.mockReset();
     mocks.update.mockReset();
@@ -188,6 +201,11 @@ describe("wishocracy allocations route", () => {
         allocationA: 20,
         allocationB: 80,
       },
+    });
+    expect(mocks.grantWishes).toHaveBeenCalledWith({
+      userId: "user_1",
+      reason: "WISHOCRATIC_ALLOCATION",
+      amount: 2,
     });
   });
 

@@ -35,8 +35,8 @@ export default async function ReferendumsIndexPage() {
       </section>
 
       {referendums.length === 0 ? (
-        <div className="border-4 border-primary bg-brutal-yellow p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-          <p className="text-lg font-black uppercase text-foreground">
+        <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
+          <p className="text-lg font-black uppercase">
             No active referendums right now.
           </p>
           <p className="text-sm font-bold text-muted-foreground mt-2">
@@ -62,8 +62,8 @@ export default async function ReferendumsIndexPage() {
                     </p>
                   )}
                 </div>
-                <div className="flex-shrink-0 border-4 border-primary bg-brutal-cyan px-4 py-2 text-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  <div className="text-2xl font-black text-foreground">
+                <div className="flex-shrink-0 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground px-4 py-2 text-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-2xl font-black">
                     {referendum._count.votes}
                   </div>
                   <div className="text-[10px] font-black uppercase text-muted-foreground">

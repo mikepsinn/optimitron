@@ -145,17 +145,17 @@ export default function DTreasuryPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-4 border-primary bg-brutal-cyan p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">Not this</div>
-            <div className="text-sm font-black text-foreground">An investment vehicle</div>
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-black uppercase mb-1">Not this</div>
+            <div className="text-sm font-black">An investment vehicle</div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">Not this</div>
-            <div className="text-sm font-black text-foreground">A security or speculative asset</div>
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-black uppercase mb-1">Not this</div>
+            <div className="text-sm font-black">A security or speculative asset</div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">This</div>
-            <div className="text-sm font-black text-foreground">Money with built-in governance</div>
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-black uppercase mb-1">This</div>
+            <div className="text-sm font-black">Money with built-in governance</div>
           </div>
         </div>
       </section>
@@ -247,14 +247,14 @@ export default function DTreasuryPage() {
               </div>
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex items-start gap-4">
               <span className="w-8 h-8 bg-foreground text-background flex items-center justify-center text-xs font-black shrink-0">
                 04
               </span>
               <div>
-                <h3 className="font-black uppercase text-foreground text-sm">No politicians deciding. No lobbying. Just data.</h3>
-                <p className="text-sm text-foreground font-bold mt-1">
+                <h3 className="font-black uppercase text-sm">No politicians deciding. No lobbying. Just data.</h3>
+                <p className="text-sm font-bold mt-1">
                   The budget reflects what citizens actually want, updated
                   continuously, verified mathematically. On my planet, this
                   process takes about four minutes a week. You lot seem to spend
@@ -322,11 +322,11 @@ export default function DTreasuryPage() {
       </section>
 
       {/* CTA */}
-      <section className="card bg-brutal-pink border-primary text-center">
-        <h2 className="text-2xl font-black text-brutal-pink-foreground mb-3 uppercase">
+      <section className="card bg-brutal-pink text-brutal-pink-foreground border-primary text-center">
+        <h2 className="text-2xl font-black mb-3 uppercase">
           Money That Does Something
         </h2>
-        <p className="text-background mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
+        <p className="mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
           Your current system: earn money, get taxed, hope politicians spend it
           well, watch them not do that, repeat for 200 years. The alternative:
           money that funds public goods automatically, distributes a basic

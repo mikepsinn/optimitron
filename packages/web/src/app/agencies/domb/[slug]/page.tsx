@@ -236,13 +236,13 @@ export default async function BudgetCategoryPage({
           {cat.name}
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="border-4 border-primary p-4 bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Current Spending</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">{fmt(cat.currentSpending)}</div>
+          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-bold uppercase mb-1">Current Spending</div>
+            <div className="text-2xl sm:text-3xl font-black">{fmt(cat.currentSpending)}</div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Optimal Spending</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">{fmt(cat.optimalSpending)}</div>
+          <div className="border-4 border-primary p-4 bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-bold uppercase mb-1">Optimal Spending</div>
+            <div className="text-2xl sm:text-3xl font-black">{fmt(cat.optimalSpending)}</div>
             {cat.oslCiLow !== undefined && cat.oslCiHigh !== undefined && (
               <div className="text-xs font-bold text-muted-foreground mt-1">
                 95% CI: {fmt(cat.oslCiLow)} – {fmt(cat.oslCiHigh)}
@@ -254,17 +254,17 @@ export default async function BudgetCategoryPage({
               cat.gap >= 0 ? "bg-brutal-cyan" : "bg-brutal-red"
             }`}
           >
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Gap</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">
+            <div className="text-xs font-bold uppercase mb-1">Gap</div>
+            <div className="text-2xl sm:text-3xl font-black">
               {fmt(Math.abs(cat.gap))} ({pct(cat.gapPercent)})
             </div>
-            <div className="text-xs font-bold text-muted-foreground mt-1">{cat.investmentStatus}</div>
+            <div className="text-xs font-bold mt-1">{cat.investmentStatus}</div>
           </div>
           <div className={`border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${gradeBg(cat.evidenceGrade)}`}>
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Evidence Grade</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">{cat.evidenceGrade}</div>
-            <div className="text-xs font-bold text-muted-foreground mt-1">{cat.evidenceDescription}</div>
-            <div className="text-xs font-bold text-muted-foreground mt-0.5">
+            <div className="text-xs font-bold uppercase mb-1">Evidence Grade</div>
+            <div className="text-2xl sm:text-3xl font-black">{cat.evidenceGrade}</div>
+            <div className="text-xs font-bold mt-1">{cat.evidenceDescription}</div>
+            <div className="text-xs font-bold mt-0.5">
               {wesMethodologyLabel(cat.wesMethodology)}
             </div>
           </div>
@@ -595,19 +595,19 @@ export default async function BudgetCategoryPage({
             category is modeled with a concave utility function — the first dollar spent on a
             category produces more welfare than the billionth dollar.
           </p>
-          <div className="border-4 border-primary bg-brutal-yellow p-4">
-            <h3 className="text-sm font-black text-foreground uppercase mb-2">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+            <h3 className="text-sm font-black uppercase mb-2">
               Budget Impact Score (BIS)
             </h3>
             <p>
-              Each category&apos;s <strong className="text-foreground">BIS</strong> is computed from
+              Each category&apos;s <strong>BIS</strong> is computed from
               outcome metrics weighted by their importance to overall welfare. The BIS captures
               how effectively each marginal dollar translates into measurable improvements in
               health, education, security, and quality of life.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-4">
-            <h3 className="text-sm font-black text-foreground uppercase mb-2">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+            <h3 className="text-sm font-black uppercase mb-2">
               Diminishing Returns Model
             </h3>
             <p>
@@ -619,13 +619,13 @@ export default async function BudgetCategoryPage({
               welfare.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-pink p-4">
-            <h3 className="text-sm font-black text-foreground uppercase mb-2">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-4">
+            <h3 className="text-sm font-black uppercase mb-2">
               Marginal Return ({(cat.marginalReturn * 100).toFixed(2)}% for {cat.name})
             </h3>
             <p>
               The marginal return of{" "}
-              <strong className="text-foreground">{(cat.marginalReturn * 100).toFixed(2)}%</strong> means
+              <strong>{(cat.marginalReturn * 100).toFixed(2)}%</strong> means
               each additional dollar currently spent on {cat.name} produces{" "}
               {(cat.marginalReturn * 100).toFixed(2)} cents of welfare value. Categories with
               higher marginal returns are underfunded relative to their potential; those with

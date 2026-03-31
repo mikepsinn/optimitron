@@ -191,18 +191,18 @@ export function EfficientFrontierSummary({ className = "" }: { className?: strin
         </div>
       </div>
       <div className="border-4 border-primary bg-brutal-cyan p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-        <div className="text-2xl font-black text-foreground">
+        <div className="text-2xl font-black text-brutal-cyan-foreground">
           ${Math.round(totals.efficientFrontierTotalPerCapita).toLocaleString()}
         </div>
-        <div className="text-xs font-black uppercase text-muted-foreground">
+        <div className="text-xs font-black uppercase text-brutal-cyan-foreground">
           Efficient Frontier/Capita
         </div>
       </div>
       <div className="border-4 border-primary bg-brutal-yellow p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-        <div className="text-2xl font-black text-foreground">
+        <div className="text-2xl font-black text-brutal-yellow-foreground">
           {totals.ratio.toFixed(1)}x
         </div>
-        <div className="text-xs font-black uppercase text-muted-foreground">
+        <div className="text-xs font-black uppercase text-brutal-yellow-foreground">
           Overspend Ratio
         </div>
       </div>

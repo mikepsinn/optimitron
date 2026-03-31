@@ -21,14 +21,14 @@ const welfareProblems = [
     description:
       "Means-tested benefits create a cliff: earn $1 more and lose $2,000 in benefits. Your system actively punishes people for getting less poor. On my planet, this is classified as a bug, not a feature.",
     color: "bg-brutal-yellow",
-    textColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     title: "The crack-falling problem",
     description:
       "Millions of people who qualify for benefits never receive them because they can't navigate the paperwork. You built a safety net with holes larger than the people it's supposed to catch.",
     color: "bg-brutal-cyan",
-    textColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
   },
 ];
 
@@ -201,8 +201,8 @@ export default function DTreasuryDssaPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed text-foreground">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed">
             The $1.1 trillion your species spends administering welfare is more
             than the GDP of the Netherlands. That money doesn&apos;t feed anyone.
             It doesn&apos;t house anyone. It pays for the privilege of deciding

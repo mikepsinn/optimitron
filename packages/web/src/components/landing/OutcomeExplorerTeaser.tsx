@@ -34,21 +34,21 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
               href={getOutcomeHubPath(outcome.id)}
               className="p-6 border-4 border-primary bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex flex-col"
             >
-              <h3 className="text-lg font-black text-foreground mb-2">
+              <h3 className="text-lg font-black text-brutal-cyan-foreground mb-2">
                 {outcome.label}
               </h3>
-              <p className="text-sm text-muted-foreground font-bold mb-3">
+              <p className="text-sm text-brutal-cyan-foreground font-bold mb-3">
                 {pairCount} predictor{pairCount !== 1 ? "s" : ""} analyzed
               </p>
               {topRow ? (
                 <div className="mt-auto pt-3 border-t border-primary">
-                  <span className="text-xs font-bold text-muted-foreground uppercase">
+                  <span className="text-xs font-bold text-brutal-cyan-foreground uppercase">
                     Top predictor
                   </span>
-                  <p className="text-sm font-black text-foreground">
+                  <p className="text-sm font-black text-brutal-cyan-foreground">
                     {topRow.predictorLabel}
                   </p>
-                  <span className="text-xs font-bold text-brutal-cyan">
+                  <span className="text-xs font-bold text-brutal-cyan-foreground">
                     Score {(topRow.score * 100).toFixed(0)}
                   </span>
                 </div>
@@ -58,7 +58,7 @@ export function OutcomeExplorerTeaser({ outcomes }: { outcomes: OutcomeCard[] })
         })}
       </div>
       <div className="text-center mt-4 p-4 bg-brutal-cyan border border-primary rounded max-w-2xl mx-auto">
-        <p className="text-sm text-muted-foreground font-bold">
+        <p className="text-sm text-brutal-cyan-foreground font-bold">
           Every recommendation comes with receipts. No vibes. No &ldquo;well
           it feels like it should work.&rdquo; If the data doesn&apos;t support
           it, it doesn&apos;t appear. I realise this is an alien concept.

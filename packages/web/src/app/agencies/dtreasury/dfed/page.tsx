@@ -28,7 +28,7 @@ const historicalCycles = [
     result:
       "13,000% hyperinflation in five years. Revolution eats its children. Napoleon shows up.",
     color: "bg-brutal-yellow",
-    textColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     era: "Weimar Germany, 1920s",
@@ -36,7 +36,7 @@ const historicalCycles = [
     result:
       "29,500% monthly inflation. Life savings buy a loaf of bread. Scapegoating begins.",
     color: "bg-brutal-cyan",
-    textColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     era: "United States, 1913–Present",
@@ -187,8 +187,8 @@ export default function DTreasuryDfedPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed text-foreground">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed">
             Median wages measured in gold equivalent have lost 93% of their
             value since 1971. Your species doubled its workforce and household
             income rose ten percentage points. You added an entire second job
@@ -216,9 +216,9 @@ export default function DTreasuryDfedPage() {
               Fed Created (2020)
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-foreground">$4T</div>
-            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">$4T</div>
+            <div className="mt-1 text-xs font-black uppercase">
               Top 1% Gained (2020)
             </div>
           </div>

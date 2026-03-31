@@ -67,6 +67,7 @@ const ACTIVE_REFERENDUM = {
 describe("POST /api/referendums/[slug]/vote", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
     mocks.activityCreate.mockResolvedValue({ id: "activity_1" });
     mocks.checkBadgesAfterWish.mockResolvedValue(undefined);
     mocks.grantWishes.mockResolvedValue(null);

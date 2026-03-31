@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
   findUnique: vi.fn(),
   groupBy: vi.fn(),
+  grantWishes: vi.fn(),
+  checkBadgesAfterWish: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -18,6 +20,14 @@ vi.mock("@/lib/prisma", () => ({
       groupBy: mocks.groupBy,
     },
   },
+}));
+
+vi.mock("@/lib/wishes.server", () => ({
+  grantWishes: mocks.grantWishes,
+}));
+
+vi.mock("@/lib/badges.server", () => ({
+  checkBadgesAfterWish: mocks.checkBadgesAfterWish,
 }));
 
 import {
@@ -34,6 +44,9 @@ describe("referral server helpers", () => {
     mocks.create.mockReset();
     mocks.findUnique.mockReset();
     mocks.groupBy.mockReset();
+    mocks.grantWishes.mockReset();
+    mocks.grantWishes.mockResolvedValue(null);
+    mocks.checkBadgesAfterWish.mockReset();
   });
 
   it("skips database lookup for blank identifiers", async () => {
@@ -86,6 +99,12 @@ describe("referral server helpers", () => {
         answer: "YES",
         referredByUserId: "user_referrer",
       },
+    });
+    expect(mocks.grantWishes).toHaveBeenCalledWith({
+      userId: "user_referrer",
+      reason: "REFERRAL",
+      amount: 1,
+      dedupeKey: "referral-user_new",
     });
   });
 

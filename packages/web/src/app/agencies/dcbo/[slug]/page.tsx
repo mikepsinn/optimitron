@@ -88,13 +88,13 @@ const BRADFORD_HILL_DESCRIPTIONS: Record<string, string> = {
 function gradeColor(grade: string): string {
   switch (grade) {
     case "A":
-      return "bg-brutal-cyan text-foreground";
+      return "bg-brutal-cyan text-brutal-cyan-foreground";
     case "B":
-      return "bg-brutal-yellow text-foreground";
+      return "bg-brutal-yellow text-brutal-yellow-foreground";
     case "C":
-      return "bg-brutal-yellow text-foreground";
+      return "bg-brutal-yellow text-brutal-yellow-foreground";
     default:
-      return "bg-brutal-red text-foreground";
+      return "bg-brutal-red text-brutal-red-foreground";
   }
 }
 
@@ -193,21 +193,21 @@ export default async function PolicyDetailPage({
             <div className="text-xs font-bold uppercase opacity-80 mb-1">Welfare Score</div>
             <div className="text-2xl sm:text-3xl font-black">+{policy.welfareScore}</div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Causal Confidence</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">
+          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-bold uppercase mb-1">Causal Confidence</div>
+            <div className="text-2xl sm:text-3xl font-black">
               {(policy.causalConfidenceScore * 100).toFixed(0)}%
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Policy Impact</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">
+          <div className="border-4 border-primary p-4 bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-bold uppercase mb-1">Policy Impact</div>
+            <div className="text-2xl sm:text-3xl font-black">
               {(policy.policyImpactScore * 100).toFixed(0)}%
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">BH Average</div>
-            <div className="text-2xl sm:text-3xl font-black text-foreground">
+          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-xs font-bold uppercase mb-1">BH Average</div>
+            <div className="text-2xl sm:text-3xl font-black">
               {(avgBH * 100).toFixed(0)}%
             </div>
           </div>
@@ -243,9 +243,9 @@ export default async function PolicyDetailPage({
       <section className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
         <h2 className="text-lg font-black uppercase text-foreground mb-4">💥 Impact Breakdown</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="border-4 border-primary p-4 bg-brutal-cyan">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Income Effect</div>
-            <div className="text-3xl font-black text-foreground">
+          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground">
+            <div className="text-xs font-bold uppercase mb-1">Income Effect</div>
+            <div className="text-3xl font-black">
               +{(policy.incomeEffect * 100).toFixed(0)}%
             </div>
             <div className="mt-2 h-3 bg-muted border border-primary overflow-hidden">
@@ -255,8 +255,8 @@ export default async function PolicyDetailPage({
               />
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-pink">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">Health Effect</div>
+          <div className="border-4 border-primary p-4 bg-brutal-pink text-brutal-pink-foreground">
+            <div className="text-xs font-bold uppercase mb-1">Health Effect</div>
             <div className="text-3xl font-black text-brutal-pink-foreground">
               +{(policy.healthEffect * 100).toFixed(0)}%
             </div>
@@ -267,11 +267,11 @@ export default async function PolicyDetailPage({
               />
             </div>
           </div>
-          <div className="border-4 border-primary p-4 bg-brutal-cyan">
-            <div className="text-xs font-bold uppercase text-muted-foreground mb-1">
+          <div className="border-4 border-primary p-4 bg-brutal-cyan text-brutal-cyan-foreground">
+            <div className="text-xs font-bold uppercase mb-1">
               Combined Welfare
             </div>
-            <div className="text-3xl font-black text-foreground">+{policy.welfareScore}</div>
+            <div className="text-3xl font-black">+{policy.welfareScore}</div>
             <div className="mt-2 h-3 bg-muted border border-primary overflow-hidden">
               <div
                 className="h-full bg-brutal-cyan"
@@ -361,24 +361,24 @@ export default async function PolicyDetailPage({
           ))}
         </div>
 
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-4">
-          <h3 className="text-sm font-black text-foreground uppercase mb-2">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+          <h3 className="text-sm font-black uppercase mb-2">
             How is the Causal Confidence Score calculated?
           </h3>
-          <p className="text-sm text-foreground font-bold">
-            The <strong className="text-foreground">Causal Confidence Score (CCS)</strong> of{" "}
-            <strong className="text-foreground">
+          <p className="text-sm font-bold">
+            The <strong>Causal Confidence Score (CCS)</strong> of{" "}
+            <strong>
               {(policy.causalConfidenceScore * 100).toFixed(0)}%
             </strong>{" "}
             is a weighted average of the nine Bradford Hill criteria. Experiment and temporality
             receive higher weights since they provide the strongest evidence for causation. The
             CCS is then combined with the estimated effect magnitude to produce the Policy
             Impact Score (PIS) of{" "}
-            <strong className="text-foreground">
+            <strong>
               {(policy.policyImpactScore * 100).toFixed(0)}%
             </strong>.
           </p>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs opacity-80 mt-2">
             See the{" "}
             <NavItemLink
               item={optimalPolicyGeneratorPaperLink}

@@ -93,8 +93,8 @@ export default function GovernmentsPage() {
               Total Body Count
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-2xl font-black text-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-2xl font-black">
               {formatNumber(
                 GOVERNMENTS.reduce(
                   (sum, g) => sum + g.nuclearWarheads.value,
@@ -106,8 +106,8 @@ export default function GovernmentsPage() {
               Nuclear Warheads
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-2xl font-black text-foreground">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-2xl font-black">
               {formatUSD(
                 GOVERNMENTS.reduce(
                   (sum, g) => sum + g.militarySpendingAnnual.value,
@@ -119,11 +119,11 @@ export default function GovernmentsPage() {
               Combined Military Spend/yr
             </div>
           </div>
-          <div className="border-4 border-primary bg-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-2xl font-black text-background">
+          <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-2xl font-black">
               {GOVERNMENTS.length}
             </div>
-            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
+            <div className="mt-1 text-xs font-black uppercase opacity-70">
               Governments Audited
             </div>
           </div>
@@ -132,17 +132,17 @@ export default function GovernmentsPage() {
 
       {/* Wishonia Commentary */}
       <section className="mb-16">
-        <div className="border-4 border-primary bg-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="mb-4 text-2xl font-black uppercase text-background">
+        <div className="border-4 border-primary bg-foreground text-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="mb-4 text-2xl font-black uppercase">
             THE PATTERN
           </h2>
-          <p className="font-bold leading-relaxed text-background">
+          <p className="font-bold leading-relaxed">
             Singapore has killed zero people. Zero. They have the highest GDP per
             capita on the list, the longest life expectancy, and a 96% murder
             clearance rate. Meanwhile, the countries at the top of the body count
             leaderboard can barely solve half their murders.
           </p>
-          <p className="mt-4 font-bold leading-relaxed text-background">
+          <p className="mt-4 font-bold leading-relaxed">
             It is almost as if killing people is not actually a prerequisite for
             running a successful country. Weird.
           </p>
@@ -150,11 +150,11 @@ export default function GovernmentsPage() {
       </section>
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-brutal-pink p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <h2 className="mb-3 text-2xl font-black uppercase text-brutal-pink-foreground">
+      <section className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="mb-3 text-2xl font-black uppercase">
           OPTIMISE THE GOVERNMENTS
         </h2>
-        <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed text-background">
+        <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed">
           These numbers do not have to stay this way. The Earth Optimization Game
           lets you set priorities, rank policies by evidence, and hold your
           government accountable with data instead of shouting.

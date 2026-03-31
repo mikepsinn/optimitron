@@ -76,8 +76,8 @@ export default function DIhPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed text-foreground">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed">
             At $929 per patient instead of $27,800, the NIH&apos;s $47 billion
             could enrol 50 million patients per year in pragmatic trials instead
             of 1.9 million in traditional ones. That&apos;s not an incremental
@@ -93,22 +93,22 @@ export default function DIhPage() {
           Where the $47 Billion Actually Goes
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">
               96.7%
             </div>
-            <div className="mt-1 text-xs font-black uppercase text-background">
+            <div className="mt-1 text-xs font-black uppercase">
               Not Clinical Trials
             </div>
-            <p className="mt-3 text-xs font-bold text-muted-foreground leading-relaxed">
+            <p className="mt-3 text-xs font-bold leading-relaxed opacity-80">
               Grant administration, overhead, intramural research programmes,
               buildings, committees that review committees. $45.5 billion that
               never touches a patient.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-foreground">3.3%</div>
-            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">3.3%</div>
+            <div className="mt-1 text-xs font-black uppercase">
               Actual Clinical Trials
             </div>
             <p className="mt-3 text-xs font-bold text-muted-foreground leading-relaxed">

@@ -335,10 +335,10 @@ export function PersonalIncomeChart() {
             </div>
           </div>
           <div className="p-4 border-4 border-primary bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+            <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
               Your Dysfunction Tax
             </div>
-            <div className="text-xl font-black text-foreground">
+            <div className="text-xl font-black text-brutal-yellow-foreground">
               {formatCurrency(lifetimeLost)}
             </div>
           </div>

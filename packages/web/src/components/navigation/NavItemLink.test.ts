@@ -23,7 +23,9 @@ describe("NavItemLink helpers", () => {
     const classes = getNavItemLinkClasses("footer", false);
 
     expect(classes).toContain("text-sm");
-    expect(classes).toContain("hover:text-foreground");
+    expect(classes).toContain("transition-colors");
+    expect(classes).not.toContain("hover:bg-");
+    expect(classes).not.toContain("hover:border-");
     expect(classes).not.toContain("bg-yellow-300");
   });
 

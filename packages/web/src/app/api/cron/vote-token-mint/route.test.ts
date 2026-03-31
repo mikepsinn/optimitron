@@ -42,6 +42,7 @@ function makeRequest() {
 describe("GET /api/cron/vote-token-mint", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("returns 401 for unauthorized requests", async () => {

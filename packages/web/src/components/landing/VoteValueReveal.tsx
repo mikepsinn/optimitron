@@ -41,46 +41,46 @@ export function VoteValueReveal() {
         {/* Part B — Two Outcomes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
           <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
-            <h3 className="text-xl font-black uppercase text-foreground mb-3">
+            <h3 className="text-xl font-black uppercase text-brutal-yellow-foreground mb-3">
               {VOTE_VALUE.failHeading}
             </h3>
-            <div className="text-4xl font-black text-foreground mb-3">
+            <div className="text-4xl font-black text-brutal-yellow-foreground mb-3">
               <ParameterValue
                 param={PRIZE_POOL_ANNUAL_RETURN}
-                className="text-foreground"
+                className="text-brutal-yellow-foreground"
               />{" "}
               Annual
             </div>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold text-brutal-yellow-foreground leading-relaxed">
               Depositors get{" "}
               <ParameterValue
                 param={PRIZE_POOL_ANNUAL_RETURN}
-                className="text-foreground font-black"
+                className="text-brutal-yellow-foreground font-black"
               />{" "}
               {VOTE_VALUE.failBody}
             </p>
           </BrutalCard>
 
           <BrutalCard bgColor="cyan" shadowSize={8} padding="lg">
-            <h3 className="text-xl font-black uppercase text-foreground mb-3">
+            <h3 className="text-xl font-black uppercase text-brutal-cyan-foreground mb-3">
               {VOTE_VALUE.successHeading}
             </h3>
-            <div className="text-4xl font-black text-foreground mb-3">
+            <div className="text-4xl font-black text-brutal-cyan-foreground mb-3">
               <ParameterValue
                 param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-                className="text-foreground"
+                className="text-brutal-cyan-foreground"
               />
             </div>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold text-brutal-cyan-foreground leading-relaxed">
               Everyone gains{" "}
               <ParameterValue
                 param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-                className="text-foreground font-black"
+                className="text-brutal-cyan-foreground font-black"
               />{" "}
               lifetime income.{" "}
               <ParameterValue
                 param={TREATY_HALE_GAIN_YEAR_15}
-                className="text-foreground font-black"
+                className="text-brutal-cyan-foreground font-black"
               />{" "}
               more years of healthy life. {VOTE_VALUE.successBody}
             </p>

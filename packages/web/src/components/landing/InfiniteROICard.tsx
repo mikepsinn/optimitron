@@ -36,7 +36,7 @@ export function InfiniteROICard() {
         <span className="text-background text-2xl font-black"><ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE} /></span> in health value.
       </p>
 
-      <div className="bg-brutal-yellow border-4 border-primary p-4 my-4">
+      <div className="bg-brutal-yellow border-4 border-primary p-4 my-4 text-brutal-yellow-foreground">
         <LatexBlock className="text-center">
           {`\\begin{aligned}
 \\text{ROI} &= \\frac{\\text{Health Value Created}}{\\text{Campaign Cost}} \\\\[1em]
@@ -49,7 +49,7 @@ export function InfiniteROICard() {
         <p className="text-lg sm:text-xl font-black uppercase text-center mb-6">Where The Value Comes From:</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <Card className="bg-brutal-yellow border-4 border-primary p-4 text-center">
+          <Card className="bg-brutal-yellow border-4 border-primary p-4 text-center text-brutal-yellow-foreground">
             <div className="text-3xl sm:text-4xl font-black mb-2">
               <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} />
             </div>
@@ -57,7 +57,7 @@ export function InfiniteROICard() {
             <div className="text-xs font-bold">Total investment needed</div>
           </Card>
 
-          <Card className="bg-brutal-cyan border-4 border-primary p-4 text-center">
+          <Card className="bg-brutal-cyan border-4 border-primary p-4 text-center text-brutal-cyan-foreground">
             <div className="text-3xl sm:text-4xl font-black mb-2">
               <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE} />
             </div>

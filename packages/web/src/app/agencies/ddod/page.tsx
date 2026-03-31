@@ -163,9 +163,9 @@ export default function DepartmentOfWarPage() {
           {couldHaveBought.map((item) => (
             <div
               key={item.instead}
-              className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
-              <h3 className="text-sm font-black uppercase text-foreground">
+              <h3 className="text-sm font-black uppercase">
                 {item.instead}
               </h3>
               <div className="mt-2 text-2xl font-black text-foreground">
@@ -177,8 +177,8 @@ export default function DepartmentOfWarPage() {
             </div>
           ))}
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed text-foreground">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed">
             Clean water, no homelessness, fully funded medical research, and no
             one starving. Total cost: roughly ${fmtRaw(totalAlt)} per year.
             That&apos;s {((totalAlt / milSpend) * 100).toFixed(0)}% of current
@@ -234,9 +234,9 @@ export default function DepartmentOfWarPage() {
               Wars Since &ldquo;Defense&rdquo; Rebrand
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-foreground">0</div>
-            <div className="mt-1 text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">0</div>
+            <div className="mt-1 text-xs font-black uppercase">
               Were Defensive
             </div>
           </div>

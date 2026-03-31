@@ -97,26 +97,26 @@ export default async function DiscoveriesPage() {
         <div className="overflow-x-auto border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-primary bg-brutal-yellow">
-                <th className="px-4 py-3 text-left font-black uppercase text-foreground">
+              <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                <th className="px-4 py-3 text-left font-black uppercase">
                   Predictor
                 </th>
-                <th className="px-4 py-3 text-left font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-left font-black uppercase">
                   Outcome
                 </th>
-                <th className="px-4 py-3 text-right font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-right font-black uppercase">
                   Effect
                 </th>
-                <th className="px-4 py-3 text-right font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-right font-black uppercase">
                   PIS
                 </th>
-                <th className="px-4 py-3 text-right font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-right font-black uppercase">
                   Correlation
                 </th>
-                <th className="px-4 py-3 text-center font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-center font-black uppercase">
                   Contributors
                 </th>
-                <th className="px-4 py-3 text-center font-black uppercase text-foreground">
+                <th className="px-4 py-3 text-center font-black uppercase">
                   Confidence
                 </th>
               </tr>

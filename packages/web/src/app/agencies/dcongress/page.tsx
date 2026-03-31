@@ -82,8 +82,8 @@ export default function DCongressPage() {
         ))}
       </div>
 
-      <section className="border-4 border-primary bg-brutal-yellow p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <p className="text-lg font-bold text-foreground max-w-2xl mx-auto">
+      <section className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <p className="text-lg font-bold max-w-2xl mx-auto">
           &ldquo;Your Congress has an approval rating of eighteen percent and a
           re-election rate of ninety-four percent. On my planet, we call that a
           bug. You lot call it democracy.&rdquo;

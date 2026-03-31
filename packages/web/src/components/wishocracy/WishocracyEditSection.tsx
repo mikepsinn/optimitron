@@ -138,7 +138,7 @@ export function WishocracyEditSection({
         <div className="flex items-center gap-3">
           <h3 className="text-xl font-black uppercase">Review & Edit Your Choices</h3>
           {hasChanges && !isOpen && (
-            <span className="px-2 py-1 bg-brutal-pink text-xs font-bold uppercase rounded">
+            <span className="px-2 py-1 bg-brutal-pink text-xs font-bold uppercase rounded text-brutal-pink-foreground">
               Unsaved Changes
             </span>
           )}
@@ -161,14 +161,14 @@ export function WishocracyEditSection({
               {showWarning && itemsToDelete.size > 0 && (
                 <div className="mb-6 p-4 bg-brutal-yellow border-4 border-primary rounded">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-foreground mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-brutal-yellow-foreground mt-0.5" />
                     <div>
-                      <p className="font-bold text-foreground">Warning: Item Removal</p>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="font-bold text-brutal-yellow-foreground">Warning: Item Removal</p>
+                      <p className="text-sm text-brutal-yellow-foreground mt-1">
                         Removing an item will permanently delete all allocations involving that item.
                         You'll need to redo those allocations if you change your mind.
                       </p>
-                      <p className="text-xs font-bold text-foreground mt-2">
+                      <p className="text-xs font-bold text-brutal-yellow-foreground mt-2">
                         Categories to be removed: {Array.from(itemsToDelete).map(id => WISHOCRATIC_ITEMS[id].name).join(", ")}
                       </p>
                     </div>
@@ -199,8 +199,8 @@ export function WishocracyEditSection({
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <p className="font-bold text-sm">{item.name}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className={`font-bold text-sm ${isSelected && !willBeDeleted ? "text-brutal-cyan-foreground" : willBeDeleted ? "text-brutal-red-foreground" : ""}`}>{item.name}</p>
+                            <p className={`text-xs ${isSelected && !willBeDeleted ? "text-brutal-cyan-foreground" : willBeDeleted ? "text-brutal-red-foreground" : "text-muted-foreground"}`}>
                               {editedAllocations.filter(c => c.itemAId === itemId || c.itemBId === itemId).length} allocations
                             </p>
                           </div>
@@ -294,7 +294,7 @@ export function WishocracyEditSection({
                 <Button
                   onClick={handleSave}
                   disabled={!hasChanges || isSaving}
-                  className="flex-1 h-12 font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {isSaving ? "Saving..." : "Save Changes"}

@@ -264,11 +264,11 @@ export default function TransparencyPage() {
               distribute automatically.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-xl font-black uppercase text-foreground mb-3">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-xl font-black uppercase mb-3">
               The Full Loop
             </h3>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold leading-relaxed">
               Citizens express preferences. System scores politicians.
               Hypercerts make scores verifiable. Smart contracts fund aligned
               politicians. $WISH circulates. Transaction tax funds UBI. No
@@ -284,8 +284,8 @@ export default function TransparencyPage() {
         <h2 className="text-2xl font-black uppercase text-foreground mb-6">
           Earth Optimization Prize
         </h2>
-        <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold text-foreground leading-relaxed mb-4">
+        <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed mb-4">
             The Prize is a dominant assurance contract (VoterPrizeTreasury).
             Depositors fund the pool with USDC, which earns Wishocratic fund yield.
             Recruiters share referral links — each verified voter (World ID)
@@ -350,11 +350,11 @@ export default function TransparencyPage() {
         </div>
       </section>
 
-      <section className="card bg-brutal-cyan border-primary text-center">
-        <h2 className="text-2xl font-black text-foreground mb-3 uppercase">
+      <section className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary text-center">
+        <h2 className="text-2xl font-black mb-3 uppercase">
           Audit Everything
         </h2>
-        <p className="text-muted-foreground mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
+        <p className="mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
           The code is public. The data is content-addressed. The attestations
           are on a public protocol. The contracts will be on a public chain.
           If you can&apos;t verify it, it isn&apos;t governance — it&apos;s

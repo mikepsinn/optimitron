@@ -319,17 +319,17 @@ export default function BudgetPage() {
         <div className="overflow-x-auto border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-primary bg-brutal-yellow">
-                <th className="text-left py-3 px-2 text-foreground font-black uppercase">Category</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">Current</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">
+              <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                <th className="text-left py-3 px-2 font-black uppercase">Category</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Current</th>
+                <th className="text-right py-3 px-2 font-black uppercase">
                   {isConstrained ? "Constrained" : "Optimal"}
                 </th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">
+                <th className="text-right py-3 px-2 font-black uppercase">
                   {isConstrained ? "Reallocation" : "Gap %"}
                 </th>
-                <th className="text-center py-3 px-2 text-foreground font-black uppercase">Grade</th>
-                <th className="text-center py-3 px-2 text-foreground font-black uppercase">Action</th>
+                <th className="text-center py-3 px-2 font-black uppercase">Grade</th>
+                <th className="text-center py-3 px-2 font-black uppercase">Action</th>
               </tr>
             </thead>
             <tbody>

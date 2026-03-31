@@ -155,8 +155,8 @@ export default function DTreasuryDirsPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold leading-relaxed text-foreground">
+        <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed">
             Americans spend 6.1 billion hours per year on tax compliance. That&apos;s
             roughly 3 million full-time jobs worth of human effort — filling out
             forms, gathering receipts, hiring accountants — to accomplish what
