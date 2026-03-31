@@ -73,16 +73,16 @@ export function WishPointToast({ amount, label, onDone }: WishPointToastProps) {
             }}
             exit={{ y: -400, scale: 0.3, opacity: 0, rotate: 180 }}
             transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 20,
+              y: { type: "spring", stiffness: 300, damping: 20 },
+              scale: { duration: 0.5, ease: "easeOut" },
+              rotate: { duration: 0.5, ease: "easeOut" },
             }}
             className="relative"
           >
             {/* Star icon */}
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: 3, duration: 0.3, delay: 0.4 }}
+              transition={{ repeat: 3, duration: 0.3, delay: 0.4, ease: "easeInOut" }}
               className="text-center"
             >
               <span className="text-7xl sm:text-8xl drop-shadow-[0_0_20px_rgba(255,200,0,0.8)]">

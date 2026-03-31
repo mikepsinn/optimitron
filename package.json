@@ -24,6 +24,7 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test",
     "db:generate": "pnpm --filter @optimitron/db run prisma:generate",
     "db:validate": "pnpm --filter @optimitron/db run prisma:validate",
+    "db:cli": "pnpm --filter @optimitron/db exec tsx src/db-cli.ts",
     "db:migrate": "pnpm --filter @optimitron/db run prisma:migrate:dev",
     "db:deploy": "pnpm --filter @optimitron/db run prisma:migrate:deploy",
     "db:push": "pnpm --filter @optimitron/db run prisma:push",
