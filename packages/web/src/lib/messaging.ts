@@ -143,7 +143,7 @@ export const VOTE_VALUE = {
   subheading:
     "You just cast a free vote. If enough people and foundations deposit into the prize fund, that vote could be worth six figures. On my planet, we call that 'good maths.'",
   failHeading: "If the Plan Fails",
-  failBody: "annual returns — better than most hedge funds. Their money grew while sitting in the Wishocratic Fund for 15 years.",
+  failBody: "annual returns — better than most hedge funds. Their money grew while sitting in the Wishocratic Earth Optimization Fund for 15 years.",
   successHeading: "If the Plan Succeeds",
   successBody: "VOTE holders claim proportional shares of the prize pool.",
   breakEvenPrefix: "The break-even probability is 1 in",

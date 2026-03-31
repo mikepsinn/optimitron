@@ -9,6 +9,7 @@ import {
   PRIZE_POOL_ANNUAL_RETURN,
   PRIZE_POOL_HORIZON_MULTIPLE,
   VOTE_TOKEN_VALUE,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
 
 /**
@@ -46,6 +47,7 @@ export const GAME_PARAMS = {
   prizePoolROI: Math.round(PRIZE_POOL_ANNUAL_RETURN.value * 100), // 17%
   prizePoolAfter15yr: Math.round(PRIZE_POOL_SIZE.value), // $33.75T
   prizePoolFallbackMultiple: Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value * 100) / 100, // ~11.06x
+  treatyLifetimeIncomeGain: Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value), // ~$14.7M
   minimumDeposit: 100,
   exchangeRatio: Math.round(VOTE_TOKEN_VALUE.value / 0.06), // value per point / cost per vote
 

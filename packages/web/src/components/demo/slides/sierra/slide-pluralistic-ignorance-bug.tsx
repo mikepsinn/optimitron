@@ -8,9 +8,6 @@ const ROWS = [
   "PERSON 3",
   "PERSON 4",
   "PERSON 5",
-  "PERSON 6",
-  "PERSON 7",
-  "PERSON 8",
   "...",
   "PERSON 8,000,000,000",
 ];
@@ -37,7 +34,7 @@ export function SlidePluralisticIgnoranceBug() {
             return (
               <div key={i} className="flex items-start gap-3 px-2">
                 <span className="text-xl shrink-0">👤</span>
-                <div className="font-terminal text-lg md:text-xl">
+                <div className="font-terminal text-3xl md:text-4xl">
                   <span className="text-muted-foreground">{label}: </span>
                   <span className="text-brutal-cyan">&quot;{QUOTE}&quot;</span>
                 </div>

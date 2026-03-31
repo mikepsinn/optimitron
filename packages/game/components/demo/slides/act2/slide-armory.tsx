@@ -15,45 +15,59 @@ interface TechItem {
 const technologies: TechItem[] = [
   {
     id: "dfda",
-    name: "dFDA",
+    name: "Decentralized FDA",
     icon: "🧬",
-    description: "Decentralized FDA - Global trial coordination",
+    description: "Real-time Outcome Labels & Treatment Rankings",
     color: "#22c55e",
   },
   {
-    id: "iabs",
-    name: "IABs",
-    icon: "📊",
-    description: "Incentive Alignment Bonds - Outcome-based funding",
-    color: "#3b82f6",
+    id: "opg",
+    name: "Optimal Policy Generator",
+    icon: "📋",
+    description: "Grade every policy A–F by what actually happened",
+    color: "#06b6d4",
   },
   {
-    id: "storacha",
-    name: "Storacha",
-    icon: "📦",
-    description: "IPFS storage - Immutable research data",
-    color: "#f97316",
-  },
-  {
-    id: "hypercerts",
-    name: "Hypercerts",
-    icon: "🏆",
-    description: "Impact certificates - Credit for contributions",
-    color: "#a855f7",
-  },
-  {
-    id: "wish",
-    name: "$WISH",
-    icon: "⭐",
-    description: "Governance token - Stake in outcomes",
+    id: "obg",
+    name: "Optimal Budget Generator",
+    icon: "💰",
+    description: "Find the cheapest high performer per category",
     color: "#eab308",
   },
   {
-    id: "optimizer",
-    name: "Optimizer",
-    icon: "🤖",
-    description: "AI policy engine - Evidence-based decisions",
-    color: "#06b6d4",
+    id: "wishocracy",
+    name: "Wishocracy",
+    icon: "🗳️",
+    description: "Pairwise budget allocation — 8 billion preferences, one optimal budget",
+    color: "#a855f7",
+  },
+  {
+    id: "iabs",
+    name: "Incentive Alignment Bonds",
+    icon: "📊",
+    description: "Align senator incentives with outcomes",
+    color: "#3b82f6",
+  },
+  {
+    id: "dfed",
+    name: "Decentralized Fed",
+    icon: "🏦",
+    description: "0% inflation anchored to productivity — new money via UBI, not banks",
+    color: "#f43f5e",
+  },
+  {
+    id: "dirs",
+    name: "Decentralized IRS",
+    icon: "🧾",
+    description: "0.5% transaction tax — four lines of Solidity replace 74,000 pages",
+    color: "#f97316",
+  },
+  {
+    id: "dwelfare",
+    name: "Decentralized Welfare",
+    icon: "🤝",
+    description: "UBI replaces $675B in welfare bureaucracy",
+    color: "#10b981",
   },
 ];
 
@@ -80,18 +94,17 @@ export function SlideArmory() {
     <SlideBase act={2} className="text-purple-400">
       {/* Title */}
       <div className="text-center mb-6">
-        <div className="font-pixel text-xs text-purple-400 mb-1">PART 5: THE ARMORY</div>
-        <h1 className="font-pixel text-xl md:text-2xl text-purple-400">
-          TECHNOLOGY STACK
+        <h1 className="font-pixel text-3xl md:text-5xl text-purple-400">
+          THE ARMORY
         </h1>
-        <div className="font-terminal text-xl text-zinc-200 mt-2">
-          The tools powering the health optimization game
+        <div className="font-terminal text-2xl md:text-3xl text-zinc-200 mt-3">
+          The tools to help you win the Earth Optimization Game
         </div>
       </div>
 
       <div className="w-full max-w-[1700px] mx-auto space-y-6">
         {/* Tech grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {technologies.map((tech) => {
             const isVisible = visibleItems.has(tech.id);
             const isSelected = selectedItem?.id === tech.id;
@@ -126,7 +139,7 @@ export function SlideArmory() {
                 </div>
 
                 {/* Brief description */}
-                <div className="font-terminal text-xl text-zinc-200 line-clamp-2">
+                <div className="font-terminal text-2xl text-zinc-200 line-clamp-2">
                   {tech.description}
                 </div>
 
@@ -170,44 +183,58 @@ export function SlideArmory() {
             <div className="font-terminal text-xs text-zinc-200 space-y-1">
               {selectedItem.id === "dfda" && (
                 <>
-                  <p>Coordinates clinical trials across 147+ countries</p>
-                  <p>Reduces approval time from 10 years to less than 1</p>
-                  <p>Open-source protocol for transparent research</p>
+                  <p>9,500 compounds proven safe — 99.7% of uses never tested</p>
+                  <p>44× cheaper, 12× more capacity than current FDA</p>
+                  <p>Real-time outcome labels and treatment rankings</p>
+                </>
+              )}
+              {selectedItem.id === "opg" && (
+                <>
+                  <p>Causal inference on hundreds of years of data across dozens of countries</p>
+                  <p>Grades every policy A–F by what actually happened</p>
+                  <p>War on Drugs: $51B/yr, overdoses up 1,700%. Portugal: decriminalised, overdoses down 80%</p>
+                </>
+              )}
+              {selectedItem.id === "obg" && (
+                <>
+                  <p>Finds the cheapest high performer per budget category</p>
+                  <p>Singapore: $3K/person on healthcare, lives to 84</p>
+                  <p>America: $12K/person, lives to 78</p>
+                </>
+              )}
+              {selectedItem.id === "wishocracy" && (
+                <>
+                  <p>Pairwise comparisons: clinical trials vs military spending</p>
+                  <p>Ten choices, two minutes, eight billion preferences</p>
+                  <p>Eigenvector aggregation produces one optimal budget</p>
                 </>
               )}
               {selectedItem.id === "iabs" && (
                 <>
-                  <p>Investors funded only if health outcomes improve</p>
-                  <p>Aligns financial incentives with patient outcomes</p>
-                  <p>De-risks research funding for governments</p>
+                  <p>Treaty revenue splits 80/10/10 by smart contract</p>
+                  <p>80% clinical trials, 10% bondholders, 10% aligned politicians</p>
+                  <p>Self-reinforcing: diseases cured → GDP rises → everyone lobbies for expansion</p>
                 </>
               )}
-              {selectedItem.id === "storacha" && (
+              {selectedItem.id === "dfed" && (
                 <>
-                  <p>IPFS-based storage for research data</p>
-                  <p>Immutable, censorship-resistant records</p>
-                  <p>Ensures data integrity and reproducibility</p>
+                  <p>Replaces 12 unelected humans who meet 8× a year</p>
+                  <p>0% inflation anchored to productivity growth</p>
+                  <p>New money distributed equally to every human via UBI</p>
                 </>
               )}
-              {selectedItem.id === "hypercerts" && (
+              {selectedItem.id === "dirs" && (
                 <>
-                  <p>NFT-based impact attribution</p>
-                  <p>Track and reward contributions to health outcomes</p>
-                  <p>Enables retroactive public goods funding</p>
+                  <p>0.5% transaction tax replaces 74,000-page tax code</p>
+                  <p>Saves $546B/yr in compliance costs</p>
+                  <p>No filing, no accountants, no loopholes</p>
                 </>
               )}
-              {selectedItem.id === "wish" && (
+              {selectedItem.id === "dwelfare" && (
                 <>
-                  <p>Governance token for the Wishonia ecosystem</p>
-                  <p>Stake tokens to vote on research priorities</p>
-                  <p>Earn rewards for successful health outcomes</p>
-                </>
-              )}
-              {selectedItem.id === "optimizer" && (
-                <>
-                  <p>AI-powered policy recommendation engine</p>
-                  <p>Analyzes health data to suggest optimal interventions</p>
-                  <p>Simulates policy outcomes before implementation</p>
+                  <p>$13.5T/yr already spent to prevent starvation</p>
+                  <p>Up to $675B is pure administrative waste</p>
+                  <p>UBI does the same job for $675B less bureaucracy</p>
                 </>
               )}
             </div>
@@ -215,9 +242,6 @@ export function SlideArmory() {
         )}
 
         {/* Bottom message */}
-        <div className="text-center font-pixel text-xs text-zinc-200">
-          Tap any technology to learn more
-        </div>
       </div>
 
       <style jsx>{`

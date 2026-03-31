@@ -2,12 +2,14 @@
 
 import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
+import {
+  VOTE_TOKEN_VALUE,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+} from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 
-const deposit = 100;
-const vcReturn = Math.round(deposit * GAME_PARAMS.prizePoolFallbackMultiple);
-const indexReturn = Math.round(deposit * Math.pow(1.07, 15));
-const voteValue = formatCurrency(GAME_PARAMS.valuePerVotePoint);
+const voteValue = formatCurrency(VOTE_TOKEN_VALUE.value);
+const lifetimeGain = formatCurrency(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value);
 
 export function SlideThreeScenariosAllWin() {
   return (
@@ -35,6 +37,9 @@ export function SlideThreeScenariosAllWin() {
             <div className="font-pixel text-lg text-muted-foreground mt-2">
               VOTE points pay out
             </div>
+            <div className="font-pixel text-2xl md:text-3xl text-brutal-cyan mt-3 border-t border-brutal-cyan/30 pt-3">
+              +{lifetimeGain} LIFETIME INCOME
+            </div>
           </div>
 
           {/* Humanity fails */}
@@ -44,7 +49,7 @@ export function SlideThreeScenariosAllWin() {
               HUMANITY FAILS
             </div>
             <div className="font-pixel text-4xl md:text-6xl text-brutal-yellow">
-              ${vcReturn.toLocaleString()}
+              {Math.round(GAME_PARAMS.prizePoolFallbackMultiple)}x RETURN
             </div>
             <div className="font-pixel text-lg text-muted-foreground mt-2">
               deposit back + 17%/yr returns
@@ -57,11 +62,11 @@ export function SlideThreeScenariosAllWin() {
             <div className="font-pixel text-xl md:text-2xl text-brutal-red mb-4">
               DID NOT PLAY
             </div>
-            <div className="font-pixel text-4xl md:text-6xl text-zinc-400">
-              ${indexReturn}
+            <div className="font-pixel text-4xl md:text-6xl text-brutal-red">
+              SOMALIA
             </div>
             <div className="font-pixel text-lg text-muted-foreground mt-2">
-              index fund at 7%/yr
+              status quo life expectancy
             </div>
           </div>
         </div>

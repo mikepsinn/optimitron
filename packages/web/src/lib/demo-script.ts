@@ -384,7 +384,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "how-to-win",
     bgColor: "pink",
     tags: ["mechanism", "financial"],
-    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at seventeen point four percent annually in the Wishocratic Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in fifteen thousand. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
+    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at seventeen point four percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in fifteen thousand. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
   },
   {
     id: "prize-vote-points",
@@ -957,7 +957,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "sierra-pairwise-budget-allocation",
     tags: ["mechanism"],
     act: "II-game",
-    narration: "You have seen what happens when politicians allocate your money. 97 million dead and a 604 to 1 ratio of bombs to cures. The Wishocratic Allocation lets you do it instead. Each player allocates the global budget through pairwise comparisons — clinical trials versus military spending, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.",
+    narration: "You have seen what happens when politicians allocate your money. 97 million dead and a 604 to 1 ratio of bombs to cures. Wishocracy lets you do it instead. Each player allocates the global budget through pairwise comparisons — clinical trials versus military spending, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.",
   },
   {
     id: "pl-budget",
@@ -989,7 +989,7 @@ export const SEGMENTS: DemoSegment[] = [
     componentId: "sierra-three-scenarios-all-win",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus 17 percent annual returns — your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third one is your fault.`,
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus 17 percent annual returns — your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third option is Somalia.`,
   },
   {
     id: "pl-prize",
