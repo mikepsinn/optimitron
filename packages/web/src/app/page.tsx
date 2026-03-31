@@ -77,7 +77,7 @@ const productWorkflows = [
     label: "Scoreboard",
     title: "Humanity's Scoreboard",
     description:
-      "Live game metrics: health, income, pool size, verified participants. The coalition size, visible to everyone.",
+      "Two numbers: how long you live and how much you earn. Plus the prize pool, voter count, and a countdown to when the destructive economy eats everything. Refreshes in real time.",
     cta: CTA.viewScoreboard,
     color: "bg-brutal-cyan",
     textColor: "text-brutal-cyan-foreground",
@@ -117,7 +117,7 @@ const productWorkflows = [
     label: "Studies",
     title: "Look at the actual numbers",
     description:
-      "Outcome hubs, pair studies, policy rankings, country comparisons. All evidence, no vibes.",
+      "What actually causes what. Your species has the data. You just never looked at it because you were too busy arguing about it on your little phones.",
     cta: CTA.browseStudies,
     color: "bg-brutal-yellow",
     textColor: "text-brutal-yellow-foreground",

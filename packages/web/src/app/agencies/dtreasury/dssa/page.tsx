@@ -37,19 +37,19 @@ const howItWorks = [
     step: "01",
     title: "Transaction tax accumulates",
     description:
-      "0.5% of every $WISH transaction flows to the treasury automatically. No filing. No audits. Just protocol-level revenue collection.",
+      "0.5% of every $WISH transaction flows to the treasury automatically. The tax happens when you spend. Like sales tax, except it funds keeping people alive instead of whatever your current sales tax funds. (Nobody knows.)",
   },
   {
     step: "02",
     title: "Treasury distributes UBI",
     description:
-      "Anyone can call distributeUBI(). The function divides the treasury balance equally among all verified citizens. That's the entire welfare system.",
+      "One function. Divides the money equally among every verified citizen. That's the entire welfare system. Your current one has 80+ programmes and still loses people in the cracks.",
   },
   {
     step: "03",
     title: "World ID prevents fraud",
     description:
-      "Each citizen registers once with World ID — cryptographic proof of unique personhood. No duplicate claims. No identity fraud. No case workers investigating.",
+      "Each citizen proves they're a real human once. Not three bots. Not a cat. One proof, one registration. No duplicate claims. No case workers spending eight hours confirming you exist.",
   },
   {
     step: "04",

@@ -13,7 +13,7 @@ const howItWorks = [
     step: "01",
     title: "You spend $WISH",
     description:
-      "Buy things, pay people, transact normally. The token contract is your currency.",
+      "You buy things. You pay people. You live your life. The currency does the rest. On your planet, this step requires a tax attorney.",
   },
   {
     step: "02",
@@ -25,7 +25,7 @@ const howItWorks = [
     step: "03",
     title: "The rest arrives at the recipient",
     description:
-      "99.5% of your transaction goes exactly where you intended. The 0.5% funds public goods — education, healthcare, infrastructure — allocated by citizen preferences.",
+      "99.5% goes where you wanted it. The 0.5% funds the things you voted for in Wishocracy. Education, healthcare, infrastructure — whatever 8 billion people chose, not whatever 535 people's donors suggested.",
   },
   {
     step: "04",
@@ -73,10 +73,11 @@ export default function DTreasuryDirsPage() {
           How the Transaction Tax Works
         </h2>
         <p className="mb-6 max-w-3xl text-sm font-bold text-muted-foreground">
-          Every $WISH transaction has a 0.5% fee built into the token contract.
-          Revenue collection happens automatically — no filing, no audits, no
-          74,000-page tax code, no 83,000 IRS employees. Just a protocol-level
-          fee on economic activity.
+          Every $WISH transaction has a 0.5% fee baked into the token itself.
+          You spend money. The tax happens. Nobody files anything. Nobody audits
+          anything. 74,000 pages of tax code, 83,000 IRS employees, and
+          6.1 billion hours of annual filing time — all replaced by six lines of
+          code that a competent intern could read in four minutes.
         </p>
         <div className="space-y-4">
           {howItWorks.map((item) => (

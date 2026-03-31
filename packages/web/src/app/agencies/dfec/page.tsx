@@ -68,9 +68,9 @@ export default function DFECPage() {
               Alignment Scoring
             </h2>
             <p className="mt-2 text-sm font-bold leading-relaxed text-foreground">
-              Compare your budget priorities against real politician voting records.
-              Each official gets a Citizen Alignment Score — a single number
-              showing how much they actually represent you.
+              You tell us what you want. We compare it against what your politicians
+              actually voted for. Each one gets a number. The number is usually
+              disappointing. That&apos;s not a bug in the tool.
             </p>
             <p className="mt-3 text-xs font-black uppercase text-muted-foreground">
               Replaces: Campaign promises nobody checks
@@ -86,9 +86,9 @@ export default function DFECPage() {
         </h2>
         <div className="space-y-4 text-sm font-bold text-foreground">
           <p>
-            <span className="text-brutal-pink font-black">1.</span> Citizens do
-            pairwise comparisons via Wishocracy — producing stable preference
-            weights.
+            <span className="text-brutal-pink font-black">1.</span> Citizens pick
+            between two things. Then two more. The maths works out what you
+            actually want. (Turns out nobody had asked before.)
           </p>
           <p>
             <span className="text-brutal-pink font-black">2.</span> Politicians
@@ -97,13 +97,14 @@ export default function DFECPage() {
           </p>
           <p>
             <span className="text-brutal-pink font-black">3.</span> Each
-            politician gets a Citizen Alignment Score — cosine similarity
-            between their voting record and citizen weights.
+            politician gets a single number: how much they actually did what
+            you asked. It&apos;s like a restaurant hygiene rating, except for
+            democracy.
           </p>
           <p>
-            <span className="text-brutal-pink font-black">4.</span> Incentive
-            Alignment Bonds automatically route campaign funds proportionally to
-            alignment scores.
+            <span className="text-brutal-pink font-black">4.</span> Smart
+            contracts route money to politicians based on their score. No
+            lobbyists. No donors. No dinner fundraisers at $50,000 a plate.
           </p>
           <p>
             <span className="text-brutal-pink font-black">5.</span> Politicians

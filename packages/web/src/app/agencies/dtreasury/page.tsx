@@ -47,7 +47,7 @@ const subPages = [
     ...dirsLink,
     title: "Transaction Tax (Replaces the IRS)",
     description:
-      "Every $WISH transaction has a 0.5% fee built into the token contract. Revenue collection happens automatically — no filing, no audits, no 74,000-page tax code, no 83,000 IRS employees.",
+      "0.5% of every transaction. That's the whole tax code. Six lines of Solidity replacing 74,000 pages of rules that no single human on your planet understands. Your accountants can finally do something useful. Like not dying.",
     color: "bg-brutal-pink",
     textColor: "text-brutal-pink-foreground",
   },
@@ -55,7 +55,7 @@ const subPages = [
     ...federalReserveLink,
     title: "Algorithmic Monetary Policy (Replaces the Fed)",
     description:
-      "Fixed supply. Zero inflation. No board of 12 unelected humans deciding how much your money is worth. The total supply is set once at deployment and can never increase.",
+      "Fixed supply. Zero inflation. No room of 12 unelected humans holding a séance over interest rates. Your Federal Reserve has devalued your dollar 96% since 1913. A rock would have done better. Literally. A rock holds its value.",
     color: "bg-brutal-yellow",
     textColor: "text-brutal-yellow-foreground",
   },
@@ -63,7 +63,7 @@ const subPages = [
     ...dssaLink,
     title: "Universal Basic Income (Replaces Welfare)",
     description:
-      "The transaction tax accumulates in a treasury that distributes UBI to every verified citizen. World ID prevents fraud. No means testing. No case workers. No applications.",
+      "Money goes in. Money goes out. To everyone. Equally. World ID confirms you're a real human and not three bots in a trenchcoat. No means testing. No case workers. No 45-day processing time to prove you're poor enough to eat.",
     color: "bg-brutal-cyan",
     textColor: "text-brutal-cyan-foreground",
   },
@@ -88,10 +88,10 @@ export default function DTreasuryPage() {
             the bureaucracy costs more than the relief. Here&apos;s the fix.
           </p>
           <p className="text-muted-foreground font-bold leading-relaxed">
-            A programmable currency with governance built into the protocol.
-            Not an investment. Not a security. A medium of exchange with
-            automatic public goods funding — where you get to decide which
-            ones.
+            $WISH is not an investment. It&apos;s not a security. It&apos;s money
+            that does what money was supposed to do before your species turned
+            it into a system that requires 83,000 bureaucrats, a 74,000-page
+            manual, and still can&apos;t feed everyone.
           </p>
         </div>
       </section>
