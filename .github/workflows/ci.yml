@@ -21,6 +21,20 @@ jobs:
     timeout-minutes: 15
     env:
       DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ci
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ci -d ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout
@@ -39,6 +53,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:deploy
 
       - name: Build
         run: pnpm --filter '!@optimitron/web' run build
