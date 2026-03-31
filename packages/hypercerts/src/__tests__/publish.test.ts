@@ -31,6 +31,7 @@ describe('publish helpers', () => {
       record: expect.objectContaining({
         $type: 'org.hypercerts.claim.rights',
       }),
+      rkey: undefined,
     });
   });
 

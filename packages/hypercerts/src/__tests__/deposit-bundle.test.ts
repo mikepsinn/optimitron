@@ -69,4 +69,31 @@ describe('deposit-bundle', () => {
       { uri: 'at://did:plc:abc/org.hypercerts.claim.activity/1', cid: 'cid-activity' },
     ]);
   });
+
+  it('passes deterministic rkeys through when provided', async () => {
+    const publisher = {
+      createRecord: vi.fn()
+        .mockResolvedValueOnce({
+          uri: 'at://did:plc:abc/org.hypercerts.claim.activity/deposit-1',
+          cid: 'cid-activity',
+        })
+        .mockResolvedValueOnce({
+          uri: 'at://did:plc:abc/org.hypercerts.context.measurement/deposit-1',
+          cid: 'cid-measurement',
+        }),
+    };
+
+    const draft = createDepositHypercertDraft(baseInput);
+    await publishDepositHypercertDraft(publisher, 'did:plc:abc', draft, {
+      activityRkey: 'prize-deposit-abc',
+      measurementRkey: 'prize-deposit-m-abc',
+    });
+
+    expect(publisher.createRecord.mock.calls[0]?.[0]).toMatchObject({
+      rkey: 'prize-deposit-abc',
+    });
+    expect(publisher.createRecord.mock.calls[1]?.[0]).toMatchObject({
+      rkey: 'prize-deposit-m-abc',
+    });
+  });
 });

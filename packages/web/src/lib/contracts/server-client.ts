@@ -67,6 +67,7 @@ export function getVoterPrizeTreasuryContract(
   }
 
   const abi = [
+    "event Deposited(address indexed depositor, uint256 assets, uint256 shares)",
     "function totalAssets() view returns (uint256)",
     "function currentHealthMetric() view returns (uint256)",
     "function currentIncomeMetric() view returns (uint256)",

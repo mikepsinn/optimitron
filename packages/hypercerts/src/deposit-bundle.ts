@@ -102,8 +102,14 @@ export async function publishDepositHypercertDraft(
   publisher: AtprotoRecordPublisher,
   repo: string,
   draft: DepositHypercertDraft,
+  options: {
+    activityRkey?: string;
+    measurementRkey?: string;
+  } = {},
 ): Promise<PublishedDepositBundle> {
-  const activityRef = await publishRecord(publisher, repo, draft.activity);
+  const activityRef = await publishRecord(publisher, repo, draft.activity, {
+    rkey: options.activityRkey,
+  });
 
   // Re-create measurement with real activity ref as subject
   const baseOptions = PolicyMeasurementInputSchema.omit({ extraMetrics: true }).parse({
@@ -124,7 +130,9 @@ export async function publishDepositHypercertDraft(
     ),
   );
 
-  const measurementRef = await publishRecord(publisher, repo, measurement);
+  const measurementRef = await publishRecord(publisher, repo, measurement, {
+    rkey: options.measurementRkey,
+  });
 
   return {
     activity: draft.activity,

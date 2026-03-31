@@ -17,6 +17,7 @@ import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
 import { StickyShareFooter } from "@/components/dashboard/StickyShareFooter"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
+import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function DashboardClient({
@@ -96,6 +97,8 @@ export function DashboardClient({
           <div id="share-templates">
             <ShareTemplatesCard referralLink={referralLink} />
           </div>
+
+          <ImpactReceiptsCard receipts={initialData.impactReceipts} />
         </div>
       </div>
       <StickyShareFooter referrals={initialData.stats.referrals} referralLink={referralLink} />

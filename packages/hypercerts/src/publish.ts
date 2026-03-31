@@ -16,6 +16,7 @@ export interface AtprotoRecordPublisher {
     repo: string;
     collection: string;
     record: HypercertRecord;
+    rkey?: string;
   }): Promise<AtprotoRecordRef>;
 }
 
@@ -31,11 +32,12 @@ export function createAtprotoPublisher(
   agent: Pick<Agent, 'com'>,
 ): AtprotoRecordPublisher {
   return {
-    async createRecord({ repo, collection, record }) {
+    async createRecord({ repo, collection, record, rkey }) {
       const response = await agent.com.atproto.repo.createRecord({
         repo,
         collection,
         record,
+        rkey,
       });
       return {
         uri: response.data.uri,
@@ -102,12 +104,14 @@ export async function publishRecord(
   publisher: AtprotoRecordPublisher,
   repo: string,
   record: HypercertRecord,
+  options: { rkey?: string } = {},
 ): Promise<AtprotoRecordRef> {
   const parsed = HypercertRecordSchema.parse(record);
   return publisher.createRecord({
     repo,
     collection: parsed.$type,
     record: parsed,
+    rkey: options.rkey,
   });
 }
 

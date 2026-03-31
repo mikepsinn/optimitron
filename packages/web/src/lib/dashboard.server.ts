@@ -15,6 +15,7 @@ import {
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   GLOBAL_POPULATION_2024,
 } from "@optimitron/data/parameters";
+import { getImpactReceipts } from "@/lib/impact-receipts.server";
 import { ROUTES } from "@/lib/routes";
 import type {
   DashboardData,
@@ -110,6 +111,10 @@ export async function getDashboardData(
     }),
   ]);
   const completedSet = new Set(completedReasons.map((r) => r.reason));
+  const [wishBalance, impactReceipts] = await Promise.all([
+    getWishBalance(userId),
+    getImpactReceipts(userId),
+  ]);
 
   const questChecklist: QuestItem[] = [
     {
@@ -230,7 +235,7 @@ export async function getDashboardData(
       newsletterSubscribed: user.newsletterSubscribed,
     },
     stats: {
-      wishes: await getWishBalance(userId),
+      wishes: wishBalance,
       referrals: referralCount,
       wishocraticAllocations: allocationCount,
       badges: user.badges.length,
@@ -268,6 +273,7 @@ export async function getDashboardData(
       target: targetPct,
     },
     questChecklist,
+    impactReceipts,
   };
 }
 

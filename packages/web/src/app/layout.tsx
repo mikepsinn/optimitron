@@ -7,6 +7,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
+import { GameScoreBar } from "@/components/game/GameScoreBar";
 import { wagmiConfig } from "@/lib/wagmi-config";
 
 const dmSans = DM_Sans({
@@ -94,8 +95,9 @@ export default async function RootLayout({
       <body className={`font-sans antialiased ${fontVariables}`} suppressHydrationWarning>
         <Providers initialState={initialState}>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen pb-12">{children}</main>
           <Footer />
+          <GameScoreBar />
         </Providers>
         <Analytics />
       </body>

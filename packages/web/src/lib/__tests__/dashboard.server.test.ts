@@ -31,6 +31,10 @@ vi.mock("@/lib/wishes.server", () => ({
   getWishReasonEmoji: vi.fn(() => "⭐"),
 }))
 
+vi.mock("@/lib/impact-receipts.server", () => ({
+  getImpactReceipts: vi.fn(),
+}))
+
 // Mock auth
 vi.mock("@/lib/auth", () => ({
   authOptions: {},
@@ -38,6 +42,7 @@ vi.mock("@/lib/auth", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { getWishBalance } from "@/lib/wishes.server"
+import { getImpactReceipts } from "@/lib/impact-receipts.server"
 import { getDashboardData } from "../dashboard.server";
 
 describe("getDashboardData", () => {
@@ -120,6 +125,10 @@ describe("getDashboardData", () => {
     vi.mocked(prisma.user.count).mockResolvedValueOnce(0);
     vi.mocked(prisma.referendumVote.count).mockResolvedValueOnce(42);
     vi.mocked(getWishBalance).mockResolvedValueOnce(7);
+    vi.mocked(getImpactReceipts).mockResolvedValueOnce({
+      items: [],
+      walletCount: 0,
+    });
     vi.mocked(prisma.wishPoint.findMany).mockResolvedValueOnce([
       { reason: "DAILY_CHECKIN" },
     ] as any);
@@ -142,6 +151,7 @@ describe("getDashboardData", () => {
     expect(result.globalProgress).toBeDefined();
     expect(result.globalProgress.current).toBeGreaterThanOrEqual(0);
     expect(result.questChecklist).toHaveLength(10);
+    expect(result.impactReceipts).toEqual({ items: [], walletCount: 0 });
     // REFERRAL should be completed because referralCount > 0
     const referralQuest = result.questChecklist.find((q) => q.reason === "REFERRAL");
     expect(referralQuest?.completed).toBe(true);

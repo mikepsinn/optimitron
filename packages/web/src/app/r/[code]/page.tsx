@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -8,19 +7,11 @@ interface PageProps {
 /**
  * Referral landing route: /r/jane or /r/REF123
  *
- * Stores the referral code in a cookie, then redirects to the homepage.
- * The homepage pitch converts them; the stored ref attributes the signup.
+ * Redirects to the homepage with ?ref= in the URL. The TreatyVoteSection
+ * reads this param, stores it in the pending vote, and passes it through
+ * to the AuthForm on signin. User votes first, signs in after.
  */
 export default async function ReferralRedirectPage({ params }: PageProps) {
   const { code } = await params;
-
-  const cookieStore = await cookies();
-  cookieStore.set("ref", code, {
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-  });
-
-  redirect("/");
+  redirect(`/?ref=${encodeURIComponent(code)}#vote`);
 }

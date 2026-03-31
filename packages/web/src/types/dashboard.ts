@@ -78,6 +78,23 @@ export interface QuestItem {
   comingSoon: boolean;
 }
 
+export interface DashboardImpactReceipt {
+  id: string;
+  title: string;
+  description: string;
+  statusLabel: string;
+  statusTone: "success" | "accent" | "muted";
+  icon: string;
+  timeLabel: string | null;
+  href: string | null;
+  external: boolean;
+}
+
+export interface DashboardImpactReceipts {
+  items: DashboardImpactReceipt[];
+  walletCount: number;
+}
+
 export interface DashboardData {
   user: DashboardUser;
   stats: DashboardStats;
@@ -88,6 +105,7 @@ export interface DashboardData {
   };
   globalProgress: DashboardProgress;
   questChecklist: QuestItem[];
+  impactReceipts: DashboardImpactReceipts;
 }
 
 export interface LeaderboardEntry {

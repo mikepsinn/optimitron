@@ -7,7 +7,15 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 function getClient(): PrismaClient {
   if (globalForPrisma.prisma) return globalForPrisma.prisma;
 
-  const adapter = new PrismaPg({ connectionString: serverEnv.DATABASE_URL });
+  // Pin sslmode=verify-full on SSL connections to suppress the pg v8 deprecation
+  // warning and keep the same security behavior when pg v9 ships.
+  let connectionString = serverEnv.DATABASE_URL;
+  const url = new URL(connectionString);
+  if (url.searchParams.get("sslmode") === "require") {
+    url.searchParams.set("sslmode", "verify-full");
+    connectionString = url.toString();
+  }
+  const adapter = new PrismaPg({ connectionString });
   const client = new PrismaClient({
     adapter,
     log: serverEnv.NODE_ENV === "development" ? ["error", "warn"] : ["error"],

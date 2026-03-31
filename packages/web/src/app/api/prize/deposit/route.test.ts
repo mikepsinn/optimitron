@@ -4,6 +4,8 @@ const mocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
   grantWishes: vi.fn(),
   checkBadgesAfterWish: vi.fn(),
+  resolvePrizeDepositEvent: vi.fn(),
+  publishPrizeDepositHypercert: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -16,6 +18,11 @@ vi.mock("@/lib/wishes.server", () => ({
 
 vi.mock("@/lib/badges.server", () => ({
   checkBadgesAfterWish: mocks.checkBadgesAfterWish,
+}));
+
+vi.mock("@/lib/prize-deposit-hypercert.server", () => ({
+  resolvePrizeDepositEvent: mocks.resolvePrizeDepositEvent,
+  publishPrizeDepositHypercert: mocks.publishPrizeDepositHypercert,
 }));
 
 import { POST } from "./route";
@@ -32,6 +39,8 @@ describe("POST /api/prize/deposit", () => {
     vi.resetAllMocks();
     mocks.grantWishes.mockResolvedValue(null);
     mocks.checkBadgesAfterWish.mockResolvedValue(undefined);
+    mocks.resolvePrizeDepositEvent.mockResolvedValue(null);
+    mocks.publishPrizeDepositHypercert.mockResolvedValue({ status: "skipped", ref: null });
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -62,6 +71,13 @@ describe("POST /api/prize/deposit", () => {
   it("grants 5 wishes for $500 deposit", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user-1" });
     mocks.grantWishes.mockResolvedValue({ amount: 5 });
+    mocks.resolvePrizeDepositEvent.mockResolvedValue({
+      txHash: "0xabc",
+      chainId: 84532,
+      depositorAddress: "0x00000000000000000000000000000000000000aa",
+      amount: "500000000",
+      sharesReceived: "500000000",
+    });
 
     const res = await POST(makeRequest({ txHash: "0xabc", depositUsd: 500 }));
 
@@ -76,6 +92,13 @@ describe("POST /api/prize/deposit", () => {
       metadata: { txHash: "0xabc", depositUsd: 500 },
     });
     expect(mocks.checkBadgesAfterWish).toHaveBeenCalledWith("user-1", "PRIZE_DEPOSIT");
+    expect(mocks.publishPrizeDepositHypercert).toHaveBeenCalledWith({
+      txHash: "0xabc",
+      chainId: 84532,
+      depositorAddress: "0x00000000000000000000000000000000000000aa",
+      amount: "500000000",
+      sharesReceived: "500000000",
+    });
   });
 
   it("returns 0 wishes for deposit under $100", async () => {
@@ -98,5 +121,23 @@ describe("POST /api/prize/deposit", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toEqual({ success: true, wishesEarned: 0 });
+  });
+
+  it("falls back to client depositUsd when chain lookup is unavailable", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user-1" });
+    mocks.grantWishes.mockResolvedValue({ amount: 5 });
+    mocks.resolvePrizeDepositEvent.mockResolvedValue(null);
+
+    const res = await POST(makeRequest({ txHash: "0xabc", depositUsd: 500 }));
+
+    expect(res.status).toBe(200);
+    expect(mocks.grantWishes).toHaveBeenCalledWith({
+      userId: "user-1",
+      reason: "PRIZE_DEPOSIT",
+      amount: 5,
+      dedupeKey: "deposit-0xabc",
+      metadata: { txHash: "0xabc", depositUsd: 500 },
+    });
+    expect(mocks.publishPrizeDepositHypercert).not.toHaveBeenCalled();
   });
 });
