@@ -24,7 +24,7 @@ export function StatBar({ label, value, max = 10, className }: StatBarProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 font-[family-name:var(--font-arcade)] text-[10px] leading-none",
+        "flex items-center gap-2 font-pixel text-[10px] leading-none",
         className,
       )}
     >

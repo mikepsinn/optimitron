@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { PulseGlow } from "@/components/animations/PulseGlow";
 import { playWishFanfare } from "@/lib/wish-sound";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 7. Wishonia slide — NEW GAME+, burst of light after darkness */
 export default function WishoniaSlideComponent() {

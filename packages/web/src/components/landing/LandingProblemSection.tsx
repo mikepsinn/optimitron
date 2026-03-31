@@ -27,7 +27,7 @@ export function LandingProblemSection() {
           <h2 className="text-3xl font-black uppercase tracking-tight text-background sm:text-4xl md:text-5xl">
             The Cost of Doing Nothing
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-lg font-bold text-background">
             Your governments spend{" "}
             <ParameterValue param={{...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD"}} display="withUnit" />{" "}
             per year on weapons and{" "}
@@ -53,7 +53,7 @@ export function LandingProblemSection() {
                 <div className="text-3xl font-black text-brutal-yellow">
                   <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} display="withUnit" />/yr
                 </div>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">
+                <p className="mt-1 text-sm font-bold text-background">
                   Global political dysfunction tax — what misaligned governance
                   costs in wasted resources, perverse incentives, and missed
                   opportunities.
@@ -63,7 +63,7 @@ export function LandingProblemSection() {
                 <div className="text-2xl font-black text-brutal-yellow">
                   <ParameterValue param={{...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL, unit: "USD"}} display="withUnit" />/person
                 </div>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">
+                <p className="mt-1 text-sm font-bold text-background">
                   That&apos;s your share. You are paying this whether you know
                   it or not.
                 </p>
@@ -83,7 +83,7 @@ export function LandingProblemSection() {
                 <div className="text-3xl font-black text-brutal-yellow">
                   <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> deaths/day
                 </div>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">
+                <p className="mt-1 text-sm font-bold text-background">
                   Preventable. Treatable. Ignored. Every day your regulatory
                   system fails to clear the backlog.
                 </p>
@@ -92,7 +92,7 @@ export function LandingProblemSection() {
                 <div className="text-2xl font-black text-brutal-yellow">
                   <ParameterValue param={{...EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL, unit: "deaths"}} display="withUnit" />
                 </div>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">
+                <p className="mt-1 text-sm font-bold text-background">
                   People who died waiting for treatments that were already
                   proven safe — stuck in{" "}
                   <ParameterValue param={EFFICACY_LAG_YEARS} display="withUnit" /> of
@@ -104,8 +104,8 @@ export function LandingProblemSection() {
         </div>
 
         <div className="mt-8">
-          <div className="border-4 border-brutal-yellow bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-center text-sm font-bold text-foreground">
+          <div className="border-4 border-brutal-yellow bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="text-center text-sm font-bold">
               On my planet, when a system kills{" "}
               <ParameterValue param={{...GLOBAL_DISEASE_DEATHS_DAILY, unit: ""}} /> people a day and costs{" "}
               <ParameterValue param={{...POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, unit: "USD"}} display="withUnit" />{" "}

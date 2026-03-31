@@ -21,7 +21,7 @@ export function WhyPlaySection() {
           <SectionHeader
             title="What Happens If Nobody Plays"
             size="lg"
-            className="text-background [&_p]:text-muted-foreground"
+            className="text-background [&_p]:text-background"
           />
         </div>
 
@@ -63,13 +63,13 @@ export function WhyPlaySection() {
 
           {/* Card 3: The Fix */}
           <BrutalCard bgColor="cyan" shadowSize={8} padding="lg">
-            <div className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground mb-2">
+            <div className="text-4xl sm:text-5xl md:text-6xl font-black mb-2">
               1%
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black uppercase text-foreground mb-3">
+            <h3 className="text-2xl sm:text-3xl font-black uppercase mb-3">
               The Fix That&apos;s Sitting Right There
             </h3>
-            <p className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">
+            <p className="text-lg sm:text-xl font-bold leading-relaxed">
               1% of military &rarr; clinical trials.{" "}
               <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
               lives saved. ROI: essentially infinite.

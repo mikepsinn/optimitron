@@ -116,10 +116,10 @@ export default async function PrizePage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* HERO — Arcade Cabinet */}
       <section className="mb-16 text-center">
-        <p className="font-[family-name:var(--font-arcade)] text-sm font-bold uppercase tracking-[0.3em] text-brutal-pink mb-4">
+        <p className="font-pixel text-sm font-bold uppercase tracking-[0.3em] text-brutal-pink mb-4">
           The Earth Optimization Game
         </p>
-        <h1 className="font-[family-name:var(--font-arcade)] text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground mb-4">
+        <h1 className="font-pixel text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground mb-4">
           Insert Coin to Play
         </h1>
         <p className="text-lg font-bold text-muted-foreground max-w-2xl mx-auto mb-6">
@@ -135,7 +135,7 @@ export default async function PrizePage() {
       <section className="mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border-4 border-primary bg-brutal-yellow p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
               Game Over — You Lose
             </p>
             <div className="font-mono text-3xl font-black text-foreground mb-3">
@@ -148,7 +148,7 @@ export default async function PrizePage() {
             </p>
           </div>
           <div className="border-4 border-primary bg-brutal-cyan p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            <p className="font-pixel text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
               Game Over — You Win
             </p>
             <div className="font-mono text-3xl font-black text-foreground mb-3">
@@ -174,7 +174,7 @@ export default async function PrizePage() {
       {/* INSERT COIN — Deposit Section */}
       <section id="invest" className="mb-16">
         <div className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="font-[family-name:var(--font-arcade)] text-2xl font-black uppercase text-brutal-pink-foreground mb-4">
+          <h2 className="font-pixel text-2xl font-black uppercase text-brutal-pink-foreground mb-4">
             Insert Coin
           </h2>
           <p className="text-sm font-bold text-background mb-6 max-w-2xl">
@@ -215,7 +215,7 @@ export default async function PrizePage() {
               key={badge.label}
               className="border-4 border-primary bg-background px-4 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
-              <div className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase text-foreground">
+              <div className="font-pixel text-xs font-black uppercase text-foreground">
                 {badge.label}
               </div>
               <div className="text-[10px] font-bold text-muted-foreground">
@@ -228,7 +228,7 @@ export default async function PrizePage() {
 
       {/* LEVELS — How to Play */}
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-2xl font-black uppercase tracking-tight text-foreground mb-8 text-center">
+        <h2 className="font-pixel text-2xl font-black uppercase tracking-tight text-foreground mb-8 text-center">
           How to Play
         </h2>
         <div className="space-y-4">
@@ -237,11 +237,11 @@ export default async function PrizePage() {
               key={item.level}
               className={`border-4 border-primary ${item.color} p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex gap-6 items-start`}
             >
-              <div className="font-[family-name:var(--font-arcade)] text-xs font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap shrink-0 pt-1">
+              <div className="font-pixel text-xs font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap shrink-0 pt-1">
                 {item.level}
               </div>
               <div>
-                <h3 className={`font-[family-name:var(--font-arcade)] text-lg font-black uppercase ${item.textColor}`}>
+                <h3 className={`font-pixel text-lg font-black uppercase ${item.textColor}`}>
                   {item.title}
                 </h3>
                 <p className={`text-sm font-bold ${item.textColor === "text-background" ? "text-muted" : "text-muted-foreground"} mt-1`}>
@@ -260,7 +260,7 @@ export default async function PrizePage() {
 
       {/* THE TWO NUMBERS */}
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
           Win Conditions
         </h2>
         <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl text-center mx-auto">
@@ -300,12 +300,12 @@ export default async function PrizePage() {
 
       {/* TECHNICAL DETAILS */}
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-6">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6">
           Technical Details
         </h2>
         <Accordion type="multiple" className="border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <Accordion.Item value="trust" className="border-b-4 border-primary last:border-b-0">
-            <Accordion.Header className="px-6 py-4 font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+            <Accordion.Header className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
               Trust &amp; Transparency
             </Accordion.Header>
             <Accordion.Content className="px-6">
@@ -334,7 +334,7 @@ export default async function PrizePage() {
           </Accordion.Item>
 
           <Accordion.Item value="contracts" className="border-b-4 border-primary last:border-b-0">
-            <Accordion.Header className="px-6 py-4 font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+            <Accordion.Header className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
               Contract Architecture
             </Accordion.Header>
             <Accordion.Content className="px-6">
@@ -373,7 +373,7 @@ export default async function PrizePage() {
 
       {/* POOL STATUS */}
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
           Game Status
         </h2>
         <div className="grid gap-4 md:grid-cols-4 mb-8">
@@ -381,7 +381,7 @@ export default async function PrizePage() {
             <div className="font-mono text-xs font-black uppercase text-muted-foreground">
               Status
             </div>
-            <div className="font-[family-name:var(--font-arcade)] mt-2 text-2xl font-black text-brutal-cyan">
+            <div className="font-pixel mt-2 text-2xl font-black text-brutal-cyan">
               ACCEPTING COINS
             </div>
           </div>
@@ -415,7 +415,7 @@ export default async function PrizePage() {
 
         {/* Final CTA */}
         <div className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-          <h2 className="font-[family-name:var(--font-arcade)] text-2xl font-black text-brutal-pink-foreground mb-3 uppercase">
+          <h2 className="font-pixel text-2xl font-black text-brutal-pink-foreground mb-3 uppercase">
             Play the Game
           </h2>
           <p className="text-background mb-6 font-bold max-w-2xl mx-auto leading-relaxed">

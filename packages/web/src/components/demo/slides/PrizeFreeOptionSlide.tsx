@@ -15,7 +15,7 @@ const upsideFormatted = fmtParam(TREATY_PERSONAL_UPSIDE_BLEND);
 const upsideRaw = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
 const netWin = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value + VOTE_2_CLAIMS_PAYOUT.value - 100);
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Prize Free Option slide — three-outcome worked example */
 export default function PrizeFreeOptionSlide() {

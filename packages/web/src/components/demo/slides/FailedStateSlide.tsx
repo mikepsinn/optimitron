@@ -3,7 +3,7 @@
 import { useReducedMotion, motion } from "framer-motion";
 import { ScanLines, GlitchText } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const CITY_BEFORE = ["🏢", "🏥", "🏫", "🏦", "🏭", "🏗", "🏢", "🏥", "🏫", "🏦", "🏭", "🏗"];
 const CITY_AFTER = ["💀", "🔥", "🏚", "💀", "🔥", "🏚", "💀", "🔥", "🏚", "💀", "🔥", "🏚"];

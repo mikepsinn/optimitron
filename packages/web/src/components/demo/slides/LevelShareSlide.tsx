@@ -9,7 +9,7 @@ import {
   fmtParam,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const VOTING_ITEMS = [
   "Drive to polling station",

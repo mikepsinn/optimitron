@@ -408,7 +408,7 @@ export default function ArmoryPage() {
 
       {/* Final CTA — Shopkeeper farewell */}
       <section className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-        <h2 className="text-2xl font-black text-brutal-pink-foreground mb-3 uppercase font-[family-name:var(--font-arcade)]">
+        <h2 className="text-2xl font-black text-brutal-pink-foreground mb-3 uppercase font-pixel">
           Still Browsing?
         </h2>
         <p className="text-background mb-6 font-bold max-w-2xl mx-auto">

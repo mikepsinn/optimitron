@@ -20,7 +20,7 @@ export function StickyShareFooter({ referrals, referralLink }: StickyShareFooter
   const [showShare, setShowShare] = useState(false)
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-primary bg-brutal-yellow p-4 shadow-[0px_-4px_10px_rgba(0,0,0,1)]">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4 shadow-[0px_-4px_10px_rgba(0,0,0,1)]">
       <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-left">
           <div className="bg-background border-4 border-primary p-2 hidden sm:block">
@@ -33,11 +33,11 @@ export function StickyShareFooter({ referrals, referralLink }: StickyShareFooter
                 {formatLives(livesSaved)} <span className="text-sm sm:text-base font-bold">LIVES SAVED</span>
               </p>
 
-              <div className="hidden lg:flex items-center gap-1 text-muted-foreground">
-                <span className="text-primary font-black mx-1">&bull;</span>
+              <div className="hidden lg:flex items-center gap-1">
+                <span className="font-black mx-1">&bull;</span>
                 <Clock3 className="h-4 w-4" />
-                <span className="font-black text-lg text-foreground">{formatNumberShort(sufferingYearsPrevented)}</span>
-                <span className="text-xs font-bold uppercase text-foreground">YEARS SUFFERING PREVENTED</span>
+                <span className="font-black text-lg">{formatNumberShort(sufferingYearsPrevented)}</span>
+                <span className="text-xs font-bold uppercase">YEARS SUFFERING PREVENTED</span>
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@ export function StickyShareFooter({ referrals, referralLink }: StickyShareFooter
 
           <Button
             onClick={() => setShowShare(!showShare)}
-            className="h-12 sm:h-14 w-12 sm:w-14 shrink-0 border-4 border-primary bg-brutal-cyan hover:bg-brutal-cyan/90 text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0"
+            className="h-12 sm:h-14 w-12 sm:w-14 shrink-0 border-4 border-primary bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0"
           >
             <Share2 className="h-6 w-6" />
             <span className="sr-only">Share Options</span>

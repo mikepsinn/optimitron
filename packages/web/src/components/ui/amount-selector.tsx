@@ -22,10 +22,10 @@ export interface AmountSelectorProps {
 }
 
 const activeColorClasses: Record<AmountSelectorColor, string> = {
-  yellow: "bg-brutal-yellow text-foreground",
+  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
   pink: "bg-brutal-pink text-brutal-pink-foreground",
-  cyan: "bg-brutal-cyan text-foreground",
-  green: "bg-brutal-green text-foreground",
+  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
+  green: "bg-brutal-green text-brutal-green-foreground",
 }
 
 const columnClasses: Record<3 | 4 | 5, string> = {

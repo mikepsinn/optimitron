@@ -12,7 +12,7 @@ import {
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 const TYPEWRITER_SPEED = 30; // chars per second
 
 const haleCurrent = GLOBAL_HALE_CURRENT.value.toFixed(1);

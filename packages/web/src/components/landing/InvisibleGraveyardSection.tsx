@@ -51,7 +51,7 @@ export function InvisibleGraveyardSection() {
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-background">
             The Invisible Graveyard
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
+          <p className="mt-4 text-lg text-background max-w-2xl mx-auto font-bold">
             <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} /> people die every day from treatable diseases. Not untreatable.
             Treatable. You just have not gotten around to testing the treatments yet.
             At your current pace, clearing the backlog takes <ParameterValue param={{...DISEASES_WITHOUT_EFFECTIVE_TREATMENT, value: Math.round(DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value), unit: ""}} display="integer" /> years.
@@ -68,7 +68,7 @@ export function InvisibleGraveyardSection() {
                 <h3 className="text-sm font-black text-background uppercase mb-2">
                   {stat.label}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed font-bold">
+                <p className="text-sm text-background leading-relaxed font-bold">
                   {stat.detail}
                 </p>
               </div>
@@ -77,11 +77,11 @@ export function InvisibleGraveyardSection() {
         </div>
 
         <ScrollReveal delay={0.4}>
-          <div className="p-8 border-4 border-brutal-yellow bg-brutal-yellow shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-3xl sm:text-4xl font-black text-foreground mb-2">
+          <div className="p-8 border-4 border-brutal-yellow bg-brutal-yellow text-brutal-yellow-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+            <div className="text-3xl sm:text-4xl font-black mb-2">
               <ParameterValue param={{...DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE, unit: "USD"}} />
             </div>
-            <p className="text-foreground font-bold max-w-xl mx-auto mb-1">
+            <p className="font-bold max-w-xl mx-auto mb-1">
               Economic value of lives lost to regulatory delay. At 15 new treatments
               per year, your <ParameterValue param={{...DISEASES_WITHOUT_EFFECTIVE_TREATMENT, value: Math.round(DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR.value), unit: ""}} display="integer" />-year queue means most of these diseases will outlive
               your civilisation. Which, given your other numbers, might not be very long.
@@ -91,7 +91,7 @@ export function InvisibleGraveyardSection() {
                 item={invisibleGraveyardPaperLink}
                 variant="custom"
                 external
-                className="inline-flex items-center text-sm font-black text-muted-foreground uppercase hover:text-foreground transition-colors"
+                className="inline-flex items-center text-sm font-black uppercase hover:underline transition-colors"
               >
                 Read the paper &rarr;
               </NavItemLink>
@@ -99,7 +99,7 @@ export function InvisibleGraveyardSection() {
                 item={dfdaSpecPaperLink}
                 variant="custom"
                 external
-                className="inline-flex items-center text-sm font-black text-muted-foreground uppercase hover:text-foreground transition-colors"
+                className="inline-flex items-center text-sm font-black uppercase hover:underline transition-colors"
               >
                 See the solution (dFDA) &rarr;
               </NavItemLink>

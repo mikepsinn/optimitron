@@ -3,7 +3,7 @@
 import { ScanLines } from "@/components/animations/GlitchText";
 import { GlitchText } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 1. Terminal slide — CRT horror, glitching transmission */
 export default function TerminalSlide() {

@@ -5,7 +5,7 @@ import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { ScanLines } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const PENCIL_ROLES = [
   { icon: "\uD83E\uDE93", label: "Lumberjack" },

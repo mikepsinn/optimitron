@@ -13,22 +13,22 @@ export function getNavItemLinkClasses(
       return `text-sm font-bold uppercase px-3 py-2 border-2 transition-all block ${
         isActive
           ? "border-primary bg-background text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          : "border-transparent text-foreground hover:border-primary hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          : "border-transparent hover:border-primary hover:bg-background hover:text-foreground hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
       }`;
     case "dropdown":
       return `block px-4 py-3 transition-colors ${
         isActive
-          ? "bg-brutal-yellow text-foreground"
-          : "text-foreground hover:bg-brutal-cyan"
+          ? "bg-brutal-yellow text-brutal-yellow-foreground"
+          : "hover:bg-brutal-cyan hover:text-brutal-cyan-foreground"
       }`;
     case "mobile":
       return `block px-3 py-2 border-2 transition-all ${
         isActive
-          ? "border-primary bg-brutal-yellow text-foreground"
-          : "border-transparent text-foreground hover:border-primary hover:bg-brutal-cyan"
+          ? "border-primary bg-brutal-yellow text-brutal-yellow-foreground"
+          : "border-transparent hover:border-primary hover:bg-brutal-cyan hover:text-brutal-cyan-foreground"
       }`;
     case "footer":
-      return "text-sm font-bold text-foreground hover:text-foreground transition-colors";
+      return "text-sm font-bold transition-colors";
     case "custom":
       return "";
   }

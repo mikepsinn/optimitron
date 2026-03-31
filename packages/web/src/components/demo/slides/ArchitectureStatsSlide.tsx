@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
 import { CountUp } from "@/components/animations/CountUp";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 16. Architecture stats slide — staggered stat blocks filling viewport */
 export default function ArchitectureStatsSlide() {

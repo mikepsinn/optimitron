@@ -5,7 +5,7 @@ import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { ScanLines } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const LINE_ITEMS = [
   { label: "Health innovation delays", value: 34, delay: 0.6 },

@@ -17,7 +17,7 @@ interface ArcadeTagProps {
 export function ArcadeTag({ children, className = "mb-2" }: ArcadeTagProps) {
   return (
     <p
-      className={`font-[family-name:var(--font-arcade)] text-sm font-black uppercase tracking-[0.2em] text-brutal-pink ${className}`}
+      className={`font-pixel text-sm font-black uppercase tracking-[0.2em] text-brutal-pink ${className}`}
     >
       {children}
     </p>

@@ -90,7 +90,7 @@ export default async function RootLayout({
   const initialState = cookieToInitialState(wagmiConfig, cookie);
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark palette-vga">
       <body className={`font-sans antialiased ${fontVariables}`} suppressHydrationWarning>
         <Providers initialState={initialState}>
           <Navbar />

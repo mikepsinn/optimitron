@@ -43,13 +43,13 @@ const treatySteps = [
 
 export function OnePercentTreatySection() {
   return (
-    <section className="bg-brutal-cyan">
+    <section className="bg-brutal-cyan text-brutal-cyan-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">
             The 1% Treaty
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
+          <p className="mt-4 text-lg max-w-2xl mx-auto font-bold">
             Take one percent of what you spend on killing each other and spend it on
             not dying instead. This is not a radical proposal. It is basic arithmetic.
             I genuinely do not understand what is taking so long.
@@ -61,7 +61,7 @@ export function OnePercentTreatySection() {
             <div key={step.label} className="p-6 border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-lg font-black text-muted-foreground line-through">
+                  <span className="text-lg font-black line-through opacity-60">
                     {step.before}
                   </span>
                   <span className="text-brutal-cyan font-black text-xl">&rarr;</span>
@@ -82,11 +82,11 @@ export function OnePercentTreatySection() {
           ))}
         </div>
 
-        <div className="p-8 border-4 border-primary bg-brutal-cyan shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-          <div className="text-4xl sm:text-5xl font-black text-foreground mb-2">
+        <div className="p-8 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+          <div className="text-4xl sm:text-5xl font-black mb-2">
             <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} /> Lives Saved
           </div>
-          <p className="text-foreground font-bold max-w-xl mx-auto">
+          <p className="font-bold max-w-xl mx-auto">
             <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} /> deaths prevented. ROI: essentially infinite. The only
             thing standing between you and this is the part where you actually do it.
           </p>
@@ -96,7 +96,7 @@ export function OnePercentTreatySection() {
               item={onePercentTreatyPaperLink}
               variant="custom"
               external
-              className="inline-flex items-center text-sm font-black text-muted-foreground uppercase hover:text-foreground transition-colors"
+              className="inline-flex items-center text-sm font-black uppercase hover:underline transition-colors"
             >
               Read the paper &rarr;
             </NavItemLink>

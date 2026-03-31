@@ -4,7 +4,7 @@ import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { TREATY_PERSONAL_UPSIDE_BLEND } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 const upsideRaw = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
 const exchangeRate = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 0.06);
 

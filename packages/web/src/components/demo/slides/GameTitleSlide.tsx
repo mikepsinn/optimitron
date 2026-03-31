@@ -3,7 +3,7 @@
 import { ScanLines } from "@/components/animations/GlitchText";
 import { PulseGlow } from "@/components/animations/PulseGlow";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 2. Game title slide — neon arcade title screen */
 export default function GameTitleSlide() {

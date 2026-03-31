@@ -2,7 +2,7 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const SNAPSHOTS = [
   { label: "WISHOCRACY AGGREGATION", detail: "us-federal | 847 participants", cid: "bafy...k7qR3" },

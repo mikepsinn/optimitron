@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { PulseGlow } from "@/components/animations/PulseGlow";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 11. Level allocate slide — fighting game versus screen */
 export default function LevelAllocateSlide() {

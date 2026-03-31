@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 15. Government leaderboard slide — arcade high score table */
 export default function LeaderboardSlide() {

@@ -3,7 +3,7 @@
 import { useReducedMotion, motion } from "framer-motion";
 import { ScanLines } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Metric Changed slide — single devastating punchline, mic drop */
 export default function MetricChangedSlide() {

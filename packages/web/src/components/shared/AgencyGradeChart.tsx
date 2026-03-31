@@ -7,15 +7,15 @@ import type { AgencyPerformance, AgencyGrade } from "@optimitron/data";
 const OUTCOME_COLORS = [
   "var(--brutal-pink)",
   "var(--brutal-yellow)",
-  "#888",
+  "var(--muted-foreground)",
   "var(--brutal-red)",
 ];
 
 const gradeColors: Record<AgencyGrade, string> = {
-  A: "bg-brutal-cyan text-foreground",
-  B: "bg-brutal-cyan text-foreground",
-  C: "bg-brutal-yellow text-foreground",
-  D: "bg-brutal-yellow text-foreground",
+  A: "bg-brutal-cyan text-brutal-cyan-foreground",
+  B: "bg-brutal-cyan text-brutal-cyan-foreground",
+  C: "bg-brutal-yellow text-brutal-yellow-foreground",
+  D: "bg-brutal-yellow text-brutal-yellow-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 

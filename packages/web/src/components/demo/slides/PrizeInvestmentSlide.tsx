@@ -3,7 +3,7 @@
 import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Prize Investment slide — 17% vs 8% investment comparison */
 export default function PrizeInvestmentSlide() {

@@ -109,10 +109,10 @@ export function VoteOrShareButton({
   }
 
   const variantClasses = {
-    default: "bg-brutal-cyan hover:bg-brutal-cyan/90 text-foreground",
+    default: "bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground",
     hero: "bg-brutal-pink hover:bg-brutal-pink/90 text-brutal-pink-foreground",
     nav: "bg-background hover:bg-background/90",
-    cta: "bg-brutal-yellow hover:bg-brutal-yellow/90 text-foreground",
+    cta: "bg-brutal-yellow hover:bg-brutal-yellow/90 text-brutal-yellow-foreground",
     inline: "bg-transparent hover:bg-brutal-yellow/10 p-0 h-auto",
   }
 

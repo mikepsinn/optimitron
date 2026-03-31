@@ -20,9 +20,9 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
   }
 
   const statusColors = {
-    PENDING: "bg-brutal-yellow",
-    APPROVED: "bg-brutal-cyan",
-    REJECTED: "bg-brutal-pink",
+    PENDING: "bg-brutal-yellow text-brutal-yellow-foreground",
+    APPROVED: "bg-brutal-cyan text-brutal-cyan-foreground",
+    REJECTED: "bg-brutal-pink text-brutal-pink-foreground",
   }
 
   const statusIcons = {
@@ -44,7 +44,7 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
 
       {/* Total Impact Summary */}
       {totalMembers > 0 && (
-        <div className="bg-brutal-yellow border-4 border-primary p-4 mb-6 flex items-center gap-4">
+        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-4 mb-6 flex items-center gap-4">
           <TrendingUp className="w-6 h-6" />
           <div>
             <div className="text-2xl font-black">{totalMembers} MEMBERS</div>

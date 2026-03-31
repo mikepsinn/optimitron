@@ -18,15 +18,15 @@ const bgColorClasses: Record<CTABgColor, { bg: string; text: string }> = {
   },
   yellow: {
     bg: "bg-brutal-yellow",
-    text: "text-foreground",
+    text: "text-brutal-yellow-foreground",
   },
   cyan: {
     bg: "bg-brutal-cyan",
-    text: "text-foreground",
+    text: "text-brutal-cyan-foreground",
   },
   black: {
     bg: "bg-foreground",
-    text: "text-brutal-pink-foreground",
+    text: "text-background",
   },
   foreground: {
     bg: "bg-foreground",
@@ -34,7 +34,7 @@ const bgColorClasses: Record<CTABgColor, { bg: string; text: string }> = {
   },
   red: {
     bg: "bg-brutal-red",
-    text: "text-foreground",
+    text: "text-brutal-red-foreground",
   },
 }
 

@@ -306,14 +306,14 @@ export function IABDeposit() {
                 ))}
               </div>
             ) : null}
-            <div className="border-4 border-primary bg-brutal-cyan p-3">
-              <p className="text-xs font-bold text-muted-foreground">
+            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-3">
+              <p className="text-xs font-bold">
                 Need a wallet?{" "}
                 <a
                   href="https://metamask.io/download/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-foreground underline hover:text-brutal-pink"
+                  className="font-black underline hover:text-brutal-pink"
                 >
                   Install MetaMask
                 </a>{" "}
@@ -337,7 +337,7 @@ export function IABDeposit() {
                 {chainId !== sepolia.id && (
                   <button
                     onClick={() => switchChain({ chainId: sepolia.id })}
-                    className="border-4 border-primary bg-brutal-yellow px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/80 transition-colors"
+                    className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/80 transition-colors"
                   >
                     Switch to Sepolia
                   </button>
@@ -353,8 +353,8 @@ export function IABDeposit() {
 
             {/* Balances */}
             <div className="grid gap-2 grid-cols-2">
-              <div className="border-4 border-primary bg-brutal-cyan p-2">
-                <div className="text-[10px] font-black uppercase text-muted-foreground">
+              <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-2">
+                <div className="text-[10px] font-black uppercase">
                   USDC Balance
                 </div>
                 <div className="text-sm font-black">
@@ -363,8 +363,8 @@ export function IABDeposit() {
                     : "\u2014"}
                 </div>
               </div>
-              <div className="border-4 border-primary bg-brutal-cyan p-2">
-                <div className="text-[10px] font-black uppercase text-muted-foreground">
+              <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-2">
+                <div className="text-[10px] font-black uppercase">
                   Your Bond Value
                 </div>
                 <div className="text-sm font-black">
@@ -407,11 +407,11 @@ export function IABDeposit() {
         </h3>
 
         {!isDeployed && (
-          <div className="border-4 border-primary bg-brutal-yellow p-3 mb-4">
-            <div className="text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3 mb-4">
+            <div className="text-xs font-black uppercase">
               Not Yet Deployed
             </div>
-            <p className="text-xs font-bold text-muted-foreground mt-1">
+            <p className="text-xs font-bold mt-1">
               The IABVault contract has not been deployed to this network yet.
               Connect your wallet to Sepolia once contracts are live.
             </p>
@@ -419,8 +419,8 @@ export function IABDeposit() {
         )}
 
         <div className="space-y-3">
-          <div className="border-4 border-primary bg-brutal-yellow p-3">
-            <label className="text-xs font-black uppercase text-muted-foreground block mb-1">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+            <label className="text-xs font-black uppercase block mb-1">
               Amount (USDC)
             </label>
             <div className="flex gap-2">
@@ -514,8 +514,8 @@ export function IABDeposit() {
 
       {/* Live Pool Status */}
       {isDeployed && isConnected && (
-        <div className="border-4 border-primary bg-brutal-cyan p-6">
-          <h3 className="font-black uppercase text-foreground mb-3">
+        <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6">
+          <h3 className="font-black uppercase mb-3">
             Live Vault Status
           </h3>
           <div className="grid gap-3 grid-cols-2">

@@ -8,7 +8,7 @@ import {
   fmtRaw,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Prize Mechanism slide — two-path branching, both green, no losing path */
 export default function PrizeMechanismSlide() {

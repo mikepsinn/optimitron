@@ -11,7 +11,7 @@ import {
   fmtRaw,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const FRIENDS_TABLE = [
   { friends: 2, value: fmtParam(VOTE_2_CLAIMS_PAYOUT) },

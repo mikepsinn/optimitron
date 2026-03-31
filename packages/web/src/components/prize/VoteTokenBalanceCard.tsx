@@ -32,8 +32,8 @@ function formatVOTE(weiAmount: string): string {
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   CONFIRMED: { bg: "bg-green-100", text: "text-green-800" },
-  PENDING: { bg: "bg-brutal-yellow", text: "text-foreground" },
-  SUBMITTED: { bg: "bg-brutal-cyan", text: "text-foreground" },
+  PENDING: { bg: "bg-brutal-yellow", text: "text-brutal-yellow-foreground" },
+  SUBMITTED: { bg: "bg-brutal-cyan", text: "text-brutal-cyan-foreground" },
   FAILED: { bg: "bg-red-100", text: "text-red-700" },
 };
 
@@ -75,11 +75,11 @@ export function VoteTokenBalanceCard() {
 
   if (error === "sign-in") {
     return (
-      <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black uppercase text-foreground mb-2">
+      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-lg font-black uppercase mb-2">
           Sign In to View VOTE Balance
         </h3>
-        <p className="text-sm font-bold text-foreground">
+        <p className="text-sm font-bold">
           Vote on referendums. Prove you&apos;re human via World ID. Each
           verified vote = 1 VOTE point. Simple enough even for your species.
         </p>
@@ -111,27 +111,27 @@ export function VoteTokenBalanceCard() {
           Your VOTE Points
         </h3>
         <div className="grid gap-4 grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan p-4">
-            <div className="text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
+            <div className="text-xs font-black uppercase">
               Confirmed Votes
             </div>
-            <div className="text-3xl font-black text-foreground">
+            <div className="text-3xl font-black">
               {data.totalVotes}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-4">
-            <div className="text-xs font-black uppercase text-muted-foreground">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+            <div className="text-xs font-black uppercase">
               Total VOTE Balance
             </div>
-            <div className="text-3xl font-black text-foreground">
+            <div className="text-3xl font-black">
               {formatVOTE(data.totalBalance)}
             </div>
           </div>
         </div>
 
         {data.totalVotes === 0 && (
-          <div className="mt-4 border-4 border-primary bg-brutal-yellow p-3">
-            <p className="text-xs font-bold text-muted-foreground">
+          <div className="mt-4 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+            <p className="text-xs font-bold">
               You don&apos;t have any VOTE points yet. Vote on a{" "}
               <Link
                 href={ROUTES.referendum}

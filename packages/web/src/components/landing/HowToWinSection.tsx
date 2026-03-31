@@ -31,7 +31,7 @@ export function HowToWinSection() {
 
         {/* Country leaderboard preview */}
         <div className="mb-6">
-          <p className="text-lg sm:text-xl font-black text-foreground uppercase mb-4 text-center">
+          <p className="text-lg sm:text-xl font-black uppercase mb-4 text-center">
             Most Misaligned Governments
           </p>
           <GovernmentLeaderboard limit={5} compact />
@@ -39,7 +39,7 @@ export function HowToWinSection() {
             <NavItemLink
               item={governmentsLink}
               variant="custom"
-              className="text-base font-black text-foreground uppercase hover:text-brutal-pink transition-colors"
+              className="text-base font-black uppercase hover:text-brutal-pink transition-colors"
             >
               See all government scoreboards &rarr;
             </NavItemLink>
@@ -48,7 +48,7 @@ export function HowToWinSection() {
 
         {/* The awareness insight */}
         <div className="text-center mb-8 max-w-3xl mx-auto">
-          <p className="text-xl sm:text-2xl font-black text-foreground">
+          <p className="text-xl sm:text-2xl font-black">
             {TAGLINES.pluralisticIgnorance} Get <ParameterValue param={GLOBAL_COORDINATION_TARGET_SUPPORTERS} figures={1} /> to show they want
             this and it becomes unstoppable.
           </p>
@@ -71,10 +71,10 @@ export function HowToWinSection() {
           </BrutalCard>
 
           <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
-            <h3 className="text-2xl sm:text-3xl font-black uppercase text-foreground mb-3">
+            <h3 className="text-2xl sm:text-3xl font-black uppercase mb-3">
               If Targets Are Missed
             </h3>
-            <p className="text-lg sm:text-xl font-bold text-foreground">
+            <p className="text-lg sm:text-xl font-bold">
               Depositors split the pool.{" "}
               <span className="text-brutal-pink font-black">
                 <ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} />x
@@ -86,7 +86,7 @@ export function HowToWinSection() {
 
         {/* Punchline */}
         <div className="text-center">
-          <p className="text-xl sm:text-2xl font-black text-foreground">
+          <p className="text-xl sm:text-2xl font-black">
             {TAGLINES.everyPlayerWins}
           </p>
         </div>

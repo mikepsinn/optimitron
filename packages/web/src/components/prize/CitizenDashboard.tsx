@@ -128,11 +128,11 @@ export function CitizenDashboard() {
   // Unauthenticated
   if (!data?.stats) {
     return (
-      <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black uppercase text-foreground mb-2">
+      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-lg font-black uppercase mb-2">
           Your Citizen Dashboard
         </h3>
-        <p className="text-sm font-bold text-foreground mb-4">
+        <p className="text-sm font-bold mb-4">
           Sign in to track your impact, see your leaderboard rank,
           and get your referral link. Each verified vote you bring in
           = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives saved + {SUFFERING_YEARS_PER_VOTE.toLocaleString()} years of
@@ -179,8 +179,8 @@ export function CitizenDashboard() {
       </h2>
 
       {/* ── Impact Banner ── */}
-      <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-sm font-black uppercase text-muted-foreground mb-2">
+      <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-sm font-black uppercase mb-2">
           Your Verified Votes Have Contributed To
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -188,10 +188,10 @@ export function CitizenDashboard() {
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <div className="cursor-help">
-                  <div className="text-3xl font-black text-brutal-pink-foreground">
+                  <div className="text-3xl font-black">
                     {Math.round(livesSaved).toLocaleString()}
                   </div>
-                  <div className="text-xs font-bold text-muted-foreground">
+                  <div className="text-xs font-bold">
                     lives saved (attributed)
                   </div>
                 </div>
@@ -210,10 +210,10 @@ export function CitizenDashboard() {
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <div className="cursor-help">
-                  <div className="text-3xl font-black text-brutal-pink-foreground">
+                  <div className="text-3xl font-black">
                     {sufferingYearsPrevented.toLocaleString()}
                   </div>
-                  <div className="text-xs font-bold text-muted-foreground">
+                  <div className="text-xs font-bold">
                     years of suffering prevented
                   </div>
                 </div>
@@ -232,10 +232,10 @@ export function CitizenDashboard() {
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <div className="cursor-help">
-                  <div className="text-3xl font-black text-brutal-pink-foreground">
+                  <div className="text-3xl font-black">
                     {estimatedReach.toLocaleString()}
                   </div>
-                  <div className="text-xs font-bold text-muted-foreground">
+                  <div className="text-xs font-bold">
                     hearts &amp; minds reached
                   </div>
                 </div>
@@ -274,7 +274,6 @@ export function CitizenDashboard() {
           value={`${sharePercent}%`}
           detail="Of success pool"
           color="bg-brutal-pink"
-          textWhite
         />
         <StatCard
           label="Global Rank"
@@ -285,11 +284,11 @@ export function CitizenDashboard() {
       </div>
 
       {/* ── Referral Goal + Badges ── */}
-      <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black uppercase text-foreground mb-1">
+      <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h3 className="text-lg font-black uppercase mb-1">
           Your Referral Goal
         </h3>
-        <p className="text-sm font-bold text-muted-foreground mb-4">
+        <p className="text-sm font-bold mb-4">
           Each verified vote = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives saved +{" "}
           {SUFFERING_YEARS_PER_VOTE.toLocaleString()} years of suffering
           prevented
@@ -320,7 +319,7 @@ export function CitizenDashboard() {
                 key={badge.threshold}
                 className={`p-3 border-4 border-primary text-center transition-all ${
                   unlocked
-                    ? "bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    ? "bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                     : "bg-background opacity-40"
                 }`}
               >
@@ -335,7 +334,7 @@ export function CitizenDashboard() {
         </div>
 
         {/* Contextual message */}
-        <p className="text-sm font-bold text-foreground text-center mt-4">
+        <p className="text-sm font-bold text-center mt-4">
           {getTierMessage(stats.verifiedVotes)}
         </p>
       </div>
@@ -381,11 +380,11 @@ export function CitizenDashboard() {
                     className="w-8 h-8 border-4 border-primary object-cover shrink-0"
                   />
                 ) : (
-                  <span className="w-8 h-8 bg-brutal-yellow border-4 border-primary flex items-center justify-center text-xs font-black shrink-0">
+                  <span className="w-8 h-8 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary flex items-center justify-center text-xs font-black shrink-0">
                     {entry.name.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <span className="flex-1 text-sm font-bold text-foreground truncate">
+                <span className="flex-1 text-sm font-bold truncate">
                   {entry.name}
                 </span>
                 <span className="text-sm font-black text-brutal-pink">
@@ -398,9 +397,9 @@ export function CitizenDashboard() {
       )}
 
       {/* ── Global Tipping Point ── */}
-      <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-lg font-black uppercase text-foreground">
+          <h3 className="text-lg font-black uppercase">
             Progress Toward {TIPPING_POINT_PCT}% Tipping Point
           </h3>
           <Tooltip.Provider>
@@ -424,7 +423,7 @@ export function CitizenDashboard() {
             </Tooltip>
           </Tooltip.Provider>
         </div>
-        <p className="text-sm font-bold text-muted-foreground mb-3">
+        <p className="text-sm font-bold mb-3">
           We need {TIPPING_POINT_PCT}% of the global population to create
           unstoppable change
         </p>
@@ -463,36 +462,38 @@ export function CitizenDashboard() {
 // StatCard
 // ---------------------------------------------------------------------------
 
+const statCardTextColors: Record<string, string> = {
+  "bg-brutal-cyan": "text-brutal-cyan-foreground",
+  "bg-brutal-yellow": "text-brutal-yellow-foreground",
+  "bg-brutal-pink": "text-brutal-pink-foreground",
+  "bg-brutal-red": "text-brutal-red-foreground",
+  "bg-background": "",
+};
+
 function StatCard({
   label,
   value,
   detail,
   color,
-  textWhite = false,
 }: {
   label: string;
   value: string;
   detail: string;
   color: string;
-  textWhite?: boolean;
 }) {
+  const textColor = statCardTextColors[color] ?? "";
+
   return (
     <div
-      className={`border-4 border-primary ${color} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+      className={`border-4 border-primary ${color} ${textColor} p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
     >
-      <div
-        className={`text-xs font-black uppercase ${textWhite ? "text-muted-foreground" : "text-muted-foreground"}`}
-      >
+      <div className="text-xs font-black uppercase">
         {label}
       </div>
-      <div
-        className={`text-2xl font-black mt-1 ${textWhite ? "text-brutal-pink-foreground" : "text-foreground"}`}
-      >
+      <div className="text-2xl font-black mt-1">
         {value}
       </div>
-      <div
-        className={`text-[10px] font-bold mt-1 ${textWhite ? "text-muted-foreground" : "text-muted-foreground"}`}
-      >
+      <div className="text-[10px] font-bold mt-1">
         {detail}
       </div>
     </div>

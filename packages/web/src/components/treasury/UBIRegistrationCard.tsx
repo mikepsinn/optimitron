@@ -86,11 +86,11 @@ export function UBIRegistrationCard() {
 
         {/* Step 1: Sign in */}
         {!isLoggedIn && (
-          <div className="border-4 border-primary bg-brutal-yellow p-4">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+            <div className="text-xs font-black uppercase mb-1">
               Step 1
             </div>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm font-bold">
               Sign in first to verify your identity.
             </p>
           </div>
@@ -108,11 +108,11 @@ export function UBIRegistrationCard() {
 
         {/* Step 3: Register on-chain */}
         {isLoggedIn && isVerified && !isConnected && (
-          <div className="border-4 border-primary bg-brutal-yellow p-4">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
+            <div className="text-xs font-black uppercase mb-1">
               Step 3
             </div>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm font-bold">
               Connect your wallet above to register for UBI.
             </p>
           </div>
@@ -120,25 +120,25 @@ export function UBIRegistrationCard() {
 
         {isLoggedIn && isVerified && isConnected && (
           <div className="space-y-3">
-            <div className="border-4 border-primary bg-brutal-cyan p-4">
+            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4">
               <div className="flex items-center gap-2 mb-2">
-                <ShieldCheck className="h-4 w-4 text-green-600" />
-                <span className="text-xs font-black uppercase text-green-600">
+                <ShieldCheck className="h-4 w-4" />
+                <span className="text-xs font-black uppercase">
                   Personhood Verified
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground font-bold">
+              <p className="text-xs font-bold">
                 World ID verification complete. Register your wallet to receive
                 UBI distributions.
               </p>
             </div>
 
             {isDemo && (
-              <div className="border-4 border-primary bg-brutal-yellow p-3">
-                <div className="text-xs font-black uppercase text-muted-foreground">
+              <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+                <div className="text-xs font-black uppercase">
                   Not Yet Deployed
                 </div>
-                <p className="text-xs font-bold text-muted-foreground mt-1">
+                <p className="text-xs font-bold mt-1">
                   Contracts are not deployed yet. Registration will be available
                   once the treasury launches.
                 </p>
@@ -149,7 +149,7 @@ export function UBIRegistrationCard() {
               <button
                 onClick={handleRegister}
                 disabled={isRegistering || registerSuccess}
-                className="border-4 border-primary bg-brutal-cyan px-6 py-2.5 text-sm font-black uppercase text-foreground hover:bg-brutal-cyan/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="border-4 border-primary bg-brutal-cyan px-6 py-2.5 text-sm font-black uppercase text-brutal-cyan-foreground hover:bg-brutal-cyan/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
               >
                 {isRegistering
                   ? "Registering..."

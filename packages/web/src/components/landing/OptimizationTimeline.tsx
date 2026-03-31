@@ -81,7 +81,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
   return (
     <div ref={timelineRef} className="relative">
-      <p className="text-sm sm:text-base text-muted-foreground text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
+      <p className="text-sm sm:text-base text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
         This timeline shows how soon we could optimize policy for all {diseasesUntreated.toLocaleString()} misaligned budget categories.
         Under the status quo, it takes <span className="font-black text-foreground">{queueYears} years</span>.
         With evidence-based optimization, we can stop doing the stupid version and start doing the version that works.
@@ -89,9 +89,9 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* Warp Effect Overlay */}
       {isWarping && (
-        <div className="fixed inset-0 pointer-events-none z-50 bg-brutal-cyan">
+        <div className="fixed inset-0 pointer-events-none z-50 bg-brutal-cyan text-brutal-cyan-foreground">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-4xl font-black text-brutal-cyan animate-pulse">
+            <div className="text-4xl font-black animate-pulse">
               TIME WARP
             </div>
           </div>
@@ -115,7 +115,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* Age Input */}
       <div className="max-w-xs mx-auto mb-4 sm:mb-8">
-        <div className="bg-brutal-yellow border-4 border-primary p-3 sm:p-4">
+        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-3 sm:p-4">
           <div className="text-center">
             <div className="font-black uppercase text-xs sm:text-sm mb-1 sm:mb-2">Make It Personal</div>
             <div className="text-xs mb-2 sm:mb-3">Enter your age to see if optimized policy arrives in time</div>
@@ -141,7 +141,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
 
       {/* "You Are Here" Start */}
       <div className="flex justify-center mb-4 sm:mb-8">
-        <div className="bg-brutal-yellow border-4 border-primary px-4 sm:px-6 py-2 sm:py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary px-4 sm:px-6 py-2 sm:py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-base sm:text-xl font-black uppercase text-center">You Are Here</div>
           <div className="text-[10px] sm:text-xs font-bold text-center mt-1">Year 0 — Stop Choosing Badly</div>
         </div>
@@ -172,7 +172,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
           className="absolute left-0 sm:left-4 z-10 w-36 sm:w-44"
           style={{ top: `${dfdaQueueYears * pxPerYear - 80}px` }}
         >
-          <div className="bg-brutal-cyan border-4 border-primary p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
+          <div className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
             <div className="text-lg mb-1">&#x1F389;</div>
             <div className="font-black text-xs uppercase leading-tight mb-2">
               Optimal policies identified for most categories
@@ -181,7 +181,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
               Due to evidence-based optimization ({dfdaQueueYears} years)
             </div>
             <div className="text-2xl">&darr;</div>
-            <div className="text-[9px] font-bold text-muted-foreground">
+            <div className="text-[9px] font-bold">
               Now see the opportunity cost of the status quo timeline below
             </div>
           </div>
@@ -207,7 +207,7 @@ export function OptimizationTimeline({ userAge, onAgeChange }: OptimizationTimel
             style={{ top: `${Math.min(currentYear * pxPerYear + 50, statusQuoHeight - 200)}px` }}
           >
             <div className="grid grid-cols-2 gap-0 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <div className="bg-brutal-cyan p-3 text-center border-r-2 border-primary">
+              <div className="bg-brutal-cyan text-brutal-cyan-foreground p-3 text-center border-r-2 border-primary">
                 <div className="text-[10px] font-black uppercase mb-2">Evidence-Based Optimization</div>
                 <div className="text-sm font-black uppercase mb-1">Policies Optimized</div>
                 <div className="text-xs font-bold">

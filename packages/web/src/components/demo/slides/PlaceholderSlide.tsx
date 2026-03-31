@@ -2,7 +2,7 @@
 
 import { useSierraGame } from "../SierraGameContext";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Generic fallback slide — shows narration text centered on screen */
 export default function PlaceholderSlide() {

@@ -17,14 +17,14 @@ export interface BrutalCardProps {
 }
 
 const bgClasses: Record<BrutalCardBgColor, string> = {
-  background: "bg-background",
+  background: "bg-background text-foreground",
   foreground: "bg-foreground text-background",
-  pink: "bg-brutal-pink",
-  cyan: "bg-brutal-cyan",
-  yellow: "bg-brutal-yellow",
-  green: "bg-brutal-green",
-  red: "bg-brutal-red",
-  default: "bg-card",
+  pink: "bg-brutal-pink text-brutal-pink-foreground",
+  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
+  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  green: "bg-brutal-green text-brutal-green-foreground",
+  red: "bg-brutal-red text-brutal-red-foreground",
+  default: "bg-card text-card-foreground",
 }
 
 const shadowClasses: Record<BrutalCardShadowSize, string> = {

@@ -10,7 +10,7 @@ import {
   fmtRaw,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 14. Prize slide — INSERT COIN arcade machine */
 export default function PrizeSlide() {

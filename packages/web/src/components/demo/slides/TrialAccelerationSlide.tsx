@@ -8,7 +8,7 @@ import {
   DFDA_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const oldQueue = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const newQueue = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);

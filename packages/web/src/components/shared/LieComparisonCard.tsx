@@ -42,14 +42,14 @@ export function LieComparisonCard({ lie }: LieComparisonCardProps) {
         </div>
 
         {/* THE TRUTH */}
-        <div className="bg-brutal-cyan p-4 border-t-4 border-primary md:border-l-2 md:border-t-4">
-          <span className="text-[10px] font-black uppercase text-foreground tracking-widest">
+        <div className="bg-brutal-cyan text-brutal-cyan-foreground p-4 border-t-4 border-primary md:border-l-2 md:border-t-4">
+          <span className="text-[10px] font-black uppercase tracking-widest">
             The Truth
           </span>
-          <p className="text-sm font-bold text-foreground mt-2 leading-relaxed">
+          <p className="text-sm font-bold mt-2 leading-relaxed">
             {lie.theTruth}
           </p>
-          <p className="text-xs font-bold text-foreground mt-2">
+          <p className="text-xs font-bold mt-2">
             {lie.harm}
           </p>
         </div>
@@ -62,7 +62,7 @@ export function LieComparisonCard({ lie }: LieComparisonCardProps) {
             {lie.deathsOrAffected}
           </span>
           {lie.declassified && (
-            <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-brutal-yellow text-foreground border-2 border-primary">
+            <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-brutal-yellow text-brutal-yellow-foreground border-2 border-primary">
               Declassified
             </span>
           )}

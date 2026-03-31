@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Scoreboard slide */
 export default function ScoreboardSlide() {

@@ -51,8 +51,8 @@ export default function ActionOptionsSection() {
   return (
     <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
       <Container>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center mb-16 text-brutal-pink-foreground">
-          DO <span className="text-primary">SOMETHING</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center mb-16 text-background">
+          DO <span className="text-brutal-pink">SOMETHING</span>
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {options.map((item, index) => {

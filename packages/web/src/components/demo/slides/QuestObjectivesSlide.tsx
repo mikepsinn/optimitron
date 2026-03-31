@@ -2,7 +2,7 @@
 
 import { useReducedMotion, motion } from "framer-motion";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** Quest objectives slide — Sierra quest log with two win conditions */
 export default function QuestObjectivesSlide() {

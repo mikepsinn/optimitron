@@ -59,7 +59,7 @@ export function TreasuryStatusCard() {
           Treasury Status
         </h2>
         {isDemo && (
-          <span className="border-4 border-primary bg-brutal-yellow px-2 py-0.5 text-[10px] font-black uppercase">
+          <span className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-2 py-0.5 text-[10px] font-black uppercase">
             Demo
           </span>
         )}
@@ -68,16 +68,16 @@ export function TreasuryStatusCard() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`border-4 border-primary ${stat.color} p-3`}
+            className={`border-4 border-primary ${stat.color} ${stat.color === "bg-brutal-cyan" ? "text-brutal-cyan-foreground" : ""} p-3`}
           >
-            <div className="text-[10px] font-black uppercase text-muted-foreground">
+            <div className="text-[10px] font-black uppercase">
               {stat.label}
             </div>
-            <div className="text-sm font-black text-foreground mt-1">
+            <div className="text-sm font-black mt-1">
               {stat.value}
             </div>
             {stat.detail && (
-              <div className="text-[10px] font-bold text-muted-foreground mt-0.5">
+              <div className="text-[10px] font-bold mt-0.5">
                 {stat.detail}
               </div>
             )}

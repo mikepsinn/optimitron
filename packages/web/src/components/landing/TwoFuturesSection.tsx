@@ -167,8 +167,8 @@ export function TwoFuturesSection() {
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: 0.8 }}
       >
-        <div className="p-6 border-4 border-primary bg-brutal-yellow shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center max-w-3xl mx-auto">
-          <p className="text-xl font-black text-foreground mb-4">
+        <div className="p-6 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center max-w-3xl mx-auto">
+          <p className="text-xl font-black mb-4">
             You are currently on Path A. You chose it by not choosing. Which
             is very on-brand for your species.
           </p>

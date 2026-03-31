@@ -28,37 +28,37 @@ export default function SensitivityAnalysisSection() {
     <SectionContainer bgColor="pink" borderPosition="top" padding="lg">
       <Container>
         <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-4">
-          IS THE <span className="text-foreground"><ParameterValue param={DFDA_ROI_RD_ONLY} /></span> ROI REAL?
+          IS THE <ParameterValue param={DFDA_ROI_RD_ONLY} /> ROI REAL?
         </h2>
         <p className="text-center text-lg font-bold mb-12 max-w-3xl mx-auto">
           Your species loves asking &ldquo;but what if you&apos;re wrong?&rdquo; So we tested that.
         </p>
 
         {/* The Main Message */}
-        <Card className="bg-brutal-yellow border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12 max-w-4xl mx-auto">
+        <Card className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12 max-w-4xl mx-auto">
           <div className="text-center">
             <div className="text-2xl md:text-3xl font-black uppercase mb-6">EVEN IF WE&apos;RE WRONG, WE&apos;RE STILL RIGHT</div>
             <p className="text-lg font-bold mb-8">
               We tested what happens if trials are LESS than {costReductionRaw}x cheaper and operations cost TWICE as much:
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-background border-4 border-primary p-6">
+              <div className="bg-background text-foreground border-4 border-primary p-6">
                 <div className="text-sm font-bold uppercase mb-2">Worst Case</div>
                 <div className="text-4xl font-black text-brutal-pink mb-2">{worstCaseROI}:1</div>
                 <div className="text-xs">60% of projected savings<br/>2x operational costs</div>
               </div>
-              <div className="bg-brutal-pink border-4 border-primary p-6">
-                <div className="text-sm font-bold uppercase mb-2 text-brutal-pink-foreground">Our Baseline</div>
-                <div className="text-4xl font-black text-brutal-pink-foreground mb-2">{roiRaw}:1</div>
-                <div className="text-xs text-brutal-pink-foreground">Based on RECOVERY trial data<br/>NPV-adjusted over {npvTimeHorizon} years</div>
+              <div className="bg-brutal-pink text-brutal-pink-foreground border-4 border-primary p-6">
+                <div className="text-sm font-bold uppercase mb-2">Our Baseline</div>
+                <div className="text-4xl font-black mb-2">{roiRaw}:1</div>
+                <div className="text-xs">Based on RECOVERY trial data<br/>NPV-adjusted over {npvTimeHorizon} years</div>
               </div>
-              <div className="bg-background border-4 border-primary p-6">
+              <div className="bg-background text-foreground border-4 border-primary p-6">
                 <div className="text-sm font-bold uppercase mb-2">Best Case</div>
                 <div className="text-4xl font-black text-brutal-pink mb-2">{bestCaseROI}:1</div>
                 <div className="text-xs">Full market capture<br/>0.5x operational costs</div>
               </div>
             </div>
-            <div className="bg-background border-4 border-primary p-4">
+            <div className="bg-background text-foreground border-4 border-primary p-4">
               <p className="font-black text-lg">
                 Even in the WORST scenario, {worstCaseROI}:1 still beats smallpox eradication ({smallpoxROI}) — humanity&apos;s previous best ROI.
               </p>

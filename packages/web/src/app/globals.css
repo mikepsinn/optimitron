@@ -8,86 +8,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Unified neobrutalist design system with cohesive color palette */
+/* Game-first design system — dark mode default, Sierra aesthetic */
 :root {
-  /* Base colors - high contrast neobrutalism */
-  --background: rgb(255, 255, 255);
-  --foreground: rgb(0, 0, 0);
-
-  /* Card & Popover */
-  --card: rgb(255, 255, 255);
-  --card-foreground: rgb(0, 0, 0);
-  --popover: rgb(255, 255, 255);
-  --popover-foreground: rgb(0, 0, 0);
-
-  /* Primary - Brutal Pink */
-  --primary: rgb(236, 70, 153);
-  --primary-foreground: rgb(255, 255, 255);
-
-  /* Secondary - Brutal Yellow */
-  --secondary: rgb(255, 221, 87);
-  --secondary-foreground: rgb(0, 0, 0);
-
-  /* Accent - Brutal Cyan */
-  --accent: rgb(123, 221, 234);
-  --accent-foreground: rgb(0, 0, 0);
-
-  /* Muted - Light gray for subtle backgrounds */
-  --muted: rgb(245, 245, 245);
-  --muted-foreground: rgb(64, 64, 64);
-
-  /* Destructive - Keep as red for warnings */
-  --destructive: rgb(239, 68, 68);
-  --destructive-foreground: rgb(255, 255, 255);
-
-  /* Borders & Inputs - Always black for neobrutalism */
-  --border: rgb(0, 0, 0);
-  --input: rgb(0, 0, 0);
-  --ring: rgb(236, 70, 153);
-
-  /* Chart colors - Using our neobrutalist palette */
-  --chart-1: rgb(236, 70, 153); /* Pink */
-  --chart-2: rgb(123, 221, 234); /* Cyan */
-  --chart-3: rgb(255, 221, 87); /* Yellow */
-  --chart-4: rgb(0, 200, 83); /* Vivid green */
-  --chart-5: rgb(168, 85, 247); /* Vivid purple */
-
-  /* Radius - 0 for sharp neobrutalist edges */
-  --radius: 0px;
-
-  /* Sidebar */
-  --sidebar-background: rgb(250, 250, 250);
-  --sidebar-foreground: rgb(0, 0, 0);
-  --sidebar-primary: rgb(236, 70, 153);
-  --sidebar-primary-foreground: rgb(255, 255, 255);
-  --sidebar-accent: rgb(123, 221, 234);
-  --sidebar-accent-foreground: rgb(0, 0, 0);
-  --sidebar-border: rgb(0, 0, 0);
-  --sidebar-ring: rgb(236, 70, 153);
-  --sidebar: rgb(245, 245, 245);
-
-  /* Neobrutalist color tokens - matching primary/secondary/accent */
-  --brutal-pink: rgb(236, 70, 153);
-  --brutal-pink-foreground: rgb(255, 255, 255);
-  --brutal-cyan: rgb(6, 182, 212);
-  --brutal-cyan-foreground: rgb(0, 0, 0);
-  --brutal-yellow: rgb(255, 221, 87);
-  --brutal-yellow-foreground: rgb(0, 0, 0);
-  --brutal-red: rgb(239, 68, 68);
-  --brutal-red-foreground: rgb(255, 255, 255);
-
-  /* Shadow system - hard shadows for neobrutalism */
-  --shadow-x: 8px;
-  --shadow-y: 8px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 1;
-  --shadow-color: rgb(0, 0, 0);
-}
-
-/* Dark mode with inverted neobrutalist aesthetic */
-.dark {
-  /* Base colors - inverted */
+  /* Base colors — dark by default (game aesthetic) */
   --background: rgb(0, 0, 0);
   --foreground: rgb(255, 255, 255);
 
@@ -97,37 +20,40 @@
   --popover: rgb(23, 23, 23);
   --popover-foreground: rgb(255, 255, 255);
 
-  /* Primary - Brighter pink for dark mode */
+  /* Primary - Bright pink for dark mode */
   --primary: rgb(244, 114, 182);
   --primary-foreground: rgb(0, 0, 0);
 
-  /* Secondary - Brighter yellow for dark mode */
+  /* Secondary - Bright yellow */
   --secondary: rgb(253, 224, 71);
   --secondary-foreground: rgb(0, 0, 0);
 
-  /* Accent - Brighter cyan for dark mode */
+  /* Accent - Bright cyan */
   --accent: rgb(165, 243, 252);
   --accent-foreground: rgb(0, 0, 0);
 
-  /* Muted */
+  /* Muted — brighter foreground for readability on dark backgrounds */
   --muted: rgb(38, 38, 38);
-  --muted-foreground: rgb(163, 163, 163);
+  --muted-foreground: rgb(200, 200, 200);
 
   /* Destructive */
   --destructive: rgb(248, 113, 113);
   --destructive-foreground: rgb(0, 0, 0);
 
-  /* Borders & Inputs - White for dark mode */
-  --border: rgb(255, 255, 255);
-  --input: rgb(255, 255, 255);
+  /* Borders & Inputs — muted sierra border, not white */
+  --border: rgb(58, 58, 90);
+  --input: rgb(58, 58, 90);
   --ring: rgb(244, 114, 182);
 
-  /* Chart colors - Brighter for dark mode */
+  /* Chart colors */
   --chart-1: rgb(244, 114, 182);
   --chart-2: rgb(165, 243, 252);
   --chart-3: rgb(253, 224, 71);
   --chart-4: rgb(0, 200, 83);
   --chart-5: rgb(168, 85, 247);
+
+  /* Radius - 0 for sharp neobrutalist edges */
+  --radius: 0px;
 
   /* Sidebar */
   --sidebar-background: rgb(10, 10, 10);
@@ -136,27 +62,77 @@
   --sidebar-primary-foreground: rgb(0, 0, 0);
   --sidebar-accent: rgb(165, 243, 252);
   --sidebar-accent-foreground: rgb(0, 0, 0);
-  --sidebar-border: rgb(255, 255, 255);
+  --sidebar-border: rgb(58, 58, 90);
   --sidebar-ring: rgb(244, 114, 182);
   --sidebar: rgb(23, 23, 23);
 
-  /* Dark mode neobrutalist colors */
+  /* Neobrutalist color tokens */
   --brutal-pink: rgb(244, 114, 182);
   --brutal-pink-foreground: rgb(0, 0, 0);
   --brutal-cyan: rgb(8, 145, 178);
-  --brutal-cyan-foreground: rgb(255, 255, 255);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
   --brutal-yellow: rgb(253, 224, 71);
   --brutal-yellow-foreground: rgb(0, 0, 0);
-  --brutal-red: rgb(239, 68, 68);
+  --brutal-red: rgb(200, 40, 40);
   --brutal-red-foreground: rgb(255, 255, 255);
+  --brutal-green: rgb(34, 197, 94);
+  --brutal-green-foreground: rgb(0, 0, 0);
 
-  /* Shadow - white shadows for dark mode */
+  /* Shadow system — black shadows on dark backgrounds */
   --shadow-x: 8px;
   --shadow-y: 8px;
   --shadow-blur: 0px;
   --shadow-spread: 0px;
   --shadow-opacity: 1;
-  --shadow-color: rgb(255, 255, 255);
+  --shadow-color: rgb(0, 0, 0);
+}
+
+/* Light mode fallback (opt-in via .light class) */
+.light {
+  --background: rgb(255, 255, 255);
+  --foreground: rgb(0, 0, 0);
+  --card: rgb(255, 255, 255);
+  --card-foreground: rgb(0, 0, 0);
+  --popover: rgb(255, 255, 255);
+  --popover-foreground: rgb(0, 0, 0);
+  --primary: rgb(236, 70, 153);
+  --primary-foreground: rgb(255, 255, 255);
+  --secondary: rgb(255, 221, 87);
+  --secondary-foreground: rgb(0, 0, 0);
+  --accent: rgb(123, 221, 234);
+  --accent-foreground: rgb(0, 0, 0);
+  --muted: rgb(245, 245, 245);
+  --muted-foreground: rgb(64, 64, 64);
+  --destructive: rgb(239, 68, 68);
+  --destructive-foreground: rgb(255, 255, 255);
+  --border: rgb(0, 0, 0);
+  --input: rgb(0, 0, 0);
+  --ring: rgb(236, 70, 153);
+  --chart-1: rgb(236, 70, 153);
+  --chart-2: rgb(123, 221, 234);
+  --chart-3: rgb(255, 221, 87);
+  --chart-4: rgb(0, 200, 83);
+  --chart-5: rgb(168, 85, 247);
+  --sidebar-background: rgb(250, 250, 250);
+  --sidebar-foreground: rgb(0, 0, 0);
+  --sidebar-primary: rgb(236, 70, 153);
+  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-accent: rgb(123, 221, 234);
+  --sidebar-accent-foreground: rgb(0, 0, 0);
+  --sidebar-border: rgb(0, 0, 0);
+  --sidebar-ring: rgb(236, 70, 153);
+  --sidebar: rgb(245, 245, 245);
+  --brutal-pink: rgb(236, 70, 153);
+  --brutal-pink-foreground: rgb(255, 255, 255);
+  --brutal-cyan: rgb(6, 182, 212);
+  --brutal-cyan-foreground: rgb(0, 0, 0);
+  --brutal-yellow: rgb(255, 221, 87);
+  --brutal-yellow-foreground: rgb(0, 0, 0);
+  --brutal-red: rgb(200, 40, 40);
+  --brutal-red-foreground: rgb(255, 255, 255);
+  --brutal-green: rgb(34, 197, 94);
+  --brutal-green-foreground: rgb(0, 0, 0);
+  --shadow-color: rgb(0, 0, 0);
 }
 
 /* Tailwind v4 @theme with unified color system */
@@ -468,6 +444,8 @@
   --color-brutal-yellow-foreground: var(--brutal-yellow-foreground);
   --color-brutal-red: var(--brutal-red);
   --color-brutal-red-foreground: var(--brutal-red-foreground);
+  --color-brutal-green: var(--brutal-green);
+  --color-brutal-green-foreground: var(--brutal-green-foreground);
 
   /* Radius - sharp edges */
   --radius-lg: var(--radius);
@@ -479,10 +457,14 @@
   --font-family-sans: var(--font-sans);
   --font-family-mono: var(--font-mono);
   --font-family-arcade: var(--font-arcade);
+  --font-family-pixel: var(--font-pixel);
+  --font-family-terminal: var(--font-terminal);
   --font-sans: var(--v0-font-dm-sans);
   --font-mono: var(--v0-font-space-mono);
   --font-serif: var(--v0-font-source-serif-4);
   --font-arcade: var(--v0-font-press-start-2p);
+  --font-pixel: var(--v0-font-press-start-2p);
+  --font-terminal: var(--v0-font-vt323);
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -523,17 +505,20 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Auto-contrast — moved outside @layer to ensure it overrides utility classes.
+     See the un-layered block below. */
 }
 
 /* Neobrutalist utility classes */
 @layer components {
   .card {
-    @apply bg-white border-2 border-black p-6;
+    @apply bg-card border-2 border-border p-6;
     box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
   }
 
   .section-title {
-    @apply text-2xl font-black uppercase tracking-tight text-black mb-6;
+    @apply text-2xl font-black uppercase tracking-tight text-foreground mb-6;
   }
 
   /* Progress bars — neobrutalist flat style */
@@ -588,3 +573,6 @@ body {
   background-color: var(--background);
   color: var(--foreground);
 }
+
+/* No auto-contrast CSS hacks. Text colors are set explicitly in components.
+   Run `pnpm e2e contrast-audit` to find contrast violations. */

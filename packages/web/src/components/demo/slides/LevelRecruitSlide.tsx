@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { StaggerGrid } from "@/components/animations/StaggerGrid";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 13. Level recruit slide — exponential doubling visualization */
 export default function LevelRecruitSlide() {

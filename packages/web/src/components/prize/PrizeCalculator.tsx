@@ -126,22 +126,22 @@ export function PrizeCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-yellow shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="text-xs font-black uppercase mb-1">
             If Metrics Miss Targets (15 Years)
           </div>
-          <div className="text-3xl font-black text-foreground mb-1">
+          <div className="text-3xl font-black mb-1">
             {formatUSD(failReturn)}
           </div>
-          <div className="text-sm font-bold text-muted-foreground mb-3">
+          <div className="text-sm font-bold mb-3">
             +{formatUSD(failProfit)} profit ({fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your deposit)
           </div>
-          <div className="text-xs text-muted-foreground font-bold space-y-1">
+          <div className="text-xs font-bold space-y-1">
             <p>
               {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} annual Wishocratic fund return × 15 years.
             </p>
-            <p className="font-bold text-muted-foreground pt-1">
+            <p className="font-bold pt-1">
               Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money.
             </p>
           </div>
@@ -153,24 +153,24 @@ export function PrizeCalculator() {
           initial={reduced ? {} : { opacity: 0.5, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className="p-5 border-4 border-primary bg-brutal-cyan shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="p-5 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="text-xs font-black uppercase text-muted-foreground mb-1">
+          <div className="text-xs font-black uppercase mb-1">
             If Metrics Hit Targets (15 Years)
           </div>
-          <div className="text-3xl font-black text-foreground mb-1">
+          <div className="text-3xl font-black mb-1">
             {formatUSD(successPayout)}
           </div>
-          <div className="text-sm font-bold text-muted-foreground mb-3">
+          <div className="text-sm font-bold mb-3">
             {voteCount} VOTE point{voteCount > 1 ? "s" : ""} × {formatUSD(VOTE_VALUE)} each
           </div>
-          <div className="text-xs text-muted-foreground font-bold space-y-1">
+          <div className="text-xs font-bold space-y-1">
             <p>
               VOTE holders split the pool pro-rata. Each VOTE point
               is worth ~{fmtParam(VOTE_TOKEN_VALUE)} if the canonical pool
               size materializes. You earned {voteCount} by recruiting {voteCount} verified voter{voteCount > 1 ? "s" : ""}.
             </p>
-            <p className="font-bold text-muted-foreground pt-1">
+            <p className="font-bold pt-1">
               Plus everyone&apos;s lifetime income increases. Not just yours. Everyone&apos;s.
             </p>
           </div>

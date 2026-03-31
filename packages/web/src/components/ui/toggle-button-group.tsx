@@ -23,9 +23,9 @@ export interface ToggleButtonGroupProps {
 
 const activeColorClasses: Record<ToggleActiveColor, string> = {
   pink: "bg-brutal-pink text-brutal-pink-foreground",
-  cyan: "bg-brutal-cyan text-foreground",
-  yellow: "bg-brutal-yellow text-foreground",
-  green: "bg-brutal-green text-foreground",
+  cyan: "bg-brutal-cyan text-brutal-cyan-foreground",
+  yellow: "bg-brutal-yellow text-brutal-yellow-foreground",
+  green: "bg-brutal-green text-brutal-green-foreground",
 }
 
 const sizeClasses: Record<"sm" | "md" | "lg", string> = {

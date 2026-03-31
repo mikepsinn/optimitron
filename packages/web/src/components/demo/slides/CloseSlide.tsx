@@ -5,7 +5,7 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { CTA } from "@/lib/messaging";
 import { PulseGlow } from "@/components/animations/PulseGlow";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 17. Close slide — alignment software for human-made AIs */
 export default function CloseSlide() {

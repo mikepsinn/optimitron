@@ -69,11 +69,11 @@ export default function NPVAnalysisSection() {
         </p>
 
         {/* Key Parameters */}
-        <Card className="bg-brutal-cyan border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
+        <Card className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
           <h3 className="text-2xl font-black uppercase mb-6 text-center">MODEL PARAMETERS</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <div className="bg-background border-4 border-primary p-4">
+              <div className="bg-background text-foreground border-4 border-primary p-4">
                 <div className="text-sm font-bold uppercase mb-2">Investment</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -86,7 +86,7 @@ export default function NPVAnalysisSection() {
                   </div>
                 </div>
               </div>
-              <div className="bg-background border-4 border-primary p-4">
+              <div className="bg-background text-foreground border-4 border-primary p-4">
                 <div className="text-sm font-bold uppercase mb-2">Adoption Curve</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -101,7 +101,7 @@ export default function NPVAnalysisSection() {
               </div>
             </div>
             <div className="space-y-4">
-              <div className="bg-background border-4 border-primary p-4">
+              <div className="bg-background text-foreground border-4 border-primary p-4">
                 <div className="text-sm font-bold uppercase mb-2">Returns</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -114,7 +114,7 @@ export default function NPVAnalysisSection() {
                   </div>
                 </div>
               </div>
-              <div className="bg-background border-4 border-primary p-4">
+              <div className="bg-background text-foreground border-4 border-primary p-4">
                 <div className="text-sm font-bold uppercase mb-2">Financial Assumptions</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -133,17 +133,17 @@ export default function NPVAnalysisSection() {
 
         {/* NPV Summary */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-brutal-pink border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-sm font-bold uppercase mb-2 text-brutal-pink-foreground">NPV of Costs</div>
-            <div className="text-4xl font-black text-brutal-pink-foreground">${totalNPVCosts.toFixed(1)}B</div>
-            <div className="text-xs text-brutal-pink-foreground mt-2">Upfront + discounted operations</div>
+          <Card className="bg-brutal-pink text-brutal-pink-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-sm font-bold uppercase mb-2">NPV of Costs</div>
+            <div className="text-4xl font-black">${totalNPVCosts.toFixed(1)}B</div>
+            <div className="text-xs mt-2">Upfront + discounted operations</div>
           </Card>
-          <Card className="bg-brutal-cyan border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Card className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-sm font-bold uppercase mb-2">NPV of Savings</div>
             <div className="text-4xl font-black">${totalNPVSavings.toFixed(1)}B</div>
             <div className="text-xs mt-2">Discounted cash flows over {years} years</div>
           </Card>
-          <Card className="bg-brutal-yellow border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <Card className="bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-sm font-bold uppercase mb-2">NPV-Adjusted ROI</div>
             <div className="text-4xl font-black text-brutal-pink"><ParameterValue param={DFDA_ROI_RD_ONLY} /></div>
             <div className="text-xs mt-2">After time value of money</div>
@@ -214,8 +214,8 @@ export default function NPVAnalysisSection() {
           <h3 className="text-2xl font-black uppercase mb-6 text-center">WHY NPV ANALYSIS MATTERS</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <div className="bg-brutal-pink border-l-4 border-brutal-pink p-4 mb-4">
-                <div className="font-black uppercase text-sm mb-2 text-brutal-pink">Simple ROI (higher)</div>
+              <div className="bg-brutal-pink text-brutal-pink-foreground border-l-4 border-brutal-pink p-4 mb-4">
+                <div className="font-black uppercase text-sm mb-2">Simple ROI (higher)</div>
                 <ul className="text-sm space-y-2">
                   <li>Easy to understand</li>
                   <li>Good for headlines</li>
@@ -226,8 +226,8 @@ export default function NPVAnalysisSection() {
               </div>
             </div>
             <div>
-              <div className="bg-brutal-cyan border-l-4 border-brutal-cyan p-4 mb-4">
-                <div className="font-black uppercase text-sm mb-2 text-brutal-cyan">NPV-Adjusted ROI ({roiRaw}:1)</div>
+              <div className="bg-brutal-cyan text-brutal-cyan-foreground border-l-4 border-brutal-cyan p-4 mb-4">
+                <div className="font-black uppercase text-sm mb-2">NPV-Adjusted ROI ({roiRaw}:1)</div>
                 <ul className="text-sm space-y-2">
                   <li>Academically rigorous</li>
                   <li>Accounts for time value</li>
@@ -238,7 +238,7 @@ export default function NPVAnalysisSection() {
               </div>
             </div>
           </div>
-          <div className="mt-6 bg-brutal-yellow border-4 border-primary p-4">
+          <div className="mt-6 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary p-4">
             <p className="font-bold text-center">
               The {roiRaw}:1 NPV-adjusted ROI is the <span className="text-brutal-pink">canonical figure</span> we use for
               academic credibility. It&apos;s conservative and passes rigorous financial scrutiny.

@@ -18,14 +18,14 @@ const coreCards = [
     description:
       "Median healthy life years and median real after-tax income. Health gets 50%. Income gets 50%. Everything else is an intermediate variable. If those two numbers don't move, nobody gets paid.",
     color: "bg-brutal-yellow",
-    textColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     title: "Referral Recruitment",
     description:
       "Share your referral link. Every person who verifies support for the 1% Treaty via World ID earns you 1 VOTE point. Metrics hit targets after 15 years? VOTE holders split the pool pro-rata. No deposit required to recruit.",
     color: "bg-brutal-cyan",
-    textColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     title: "Anti-Capture",
@@ -38,13 +38,13 @@ const coreCards = [
 
 export function EarthOptimizationPrizeSection() {
   return (
-    <section className="bg-brutal-yellow">
+    <section className="bg-brutal-yellow text-brutal-yellow-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">
             The Earth Optimization Prize
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
+          <p className="mt-4 text-lg max-w-2xl mx-auto font-bold">
             Not a grant. Not a charity. A coordination game that pays everyone
             who proved demand for the 1% Treaty — but only if the metrics
             actually move. Recruit verified voters now. Get paid in 15 years if
@@ -61,7 +61,7 @@ export function EarthOptimizationPrizeSection() {
               <h3 className={`text-lg font-black ${card.textColor} mb-3 uppercase`}>
                 {card.title}
               </h3>
-              <p className={`text-sm ${card.textColor === "text-brutal-pink-foreground" ? "text-background" : "text-foreground"} leading-relaxed font-bold`}>
+              <p className={`text-sm ${card.textColor} leading-relaxed font-bold`}>
                 {card.description}
               </p>
             </div>
@@ -75,7 +75,7 @@ export function EarthOptimizationPrizeSection() {
               item={earthOptimizationPrizePaperLink}
               variant="custom"
               external
-              className="inline-flex items-center text-sm font-black text-muted-foreground uppercase hover:text-foreground transition-colors"
+              className="inline-flex items-center text-sm font-black uppercase hover:underline transition-colors"
             >
               Read the paper &rarr;
             </NavItemLink>

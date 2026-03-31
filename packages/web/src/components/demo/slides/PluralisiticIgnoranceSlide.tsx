@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ScanLines } from "@/components/animations/GlitchText";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 /** 10. Pluralistic ignorance slide — wave of dots from center, dark bg */
 export default function PluralisiticIgnoranceSlide() {

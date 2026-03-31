@@ -42,25 +42,25 @@ export function CostEffectivenessComparison() {
         <div className="flex items-center gap-4 mb-3">
           <div className="text-right w-32 text-sm font-black text-foreground uppercase">Bed nets</div>
           <motion.div
-            className="h-10 bg-brutal-yellow border-4 border-primary flex items-center px-3"
+            className="h-10 bg-brutal-yellow text-brutal-yellow-foreground border-4 border-primary flex items-center px-3"
             initial={reduced ? { width: "100%" } : { width: 0 }}
             animate={isInView ? { width: "100%" } : {}}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "hidden" }}
           >
-            <span className="text-sm font-black text-foreground whitespace-nowrap"><ParameterValue param={BED_NETS_COST_PER_DALY} />/DALY</span>
+            <span className="text-sm font-black whitespace-nowrap"><ParameterValue param={BED_NETS_COST_PER_DALY} />/DALY</span>
           </motion.div>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right w-32 text-sm font-black text-foreground uppercase">1% Treaty</div>
           <motion.div
-            className="h-10 bg-brutal-cyan border-4 border-primary flex items-center px-3"
+            className="h-10 bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary flex items-center px-3"
             initial={reduced ? { width: "2%" } : { width: 0 }}
             animate={isInView ? { width: "2%" } : {}}
             transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "visible", minWidth: 0 }}
           >
-            <span className="text-sm font-black text-foreground whitespace-nowrap"><ParameterValue param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /></span>
+            <span className="text-sm font-black whitespace-nowrap"><ParameterValue param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG} /></span>
           </motion.div>
         </div>
       </div>

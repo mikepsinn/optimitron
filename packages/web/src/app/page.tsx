@@ -8,7 +8,7 @@ import { TLDRSection } from "@/components/landing/TLDRSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
 import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
-import { IncentiveAlignmentBondsSection } from "@/components/landing/IncentiveAlignmentBondsSection";
+
 import { TwoFuturesSection } from "@/components/landing/TwoFuturesSection";
 import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySection";
 import { PoliticalDysfunctionTaxSection } from "@/components/landing/PoliticalDysfunctionTaxSection";
@@ -70,6 +70,7 @@ const productWorkflows = [
       "Deposit USDC. Recruit verified voters. Earn VOTE points. The only way to lose is to not play.",
     cta: CTA.playTheGame,
     color: "bg-brutal-pink",
+    textColor: "text-brutal-pink-foreground",
   },
   {
     item: scoreboardLink,
@@ -79,6 +80,7 @@ const productWorkflows = [
       "Live game metrics: health, income, pool size, verified participants. The coalition size, visible to everyone.",
     cta: CTA.viewScoreboard,
     color: "bg-brutal-cyan",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     item: wishocracyLink,
@@ -88,6 +90,7 @@ const productWorkflows = [
       "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Sneaky, isn't it?",
     cta: CTA.startVoting,
     color: "bg-brutal-yellow",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     item: alignmentLink,
@@ -97,6 +100,7 @@ const productWorkflows = [
       "Compare your priorities against real politician voting records. Spoiler: it's not who you think.",
     cta: CTA.checkAlignment,
     color: "bg-brutal-cyan",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     item: trackLink,
@@ -106,6 +110,7 @@ const productWorkflows = [
       "Track health, meals, mood, and habits with an alien who's been running a planet for 4,237 years.",
     cta: CTA.openChat,
     color: "bg-brutal-cyan",
+    textColor: "text-brutal-cyan-foreground",
   },
   {
     item: studiesLink,
@@ -115,6 +120,7 @@ const productWorkflows = [
       "Outcome hubs, pair studies, policy rankings, country comparisons. All evidence, no vibes.",
     cta: CTA.browseStudies,
     color: "bg-brutal-yellow",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     item: misconceptionsLink,
@@ -124,6 +130,7 @@ const productWorkflows = [
       "War on Drugs, healthcare spending, abstinence education — graded against real data.",
     cta: CTA.seeTheMmyths,
     color: "bg-brutal-pink",
+    textColor: "text-brutal-pink-foreground",
   },
   {
     item: governmentsLink,
@@ -133,6 +140,7 @@ const productWorkflows = [
       "Every government ranked by body count — the data they hope you never see.",
     cta: "See Report Cards",
     color: "bg-brutal-red",
+    textColor: "text-brutal-red-foreground",
   },
   {
     item: iabLink,
@@ -142,6 +150,7 @@ const productWorkflows = [
       "Fund politicians who vote for the treaty. Defund the ones who don't. The math does the lobbying.",
     cta: "Learn More",
     color: "bg-brutal-yellow",
+    textColor: "text-brutal-yellow-foreground",
   },
   {
     item: demoLink,
@@ -151,6 +160,7 @@ const productWorkflows = [
       "A guided tour narrated by an alien who has been running a planet for 4,237 years. She has notes.",
     cta: "Watch Demo",
     color: "bg-brutal-cyan",
+    textColor: "text-brutal-cyan-foreground",
   },
 ];
 
@@ -193,10 +203,7 @@ export default function Home() {
       {/* ── 9c. Treatment Rankings — ranked by what works ── */}
       <ComparativeEffectivenessSection />
 
-      {/* ── 10. The Incentive — IABs ── */}
-      <IncentiveAlignmentBondsSection />
-
-      {/* ── 11. Two Futures — Wishonia vs Moronia ── */}
+      {/* ── 10. Two Futures — Wishonia vs Moronia ── */}
       <TwoFuturesSection />
 
       {/* ── 12. Watch the Demo — screenshot carousel ── */}
@@ -250,21 +257,21 @@ export default function Home() {
             {productWorkflows.map((workflow) => (
               <div
                 key={workflow.title}
-                className={`p-6 border-4 border-primary ${workflow.color} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all`}
+                className={`p-6 border-4 border-primary ${workflow.color} ${workflow.textColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all`}
               >
                 <div className="text-xs font-black px-2.5 py-1 bg-foreground text-background inline-block self-start mb-4 uppercase">
                   {workflow.label}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">
+                <h3 className="text-xl sm:text-2xl font-black mb-3">
                   {workflow.title}
                 </h3>
-                <p className="text-base sm:text-lg text-foreground leading-relaxed font-bold flex-grow">
+                <p className="text-base sm:text-lg leading-relaxed font-bold flex-grow">
                   {workflow.description}
                 </p>
                 <NavItemLink
                   item={workflow.item}
                   variant="custom"
-                  className="mt-6 inline-flex items-center text-sm font-black text-foreground uppercase hover:text-brutal-pink transition-colors"
+                  className="mt-6 inline-flex items-center text-sm font-black uppercase hover:opacity-70 transition-colors"
                 >
                   {workflow.cta} &rarr;
                 </NavItemLink>

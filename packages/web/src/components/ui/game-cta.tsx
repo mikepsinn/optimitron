@@ -9,9 +9,9 @@ const variants = {
   outline:
     "bg-background text-foreground",
   yellow:
-    "bg-brutal-yellow text-foreground",
+    "bg-brutal-yellow text-brutal-yellow-foreground",
   cyan:
-    "bg-brutal-cyan text-foreground",
+    "bg-brutal-cyan text-brutal-cyan-foreground",
 } as const;
 
 const sizes = {
@@ -54,7 +54,7 @@ export function GameCTA({
 }: GameCTAProps) {
   const baseClasses = [
     "inline-flex items-center justify-center gap-2",
-    "font-[family-name:var(--font-arcade)]",
+    "font-pixel",
     "font-black uppercase",
     "border-4 border-primary",
     "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",

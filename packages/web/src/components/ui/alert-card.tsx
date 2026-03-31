@@ -15,25 +15,25 @@ const typeConfig: Record<AlertType, { bg: string; border: string; text: string; 
   error: {
     bg: "bg-brutal-red",
     border: "border-primary",
-    text: "text-foreground",
+    text: "text-brutal-red-foreground",
     DefaultIcon: AlertCircle,
   },
   success: {
     bg: "bg-brutal-cyan",
     border: "border-primary",
-    text: "text-foreground",
+    text: "text-brutal-cyan-foreground",
     DefaultIcon: CheckCircle,
   },
   warning: {
     bg: "bg-brutal-yellow",
     border: "border-primary",
-    text: "text-foreground",
+    text: "text-brutal-yellow-foreground",
     DefaultIcon: AlertTriangle,
   },
   info: {
     bg: "bg-brutal-cyan",
     border: "border-primary",
-    text: "text-foreground",
+    text: "text-brutal-cyan-foreground",
     DefaultIcon: Info,
   },
 }

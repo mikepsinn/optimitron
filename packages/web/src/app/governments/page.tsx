@@ -35,7 +35,7 @@ export default function GovernmentsPage() {
       <section className="mb-16">
         <div className="max-w-3xl space-y-5">
           <ArcadeTag>Government Report Cards</ArcadeTag>
-          <h1 className="font-[family-name:var(--font-arcade)] text-2xl font-black uppercase tracking-tight text-foreground sm:text-3xl md:text-4xl">
+          <h1 className="font-pixel text-2xl font-black uppercase tracking-tight text-foreground sm:text-3xl md:text-4xl">
             BODY COUNT LEADERBOARD
           </h1>
           <p className="text-lg font-bold leading-relaxed text-foreground">
@@ -55,7 +55,7 @@ export default function GovernmentsPage() {
 
       {/* Health & Wealth Leaderboard */}
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-2 sm:text-2xl">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-2 sm:text-2xl">
           MOST MISALIGNED GOVERNMENTS
         </h2>
         <p className="text-lg font-bold text-muted-foreground mb-6">
@@ -67,7 +67,7 @@ export default function GovernmentsPage() {
       </section>
 
       <section className="mb-16">
-        <h2 className="font-[family-name:var(--font-arcade)] text-xl font-black uppercase tracking-tight text-foreground mb-2 sm:text-2xl">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-2 sm:text-2xl">
           CORRELATION MAP
         </h2>
         <p className="text-lg font-bold text-muted-foreground mb-6">

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Menu, User } from "lucide-react";
+import { Menu, User, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/components/ThemeProvider";
 import { PersonhoodStatusBadge } from "@/components/personhood/PersonhoodStatusBadge";
 import type { PersonhoodProviderValue } from "@/lib/personhood";
 import {
@@ -43,7 +44,7 @@ function AvatarButton({
   return (
     <Link
       href={href}
-      className="flex items-center justify-center w-10 h-10 border-4 border-primary bg-brutal-cyan hover:bg-primary hover:text-primary-foreground font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all rounded-full"
+      className="flex items-center justify-center w-10 h-10 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground hover:bg-primary hover:text-primary-foreground font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all rounded-full"
       title={isAuthenticated ? "Profile" : "Sign In"}
     >
       {initial ? (
@@ -55,6 +56,20 @@ function AvatarButton({
   );
 }
 
+function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="flex items-center justify-center w-10 h-10 border-4 border-primary bg-background text-foreground hover:bg-foreground hover:text-background font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all rounded-full"
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {theme === "dark" ? <Sun className="h-5 w-5 stroke-[3px]" /> : <Moon className="h-5 w-5 stroke-[3px]" />}
+    </button>
+  );
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
@@ -63,20 +78,21 @@ export default function Navbar() {
   const user = session?.user ?? null;
 
   return (
-    <nav className="sticky top-0 z-50 border-b-4 border-primary bg-brutal-yellow">
+    <nav className="sticky top-0 z-50 border-b-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link
             href={ROUTES.home}
-            className="text-xl font-black uppercase tracking-tight text-foreground hover:underline decoration-4"
+            className="text-xl font-black uppercase tracking-tight hover:underline decoration-4"
           >
             <span className="sm:hidden">Optimitron</span>
             <span className="hidden sm:inline">⚡ Optimitron</span>
           </Link>
 
-          {/* Right side: Avatar + Hamburger */}
+          {/* Right side: Theme toggle + Avatar + Hamburger */}
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <AvatarButton user={user} isAuthenticated={isAuthenticated} />
 
             <Sheet open={open} onOpenChange={setOpen}>
@@ -165,7 +181,7 @@ export default function Navbar() {
                     <SheetClose asChild>
                       <Link
                         href={getSignInPath(ROUTES.wishocracy)}
-                        className="block text-sm font-black uppercase px-3 py-2 border-4 border-primary bg-brutal-cyan text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
+                        className="block text-sm font-black uppercase px-3 py-2 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all"
                       >
                         Sign In
                       </Link>

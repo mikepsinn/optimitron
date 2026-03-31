@@ -48,7 +48,7 @@ export function ComparativeEffectivenessSection() {
     <section className="w-full py-12 md:py-24 lg:py-32 bg-brutal-pink border-b-4 border-primary">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <h2 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl text-white">
+          <h2 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl text-brutal-pink-foreground">
             TREATMENT RANKINGS
           </h2>
         </div>

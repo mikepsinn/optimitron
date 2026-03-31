@@ -43,7 +43,7 @@ export function RarityBadge({ rarity, className }: RarityBadgeProps) {
     <span
       className={cn(
         "inline-flex items-center px-2 py-0.5",
-        "font-[family-name:var(--font-arcade)] text-[10px] uppercase tracking-wider",
+        "font-pixel text-[10px] uppercase tracking-wider",
         "border-2 border-primary",
         style.bg,
         style.text,

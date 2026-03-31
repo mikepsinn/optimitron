@@ -4,7 +4,7 @@ import { useReducedMotion, motion } from "framer-motion";
 import { CountUp } from "@/components/animations/CountUp";
 import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 
 const LOOP_NODES = [
   { label: "REDIRECT $27B", emoji: "💰" },

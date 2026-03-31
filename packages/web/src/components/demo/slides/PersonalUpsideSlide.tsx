@@ -7,7 +7,7 @@ import {
   TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER,
 } from "@optimitron/data/parameters";
 
-const ARCADE = "font-[family-name:var(--font-arcade)]";
+const ARCADE = "font-pixel";
 const treatyIncome = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value);
 const treatyMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
 

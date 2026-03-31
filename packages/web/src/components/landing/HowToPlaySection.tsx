@@ -68,14 +68,14 @@ export function HowToPlaySection() {
               padding="lg"
             >
               <div className="flex items-start gap-4">
-                <span className="text-5xl font-black text-foreground leading-none shrink-0">
+                <span className="text-5xl font-black leading-none shrink-0">
                   {step.number}
                 </span>
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black uppercase text-foreground mb-2">
+                  <h3 className="text-2xl sm:text-3xl font-black uppercase mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">
+                  <p className="text-lg sm:text-xl font-bold leading-relaxed">
                     {step.body}
                   </p>
                   {step.ctas.length > 0 && (
@@ -99,12 +99,12 @@ export function HowToPlaySection() {
         </div>
 
         {/* Bottom stat */}
-        <div className="text-center p-6 border-4 border-primary bg-brutal-cyan shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="text-4xl sm:text-5xl font-black text-foreground mb-2">
+        <div className="text-center p-6 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-4xl sm:text-5xl font-black mb-2">
             <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />{" "}
             Lives Saved
           </div>
-          <p className="text-lg sm:text-xl font-bold text-foreground">
+          <p className="text-lg sm:text-xl font-bold">
             That&apos;s what happens when enough people know.
           </p>
         </div>
