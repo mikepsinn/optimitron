@@ -52,14 +52,17 @@ export function PoliticianScorecardTable({
   const [sortKey, setSortKey] = useState<SortKey>("ratio");
   const [sortAsc, setSortAsc] = useState(false);
   const [chamberFilter, setChamberFilter] = useState<"all" | "Senate" | "House">("all");
+  const [search, setSearch] = useState("");
 
-  const filtered = compact || chamberFilter === "all"
-    ? scorecards
-    : scorecards.filter((s) =>
-        chamberFilter === "Senate"
-          ? s.chamber === "Senate"
-          : s.chamber.includes("House"),
-      );
+  const searchLower = search.toLowerCase();
+  const filtered = scorecards.filter((s) => {
+    if (!compact && chamberFilter !== "all") {
+      if (chamberFilter === "Senate" && s.chamber !== "Senate") return false;
+      if (chamberFilter === "House" && !s.chamber.includes("House")) return false;
+    }
+    if (searchLower && !s.name.toLowerCase().includes(searchLower) && !s.state.toLowerCase().includes(searchLower)) return false;
+    return true;
+  });
 
   const sorted = [...filtered].sort((a, b) => {
     let diff = 0;
@@ -86,21 +89,6 @@ export function PoliticianScorecardTable({
 
   return (
     <div>
-      {/* System ratio callout — hidden in compact mode */}
-      {!compact && (
-        <div className="border-4 border-primary bg-brutal-red p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4 text-center">
-          <span className="text-xs font-black uppercase text-brutal-red-foreground">
-            Your Species&apos; Ratio
-          </span>
-          <div className="text-3xl font-black text-brutal-red-foreground">
-            {systemWideRatio.toLocaleString()}:1
-          </div>
-          <p className="text-sm font-bold text-brutal-red-foreground">
-            Dollars on {getMilitarySynonym("table-ratio")} per dollar testing which medicines work. If cancer had oil, you would have cured it by 2003.
-          </p>
-        </div>
-      )}
-
       {/* Chamber filter — hidden in compact mode */}
       {!compact && (
         <div className="flex gap-2 mb-4">
@@ -117,6 +105,24 @@ export function PoliticianScorecardTable({
           ))}
         </div>
       )}
+
+      {/* Title + search row */}
+      <div className="flex items-end justify-between mb-2 gap-4">
+        {sortKey === "ratio" ? (
+          <h3 className="text-lg font-black uppercase text-foreground">
+            {sortAsc ? "Least Bad Players" : "Worst Players"}
+          </h3>
+        ) : <div />}
+        {!compact && (
+          <input
+            type="text"
+            placeholder="Search name or state..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink w-48"
+          />
+        )}
+      </div>
 
       {/* Table */}
       <div className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">

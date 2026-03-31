@@ -388,35 +388,39 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           <h3 className="text-sm font-black uppercase text-foreground mb-4">
             How We Calculate
           </h3>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-5">
             <div>
-              <div className="text-xs font-black uppercase text-brutal-red mb-1">
+              <div className="text-xs font-black uppercase text-brutal-red mb-2">
                 Military $
               </div>
+              <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">
+                Military $ = &Sigma; (bill amount for each YEA vote on NDAA, supplementals, or omnibus military portion)
+              </div>
               <p className="text-xs font-bold text-muted-foreground">
-                A YEA on the NDAA or a military supplemental adds the full bill amount.
-                A YEA on an omnibus adds the military appropriation portion (~$858&ndash;886B).
+                NDAA and supplementals count at face value. Omnibus bills count only the military appropriation (~$858&ndash;886B/yr).
               </p>
             </div>
             <div>
-              <div className="text-xs font-black uppercase text-brutal-cyan mb-1">
+              <div className="text-xs font-black uppercase text-brutal-cyan mb-2">
                 Clinical Trials $
               </div>
+              <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">
+                Trials $ = NIH budget &times; 0.033
+              </div>
               <p className="text-xs font-bold text-muted-foreground">
-                A YEA on an omnibus adds only 3.3% of the NIH budget &mdash;
-                the portion that actually funds clinical trials ($1.56B of $47.3B).
-                The other 96.7% is basic research, overhead, and administration.
+                Only 3.3% of the NIH budget funds clinical trials ($1.56B of $47.3B). The other 96.7% is basic research, overhead, and administration.
                 {" "}<a href="https://jamanetwork.com/journals/jama/fullarticle/2720005" target="_blank" rel="noopener noreferrer" className="underline text-foreground">Source: JAMA</a>.
               </p>
             </div>
             <div>
-              <div className="text-xs font-black uppercase text-foreground mb-1">
+              <div className="text-xs font-black uppercase text-foreground mb-2">
                 Ratio
               </div>
+              <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">
+                Ratio = Military $ &divide; Clinical Trials $
+              </div>
               <p className="text-xs font-bold text-muted-foreground">
-                Military $ &divide; Clinical Trial $. Higher = worse.
-                &infin; means the politician voted for military spending but never
-                voted for any bill containing clinical trial funding.
+                Higher = worse. &infin; means the politician voted for military spending but never voted for any bill containing clinical trial funding.
               </p>
             </div>
           </div>
