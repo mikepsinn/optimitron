@@ -80,40 +80,40 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
       {/* Left side: info */}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, marginRight: 40 }}>
         {/* Name + party */}
-        <div style={{ fontSize: 48, fontWeight: 900, textTransform: "uppercase", letterSpacing: -2, lineHeight: 1.1 }}>
+        <div style={{ display: "flex", fontSize: 48, fontWeight: 900, textTransform: "uppercase", letterSpacing: -2, lineHeight: 1.1 }}>
           {p.name}
         </div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: "#888", marginTop: 8 }}>
+        <div style={{ display: "flex", fontSize: 22, fontWeight: 700, color: "#888", marginTop: 8 }}>
           {descriptorText}
         </div>
 
         {/* Stats */}
         <div style={{ display: "flex", gap: 32, marginTop: 32 }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#ef4444", textTransform: "uppercase" }}>{getMilitarySynonym(p.bioguideId + "-og-stat")}</div>
-            <div style={{ fontSize: 40, fontWeight: 900, color: "#ef4444" }}>{fmt(p.militaryDollarsVotedFor)}</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#ef4444" }}>{milPct.toFixed(1)}%</div>
+            <div style={{ display: "flex", fontSize: 16, fontWeight: 700, color: "#ef4444", textTransform: "uppercase" }}>{getMilitarySynonym(p.bioguideId + "-og-stat")}</div>
+            <div style={{ display: "flex", fontSize: 40, fontWeight: 900, color: "#ef4444" }}>{fmt(p.militaryDollarsVotedFor)}</div>
+            <div style={{ display: "flex", fontSize: 18, fontWeight: 700, color: "#ef4444" }}>{milPct.toFixed(1)}%</div>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#00D9FF", textTransform: "uppercase" }}>Testing Medicines</div>
-            <div style={{ fontSize: 40, fontWeight: 900, color: "#00D9FF" }}>{fmt(p.clinicalTrialDollarsVotedFor)}</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#00D9FF" }}>{trialsPct.toFixed(2)}%</div>
+            <div style={{ display: "flex", fontSize: 16, fontWeight: 700, color: "#00D9FF", textTransform: "uppercase" }}>Testing Medicines</div>
+            <div style={{ display: "flex", fontSize: 40, fontWeight: 900, color: "#00D9FF" }}>{fmt(p.clinicalTrialDollarsVotedFor)}</div>
+            <div style={{ display: "flex", fontSize: 18, fontWeight: 700, color: "#00D9FF" }}>{trialsPct.toFixed(2)}%</div>
           </div>
         </div>
 
         {/* Bottom */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#666" }}>
+          <div style={{ display: "flex", fontSize: 15, fontWeight: 700, color: "#666" }}>
             optimitron.earth
           </div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: "#FF6B9D", textTransform: "uppercase" }}>
+          <div style={{ display: "flex", fontSize: 18, fontWeight: 900, color: "#FF6B9D", textTransform: "uppercase" }}>
             The Earth Optimization Game
           </div>
         </div>
       </div>
 
       {/* Right side: pie chart */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 320 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 320, position: "relative" }}>
         <svg width="240" height="240" viewBox="0 0 200 200">
           {/* Background circle (military - red) */}
           <circle
@@ -147,17 +147,17 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
           top: "50%",
           marginTop: -30,
         }}>
-          <div style={{ fontSize: 44, fontWeight: 900, color: "#fff" }}>{ratioText}</div>
+          <div style={{ display: "flex", fontSize: 44, fontWeight: 900, color: "#fff" }}>{ratioText}</div>
         </div>
         {/* Legend */}
         <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#ef4444" }} />
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#aaa" }}>{getMilitarySynonymTitle(p.bioguideId + "-og-legend")}</div>
+            <div style={{ display: "flex", fontSize: 13, fontWeight: 700, color: "#aaa" }}>{getMilitarySynonymTitle(p.bioguideId + "-og-legend")}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#00D9FF" }} />
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#aaa" }}>Medicines</div>
+            <div style={{ display: "flex", fontSize: 13, fontWeight: 700, color: "#aaa" }}>Medicines</div>
           </div>
         </div>
       </div>
