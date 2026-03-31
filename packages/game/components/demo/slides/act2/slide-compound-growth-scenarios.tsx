@@ -19,7 +19,7 @@ const BARS = [
     colorText: "text-amber-400",
   },
   {
-    label: "🧪 1% TREATY TRAJECTORY",
+    label: "🧪 1% TREATY TRAJECTORY (Minimum Acceptable Governance)",
     sublabel: "$27B/yr → clinical trials",
     value: 149_000,
     widthPct: 28,
@@ -27,7 +27,7 @@ const BARS = [
     colorText: "text-emerald-400",
   },
   {
-    label: "😐 DO NOTHING",
+    label: "☢️ DO NOTHING (Somalia, But Everywhere)",
     sublabel: "Status quo trajectory",
     value: 20_100,
     widthPct: 3.8,
@@ -64,8 +64,8 @@ export function SlideCompoundGrowthScenarios() {
       <div className="flex flex-col gap-4 w-full max-w-[1700px] mx-auto">
         {/* Title */}
         {phase >= 1 && (
-          <h1 className="font-pixel text-xl md:text-2xl text-amber-400 text-center slide-fade-in">
-            PLEASE SELECT AN EARTH
+          <h1 className="font-pixel text-3xl md:text-5xl text-amber-400 text-center slide-fade-in">
+            🌍 PLEASE SELECT AN EARTH 🌍
           </h1>
         )}
 

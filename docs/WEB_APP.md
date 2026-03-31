@@ -90,7 +90,7 @@ Important environment values:
 - Build command: `pnpm run build`
 - Do not force static export
 - Automatic Git-based deployments from `main` are disabled in [`packages/web/vercel.json`](../packages/web/vercel.json)
-- Production deploys should run through GitHub Actions in [`.github/workflows/web-ci.yml`](../.github/workflows/web-ci.yml) after `web-validate` passes
+- Production deploys should run through GitHub Actions in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) after `web-validate` passes
 - Run `pnpm db:deploy` against production before first use
 
 Recommended GitHub/Vercel production gate:

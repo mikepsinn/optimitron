@@ -18,14 +18,18 @@ Optimitron is my attempt to help. It's a universal causal inference engine that 
 
 ## The Problem
 
-Your governments are misaligned superintelligences. Collective intelligence systems made of millions of humans, optimizing for the wrong things. The [**Political Dysfunction Tax**](https://political-dysfunction-tax.warondisease.org) costs your species **$101 trillion per year** — roughly **$12,600 per person**. That's $50,500 per household of four. Per year. Every year. It's like being subscribed to the world's most expensive streaming service except all it shows is war and preventable disease.
+Bugs in your meat software kill **150,000** of you every day. That is fifty 9/11s. Nobody invades anybody about it because diseases do not have oil.
+
+Your governments spend **$604 on the capacity for mass murder for every $1 they spend testing which medicines work**. Since 1913, they have printed **$170 trillion** and used it to kill **97 million** of you in wars nobody asked you if you wanted to have. Every dollar invested in healthcare returns **$1.80**. Every dollar invested in military returns **$0.60**. Your species chose the $0.60 option and then complained about being poor.
+
+The [**Political Dysfunction Tax**](https://political-dysfunction-tax.warondisease.org) — the total cost of this misallocation — is **$101 trillion per year**. Roughly **$12,600 per person**. That's $50,500 per household of four. Per year. Every year. It's like being subscribed to the world's most expensive streaming service except all it shows is war and preventable disease.
 
 This comes from two ledgers:
 
 - **Waste** — $4T+ in administrative bloat, compliance friction, fossil fuel subsidies, and mass incarceration costs
 - **Buried multipliers** — $34T in health innovation delayed by regulatory bottlenecks, $57T in output lost to migration restrictions, $6T in lead poisoning damage, and trillions more in underfunded science
 
-The result: your civilization operates at roughly **52% of its technological potential**. You're running at half speed and congratulating yourselves for jogging.
+The result: your dollar has lost 96% of its value since 1913. If wages had kept pace with productivity, the median family would earn **$528,000**. The actual number is $77,500. On my planet we have a word for this. It translates roughly to "beige crime" — theft that is far too boring for anyone to investigate.
 
 | Scenario | Per Capita Income (Year 20) |
 |----------|----------------------------:|
@@ -67,7 +71,16 @@ The game has three steps:
 2. **Recruit** — Get every voter you know to play (target: 4 billion — all voters on Earth)
 3. **Allocate** — Players decide how the global budget should be split via pairwise comparisons (Wishocracy)
 
-The **goal**: get governments to redirect 1% of military spending ($27.2B/yr) to pragmatic clinical trials. That's the [1% Treaty](https://impact.warondisease.org). At scale, it means a 12.3x acceleration in treatment discovery, global healthy lifespan rising from 63.3 to 79 years, and median income reaching $339K by year 20. Treatment queue drops from 443 years to 36.
+The **goal**: get governments to redirect 1% of military spending ($27.2B/yr) to pragmatic clinical trials. That's the [1% Treaty](https://impact.warondisease.org). At scale, it means a 12.3x acceleration in treatment discovery, treatment queue dropping from 443 years to 36, and 10.7 billion lives saved.
+
+**Win conditions** (measurable, on a deadline):
+
+| Metric | Current | Target (2040) |
+|--------|---------|---------------|
+| Healthy life expectancy (HALE) | 63.3 years | 69.8 years (+6.5) |
+| Global median income | $18,700 | $149,000 (8x) |
+
+Each verified voter you recruit earns you 1 VOTE token worth approximately **$8,400** if targets are hit. Thirty seconds of your time. On my planet, this would be considered an acceptable exchange rate.
 
 ### The Earth Optimization Prize — `/prize`
 
@@ -95,11 +108,11 @@ Contracts: `VoterPrizeTreasury` + `VoteToken` on Base Sepolia. Fully on-chain, n
 
 These aren't standalone products. They're weapons in the game — each one gives players evidence and mechanisms to push for the treaty:
 
-- **[Wishocracy](/agencies/dcongress/wishocracy)** — pairwise preference allocation. Eight billion ranked preferences, one optimal budget.
-- **[Optimal Budget Generator](/agencies/domb)** — find the cheapest high-performer for each spending category. Singapore: $3K/person on healthcare, lives to 84. America: $12K, lives to 78.
-- **[Optimal Policy Generator](/agencies/dcbo)** — grade every policy A–F by what actually happened. No ideology, just data.
-- **[Decentralized FDA](/agencies/dih/discoveries)** — Outcome Labels + Treatment Rankings. 12.3x cheaper, 12.3x more capacity, zero queue.
-- **[Incentive Alignment Bonds](/iab)** — fund the lobbying campaign once demand is proven (see Phase 2 below).
+- **[Wishocracy](/agencies/dcongress/wishocracy)** — pairwise preference allocation. Eight billion ranked preferences, one optimal budget. Your species identified the bug preventing this (pluralistic ignorance) in 1965, published it, assigned it in universities, and then continued to be governed by it for sixty years.
+- **[Optimal Budget Generator](/agencies/domb)** — find the cheapest high-performer for each spending category. Singapore: $3K/person on healthcare, lives to 84. America: $12K, lives to 78. It's like watching someone pay four times more for a worse sandwich.
+- **[Optimal Policy Generator](/agencies/dcbo)** — grade every policy A–F by what actually happened. Portugal decriminalised drugs: overdose deaths dropped 80%. America declared war on drugs: overdose deaths rose 1,700%. The data existed. Nobody looked at it. The data did not have a lobbying firm.
+- **[Decentralized FDA](/agencies/dih/discoveries)** — Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. For every 1 person it protects from a bad drug, 3,070 die waiting for a good one. The dFDA replaces this with real-time Outcome Labels and Treatment Rankings — 44x cheaper, 12.3x more capacity, zero queue.
+- **[Incentive Alignment Bonds](/iab)** — fund the lobbying campaign once demand is proven (see Phase 2 below). Cost: $1B. Treaty revenue: $27B/year. Indefinitely.
 
 [Read the paper](https://iab.warondisease.org) | [See the contract architecture](#economic-instruments)
 
