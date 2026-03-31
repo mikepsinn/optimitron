@@ -8,6 +8,7 @@ import {
 } from "@/lib/referral-email-sequence";
 import { sendResendEmail, isResendConfigured } from "@/lib/resend";
 import { buildUserReferralUrl } from "@/lib/url";
+import { EmailLogStatus, Prisma } from "@optimitron/db";
 
 interface ReferralSequenceUser {
   createdAt: Date;
@@ -21,6 +22,17 @@ interface ReferralSequenceUser {
   username: string | null;
 }
 
+interface ReferralSequenceMessage {
+  html: string;
+  subject: string;
+  text: string;
+}
+
+interface ReferralEmailClaim {
+  duplicate: boolean;
+  emailLogId: string | null;
+}
+
 function getReferralEmailBatchSize() {
   const rawValue = Number(serverEnv.REFERRAL_EMAIL_BATCH_SIZE);
   return Number.isFinite(rawValue) && rawValue > 0 ? rawValue : 50;
@@ -28,16 +40,8 @@ function getReferralEmailBatchSize() {
 
 async function sendReferralSequenceStep(
   user: ReferralSequenceUser,
-  referralCount: number,
-  step: number,
+  message: ReferralSequenceMessage,
 ) {
-  const message = buildReferralSequenceEmail({
-    step,
-    referralCount,
-    name: user.name,
-    shareUrl: buildUserReferralUrl(user),
-  });
-
   return sendResendEmail({
     to: user.email,
     subject: message.subject,
@@ -46,29 +50,163 @@ async function sendReferralSequenceStep(
   });
 }
 
-async function advanceReferralSequence(userId: string, nextStep: number, now: Date) {
-  await prisma.user.update({
-    where: { id: userId },
+function buildReferralSequenceMessage(
+  user: ReferralSequenceUser,
+  referralCount: number,
+  step: number,
+) {
+  return buildReferralSequenceEmail({
+    step,
+    referralCount,
+    name: user.name,
+    shareUrl: buildUserReferralUrl(user),
+  });
+}
+
+function getReferralSequenceTemplateId(step: number) {
+  return `referral_sequence_${step}`;
+}
+
+function getNextReferralSequenceStep(user: ReferralSequenceUser, step: number) {
+  if (step === 0 && !user.newsletterSubscribed) {
+    return REFERRAL_EMAIL_SEQUENCE_LENGTH;
+  }
+
+  return Math.min(step + 1, REFERRAL_EMAIL_SEQUENCE_LENGTH);
+}
+
+function isUniqueConstraintError(error: unknown) {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+async function markReferralEmailStatus(
+  emailLogId: string,
+  status: typeof EmailLogStatus[keyof typeof EmailLogStatus],
+  errorMessage?: string | null,
+) {
+  await prisma.emailLog.update({
+    where: { id: emailLogId },
     data: {
-      referralEmailSequenceStep: nextStep,
-      referralEmailSequenceLastSentAt: now,
+      errorMessage: errorMessage ?? null,
+      status,
     },
   });
+}
+
+async function claimReferralSequenceEmail(
+  user: ReferralSequenceUser,
+  step: number,
+  subject: string,
+  now: Date,
+): Promise<ReferralEmailClaim> {
+  const templateId = getReferralSequenceTemplateId(step);
+  const nextStep = getNextReferralSequenceStep(user, step);
+
+  try {
+    const emailLog = await prisma.$transaction(async (tx) => {
+      const { count } = await tx.user.updateMany({
+        where: { id: user.id, referralEmailSequenceStep: step },
+        data: {
+          referralEmailSequenceStep: nextStep,
+          referralEmailSequenceLastSentAt: now,
+        },
+      });
+
+      if (count === 0) {
+        return null;
+      }
+
+      return tx.emailLog.create({
+        data: {
+          userId: user.id,
+          toAddress: user.email,
+          subject,
+          templateId,
+          status: EmailLogStatus.QUEUED,
+          sentAt: now,
+        },
+      });
+    });
+
+    return {
+      duplicate: false,
+      emailLogId: emailLog?.id ?? null,
+    };
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) {
+      throw error;
+    }
+
+    const existingLog = await prisma.emailLog.findUnique({
+      where: {
+        userId_templateId: {
+          userId: user.id,
+          templateId,
+        },
+      },
+      select: {
+        sentAt: true,
+      },
+    });
+
+    if (existingLog) {
+      await prisma.user.updateMany({
+        where: { id: user.id, referralEmailSequenceStep: step },
+        data: {
+          referralEmailSequenceStep: nextStep,
+          referralEmailSequenceLastSentAt: existingLog.sentAt,
+        },
+      });
+    }
+
+    return {
+      duplicate: true,
+      emailLogId: null,
+    };
+  }
 }
 
 export async function sendWelcomeReferralEmailForUser(
   user: ReferralSequenceUser,
   now: Date = new Date(),
 ) {
-  const result = await sendReferralSequenceStep(user, 0, 0);
-  if (result.status !== "sent") {
-    return result;
+  if (!isResendConfigured()) {
+    return { status: "disabled" as const };
   }
 
-  const nextStep = user.newsletterSubscribed ? 1 : REFERRAL_EMAIL_SEQUENCE_LENGTH;
-  await advanceReferralSequence(user.id, nextStep, now);
+  const message = buildReferralSequenceMessage(user, 0, 0);
+  const claim = await claimReferralSequenceEmail(user, 0, message.subject, now);
+  if (claim.duplicate) {
+    return { status: "duplicate" as const };
+  }
 
-  return result;
+  if (!claim.emailLogId) {
+    return { status: "skipped" as const };
+  }
+
+  try {
+    const result = await sendReferralSequenceStep(user, message);
+    if (result.status !== "sent") {
+      return result;
+    }
+
+    await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT);
+
+    return result;
+  } catch (error) {
+    await markReferralEmailStatus(
+      claim.emailLogId,
+      EmailLogStatus.FAILED,
+      getErrorMessage(error),
+    ).catch((updateError) => {
+      console.error("[REFERRAL EMAIL] Failed to mark welcome email log", user.id, updateError);
+    });
+    throw error;
+  }
 }
 
 export async function processDueReferralSequenceEmails(now: Date = new Date()) {
@@ -137,40 +275,36 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
       continue;
     }
 
-    // Claim by advancing the step BEFORE sending. If another cron
-    // invocation (or the welcome handler) already advanced, count === 0.
-    const nextStep = action.step + 1;
-    const { count } = await prisma.user.updateMany({
-      where: { id: user.id, referralEmailSequenceStep: action.step },
-      data: {
-        referralEmailSequenceStep: nextStep,
-        referralEmailSequenceLastSentAt: now,
-      },
-    });
-
-    if (count === 0) {
-      continue;
-    }
-
     try {
-      const result = await sendReferralSequenceStep(user, referralCount, action.step);
+      const message = buildReferralSequenceMessage(user, referralCount, action.step);
+      const claim = await claimReferralSequenceEmail(user, action.step, message.subject, now);
+      if (claim.duplicate || !claim.emailLogId) {
+        continue;
+      }
+
+      const result = await sendReferralSequenceStep(user, message);
       if (result.status === "sent") {
+        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT);
         sent += 1;
       }
     } catch (error) {
-      // Roll back so the next cron run retries this step
-      await prisma.user
+      failures += 1;
+      const templateId = getReferralSequenceTemplateId(action.step);
+      await prisma.emailLog
         .updateMany({
-          where: { id: user.id, referralEmailSequenceStep: nextStep },
+          where: {
+            userId: user.id,
+            templateId,
+            status: EmailLogStatus.QUEUED,
+          },
           data: {
-            referralEmailSequenceStep: action.step,
-            referralEmailSequenceLastSentAt: user.referralEmailSequenceLastSentAt,
+            errorMessage: getErrorMessage(error),
+            status: EmailLogStatus.FAILED,
           },
         })
-        .catch((revertError) => {
-          console.error("[REFERRAL EMAIL] Revert failed", user.id, revertError);
+        .catch((updateError) => {
+          console.error("[REFERRAL EMAIL] Failed to mark email log", user.id, updateError);
         });
-      failures += 1;
       console.error("[REFERRAL EMAIL] Failed to send step", action.step, user.id, error);
     }
   }

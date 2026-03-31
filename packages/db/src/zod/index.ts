@@ -174,7 +174,7 @@ export const QuestionTypeSchema = z.enum([
 ]);
 export type QuestionType = z.infer<typeof QuestionTypeSchema>;
 
-export const EmailLogStatusSchema = z.enum(['SENT', 'DELIVERED', 'OPENED', 'BOUNCED', 'FAILED']);
+export const EmailLogStatusSchema = z.enum(['QUEUED', 'SENT', 'DELIVERED', 'OPENED', 'BOUNCED', 'FAILED']);
 export type EmailLogStatus = z.infer<typeof EmailLogStatusSchema>;
 
 // ============================================================================
@@ -1182,4 +1182,3 @@ export const EmailLogSchema = z.object({
   createdAt: dateSchema,
 });
 export type EmailLogType = z.infer<typeof EmailLogSchema>;
-

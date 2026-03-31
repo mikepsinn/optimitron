@@ -287,6 +287,7 @@ enum QuestionType {
 
 /// Delivery status for email log
 enum EmailLogStatus {
+  QUEUED
   SENT
   DELIVERED
   OPENED
@@ -3247,6 +3248,7 @@ model EmailLog {
   // -- Relations --
   user User @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, templateId])
   @@index([userId])
   @@index([templateId])
   @@index([status])

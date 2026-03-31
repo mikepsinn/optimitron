@@ -57,6 +57,7 @@ export const ROUTES = {
   // Meta
   about: "/about",
   demo: "/demo",
+  video: "/video",
   tools: "/tools",
   contribute: "/contribute",
   signIn: "/auth/signin",
@@ -372,6 +373,13 @@ export const demoLink: NavItem = {
   emoji: "🎬",
   description: "A guided tour by an alien who's been running a planet for 4,237 years. She has notes.",
   matchPrefixes: [ROUTES.demo],
+};
+
+export const videoLink: NavItem = {
+  href: ROUTES.video,
+  label: "Video",
+  emoji: "📺",
+  description: "Your governments spend 604 dollars on weapons for every one dollar on curing disease. I fixed this on my planet. Here is how you fix it on yours.",
 };
 
 /** @deprecated Use dtreasuryLink instead */
