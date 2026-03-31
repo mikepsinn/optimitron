@@ -250,11 +250,11 @@ export default function DepartmentOfWarPage() {
       </section>
 
       {/* CTA */}
-      <section className="card border-primary bg-brutal-pink text-center">
-        <h2 className="mb-3 text-2xl font-black uppercase text-brutal-pink-foreground">
+      <section className="card border-primary bg-brutal-pink text-brutal-pink-foreground text-center">
+        <h2 className="mb-3 text-2xl font-black uppercase">
           Optimise for Living, Not Killing
         </h2>
-        <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed text-background">
+        <p className="mx-auto mb-6 max-w-2xl font-bold leading-relaxed">
           On this platform, we allocate resources toward things that make
           people&apos;s lives measurably better. Disease reduction. Income
           growth. Healthy life years. We have no Department of War because we

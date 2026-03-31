@@ -114,8 +114,8 @@ export default function DTreasuryDirsPage() {
           complicated. The politics, apparently, is.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Current System (IRS)
             </h3>
             <div className="space-y-3">
@@ -134,8 +134,8 @@ export default function DTreasuryDirsPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-foreground">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               $WISH Transaction Tax
             </h3>
             <div className="space-y-3">

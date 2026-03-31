@@ -173,11 +173,11 @@ export default async function PrizePage() {
 
       {/* INSERT COIN — Deposit Section */}
       <section id="invest" className="mb-16">
-        <div className="border-4 border-primary bg-brutal-pink p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="font-pixel text-2xl font-black uppercase text-brutal-pink-foreground mb-4">
+        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <h2 className="font-pixel text-2xl font-black uppercase mb-4">
             Insert Coin
           </h2>
-          <p className="text-sm font-bold text-background mb-6 max-w-2xl">
+          <p className="text-sm font-bold mb-6 max-w-2xl">
             Your deposit goes into the Wishocratic fund ({poolReturn} annually). You get PRIZE shares —
             your claim on the pool. Recruit verified voters to earn
             VOTE points for success-scenario upside too.

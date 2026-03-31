@@ -146,8 +146,8 @@ export default function DTreasuryDfedPage() {
           a constraint. After that, it didn&apos;t.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-foreground">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Before 1971 (Gold-Anchored)
             </h3>
             <div className="space-y-3">
@@ -166,8 +166,8 @@ export default function DTreasuryDfedPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               After 1971 (Fiat Currency)
             </h3>
             <div className="space-y-3">
@@ -208,11 +208,11 @@ export default function DTreasuryDfedPage() {
           prices have already risen.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">
               ~$4T
             </div>
-            <div className="mt-1 text-xs font-black uppercase text-background">
+            <div className="mt-1 text-xs font-black uppercase">
               Fed Created (2020)
             </div>
           </div>

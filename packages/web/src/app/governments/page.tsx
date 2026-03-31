@@ -80,8 +80,8 @@ export default function GovernmentsPage() {
       {/* Summary Stats */}
       <section className="mb-16">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-2xl font-black text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-2xl font-black">
               {formatNumber(
                 GOVERNMENTS.reduce(
                   (sum, g) => sum + g.militaryDeathsCaused.value,

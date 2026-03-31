@@ -160,8 +160,8 @@ export default function DTreasuryDssaPage() {
           80+ Programs vs 1 For-Loop
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-brutal-pink-foreground">
+          <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               Current System (SSA + Welfare)
             </h3>
             <div className="space-y-3">
@@ -180,8 +180,8 @@ export default function DTreasuryDssaPage() {
               ))}
             </div>
           </div>
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em] text-foreground">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.1em]">
               $WISH UBI
             </h3>
             <div className="space-y-3">
