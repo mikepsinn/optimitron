@@ -44,8 +44,8 @@ export function CheckInPageClient({ initialData }: CheckInPageClientProps) {
           href={ROUTES.census}
           className="block border-4 border-primary bg-brutal-cyan p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
         >
-          <h3 className="text-sm font-black uppercase text-foreground">Update Census Data</h3>
-          <p className="mt-1 text-xs font-bold text-foreground">
+          <h3 className="text-sm font-black uppercase text-brutal-cyan-foreground">Update Census Data</h3>
+          <p className="mt-1 text-xs font-bold text-brutal-cyan-foreground">
             Income, location, demographics — the permanent record stuff.
           </p>
         </Link>
@@ -53,8 +53,8 @@ export function CheckInPageClient({ initialData }: CheckInPageClientProps) {
           href={ROUTES.wishocracy}
           className="block border-4 border-primary bg-brutal-yellow p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
         >
-          <h3 className="text-sm font-black uppercase text-foreground">Budget Allocation</h3>
-          <p className="mt-1 text-xs font-bold text-foreground">
+          <h3 className="text-sm font-black uppercase text-brutal-yellow-foreground">Budget Allocation</h3>
+          <p className="mt-1 text-xs font-bold text-brutal-yellow-foreground">
             Tell me what you think Earth should spend money on.
           </p>
         </Link>

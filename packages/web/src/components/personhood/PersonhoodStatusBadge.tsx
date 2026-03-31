@@ -18,7 +18,7 @@ export function PersonhoodStatusBadge({
 }: PersonhoodStatusBadgeProps) {
   if (verified) {
     return (
-      <Badge className="border border-primary bg-brutal-cyan px-2 py-1 font-bold text-foreground">
+      <Badge className="border border-primary bg-brutal-cyan px-2 py-1 font-bold text-brutal-cyan-foreground">
         <ShieldCheck className="h-3.5 w-3.5" />
         {getPersonhoodProviderLabel(provider)}
       </Badge>
@@ -26,7 +26,7 @@ export function PersonhoodStatusBadge({
   }
 
   return (
-    <Badge className="border border-primary bg-brutal-yellow px-2 py-1 font-bold text-foreground">
+    <Badge className="border border-primary bg-brutal-yellow px-2 py-1 font-bold text-brutal-yellow-foreground">
       <ShieldAlert className="h-3.5 w-3.5" />
       Unverified
     </Badge>

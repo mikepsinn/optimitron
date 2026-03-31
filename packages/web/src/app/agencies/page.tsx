@@ -184,11 +184,11 @@ export default function AgenciesIndexPage() {
       ))}
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-foreground p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <h2 className="mb-3 text-2xl font-black uppercase text-background">
+      <section className="border-4 border-primary bg-foreground text-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="mb-3 text-2xl font-black uppercase">
           See How Earth Does It
         </h2>
-        <p className="mx-auto mb-6 max-w-2xl text-lg font-bold text-muted-foreground">
+        <p className="mx-auto mb-6 max-w-2xl text-lg font-bold opacity-80">
           Every Earth government graded on spending vs outcomes. Spoiler: most
           agencies get an F.
         </p>

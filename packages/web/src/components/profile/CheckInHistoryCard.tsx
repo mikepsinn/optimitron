@@ -7,12 +7,12 @@ interface CheckInHistoryCardProps {
 
 function RatingBar({ colorClassName, value }: { colorClassName: string; value: number | null }) {
   if (value === null) {
-    return <span className="text-xs font-bold uppercase text-muted-foreground">No entry</span>;
+    return <span className="text-xs font-bold uppercase text-brutal-cyan-foreground">No entry</span>;
   }
 
   return (
     <div className="w-full">
-      <div className="mb-1 flex items-center justify-between text-xs font-bold uppercase text-muted-foreground">
+      <div className="mb-1 flex items-center justify-between text-xs font-bold uppercase text-brutal-cyan-foreground">
         <span>{value}/5</span>
       </div>
       <div className="h-3 w-full border-4 border-primary bg-background">
@@ -43,21 +43,21 @@ export function CheckInHistoryCard({ history }: CheckInHistoryCardProps) {
                 className="grid gap-4 border-4 border-primary bg-brutal-cyan p-4 md:grid-cols-[160px_1fr_1fr]"
               >
                 <div>
-                  <p className="text-sm font-black uppercase text-foreground">
+                  <p className="text-sm font-black uppercase text-brutal-cyan-foreground">
                     {new Date(`${entry.date}T00:00:00.000Z`).toLocaleDateString()}
                   </p>
                   {entry.note ? (
-                    <p className="mt-2 text-xs font-bold text-muted-foreground">{entry.note}</p>
+                    <p className="mt-2 text-xs font-bold text-brutal-cyan-foreground">{entry.note}</p>
                   ) : null}
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-wide text-muted-foreground">
+                  <p className="text-xs font-black uppercase tracking-wide text-brutal-cyan-foreground">
                     Health
                   </p>
                   <RatingBar colorClassName="bg-brutal-cyan" value={entry.healthRating} />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-wide text-muted-foreground">
+                  <p className="text-xs font-black uppercase tracking-wide text-brutal-cyan-foreground">
                     Happiness
                   </p>
                   <RatingBar colorClassName="bg-brutal-pink" value={entry.happinessRating} />

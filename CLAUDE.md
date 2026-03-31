@@ -224,12 +224,19 @@ We use **Prisma 7** (`prisma@^7.0.0`, `@prisma/client@^7.0.0`) with `@prisma/ada
 4. **Use Zod where runtime validation protects a real boundary.** Do not cargo-cult it into every internal helper.
 5. **When touching product UI, preserve the existing neobrutalist system unless you are intentionally changing the design direction.**
 
-## Color Rules (Neobrutalist Aesthetic)
+## Color Rules (Game Aesthetic — Dark Mode Default)
 
-The UI uses a **neobrutalist** design system — bold, high-contrast, no washed-out pastels. Run `pnpm --filter @optimitron/web run audit:colors` to validate.
+The UI uses a **dark-mode game aesthetic** with neobrutalist accents. Run `pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts` to check contrast. See `docs/game-design-guidelines.md` for the full design system.
+
+### Contrast Rule (CRITICAL)
+- **Every `bg-brutal-*` element MUST set the matching `text-brutal-*-foreground`** on the same element
+- **Children inside colored sections must NOT use `text-foreground` or `text-white`** — let them inherit the correct color from the parent
+- `SectionContainer` and `BrutalCard` handle this automatically via their `bgColor` prop — use those instead of raw divs
+- If you must use a raw div with `bg-brutal-yellow`, always pair it: `bg-brutal-yellow text-brutal-yellow-foreground`
+- **Foreground tokens:** yellow=black, pink=black, cyan=black, red=white, green=black
 
 ### Approved Colors ONLY
-- **Brutal tokens:** `brutal-pink`, `brutal-cyan`, `brutal-yellow`, `brutal-red` (and `-foreground` variants)
+- **Brutal tokens:** `brutal-pink`, `brutal-cyan`, `brutal-yellow`, `brutal-red`, `brutal-green` (and `-foreground` variants)
 - **Semantic tokens:** `primary`, `foreground`, `background`, `muted`, `muted-foreground`, `primary-foreground`, `secondary`, `accent`, `destructive`, `border`, `card`, `popover`, `ring`, `input`, `chart-*`
 - **Fundamentals:** `black`, `white`, `transparent`, `current`, `inherit` — only WITHOUT opacity modifiers
 - **Hard shadows only:** `rgba(0,0,0,1)` — never soft/transparent shadows

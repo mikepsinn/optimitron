@@ -62,15 +62,15 @@ export default function OutcomesIndexPage() {
                   <h2 className="text-xl font-black text-foreground">{outcome.label}</h2>
                   <p className="text-xs font-bold uppercase text-muted-foreground">{outcome.unit}</p>
                 </div>
-                <span className="text-xs font-black border-4 border-primary bg-brutal-cyan px-2 py-1 uppercase">
+                <span className="text-xs font-black border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground px-2 py-1 uppercase">
                   {pairCount} predictor{pairCount === 1 ? "" : "s"}
                 </span>
               </div>
 
               {top ? (
-                <div className="border border-primary bg-brutal-yellow px-3 py-2 mb-4">
-                  <p className="text-xs font-black uppercase text-muted-foreground">Top Predictor</p>
-                  <p className="text-sm font-bold text-foreground">{top.predictorLabel ?? top.predictorId}</p>
+                <div className="border border-primary bg-brutal-yellow text-brutal-yellow-foreground px-3 py-2 mb-4">
+                  <p className="text-xs font-black uppercase">Top Predictor</p>
+                  <p className="text-sm font-bold">{top.predictorLabel ?? top.predictorId}</p>
                   <p className="text-xs text-muted-foreground">
                     Score {(top.score * 100).toFixed(1)} • q={(top.adjustedPValue * 100).toFixed(2)}%
                   </p>

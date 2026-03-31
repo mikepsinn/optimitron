@@ -156,26 +156,26 @@ export default async function ScoreboardPage() {
                 of outcome.
               </p>
             </div>
-            <div className="border-4 border-primary bg-brutal-yellow p-5">
+            <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-5">
               <div className="w-10 h-10 bg-foreground text-background flex items-center justify-center font-black mb-3">
                 2
               </div>
-              <h3 className="font-black uppercase text-foreground mb-2">
+              <h3 className="font-black uppercase mb-2">
                 Recruit
               </h3>
-              <p className="text-sm font-bold text-foreground">
+              <p className="text-sm font-bold">
                 Share your referral link. Every person who verifies support for
                 the 1% Treaty via World ID earns you 1 VOTE point.
               </p>
             </div>
-            <div className="border-4 border-primary bg-brutal-cyan p-5">
+            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-5">
               <div className="w-10 h-10 bg-foreground text-background flex items-center justify-center font-black mb-3">
                 3
               </div>
-              <h3 className="font-black uppercase text-foreground mb-2">
+              <h3 className="font-black uppercase mb-2">
                 Score
               </h3>
-              <p className="text-sm font-bold text-foreground">
+              <p className="text-sm font-bold">
                 15 years later: metrics hit targets → VOTE holders split the
                 pool. Metrics miss → depositors get ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} back.
                 Nobody loses.
@@ -187,8 +187,8 @@ export default async function ScoreboardPage() {
 
       {/* Wishonia comment */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-brutal-pink p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm font-bold text-background leading-relaxed text-center">
+        <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm font-bold leading-relaxed text-center">
             On my planet, we solved this in year 12. You lot have been arguing
             about it for 4,237 years. The scoreboard makes the coalition size
             impossible to pretend does not exist. Updated in real time. Visible

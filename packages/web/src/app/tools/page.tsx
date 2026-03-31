@@ -357,9 +357,9 @@ const totalItems = shelves.reduce((sum, s) => sum + s.items.length, 0);
 /* ------------------------------------------------------------------ */
 
 const shelfBgClasses: Record<Shelf["color"], string> = {
-  cyan: "bg-brutal-cyan/5",
-  yellow: "bg-brutal-yellow/5",
-  pink: "bg-brutal-pink/5",
+  cyan: "bg-muted",
+  yellow: "bg-muted",
+  pink: "bg-muted",
   background: "bg-background",
 };
 

@@ -13,10 +13,10 @@ export function ReferendumStatusBox() {
           <AlertTriangle className="w-12 h-12 text-brutal-pink" />
         </div>
         <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-black uppercase mb-2">
+          <h2 className="text-xl md:text-2xl font-black uppercase mb-2 text-brutal-yellow-foreground">
             <span className="text-brutal-pink">STATUS:</span> REFERENDUM IN PROGRESS
           </h2>
-          <p className="font-bold text-sm md:text-base leading-relaxed">
+          <p className="font-bold text-sm md:text-base leading-relaxed text-brutal-yellow-foreground">
             The referendum hasn&apos;t tipped yet. We need more verified humans
             to prove this isn&apos;t just a nice idea everyone secretly agrees
             with but nobody acts on. Which is literally what pluralistic

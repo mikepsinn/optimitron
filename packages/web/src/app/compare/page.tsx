@@ -150,11 +150,11 @@ function HealthTab() {
   return (
     <div className="space-y-8">
       {/* Exemplar callout */}
-      <div className="card bg-brutal-cyan border-primary">
-        <p className="text-foreground font-black mb-1">🏆 Top Performer</p>
-        <p className="text-sm text-foreground font-bold">
-          <strong className="text-foreground">Singapore</strong> spends $3,013 per person on health. Life expectancy: 84.1 years.
-          The <strong className="text-foreground">US</strong> spends $12,555 per person. Life expectancy: 77.5 years.
+      <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
+        <p className="font-black mb-1">🏆 Top Performer</p>
+        <p className="text-sm font-bold">
+          <strong>Singapore</strong> spends $3,013 per person on health. Life expectancy: 84.1 years.
+          The <strong>US</strong> spends $12,555 per person. Life expectancy: 77.5 years.
           It&apos;s like paying four times more for a sandwich and getting fewer years to eat it.
         </p>
       </div>
@@ -214,14 +214,14 @@ function HealthTab() {
         <div className="overflow-x-auto border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-primary bg-brutal-yellow">
-                <th className="text-left py-3 px-2 text-foreground font-black uppercase">Country</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">$/Capita</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">% GDP</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">Life Exp</th>
-                <th className="text-right py-3 px-2 text-foreground font-black uppercase">Infant Mort</th>
-                <th className="text-center py-3 px-2 text-foreground font-black uppercase">System</th>
-                <th className="text-center py-3 px-2 text-foreground font-black uppercase">Universal</th>
+              <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                <th className="text-left py-3 px-2 font-black uppercase">Country</th>
+                <th className="text-right py-3 px-2 font-black uppercase">$/Capita</th>
+                <th className="text-right py-3 px-2 font-black uppercase">% GDP</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Life Exp</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Infant Mort</th>
+                <th className="text-center py-3 px-2 font-black uppercase">System</th>
+                <th className="text-center py-3 px-2 font-black uppercase">Universal</th>
               </tr>
             </thead>
             <tbody>
@@ -265,12 +265,12 @@ function DrugTab() {
 
   return (
     <div className="space-y-8">
-      <div className="card bg-brutal-cyan border-primary">
-        <p className="text-foreground font-black mb-1">🏆 Key Finding</p>
-        <p className="text-sm text-foreground font-bold">
-          <strong className="text-foreground">Portugal</strong> decriminalized all drugs in 2001. Drug-induced deaths dropped
+      <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
+        <p className="font-black mb-1">🏆 Key Finding</p>
+        <p className="text-sm font-bold">
+          <strong>Portugal</strong> decriminalized all drugs in 2001. Drug-induced deaths dropped
           80%, HIV among people who inject drugs fell 95%, and drug use remained below the EU average.
-          The <strong className="text-foreground">US prohibitionist approach</strong> produces 32.4 drug deaths per 100K — 108× Portugal&apos;s rate.
+          The <strong>US prohibitionist approach</strong> produces 32.4 drug deaths per 100K — 108× Portugal&apos;s rate.
         </p>
       </div>
 
@@ -278,13 +278,13 @@ function DrugTab() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b-2 border-primary bg-brutal-yellow">
-              <th className="text-left py-3 px-2 text-foreground font-black uppercase">Country</th>
-              <th className="text-center py-3 px-2 text-foreground font-black uppercase">Approach</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Deaths/100K</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Incarceration</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">HIV (PWID) %</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Treatment %</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Year</th>
+              <th className="text-left py-3 px-2 font-black uppercase">Country</th>
+              <th className="text-center py-3 px-2 font-black uppercase">Approach</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Deaths/100K</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Incarceration</th>
+              <th className="text-right py-3 px-2 font-black uppercase">HIV (PWID) %</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Treatment %</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Year</th>
             </tr>
           </thead>
           <tbody>
@@ -325,11 +325,11 @@ function EducationTab() {
 
   return (
     <div className="space-y-8">
-      <div className="card bg-brutal-cyan border-primary">
-        <p className="text-foreground font-black mb-1">🏆 Key Finding</p>
-        <p className="text-sm text-foreground font-bold">
-          <strong className="text-foreground">Singapore</strong> spends 2.9% of GDP on education. Math score: 575 (top globally).
-          The <strong className="text-foreground">US</strong> spends 4.9% of GDP. Math score: 465. That&apos;s 69% more money for 19% worse results.
+      <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
+        <p className="font-black mb-1">🏆 Key Finding</p>
+        <p className="text-sm font-bold">
+          <strong>Singapore</strong> spends 2.9% of GDP on education. Math score: 575 (top globally).
+          The <strong>US</strong> spends 4.9% of GDP. Math score: 465. That&apos;s 69% more money for 19% worse results.
           Turns out you can&apos;t fix a system by throwing cash at it. Weird.
         </p>
       </div>
@@ -363,12 +363,12 @@ function EducationTab() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b-2 border-primary bg-brutal-yellow">
-              <th className="text-left py-3 px-2 text-foreground font-black uppercase">Country</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Spending %GDP</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Math</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Reading</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Science</th>
-              <th className="text-right py-3 px-2 text-foreground font-black uppercase">Average</th>
+              <th className="text-left py-3 px-2 font-black uppercase">Country</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Spending %GDP</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Math</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Reading</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Science</th>
+              <th className="text-right py-3 px-2 font-black uppercase">Average</th>
             </tr>
           </thead>
           <tbody>
@@ -404,11 +404,11 @@ function JusticeTab() {
 
   return (
     <div className="space-y-8">
-      <div className="card bg-brutal-cyan border-primary">
-        <p className="text-foreground font-black mb-1">🏆 Key Finding</p>
-        <p className="text-sm text-foreground font-bold">
-          <strong className="text-foreground">Norway</strong> rehabilitates prisoners. Recidivism: 20%.
-          The <strong className="text-foreground">US</strong> punishes them. Recidivism: 76%. Incarceration rate: 531 per 100K — highest in the developed world.
+      <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
+        <p className="font-black mb-1">🏆 Key Finding</p>
+        <p className="text-sm font-bold">
+          <strong>Norway</strong> rehabilitates prisoners. Recidivism: 20%.
+          The <strong>US</strong> punishes them. Recidivism: 76%. Incarceration rate: 531 per 100K — highest in the developed world.
           You&apos;re paying more to make the problem worse. On my planet this would be called a bug. Here it&apos;s called &ldquo;tough on crime.&rdquo;
         </p>
       </div>

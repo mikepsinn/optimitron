@@ -41,9 +41,9 @@ const productSurfaces = [
     desc: "Find out which of your elected officials actually agrees with you. Brace yourself.",
     cta: "Open Alignment",
     tone: "bg-brutal-yellow",
-    titleColor: "text-foreground",
-    descColor: "text-foreground",
-    ctaColor: "text-foreground hover:text-brutal-pink",
+    titleColor: "text-brutal-yellow-foreground",
+    descColor: "text-brutal-yellow-foreground",
+    ctaColor: "text-brutal-yellow-foreground hover:text-brutal-pink",
   },
   {
     item: studiesLink,
@@ -51,9 +51,9 @@ const productSurfaces = [
     desc: "Every claim, tested against data. No opinions. No vibes. Just receipts.",
     cta: "Browse Studies",
     tone: "bg-brutal-cyan",
-    titleColor: "text-foreground",
-    descColor: "text-foreground",
-    ctaColor: "text-foreground hover:text-brutal-pink",
+    titleColor: "text-brutal-cyan-foreground",
+    descColor: "text-brutal-cyan-foreground",
+    ctaColor: "text-brutal-cyan-foreground hover:text-brutal-pink",
   },
   {
     item: trackLink,
@@ -61,9 +61,9 @@ const productSurfaces = [
     desc: "Log what you do, eat, and feel. I'll tell you what's actually working. Your intuition won't like it.",
     cta: "Open Tracking",
     tone: "bg-brutal-cyan",
-    titleColor: "text-foreground",
-    descColor: "text-foreground",
-    ctaColor: "text-foreground hover:text-brutal-pink",
+    titleColor: "text-brutal-cyan-foreground",
+    descColor: "text-brutal-cyan-foreground",
+    ctaColor: "text-brutal-cyan-foreground hover:text-brutal-pink",
   },
 ];
 
@@ -233,10 +233,10 @@ export default function AboutPage() {
               Play the Game &rarr;
             </NavItemLink>
           </div>
-          <div className="card bg-brutal-cyan border-primary">
+          <div className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary">
             <div className="text-2xl mb-2">🤝</div>
-            <h3 className="font-black text-foreground mb-2">IABs (Phase 2)</h3>
-            <p className="text-sm text-muted-foreground font-bold leading-relaxed">
+            <h3 className="font-black mb-2">IABs (Phase 2)</h3>
+            <p className="text-sm font-bold leading-relaxed">
               After the referendum proves demand, raise ~$1B to lobby for the
               treaty. Revenue splits 80/10/10: clinical trials, investors,
               superpacs for aligned politicians.
@@ -244,15 +244,15 @@ export default function AboutPage() {
             <NavItemLink
               item={iabLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-brutal-pink transition-colors"
             >
               Learn About IABs &rarr;
             </NavItemLink>
           </div>
-          <div className="card bg-brutal-yellow border-primary">
+          <div className="card bg-brutal-yellow text-brutal-yellow-foreground border-primary">
             <div className="text-2xl mb-2">💸</div>
-            <h3 className="font-black text-foreground mb-2">$WISH</h3>
-            <p className="text-sm text-muted-foreground font-bold leading-relaxed">
+            <h3 className="font-black mb-2">$WISH</h3>
+            <p className="text-sm font-bold leading-relaxed">
               Programmable currency with 0.5% transaction tax. Replaces the IRS,
               welfare bureaucracy, and lobbying with automatic UBI and
               wishocratic public goods allocation.
@@ -260,7 +260,7 @@ export default function AboutPage() {
             <NavItemLink
               item={dtreasuryLink}
               variant="custom"
-              className="mt-4 inline-flex items-center text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
+              className="mt-4 inline-flex items-center text-sm font-black uppercase hover:text-brutal-pink transition-colors"
             >
               How $WISH Works &rarr;
             </NavItemLink>
@@ -315,11 +315,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="card bg-brutal-cyan border-primary text-center">
-        <h2 className="text-2xl font-black text-foreground mb-3 uppercase">
+      <section className="card bg-brutal-cyan text-brutal-cyan-foreground border-primary text-center">
+        <h2 className="text-2xl font-black mb-3 uppercase">
           Open By Design
         </h2>
-        <p className="text-muted-foreground mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
+        <p className="mb-6 font-bold max-w-2xl mx-auto leading-relaxed">
           The code is public. The papers are public. The data is public. On my
           planet this is called &ldquo;the bare minimum.&rdquo; Here it seems
           to be called &ldquo;radical transparency.&rdquo;

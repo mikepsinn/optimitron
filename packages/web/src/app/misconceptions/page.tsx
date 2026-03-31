@@ -34,18 +34,18 @@ const data = misconceptionData as MisconceptionData;
 
 const categoryColors: Record<string, string> = {
   "criminal-justice": "bg-brutal-red text-brutal-red-foreground",
-  economics: "bg-brutal-cyan text-foreground",
-  healthcare: "bg-brutal-cyan text-foreground",
-  education: "bg-brutal-pink text-foreground",
-  international: "bg-brutal-yellow text-foreground",
-  environment: "bg-brutal-cyan text-foreground",
+  economics: "bg-brutal-cyan text-brutal-cyan-foreground",
+  healthcare: "bg-brutal-cyan text-brutal-cyan-foreground",
+  education: "bg-brutal-pink text-brutal-pink-foreground",
+  international: "bg-brutal-yellow text-brutal-yellow-foreground",
+  environment: "bg-brutal-cyan text-brutal-cyan-foreground",
 };
 
 const gradeColors: Record<string, string> = {
-  A: "bg-brutal-cyan text-foreground",
-  B: "bg-brutal-cyan text-foreground",
-  C: "bg-brutal-yellow text-foreground",
-  D: "bg-brutal-red text-foreground",
+  A: "bg-brutal-cyan text-brutal-cyan-foreground",
+  B: "bg-brutal-cyan text-brutal-cyan-foreground",
+  C: "bg-brutal-yellow text-brutal-yellow-foreground",
+  D: "bg-brutal-red text-brutal-red-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 
@@ -184,27 +184,27 @@ export default function MisconceptionsPage() {
 
         {/* Summary cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-brutal-red border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-brutal-red-foreground">
+          <div className="bg-brutal-red text-brutal-red-foreground border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">
               {data.summary.gradeFCount}
             </div>
-            <div className="text-sm text-foreground">
+            <div className="text-sm">
               Grade F (data contradicts)
             </div>
           </div>
-          <div className="bg-brutal-cyan border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-foreground">
+          <div className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">
               {data.summary.gradeACount}
             </div>
-            <div className="text-sm text-foreground">
+            <div className="text-sm">
               Grade A (data supports)
             </div>
           </div>
-          <div className="bg-brutal-cyan border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-3xl font-black text-foreground">
+          <div className="bg-brutal-cyan text-brutal-cyan-foreground border-4 border-primary p-4 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-3xl font-black">
               {data.summary.totalFindings}
             </div>
-            <div className="text-sm text-foreground">Total analyzed</div>
+            <div className="text-sm">Total analyzed</div>
           </div>
         </div>
 
@@ -335,22 +335,22 @@ export default function MisconceptionsPage() {
         </div>
 
         {/* Methodology note */}
-        <div className="mt-8 border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="text-foreground font-black mb-2">Methodology</h3>
-          <p className="text-sm text-foreground">
+        <div className="mt-8 border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="font-black mb-2">Methodology</h3>
+          <p className="text-sm">
             We compare year-over-year percentage changes — not raw totals —
             because your species has a habit of confusing &ldquo;two things
             both went up over 50 years&rdquo; with &ldquo;one caused the
             other.&rdquo; We call this &ldquo;a statistical error.&rdquo; You
             call it &ldquo;a talking point.&rdquo;
           </p>
-          <p className="text-sm text-foreground mt-2">
+          <p className="text-sm mt-2">
             We also test which direction causation flows — does the policy
             cause the outcome, or does the outcome drive the spending? Data
             from FRED, BLS, IRS, OMB, FBI UCR, CDC, WHO, OECD, and World Bank
             (1950&ndash;2023).
           </p>
-          <p className="text-sm text-foreground mt-2">
+          <p className="text-sm mt-2">
             <strong>Most common mistake:</strong>{" "}
             {data.summary.topPattern}.{" "}
             <strong>Second most common:</strong>{" "}

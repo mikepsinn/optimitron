@@ -63,7 +63,7 @@ export default async function OutcomeHubPage({
       <section className="border-4 border-primary bg-background overflow-x-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b-2 border-primary bg-brutal-yellow">
+            <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
               <th className="text-left px-3 py-2 font-black uppercase">Rank</th>
               <th className="text-left px-3 py-2 font-black uppercase">Predictor</th>
               <th className="text-right px-3 py-2 font-black uppercase">Score</th>

@@ -31,26 +31,26 @@ export function PoliticianAlignmentDashboard({ data }: PoliticianAlignmentDashbo
       {/* Metadata cards */}
       <section className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="border-4 border-primary bg-brutal-cyan p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-cyan-foreground">
             Jurisdiction
           </div>
-          <div className="mt-2 text-2xl font-black text-foreground">
+          <div className="mt-2 text-2xl font-black text-brutal-cyan-foreground">
             {data.jurisdiction.name ?? data.jurisdiction.code}
           </div>
         </div>
         <div className="border-4 border-primary bg-brutal-pink p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-pink-foreground">
             Comparisons
           </div>
-          <div className="mt-2 text-2xl font-black text-foreground">
+          <div className="mt-2 text-2xl font-black text-brutal-pink-foreground">
             {data.aggregationRun.allocationCount.toLocaleString()}
           </div>
         </div>
         <div className="border-4 border-primary bg-brutal-yellow p-4">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="text-xs font-black uppercase tracking-[0.2em] text-brutal-yellow-foreground">
             Participants
           </div>
-          <div className="mt-2 text-2xl font-black text-foreground">
+          <div className="mt-2 text-2xl font-black text-brutal-yellow-foreground">
             {data.aggregationRun.participantCount.toLocaleString()}
           </div>
         </div>

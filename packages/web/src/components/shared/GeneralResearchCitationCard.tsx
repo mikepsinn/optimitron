@@ -44,8 +44,8 @@ export function GeneralResearchCitationCard({
         {firstQuote && <p className="text-lg mb-4 leading-relaxed">{firstQuote}</p>}
         {citation.notes && (
           <div className="bg-brutal-yellow border-l-4 border-brutal-yellow p-4">
-            <div className="text-sm font-bold uppercase mb-1">IMPACT</div>
-            <div className="font-bold">{citation.notes}</div>
+            <div className="text-sm font-bold uppercase mb-1 text-brutal-yellow-foreground">IMPACT</div>
+            <div className="font-bold text-brutal-yellow-foreground">{citation.notes}</div>
           </div>
         )}
       </Card>
@@ -96,8 +96,8 @@ export function GeneralResearchCitationCard({
 
       {citation.notes && (
         <div className="bg-brutal-yellow border-l-4 border-brutal-yellow p-4">
-          <div className="text-sm font-bold uppercase mb-1">NOTES</div>
-          <div className="font-bold">{citation.notes}</div>
+          <div className="text-sm font-bold uppercase mb-1 text-brutal-yellow-foreground">NOTES</div>
+          <div className="font-bold text-brutal-yellow-foreground">{citation.notes}</div>
         </div>
       )}
     </Card>

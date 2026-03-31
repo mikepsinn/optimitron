@@ -92,10 +92,10 @@ export function WishocracyLandingSection() {
             <div className="mb-4 inline-flex border-4 border-primary bg-foreground px-3 py-1 text-xs font-black uppercase text-background">
               Wishocracy Live
             </div>
-            <h2 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-black uppercase tracking-tight text-brutal-cyan-foreground sm:text-4xl">
               Community Budget Priorities
             </h2>
-            <p className="mt-4 max-w-2xl text-base font-bold leading-relaxed text-foreground">
+            <p className="mt-4 max-w-2xl text-base font-bold leading-relaxed text-brutal-cyan-foreground">
               Save your allocation, compare it with current government spending,
               and see which priorities rise to the top across the community.
             </p>
@@ -143,7 +143,7 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={alignmentLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-primary bg-brutal-yellow px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-brutal-yellow px-8 py-3 text-sm font-black uppercase text-brutal-yellow-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
               >
                 See Alignment Reports
               </NavItemLink>

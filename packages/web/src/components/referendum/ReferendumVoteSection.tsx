@@ -98,10 +98,10 @@ export function ReferendumVoteSection({
 
     return (
       <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h3 className="text-lg font-black uppercase text-foreground mb-2">
+        <h3 className="text-lg font-black uppercase text-brutal-yellow-foreground mb-2">
           Sign In to Vote
         </h3>
-        <p className="text-sm font-bold text-foreground">
+        <p className="text-sm font-bold text-brutal-yellow-foreground">
           You need an account to cast your vote. Verify with World ID
           afterwards to make it count as a verified vote.
         </p>
@@ -120,11 +120,11 @@ export function ReferendumVoteSection({
 
     return (
       <div className="space-y-6">
-        <div className="border-4 border-primary bg-green-50 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h3 className="text-lg font-black uppercase text-foreground mb-2">
+        <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="text-lg font-black uppercase text-brutal-cyan-foreground mb-2">
             Vote Recorded: {answer}
           </h3>
-          <p className="text-sm font-bold text-foreground">
+          <p className="text-sm font-bold text-brutal-cyan-foreground">
             Verify with World ID to make your vote count as verified.
             Then share your link below to bring in more verified votes.
           </p>
@@ -133,15 +133,15 @@ export function ReferendumVoteSection({
         {/* VOTE point earning info */}
         {mintQueued ? (
           <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-lg font-black uppercase text-foreground mb-2">
+            <h3 className="text-lg font-black uppercase text-brutal-cyan-foreground mb-2">
               1 VOTE Point Queued
             </h3>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm font-bold text-brutal-cyan-foreground">
               Your verified vote earned 1 VOTE point. It will be minted
               on-chain in the next batch.{" "}
               <Link
                 href="/contribute"
-                className="font-black text-brutal-pink underline hover:text-foreground"
+                className="font-black text-brutal-pink underline hover:text-brutal-cyan-foreground"
               >
                 View your VOTE balance &rarr;
               </Link>
@@ -149,15 +149,15 @@ export function ReferendumVoteSection({
           </div>
         ) : (
           <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-lg font-black uppercase text-foreground mb-2">
+            <h3 className="text-lg font-black uppercase text-brutal-yellow-foreground mb-2">
               Earn VOTE Points
             </h3>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm font-bold text-brutal-yellow-foreground">
               Verify with World ID below{address ? "" : " and connect a wallet"} to earn 1 VOTE point for this
               vote. VOTE points are redeemable for a share of the{" "}
               <Link
                 href="/contribute"
-                className="font-black text-brutal-pink underline hover:text-foreground"
+                className="font-black text-brutal-pink underline hover:text-brutal-yellow-foreground"
               >
                 Earth Optimization Prize
               </Link>{" "}
@@ -195,7 +195,7 @@ export function ReferendumVoteSection({
         Cast Your Vote
       </h3>
       {error && (
-        <div className="mb-4 border-2 border-red-600 bg-red-50 p-3 text-sm font-bold text-red-700">
+        <div className="mb-4 border-2 border-brutal-red bg-brutal-red p-3 text-sm font-bold text-brutal-red-foreground">
           {error}
         </div>
       )}

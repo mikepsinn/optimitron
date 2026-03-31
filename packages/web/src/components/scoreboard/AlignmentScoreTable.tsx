@@ -26,14 +26,14 @@ interface AlignmentScoreTableProps {
 }
 
 function scoreColorClass(score: number): string {
-  if (score > 70) return "bg-brutal-cyan text-green-900 border-green-600";
-  if (score >= 40) return "bg-yellow-400/20 text-yellow-900 border-yellow-600";
-  return "bg-brutal-red text-red-900 border-red-600";
+  if (score > 70) return "bg-brutal-cyan text-brutal-cyan-foreground border-primary";
+  if (score >= 40) return "bg-brutal-yellow text-brutal-yellow-foreground border-primary";
+  return "bg-brutal-red text-brutal-red-foreground border-primary";
 }
 
 function scoreBgClass(score: number): string {
   if (score > 70) return "bg-brutal-cyan";
-  if (score >= 40) return "bg-yellow-500";
+  if (score >= 40) return "bg-brutal-yellow";
   return "bg-brutal-red";
 }
 

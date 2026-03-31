@@ -83,14 +83,14 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
   return (
     <Card className="border-4 border-primary bg-brutal-yellow shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <Card.Header className="gap-3">
-        <Card.Title className="text-2xl font-black uppercase text-foreground">
+        <Card.Title className="text-2xl font-black uppercase text-brutal-yellow-foreground">
           Daily Check-In
         </Card.Title>
-        <p className="text-sm font-bold text-muted-foreground">
+        <p className="text-sm font-bold text-brutal-yellow-foreground">
           One check-in per UTC day for overall health and happiness.
         </p>
         {currentCheckIn.healthRating !== null || currentCheckIn.happinessRating !== null ? (
-          <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          <p className="text-xs font-bold uppercase tracking-wide text-brutal-yellow-foreground">
             Today&apos;s entry: {currentCheckIn.date}
           </p>
         ) : null}
@@ -101,7 +101,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-3">
-            <p className="text-sm font-bold uppercase text-foreground">Overall Health</p>
+            <p className="text-sm font-bold uppercase text-brutal-yellow-foreground">Overall Health</p>
             <AmountSelector
               activeColor="green"
               amounts={[1, 2, 3, 4, 5]}
@@ -111,13 +111,13 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
               value={healthRating}
               onChange={setHealthRating}
             />
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-bold uppercase tracking-wide text-brutal-yellow-foreground">
               1 rough, 5 excellent
             </p>
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-bold uppercase text-foreground">Happiness</p>
+            <p className="text-sm font-bold uppercase text-brutal-yellow-foreground">Happiness</p>
             <AmountSelector
               activeColor="pink"
               amounts={[1, 2, 3, 4, 5]}
@@ -127,7 +127,7 @@ export function DailyCheckInCard({ currentCheckIn, onSaved }: DailyCheckInCardPr
               value={happinessRating}
               onChange={setHappinessRating}
             />
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-bold uppercase tracking-wide text-brutal-yellow-foreground">
               1 low, 5 high
             </p>
           </div>

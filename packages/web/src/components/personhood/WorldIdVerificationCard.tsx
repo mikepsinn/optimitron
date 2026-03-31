@@ -158,18 +158,18 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           {isVerified ? (
             <div className="border-4 border-primary bg-brutal-cyan p-4">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 h-5 w-5 text-foreground" />
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-brutal-cyan-foreground" />
                 <div className="space-y-1 text-sm">
-                  <p className="font-bold text-foreground">
+                  <p className="font-bold text-brutal-cyan-foreground">
                     Verified with {sessionUser.personhoodProvider === "WORLD_ID" ? "World ID" : "a personhood provider"}.
                   </p>
                   {sessionUser.personhoodVerificationLevel ? (
-                    <p className="text-foreground">
+                    <p className="text-brutal-cyan-foreground">
                       Credential: {sessionUser.personhoodVerificationLevel}
                     </p>
                   ) : null}
                   {verifiedDate ? (
-                    <p className="text-foreground">Verified on {verifiedDate}.</p>
+                    <p className="text-brutal-cyan-foreground">Verified on {verifiedDate}.</p>
                   ) : null}
                 </div>
               </div>
@@ -181,9 +181,9 @@ export function WorldIdVerificationCard({ show }: WorldIdVerificationCardProps) 
           ) : (
             <div className="border-4 border-primary bg-brutal-cyan p-4">
               <div className="flex items-start gap-3">
-                <ShieldQuestion className="mt-0.5 h-5 w-5 text-foreground" />
+                <ShieldQuestion className="mt-0.5 h-5 w-5 text-brutal-cyan-foreground" />
                 <div className="space-y-3 text-sm">
-                  <p className="text-foreground">
+                  <p className="text-brutal-cyan-foreground">
                     This does not replace login. It adds a separate uniqueness proof on top of
                     your account.
                   </p>

@@ -32,8 +32,8 @@ const pipelineSteps = [
     techDetail: "Each alignment score is published as a Hypercert — an Activity claim with Measurements, Evaluations, and Attachments.",
     color: "bg-brutal-yellow",
     borderColor: "border-primary",
-    textColor: "text-foreground",
-    subTextColor: "text-foreground",
+    textColor: "text-brutal-yellow-foreground",
+    subTextColor: "text-brutal-yellow-foreground",
   },
   {
     number: 3,
@@ -44,8 +44,8 @@ const pipelineSteps = [
     techDetail: "Every CID resolves to its exact data at {cid}.ipfs.storacha.link — no server can alter it after the fact.",
     color: "bg-brutal-cyan",
     borderColor: "border-primary",
-    textColor: "text-foreground",
-    subTextColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
+    subTextColor: "text-brutal-cyan-foreground",
   },
   {
     number: 4,
@@ -56,8 +56,8 @@ const pipelineSteps = [
     techDetail: "A 0.5% transaction tax funds UBI distribution. Politicians earn $WISH by aligning with citizens, not donors.",
     color: "bg-brutal-cyan",
     borderColor: "border-primary",
-    textColor: "text-foreground",
-    subTextColor: "text-foreground",
+    textColor: "text-brutal-cyan-foreground",
+    subTextColor: "text-brutal-cyan-foreground",
   },
   {
     number: 5,
@@ -202,16 +202,16 @@ export default function TransparencyPage() {
             Preference Aggregation Snapshot
           </h3>
           <div className="grid gap-4 md:grid-cols-3 mb-4">
-            <div className="border-4 border-primary bg-brutal-pink p-3">
-              <div className="text-xs font-black uppercase text-background">Participants</div>
-              <div className="text-2xl font-black text-brutal-pink-foreground">{snapshotData.participantCount}</div>
+            <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-3">
+              <div className="text-xs font-black uppercase">Participants</div>
+              <div className="text-2xl font-black">{snapshotData.participantCount}</div>
             </div>
-            <div className="border-4 border-primary bg-brutal-yellow p-3">
-              <div className="text-xs font-black uppercase text-muted-foreground">Consistency Ratio</div>
+            <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-3">
+              <div className="text-xs font-black uppercase">Consistency Ratio</div>
               <div className="text-2xl font-black">{(snapshotData.consistencyRatio * 100).toFixed(0)}%</div>
             </div>
-            <div className="border-4 border-primary bg-brutal-cyan p-3">
-              <div className="text-xs font-black uppercase text-muted-foreground">Categories</div>
+            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-3">
+              <div className="text-xs font-black uppercase">Categories</div>
               <div className="text-2xl font-black">{snapshotData.preferenceWeights.length}</div>
             </div>
           </div>
@@ -231,11 +231,11 @@ export default function TransparencyPage() {
           $WISH Token & UBI
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="border-4 border-primary bg-brutal-cyan p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-xl font-black uppercase text-foreground mb-3">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-xl font-black uppercase mb-3">
               Transaction Tax Replaces the IRS
             </h3>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold leading-relaxed">
               A 0.5% tax on every $WISH transfer automatically funds the
               treasury. No filing. No audits. No 74,000-page tax code. Revenue
               collection as a protocol feature, not a bureaucratic apparatus
@@ -253,11 +253,11 @@ export default function TransparencyPage() {
               spending half of it on the process of giving it to them.
             </p>
           </div>
-          <div className="border-4 border-primary bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="text-xl font-black uppercase text-foreground mb-3">
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-xl font-black uppercase mb-3">
               Alignment-Based Campaign Finance
             </h3>
-            <p className="text-sm font-bold text-foreground leading-relaxed">
+            <p className="text-sm font-bold leading-relaxed">
               Politicians earn $WISH proportional to their Citizen Alignment
               Score. Higher alignment = more funding. No donors. No PACs. No
               lobbyists. Smart contracts read Hypercert attestations and

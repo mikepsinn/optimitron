@@ -89,10 +89,10 @@ export function ViralDoublingChart() {
         transition={{ duration: 0.4, delay: 1.2 }}
       >
         <BrutalCard bgColor="yellow" shadowSize={8} className="max-w-xl text-center">
-          <p className="text-2xl sm:text-3xl font-black text-foreground">
+          <p className="text-2xl sm:text-3xl font-black text-brutal-yellow-foreground">
             {TARGET_M}M = 3.5% Tipping Point
           </p>
-          <p className="text-sm font-bold text-foreground mt-1">
+          <p className="text-sm font-bold text-brutal-yellow-foreground mt-1">
             No campaign that reached this threshold has ever failed.
           </p>
         </BrutalCard>
