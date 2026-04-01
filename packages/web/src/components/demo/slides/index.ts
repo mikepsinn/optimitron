@@ -189,12 +189,12 @@ const legacyAliases: Record<string, string> = {
   "wishonia-slide": "sierra-restore-from-wishonia",
 };
 
-export function getSlideComponent(componentId: string): DemoSlideComponent {
-  if (sierraRegistry[componentId]) {
-    return sierraRegistry[componentId];
+export function getSlideComponent(slideId: string): DemoSlideComponent {
+  if (sierraRegistry[slideId]) {
+    return sierraRegistry[slideId];
   }
 
-  const alias = legacyAliases[componentId];
+  const alias = legacyAliases[slideId];
   if (alias && sierraRegistry[alias]) {
     return sierraRegistry[alias];
   }

@@ -1,5 +1,5 @@
 import { DemoPlayer } from "@/components/demo/DemoPlayer";
-import { PLAYLISTS, DEFAULT_PLAYLIST_ID } from "@/lib/demo-script";
+import { DEFAULT_PLAYLIST_ID, getPlaylist } from "@/lib/demo-script";
 import { demoLink } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 
@@ -12,8 +12,7 @@ interface PageProps {
 export default async function DemoPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const playlistId = params.playlist ?? DEFAULT_PLAYLIST_ID;
-  const validPlaylist = PLAYLISTS.find((p) => p.id === playlistId);
-  const resolvedId = validPlaylist ? playlistId : DEFAULT_PLAYLIST_ID;
+  const resolvedId = getPlaylist(playlistId) ? playlistId : DEFAULT_PLAYLIST_ID;
 
   return (
     <>

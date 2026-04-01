@@ -43,18 +43,6 @@ function WishoniaPresenter({ analyserNode }: { analyserNode: AnalyserNode | null
 }
 
 // ---------------------------------------------------------------------------
-// Background color map
-// ---------------------------------------------------------------------------
-
-const bgColorMap: Record<string, string> = {
-  background: "bg-background",
-  foreground: "bg-foreground text-background",
-  pink: "bg-brutal-pink",
-  cyan: "bg-brutal-cyan",
-  yellow: "bg-brutal-yellow",
-};
-
-// ---------------------------------------------------------------------------
 // Sierra-aware narration sync
 // ---------------------------------------------------------------------------
 
@@ -62,25 +50,23 @@ function useNarrationSync(
   slide: DemoSegment,
   isPlaying: boolean,
 ) {
-  const { dispatch, state } = useSierraGame();
+  const { dispatch } = useSierraGame();
 
   useEffect(() => {
-    if (!state.enabled) return;
     dispatch({
       type: "SET_NARRATION",
       text: slide.narration,
       isNarrating: isPlaying,
     });
-  }, [slide.id, isPlaying, state.enabled, dispatch, slide.narration]);
+  }, [slide.id, isPlaying, dispatch, slide.narration]);
 
   // Sync Sierra metadata from segment (act, score, inventory)
   useEffect(() => {
-    if (!state.enabled) return;
     if (slide.act) dispatch({ type: "SET_ACT", act: slide.act });
     if (slide.scoreAdd) dispatch({ type: "ADD_SCORE", amount: slide.scoreAdd });
     if (slide.inventoryAdd)
       dispatch({ type: "ADD_INVENTORY", item: slide.inventoryAdd });
-  }, [slide.id, state.enabled, dispatch, slide.act, slide.scoreAdd, slide.inventoryAdd]);
+  }, [slide.id, dispatch, slide.act, slide.scoreAdd, slide.inventoryAdd]);
 }
 
 // ---------------------------------------------------------------------------
@@ -89,10 +75,8 @@ function useNarrationSync(
 
 function DemoPlayerInner({
   playlistId,
-  sierraMode,
 }: {
   playlistId: string;
-  sierraMode: boolean;
 }) {
   const slides = getPlaylistSegments(playlistId);
 
@@ -107,8 +91,9 @@ function DemoPlayerInner({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on mount
   }, []);
-  const [isPlaying, setIsPlaying] = useState(sierraMode);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [isCaptionsVisible, setIsCaptionsVisible] = useState(false);
   const [forceLive, setForceLive] = useState(false);
   const forceLiveRef = useRef(forceLive);
   useEffect(() => { forceLiveRef.current = forceLive; }, [forceLive]);
@@ -340,11 +325,8 @@ function DemoPlayerInner({
     setCurrentIndex(index);
   };
 
-  const bgClass =
-    bgColorMap[slide.bgColor ?? "background"] ?? "bg-background";
-
   // Resolve slide component
-  const SlideComponent = getSlideComponent(slide.componentId);
+  const SlideComponent = getSlideComponent(slide.slideId);
 
   // Build slide content
   const slideContent = (
@@ -356,9 +338,9 @@ function DemoPlayerInner({
           initial="initial"
           animate="animate"
           exit="exit"
-          className={`absolute inset-0 overflow-y-auto ${bgClass}`}
+          className="absolute inset-0 overflow-y-auto bg-black"
         >
-          <Suspense fallback={<div className={`absolute inset-0 ${bgClass}`} />}>
+          <Suspense fallback={<div className="absolute inset-0 bg-black" />}>
             <SlideComponent segment={slide} />
           </Suspense>
         </motion.div>
@@ -374,33 +356,25 @@ function DemoPlayerInner({
 
   return (
     <div ref={containerRef} className="relative h-full group">
-      {/* Slide area — wrapped in Sierra chrome when enabled */}
-      {sierraMode ? (
-        <SierraChrome>{slideContent}</SierraChrome>
-      ) : (
-        slideContent
-      )}
+      <SierraChrome>{slideContent}</SierraChrome>
 
       {/* Wishonia character — bottom right, click to play */}
-      {sierraMode && (
-        <div
-          className="absolute -bottom-4 -right-2 z-20 cursor-pointer"
-          onClick={() => {
-            if (!isPlaying) {
-              setIsPlaying(true);
-            }
-          }}
-        >
-          <WishoniaPresenter analyserNode={analyserNode} />
-        </div>
-      )}
+      <div
+        className="absolute -bottom-4 -right-2 z-20 cursor-pointer"
+        onClick={() => {
+          if (!isPlaying) {
+            setIsPlaying(true);
+          }
+        }}
+      >
+        <WishoniaPresenter analyserNode={analyserNode} />
+      </div>
 
       {/* Overlay controls — visible on hover/tap */}
       <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 z-40">
-        {/* Subtitle (only in non-sierra mode — sierra uses narrator box) */}
-        {!sierraMode && (
-          <div className="bg-foreground/90 backdrop-blur-sm px-3 sm:px-6 py-2 sm:py-3">
-            <p className="text-xs sm:text-sm font-bold text-background leading-relaxed line-clamp-2">
+        {isCaptionsVisible && (
+          <div className="border-t border-white/10 bg-black/70 backdrop-blur-sm px-3 sm:px-6 py-2 sm:py-3">
+            <p className="font-terminal text-xs sm:text-sm text-zinc-100 leading-relaxed line-clamp-2">
               {subtitle}
             </p>
           </div>
@@ -411,12 +385,14 @@ function DemoPlayerInner({
           total={slides.length}
           isPlaying={isPlaying}
           isMuted={isMuted}
+          isCaptionsVisible={isCaptionsVisible}
           forceLive={forceLive}
           isRecording={isRecording}
           onPrev={() => goTo(Math.max(0, currentIndex - 1))}
           onNext={() => goTo(Math.min(slides.length - 1, currentIndex + 1))}
           onTogglePlay={() => setIsPlaying((p) => !p)}
           onToggleMute={() => setIsMuted((m) => !m)}
+          onToggleCaptions={() => setIsCaptionsVisible((visible) => !visible)}
           onToggleForceLive={() => setForceLive((f) => !f)}
           onToggleRecord={() => isRecording ? stopRecording() : startRecording()}
           onGoTo={goTo}
@@ -437,35 +413,19 @@ function DemoPlayerInner({
 }
 
 // ---------------------------------------------------------------------------
-// Public component (wraps with Sierra context when needed)
+// Public component
 // ---------------------------------------------------------------------------
 
 interface DemoPlayerProps {
   playlistId?: string;
 }
 
-const SIERRA_PLAYLISTS = new Set(["hackathon", "protocol-labs"]);
-
 export function DemoPlayer({
   playlistId = DEFAULT_PLAYLIST_ID,
 }: DemoPlayerProps) {
-  const [sierraMode, setSierraMode] = useState(
-    SIERRA_PLAYLISTS.has(playlistId),
-  );
-
-  // Check query param after hydration to avoid server/client mismatch
-  useEffect(() => {
-    if (
-      !SIERRA_PLAYLISTS.has(playlistId) &&
-      new URLSearchParams(window.location.search).get("sierra") === "true"
-    ) {
-      setSierraMode(true);
-    }
-  }, [playlistId]);
-
   return (
-    <SierraGameProvider enabled={sierraMode}>
-      <DemoPlayerInner playlistId={playlistId} sierraMode={sierraMode} />
+    <SierraGameProvider>
+      <DemoPlayerInner playlistId={playlistId} />
     </SierraGameProvider>
   );
 }

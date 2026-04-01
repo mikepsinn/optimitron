@@ -30,7 +30,6 @@ export interface InventoryItem {
 }
 
 export interface SierraGameState {
-  enabled: boolean;
   act: SierraAct;
   score: number;
   maxScore: number;
@@ -120,7 +119,7 @@ function sierraReducer(
         questVisible: true,
       };
     case "RESET":
-      return createInitialState(state.enabled);
+      return createInitialState();
     default:
       return state;
   }
@@ -130,9 +129,8 @@ function sierraReducer(
 // Initial state
 // ---------------------------------------------------------------------------
 
-function createInitialState(enabled: boolean): SierraGameState {
+function createInitialState(_unused: null = null): SierraGameState {
   return {
-    enabled,
     act: "I",
     score: 0,
     maxScore: 8_000_000_000,
@@ -163,16 +161,14 @@ const SierraGameContext = createContext<SierraContextValue | null>(null);
 
 interface SierraGameProviderProps {
   children: ReactNode;
-  enabled?: boolean;
 }
 
 export function SierraGameProvider({
   children,
-  enabled = true,
 }: SierraGameProviderProps) {
   const [state, dispatch] = useReducer(
     sierraReducer,
-    enabled,
+    null,
     createInitialState,
   );
 
@@ -190,9 +186,9 @@ export function SierraGameProvider({
 export function useSierraGame(): SierraContextValue {
   const ctx = useContext(SierraGameContext);
   if (!ctx) {
-    // Return a no-op context for slides used outside Sierra mode
+    // Return a no-op context for slides rendered without the demo provider.
     return {
-      state: createInitialState(false),
+      state: createInitialState(),
       dispatch: () => {},
     };
   }

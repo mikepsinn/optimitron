@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useSierraGame } from "./SierraGameContext";
 import { DEATHS_PER_SECOND } from "@/data/collapse-constants";
 import {
   GLOBAL_HALE_CURRENT,
@@ -107,10 +106,6 @@ interface SierraChromeProps {
 }
 
 export function SierraChrome({ children }: SierraChromeProps) {
-  const { state } = useSierraGame();
-
-  if (!state.enabled) return <>{children}</>;
-
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
       {/* Top bar: Score + Death ticker */}

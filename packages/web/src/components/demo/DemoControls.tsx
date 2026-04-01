@@ -7,12 +7,14 @@ interface DemoControlsProps {
   total: number;
   isPlaying: boolean;
   isMuted: boolean;
+  isCaptionsVisible: boolean;
   forceLive: boolean;
   isRecording: boolean;
   onPrev: () => void;
   onNext: () => void;
   onTogglePlay: () => void;
   onToggleMute: () => void;
+  onToggleCaptions: () => void;
   onToggleForceLive: () => void;
   onToggleRecord: () => void;
   onGoTo: (index: number) => void;
@@ -23,12 +25,14 @@ export function DemoControls({
   total,
   isPlaying,
   isMuted,
+  isCaptionsVisible,
   forceLive,
   isRecording,
   onPrev,
   onNext,
   onTogglePlay,
   onToggleMute,
+  onToggleCaptions,
   onToggleForceLive,
   onToggleRecord,
 }: DemoControlsProps) {
@@ -58,6 +62,18 @@ export function DemoControls({
             ) : (
               <Volume2 className="w-5 h-5 text-foreground" />
             )}
+          </button>
+          <button
+            onClick={onToggleCaptions}
+            className={`px-2 py-2 rounded transition-all font-pixel text-[10px] ${
+              isCaptionsVisible
+                ? "bg-brutal-cyan text-brutal-cyan-foreground"
+                : "bg-white/10 hover:bg-white/20 text-foreground"
+            }`}
+            aria-label={isCaptionsVisible ? "Hide captions" : "Show captions"}
+            title={isCaptionsVisible ? "Hide captions" : "Show captions"}
+          >
+            CC
           </button>
           <button
             onClick={onToggleForceLive}

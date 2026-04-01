@@ -95,8 +95,8 @@ export interface DemoSegment {
   id: string;
   title: string;
   narration: string;
-  /** Maps to a component in DemoPlayer */
-  componentId: string;
+  /** Maps to a slide renderer in the Sierra registry */
+  slideId: string;
   bgColor?: BrutalCardBgColor;
   /** Tags for auto-composition */
   tags: ("hook" | "problem" | "solution" | "mechanism" | "feature" | "evidence" | "cta" | "financial")[];
@@ -110,8 +110,8 @@ export interface DemoPlaylist {
   id: string;
   name: string;
   description: string;
-  /** Ordered list of segment IDs */
-  segmentIds: string[];
+  /** Ordered list of resolved segment objects */
+  segments: DemoSegment[];
 }
 
 // ---------------------------------------------------------------------------
@@ -123,7 +123,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-deaths",
     title: "150,000 Deaths Per Day",
-    componentId: "death-count",
+    slideId: "death-count",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `${deathsDaily} people die every day from diseases that are theoretically curable. That is fifty-nine September elevenths. Every single day. But nobody invades anybody about it because cancer does not have oil.`,
@@ -131,7 +131,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-ratio",
     title: "604:1",
-    componentId: "military-pie",
+    slideId: "military-pie",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
@@ -140,7 +140,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-1a-misaligned",
     title: "Misaligned Superintelligence",
-    componentId: "terminal",
+    slideId: "terminal",
     bgColor: "foreground",
     tags: ["hook"],
     act: "I",
@@ -149,7 +149,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-1b-objective",
     title: "The Earth Optimization Game",
-    componentId: "game-title",
+    slideId: "game-title",
     bgColor: "foreground",
     tags: ["hook"],
     act: "I",
@@ -158,7 +158,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2a-deaths",
     title: "150,000 Deaths Per Day",
-    componentId: "death-count",
+    slideId: "death-count",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `${deathsDaily} humans die every day from diseases that are theoretically curable. That is fifty-nine September elevenths. But nobody invades anybody about it because cancer does not have oil.`,
@@ -166,7 +166,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2b-ratio",
     title: "604:1",
-    componentId: "military-pie",
+    slideId: "military-pie",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
@@ -175,7 +175,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2c-clock",
     title: "The Clock",
-    componentId: "collapse-clock",
+    slideId: "collapse-clock",
     bgColor: "foreground",
     tags: ["problem"],
     act: "I",
@@ -184,7 +184,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-3a-moronia",
     title: "Moronia",
-    componentId: "moronia",
+    slideId: "moronia",
     bgColor: "foreground",
     tags: ["problem"],
     act: "turn",
@@ -193,7 +193,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-3b-wishonia",
     title: "Wishonia",
-    componentId: "wishonia-slide",
+    slideId: "wishonia-slide",
     bgColor: "cyan",
     tags: ["solution"],
     act: "turn",
@@ -203,7 +203,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4a-fix",
     title: "The Fix",
-    componentId: "one-percent-shift",
+    slideId: "one-percent-shift",
     bgColor: "yellow",
     tags: ["solution"],
     act: "II-solution",
@@ -214,7 +214,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4b-acceleration",
     title: "12.3× Acceleration",
-    componentId: "trial-acceleration",
+    slideId: "trial-acceleration",
     bgColor: "cyan",
     tags: ["solution", "evidence"],
     act: "II-solution",
@@ -224,7 +224,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4c-ignorance",
     title: "Pluralistic Ignorance",
-    componentId: "pluralistic-ignorance",
+    slideId: "pluralistic-ignorance",
     bgColor: "background",
     tags: ["problem"],
     act: "II-solution",
@@ -233,7 +233,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-5a-allocate",
     title: "Level 1: Allocate",
-    componentId: "level-allocate",
+    slideId: "level-allocate",
     bgColor: "yellow",
     tags: ["mechanism", "cta"],
     act: "II-game",
@@ -244,7 +244,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-5b-vote",
     title: "Level 2: Vote",
-    componentId: "level-vote",
+    slideId: "level-vote",
     bgColor: "pink",
     tags: ["mechanism", "cta"],
     act: "II-game",
@@ -255,7 +255,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-5c-share",
     title: "Level 3: Recruit",
-    componentId: "level-recruit",
+    slideId: "level-recruit",
     bgColor: "yellow",
     tags: ["mechanism", "cta"],
     act: "II-game",
@@ -266,7 +266,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-6-prize",
     title: "The Prize",
-    componentId: "prize-worked-example",
+    slideId: "prize-worked-example",
     bgColor: "pink",
     tags: ["financial", "mechanism"],
     narration: `Depositors deposit USDC into a smart contract and receive PRIZE claim tokens — their receipt for a share of the pool. If Earth hits its targets — median income up, healthy life years up — the funds unlock and flow to verified implementers. If Earth fails to hit its targets, PRIZE holders get their principal back. Plus the yield that accrued the entire time — roughly eleven times over fifteen years. You either fix civilisation or you eleven-x your money. The only way to lose is not to play.`,
@@ -274,7 +274,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-8-leaderboard",
     title: "The Leaderboard",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "background",
     tags: ["feature"],
     act: "II-accountability",
@@ -285,7 +285,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-10-architecture",
     title: "Under the Hood",
-    componentId: "architecture-stats",
+    slideId: "architecture-stats",
     bgColor: "background",
     tags: ["feature"],
     narration: `Under the hood: fifteen packages, twenty-six hundred tests, domain-agnostic causal inference, full TypeScript monorepo. Storacha for immutable content-addressed storage. Hypercerts for verifiable attestations. Solidity for enforceable incentives. Everything is auditable. Nothing relies on trusting us.`,
@@ -293,7 +293,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-11-close",
     title: "Play Now",
-    componentId: "close",
+    slideId: "close",
     bgColor: "pink",
     tags: ["cta"],
     act: "III",
@@ -305,7 +305,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-mortality",
     title: "150,000 Deaths Per Day",
-    componentId: "death-count",
+    slideId: "death-count",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `${deathsDaily} people die every day from treatable diseases. Your governments spend ${milToTrialRatio} dollars on weapons and military systems for every one dollar they spend on clinical trials. That is not a policy disagreement. That is a configuration error in a collective intelligence system controlling eight billion lives.`,
@@ -313,7 +313,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-misaligned-ai",
     title: "Misaligned Superintelligences",
-    componentId: "hook",
+    slideId: "hook",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `Your governments are misaligned superintelligences — collective intelligence systems optimising for re-election instead of welfare. Same problem as any misaligned AI, except these ones have nuclear weapons and a trillion-dollar budget. I built alignment software. It works on my planet. Let us see if your species can handle it.`,
@@ -321,7 +321,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-dysfunction-tax",
     title: "The $101 Trillion Bug",
-    componentId: "hook",
+    slideId: "hook",
     bgColor: "foreground",
     tags: ["hook", "problem", "financial"],
     narration: `Your governments cost you ${dysfunctionCostT} trillion dollars a year in dysfunction. That is ${dysfunctionPerPerson} per person, per year. Every person. Including the ones who cannot afford lunch. On my planet, when a system kills ${deathsDaily} people a day and costs ${dysfunctionCostT} trillion a year, we do not call it politics. We call it a bug. And we fix it.`,
@@ -329,7 +329,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "hook-parasitic-economy",
     title: "The Collapse Clock",
-    componentId: "why-play",
+    slideId: "why-play",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     narration: `The parasitic economy — military spending plus cybercrime — is growing at fifteen percent per year. Productive GDP grows at three. At current rates, destruction exceeds fifty percent of GDP by twenty forty. Every civilisation that reached this threshold collapsed. Soviet Union. Yugoslavia. Argentina. Zimbabwe. This is not a prediction. It is compound interest. You are currently on this trajectory. You chose it by not choosing.`,
@@ -339,7 +339,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "game-scoreboard",
     title: "The Scoreboard",
-    componentId: "scoreboard",
+    slideId: "scoreboard",
     bgColor: "background",
     tags: ["solution", "mechanism"],
     narration: `The entire game comes down to two numbers. Healthy life expectancy — how many years you actually live without disease dragging you down. And median income — how much a normal person can actually buy. Not GDP. Not billionaire wealth. The median. Move these two numbers and everything else follows. That is the scoreboard. Everything on this site exists to move it.`,
@@ -347,7 +347,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "game-how-to-win",
     title: "How to Win",
-    componentId: "how-to-win",
+    slideId: "how-to-win",
     bgColor: "cyan",
     tags: ["mechanism", "financial"],
     narration: `If the scoreboard metrics hit their targets in fifteen years, VOTE holders get paid. Each point could be worth ${votePointValue}. If the targets are missed, depositors split the prize pool at ${poolMultiple} times their original deposit. That still beats a retirement account. Every player wins. The only losing move is not playing.`,
@@ -355,7 +355,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "game-how-to-play",
     title: "How to Play",
-    componentId: "how-to-play",
+    slideId: "how-to-play",
     bgColor: "background",
     tags: ["mechanism", "cta"],
     narration: `Four steps. Vote and make your allocation — two minutes and you are a player. Get your referral link. Share it with two friends. They each share with two more. Twenty-eight rounds of this reaches ${tippingPointM} million people — the tipping point where no campaign in history has ever failed. Then deposit into the prize fund. If it works, you get paid. If it does not, you get ${poolMultiple} times your money back. You literally cannot lose your principal.`,
@@ -363,7 +363,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "game-the-question",
     title: "The Question",
-    componentId: "the-question",
+    slideId: "the-question",
     bgColor: "yellow",
     tags: ["mechanism", "cta"],
     narration: `Here is the question. Should all nations allocate just one percent of military spending to clinical trials? Your species currently spends ${milToTrialRatio} dollars on weapons for every one dollar on curing disease. Go ahead. Answer the question. It takes thirty seconds.`,
@@ -371,7 +371,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "game-pluralistic-ignorance",
     title: "The Real Bug",
-    componentId: "scoreboard",
+    slideId: "scoreboard",
     bgColor: "background",
     tags: ["problem", "solution"],
     narration: `Four billion people would rather be healthy and rich than funding ${milToTrialRatio} times more weapons than cures. They just cannot see each other yet. That is called pluralistic ignorance. Everyone assumes nobody else would agree to a saner allocation — despite the fact that this is what literally everyone wants. This game makes the demand visible. Once it is visible, it is unstoppable.`,
@@ -381,7 +381,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "prize-mechanism",
     title: "The Earth Optimization Prize",
-    componentId: "how-to-win",
+    slideId: "how-to-win",
     bgColor: "pink",
     tags: ["mechanism", "financial"],
     narration: `The Prize is a dominant assurance contract. Deposit money. It grows at seventeen point four percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in fifteen thousand. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
@@ -389,7 +389,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "prize-vote-points",
     title: "VOTE Points",
-    componentId: "how-to-play",
+    slideId: "how-to-play",
     bgColor: "cyan",
     tags: ["mechanism", "financial"],
     narration: `Vote Points are earned by sharing your link. Each friend who votes gives you one point. Points are non-transferable and cannot be purchased. If targets are hit, each point could be worth ${votePointValue}. You are not recruiting. You are showing people the maths. Each person you tell proves one more person agrees and moves closer to the tipping point.`,
@@ -397,7 +397,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "prize-no-downside",
     title: "You Cannot Lose",
-    componentId: "how-to-win",
+    slideId: "how-to-win",
     bgColor: "yellow",
     tags: ["financial", "cta"],
     narration: `Targets met: humanity gets cured, you get paid. Targets missed: your deposit grew ${poolMultiple} times. That is not charity. That is not gambling. That is a financial instrument where the downside is becoming richer and the upside is saving civilisation. The only scenario where you lose is the one where you do not play.`,
@@ -406,7 +406,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "treaty-one-percent",
     title: "The 1% Fix",
-    componentId: "one-percent-shift",
+    slideId: "one-percent-shift",
     bgColor: "yellow",
     tags: ["solution"],
     narration: `The fix is not complicated. Redirect one percent of global military spending — twenty-seven billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know. This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue}. The maths is not in dispute.`,
@@ -416,7 +416,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-cost-effectiveness",
     title: "Cost Per Life",
-    componentId: "cost-effectiveness",
+    slideId: "cost-effectiveness",
     bgColor: "cyan",
     tags: ["evidence", "financial"],
     narration: `The cost per disability-adjusted life year for this campaign is ${treatyCostPerDaly} dollars. Bed nets — the gold standard of cost-effective intervention — cost ${bedNetsCost} dollars per DALY. This is ${bedNetsMultiplier} times more cost-effective. Even if you adjust for political uncertainty at one percent success probability, it is still ${riskAdjMultiplier} times more cost-effective than bed nets. The maths is not ambiguous.`,
@@ -424,7 +424,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-trial-cost",
     title: "Trial Costs",
-    componentId: "trial-cost",
+    slideId: "trial-cost",
     bgColor: "background",
     tags: ["evidence"],
     narration: `A traditional Phase Three clinical trial costs ${oldTrialCost} dollars per patient. A pragmatic trial — same patients, real-world conditions instead of artificial ones — costs ${newTrialCost} dollars. That is a ${trialCapacityX} times increase in trial capacity for the same budget. The queue to cure all diseases drops from ${oldQueue} years to ${newQueue}. Not because of a miracle. Because of basic arithmetic applied to trial design.`,
@@ -432,7 +432,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-historical-waste",
     title: "Historical Proof",
-    componentId: "historical-waste",
+    slideId: "historical-waste",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `Your War on Terror cost eight trillion dollars. Terror attacks increased from roughly one thousand per year to seventeen thousand. Your War on Drugs costs ${drugWarCostB} billion dollars per year. Overdose deaths went from six thousand to a hundred and eight thousand. Your species has a pattern: spend more money, get worse results, declare victory, and increase the budget. On my planet, when something does not work, we stop doing it. Radical concept, apparently.`,
@@ -440,7 +440,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-worked-example",
     title: "The Worked Example",
-    componentId: "prize-worked-example",
+    slideId: "prize-worked-example",
     bgColor: "pink",
     tags: ["financial", "mechanism"],
     narration: `One hundred dollars deposited. Two friends recruited. If the targets are missed, your deposit grew to roughly one thousand one hundred dollars. If the targets are hit, your two Vote Points pay two times ${votePointValue} — that is three hundred and eighty-seven thousand dollars. The break-even probability is one in fifteen thousand. You do not need to be altruistic. You just need to be numerate.`,
@@ -448,7 +448,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-viral-doubling",
     title: "The Doubling Model",
-    componentId: "viral-doubling",
+    slideId: "viral-doubling",
     bgColor: "yellow",
     tags: ["evidence", "mechanism"],
     narration: `Tell two people. They each tell two more. Twenty-eight rounds of this reaches ${tippingPointM} million people — Chenoweth's three point five percent tipping point. No campaign in history that reached this threshold ever failed. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
@@ -456,7 +456,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-per-pct-point",
     title: "The Value of One Percent",
-    componentId: "per-pct-point",
+    slideId: "per-pct-point",
     bgColor: "pink",
     tags: ["evidence", "mechanism"],
     narration: `Every percentage point you shift the probability is worth ${livesPer1Pct} million lives. ${dalysPer1Pct} billion disability-adjusted life years. ${sufferingHrsPer1Pct} trillion hours of suffering prevented. Every share, every vote, every conversation moves that probability. The question is not whether your effort matters. It is how many hundred million lives it is worth.`,
@@ -464,7 +464,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "evidence-personal-upside",
     title: "Your Personal Upside",
-    componentId: "personal-upside",
+    slideId: "personal-upside",
     bgColor: "cyan",
     tags: ["financial"],
     narration: `You currently lose ${dysfunctionPerPerson} per year to political dysfunction. That is your share of the ${dysfunctionCostT} trillion dollar bug. If the one percent treaty passes, your lifetime income gains are ${treatyGainM} million dollars. Per person. Not per country. Per person. This is not philanthropy. This is the largest investment opportunity in the history of your species. The cost of not playing is ${treatyGainM} million dollars.`,
@@ -474,7 +474,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "countries-leaderboard",
     title: "Government Rankings",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "cyan",
     tags: ["evidence"],
     narration: `Here is where your country ranks. Singapore has the highest healthy life expectancy on the list and spends a fraction of what the United States spends on healthcare. Japan has a ninety-eight percent murder clearance rate and an incarceration rate of thirty-eight per hundred thousand. The United States has a fifty-two percent clearance rate and five hundred and thirty-one per hundred thousand. Same species. Different configuration.`,
@@ -482,7 +482,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "countries-singapore",
     title: "The Singapore Proof",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "cyan",
     tags: ["evidence"],
     narration: `Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It is like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible. Zero body count since independence. Zero nuclear warheads. Highest GDP per capita on the list. It is almost as if killing people is not actually a prerequisite for running a successful country. Weird.`,
@@ -490,7 +490,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "countries-body-count",
     title: "The Body Count",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `We ranked every major government by how many people they have killed since nineteen forty-five. Nuclear warheads stockpiled. Military spending burned. Civilians bombed. Drug war prisoners caged. Murders they could not be bothered to solve. The data is public. Your governments just hope you never look at it all in one place.`,
@@ -500,7 +500,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-wishocracy",
     title: "Wishocracy",
-    componentId: "wishocracy",
+    slideId: "wishocracy",
     bgColor: "yellow",
     tags: ["feature"],
     narration: `Pick between two things. Then two more. Before you know it you have designed a coherent budget allocation. Eigenvector decomposition produces stable preference weights from as few as ten comparisons. Your species invented this maths in nineteen seventy-seven. You mostly used it to rank football teams. We use it to ask eight billion people what they actually want. Democracy in four minutes.`,
@@ -508,7 +508,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-alignment",
     title: "Politician Alignment",
-    componentId: "alignment",
+    slideId: "alignment",
     bgColor: "pink",
     tags: ["feature"],
     narration: `Compare your budget priorities against real politician voting records. Each official gets a Citizen Alignment Score — a single number that answers how much they actually represent you. On my planet, officials who ignore citizen preferences get replaced in four minutes. Here, you re-elect them for decades and then wonder why nothing works. This scoreboard makes the gap impossible to ignore.`,
@@ -516,7 +516,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-dfda",
     title: "Decentralized FDA",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "cyan",
     tags: ["feature"],
     narration: `Your FDA makes treatments wait eight point two years after they have already been proven safe. Just sitting there. Being safe. While a hundred and two million people died waiting. The decentralized FDA runs pragmatic trials at two percent of the cost and forty-four times the speed. Real patients, real conditions, real data. No eight-year queue to test something that already works.`,
@@ -524,7 +524,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-optimizer",
     title: "The Optimizer",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "background",
     tags: ["feature"],
     narration: `Give it two time series. It tells you what causes what. Drug and symptom? Policy and outcome? Spending and welfare? Same engine. Domain-agnostic causal inference using Bradford Hill criteria, temporal alignment, and predictor impact scores. Your scientists take twelve years. This takes seconds. And it works on anything with data.`,
@@ -532,7 +532,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-chat",
     title: "Talk to Wishonia",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "cyan",
     tags: ["feature"],
     narration: `Track health, meals, mood, and habits with an alien who has been running a planet for four thousand two hundred and thirty-seven years. She will tell you what is actually working. Your intuition will not like it. The same causal inference that works on countries works on you. Personal optimisation. Same maths, smaller scale.`,
@@ -540,7 +540,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-treasury",
     title: "The $WISH Token",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "yellow",
     tags: ["feature", "financial"],
     narration: `Zero point five percent transaction tax. That replaces your IRS. No seventy-four thousand page tax code. No eighty-three thousand employees. Revenue collection as a protocol feature. The tax funds Universal Basic Income distributed automatically via World ID, and Wishocratic budget allocation decided by eight billion people doing five minutes of pairwise comparisons. No politicians. No lobbyists. Just maths and peer pressure.`,
@@ -548,7 +548,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "feature-architecture",
     title: "Under the Hood",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "background",
     tags: ["feature"],
     narration: `Fifteen packages. Twenty-six hundred tests. A domain-agnostic causal inference engine. Storacha for content-addressed storage. Hypercerts for verifiable attestations. Solidity for enforceable incentives. Fully typed TypeScript monorepo. All open source. All public. On my planet we call this the bare minimum. Here it seems to be called radical transparency.`,
@@ -558,7 +558,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "armory-overview",
     title: "The Armory",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "background",
     tags: ["feature", "cta"],
     narration: `Eighteen tools. Policy generators. Budget optimisers. Causal inference engines. Health trackers. Outcome comparisons across a hundred jurisdictions. All free. All open source. Everything your species needs to run a civilisation that does not kill ${deathsDaily} people a day. Equip yourself.`,
@@ -568,7 +568,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-report-cards",
     title: "Agency Report Cards",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "background",
     tags: ["evidence", "problem"],
     narration: `We graded every US government agency on spending versus outcomes. Ten F's. Five D's. Two C's. One B. The EPA — the Environmental Protection Agency — is the only agency that demonstrably improves the thing it is supposed to improve. Every other agency either had no effect or made things worse. The DEA spent forty-seven billion a year and overdose deaths went up twenty times. The FDA's efficacy review has killed a hundred and two million people through delay. The Department of Education tripled its budget and test scores went down.`,
@@ -576,7 +576,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-drug-war",
     title: "The Drug War",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `Forty-seven billion dollars per year on the war on drugs. Overdose deaths have gone from five thousand when the DEA was created to a hundred and eight thousand at peak. That is a twenty-fold increase in the thing you are spending forty-seven billion dollars to prevent. Meanwhile, Portugal decriminalised all drugs in two thousand and one. Drug deaths dropped eighty percent. The data is not ambiguous.`,
@@ -584,7 +584,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-fda-graveyard",
     title: "The Invisible Graveyard",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `The FDA requires eight point two years of efficacy testing after a drug has already been proven safe. Over sixty-two years, this delay has killed an estimated hundred and two million people. That is thirty-four thousand nine-elevens. Seventeen Holocausts. The drugs that did pass the review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. The total fines paid by those companies: thirty-nine billion. The total executives jailed: zero.`,
@@ -592,7 +592,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-money-printer",
     title: "The Money Printer",
-    componentId: "scoreboard",
+    slideId: "scoreboard",
     bgColor: "yellow",
     tags: ["evidence", "problem", "financial"],
     narration: `The Federal Reserve has destroyed ninety-seven percent of the dollar's purchasing power since it was created in nineteen thirteen. If wages had kept pace with gold, the median family would earn five hundred and twenty-eight thousand dollars per year. The actual number is seventy-seven thousand five hundred. The economy grew three point eight percent per year without a central bank. With one, it grows two point seven percent. Canada had zero bank failures during the Great Depression. Without a central bank. The United States had nine thousand. With one.`,
@@ -600,7 +600,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-government-lies",
     title: "The Lies",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `Tuskegee — they told Black men they were getting free healthcare while deliberately withholding treatment for forty years. MK-Ultra — the CIA drugged thousands of citizens without consent. Gulf of Tonkin — fabricated an attack to justify Vietnam. Fifty-eight thousand Americans and two million Vietnamese civilians murdered based on a lie the NSA later admitted never happened. Iraq WMDs — fabricated evidence presented to the United Nations. Three hundred thousand Iraqi civilians murdered. Cost: two point four trillion dollars. The lies are not theories. They are declassified.`,
@@ -608,7 +608,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-ironic-laws",
     title: "Laws Named Wrong",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "yellow",
     tags: ["evidence", "problem"],
     narration: `The Affordable Care Act — premiums increased a hundred and five percent. The Drug Free America Act — overdose deaths up six hundred percent. The Department of Defense — renamed from Department of War. Thirteen offensive wars since the rename. Zero defensive. The PATRIOT Act — warrantless surveillance of every American. The Fair Sentencing Act — reduced the crack sentencing disparity from a hundred to one down to eighteen to one. Not eliminated. Just slightly less racist. Your species names its laws the opposite of what they do.`,
@@ -616,7 +616,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-cia-coups",
     title: "Regime Changes",
-    componentId: "government-leaderboard",
+    slideId: "government-leaderboard",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
     narration: `Ten democracies overthrown by the CIA. Iran nineteen fifty-three — for an oil company. Guatemala nineteen fifty-four — for a fruit company. Chile nineteen seventy-three — for a copper company. Indonesia nineteen sixty-five — five hundred thousand to one million people murdered with lists provided by the CIA. Afghanistan — funded the fighters who became the Taliban and Al-Qaeda. Then spent two point three trillion and twenty years fighting them. All declassified. All documented.`,
@@ -624,7 +624,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "agencies-corruption",
     title: "The Corruption Machine",
-    componentId: "tools",
+    slideId: "tools",
     bgColor: "pink",
     tags: ["evidence", "problem"],
     narration: `The pharmaceutical industry spends three hundred and seventy-four million dollars per year lobbying Congress. In return, Medicare was banned from negotiating drug prices for twenty years. Insulin costs three dollars and sixty-nine cents to manufacture. It sells for three hundred dollars. Sixty-five percent of retiring members of Congress become lobbyists. Three of the last five FDA commissioners went to work for pharmaceutical companies. Members of Congress outperform the stock market by six to twelve percent. Zero have been criminally prosecuted for insider trading.`,
@@ -634,7 +634,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "close-play-now",
     title: "Play Now",
-    componentId: "close",
+    slideId: "close",
     bgColor: "pink",
     tags: ["cta"],
     narration: `Your species has the data. It has the solutions. Four billion people probably agree on this — they just cannot see each other yet. That is called pluralistic ignorance. This game fixes it. Vote. Share. Win. Free. Thirty seconds. No catch. The only way to lose is to not play.`,
@@ -642,7 +642,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "close-hackathon",
     title: "Try It Now",
-    componentId: "close",
+    slideId: "close",
     bgColor: "pink",
     tags: ["cta"],
     narration: `Optimitron. Alignment software for the most powerful AIs on your planet — the ones made of people. The code is public. The data is public. The maths works. The only missing variable is you. Play now.`,
@@ -650,7 +650,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "close-investor",
     title: "The Opportunity",
-    componentId: "close",
+    slideId: "close",
     bgColor: "pink",
     tags: ["cta", "financial"],
     narration: `The break-even probability is one in fifteen thousand. The potential upside is fifteen point seven million dollars per person in lifetime income gains. The return on investment for the campaign is two hundred and fifty-nine thousand to one. These are not aspirational numbers. They are compound interest and published research. The question is not whether this works. The question is whether your species will use it.`,
@@ -660,7 +660,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-0-cold-open",
     title: "150,000 Deaths Per Day",
-    componentId: "death-count",
+    slideId: "death-count",
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
@@ -669,7 +669,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2d-failed-state",
     title: "Global Failed State",
-    componentId: "failed-state",
+    slideId: "failed-state",
     bgColor: "foreground",
     tags: ["problem"],
     act: "I",
@@ -678,7 +678,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2e-ai-hackers",
     title: "The AI Hacker Spiral",
-    componentId: "ai-spiral",
+    slideId: "ai-spiral",
     bgColor: "foreground",
     tags: ["problem"],
     act: "I",
@@ -687,7 +687,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-2f-paycheck-theft",
     title: "Your Paycheck Already Got Stolen",
-    componentId: "paycheck-theft",
+    slideId: "paycheck-theft",
     bgColor: "foreground",
     tags: ["problem", "financial"],
     act: "I",
@@ -696,7 +696,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4b2-compounding",
     title: "The Compounding Loop",
-    componentId: "gdp-trajectory",
+    slideId: "gdp-trajectory",
     bgColor: "yellow",
     tags: ["solution", "evidence"],
     act: "II-solution",
@@ -706,7 +706,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4c2-dysfunction-tax",
     title: "The $101 Trillion Bug",
-    componentId: "dysfunction-tax",
+    slideId: "dysfunction-tax",
     bgColor: "foreground",
     tags: ["problem", "financial"],
     act: "II-solution",
@@ -715,7 +715,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-4d-scoreboard",
     title: "The Scoreboard",
-    componentId: "quest-objectives",
+    slideId: "quest-objectives",
     bgColor: "background",
     tags: ["solution"],
     act: "II-solution",
@@ -725,7 +725,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-5b2-asymmetry",
     title: "$0.06",
-    componentId: "asymmetry",
+    slideId: "asymmetry",
     bgColor: "foreground",
     tags: ["evidence"],
     act: "II-game",
@@ -735,7 +735,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-6a-investment",
     title: "Better Than Your Retirement Fund",
-    componentId: "prize-investment",
+    slideId: "prize-investment",
     bgColor: "pink",
     tags: ["financial"],
     act: "II-money",
@@ -745,7 +745,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-6b-mechanism",
     title: "How the Prize Works",
-    componentId: "prize-mechanism",
+    slideId: "prize-mechanism",
     bgColor: "cyan",
     tags: ["financial", "mechanism"],
     act: "II-money",
@@ -756,7 +756,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-6c-vote-value",
     title: "VOTE Point Value",
-    componentId: "vote-point-value",
+    slideId: "vote-point-value",
     bgColor: "yellow",
     tags: ["financial"],
     act: "II-money",
@@ -767,7 +767,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-6d-free-option",
     title: "You Cannot Lose",
-    componentId: "prize-free-option",
+    slideId: "prize-free-option",
     bgColor: "pink",
     tags: ["financial", "cta"],
     act: "II-money",
@@ -777,7 +777,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-8b-metric",
     title: "We Changed the Metric",
-    componentId: "metric-changed",
+    slideId: "metric-changed",
     bgColor: "foreground",
     tags: ["solution"],
     act: "II-accountability",
@@ -787,7 +787,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-dfda",
     title: "The Decentralized FDA",
-    componentId: "dfda",
+    slideId: "dfda",
     bgColor: "cyan",
     tags: ["feature"],
     act: "II-armory",
@@ -797,7 +797,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-iab",
     title: "Incentive Alignment Bonds",
-    componentId: "iab",
+    slideId: "iab",
     bgColor: "pink",
     tags: ["feature", "financial"],
     act: "II-armory",
@@ -807,7 +807,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-superpac",
     title: "The Alignment SuperPAC",
-    componentId: "superpac",
+    slideId: "superpac",
     bgColor: "cyan",
     tags: ["feature"],
     act: "II-armory",
@@ -817,7 +817,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-optimizer",
     title: "The Optimizer",
-    componentId: "optimizer",
+    slideId: "optimizer",
     bgColor: "yellow",
     tags: ["feature"],
     act: "II-armory",
@@ -827,7 +827,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-storacha",
     title: "Storacha: Immutable Evidence",
-    componentId: "storacha",
+    slideId: "storacha",
     bgColor: "background",
     tags: ["feature"],
     act: "II-armory",
@@ -837,7 +837,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-hypercerts",
     title: "Hypercerts: Verifiable Impact",
-    componentId: "hypercerts",
+    slideId: "hypercerts",
     bgColor: "pink",
     tags: ["feature"],
     act: "II-armory",
@@ -847,7 +847,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-wish",
     title: "The $WISH Token",
-    componentId: "wish-token",
+    slideId: "wish-token",
     bgColor: "yellow",
     tags: ["feature", "financial"],
     act: "II-armory",
@@ -857,7 +857,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-armory-brains",
     title: "Billions of Brains",
-    componentId: "i-pencil",
+    slideId: "i-pencil",
     bgColor: "foreground",
     tags: ["solution"],
     act: "II-armory",
@@ -867,7 +867,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-7-personal-upside",
     title: "Your $15.7 Million",
-    componentId: "personal-upside",
+    slideId: "personal-upside",
     bgColor: "yellow",
     tags: ["financial", "cta"],
     act: "II-climax",
@@ -878,7 +878,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "script-10b-lives",
     title: "10.7 Billion Lives",
-    componentId: "lives-saved",
+    slideId: "lives-saved",
     bgColor: "cyan",
     tags: ["cta"],
     act: "III",
@@ -890,7 +890,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-intro",
     title: "The Earth Optimization Game",
-    componentId: "sierra-earth-optimization-game",
+    slideId: "sierra-earth-optimization-game",
     tags: ["hook"],
     act: "I",
     narration: "The Earth Optimization Game. Optimize your governments to stop making everyone poorer and deader and start making everyone healthier and wealthier!",
@@ -898,7 +898,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-170t",
     title: "$170 Trillion",
-    componentId: "sierra-military-waste-170t",
+    slideId: "sierra-military-waste-170t",
     tags: ["hook", "problem"],
     act: "I",
     narration: "Since 1913, your governments have printed 170 trillion dollars out of nothing and spent these nothing papers on murdering 97 million humans and destroying many valuable things those humans spent their entire lives building. Consequently your paycheck now buys 97 percent less due to the aforementioned destruction.",
@@ -906,7 +906,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-170t-cost",
     title: "They Bought the Other Thing",
-    componentId: "sierra-170t-opportunity-cost",
+    slideId: "sierra-170t-opportunity-cost",
     tags: ["hook", "problem"],
     act: "I",
     narration: `Instead of murdering 97 million people and destroying everything they built, they could have funded ${Math.round(CUMULATIVE_MILITARY_SPENDING_FED_ERA.value / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value).toLocaleString()} years of clinical trials. They bought the other thing. Through compounding effects, you would be 33 times richer and significantly less diseased today if someone had aligned your governments in 1913. They did not. So that is what you are going to do.`,
@@ -914,7 +914,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-misaligned",
     title: "Misaligned Superintelligence",
-    componentId: "sierra-misaligned-superintelligence",
+    slideId: "sierra-misaligned-superintelligence",
     tags: ["hook", "problem"],
     act: "I",
     narration: "Your governments are misaligned superintelligences. Collective intelligence systems controlling 50 trillion dollars and 8 billion lives. Stated objective: promote the general welfare. Actual objective: campaign contributions.",
@@ -922,7 +922,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-ratio",
     title: "604:1",
-    componentId: "sierra-military-health-ratio",
+    slideId: "sierra-military-health-ratio",
     tags: ["hook", "problem"],
     act: "I",
     narration: `So right now they currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. 95 percent of diseases have zero FDA-approved treatments. Curing them all at current spending takes ${oldQueue} years. You will be dead in 80. I mention this not to be rude but because you seem weirdly calm about it.`,
@@ -930,7 +930,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-moronia",
     title: "Game Over",
-    componentId: "sierra-economic-collapse-clock",
+    slideId: "sierra-economic-collapse-clock",
     tags: ["problem"],
     act: "turn",
     narration: `The parasitic economy — cybercrime plus military spending — is growing at 15 percent per year. The productive economy is growing at 3. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. By ${collapseYear}, Earth crosses the same threshold. Think Somalia, but everywhere. But there is a save file.`,
@@ -938,7 +938,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-wishonia",
     title: "Select an Earth",
-    componentId: "sierra-compound-growth-scenarios",
+    slideId: "sierra-compound-growth-scenarios",
     tags: ["solution"],
     act: "turn",
     narration: `Three timelines over 15 years. Status quo: parasitic economy overtakes productive. You get poorer and deader. The 1 percent treaty: all nations redirect 1 percent of military spending to clinical trials simultaneously — no one loses strategic advantage. Healthy people work more, earn more, and spend less on healthcare. That compounds. ${treatyHaleGainYears} more healthy years, ${treatyIncomeMultiplier} times richer. Optimal governance: end the ${dysfunctionCostT} trillion dollar Political Dysfunction Tax. ${optimalGovernanceIncomeMultiplier} times richer. Choose.`,
@@ -946,7 +946,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-treaty",
     title: "The 1% Treaty",
-    componentId: "sierra-one-percent-treaty",
+    slideId: "sierra-one-percent-treaty",
     tags: ["solution"],
     act: "II-solution",
     narration: `Redirect 1 percent of the global military budget to pragmatic trials integrated into standard healthcare — 82 times more efficient than traditional trials. 27 billion dollars a year. Trial capacity increases ${trialCapacityX} times. ${oldQueue} years compresses to ${newQueue}.`,
@@ -954,7 +954,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-game",
     title: "The Game",
-    componentId: "sierra-pairwise-budget-allocation",
+    slideId: "sierra-pairwise-budget-allocation",
     tags: ["mechanism"],
     act: "II-game",
     narration: "You have seen what happens when politicians allocate your money. 97 million dead and a 604 to 1 ratio of bombs to cures. Wishocracy lets you do it instead. Each player allocates the global budget through pairwise comparisons — clinical trials versus military spending, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.",
@@ -962,7 +962,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-budget",
     title: "The Budget",
-    componentId: "sierra-eigenvector-budget-result",
+    slideId: "sierra-eigenvector-budget-result",
     tags: ["mechanism"],
     act: "II-game",
     narration: "When you ask people what they want, cures beat bombs. Nobody has ever asked.",
@@ -970,7 +970,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-ignorance",
     title: "Pluralistic Ignorance",
-    componentId: "sierra-pluralistic-ignorance-bug",
+    slideId: "sierra-pluralistic-ignorance-bug",
     tags: ["problem", "mechanism"],
     act: "II-game",
     narration: "Everyone wants to end war and disease. But everyone thinks it's crazy because nobody else will agree to the steps to make it happen. So nobody does anything. Your economists call this pluralistic ignorance. I call this the dumbest reason a civilisation has ever continued dying and murdering each other.",
@@ -978,7 +978,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-targets",
     title: "Win Conditions",
-    componentId: "sierra-win-conditions-hale-income",
+    slideId: "sierra-win-conditions-hale-income",
     tags: ["mechanism"],
     act: "II-game",
     narration: "The entire game comes down to two numbers. Healthy life expectancy: 63.3 years, target 69.8. Median income: 18 thousand 7 hundred dollars, target 149 thousand. Your species has produced 4,000 pages of U.N. resolutions about these numbers. This game has two progress bars. We find the bars more effective.",
@@ -986,7 +986,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-fund",
     title: "The Fund",
-    componentId: "sierra-three-scenarios-all-win",
+    slideId: "sierra-three-scenarios-all-win",
     tags: ["mechanism", "financial"],
     act: "II-money",
     narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing 17 percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus 17 percent annual returns — your hundred dollars still becomes eleven hundred. Two out of three outcomes are wins. The third option is Somalia.`,
@@ -994,7 +994,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-prize",
     title: "The Prize",
-    componentId: "sierra-dominant-assurance-contract",
+    slideId: "sierra-dominant-assurance-contract",
     tags: ["mechanism", "financial"],
     act: "II-money",
     narration: `Vote, then share your referral link. Each friend who votes through your link earns you one VOTE point. Each point could be worth up to ${votePointValue}.`,
@@ -1002,7 +1002,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-armory",
     title: "The Armory",
-    componentId: "sierra-armory",
+    slideId: "sierra-armory",
     tags: ["feature"],
     act: "II-armory",
     narration: "Now you have the incentive. Here are the tools to hit the targets.",
@@ -1010,7 +1010,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-dfda",
     title: "Decentralized FDA",
-    componentId: "sierra-decentralized-fda",
+    slideId: "sierra-decentralized-fda",
     tags: ["feature"],
     act: "II-armory",
     narration: "9,500 compounds are proven safe but 99.7 percent of their uses have never been tested. Your FDA makes patients wait 8 years after a drug is proven safe. The Decentralized FDA: real-time Outcome Labels and Treatment Rankings. 44 times cheaper. 12 times more capacity.",
@@ -1018,7 +1018,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-opg",
     title: "Optimal Policy Generator",
-    componentId: "sierra-optimal-policy-generator",
+    slideId: "sierra-optimal-policy-generator",
     tags: ["feature"],
     act: "II-armory",
     narration: `The Optimal Policy Generator uses causal inference on hundreds of years of data across dozens of countries to grade every policy A through F by what actually happened. America spent ${drugWarCostB} billion dollars a year on the War on Drugs. Overdoses rose 1,700 percent. Portugal decriminalised drugs for almost nothing. Overdoses dropped 80 percent.`,
@@ -1026,7 +1026,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-obg",
     title: "Optimal Budget Generator",
-    componentId: "sierra-optimal-budget-generator",
+    slideId: "sierra-optimal-budget-generator",
     tags: ["feature"],
     act: "II-armory",
     narration: "The Optimal Budget Generator finds the cheapest high performer per category. Singapore: 3,000 dollars per person on healthcare, lives to 84. America: 12,000 dollars, lives to 78.",
@@ -1034,7 +1034,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-iab",
     title: "How to Train a Senator",
-    componentId: "sierra-incentive-alignment-bonds",
+    slideId: "sierra-incentive-alignment-bonds",
     tags: ["feature", "financial"],
     act: "II-armory",
     narration: "Now you know what everyone wants and what the optimal budget is. How do you get your politicians to actually do it? Incentive Alignment Bonds. Raise 1 billion dollars from investors. Use it to fund politicians who vote for the treaty and defund the ones who do not. When the treaty passes, bondholders get perpetual returns proportional to the treaty percentage. Politicians get electoral support proportional to it. Every investor and every politician becomes a permanent lobbyist for expanding it. The math does the lobbying.",
@@ -1042,7 +1042,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-dirs",
     title: "Decentralized IRS",
-    componentId: "sierra-decentralized-irs",
+    slideId: "sierra-decentralized-irs",
     tags: ["feature"],
     act: "II-armory",
     narration: "Your tax code is 74,000 pages. It costs 546 billion dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No loopholes. No lobbyist can bribe a smart contract to give their client a tax loophole.",
@@ -1050,7 +1050,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-dwelfare",
     title: "Decentralized Welfare",
-    componentId: "sierra-decentralized-welfare",
+    slideId: "sierra-decentralized-welfare",
     tags: ["feature"],
     act: "II-armory",
     narration: "Your species already spends 13.5 trillion dollars a year on welfare to prevent starvation. Up to 675 billion of that is pure administrative waste. Universal basic income does the same job for 675 billion less bureaucracy.",
@@ -1058,7 +1058,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-dfed",
     title: "Decentralized Fed",
-    componentId: "sierra-decentralized-federal-reserve",
+    slideId: "sierra-decentralized-federal-reserve",
     tags: ["feature"],
     act: "II-armory",
     narration: "Twelve unelected humans meet eight times a year to decide how much your money is worth. When they print new money, it goes to banks and asset holders first. In 2020 they printed 4 trillion dollars. The wealth of the top 1 percent increased by exactly 4 trillion dollars that year. This smart contract replaces them. Zero percent inflation anchored to productivity growth. New money distributed equally to every human via UBI.",
@@ -1066,7 +1066,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-storacha",
     title: "Storacha + IPFS",
-    componentId: "sierra-ipfs-immutable-storage",
+    slideId: "sierra-ipfs-immutable-storage",
     tags: ["feature"],
     act: "II-armory",
     narration: "The Optimal Policy Generator, Budget Generator, and Decentralized FDA are all powered by data collected through a decentralized census. 8 billion citizens verified via World ID. Budget preferences, treaty votes, health outcomes, impact metrics — stored on Storacha and pinned to IPFS. No government can delete it. No lobbyist can edit it.",
@@ -1074,7 +1074,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-hypercerts",
     title: "Hypercerts",
-    componentId: "sierra-impact-certificates",
+    slideId: "sierra-impact-certificates",
     tags: ["feature"],
     act: "II-armory",
     narration: "Every action in the game mints a Hypercert on AT Protocol. Voter recruitment, fund deposits, budget allocations — each verified via World ID and published to Bluesky. Permanent, auditable impact receipts.",
@@ -1082,7 +1082,7 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-lives",
     title: "10.7 Billion Lives",
-    componentId: "sierra-ten-billion-lives-saved",
+    slideId: "sierra-ten-billion-lives-saved",
     tags: ["cta"],
     act: "III",
     narration: `${totalLivesSavedB} billion lives. ${totalSufferingQuad} quadrillion hours of suffering prevented. That is what 1 percent buys you.`,
@@ -1090,15 +1090,15 @@ export const SEGMENTS: DemoSegment[] = [
   {
     id: "pl-close",
     title: "Play Now",
-    componentId: "sierra-final-call-to-action",
+    slideId: "sierra-final-call-to-action",
     tags: ["cta"],
     act: "III",
-    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the invoice. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
+    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the tax bill. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
   },
   {
     id: "pl-cta",
     title: "Vote Now",
-    componentId: "sierra-post-credits-aliens",
+    slideId: "sierra-post-credits-aliens",
     tags: ["cta"],
     act: "III",
     narration: "The Earth Optimization Game is brought to you by the good humans at Protocol Labs funding the Commons, Hypercerts, Storacha, Worldcoin, and Base.",
@@ -1116,7 +1116,19 @@ export function getSegment(id: string): DemoSegment | undefined {
 }
 
 export function getSegments(ids: string[]): DemoSegment[] {
-  return ids.map((id) => segmentMap.get(id)).filter(Boolean) as DemoSegment[];
+  return resolveSegments(ids);
+}
+
+function requireSegment(id: string): DemoSegment {
+  const segment = segmentMap.get(id);
+  if (!segment) {
+    throw new Error(`Unknown demo segment: ${id}`);
+  }
+  return segment;
+}
+
+function resolveSegments(ids: readonly string[]): DemoSegment[] {
+  return ids.map(requireSegment);
 }
 
 // ---------------------------------------------------------------------------
@@ -1128,7 +1140,7 @@ export const PLAYLISTS: DemoPlaylist[] = [
     id: "protocol-labs",
     name: "Protocol Labs Hackathon (~3:30)",
     description: "Problem → solution → game → tools → PL tech → endgame",
-    segmentIds: [
+    segments: resolveSegments([
       // Intro + Problem (~35s)
       "pl-intro",
       "pl-cta",
@@ -1164,13 +1176,13 @@ export const PLAYLISTS: DemoPlaylist[] = [
       // Endgame (~15s)
       "pl-lives",
       "pl-close",
-    ],
+    ]),
   },
   {
     id: "hackathon",
     name: "Hackathon Demo (~6 min)",
     description: "Sierra adventure game — 38 slides, full narrative arc with Armory",
-    segmentIds: [
+    segments: resolveSegments([
       // Act I — The Horror
       "script-0-cold-open",
       "script-1a-misaligned",
@@ -1217,13 +1229,13 @@ export const PLAYLISTS: DemoPlaylist[] = [
       // Act III — Endgame
       "script-10b-lives",
       "script-11-close",
-    ],
+    ]),
   },
   {
     id: "full-demo",
     name: "Full Demo (16 min)",
     description: "Complete walkthrough: evidence + features + agency report cards + corruption data",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "hook-misaligned-ai",
       "game-scoreboard",
@@ -1254,13 +1266,13 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "armory-overview",
       "evidence-personal-upside",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "investor",
     name: "Investor Pitch (8 min)",
     description: "Financial mechanism + evidence + unit economics + ROI",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "hook-dysfunction-tax",
       "game-scoreboard",
@@ -1277,122 +1289,122 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "countries-singapore",
       "feature-architecture",
       "close-investor",
-    ],
+    ]),
   },
   // ── YouTube Feature Series ─────────────────────────────────────────────
   {
     id: "youtube-prize",
     name: "The Earth Optimization Prize",
     description: "How the prize mechanism works + financial upside",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "prize-mechanism",
       "prize-vote-points",
       "prize-no-downside",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-wishocracy",
     name: "Wishocracy: Democracy in 4 Minutes",
     description: "Pairwise budget allocation + eigenvector",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-misaligned-ai",
       "feature-wishocracy",
       "feature-alignment",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-governments",
     name: "Government Report Cards",
     description: "Country rankings + Singapore comparison + body count",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "countries-leaderboard",
       "countries-singapore",
       "countries-body-count",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-dfda",
     name: "Decentralized FDA",
     description: "Why treatments take 8.2 years + the fix",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "feature-dfda",
       "game-the-question",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-treasury",
     name: "The $WISH Token",
     description: "0.5% transaction tax replaces the IRS + UBI",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-dysfunction-tax",
       "feature-treasury",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-optimizer",
     name: "The Optimizer",
     description: "Domain-agnostic causal inference engine",
-    segmentIds: [
+    segments: resolveSegments([
       "feature-optimizer",
       "feature-chat",
       "close-play-now",
-    ],
+    ]),
   },
   // ── NEW YouTube Videos (from agency/corruption data) ───────────────────
   {
     id: "youtube-agency-grades",
     name: "Agency Report Cards",
     description: "Every US agency graded — 10 F's, 5 D's, 1 B",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-misaligned-ai",
       "agencies-report-cards",
       "agencies-drug-war",
       "agencies-fda-graveyard",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-government-lies",
     name: "Government Lies",
     description: "Tuskegee, MK-Ultra, Gulf of Tonkin, WMDs — all declassified",
-    segmentIds: [
+    segments: resolveSegments([
       "agencies-government-lies",
       "agencies-cia-coups",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-money-printer",
     name: "The Money Printer",
     description: "97% purchasing power lost, $528K stolen per family, economy grew faster without the Fed",
-    segmentIds: [
+    segments: resolveSegments([
       "agencies-money-printer",
       "agencies-corruption",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-ironic-laws",
     name: "Laws Named Wrong",
     description: "Affordable Care Act, Drug Free America, Department of Defense — named the opposite of what they do",
-    segmentIds: [
+    segments: resolveSegments([
       "agencies-ironic-laws",
       "close-play-now",
-    ],
+    ]),
   },
   {
     id: "youtube-evidence",
     name: "The Math Behind the Prize",
     description: "Cost-effectiveness, trial costs, viral model, worked example, per-percentage-point value",
-    segmentIds: [
+    segments: resolveSegments([
       "hook-mortality",
       "evidence-cost-effectiveness",
       "evidence-trial-cost",
@@ -1402,80 +1414,80 @@ export const PLAYLISTS: DemoPlaylist[] = [
       "evidence-per-pct-point",
       "evidence-personal-upside",
       "close-investor",
-    ],
+    ]),
   },
   // ── Social Media Clips ─────────────────────────────────────────────────
   {
     id: "social-deaths",
     name: "150K Deaths (30s)",
     description: "The mortality hook",
-    segmentIds: ["hook-mortality"],
+    segments: resolveSegments(["hook-mortality"]),
   },
   {
     id: "social-604",
     name: "604:1 Ratio (30s)",
     description: "Military vs clinical trial spending",
-    segmentIds: ["hook-mortality"],
+    segments: resolveSegments(["hook-mortality"]),
   },
   {
     id: "social-singapore",
     name: "Singapore Proof (45s)",
     description: "Same species, different configuration",
-    segmentIds: ["countries-singapore"],
+    segments: resolveSegments(["countries-singapore"]),
   },
   {
     id: "social-collapse",
     name: "2037 Collapse (30s)",
     description: "Parasitic economy timeline",
-    segmentIds: ["hook-parasitic-economy"],
+    segments: resolveSegments(["hook-parasitic-economy"]),
   },
   {
     id: "social-cant-lose",
     name: "You Can't Lose (30s)",
     description: "Prize downside protection",
-    segmentIds: ["prize-no-downside"],
+    segments: resolveSegments(["prize-no-downside"]),
   },
   {
     id: "social-drug-war",
     name: "$47B Drug War (45s)",
     description: "Spent $47B/yr, overdose deaths 20x worse",
-    segmentIds: ["agencies-drug-war"],
+    segments: resolveSegments(["agencies-drug-war"]),
   },
   {
     id: "social-fda-graveyard",
     name: "102M Murdered by FDA (45s)",
     description: "8.2-year efficacy lag, 102M dead",
-    segmentIds: ["agencies-fda-graveyard"],
+    segments: resolveSegments(["agencies-fda-graveyard"]),
   },
   {
     id: "social-money-printer",
     name: "97% Dollar Destroyed (45s)",
     description: "$528K stolen per family since 1971",
-    segmentIds: ["agencies-money-printer"],
+    segments: resolveSegments(["agencies-money-printer"]),
   },
   {
     id: "social-government-lies",
     name: "Declassified Lies (60s)",
     description: "Tuskegee, MK-Ultra, Gulf of Tonkin, WMDs",
-    segmentIds: ["agencies-government-lies"],
+    segments: resolveSegments(["agencies-government-lies"]),
   },
   {
     id: "social-ironic-laws",
     name: "Laws Named Wrong (45s)",
     description: "Affordable Care Act premiums doubled",
-    segmentIds: ["agencies-ironic-laws"],
+    segments: resolveSegments(["agencies-ironic-laws"]),
   },
   {
     id: "social-cia-coups",
     name: "10 Democracies Overthrown (60s)",
     description: "CIA coups for corporate interests",
-    segmentIds: ["agencies-cia-coups"],
+    segments: resolveSegments(["agencies-cia-coups"]),
   },
   {
     id: "social-corruption",
     name: "The Corruption Machine (45s)",
     description: "$374M pharma lobbying, insulin $3.69 to make, $300 to buy",
-    segmentIds: ["agencies-corruption"],
+    segments: resolveSegments(["agencies-corruption"]),
   },
 ];
 
@@ -1492,7 +1504,7 @@ export function getPlaylist(id: string): DemoPlaylist | undefined {
 export function getPlaylistSegments(playlistId: string): DemoSegment[] {
   const playlist = playlistMap.get(playlistId);
   if (!playlist) return [];
-  return getSegments(playlist.segmentIds);
+  return playlist.segments;
 }
 
 /** Estimate total seconds for a playlist at ~150 words/minute */

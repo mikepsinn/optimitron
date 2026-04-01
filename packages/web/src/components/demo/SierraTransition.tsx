@@ -133,12 +133,9 @@ const variantMap: Record<TransitionStyle, Variants> = {
 
 /**
  * Returns the Framer Motion variants for the current Sierra act.
- * Falls back to default slide transition when Sierra mode is off.
  */
 export function useSierraTransition(): Variants {
   const { state } = useSierraGame();
-
-  if (!state.enabled) return defaultVariants;
 
   const style = actToTransition[state.act] ?? "default";
   return variantMap[style];
