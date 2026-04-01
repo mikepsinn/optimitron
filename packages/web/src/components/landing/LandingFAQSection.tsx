@@ -27,7 +27,7 @@ const objections: { id: string; question: string; answer: ReactNode }[] = [
   {
     id: "fails",
     question: "What if the plan fails?",
-    answer: <>That&apos;s the entire point of dominant assurance. If the plan fails after 15 years, depositors claim their principal plus ~<ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} display="withUnit" /> in Wishocratic fund growth. You&apos;re not donating. You&apos;re making a bet where the worst case is multiplying your money. The plan failing is the scenario designed to make you rich.</>,
+    answer: <>That&apos;s the entire point of dominant assurance. If the plan fails after 15 years, depositors claim their principal plus ~<ParameterValue param={PRIZE_POOL_HORIZON_MULTIPLE} display="withUnit" /> in Prize fund growth. You&apos;re not donating. You&apos;re making a bet where the worst case is multiplying your money. The plan failing is the scenario designed to make you rich.</>,
   },
   {
     id: "trust",

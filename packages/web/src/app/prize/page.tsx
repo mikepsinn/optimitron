@@ -86,7 +86,7 @@ const contractDetails = [
   {
     label: "Contract",
     value: "VoterPrizeTreasury.sol",
-    detail: "Dominant assurance pool with Wishocratic fund yield and VOTE point rewards",
+    detail: "Dominant assurance pool with Earth Optimization Prize fund yield and VOTE point rewards",
   },
   {
     label: "Health Metric",
@@ -178,7 +178,7 @@ export default async function PrizePage() {
             Insert Coin
           </h2>
           <p className="text-sm font-bold mb-6 max-w-2xl">
-            Your papers go into the Wishocratic fund ({poolReturn} annually). You get PRIZE shares.
+            Your papers go into the Earth Optimization Prize fund ({poolReturn} annually). You get PRIZE shares.
             Recruit verified voters and you also earn VOTE points, which pay out if humanity
             wins. This is the first arcade game in history where the house loses on purpose.
           </p>

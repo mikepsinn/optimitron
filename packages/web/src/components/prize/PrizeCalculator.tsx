@@ -139,7 +139,7 @@ export function PrizeCalculator() {
           </div>
           <div className="text-xs font-bold space-y-1">
             <p>
-              {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} annual Wishocratic fund return × 15 years.
+              {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} annual Prize fund return × 15 years.
             </p>
             <p className="font-bold pt-1">
               Your &ldquo;worst case&rdquo; is {fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your money.

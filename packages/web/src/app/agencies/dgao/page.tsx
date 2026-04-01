@@ -287,7 +287,7 @@ export default function TransparencyPage() {
         <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <p className="text-sm font-bold leading-relaxed mb-4">
             The Prize is a dominant assurance contract (VoterPrizeTreasury).
-            Depositors fund the pool with USDC, which earns Wishocratic fund yield.
+            Depositors fund the pool with USDC, which earns Prize fund yield.
             Recruiters share referral links — each verified voter (World ID)
             earns the recruiter 1 VOTE point. When health and income metrics
             cross thresholds, VOTE holders claim proportional prize share.
@@ -298,7 +298,7 @@ export default function TransparencyPage() {
             <div className="border-4 border-primary bg-background p-3">
               <div className="text-xs font-black uppercase text-muted-foreground">Depositors</div>
               <div className="text-sm font-black mt-1">PRIZE Shares</div>
-              <div className="text-xs text-muted-foreground mt-1">USDC → Wishocratic fund yield. ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} floor if plan fails. Sybil-resistant via capital commitment.</div>
+              <div className="text-xs text-muted-foreground mt-1">USDC → Prize fund yield. ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} floor if plan fails. Sybil-resistant via capital commitment.</div>
             </div>
             <div className="border-4 border-primary bg-background p-3">
               <div className="text-xs font-black uppercase text-muted-foreground">Recruiters</div>

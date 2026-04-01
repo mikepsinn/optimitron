@@ -44,7 +44,7 @@ export function LandingPrizeOffer() {
             <p className="mt-3 text-sm font-bold">
               Your principal grows at{" "}
               {fmtParam(PRIZE_POOL_ANNUAL_RETURN)} annually in the
-              Wishocratic fund for 15 years. You get it all back. The
+              Prize fund for 15 years. You get it all back. The
               &ldquo;worst case&rdquo; is multiplying your money.
             </p>
             <div className="mt-4 border-4 border-primary bg-background text-foreground px-3 py-2 inline-block">

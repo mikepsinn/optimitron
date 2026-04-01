@@ -289,7 +289,7 @@ export function IABDeposit() {
           <div className="space-y-3">
             <p className="text-xs font-bold text-muted-foreground mb-4">
               Connect your wallet to purchase Incentive Alignment Bonds with
-              USDC. Your deposit earns yield in the Wishocratic fund while it waits.
+              USDC. Your deposit earns yield in the Prize fund while it waits.
             </p>
             {connectors.length > 0 ? (
               <div className="flex flex-wrap gap-2">

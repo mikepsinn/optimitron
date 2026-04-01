@@ -211,7 +211,7 @@ const shelves: Shelf[] = [
         bgColor: "pink",
       },
       {
-        name: "Wishocratic Fund",
+        name: "Earth Optimization Prize Fund",
         icon: "🏆",
         rarity: "epic",
         description:

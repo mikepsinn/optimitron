@@ -225,7 +225,7 @@ export default function AboutPage() {
             <p className="text-sm text-background font-bold leading-relaxed">
               Deposit USDC. Recruit voters for the 1% Treaty referendum. If it
               works, you share the prize. If it doesn&apos;t, you get ~{fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} your
-              deposit back from the Wishocratic fund after 15 years. Zero downside.
+              deposit back from the Earth Optimization Prize fund after 15 years. Zero downside.
             </p>
             <NavItemLink
               item={prizeLink}

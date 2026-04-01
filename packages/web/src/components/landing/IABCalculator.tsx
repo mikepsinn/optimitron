@@ -14,7 +14,7 @@ import {
 /**
  * Interactive return calculator for the Prize/IAB mechanism.
  *
- * Fail scenario:  principal × PRIZE_POOL_HORIZON_MULTIPLE (Wishocratic fund, 15-year resolution)
+ * Fail scenario:  principal × PRIZE_POOL_HORIZON_MULTIPLE (Prize fund, 15-year resolution)
  * Succeed scenario: vote-proportional revenue share + per-capita lifetime income gain
  * Break-even: probability shift per $1K (treaty floor)
  */
@@ -128,10 +128,10 @@ export function IABCalculator() {
           </div>
           <div className="text-xs text-brutal-yellow-foreground font-bold space-y-1">
             <p>
-              {POOL_RETURN_DISPLAY} annual Wishocratic fund return × {POOL_YEARS} years.
+              {POOL_RETURN_DISPLAY} annual Prize fund return × {POOL_YEARS} years.
             </p>
             <p>
-              Principal deployed in the Wishocratic fund.
+              Principal deployed in the Prize fund.
               Returned with growth if threshold not met.
             </p>
             <p className="font-bold pt-1">

@@ -169,7 +169,7 @@ export default function IABPage() {
               ~{poolMultiple} Your Money Back
             </div>
             <p className="text-xs font-bold mt-2">
-              Principal + 15 years of Wishocratic fund returns ({poolReturn} annually) returned to you.
+              Principal + 15 years of Prize fund returns ({poolReturn} annually) returned to you.
               Your &ldquo;worst case&rdquo; is multiplying your money.
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function IABPage() {
             <ul className="space-y-2 text-sm font-bold">
               <li className="flex gap-2">
                 <span className="text-brutal-cyan font-black shrink-0">1.</span>
-                <span>Deposit USDC → PRIZE shares (Wishocratic fund yield)</span>
+                <span>Deposit USDC → PRIZE shares (Prize fund yield)</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-brutal-cyan font-black shrink-0">2.</span>
@@ -322,7 +322,7 @@ export default function IABPage() {
           </h2>
           <p className="text-sm font-bold mb-4 max-w-2xl">
             IABs are Phase 2 — not yet deployed. The referendum (Phase 1) must
-            prove demand first. Once deployed, your deposit goes into the Wishocratic fund
+            prove demand first. Once deployed, your deposit goes into the Prize fund
             and earns proportional returns from treaty revenue.
           </p>
           <div className="border-4 border-border bg-background p-6">
@@ -358,7 +358,7 @@ export default function IABPage() {
           {[
             {
               label: "IABVault",
-              value: "Bond purchases + Wishocratic fund yield",
+              value: "Bond purchases + Prize fund yield",
               detail: "Depositors get IAB tokens. Principal earns yield. Distributes refunds on failure or revenue share on success.",
             },
             {

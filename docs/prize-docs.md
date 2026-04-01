@@ -44,7 +44,7 @@ How VOTE works. You recruit one verified referendum participant, you earn one po
 How you start. Find a host to launch the Planetary Constitutional Convention. PRIZE deposits begin, the Scoreboard goes live, and recruitment compounds from there. (For the institutional deployment plan, see Why Your Institution Should Be The Initiating Node.)
 Why you bother. “Do nothing” is not free. Your governments already waste $12.6K per person per year (Political Dysfunction Tax47). The destructive economy139 hits 50% of GDP by 2040 (the point where half of everything gets looted as fast as it is created).
 How It Works (The 90-Second Version)
-Here’s how PRIZE deposits work. Your deposit goes into a single pool that compounds through the Wishocratic fund. Rich people have a secret money club (venture capital and private equity) that makes 17% returns. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called “investor protection.” It protects you from having money. The pool gets you in. It spreads your money across the entire sector so no single bad bet kills you, and crowds pick the investments (91% accuracy) instead of expensive fund managers (65% accuracy)11. Result: 17.4% annually, nearly triple conventional retirement at 6.5% (see Wishocratic Investment Fund for the full derivation).
+Here’s how PRIZE deposits work. Your deposit goes into a single pool that compounds through the Prize fund. Rich people have a secret money club (venture capital and private equity) that makes 17% returns. Your retirement account is legally banned from joining. Your government decided that only rich people are smart enough to invest in things that make money. This is called “investor protection.” It protects you from having money. The pool gets you in. It spreads your money across the entire sector so no single bad bet kills you, and crowds pick the investments (91% accuracy) instead of expensive fund managers (65% accuracy)11. Result: 17.4% annually, nearly triple conventional retirement at 6.5% (see Wishocratic Investment Fund for the full derivation).
 
 Your deposit is locked. Not a savings account. It stays in your account until 2040. Targets missed: you divide the realized pool pro rata. Targets met: the pool goes to VOTE point-holders, not back to you. See the prize protocol140 for the full specification.
 
@@ -246,7 +246,7 @@ Everything the Game exists to produce is either healthy life years or more paper
 
 Your PRIZE pool trigger. By 2040: targets met, the pool distributes to VOTE point-holders; targets missed, depositors divide it pro rata.
 
-Why better ideas win. The Prize pays for outcomes, not methods. Every proposal in this manual (the treaty, the bonds, the Wishocratic fund, the decentralized FDA144,155) is improvable plumbing. If someone finds a cheaper way to move the two numbers, VOTE point-holders shift recruitment toward it because it makes them more money. The two numbers do not change. The plumbing is replaceable. That is the point.
+Why better ideas win. The Prize pays for outcomes, not methods. Every proposal in this manual (the treaty, the bonds, the Prize fund, the decentralized FDA144,155) is improvable plumbing. If someone finds a cheaper way to move the two numbers, VOTE point-holders shift recruitment toward it because it makes them more money. The two numbers do not change. The plumbing is replaceable. That is the point.
 
 Why Nobody Needs to Understand This Manual
 One of your economists once held up a pencil on television and said: “There’s not a single person in the world who could make this pencil. The wood comes from a tree in Washington. The graphite comes from mines in South America. The rubber comes from Malaya. The brass ferrule, I haven’t the slightest idea where it came from. Literally thousands of people cooperated to make this pencil. People who don’t speak the same language, who practice different religions, who might hate one another if they ever met. No one sitting in a central office gave orders to these thousands of people. No military police enforced the orders that were not given.”158
@@ -261,7 +261,7 @@ What does it cost to get the Game to scale? Here is what it costs to pay 4 billi
 
 The planning midpoint is $30B: a blended reward of $5 (95% CI: $2-$10) per verified participant, plus $1.5 (95% CI: $1-$3) to verify everyone is real and pay them, plus $4B (95% CI: $2B-$8B) in fixed platform and launch costs.
 
-How large does your pool get? It starts at whatever gets deposited and compounds through the Wishocratic fund at 17.4% annually. The potential ceiling is the global retirement asset base ($70T), which would compound to:
+How large does your pool get? It starts at whatever gets deposited and compounds through the Prize fund at 17.4% annually. The potential ceiling is the global retirement asset base ($70T), which would compound to:
 
 
 How big does the pool need to be before two VOTE points are worth more than a retirement account?
@@ -366,7 +366,7 @@ The 17.4% is not a promise. It is transparent arithmetic from four independently
 To anyone in finance, “272% annual returns” sounds like a red flag. Good. It should sound unusual. It is not a market return. It is a political-risk premium. The math: the treaty redirects $27.2B/year. A 10% management fee = $2.72B/year. The campaign costs $1B. $2.72B / $1B = 272%. The appropriate comparison is not the S&P 500. It is the return on any binary political bet that hits: lobby for a policy, the policy passes, you capture a percentage of the resulting revenue flow. Lobbying returns routinely exceed 100:1 when they work164. The 272% is contingent on the treaty actually passing, which is the hard part. The transparency is the defense: every number is disclosed, not hidden. And the bondholders become the world’s most motivated lobbyists for expanding the treaty, because their returns grow with it. The mechanism that looks like a red flag is the mechanism that makes your treaty durable. (For the full derivation, see Incentive Alignment Bonds147.)
 
 7. “The VOTE payout assumes $70 trillion flows into the pool”
-It does not assume that. It calculates the ceiling. The $194K per VOTE point is what happens if the entire global retirement asset base ($70T) compounds through the Wishocratic fund through 2040. That is a potential maximum, not the opening ask.
+It does not assume that. It calculates the ceiling. The $194K per VOTE point is what happens if the entire global retirement asset base ($70T) compounds through the Prize fund through 2040. That is a potential maximum, not the opening ask.
 
 Pool participation	Pool size (15-year compounded)	VOTE payout per point
 0.1% of retirement assets ($70B)	$777B	~$194
