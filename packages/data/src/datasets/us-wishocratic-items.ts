@@ -188,7 +188,7 @@ export const US_WISHOCRATIC_ITEMS = {
   CYBERSECURITY: {
     slug: 'cybersecurity',
     name: 'Cybersecurity & Infrastructure Protection',
-    description: 'CISA — the federal agency that protects power grids, water systems, and hospitals from cyberattack. The Colonial Pipeline hack cost the US economy $3.4 billion. The SolarWinds breach compromised nine federal agencies. Ransomware attacks on hospitals doubled between 2022 and 2024. Whether this is a government responsibility or a private-sector one is a fair question. The hospitals currently getting ransomwared do not seem to have solved it on their own.',
+    description: 'CISA — the federal agency responsible for protecting critical infrastructure from cyberattack. US cybercrime losses: $12.5 billion in 2023 (up 22% from prior year). Fewer than 0.2% of reported cybercrimes result in prosecution. 2,825 ransomware attacks hit critical infrastructure sectors in 2023. The Colonial Pipeline hack alone cost the economy $3.4 billion.',
     icon: '🔐',
     annualBudgetBillions: 3,
     budgetSourceUrl: 'https://www.cisa.gov/about',
@@ -214,7 +214,7 @@ export const US_WISHOCRATIC_ITEMS = {
   DRUG_WAR: {
     slug: 'drug_war',
     name: 'Drug War (Enforcement + Incarceration)',
-    description: 'Fifty-plus years. Over one trillion dollars cumulative. Overdose deaths went from 6,100 per year in 1980 to 110,000 in 2023 — an 18x increase. Drug use rates are essentially unchanged. 300,000 people imprisoned for drug offences. Meanwhile Portugal decriminalised everything in 2001 and drug deaths dropped 80%, HIV among users fell 95%. Pew Research found zero statistical relationship between drug imprisonment rates and drug use. You are funding the longest-running policy failure in recorded history.',
+    description: 'Enforcement, interdiction, and incarceration of non-violent drug offenders. Outcomes after 50+ years: overdose deaths went from 6,100/yr (1980) to 110,000/yr (2023) — an 18x increase. Drug use rates: essentially unchanged. 300,000 people imprisoned for drug offences at $39,158/yr each. 44% are rearrested for a new drug offence within 5 years. Portugal decriminalised all personal use in 2001: drug deaths fell to 3 per million (EU average: 23.7). HIV infections among drug users dropped 98%.',
     icon: '🚔',
     annualBudgetBillions: 75,
     budgetSourceUrl: 'https://www.whitehouse.gov/ondcp/budget/',
@@ -244,7 +244,7 @@ export const US_WISHOCRATIC_ITEMS = {
   ICE_IMMIGRATION_ENFORCEMENT: {
     slug: 'ice',
     name: 'Mass Immigrant Detention Camps',
-    description: 'ICE enforcement, detention, and removal operations. Detention costs $150-$200 per day per person. Alternatives to detention cost $4.50/day with 90%+ court appearance rates. The immigration court backlog exceeds 3 million cases. Deportations remove both criminals and working taxpayers. The fiscal impact of immigration is debated — estimates range from net positive to net negative depending on methodology and time horizon.',
+    description: 'ICE enforcement, detention, and removal operations. Cost per deportation: $10,900-$12,500. Detention: $142/day average, 55-day average stay. Of ICE arrests in FY2023, 27% had criminal convictions; 73% had no criminal record. Immigration court backlog: 3.7 million pending cases. Average case takes 4+ years. Alternatives to detention cost $4.50/day with 90%+ court appearance rates.',
     icon: '🚨',
     annualBudgetBillions: 10,
     budgetSourceUrl: 'https://www.dhs.gov/sites/default/files/2024-03/2024_0311_cfo_fy2025bib.pdf',
@@ -273,7 +273,7 @@ export const US_WISHOCRATIC_ITEMS = {
   FARM_SUBSIDIES_AGRIBUSINESS: {
     slug: 'farm_subsidies',
     name: 'Agribusiness Subsidies',
-    description: 'Seventy-five percent of farm subsidies go to the top 10% of farms, which are mostly enormous corporations that do not need the help. The programme promotes monoculture, damages the environment, and crowds out the small farms your politicians claim to be protecting. It is corporate welfare wearing a straw hat.',
+    description: 'Commodity payments, crop insurance subsidies, and conservation programmes. The top 8% of farms receive 62% of all payments. US farm count: 6.8 million (1935) → 2.04 million (2022) despite continuous subsidies since 1933. 40% of subsidized corn goes to ethanol, 36% to animal feed, ~10% to human food. 142,000 farms lost between 2017-2022 alone.',
     icon: '🌽',
     annualBudgetBillions: 22,
     budgetSourceUrl: 'https://www.cbo.gov/topics/agriculture',
