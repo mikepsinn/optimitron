@@ -80,30 +80,26 @@ export function DemoControls({
             className={`p-2 rounded transition-all flex items-center gap-1.5 ${
               forceLive ? "bg-brutal-red text-brutal-red-foreground" : "bg-white/10 hover:bg-white/20"
             }`}
-            aria-label={forceLive ? "Switch to cached audio" : "Switch to live TTS"}
-            title={forceLive ? "LIVE TTS (Gemini)" : "Cached audio"}
+            aria-label={forceLive ? "Switch to local audio" : "Switch to live TTS"}
+            title={forceLive ? "LIVE TTS (Gemini)" : "Local audio"}
           >
             {forceLive ? (
               <Circle className="w-4 h-4 fill-current animate-pulse" />
             ) : (
               <Save className="w-4 h-4" />
             )}
-            <span className="font-pixel text-[10px]">
-              {forceLive ? "LIVE" : "SAVED"}
-            </span>
+            {forceLive && <span className="font-pixel text-[10px]">LIVE</span>}
           </button>
           <button
             onClick={onToggleRecord}
             className={`p-2 rounded transition-all flex items-center gap-1.5 ${
               isRecording ? "bg-brutal-red text-brutal-red-foreground" : "bg-white/10 hover:bg-white/20"
             }`}
-            aria-label={isRecording ? "Stop recording" : "Start recording"}
-            title={isRecording ? "Stop recording" : "Record demo"}
+            aria-label={isRecording ? "Stop capture" : "Start capture"}
+            title={isRecording ? "Stop capture" : "Capture demo"}
           >
             <Circle className={`w-4 h-4 ${isRecording ? "fill-current animate-pulse" : ""}`} />
-            <span className="font-pixel text-[10px]">
-              {isRecording ? "STOP" : "REC"}
-            </span>
+            {isRecording && <span className="font-pixel text-[10px]">STOP</span>}
           </button>
         </div>
 

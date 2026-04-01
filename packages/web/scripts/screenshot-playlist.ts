@@ -9,7 +9,7 @@
  * Outputs: docs/demo-scripts/screenshots/{slideId}.png
  */
 
-import { SEGMENTS, PLAYLISTS } from "../src/lib/demo-script";
+import { PLAYLISTS } from "../src/lib/demo-script";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -36,9 +36,10 @@ async function main() {
   // Set dark mode
   await page.emulateMedia({ colorScheme: "dark" });
 
-  for (const [i, id] of playlist.segmentIds.entries()) {
+  for (const [i, seg] of playlist.segments.entries()) {
+    const id = seg.id;
     const url = `${baseUrl}/demo?playlist=${playlistId}#${id}`;
-    console.log(`[${i + 1}/${playlist.segmentIds.length}] ${id}...`);
+    console.log(`[${i + 1}/${playlist.segments.length}] ${id}...`);
 
     // Fresh navigation each time — the demo player only reads hash on mount
     await page.goto("about:blank");
@@ -52,7 +53,7 @@ async function main() {
   }
 
   await browser.close();
-  console.log(`\n✅ ${playlist.segmentIds.length} screenshots saved to ${outDir}`);
+  console.log(`\n✅ ${playlist.segments.length} screenshots saved to ${outDir}`);
 }
 
 main().catch((e) => {

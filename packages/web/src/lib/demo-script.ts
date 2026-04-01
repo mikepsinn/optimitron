@@ -1093,7 +1093,7 @@ export const SEGMENTS: DemoSegment[] = [
     slideId: "sierra-final-call-to-action",
     tags: ["cta"],
     act: "III",
-    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the tax bill. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
+    narration: "Think about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money bought a missile instead. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the tax bill. You get to pay for her murder. One percent fixes this. One vote starts it. Go to optimitron dot com and play now.",
   },
   {
     id: "pl-cta",

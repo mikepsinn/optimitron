@@ -13,7 +13,7 @@
  *   - Screenshot placeholder paths (take screenshots separately via Playwright)
  */
 
-import { SEGMENTS, PLAYLISTS } from "../src/lib/demo-script";
+import { PLAYLISTS } from "../src/lib/demo-script";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -26,7 +26,6 @@ if (!playlist) {
   process.exit(1);
 }
 
-const segmentMap = new Map(SEGMENTS.map((s) => [s.id, s]));
 const WPM = 150; // average speaking pace
 
 let totalWords = 0;
@@ -37,19 +36,13 @@ const lines: string[] = [];
 lines.push(`# ${playlist.name}`);
 lines.push(`**Playlist ID:** \`${playlist.id}\``);
 lines.push(`**Description:** ${playlist.description}`);
-lines.push(`**Slides:** ${playlist.segmentIds.length}`);
+lines.push(`**Slides:** ${playlist.segments.length}`);
 lines.push("");
 lines.push("---");
 lines.push("");
 
-playlist.segmentIds.forEach((id, i) => {
-  const seg = segmentMap.get(id);
-  if (!seg) {
-    lines.push(`## ${i + 1}. ⚠️ ${id} — NOT FOUND`);
-    lines.push("");
-    return;
-  }
-
+playlist.segments.forEach((seg, i) => {
+  const id = seg.id;
   const words = seg.narration.split(/\s+/).length;
   const seconds = Math.round((words / WPM) * 60);
   totalWords += words;
@@ -60,7 +53,7 @@ playlist.segmentIds.forEach((id, i) => {
 
   lines.push(`## ${i + 1}. ${id} — "${seg.title}"`);
   lines.push("");
-  lines.push(`**Slide:** \`${seg.componentId}\`  `);
+  lines.push(`**Slide:** \`${seg.slideId}\`  `);
   lines.push(`**Words:** ${words} | **Duration:** ~${seconds}s | **Running total:** ${mins}:${String(secs).padStart(2, "0")}`);
   lines.push("");
   lines.push(`**Narration:**`);
@@ -80,10 +73,10 @@ lines.push("## Summary");
 lines.push("");
 lines.push(`| Metric | Value |`);
 lines.push(`|--------|-------|`);
-lines.push(`| Total slides | ${playlist.segmentIds.length} |`);
+lines.push(`| Total slides | ${playlist.segments.length} |`);
 lines.push(`| Total words | ${totalWords} |`);
 lines.push(`| Estimated duration | ${totalMins}:${String(totalSecs).padStart(2, "0")} |`);
-lines.push(`| Average words/slide | ${Math.round(totalWords / playlist.segmentIds.length)} |`);
+lines.push(`| Average words/slide | ${Math.round(totalWords / playlist.segments.length)} |`);
 lines.push("");
 
 const outDir = path.resolve(__dirname, "../../..", "docs", "demo-scripts");
@@ -91,5 +84,5 @@ fs.mkdirSync(outDir, { recursive: true });
 const outPath = path.join(outDir, `${playlistId}.md`);
 fs.writeFileSync(outPath, lines.join("\n"), "utf-8");
 
-console.log(`✅ Exported ${playlist.segmentIds.length} slides to ${outPath}`);
+console.log(`✅ Exported ${playlist.segments.length} slides to ${outPath}`);
 console.log(`   ${totalWords} words, ~${totalMins}:${String(totalSecs).padStart(2, "0")} estimated duration`);

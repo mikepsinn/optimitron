@@ -208,10 +208,10 @@ async function main() {
 
   // Check all playlist segments have TTS mappings
   for (const playlist of PLAYLISTS) {
-    for (const segId of playlist.segmentIds) {
-      if (!segmentIds.has(segId)) {
+    for (const seg of playlist.segments) {
+      if (!segmentIds.has(seg.id)) {
         validationErrors.push(
-          `Playlist "${playlist.id}" references segment "${segId}" which does not exist in SEGMENTS`,
+          `Playlist "${playlist.id}" references segment "${seg.id}" which does not exist in SEGMENTS`,
         );
       }
     }
