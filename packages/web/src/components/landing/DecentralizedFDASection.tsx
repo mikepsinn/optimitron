@@ -105,7 +105,7 @@ export function DecentralizedFDASection() {
                         className={`absolute inset-y-0 left-0 ${comp.current.color} border-r-2 border-primary`}
                       />
                       <div className="absolute inset-0 flex items-center pl-3">
-                        <span className="text-sm font-black text-brutal-red-foreground drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
+                        <span className="text-sm font-black text-foreground drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
                           {comp.current.display}
                         </span>
                       </div>
@@ -130,7 +130,7 @@ export function DecentralizedFDASection() {
                         className={`absolute inset-y-0 left-0 ${comp.optimized.color} border-r-2 border-primary`}
                       />
                       <div className="absolute inset-0 flex items-center pl-3">
-                        <span className="text-sm font-black text-brutal-cyan-foreground">
+                        <span className="text-sm font-black text-foreground">
                           {comp.optimized.display}
                         </span>
                       </div>
