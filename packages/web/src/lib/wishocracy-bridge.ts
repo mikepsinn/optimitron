@@ -1,7 +1,7 @@
 /**
  * Bridge between OBG budget analysis and Wishocratic items.
  *
- * Enriches wishocratic items with OBG efficiency data (overspend ratios,
+ * Enriches Wishocratic items with OBG efficiency data (overspend ratios,
  * optimal spending, best-in-class countries) by mapping items
  * to their parent fiscal categories via fiscalCategoryMappings.
  */
@@ -80,7 +80,7 @@ function findFiscalCategoryAnalysis(fiscalCategoryId: string): BudgetAnalysisCat
 }
 
 /**
- * Compute weighted efficiency context for a wishocratic item from its fiscal category mappings.
+ * Compute weighted efficiency context for a Wishocratic item from its fiscal category mappings.
  * If the item maps to multiple fiscal categories, uses the primary one (highest share).
  */
 function computeEfficiencyContext(item: WishocraticItemDefinition): EfficiencyContext | null {
@@ -109,7 +109,7 @@ function computeEfficiencyContext(item: WishocraticItemDefinition): EfficiencyCo
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 /**
- * Build enriched wishocratic items with OBG efficiency data.
+ * Build enriched Wishocratic items with OBG efficiency data.
  * Returns items suitable for display in the pairwise allocation UI.
  */
 export function buildEnrichedWishocraticItems(): Record<WishocraticItemId, EnrichedWishocraticItem> {
@@ -137,7 +137,7 @@ export function buildEnrichedWishocraticItems(): Record<WishocraticItemId, Enric
 }
 
 /**
- * Get enriched data for a single wishocratic item.
+ * Get enriched data for a single Wishocratic item.
  */
 export function getEnrichedWishocraticItem(id: WishocraticItemId): EnrichedWishocraticItem | undefined {
   return buildEnrichedWishocraticItems()[id];

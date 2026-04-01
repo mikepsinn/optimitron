@@ -19,7 +19,7 @@ const BAR_COLORS = [
 ];
 
 /**
- * Demo wishocratic allocations (shown when no real community data is available).
+ * Demo Wishocratic allocations (shown when no real community data is available).
  * Roughly mirrors what an informed electorate might produce.
  */
 const DEMO_ALLOCATIONS: { categoryId: WishocraticItemId; percentage: number }[] = [

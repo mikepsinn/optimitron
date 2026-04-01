@@ -331,7 +331,7 @@ describe("WishocraticTreasury", function () {
   });
 
   describe("Integration: WishToken → WishocraticTreasury → UBIDistributor → Citizens", function () {
-    it("full chain: transfer tax → wishocratic split → UBI to citizens", async function () {
+    it("full chain: transfer tax → Wishocratic split → UBI to citizens", async function () {
       const {
         wish, treasury, ubiDistributor, owner,
         recipientB, citizen1, citizen2,

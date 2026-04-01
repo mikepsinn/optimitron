@@ -31,9 +31,9 @@ export interface JurisdictionData<
   budget: JurisdictionBudget;
   /** Wishocratic items for pairwise comparison */
   wishocraticItems: Readonly<Record<TItemId, TItem>>;
-  /** Calculate allocation percentages from wishocratic item budgets */
+  /** Calculate allocation percentages from Wishocratic item budgets */
   getWishocraticAllocations: () => Record<TItemId, number>;
-  /** Project wishocratic items into DB-ready catalog rows */
+  /** Project Wishocratic items into DB-ready catalog rows */
   getWishocraticCatalogRecords: () => Record<TItemId, WishocraticCatalogRecord<TItemId>>;
 }
 

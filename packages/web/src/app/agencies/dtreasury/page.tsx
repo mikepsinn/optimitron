@@ -227,7 +227,7 @@ export default function DTreasuryPage() {
                 <p className="text-sm text-muted-foreground font-bold mt-1">
                   The treasury automatically divides incoming revenue: a UBI
                   floor goes to every verified citizen, and the remainder funds
-                  wishocratic public goods.
+                  Wishocratic public goods.
                 </p>
               </div>
             </div>

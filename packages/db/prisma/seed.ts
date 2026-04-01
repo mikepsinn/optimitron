@@ -625,7 +625,7 @@ async function seedWishocraticItems() {
 
   if (!jurisdiction) {
     throw new Error(
-      `Cannot seed wishocratic items before jurisdiction ${US_WISHOCRATIC_JURISDICTION.code} exists.`,
+      `Cannot seed Wishocratic items before jurisdiction ${US_WISHOCRATIC_JURISDICTION.code} exists.`,
     );
   }
 

@@ -33,7 +33,7 @@ describe("wishocracy catalog sync", () => {
     mocks.upsertWishocraticItem.mockResolvedValue({});
   });
 
-  it("builds catalog records from the default wishocratic items registry", () => {
+  it("builds catalog records from the default Wishocratic items registry", () => {
     const allocations = getActualGovernmentAllocations();
     const record = buildWishocraticCatalogRecord("PRAGMATIC_CLINICAL_TRIALS");
 

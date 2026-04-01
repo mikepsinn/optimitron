@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * Flow:
  *   1. WishToken transaction tax (0.5%) flows here automatically
  *   2. Owner registers recipient wallets for each budget category
- *   3. Owner posts aggregated wishocratic weights (from off-chain eigenvector)
+ *   3. Owner posts aggregated Wishocratic weights (from off-chain eigenvector)
  *   4. Anyone triggers distribute() — splits $WISH proportionally
  *
  * The UBI category's recipient is the UBIDistributor contract, which
@@ -112,7 +112,7 @@ contract WishocraticTreasury is Ownable {
     // --- Weight Management ---
 
     /**
-     * @notice Post aggregated wishocratic allocation weights.
+     * @notice Post aggregated Wishocratic allocation weights.
      *         Weights are derived off-chain from citizen pairwise comparisons
      *         using eigenvector aggregation. They are independently verifiable
      *         by re-running aggregation against public preference data.

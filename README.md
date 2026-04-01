@@ -270,7 +270,7 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | dOMB - Budget Optimization | `/agencies/domb` | 34+ budget categories, OBG engine, reallocation targets |
 | dGAO - Transparency & Audit | `/agencies/dgao` | IPFS snapshots, Hypercerts, smart contract verification |
 | dIH - Health Discoveries | `/agencies/dih/discoveries` | Population-level health insights from tracked data |
-| dTreasury - $WISH System | `/agencies/dtreasury` | $WISH token, transaction tax, UBI, wishocratic allocation |
+| dTreasury - $WISH System | `/agencies/dtreasury` | $WISH token, transaction tax, UBI, Wishocratic allocation |
 | dTreasury - dFED | `/agencies/dtreasury/dfed` | Monetary policy: transparent algorithm vs 12 guessers |
 | dTreasury - dIRS | `/agencies/dtreasury/dirs` | 0.5% transaction tax replacing 74,000-page tax code |
 | dTreasury - dSSA | `/agencies/dtreasury/dssa` | Universal Basic Income replacing 80+ welfare programs |

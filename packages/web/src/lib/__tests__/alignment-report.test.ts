@@ -7,7 +7,7 @@ import {
 } from "@/lib/alignment-report";
 
 describe("alignment report utilities", () => {
-  it("keeps the latest normalized wishocratic comparison per pair", () => {
+  it("keeps the latest normalized Wishocratic comparison per pair", () => {
     const comparisons = dedupeLatestWishocraticAllocations([
       {
         userId: "user-1",

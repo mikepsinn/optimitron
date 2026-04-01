@@ -215,7 +215,7 @@ const shelves: Shelf[] = [
         icon: "🏆",
         rarity: "epic",
         description:
-          "Venture-grade returns (17.4% annually) without the 2-and-20 fees. Crowd-allocated via wishocratic preference aggregation. Beats conventional retirement by 3x.",
+          "Venture-grade returns (17.4% annually) without the 2-and-20 fees. Crowd-allocated via Wishocratic preference aggregation. Beats conventional retirement by 3x.",
         stats: [
           { label: "YIELD", value: 8 },
           { label: "IMPACT", value: 7 },

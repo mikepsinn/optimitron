@@ -155,7 +155,7 @@ export const dtreasuryLink: NavItem = {
   href: ROUTES.dtreasury,
   label: "dTreasury — The $WISH System",
   emoji: "💸",
-  description: "0.5% transaction tax, UBI, and wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.",
+  description: "0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.",
   matchPrefixes: [ROUTES.dtreasury],
 };
 

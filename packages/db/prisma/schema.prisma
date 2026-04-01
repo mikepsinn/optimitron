@@ -2111,7 +2111,7 @@ model AggregationRun {
   /// AHP consistency ratio (< 0.1 = good)
   consistencyRatio Float?
 
-  /// Filter: which wishocratic items were included (null = all)
+  /// Filter: which Wishocratic items were included (null = all)
   itemFilter String?
 
   /// Filter: which region was included (null = all)
@@ -2683,7 +2683,7 @@ model PublicGoodsRecipient {
   deletedAt DateTime?
 }
 
-/// A record of a wishocratic distribution event on-chain.
+/// A record of a Wishocratic distribution event on-chain.
 model WishocraticDistribution {
   /// Unique identifier
   id String @id @default(cuid())

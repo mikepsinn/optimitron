@@ -257,7 +257,7 @@ export default function AboutPage() {
             <p className="text-sm font-bold leading-relaxed">
               Programmable currency with 0.5% transaction tax. Replaces the IRS,
               welfare bureaucracy, and lobbying with automatic UBI and
-              wishocratic public goods allocation.
+              Wishocratic public goods allocation.
             </p>
             <NavItemLink
               item={dtreasuryLink}

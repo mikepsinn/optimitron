@@ -195,7 +195,7 @@ contract PublicGoodsPool is Ownable {
     }
 
     /**
-     * @notice Move from Locked → Allocating (begin wishocratic allocation).
+     * @notice Move from Locked → Allocating (begin Wishocratic allocation).
      */
     function beginAllocation() external onlyOwner {
         require(status == PoolStatus.Locked, "PublicGoodsPool: not locked");

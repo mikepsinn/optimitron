@@ -4,7 +4,7 @@
  * Tests:
  * 1. Deposit form renders with wallet connect + amount presets
  * 2. Authenticated user can vote on referendum
- * 3. Authenticated user can submit wishocratic allocations
+ * 3. Authenticated user can submit Wishocratic allocations
  * 4. Scoreboard shows live data from DB
  *
  * Requires: seeded database (prisma db seed)

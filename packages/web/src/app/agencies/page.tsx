@@ -38,7 +38,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
         emoji: "💸",
         name: "dTreasury",
         description:
-          "0.5% transaction tax, UBI, and wishocratic allocation — in one currency. The seventy-four-thousand-page tax code is not invited.",
+          "0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. The seventy-four-thousand-page tax code is not invited.",
         href: ROUTES.dtreasury,
         earthEquivalent: "Treasury + IRS + Federal Reserve + Social Security",
         color: "pink",

@@ -77,7 +77,7 @@ export interface PostWeightsResult {
 }
 
 /**
- * Read community wishocratic summary, convert to basis points, and post on-chain.
+ * Read community Wishocratic summary, convert to basis points, and post on-chain.
  */
 export async function postWishocraticWeightsOnChain(): Promise<PostWeightsResult> {
   const summary = await getWishocracyCommunitySummary();

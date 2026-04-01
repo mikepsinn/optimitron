@@ -9,7 +9,7 @@ import {
   getWishocraticItemsRegistryEntry,
 } from "../wishocratic-items-registry";
 
-describe("wishocratic items registry", () => {
+describe("Wishocratic items registry", () => {
   it("exposes the default jurisdiction catalog", () => {
     expect(DEFAULT_WISHOCRATIC_ITEMS_JURISDICTION_CODE).toBe("US");
     expect(DEFAULT_WISHOCRATIC_JURISDICTION).toEqual({

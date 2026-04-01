@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("[WISHOCRATIC WEIGHTS CRON] Error:", error);
     return NextResponse.json(
-      { error: "Failed to post wishocratic weights." },
+      { error: "Failed to post Wishocratic weights." },
       { status: 500 },
     );
   }
