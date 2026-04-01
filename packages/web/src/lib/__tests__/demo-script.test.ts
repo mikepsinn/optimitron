@@ -9,6 +9,7 @@ import {
   getPlaylist,
   getPlaylistSegments,
 } from "../demo-script";
+import { hasSlideComponent } from "@/components/demo/slides";
 
 describe("demo script playlists", () => {
   it("keeps segment ids and playlist ids unique", () => {
@@ -26,6 +27,21 @@ describe("demo script playlists", () => {
         playlist.segments.length,
       );
     }
+  });
+
+  it("keeps demo ids on the canonical naming scheme", () => {
+    expect(
+      SEGMENTS.every((segment) => !segment.id.startsWith("pl-") && !segment.id.startsWith("script-")),
+    ).toBe(true);
+    expect(
+      SEGMENTS.every((segment) => !segment.slideId.startsWith("sierra-")),
+    ).toBe(true);
+  });
+
+  it("requires every authored slide renderer id to exist in the registry", () => {
+    expect(SEGMENTS.every((segment) => hasSlideComponent(segment.slideId))).toBe(
+      true,
+    );
   });
 
   it("keeps default playlist helpers aligned with the stored playlist object", () => {

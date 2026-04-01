@@ -19,7 +19,6 @@ import {
   POLITICIAN_SCORECARDS,
   SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO,
 } from "@optimitron/data/datasets/us-politician-scorecards";
-import { DemoPreview } from "@/components/landing/DemoPreview";
 import { OutcomeLabelsSection } from "@/components/dfda/OutcomeLabelsSection";
 import { ComparativeEffectivenessSection } from "@/components/dfda/ComparativeEffectivenessSection";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
@@ -208,9 +207,6 @@ export default function Home() {
 
       {/* ── 10. Two Futures — Wishonia vs Moronia ── */}
       <TwoFuturesSection />
-
-      {/* ── 12. Watch the Demo — screenshot carousel ── */}
-      {/* <DemoPreview /> */}
 
       {/* ── 13. Government Report Cards — mini leaderboard ── */}
       <GovernmentReportCardPreview />

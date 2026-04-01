@@ -8,29 +8,25 @@ import {
 } from "../demo-narration";
 
 describe("demo narration manifest helpers", () => {
-  it("prefers the canonical manifest key before legacy aliases", () => {
-    expect(getNarrationManifestLookupKeys("pl-fund")).toEqual([
-      "three-scenarios-all-win",
-      "protocol-labs--three-scenarios-all-win",
-      "pl-fund",
+  it("uses the segment id as the only canonical narration key", () => {
+    expect(getCanonicalNarrationManifestKey("earth-optimization-game-brief")).toBe(
+      "earth-optimization-game-brief",
+    );
+    expect(getNarrationManifestLookupKeys("earth-optimization-game-brief")).toEqual([
+      "earth-optimization-game-brief",
     ]);
   });
 
-  it("falls back to the raw segment id when no alias exists", () => {
-    expect(getCanonicalNarrationManifestKey("custom-slide")).toBe("custom-slide");
-    expect(getNarrationManifestLookupKeys("custom-slide")).toEqual(["custom-slide"]);
-  });
-
-  it("identifies legacy raw manifest entries that should be pruned", () => {
+  it("treats manifest entries outside the current segment set as legacy", () => {
     const manifest: NarrationManifest = {
-      "three-scenarios-all-win": {
+      "earth-optimization-game-brief": {
         hash: "new",
-        file: "three-scenarios-all-win.mp3",
+        file: "earth-optimization-game-brief.mp3",
         generatedAt: "2026-03-31T03:20:45.971Z",
       },
-      "pl-fund": {
+      "pl-intro": {
         hash: "old",
-        file: "pl-fund.mp3",
+        file: "pl-intro.mp3",
         generatedAt: "2026-03-30T07:14:33.860Z",
       },
       "custom-slide": {
@@ -40,6 +36,11 @@ describe("demo narration manifest helpers", () => {
       },
     };
 
-    expect(getLegacyNarrationManifestKeys(manifest)).toEqual(["pl-fund"]);
+    expect(
+      getLegacyNarrationManifestKeys(manifest, [
+        "earth-optimization-game-brief",
+        "custom-slide",
+      ]),
+    ).toEqual(["pl-intro"]);
   });
 });

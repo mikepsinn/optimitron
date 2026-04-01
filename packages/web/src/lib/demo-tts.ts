@@ -61,11 +61,11 @@ async function getManifest(): Promise<NarrationManifest | null> {
 }
 
 /** Try to load from the narration manifest (MP3 files) */
-async function tryManifest(slideId: string): Promise<HTMLAudioElement | null> {
+async function tryManifest(segmentId: string): Promise<HTMLAudioElement | null> {
   const manifest = await getManifest();
   if (!manifest) return null;
 
-  for (const key of getNarrationManifestLookupKeys(slideId)) {
+  for (const key of getNarrationManifestLookupKeys(segmentId)) {
     const entry = manifest[key];
     if (entry) {
       return loadAudio(`/audio/narration/${entry.file}?v=${entry.hash}`);
@@ -149,15 +149,15 @@ function wireAnalyser(audio: HTMLAudioElement): AnalyserNode {
 // ---------------------------------------------------------------------------
 
 /**
- * Get audio + analyser for a demo slide. Returns null if TTS is unavailable.
+ * Get audio + analyser for a demo segment. Returns null if TTS is unavailable.
  * Results are cached for the session.
  */
 export async function getDemoAudio(
-  slideId: string,
+  segmentId: string,
   narrationText: string,
   forceLive = false,
 ): Promise<DemoAudioResult | null> {
-  const cacheKey = forceLive ? `${slideId}__live` : slideId;
+  const cacheKey = forceLive ? `${segmentId}__live` : segmentId;
   const textHash = simpleHash(narrationText);
 
   // Return cached if same key AND same text (bust cache on hot-reload text changes)
@@ -171,7 +171,7 @@ export async function getDemoAudio(
   // Fallback chain: manifest MP3 → real-time TTS
   const audio = forceLive
     ? await generateStreaming(narrationText) ?? await generateRealTime(narrationText)
-    : (await tryManifest(slideId)) ??
+    : (await tryManifest(segmentId)) ??
       (await generateRealTime(narrationText));
 
   if (audio) {

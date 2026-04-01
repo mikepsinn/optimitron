@@ -9,7 +9,7 @@
  * - Hashes each narration text (SHA-256, first 16 hex chars)
  * - Only regenerates when narration changes (compares against manifest)
  * - Generates WAV via Gemini TTS, converts to MP3 via ffmpeg
- * - Saves to public/audio/narration/{slideId}.mp3
+ * - Saves to public/audio/narration/{segmentId}.mp3
  */
 import { config } from "dotenv";
 import { resolve } from "path";
@@ -140,7 +140,10 @@ function saveManifest(manifest: Manifest) {
   writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
 }
 
-function pruneLegacyManifestEntries(manifest: Manifest) {
+function pruneLegacyManifestEntries(
+  manifest: Manifest,
+  validSegmentIds: Iterable<string>,
+) {
   const fileRefCounts = new Map<string, number>();
   for (const entry of Object.values(manifest)) {
     fileRefCounts.set(entry.file, (fileRefCounts.get(entry.file) ?? 0) + 1);
@@ -149,7 +152,7 @@ function pruneLegacyManifestEntries(manifest: Manifest) {
   const removedKeys: string[] = [];
   const removedFiles: string[] = [];
 
-  for (const legacyKey of getLegacyNarrationManifestKeys(manifest)) {
+  for (const legacyKey of getLegacyNarrationManifestKeys(manifest, validSegmentIds)) {
     const entry = manifest[legacyKey];
     if (!entry) continue;
 
@@ -226,14 +229,16 @@ async function main() {
     }
     console.error(
       "\nFix these in:\n" +
-      "  - packages/web/src/lib/demo-script.ts (SEGMENTS / PLAYLISTS)\n" +
-      "  - packages/web/src/lib/demo-narration.ts (segmentToSlideId)\n",
+      "  - packages/web/src/lib/demo-script.ts (SEGMENTS / PLAYLISTS)\n",
     );
     process.exit(1);
   }
 
   const manifest = loadManifest();
-  const { removedKeys, removedFiles } = pruneLegacyManifestEntries(manifest);
+  const { removedKeys, removedFiles } = pruneLegacyManifestEntries(
+    manifest,
+    SEGMENTS.map((segment) => segment.id),
+  );
   let generated = 0;
   let cached = 0;
   let skipped = 0;
@@ -300,7 +305,7 @@ async function main() {
     }
 
     const hash = hashText(seg.narration);
-    // Use the slide-level key that demo-tts.ts looks up in the manifest
+    // Use the segment id that demo-tts.ts looks up in the manifest
     const manifestKey = getCanonicalNarrationManifestKey(seg.id);
     const mp3File = `${manifestKey}.mp3`;
     const mp3Path = join(OUTPUT_DIR, mp3File);
@@ -382,7 +387,7 @@ async function main() {
       console.error(`  • ${err}`);
     }
     console.error(
-      "\nTo fix: ensure segmentToSlideId in demo-narration.ts matches the manifest keys.\n",
+      "\nTo fix: ensure the manifest only contains current segment ids, then rerun this script.\n",
     );
   }
 }
