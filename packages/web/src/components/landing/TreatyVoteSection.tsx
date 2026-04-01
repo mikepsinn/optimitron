@@ -271,7 +271,7 @@ export default function TreatyVoteSection() {
               exit={{ opacity: 0, scale: 0.8, y: -50 }}
               transition={{ duration: 0.4 }}
             >
-              <Card className="bg-background border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
+              <Card className="bg-background text-foreground border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
                 <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
                   {VOTE_SECTION.sliderPrompt}
                 </p>
@@ -384,7 +384,7 @@ export default function TreatyVoteSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card className="bg-background border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
+              <Card className="bg-background text-foreground border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
                 <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-2">
                   Your governments spend{" "}
                   <br className="hidden sm:block" />
@@ -457,7 +457,7 @@ export default function TreatyVoteSection() {
               {status === "authenticated" ? (
                 <ReferralLinkCard referralLink={shareUrl} />
               ) : (
-                <Card className="bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                   <div className="mb-4">
                     <p className="text-center font-bold text-lg sm:text-xl mb-2">
                       {VOTE_SECTION.authPrompt}

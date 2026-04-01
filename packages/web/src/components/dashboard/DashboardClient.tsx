@@ -53,18 +53,18 @@ export function DashboardClient({
             </div>
           </div>
 
+          {/* Referral Link + Referral Goal — most important action */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8" id="referral">
+            <ReferralLinkCard referralLink={referralLink} className="h-full" />
+            <ReferralGoalCard stats={initialData.stats} />
+          </div>
+
           {/* Quest Checklist */}
           <QuestChecklistCard quests={initialData.questChecklist} />
 
           {/* Impact Ledger */}
           <div className="mb-8" id="impact-ledger">
             <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
-          </div>
-
-          {/* Referral Link + Referral Goal */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <ReferralLinkCard referralLink={referralLink} className="h-full" id="referral" />
-            <ReferralGoalCard stats={initialData.stats} />
           </div>
 
           {/* Global Progress */}

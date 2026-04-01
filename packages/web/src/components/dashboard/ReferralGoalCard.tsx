@@ -1,6 +1,7 @@
 import { Card } from "@/components/retroui/Card"
 import { Target } from "lucide-react"
 import type { DashboardStats } from "@/types/dashboard"
+import { GAME } from "@/lib/messaging"
 
 interface ReferralGoalCardProps {
   stats: DashboardStats
@@ -15,7 +16,7 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
           YOUR REFERRAL GOAL
         </Card.Title>
         <Card.Description className="text-foreground font-bold">
-          QUEST: Recruit 2 players. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own.
+          QUEST: Get {GAME.referralGoal} friends to play. That&apos;s the reproductive number for ideas. Above 1.3 and this thing spreads on its own.
         </Card.Description>
       </Card.Header>
       <Card.Content>
@@ -23,12 +24,12 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
           <div>
             <div className="flex justify-between text-sm font-bold mb-2">
               <span>{stats.referrals} referrals</span>
-              <span>{stats.referrals >= 2 ? "✓ Goal Met!" : `${2 - stats.referrals} more to goal`}</span>
+              <span>{stats.referrals >= GAME.referralGoal ? "✓ Goal Met!" : `${GAME.referralGoal - stats.referrals} more to goal`}</span>
             </div>
             <div className="h-8 bg-background border-4 border-primary rounded-none overflow-hidden">
               <div
                 className={`h-full transition-all duration-500 ${stats.referrals >= 2 ? "bg-brutal-cyan" : "bg-primary"}`}
-                style={{ width: `${Math.min((stats.referrals / 2) * 100, 100)}%` }}
+                style={{ width: `${Math.min((stats.referrals / GAME.referralGoal) * 100, 100)}%` }}
               />
             </div>
           </div>
@@ -36,7 +37,7 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
               { milestone: 1, label: "FIRST RECRUIT", icon: "🎯" },
-              { milestone: 2, label: "GOAL MET", icon: "✅" },
+              { milestone: GAME.referralGoal, label: "GOAL MET", icon: "✅" },
               { milestone: 5, label: "POWER RECRUITER", icon: "💪" },
               { milestone: 10, label: "SUPER SPREADER", icon: "🚀" },
             ].map((item) => (
@@ -54,8 +55,8 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
           </div>
 
           <p className="text-sm font-bold text-center">
-            {stats.referrals < 2
-              ? "Share your referral link to reach your goal!"
+            {stats.referrals < 3
+              ? "Share your link — get 3 friends to play!"
               : stats.referrals < 5
                 ? "You're in the top 50%! Can you reach 5?"
                 : stats.referrals < 10

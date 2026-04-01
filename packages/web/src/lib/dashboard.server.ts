@@ -17,6 +17,7 @@ import {
 } from "@optimitron/data/parameters";
 import { getImpactReceipts } from "@/lib/impact-receipts.server";
 import { ROUTES } from "@/lib/routes";
+import { GAME } from "@/lib/messaging";
 import type {
   DashboardData,
   LeaderboardEntry,
@@ -116,57 +117,8 @@ export async function getDashboardData(
     getImpactReceipts(userId),
   ]);
 
-  const questChecklist: QuestItem[] = [
-    {
-      reason: "WORLD_ID_VERIFICATION",
-      label: getWishReasonLabel("WORLD_ID_VERIFICATION"),
-      emoji: getWishReasonEmoji("WORLD_ID_VERIFICATION"),
-      wishesLabel: "10",
-      completed: completedSet.has("WORLD_ID_VERIFICATION"),
-      href: ROUTES.profile,
-      anchor: null,
-      comingSoon: false,
-    },
-    {
-      reason: "KYC_COMPLETION",
-      label: getWishReasonLabel("KYC_COMPLETION"),
-      emoji: getWishReasonEmoji("KYC_COMPLETION"),
-      wishesLabel: "5",
-      completed: completedSet.has("KYC_COMPLETION"),
-      href: null,
-      anchor: null,
-      comingSoon: true,
-    },
-    {
-      reason: "CENSUS_SNAPSHOT",
-      label: getWishReasonLabel("CENSUS_SNAPSHOT"),
-      emoji: getWishReasonEmoji("CENSUS_SNAPSHOT"),
-      wishesLabel: "5",
-      completed: completedSet.has("CENSUS_SNAPSHOT"),
-      href: ROUTES.census,
-      anchor: null,
-      comingSoon: false,
-    },
-    {
-      reason: "DAILY_CHECKIN",
-      label: getWishReasonLabel("DAILY_CHECKIN"),
-      emoji: getWishReasonEmoji("DAILY_CHECKIN"),
-      wishesLabel: "1/day",
-      completed: todayCheckin !== null,
-      href: ROUTES.checkIn,
-      anchor: null,
-      comingSoon: false,
-    },
-    {
-      reason: "WISHOCRATIC_ALLOCATION",
-      label: getWishReasonLabel("WISHOCRATIC_ALLOCATION"),
-      emoji: getWishReasonEmoji("WISHOCRATIC_ALLOCATION"),
-      wishesLabel: "2",
-      completed: allocationCount >= 10,
-      href: ROUTES.wishocracy,
-      anchor: null,
-      comingSoon: false,
-    },
+  // High-value quests — the core game loop
+  const primaryQuests: QuestItem[] = [
     {
       reason: "REFERENDUM_VOTE",
       label: getWishReasonLabel("REFERENDUM_VOTE"),
@@ -174,6 +126,50 @@ export async function getDashboardData(
       wishesLabel: "2",
       completed: completedSet.has("REFERENDUM_VOTE"),
       href: ROUTES.referendum,
+      anchor: null,
+      comingSoon: false,
+    },
+    {
+      reason: "REFERRAL",
+      label: "Get Your Friends to Play",
+      emoji: "🤝",
+      wishesLabel: "1 VOTE",
+      completed: referralCount >= GAME.referralGoal,
+      href: null,
+      anchor: "#referral",
+      comingSoon: false,
+    },
+    {
+      reason: "WISHOCRATIC_ALLOCATION",
+      label: getWishReasonLabel("WISHOCRATIC_ALLOCATION"),
+      emoji: getWishReasonEmoji("WISHOCRATIC_ALLOCATION"),
+      wishesLabel: "2",
+      completed: allocationCount >= GAME.wishocracyMinComparisons,
+      href: ROUTES.wishocracy,
+      anchor: null,
+      comingSoon: false,
+    },
+    {
+      reason: "PRIZE_DEPOSIT",
+      label: getWishReasonLabel("PRIZE_DEPOSIT"),
+      emoji: getWishReasonEmoji("PRIZE_DEPOSIT"),
+      wishesLabel: "1/$100",
+      completed: completedSet.has("PRIZE_DEPOSIT"),
+      href: ROUTES.prize,
+      anchor: null,
+      comingSoon: false,
+    },
+  ];
+
+  // Secondary quests — shown after all primary quests are done
+  const secondaryQuests: QuestItem[] = [
+    {
+      reason: "WORLD_ID_VERIFICATION",
+      label: getWishReasonLabel("WORLD_ID_VERIFICATION"),
+      emoji: getWishReasonEmoji("WORLD_ID_VERIFICATION"),
+      wishesLabel: "10",
+      completed: completedSet.has("WORLD_ID_VERIFICATION"),
+      href: ROUTES.profile,
       anchor: null,
       comingSoon: false,
     },
@@ -188,36 +184,31 @@ export async function getDashboardData(
       comingSoon: false,
     },
     {
-      reason: "REFERRAL",
-      label: getWishReasonLabel("REFERRAL"),
-      emoji: getWishReasonEmoji("REFERRAL"),
-      wishesLabel: "1",
-      completed: referralCount > 0,
-      href: null,
-      anchor: "#referral",
-      comingSoon: false,
-    },
-    {
-      reason: "PRIZE_DEPOSIT",
-      label: getWishReasonLabel("PRIZE_DEPOSIT"),
-      emoji: getWishReasonEmoji("PRIZE_DEPOSIT"),
-      wishesLabel: "1/$100",
-      completed: completedSet.has("PRIZE_DEPOSIT"),
-      href: ROUTES.prize,
+      reason: "DAILY_CHECKIN",
+      label: getWishReasonLabel("DAILY_CHECKIN"),
+      emoji: getWishReasonEmoji("DAILY_CHECKIN"),
+      wishesLabel: "1/day",
+      completed: todayCheckin !== null,
+      href: ROUTES.checkIn,
       anchor: null,
       comingSoon: false,
     },
     {
-      reason: "SHARE_REPORT",
-      label: getWishReasonLabel("SHARE_REPORT"),
-      emoji: getWishReasonEmoji("SHARE_REPORT"),
-      wishesLabel: "1",
-      completed: completedSet.has("SHARE_REPORT"),
-      href: null,
-      anchor: "#share-templates",
+      reason: "CENSUS_SNAPSHOT",
+      label: getWishReasonLabel("CENSUS_SNAPSHOT"),
+      emoji: getWishReasonEmoji("CENSUS_SNAPSHOT"),
+      wishesLabel: "5",
+      completed: completedSet.has("CENSUS_SNAPSHOT"),
+      href: ROUTES.census,
+      anchor: null,
       comingSoon: false,
     },
   ];
+
+  const allPrimaryDone = primaryQuests.every((q) => q.completed);
+  const questChecklist = allPrimaryDone
+    ? [...primaryQuests, ...secondaryQuests]
+    : primaryQuests;
 
   return {
     user: {

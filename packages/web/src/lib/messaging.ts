@@ -10,6 +10,14 @@ import {
   fmtParam,
 } from "@optimitron/data/parameters";
 
+/** Game balance constants — tweak here, updates everywhere */
+export const GAME = {
+  /** Friends each player should recruit. 3 gives margin for broken chains while staying achievable. */
+  referralGoal: 3,
+  /** Minimum pairwise comparisons to count as "completed" wishocracy (C(5,2) = 10) */
+  wishocracyMinComparisons: 10,
+} as const;
+
 export const CTA = {
   playTheGame: "Play the Game",
   insertCoin: "Insert Coin",
