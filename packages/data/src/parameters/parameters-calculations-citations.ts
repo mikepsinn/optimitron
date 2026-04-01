@@ -285,7 +285,7 @@ export const CONVENTIONAL_RETIREMENT_RETURN: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-conventional_retirement_return",
   unit: "percent",
   displayName: "Conventional Retirement Return (After Fees)",
-  description: "Average retail after-fee return on conventional retirement portfolios (60/40 stock/bond mix, ~1% advisory fees, ~0.4% fund fees). Used as the opportunity cost comparison: depositors are LOSING money by NOT participating in the Prize fund.",
+  description: "Average retail after-fee return on conventional retirement portfolios (60/40 stock/bond mix, ~1% advisory fees, ~0.4% fund fees). Used as the opportunity cost comparison: depositors are LOSING money by NOT participating in the wishocratic fund.",
   sourceType: "external",
   confidence: "high",
   confidenceInterval: [0.05, 0.08],
@@ -315,7 +315,7 @@ export const CROWD_DECISION_ACCURACY: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-crowd_decision_accuracy",
   unit: "percent",
   displayName: "Crowd Decision Accuracy (Millionaire)",
-  description: "Crowd accuracy on Who Wants to Be a Millionaire ask-the-audience lifeline. Studio audience picked the correct answer 91% of the time (Surowiecki 2004). Used as lower bound for Wishocratic allocation accuracy.",
+  description: "Crowd accuracy on Who Wants to Be a Millionaire ask-the-audience lifeline. Studio audience picked the correct answer 91% of the time (Surowiecki 2004). Used as lower bound for wishocratic allocation accuracy.",
   sourceType: "external",
   sourceRef: "surowiecki-2004",
   sourceUrl: "https://archive.org/details/wisdomofcrowds0000suro",
@@ -1457,7 +1457,7 @@ export const GLOBAL_RETIREMENT_ASSETS: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_retirement_assets",
   unit: "USD",
   displayName: "Global Retirement Assets",
-  description: "Total global pension and retirement assets (OECD 2024). This is the capital pool that the Prize fund competes with and could partially absorb.",
+  description: "Total global pension and retirement assets (OECD 2024). This is the capital pool that the wishocratic fund competes with and could partially absorb.",
   sourceType: "external",
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/wishocratic-investment-fund.html",
@@ -3108,7 +3108,7 @@ export const VENTURE_GROSS_RETURN: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-venture_gross_return",
   unit: "percent",
   displayName: "Venture Capital Gross Return",
-  description: "Venture capital / private equity gross return (before 2-and-20 fees). Cambridge Associates US VC index 25-year pooled gross IRR. The Prize fund charges zero fees, so gross return is the correct baseline. Lockup premium is already embedded: VC/PE IS illiquid.",
+  description: "Venture capital / private equity gross return (before 2-and-20 fees). Cambridge Associates US VC index 25-year pooled gross IRR. The wishocratic fund charges zero fees, so gross return is the correct baseline. Lockup premium is already embedded: VC/PE IS illiquid.",
   sourceType: "external",
   confidence: "high",
   confidenceInterval: [0.13, 0.22],
@@ -3129,6 +3129,22 @@ export const VITAMIN_A_COST_PER_DALY: Parameter = {
   confidence: "medium",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
+};
+
+export const WAR_DEATHS_SINCE_1900: Parameter = {
+  value: 200000000.0,
+  parameterName: "WAR_DEATHS_SINCE_1900",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_deaths_since_1900",
+  unit: "deaths",
+  displayName: "Total War and Conflict Deaths Since 1900",
+  description: "Total deaths from wars, conflicts, genocides, and policy-induced famines since 1900. Leitenberg (2006): 231M; White: 123-203M; Hobsbawm: 187M. Central estimate: 200M.",
+  sourceType: "external",
+  sourceRef: "leitenberg-deaths-wars-2006",
+  sourceUrl: "https://www.clingendael.org/sites/default/files/pdfs/20060800_cdsp_occ_leitenberg.pdf",
+  confidence: "low",
+  confidenceInterval: [150000000.0, 231000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
 };
 
 export const WATER_FLUORIDATION_ANNUAL_BENEFIT: Parameter = {
@@ -7009,6 +7025,36 @@ export const WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR: Parameter = {
   manualPageTitle: "Peace Dividend",
 };
 
+export const WAR_LIFE_YEARS_LOST_SINCE_1900: Parameter = {
+  value: 5400000000.0,
+  parameterName: "WAR_LIFE_YEARS_LOST_SINCE_1900",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_life_years_lost_since_1900",
+  unit: "life-years",
+  displayName: "Total Life-Years Lost to War Since 1900",
+  description: "Total life-years stolen by war since 1900 (deaths x avg years lost per death)",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "WAR_DEATHS_SINCE_1900 × WAR_AVG_YEARS_LIFE_LOST",
+  latex: "\\begin{gathered}\nYLL_{war,total} \\\\\n= Deaths_{war,1900} \\times YLL_{war} \\\\\n= 200M \\times 27 \\\\\n= 5.4B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
+export const WAR_QALY_VALUE_LOST_SINCE_1900: Parameter = {
+  value: 810000000000000.0,
+  parameterName: "WAR_QALY_VALUE_LOST_SINCE_1900",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_qaly_value_lost_since_1900",
+  unit: "USD",
+  displayName: "QALY Value of Life Lost to War Since 1900",
+  description: "Economic value of life-years destroyed by war since 1900, at $150K/QALY",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "WAR_LIFE_YEARS_LOST_SINCE_1900 × STANDARD_ECONOMIC_QALY_VALUE_USD",
+  latex: "\\begin{gathered}\nV_{war,QALY} = YLL_{war,total} \\times Value_{QALY} = 5.4B \\times \\$150K = \\$810T\n\\\\[0.5em]\n\\text{where } YLL_{war,total} = Deaths_{war,1900} \\times YLL_{war} = 200M \\times 27 = 5.4B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const WILLING_TRIAL_PARTICIPANTS_GLOBAL: Parameter = {
   value: 1075200000.0,
   parameterName: "WILLING_TRIAL_PARTICIPANTS_GLOBAL",
@@ -7028,7 +7074,7 @@ export const WISHOCRATIC_CROWD_ALPHA: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishocratic_crowd_alpha",
   unit: "percent",
   displayName: "Wishocratic Crowd Allocation Alpha",
-  description: "Allocation alpha from Wishocratic crowd decision-making. Crowds pick correctly 91% vs experts at 65% (Surowiecki). Applied to the return spread between best/worst sectors. This is the floor: politicians (the real 'experts') are worse than 65% because they are being paid by one of the answer choices.",
+  description: "Allocation alpha from wishocratic crowd decision-making. Crowds pick correctly 91% vs experts at 65% (Surowiecki). Applied to the return spread between best/worst sectors. This is the floor: politicians (the real 'experts') are worse than 65% because they are being paid by one of the answer choices.",
   sourceType: "calculated",
   confidence: "high",
   formula: "(CROWD_DECISION_ACCURACY - EXPERT_DECISION_ACCURACY) × ALLOCATION_DECISION_SPREAD",
@@ -7326,7 +7372,7 @@ export const ALLOCATION_DECISION_SPREAD: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-allocation_decision_spread",
   unit: "percent",
   displayName: "Allocation Decision Return Spread",
-  description: "Return spread between the best and worst major asset-class sectors (biotech vs. coal, growth vs. value, emerging vs. declining). The accuracy advantage of crowds over experts is multiplied by this spread to estimate the allocation alpha from Wishocratic decision-making.",
+  description: "Return spread between the best and worst major asset-class sectors (biotech vs. coal, growth vs. value, emerging vs. declining). The accuracy advantage of crowds over experts is multiplied by this spread to estimate the allocation alpha from wishocratic decision-making.",
   sourceType: "definition",
   confidence: "high",
   confidenceInterval: [0.05, 0.12],
@@ -8625,7 +8671,7 @@ export const SCALE_COMPRESSION_FACTOR: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-scale_compression_factor",
   unit: "percent",
   displayName: "Scale Compression Factor",
-  description: "Diminishing-returns drag as the venture market expands ~15x (current global VC ~$300B/yr; Prize fund deploys ~$4.7T/yr). More capital chasing deals compresses returns. Partially offset by market expansion (every viable idea gets funded, oligopolies face real competition). Point estimate is moderate; CI spans optimistic to pessimistic.",
+  description: "Diminishing-returns drag as the venture market expands ~15x (current global VC ~$300B/yr; wishocratic fund deploys ~$4.7T/yr). More capital chasing deals compresses returns. Partially offset by market expansion (every viable idea gets funded, oligopolies face real competition). Point estimate is moderate; CI spans optimistic to pessimistic.",
   sourceType: "definition",
   confidence: "high",
   confidenceInterval: [-0.05, -0.01],
@@ -8874,6 +8920,20 @@ export const VICTORY_BOND_FUNDING_PCT: Parameter = {
   manualPageTitle: "Earth Optimization Protocol v1",
 };
 
+export const WAR_AVG_YEARS_LIFE_LOST: Parameter = {
+  value: 27.0,
+  parameterName: "WAR_AVG_YEARS_LIFE_LOST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_avg_years_life_lost",
+  unit: "years",
+  displayName: "Average Years of Life Lost per War Death",
+  description: "Average years of life lost per war/conflict death. Based on avg age at death ~28 (soldiers ~23, civilians older) vs mid-century life expectancy ~55.",
+  sourceType: "definition",
+  confidence: "low",
+  confidenceInterval: [20.0, 35.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
+  manualPageTitle: "The Cost of War",
+};
+
 export const _CASCADE_GENERATIONS: Parameter = {
   value: 3.0,
   parameterName: "_CASCADE_GENERATIONS",
@@ -9105,6 +9165,7 @@ export const parameters = {
   VALUE_OF_STATISTICAL_LIFE,
   VENTURE_GROSS_RETURN,
   VITAMIN_A_COST_PER_DALY,
+  WAR_DEATHS_SINCE_1900,
   WATER_FLUORIDATION_ANNUAL_BENEFIT,
   WATER_FLUORIDATION_ROI,
   WHO_QALY_THRESHOLD_COST_EFFECTIVE,
@@ -9371,6 +9432,8 @@ export const parameters = {
   VOTE_TOKEN_VALUE,
   WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY,
   WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR,
+  WAR_LIFE_YEARS_LOST_SINCE_1900,
+  WAR_QALY_VALUE_LOST_SINCE_1900,
   WILLING_TRIAL_PARTICIPANTS_GLOBAL,
   WISHOCRATIC_CROWD_ALPHA,
   WISHONIA_DISEASE_CURE_FRACTION_15YR,
@@ -9511,6 +9574,7 @@ export const parameters = {
   US_VS_SWITZERLAND_LIFE_EXPECTANCY_GAP,
   US_VS_SWITZERLAND_SPENDING_GAP,
   VICTORY_BOND_FUNDING_PCT,
+  WAR_AVG_YEARS_LIFE_LOST,
   _CASCADE_GENERATIONS,
   _R0,
   _SOCIAL_NETWORK_POP,
@@ -10436,6 +10500,20 @@ export const citations: Record<string, Citation> = {
         issued: { 'date-parts': [[2024]] },
         'container-title': "IQVIA Institute Report",
         URL: "https://www.iqvia.com/insights/the-iqvia-institute/reports-and-publications/reports/the-global-use-of-medicines-2024-outlook-to-2028",
+  },
+  "leitenberg-deaths-wars-2006": {
+        id: "leitenberg-deaths-wars-2006",
+        type: "report",
+        title: "Deaths in Wars and Conflicts in the 20th Century",
+        author: [
+          {
+            family: "Leitenberg",
+            given: "Milton"
+          },
+        ],
+        issued: { 'date-parts': [[2006]] },
+        publisher: "Center for International and Security Studies at Maryland (CISSM)",
+        URL: "https://www.clingendael.org/sites/default/files/pdfs/20060800_cdsp_occ_leitenberg.pdf",
   },
   "lichtenberg-life-years-saved-2019": {
         id: "lichtenberg-life-years-saved-2019",
@@ -11468,11 +11546,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 612,
-  external: 206,
-  calculated: 282,
-  definitions: 124,
-  citations: 143,
+  total: 616,
+  external: 207,
+  calculated: 284,
+  definitions: 125,
+  citations: 144,
 } as const;
 
 // ============================================================================
