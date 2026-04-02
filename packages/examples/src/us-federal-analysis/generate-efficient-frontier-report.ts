@@ -22,7 +22,6 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPORTS_DIR = path.resolve(__dirname, '../../../../reports');
-const WEB_DIR = path.resolve(__dirname, '../../../../packages/web/public/data');
 
 // ---------------------------------------------------------------------------
 // Cross-country spending decile data (per-capita PPP, OECD 2018-2022 avg)
@@ -321,48 +320,6 @@ function generateReport(): string {
 }
 
 // ---------------------------------------------------------------------------
-// Generate web JSON
-// ---------------------------------------------------------------------------
-
-function generateWebJson(): object {
-  return {
-    version: 6,
-    generatedAt: new Date().toISOString(),
-    methodology: 'minimum-effective-spending',
-    floors: allFloors.map(f => ({
-      categoryId: f.categoryId,
-      categoryName: f.categoryName,
-      floorSpending: f.floorSpending,
-      topSpending: f.topSpending,
-      floorOutcome: f.floorOutcome,
-      topOutcome: f.topOutcome,
-      outcomeGap: f.outcomeGap,
-    })),
-    efficientFrontier: frontierResults[0]!.rankings.map(r => ({
-      countryCode: r.countryCode,
-      countryName: r.countryName,
-      spending: r.spending,
-      outcome: r.outcome,
-      efficiencyScore: r.efficiencyScore,
-      rank: r.rank,
-    })),
-    overspend: overspendResults.map(cat => ({
-      categoryId: cat.categoryId,
-      categoryName: cat.categoryName,
-      floorSpending: cat.floorSpending,
-      avgOverspendRatio: cat.avgOverspendRatio,
-      countries: cat.countries.map(c => ({
-        countryCode: c.countryCode,
-        countryName: c.countryName,
-        actualSpending: c.actualSpending,
-        overspendRatio: c.overspendRatio,
-        excessSpending: c.excessSpending,
-      })),
-    })),
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Write outputs
 // ---------------------------------------------------------------------------
 
@@ -370,8 +327,3 @@ const report = generateReport();
 fs.mkdirSync(REPORTS_DIR, { recursive: true });
 fs.writeFileSync(path.join(REPORTS_DIR, 'us-optimal-budget-v6.md'), report);
 console.log(`✅ Report written to reports/us-optimal-budget-v6.md`);
-
-const webJson = generateWebJson();
-fs.mkdirSync(WEB_DIR, { recursive: true });
-fs.writeFileSync(path.join(WEB_DIR, 'efficient-frontier-v6.json'), JSON.stringify(webJson, null, 2));
-console.log(`✅ Web JSON written to packages/web/public/data/efficient-frontier-v6.json`);

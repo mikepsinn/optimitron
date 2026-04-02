@@ -1,12 +1,16 @@
 import { slugify } from "@/lib/slugify";
 import {
   fmtParam,
+  DFDA_TRIAL_COST_REDUCTION_FACTOR,
+  DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER,
   IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PRIZE_POOL_HORIZON_MULTIPLE,
   VICTORY_BOND_ANNUAL_RETURN_PCT,
 } from "@optimitron/data/parameters";
 // Precompute for descriptions (same pattern as demo-script.ts)
+const costReduction = Math.round(DFDA_TRIAL_COST_REDUCTION_FACTOR.value);
+const speedup = Math.round(DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER.value);
 const iabLobbyRatio = Math.round(IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT.value);
 const milToTrialRatio = Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value);
 const bondReturn = fmtParam(VICTORY_BOND_ANNUAL_RETURN_PCT);
@@ -31,7 +35,7 @@ export const ROUTES = {
   dih: "/agencies/dih",
   ddod: "/agencies/ddod",
   dcensus: "/agencies/dcensus",
-  discoveries: "/agencies/dih/discoveries",
+  // discoveries route deleted — use dfdaLink (external) instead
   // Earth's Governments
   governments: "/governments",
   politicians: "/politicians",
@@ -122,18 +126,27 @@ export const obgLink: NavItem = {
   cta: "See Budget Analysis",
 };
 
-export const discoveriesLink: NavItem = {
-  href: ROUTES.discoveries,
-  label: "Discoveries",
-  emoji: "🔬",
-  description: "Health patterns discovered by people who tracked their own meat. Your doctor has seven minutes per appointment and just Googled your condition in the hallway.",
+export const dihLink: NavItem = {
+  href: "https://dih.earth",
+  label: "Decentralized Institutes of Health",
+  emoji: "🧬",
+  description: `${costReduction}x cheaper clinical trials. ${speedup}x faster treatment discovery. Your NIH spends 97% of its budget on things that aren't clinical trials.`,
+  external: true,
+  cta: "Visit dIH.earth",
+};
 
-  cta: "See Discoveries",
+export const dfdaLink: NavItem = {
+  href: "https://dfda.earth",
+  label: "Decentralized FDA",
+  emoji: "💊",
+  description: `Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. This replaces the queue with maths.`,
+  external: true,
+  cta: "Visit dFDA.earth",
 };
 
 export const dtreasuryLink: NavItem = {
   href: ROUTES.dtreasury,
-  label: "dTreasury — The $WISH System",
+  label: "Decentralized Treasury",
   emoji: "💸",
   description: "0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.",
   matchPrefixes: [ROUTES.dtreasury],
@@ -143,7 +156,7 @@ export const dtreasuryLink: NavItem = {
 
 export const federalReserveLink: NavItem = {
   href: ROUTES.dtreasuryDfed,
-  label: "dFED — Monetary Policy",
+  label: "Decentralized Federal Reserve",
   emoji: "🏦",
   description: "Your monetary policy is set by 12 humans in a room guessing. On my planet we use an algorithm. It has never once printed money to buy murder machines.",
 
@@ -152,7 +165,7 @@ export const federalReserveLink: NavItem = {
 
 export const dirsLink: NavItem = {
   href: ROUTES.dtreasuryDirs,
-  label: "dIRS — Transaction Tax",
+  label: "Decentralized IRS",
   emoji: "🏦",
   description: "74,000 pages of tax code replaced by 6 lines of Solidity. Your species invented an entire profession called 'accountant' to decode the rules you wrote for yourselves. Remarkable.",
 
@@ -161,7 +174,7 @@ export const dirsLink: NavItem = {
 
 export const dssaLink: NavItem = {
   href: ROUTES.dtreasuryDssa,
-  label: "dSSA — Universal Basic Income",
+  label: "Decentralized Welfare",
   emoji: "🍞",
   description: "Eighty-plus welfare programs replaced by one for-loop. You currently pay humans to sit in offices deciding which other humans deserve to eat. On my planet we skip that step.",
 
@@ -170,7 +183,7 @@ export const dssaLink: NavItem = {
 
 export const departmentOfWarLink: NavItem = {
   href: ROUTES.ddod,
-  label: "dDoD — Defense",
+  label: "Decentralized Defense",
   emoji: "💀",
   description: "We don't have one. War is a negative-sum game and the spreadsheet agrees.",
 
@@ -202,7 +215,8 @@ export const exploreLinks: NavItem[] = [
   referendumLink,
   opgLink,
   obgLink,
-  discoveriesLink,
+  dihLink,
+  dfdaLink,
   dtreasuryLink,
   agenciesLink,
   departmentOfWarLink,
@@ -307,7 +321,7 @@ export const appLinks: NavItem[] = [
 
 export const transparencyLink: NavItem = {
   href: ROUTES.dgao,
-  label: "dGAO — Transparency & Audit",
+  label: "Decentralized Accountability",
   emoji: "🔍",
   description: "Every attestation, every fund flow — on IPFS, impossible to quietly delete. Your governments call their version 'transparency' and then redact it. We don't have a word for redact.",
   matchPrefixes: [ROUTES.dgao],
@@ -444,7 +458,7 @@ export interface NavSection {
 
 export const navSections: NavSection[] = [
   { id: "play", label: "Play", items: [dashboardLink, profileLink, censusLink, checkInLink, settingsLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
-  { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, opgLink, obgLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
+  { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, opgLink, obgLink, transparencyLink, dihLink, dfdaLink, agenciesLink, departmentOfWarLink] },
   { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, opgLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
 ];

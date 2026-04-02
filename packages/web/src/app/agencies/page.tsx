@@ -22,7 +22,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
     agencies: [
       {
         emoji: "🏛️",
-        name: "dCongress",
+        name: "Decentralized Congress",
         description:
           "Every citizen votes on the budget. Takes two minutes. Your Congress takes two years and still gets it wrong.",
         href: ROUTES.dcongress,
@@ -36,7 +36,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
     agencies: [
       {
         emoji: "💸",
-        name: "dTreasury",
+        name: "Decentralized Treasury",
         description:
           "0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. The seventy-four-thousand-page tax code is not invited.",
         href: ROUTES.dtreasury,
@@ -45,7 +45,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
       },
       {
         emoji: "🤝",
-        name: "dFEC",
+        name: "Decentralized Election Commission",
         description:
           "Smart contracts fund politicians by alignment score. No PACs. No lobbying. No bribery with extra steps.",
         href: ROUTES.dfec,
@@ -77,7 +77,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
       },
       {
         emoji: "🔍",
-        name: "dGAO",
+        name: "Decentralized Accountability",
         description:
           "Every number stored where nobody can quietly delete it. Your governments love deleting things. This system can't.",
         href: ROUTES.dgao,
@@ -91,7 +91,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
     agencies: [
       {
         emoji: "🧬",
-        name: "dIH",
+        name: "Decentralized Health",
         description:
           "Same science, 30x cheaper, 44x faster. Your NIH spends 97% of its budget on things that aren't clinical trials. It's a fire department that budgets 3% for water.",
         href: ROUTES.dih,
@@ -100,7 +100,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
       },
       {
         emoji: "💀",
-        name: "dDoD",
+        name: "Decentralized Defense",
         description:
           "We don't have one. War is a negative-sum game and the spreadsheet agrees.",
         href: ROUTES.ddod,
@@ -109,7 +109,7 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
       },
       {
         emoji: "🌐",
-        name: "dCensus",
+        name: "Decentralized Census",
         description:
           "citizenCount() returns in fifty milliseconds. No fourteen-billion-dollar survey required.",
         href: ROUTES.dcensus,

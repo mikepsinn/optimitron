@@ -19,6 +19,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { navigateAndSettle, writeAuditReport } from "./utils/audit-helpers";
 import { getContrastViolations, type ComputedContrastViolation } from "./utils/computed-contrast";
+import { PUBLIC_PAGE_PATHS } from "./utils/static-pages";
 
 // Auto-discover all demo slide components from the sierra/ directory
 const DEMO_SLIDES = fs
@@ -27,35 +28,9 @@ const DEMO_SLIDES = fs
   .map((f) => f.replace(/^slide-/, "").replace(/\.tsx$/, ""))
   .sort();
 
-// All static routes
+// All static routes + individual demo slides
 const PAGES = [
-  "/",
-  "/prize",
-  "/iab",
-  "/scoreboard",
-  "/about",
-  "/compare",
-  "/misconceptions",
-  "/outcomes",
-  "/tools",
-  "/wishonia",
-  "/moronia",
-  "/agencies",
-  "/agencies/dcongress",
-  "/agencies/dcongress/wishocracy",
-  "/agencies/dcongress/referendums",
-  "/agencies/dtreasury",
-  "/agencies/dtreasury/dirs",
-  "/agencies/dtreasury/dfed",
-  "/agencies/dtreasury/dssa",
-  "/agencies/dfec",
-  "/agencies/dcbo",
-  "/agencies/domb",
-  "/agencies/dgao",
-  "/agencies/dih",
-  "/agencies/dih/discoveries",
-  "/agencies/ddod",
-  "/governments",
+  ...PUBLIC_PAGE_PATHS,
   ...DEMO_SLIDES.map((id) => `/demo#${id}`),
 ];
 
