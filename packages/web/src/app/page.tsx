@@ -63,107 +63,18 @@ export const metadata: Metadata = {
   },
 };
 
-const productWorkflows = [
-  {
-    item: prizeLink,
-    label: "Game",
-    title: "Play the Earth Optimization Game",
-    description:
-      "Deposit USDC. Recruit verified voters. Earn VOTE points. The only way to lose is to not play.",
-    cta: CTA.playTheGame,
-    color: "bg-brutal-pink",
-    textColor: "text-brutal-pink-foreground",
-  },
-  {
-    item: scoreboardLink,
-    label: "Scoreboard",
-    title: "Humanity's Scoreboard",
-    description:
-      "Two numbers: how long you live and how much you earn. Plus the prize pool, voter count, and a countdown to when the destructive economy eats everything. Refreshes in real time.",
-    cta: CTA.viewScoreboard,
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
-  {
-    item: wishocracyLink,
-    label: "Wishocracy",
-    title: "Build your ideal budget",
-    description:
-      "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Sneaky, isn't it?",
-    cta: CTA.startVoting,
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
-  },
-  {
-    item: alignmentLink,
-    label: "Alignment",
-    title: "Who actually agrees with you?",
-    description:
-      "Compare your priorities against real politician voting records. Spoiler: it's not who you think.",
-    cta: CTA.checkAlignment,
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
-  {
-    item: trackLink,
-    label: "Wishonia",
-    title: "Chat with an alien",
-    description:
-      "Track health, meals, mood, and habits with an alien who's been running a planet for 4,237 years.",
-    cta: CTA.openChat,
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
-  {
-    item: opgLink,
-    label: "Policy Grades",
-    title: "Every Policy Graded A Through F",
-    description:
-      "Causal inference on decades of data across dozens of countries. Most of your policies fail.",
-    cta: "See Policy Grades",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
-  {
-    item: obgLink,
-    label: "Budget Analysis",
-    title: "Your Government's Budget, Diagnosed",
-    description:
-      "Cross-country efficiency analysis on every budget category. More money. Worse outcomes. On every line item.",
-    cta: "See Budget Analysis",
-    color: "bg-brutal-red",
-    textColor: "text-brutal-red-foreground",
-  },
-  {
-    item: governmentsLink,
-    label: "Report Cards",
-    title: "Government Report Cards",
-    description:
-      "Every government ranked by body count — the data they hope you never see.",
-    cta: "See Report Cards",
-    color: "bg-brutal-red",
-    textColor: "text-brutal-red-foreground",
-  },
-  {
-    item: iabLink,
-    label: "IABs",
-    title: "Incentive Alignment Bonds",
-    description:
-      "Fund politicians who vote for the treaty. Defund the ones who don't. The math does the lobbying.",
-    cta: "Learn More",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
-  },
-  {
-    item: demoLink,
-    label: "Demo",
-    title: "Watch the Full Demo",
-    description:
-      "A guided tour narrated by an alien who has been running a planet for 4,237 years. She has notes.",
-    cta: "Watch Demo",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
+/** Each card uses the NavItem as the single source of truth for title + description. */
+const productWorkflows: { item: typeof prizeLink; cta: string; color: string; textColor: string }[] = [
+  { item: prizeLink, cta: CTA.playTheGame, color: "bg-brutal-pink", textColor: "text-brutal-pink-foreground" },
+  { item: scoreboardLink, cta: CTA.viewScoreboard, color: "bg-brutal-cyan", textColor: "text-brutal-cyan-foreground" },
+  { item: wishocracyLink, cta: CTA.startVoting, color: "bg-brutal-yellow", textColor: "text-brutal-yellow-foreground" },
+  { item: alignmentLink, cta: CTA.checkAlignment, color: "bg-brutal-cyan", textColor: "text-brutal-cyan-foreground" },
+  { item: trackLink, cta: CTA.openChat, color: "bg-brutal-cyan", textColor: "text-brutal-cyan-foreground" },
+  { item: opgLink, cta: "See Policy Grades", color: "bg-brutal-cyan", textColor: "text-brutal-cyan-foreground" },
+  { item: obgLink, cta: "See Budget Analysis", color: "bg-brutal-red", textColor: "text-brutal-red-foreground" },
+  { item: governmentsLink, cta: "See Report Cards", color: "bg-brutal-red", textColor: "text-brutal-red-foreground" },
+  { item: iabLink, cta: "Learn More", color: "bg-brutal-yellow", textColor: "text-brutal-yellow-foreground" },
+  { item: demoLink, cta: "Watch Demo", color: "bg-brutal-cyan", textColor: "text-brutal-cyan-foreground" },
 ];
 
 export default function Home() {
@@ -271,17 +182,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {productWorkflows.map((workflow) => (
               <div
-                key={workflow.title}
+                key={workflow.item.href}
                 className={`p-6 border-4 border-primary ${workflow.color} ${workflow.textColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all`}
               >
                 <div className="text-xs font-black px-2.5 py-1 bg-foreground text-background inline-block self-start mb-4 uppercase">
-                  {workflow.label}
+                  {workflow.item.emoji} {workflow.item.label}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black mb-3">
-                  {workflow.title}
-                </h3>
                 <p className="text-base sm:text-lg leading-relaxed font-bold flex-grow">
-                  {workflow.description}
+                  {workflow.item.description}
                 </p>
                 <NavItemLink
                   item={workflow.item}
