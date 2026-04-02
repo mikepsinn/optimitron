@@ -91,5 +91,4 @@ module.exports = withSentryConfig(nextConfig, {
   project: "optimitron-web",
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  disableLogger: true,
 });

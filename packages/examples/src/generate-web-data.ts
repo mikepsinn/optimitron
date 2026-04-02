@@ -82,17 +82,14 @@ type OECDMapping = OECDCategoryMapping;
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
-// ─── Output Types (explicit interfaces for type safety + Zod schemas for runtime validation) ───
+// ─── Output Types ───────────────────────────────────────────────────────────
 
-// Use the canonical type from OBG — the web app imports the same type,
-// so any schema mismatch causes a build error in both places.
-export type { BudgetReportCategory as BudgetCategoryOutput } from '@optimitron/obg';
-import type { BudgetReportCategory as BudgetCategoryOutput } from '@optimitron/obg';
+import type { BudgetReportCategory } from '@optimitron/obg';
 
 export interface BudgetAnalysisOutput {
   jurisdiction: string;
   totalSpendingNominal: number;
-  categories: BudgetCategoryOutput[];
+  categories: BudgetReportCategory[];
   topRecommendations: string[];
   generatedAt: string;
   generatedBy: string;
@@ -131,7 +128,7 @@ export interface PolicyAnalysisOutput {
 // Zod schemas for runtime validation
 // Uses z.any() for efficiency field to avoid cross-package deep type instantiation (TS2589).
 // The explicit interfaces above provide compile-time safety; Zod validates structure at runtime.
-export const BudgetCategoryOutputSchema: z.ZodType<BudgetCategoryOutput> = z.object({
+export const BudgetReportCategorySchema: z.ZodType<BudgetReportCategory> = z.object({
   id: z.string(),
   name: z.string(),
   currentSpending: z.number(),
@@ -149,12 +146,12 @@ export const BudgetCategoryOutputSchema: z.ZodType<BudgetCategoryOutput> = z.obj
     marginalReturn: z.number(), elasticity: z.number().nullable(), outcomeName: z.string(),
   }).nullable(),
   efficiency: z.any().nullable(),
-}) as unknown as z.ZodType<BudgetCategoryOutput>;
+}) as unknown as z.ZodType<BudgetReportCategory>;
 
 export const BudgetAnalysisOutputSchema: z.ZodType<BudgetAnalysisOutput> = z.object({
   jurisdiction: z.string(),
   totalSpendingNominal: z.number(),
-  categories: z.array(BudgetCategoryOutputSchema),
+  categories: z.array(BudgetReportCategorySchema),
   topRecommendations: z.array(z.string()),
   generatedAt: z.string(),
   generatedBy: z.string(),
@@ -220,7 +217,7 @@ function fitModelInfo(
 
 function generateBudgetAnalysis() {
   const totalSpendingNominal = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions * 1e9, 0);
-  const categories: BudgetCategoryOutput[] = [];
+  const categories: BudgetReportCategory[] = [];
 
   for (const cat of US_FEDERAL_BUDGET.categories) {
     const latestSpending = cat.historicalSpending[cat.historicalSpending.length - 1]?.amount ?? 0;
@@ -260,7 +257,7 @@ function generateBudgetAnalysis() {
     else recommendation = 'maintain';
 
     // Fit a diminishing returns model for informational context
-    let drInfo: BudgetCategoryOutput['diminishingReturns'] = undefined;
+    let drInfo: BudgetReportCategory['diminishingReturns'] = undefined;
     const modelInfo = fitModelInfo(mapping);
     if (modelInfo) {
       drInfo = {
@@ -374,12 +371,12 @@ const STRUCTURAL_REFORMS: PolicyInput[] = [...STRUCTURAL_POLICY_REFORMS];
 // These are spending reallocations, not structural reforms — the "effect" is the
 // savings redirected as Optimization Dividend (income) and the outcome improvement
 // from matching the high performer's level (health, if the outcome is life expectancy).
-function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): PolicyInput[] {
+function generateEfficiencyPolicies(budgetCategories: BudgetReportCategory[]): PolicyInput[] {
   const MEDIAN_INCOME = JURISDICTION.medianIncome;
   const HOUSEHOLDS = JURISDICTION.households;
 
   return budgetCategories
-    .filter((c): c is BudgetCategoryOutput & { efficiency: EfficiencyAnalysis } =>
+    .filter((c): c is BudgetReportCategory & { efficiency: EfficiencyAnalysis } =>
       c.efficiency !== null && c.efficiency.overspendRatio >= 1.5)
     .map(c => {
       const e = c.efficiency;
@@ -418,7 +415,7 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
     });
 }
 
-function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]) {
+function generatePolicyAnalysis(budgetCategories: BudgetReportCategory[]) {
   const efficiencyPolicies = generateEfficiencyPolicies(budgetCategories);
   const allPolicies = [...efficiencyPolicies, ...STRUCTURAL_REFORMS];
 
@@ -504,7 +501,7 @@ function writeTypedDataFile(
 // Regenerate with: pnpm --filter @optimitron/examples run generate:web-data
 import type { ${typeName} } from "${typeImport}";
 
-export const ${exportName} = ${json} as const satisfies ${typeName};
+export const ${exportName}: ${typeName} = ${json};
 `;
   writeFileSync(resolve(dataDir, filename), ts);
 }
@@ -530,11 +527,13 @@ console.warn(`  📊 ${withOSL.length} with OECD-backed OSL, ${withRecs.length} 
 
 console.warn('\nGenerating policy analysis...');
 const policyAnalysis = generatePolicyAnalysis(budgetAnalysis.categories);
-// Policy analysis still as JSON until OPG types are defined
-writeFileSync(
-  resolve(dataDir, 'us-policy-analysis.json'),
-  JSON.stringify(policyAnalysis, null, 2)
+writeTypedDataFile(
+  'us-policy-analysis.ts',
+  'usPolicyAnalysis',
+  'PolicyReportJSON',
+  '@optimitron/opg',
+  policyAnalysis,
 );
-console.warn(`  ✅ ${policyAnalysis.policies.length} policies → us-policy-analysis.json`);
+console.warn(`  ✅ ${policyAnalysis.policies.length} policies → us-policy-analysis.ts`);
 
 console.warn('\nDone! Data generated from real OPG/OBG libraries + OECD cross-country data.');

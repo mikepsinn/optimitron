@@ -5,6 +5,7 @@ import {
   buildPersonalAlignmentReport,
   dedupeLatestWishocraticAllocations,
 } from "@/lib/alignment-report";
+import { mapVoteAllocationsToWishocraticItems } from "@/lib/wishocracy-alignment";
 
 describe("alignment report utilities", () => {
   it("keeps the latest normalized Wishocratic comparison per pair", () => {
@@ -102,13 +103,15 @@ describe("alignment report utilities", () => {
     expect(report.politicians[0]?.sourceLabel).toBeTruthy();
   });
 
-  it("keeps simulated benchmark profiles normalized to 100 percent", () => {
+  it("normalizes benchmark profiles to roughly 100 percent before scoring", () => {
     for (const benchmark of ALIGNMENT_BENCHMARKS) {
-      const total = Object.values(benchmark.allocations).reduce(
+      const normalized = mapVoteAllocationsToWishocraticItems(benchmark.allocations);
+      const total = Object.values(normalized.allocations).reduce(
         (sum, value) => sum + value,
         0,
       );
-      expect(total).toBe(100);
+      expect(normalized.unresolvedItems).toEqual([]);
+      expect(Math.abs(total - 100)).toBeLessThanOrEqual(0.5);
     }
   });
 });

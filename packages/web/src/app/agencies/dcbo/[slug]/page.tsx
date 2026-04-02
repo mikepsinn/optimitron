@@ -1,4 +1,4 @@
-import policyData from "@/data/us-policy-analysis.json";
+import { usPolicyAnalysis as policyData } from "@/data/us-policy-analysis";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { optimalPolicyGeneratorPaperLink, policiesLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";

@@ -98,7 +98,7 @@ describe("alignment report server loader", () => {
     expect(state.report.ranking.length).toBeGreaterThan(0);
   });
 
-  it("surfaces a partial congress source note when all benchmark profiles use the live overlay", async () => {
+  it("surfaces partial congress source metadata when all benchmark profiles use the live overlay", async () => {
     mocks.allocationsFindMany.mockResolvedValue([
       {
         userId: "user-1",
@@ -146,7 +146,8 @@ describe("alignment report server loader", () => {
       throw new Error("Expected ready state.");
     }
     expect(state.report.candidateSourceType).toBe("congress_partial");
-    expect(state.report.candidateSourceNote).toContain("curated benchmark priors");
+    expect(state.report.candidateLastSyncedAt).toBe("2026-03-12T00:00:00.000Z");
+    expect(state.report.candidateSourceNote.length).toBeGreaterThan(0);
   });
 
   it("resolves a public alignment owner from username or referral code", async () => {

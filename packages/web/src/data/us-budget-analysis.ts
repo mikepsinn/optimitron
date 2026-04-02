@@ -2,7 +2,7 @@
 // Regenerate with: pnpm --filter @optimitron/examples run generate:web-data
 import type { BudgetReportJSON } from "@optimitron/obg";
 
-export const usBudgetAnalysis = {
+export const usBudgetAnalysis: BudgetReportJSON = {
   "jurisdiction": "United States",
   "totalSpendingNominal": 6707000000000,
   "categories": [
@@ -2482,7 +2482,7 @@ export const usBudgetAnalysis = {
     "Justice / Law Enforcement: United States spends $12848/cap (rank 25/26). South Korea spends $6037/cap with Life Expectancy 83.57. Overspend: 2.1x. Potential savings: $2.3T/yr",
     "Energy: United States spends $1991/cap (rank 23/27). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-04-02T21:10:25.659Z",
+  "generatedAt": "2026-04-02T21:23:52.911Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",
@@ -2499,4 +2499,4 @@ export const usBudgetAnalysis = {
     "nonDiscretionary": "Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization"
   },
   "note": "Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics."
-} as const satisfies BudgetReportJSON;
+};

@@ -3405,7 +3405,7 @@ export const CONTRIBUTION_DALYS_PER_PCT_POINT: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY: Parameter = {
-  value: 147126.35771127904,
+  value: 34800.17193154482,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_treaty",
   unit: "USD",
@@ -3420,7 +3420,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY_BLEND: Parameter = {
-  value: 156949.2947490749,
+  value: 58350.17193154482,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_TREATY_BLEND",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_treaty_blend",
   unit: "USD",
@@ -3435,7 +3435,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY_BLEND: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA: Parameter = {
-  value: 519483.9283706183,
+  value: 472058.6748361206,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_wishonia",
   unit: "USD",
@@ -3450,7 +3450,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_BLEND: Parameter = {
-  value: 543033.9283706183,
+  value: 495608.6748361206,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_BLEND",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_wishonia_blend",
   unit: "USD",
@@ -3600,16 +3600,16 @@ export const CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 1338759.1598336913,
+  value: 1097018.4798561125,
   parameterName: "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_cumulative_lifetime_income",
   unit: "USD",
   displayName: "Current Trajectory Cumulative Lifetime Income (Per Capita)",
-  description: "Cumulative per-capita income over an average remaining lifespan under current trajectory baseline trajectory. Uses 2.5% baseline growth for all years.",
+  description: "Cumulative per-capita income over an average remaining lifespan under current trajectory baseline trajectory. Uses the implied per-capita baseline CAGR from 2025 to 2045.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_AVG_INCOME_2025 * (1+g) * ((1+g)^T - 1) / g, where g = per-capita baseline growth",
-  latex: "\\begin{gathered}\nY_{cum,earth} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  formula: "GLOBAL_AVG_INCOME_2025 * (1+g_pc,base) * ((1+g_pc,base)^T - 1) / g_pc,base, where g_pc,base is implied by CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20",
+  latex: "\\begin{gathered}\nY_{cum,earth} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
   manualPageTitle: "Your Personal Benefits",
 };
@@ -3638,6 +3638,8 @@ export const CURRENT_TRAJECTORY_GDP_YEAR_20: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 × (1 + GDP_BASELINE_GROWTH_RATE)^20",
   latex: "GDP_{base,20} = GDP_0(1+g_{base})^{20}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
+  manualPageTitle: "Please Select an Earth: A) Everyone Gets Rich B) Somalia, but Everywhere",
 };
 
 export const DESTRUCTIVE_ECONOMY_25PCT_YEAR: Parameter = {
@@ -5839,7 +5841,7 @@ export const RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET: Parameter = {
 };
 
 export const SHARING_BREAKEVEN_ONE_IN_TREATY: Parameter = {
-  value: 245637049.39622235,
+  value: 58101156.61614439,
   parameterName: "SHARING_BREAKEVEN_ONE_IN_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_breakeven_one_in_treaty",
   unit: "ratio",
@@ -5848,13 +5850,13 @@ export const SHARING_BREAKEVEN_ONE_IN_TREATY: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "1 / SHARING_BREAKEVEN_PROBABILITY_TREATY",
-  latex: "\\begin{gathered}\nN_{breakeven} = P_{breakeven} = 0 = 246M\n\\\\[0.5em]\n\\text{where } P_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$14.7M} = 0\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$16.1M - \\$1.34M = \\$14.7M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nN_{breakeven} = P_{breakeven} = 0 = 58.1M\n\\\\[0.5em]\n\\text{where } P_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$3.48M} = 0\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$4.58M - \\$1.1M = \\$3.48M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
 
 export const SHARING_BREAKEVEN_PROBABILITY_TREATY: Parameter = {
-  value: 4.071047109782531e-09,
+  value: 1.721136132636184e-08,
   parameterName: "SHARING_BREAKEVEN_PROBABILITY_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_breakeven_probability_treaty",
   unit: "probability",
@@ -5863,7 +5865,7 @@ export const SHARING_BREAKEVEN_PROBABILITY_TREATY: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "SHARING_OPPORTUNITY_COST / TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
-  latex: "\\begin{gathered}\nP_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$14.7M} = 0\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$16.1M - \\$1.34M = \\$14.7M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nP_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$3.48M} = 0\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$4.58M - \\$1.1M = \\$3.48M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
 };
 
 export const SHARING_OPPORTUNITY_COST: Parameter = {
@@ -5882,7 +5884,7 @@ export const SHARING_OPPORTUNITY_COST: Parameter = {
 };
 
 export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
-  value: 245637049.39622235,
+  value: 58101156.61614439,
   parameterName: "SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_upside_downside_ratio_treaty",
   unit: "x",
@@ -5891,7 +5893,7 @@ export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA / SHARING_OPPORTUNITY_COST",
-  latex: "\\begin{gathered}\nk_{upside:downside} = \\frac{\\Delta Y_{lifetime,treaty}}{C_{share}} = \\frac{\\$14.7M}{\\$0.0599} = 246M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$16.1M - \\$1.34M = \\$14.7M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{upside:downside} = \\frac{\\Delta Y_{lifetime,treaty}}{C_{share}} = \\frac{\\$3.48M}{\\$0.0599} = 58.1M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$4.58M - \\$1.1M = \\$3.48M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
@@ -6137,17 +6139,56 @@ export const TREATY_CUMULATIVE_20YR_WITH_RATCHET: Parameter = {
   manualPageTitle: "Peace Dividend",
 };
 
+export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
+  value: 0.004017391304347827,
+  parameterName: "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cybercrime_recovery_gdp_growth_bonus_year_15",
+  unit: "rate",
+  displayName: "Treaty Cybercrime Recovery GDP Growth Bonus (Year 15)",
+  description: "Annual GDP growth bonus by year 15 from reducing cybercrime drag as the treaty weakens the destructive economy feedback loop.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(GLOBAL_CYBERCRIME_COST_ANNUAL_2025 ÷ GLOBAL_GDP_2025) × TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
+  latex: "\\begin{gathered}\ng_{cyber,treaty,15} \\\\\n= \\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,15}\\cdot\\varepsilon_{conflict}\n\\end{gathered}",
+};
+
+export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
+  value: 0.005295652173913044,
+  parameterName: "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cybercrime_recovery_gdp_growth_bonus_year_20",
+  unit: "rate",
+  displayName: "Treaty Cybercrime Recovery GDP Growth Bonus (Year 20)",
+  description: "Annual GDP growth bonus by year 20 from reducing cybercrime drag as the treaty weakens the destructive economy feedback loop.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(GLOBAL_CYBERCRIME_COST_ANNUAL_2025 ÷ GLOBAL_GDP_2025) × TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
+  latex: "\\begin{gathered}\ng_{cyber,treaty,20} \\\\\n= \\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\end{gathered}",
+};
+
 export const TREATY_DISEASE_CURE_FRACTION_15YR: Parameter = {
-  value: 0.4171098529849636,
+  value: 1.0,
   parameterName: "TREATY_DISEASE_CURE_FRACTION_15YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_disease_cure_fraction_15yr",
   unit: "rate",
-  displayName: "Treaty Disease Cure Fraction (15yr, 1% Reallocation)",
-  description: "Treaty disease-cure fraction over 15 years under 1% military reallocation only. Uses base trial-capacity multiplier (no scaling beyond 1% reallocation) and applies an upper bound of 100% of untreated disease classes.",
+  displayName: "Treaty Disease Cure Fraction (15yr, Take-Hold Path)",
+  description: "Treaty disease-cure fraction over 15 years under the optimistic treaty take-hold path. The initial 1% treaty expands to 2%, then 5%, then 10%, and cumulative trial throughput is capped by the physical participant ceiling.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "min(1.0, NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR * min(DFDA_TRIAL_CAPACITY_MULTIPLIER, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) * 15 / DISEASES_WITHOUT_EFFECTIVE_TREATMENT)",
-  latex: "\\begin{gathered}\nf_{cure,15,treaty} \\\\\n= \\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity}\\cdot 15}{D_{untreated}}\\right)\n\\end{gathered}",
+  formula: "min(1.0, NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR × (3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×1, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 4×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×2, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 5×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×5, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×10, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) ÷ DISEASES_WITHOUT_EFFECTIVE_TREATMENT)",
+  latex: "\\begin{gathered}\nf_{cure,15,treaty} \\\\\n= \\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\end{gathered}",
+};
+
+export const TREATY_DISEASE_CURE_FRACTION_20YR: Parameter = {
+  value: 1.0,
+  parameterName: "TREATY_DISEASE_CURE_FRACTION_20YR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_disease_cure_fraction_20yr",
+  unit: "rate",
+  displayName: "Treaty Disease Cure Fraction (20yr, Take-Hold Path)",
+  description: "Treaty disease-cure fraction over 20 years under the optimistic treaty take-hold path. The initial 1% treaty expands to 2%, then 5%, then 10%, and cumulative trial throughput is capped by the physical participant ceiling.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "min(1.0, NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR × (3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×1, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 4×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×2, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 5×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×5, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 8×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×10, DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) ÷ DISEASES_WITHOUT_EFFECTIVE_TREATMENT)",
+  latex: "\\begin{gathered}\nf_{cure,20,treaty} \\\\\n= \\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\end{gathered}",
 };
 
 export const TREATY_EXPECTED_COST_PER_DALY: Parameter = {
@@ -6197,7 +6238,7 @@ export const TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER: Parameter = {
 };
 
 export const TREATY_HALE_GAIN_YEAR_15: Parameter = {
-  value: 6.54862469186393,
+  value: 15.700000000000003,
   parameterName: "TREATY_HALE_GAIN_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_hale_gain_year_15",
   unit: "years",
@@ -6212,7 +6253,7 @@ export const TREATY_HALE_GAIN_YEAR_15: Parameter = {
 };
 
 export const TREATY_HALE_VALUE_PER_CAPITA: Parameter = {
-  value: 982293.7037795895,
+  value: 2355000.0000000005,
   parameterName: "TREATY_HALE_VALUE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_hale_value_per_capita",
   unit: "USD/person",
@@ -6221,9 +6262,35 @@ export const TREATY_HALE_VALUE_PER_CAPITA: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_HALE_GAIN_YEAR_15 × STANDARD_ECONOMIC_QALY_VALUE_USD",
-  latex: "\\begin{gathered}\nValue_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 6.55 \\times \\$150K = \\$982K\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity}\\cdot 15}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
+  latex: "\\begin{gathered}\nValue_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 15.7 \\times \\$150K = \\$2.36M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
   manualPageTitle: "Your Personal Benefits",
+};
+
+export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
+  value: 0.08464569668336508,
+  parameterName: "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_health_recovery_gdp_growth_bonus_year_15",
+  unit: "rate",
+  displayName: "Treaty Health Recovery GDP Growth Bonus (Year 15)",
+  description: "Annualized GDP growth bonus by year 15 from lower disease burden plus eliminating existing-drug efficacy lag under the treaty path.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "((1 + TREATY_DISEASE_CURE_FRACTION_15YR × DISEASE_BURDEN_GDP_DRAG_PCT + (EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS ÷ GLOBAL_GDP_2025))^(1/15)) - 1",
+  latex: "\\begin{gathered}\ng_{health,treaty,15} \\\\\n= \\left(1 + f_{cure,15,treaty}\\cdot d_{disease} \\\\\n+ \\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/15}-1\n\\end{gathered}",
+};
+
+export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
+  value: 0.06283518480816075,
+  parameterName: "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_health_recovery_gdp_growth_bonus_year_20",
+  unit: "rate",
+  displayName: "Treaty Health Recovery GDP Growth Bonus (Year 20)",
+  description: "Annualized GDP growth bonus by year 20 from lower disease burden plus eliminating existing-drug efficacy lag under the treaty path.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "((1 + TREATY_DISEASE_CURE_FRACTION_20YR × DISEASE_BURDEN_GDP_DRAG_PCT + (EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS ÷ GLOBAL_GDP_2025))^(1/20)) - 1",
+  latex: "\\begin{gathered}\ng_{health,treaty,20} \\\\\n= \\left(1 + f_{cure,20,treaty}\\cdot d_{disease} \\\\\n+ \\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\end{gathered}",
 };
 
 export const TREATY_LIVES_SAVED_ANNUAL_GLOBAL: Parameter = {
@@ -6254,8 +6321,34 @@ export const TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS: Parameter = {
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
+export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
+  value: 0.004345325217391305,
+  parameterName: "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_peace_recovery_gdp_growth_bonus_year_15",
+  unit: "rate",
+  displayName: "Treaty Peace Recovery GDP Growth Bonus (Year 15)",
+  description: "Annual GDP growth bonus by year 15 from explicit avoided war-cost drag under the treaty take-hold path.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT ÷ GLOBAL_GDP_2025) × (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 ÷ TREATY_REDUCTION_PCT) × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
+  latex: "\\begin{gathered}\ng_{peace,treaty,15} \\\\\n= \\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\end{gathered}",
+};
+
+export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
+  value: 0.005727928695652175,
+  parameterName: "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_peace_recovery_gdp_growth_bonus_year_20",
+  unit: "rate",
+  displayName: "Treaty Peace Recovery GDP Growth Bonus (Year 20)",
+  description: "Annual GDP growth bonus by year 20 from explicit avoided war-cost drag under the treaty take-hold path.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT ÷ GLOBAL_GDP_2025) × (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 ÷ TREATY_REDUCTION_PCT) × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
+  latex: "\\begin{gathered}\ng_{peace,treaty,20} \\\\\n= \\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\end{gathered}",
+};
+
 export const TREATY_PERSONAL_UPSIDE_BLEND: Parameter = {
-  value: 15694929.474907491,
+  value: 5835017.193154482,
   parameterName: "TREATY_PERSONAL_UPSIDE_BLEND",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_personal_upside_blend",
   unit: "USD/person",
@@ -6264,13 +6357,13 @@ export const TREATY_PERSONAL_UPSIDE_BLEND: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + TREATY_HALE_VALUE_PER_CAPITA",
-  latex: "\\begin{gathered}\nUpside_{blend,treaty} = \\Delta Y_{lifetime,treaty} + Value_{HALE,treaty} = \\$14.7M + \\$982K = \\$15.7M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$16.1M - \\$1.34M = \\$14.7M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 6.55 \\times \\$150K = \\$982K\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity}\\cdot 15}{D_{untreated}}\\right)\n\\end{gathered}",
+  latex: "\\begin{gathered}\nUpside_{blend,treaty} = \\Delta Y_{lifetime,treaty} + Value_{HALE,treaty} = \\$3.48M + \\$2.36M = \\$5.84M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$4.58M - \\$1.1M = \\$3.48M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 15.7 \\times \\$150K = \\$2.36M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
 
 export const TREATY_PROJECTED_HALE_YEAR_15: Parameter = {
-  value: 69.84862469186393,
+  value: 79.0,
   parameterName: "TREATY_PROJECTED_HALE_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_projected_hale_year_15",
   unit: "years",
@@ -6297,30 +6390,30 @@ export const TREATY_QALYS_GAINED_ANNUAL_GLOBAL: Parameter = {
   latex: "\\begin{gathered}\nQALY_{treaty,ann} = QALY_{life} \\times Lives_{treaty,ann} = 35 \\times 2{,}450 = 85{,}600\n\\\\[0.5em]\n\\text{where } Lives_{treaty,ann} = Deaths_{conflict} \\times Reduce_{treaty} = 245{,}000 \\times 1\\% = 2{,}450\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
 };
 
-export const TREATY_RATCHET_MULTIPLIER_20YR: Parameter = {
-  value: 5.800000000000001,
-  parameterName: "TREATY_RATCHET_MULTIPLIER_20YR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_ratchet_multiplier_20yr",
-  unit: "x",
-  displayName: "Treaty Ratchet Funding Multiplier (20yr)",
-  description: "How many times more cumulative funding flows with IAB ratchet vs stagnation over 20 years.",
+export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
+  value: 0.008066666666666668,
+  parameterName: "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_redirect_gdp_growth_bonus_year_15",
+  unit: "rate",
+  displayName: "Treaty Redirect GDP Growth Bonus (Year 15)",
+  description: "Annual GDP growth bonus by year 15 from redirecting military spending to medical research under the treaty take-hold path, including R&D spillovers.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "TREATY_CUMULATIVE_20YR_WITH_RATCHET / (TREATY_ANNUAL_FUNDING × 20)",
-  latex: "\\begin{gathered}\nk_{ratchet,20} \\\\\n= \\frac{Fund_{20yr,ratchet}}{20\\cdot Funding_{treaty,ann}}\n\\end{gathered}",
+  formula: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 × ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT ÷ 0.30) × (RD_SPILLOVER_MULTIPLIER ÷ 2.0))",
+  latex: "\\begin{gathered}\ng_{redirect,treaty,15} \\\\\n= \\bar{s}_{treaty,15}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\end{gathered}",
 };
 
-export const TREATY_RATCHET_PREMIUM_20YR: Parameter = {
-  value: 2611200000000.0005,
-  parameterName: "TREATY_RATCHET_PREMIUM_20YR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_ratchet_premium_20yr",
-  unit: "USD",
-  displayName: "Treaty Ratchet Premium over 20 Years",
-  description: "Additional cumulative funding from IAB ratchet expansion vs stagnation over 20 years. The value of the IAB mechanism: this much more funding flows to medical research because bondholder incentives drive treaty expansion.",
+export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
+  value: 0.010633333333333337,
+  parameterName: "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_redirect_gdp_growth_bonus_year_20",
+  unit: "rate",
+  displayName: "Treaty Redirect GDP Growth Bonus (Year 20)",
+  description: "Annual GDP growth bonus by year 20 from redirecting military spending to medical research under the treaty take-hold path, including R&D spillovers.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "TREATY_CUMULATIVE_20YR_WITH_RATCHET - (TREATY_ANNUAL_FUNDING × 20)",
-  latex: "\\begin{gathered}\n\\Delta Fund_{ratchet,20} \\\\\n= Fund_{20yr,ratchet}-20\\cdot Funding_{treaty,ann}\n\\end{gathered}",
+  formula: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 × ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT ÷ 0.30) × (RD_SPILLOVER_MULTIPLIER ÷ 2.0))",
+  latex: "\\begin{gathered}\ng_{redirect,treaty,20} \\\\\n= \\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\end{gathered}",
 };
 
 export const TREATY_ROI_EXISTING_DRUGS_ONLY: Parameter = {
@@ -6367,7 +6460,7 @@ export const TREATY_TOTAL_ANNUAL_COSTS: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
-  value: 149452.79694361,
+  value: 76704.0062670062,
   parameterName: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_avg_income_year_15",
   unit: "USD",
@@ -6382,7 +6475,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
-  value: 338569.0191556,
+  value: 99860.6273447306,
   parameterName: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_avg_income_year_20",
   unit: "USD",
@@ -6397,7 +6490,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_CAGR_YEAR_20: Parameter = {
-  value: 0.17933411068717886,
+  value: 0.10949209901105927,
   parameterName: "TREATY_TRAJECTORY_CAGR_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_cagr_year_20",
   unit: "rate",
@@ -6412,20 +6505,20 @@ export const TREATY_TRAJECTORY_CAGR_YEAR_20: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 16051394.930961594,
+  value: 4577035.673010594,
   parameterName: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_cumulative_lifetime_income",
   unit: "USD",
   displayName: "Treaty Trajectory Cumulative Lifetime Income (Per Capita)",
-  description: "Cumulative per-capita income over an average remaining lifespan under Treaty Trajectory. Uses implied per-capita CAGR for years 1-20 (derived from known year-0 and year-20 per-capita incomes), then baseline growth from the year-20 level. Conservative: assumes no further treaty acceleration beyond year 20.",
+  description: "Cumulative per-capita income over an average remaining lifespan under Treaty Trajectory. Uses implied per-capita CAGR for years 1-20 (derived from known year-0 and year-20 per-capita incomes), then current-trajectory per-capita growth from the year-20 level. Conservative: assumes no further treaty acceleration beyond year 20.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "Phase 1: y0*(1+g_pc)*((1+g_pc)^20-1)/g_pc + Phase 2: y20*(1+g_base)*((1+g_base)^(T-20)-1)/g_base",
-  latex: "\\begin{gathered}\nY_{cum,treaty} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} \\\\\n+ \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\end{gathered}",
+  formula: "Phase 1: y0*(1+g_pc,treaty)*((1+g_pc,treaty)^20-1)/g_pc,treaty + Phase 2: y20*(1+g_pc,base)*((1+g_pc,base)^(T-20)-1)/g_pc,base",
+  latex: "\\begin{gathered}\nY_{cum,treaty} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} \\\\\n+ \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\end{gathered}",
 };
 
 export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Parameter = {
-  value: 7.986164148687315,
+  value: 4.0987575839171555,
   parameterName: "TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_vs_current_trajectory_multiplier_year_15",
   unit: "x",
@@ -6434,11 +6527,11 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Par
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_15 / CURRENT_TRAJECTORY_GDP_YEAR_15",
-  latex: "\\begin{gathered}\nk_{treaty:base,15} = \\frac{GDP_{treaty,15}}{GDP_{base,15}} = \\frac{\\$1330T}{\\$167T} = 7.99\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{12}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 15}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,15} = GDP_0(1+g_{base})^{15}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{treaty:base,15} = \\frac{GDP_{treaty,15}}{GDP_{base,15}} = \\frac{\\$683T}{\\$167T} = 4.1\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15}=\\bar{s}_{treaty,15}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,15}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15}=\\left(1+f_{cure,15,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/15}-1\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } GDP_{base,15} = GDP_0(1+g_{base})^{15}\n\\end{gathered}",
 };
 
 export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Parameter = {
-  value: 16.529506763430206,
+  value: 4.875363136331447,
   parameterName: "TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_vs_current_trajectory_multiplier_year_20",
   unit: "x",
@@ -6447,41 +6540,41 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Par
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_20 ÷ CURRENT_TRAJECTORY_GDP_YEAR_20",
-  latex: "\\begin{gathered}\nk_{treaty:base,20} = \\frac{GDP_{treaty,20}}{GDP_{base,20}} = \\frac{\\$3110T}{\\$188T} = 16.5\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{treaty:base,20} = \\frac{GDP_{treaty,20}}{GDP_{base,20}} = \\frac{\\$919T}{\\$188T} = 4.88\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
 
 export const TREATY_TRAJECTORY_GDP_YEAR_15: Parameter = {
-  value: 1330129892798129.0,
+  value: 682665655776355.2,
   parameterName: "TREATY_TRAJECTORY_GDP_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_year_15",
   unit: "USD",
   displayName: "Treaty Trajectory GDP at Year 15",
-  description: "Projected global GDP at year 15 under the Treaty Trajectory: military-to-science reallocation plus disease-burden recovery only. 3-year ramp at 50% intensity + 12 years full implementation. Excludes non-health dysfunction-capital reallocation.",
+  description: "Projected global GDP at year 15 under the optimistic treaty take-hold path. Compounds baseline growth plus explicit military redirect spillovers, peace dividend recovery, cybercrime drag recovery, and health recovery from disease cures and faster deployment.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_GDP_2025 * (1 + g_treaty_ramp)^3 * (1 + g_treaty_full)^12, where g_treaty includes baseline growth + military reallocation + disease-burden recovery only",
-  latex: "\\begin{gathered}\nGDP_{treaty,15} \\\\\n= GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{12}\n\\end{gathered}",
+  formula: "GLOBAL_GDP_2025 × (1 + GDP_BASELINE_GROWTH_RATE + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15 + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15 + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15 + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15)^15",
+  latex: "\\begin{gathered}\nGDP_{treaty,15} \\\\\n= GDP_0(1 + g_{base} + g_{redirect} + g_{peace} + g_{cyber} \\\\\n+ g_{health})^{15}\n\\end{gathered}",
 };
 
 export const TREATY_TRAJECTORY_GDP_YEAR_20: Parameter = {
-  value: 3114834976231520.0,
+  value: 918717771571521.5,
   parameterName: "TREATY_TRAJECTORY_GDP_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_year_20",
   unit: "USD",
   displayName: "Treaty Trajectory GDP at Year 20",
-  description: "Projected global GDP at year 20 under the Treaty Trajectory: military-to-science reallocation plus disease-burden recovery only. Excludes non-health dysfunction-capital reallocation to isolate the lower-political-baggage channel.",
+  description: "Projected global GDP at year 20 under the optimistic treaty take-hold path. Compounds baseline growth plus explicit military redirect spillovers, peace dividend recovery, cybercrime drag recovery, and health recovery from disease cures and faster deployment.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_GDP_2025 × (1 + g_treaty_ramp)^3 × (1 + g_treaty_full)^17, where g_treaty includes baseline growth + military reallocation + disease-burden recovery only",
-  latex: "\\begin{gathered}\nGDP_{treaty,20} \\\\\n= GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\end{gathered}",
+  formula: "GLOBAL_GDP_2025 × (1 + GDP_BASELINE_GROWTH_RATE + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20 + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20 + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20 + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20)^20",
+  latex: "\\begin{gathered}\nGDP_{treaty,20} \\\\\n= GDP_0(1 + g_{base} + g_{redirect} + g_{peace} + g_{cyber} \\\\\n+ g_{health})^{20}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
   manualPageTitle: "The Political Dysfunction Tax",
 };
 
 export const TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
-  value: 14712635.771127902,
+  value: 3480017.1931544817,
   parameterName: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_lifetime_income_gain_per_capita",
   unit: "USD",
@@ -6490,13 +6583,13 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
-  latex: "\\begin{gathered}\n\\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$16.1M - \\$1.34M = \\$14.7M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\n\\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$4.58M - \\$1.1M = \\$3.48M\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
 
 export const TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
-  value: 11.98975544858688,
+  value: 4.172250292092554,
   parameterName: "TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_lifetime_income_multiplier",
   unit: "x",
@@ -6505,7 +6598,7 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
-  latex: "\\begin{gathered}\nk_{lifetime,treaty:earth} = \\frac{Y_{cum,treaty}}{Y_{cum,earth}} = \\frac{\\$16.1M}{\\$1.34M} = 12\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc})((1+g_{pc})^{20}-1)}{g_{pc}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{lifetime,treaty:earth} = \\frac{Y_{cum,treaty}}{Y_{cum,earth}} = \\frac{\\$4.58M}{\\$1.1M} = 4.17\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
@@ -7232,7 +7325,7 @@ export const WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE: Parameter = {
 };
 
 export const WISHONIA_PERSONAL_UPSIDE_BLEND: Parameter = {
-  value: 54303392.83706183,
+  value: 49560867.48361206,
   parameterName: "WISHONIA_PERSONAL_UPSIDE_BLEND",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_personal_upside_blend",
   unit: "USD/person",
@@ -7241,7 +7334,7 @@ export const WISHONIA_PERSONAL_UPSIDE_BLEND: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + WISHONIA_HALE_VALUE_PER_CAPITA",
-  latex: "\\begin{gathered}\nUpside_{blend,wish} = \\Delta Y_{lifetime,wish} + Value_{HALE,wish} = \\$51.9M + \\$2.36M = \\$54.3M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$53.3M - \\$1.34M = \\$51.9M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,wish} = \\Delta HALE_{wish,15} \\times Value_{QALY} = 15.7 \\times \\$150K = \\$2.36M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 15}{D_{untreated}}\\right)\n\\end{gathered}",
+  latex: "\\begin{gathered}\nUpside_{blend,wish} = \\Delta Y_{lifetime,wish} + Value_{HALE,wish} = \\$47.2M + \\$2.36M = \\$49.6M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$48.3M - \\$1.1M = \\$47.2M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,wish} = \\Delta HALE_{wish,15} \\times Value_{QALY} = 15.7 \\times \\$150K = \\$2.36M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\cdot \\Delta_{HALE}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 15}{D_{untreated}}\\right)\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
   manualPageTitle: "Your Personal Benefits",
 };
@@ -7307,16 +7400,16 @@ export const WISHONIA_TRAJECTORY_CAGR_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 53287151.99689552,
+  value: 48302885.96346817,
   parameterName: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_cumulative_lifetime_income",
   unit: "USD",
   displayName: "Wishonia Trajectory Cumulative Lifetime Income (Per Capita)",
-  description: "Cumulative per-capita income over an average remaining lifespan under Wishonia Trajectory. Uses implied per-capita CAGR for years 1-20, then baseline growth from the year-20 level. Conservative: assumes no further acceleration beyond year 20.",
+  description: "Cumulative per-capita income over an average remaining lifespan under Wishonia Trajectory. Uses implied per-capita CAGR for years 1-20, then current-trajectory per-capita growth from the year-20 level. Conservative: assumes no further acceleration beyond year 20.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "Phase 1: y0*(1+g_pc)*((1+g_pc)^20-1)/g_pc + Phase 2: y20*(1+g_base)*((1+g_base)^(T-20)-1)/g_base",
-  latex: "\\begin{gathered}\nY_{cum,wish} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} \\\\\n+ \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\end{gathered}",
+  formula: "Phase 1: y0*(1+g_pc,wish)*((1+g_pc,wish)^20-1)/g_pc,wish + Phase 2: y20*(1+g_pc,base)*((1+g_pc,base)^(T-20)-1)/g_pc,base",
+  latex: "\\begin{gathered}\nY_{cum,wish} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} \\\\\n+ \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\end{gathered}",
 };
 
 export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Parameter = {
@@ -7378,7 +7471,7 @@ export const WISHONIA_TRAJECTORY_GDP_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
-  value: 51948392.83706183,
+  value: 47205867.48361206,
   parameterName: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_lifetime_income_gain_per_capita",
   unit: "USD",
@@ -7387,13 +7480,13 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
-  latex: "\\begin{gathered}\n\\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$53.3M - \\$1.34M = \\$51.9M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\n\\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$48.3M - \\$1.1M = \\$47.2M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
 
 export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
-  value: 39.80338928438418,
+  value: 44.03105950394171,
   parameterName: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_lifetime_income_multiplier",
   unit: "x",
@@ -7402,13 +7495,13 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
-  latex: "\\begin{gathered}\nk_{lifetime,wish:earth} = \\frac{Y_{cum,wish}}{Y_{cum,earth}} = \\frac{\\$53.3M}{\\$1.34M} = 39.8\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}-20}-1)}{g_{base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{base})((1+g_{base})^{T_{remaining}}-1)}{g_{base}}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{lifetime,wish:earth} = \\frac{Y_{cum,wish}}{Y_{cum,earth}} = \\frac{\\$48.3M}{\\$1.1M} = 44\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}}\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_0(1+g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 79 - 30.5 = 48.5\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
 
 export const WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20: Parameter = {
-  value: 3.4315554367560863,
+  value: 11.63439875447449,
   parameterName: "WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_vs_treaty_trajectory_gdp_multiplier_year_20",
   unit: "x",
@@ -7417,7 +7510,7 @@ export const WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20: Pa
   sourceType: "calculated",
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_20 ÷ TREATY_TRAJECTORY_GDP_YEAR_20",
-  latex: "\\begin{gathered}\nk_{wish,full:core,20} = \\frac{GDP_{wish,20}}{GDP_{treaty,20}} = \\frac{\\$10700T}{\\$3110T} = 3.43\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{treaty,ramp})^3(1+g_{treaty,full})^{17}\n\\end{gathered}",
+  latex: "\\begin{gathered}\nk_{wish,full:core,20} = \\frac{GDP_{wish,20}}{GDP_{treaty,20}} = \\frac{\\$10700T}{\\$919T} = 11.6\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^3(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot k_{capacity,wish}\\cdot 20}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20}=GDP_0(1+g_{base}+g_{redirect}+g_{peace}+g_{cyber}+g_{health})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20}=\\bar{s}_{treaty,20}\\cdot\\left(\\frac{\\Delta g_{30\\%}}{0.30}\\right)\\cdot\\left(\\frac{m_{spillover}}{2.0}\\right)\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20}=\\left(\\frac{Benefit_{peace,soc}}{GDP_0}\\right)\\cdot\\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right)\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20}=\\left(\\frac{Cost_{cyber,2025}}{GDP_0}\\right)\\cdot\\bar{s}_{treaty,20}\\cdot\\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20}=\\left(1+f_{cure,20,treaty}\\cdot d_{disease}+\\frac{Loss_{lag,existing}}{GDP_0}\\right)^{1/20}-1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty}=\\min\\left(1,\\frac{Treatments_{new,ann}\\cdot \\sum_y k_{capacity,y}}{D_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } Loss_{lag} = Deaths_{lag,total} \\times (LE_{global} - Age_{death,delay}) \\times Value_{QALY} = 102M \\times (79 - 62) \\times \\$150K = \\$259T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
   manualPageTitle: "Please Select an Earth: A) Everyone Gets Rich B) Somalia, but Everywhere",
 };
@@ -8846,6 +8939,30 @@ export const TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE: Parameter = {
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
 };
 
+export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15: Parameter = {
+  value: 0.044000000000000004,
+  parameterName: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_effective_reallocation_share_year_15",
+  unit: "rate",
+  displayName: "Treaty Effective Reallocation Share (Year 15)",
+  description: "Average military-to-medicine reallocation share over 15 years under the optimistic treaty take-hold path (1% for 3 years, 2% for 4 years, 5% for 5 years, 10% for 3 years).",
+  sourceType: "definition",
+  confidence: "high",
+  formula: "(0.01×3 + 0.02×4 + 0.05×5 + 0.10×3) / 15",
+};
+
+export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20: Parameter = {
+  value: 0.05800000000000001,
+  parameterName: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_effective_reallocation_share_year_20",
+  unit: "rate",
+  displayName: "Treaty Effective Reallocation Share (Year 20)",
+  description: "Average military-to-medicine reallocation share over 20 years under the optimistic treaty take-hold path (1% for 3 years, 2% for 4 years, 5% for 5 years, 10% for 8 years).",
+  sourceType: "definition",
+  confidence: "high",
+  formula: "(0.01×3 + 0.02×4 + 0.05×5 + 0.10×8) / 20",
+};
+
 export const TREATY_REDIRECTED_SPENDING_INFINITE_ROI: Parameter = {
   value: 0.0,
   parameterName: "TREATY_REDIRECTED_SPENDING_INFINITE_ROI",
@@ -9510,19 +9627,26 @@ export const parameters = {
   TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_CUMULATIVE_20YR_WITH_RATCHET,
+  TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15,
+  TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20,
   TREATY_DISEASE_CURE_FRACTION_15YR,
+  TREATY_DISEASE_CURE_FRACTION_20YR,
   TREATY_EXPECTED_COST_PER_DALY,
   TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_HALE_VALUE_PER_CAPITA,
+  TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15,
+  TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20,
   TREATY_LIVES_SAVED_ANNUAL_GLOBAL,
   TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS,
+  TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15,
+  TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20,
   TREATY_PERSONAL_UPSIDE_BLEND,
   TREATY_PROJECTED_HALE_YEAR_15,
   TREATY_QALYS_GAINED_ANNUAL_GLOBAL,
-  TREATY_RATCHET_MULTIPLIER_20YR,
-  TREATY_RATCHET_PREMIUM_20YR,
+  TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15,
+  TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20,
   TREATY_ROI_EXISTING_DRUGS_ONLY,
   TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_TOTAL_ANNUAL_COSTS,
@@ -9707,6 +9831,8 @@ export const parameters = {
   TREATY_CAMPAIGN_BUDGET_RESERVE,
   TREATY_CAMPAIGN_DURATION_YEARS,
   TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE,
+  TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15,
+  TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20,
   TREATY_REDIRECTED_SPENDING_INFINITE_ROI,
   TREATY_REDUCTION_PCT,
   TRIAL_RELEVANT_DISEASES_COUNT,
@@ -11762,10 +11888,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 625,
+  total: 634,
   external: 207,
-  calculated: 289,
-  definitions: 129,
+  calculated: 296,
+  definitions: 131,
   citations: 149,
 } as const;
 

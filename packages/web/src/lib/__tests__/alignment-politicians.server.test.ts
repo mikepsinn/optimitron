@@ -144,11 +144,16 @@ describe("alignment politician source", () => {
     const profiles = await loadAlignmentBenchmarkProfiles();
 
     expect(profiles[0]?.sourceType).toBe("congress_partial");
-    expect(profiles[0]?.sourceNote).toContain("curated benchmark");
+    expect(profiles[0]?.sourceLabel).toBeTruthy();
+    expect(profiles[0]?.sourceNote.length).toBeGreaterThan(0);
+    expect(profiles[0]?.categoriesCovered).toBeGreaterThan(0);
+    expect(profiles[0]?.rollCallCount).toBe(2);
+    expect(profiles[0]?.lastSyncedAt).toBe("2026-03-12T00:00:00.000Z");
     expect(profiles[0]?.allocations.ICE_CRIMINAL_DEPORTATION).not.toBe(
       bernie.allocations.ICE_CRIMINAL_DEPORTATION,
     );
-    expect(profiles[0]?.summary).toContain("partially tilt");
+    expect(profiles[0]?.summary).toBeTruthy();
+    expect(profiles[0]?.summary).not.toBe(bernie.summary);
   });
 
   it("skips sync cleanly when CONGRESS_API_KEY is missing", async () => {

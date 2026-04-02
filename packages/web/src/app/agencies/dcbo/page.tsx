@@ -2,51 +2,13 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import policyData from "@/data/us-policy-analysis.json";
+import { usPolicyAnalysis } from "@/data/us-policy-analysis";
 import { getPolicyPath } from "@/lib/routes";
 import { PrizeCTA } from "@/components/prize/PrizeCTA";
 import { GLOBAL_AVG_INCOME_2025, GLOBAL_HALE_CURRENT } from "@optimitron/data/parameters";
 
-interface BradfordHillScores {
-  strength: number;
-  consistency: number;
-  temporality: number;
-  gradient: number;
-  experiment: number;
-  plausibility: number;
-  coherence: number;
-  analogy: number;
-  specificity: number;
-}
-
-interface Policy {
-  name: string;
-  type: string;
-  category: string;
-  description: string;
-  recommendationType: string;
-  evidenceGrade: string;
-  causalConfidenceScore: number;
-  policyImpactScore: number;
-  welfareScore: number;
-  incomeEffect: number;
-  healthEffect: number;
-  bradfordHillScores: BradfordHillScores;
-  rationale: string;
-  currentStatus?: string;
-  recommendedTarget?: string;
-  blockingFactors: string[];
-}
-
-interface PolicyData {
-  jurisdiction: string;
-  generatedAt: string;
-  generatedBy: string;
-  note: string;
-  policies: Policy[];
-}
-
-const data = policyData as unknown as PolicyData;
+// All types flow from @optimitron/opg via the generated .ts file.
+const data = usPolicyAnalysis;
 
 const MEDIAN_INCOME = GLOBAL_AVG_INCOME_2025.value;
 const HALE_YEARS = GLOBAL_HALE_CURRENT.value;

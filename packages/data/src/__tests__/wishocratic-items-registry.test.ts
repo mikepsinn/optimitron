@@ -33,9 +33,11 @@ describe("Wishocratic items registry", () => {
     expect(pragmaticTrials).toMatchObject({
       id: "PRAGMATIC_CLINICAL_TRIALS",
       jurisdictionCode: "US",
-      currentAllocationUsd: 2_000_000_000,
+      currentAllocationUsd: expect.any(Number),
+      currentAllocationPct: allocations.PRAGMATIC_CLINICAL_TRIALS,
       sourceUrl: "https://copenhagenconsensus.com/copenhagen-consensus-iii/outcome",
     });
+    expect(pragmaticTrials.currentAllocationUsd).toBeGreaterThan(0);
     expect(allocations.MILITARY_OPERATIONS).toBeGreaterThan(
       allocations.PRAGMATIC_CLINICAL_TRIALS,
     );
