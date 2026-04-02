@@ -43,7 +43,6 @@ describe("navigation routes", () => {
     expect(hrefs).toEqual(
       expect.arrayContaining([
         ROUTES.referendum,
-        ROUTES.outcomes,
         ROUTES.compare,
         ROUTES.dcbo,
         ROUTES.domb,
@@ -53,11 +52,10 @@ describe("navigation routes", () => {
   });
 
   it("keeps nested routes highlighted under the correct parent nav item", () => {
-    const studiesLink = requireLink(ROUTES.outcomes, exploreLinks);
+    const policies = requireLink(ROUTES.dcbo, exploreLinks);
 
-    expect(isNavItemActive("/outcomes/healthy-life-years", studiesLink)).toBe(true);
-    expect(isNavItemActive("/studies/hale/public-health-spending", studiesLink)).toBe(true);
-    expect(isNavItemActive(ROUTES.compare, studiesLink)).toBe(false);
+    expect(isNavItemActive("/agencies/dcbo/drug-decriminalization", policies)).toBe(true);
+    expect(isNavItemActive(ROUTES.compare, policies)).toBe(false);
   });
 
   it("builds sign-in links from canonical routes", () => {

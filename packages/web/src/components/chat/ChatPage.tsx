@@ -10,7 +10,7 @@ import {
 } from "@optimitron/chat-ui";
 import { API_ROUTES } from "@/lib/api-routes";
 import { MythBusterCard } from "./MythBusterCard";
-import { OutcomeCard } from "./OutcomeCard";
+// OutcomeCard removed — explorer infrastructure deleted
 import { BudgetResultCard } from "./BudgetResultCard";
 import { RepresentativeCard } from "./RepresentativeCard";
 import { BillListCard } from "./BillListCard";
@@ -34,8 +34,7 @@ import {
 import { buildBillCBA, type BillCBA } from "../../lib/civic-cba";
 import type { CivicRepresentative } from "../../lib/civic-data";
 import type { ClassifiedBill } from "../../app/api/civic/bills/route";
-import { listExplorerOutcomes, getOutcomeMegaStudy } from "../../lib/analysis-explorer-data";
-import { getOutcomeHubPath } from "../../lib/analysis-explorer-routes";
+// Explorer imports removed — outcomes/studies pages deleted
 import { misconceptionsData } from "@/data/misconceptions";
 import "./chat-theme.css";
 
@@ -43,7 +42,7 @@ const VoiceChatOverlay = lazy(() => import("./VoiceChatOverlay"));
 
 // --- Extended message types for app-specific cards ---
 type MythCardMessage = { type: "mythCard"; finding: { myth: string; reality: string; grade: string } };
-type OutcomeCardMessage = { type: "outcomeCard"; outcome: { label: string; topPredictor: string; score: number; id: string } };
+// OutcomeCardMessage removed — explorer deleted
 type BudgetResultMessage = { type: "budgetResult"; allocations: Record<string, number>; actualAllocations: Record<string, number> };
 
 // --- Civic engagement message types ---
@@ -58,7 +57,7 @@ type SendToRepMessage = { type: "sendToRep"; representatives: CivicRepresentativ
 type AppChatMessage =
   | ChatMessage
   | MythCardMessage
-  | OutcomeCardMessage
+  // OutcomeCardMessage removed
   | BudgetResultMessage
   | RepCardMessage
   | BillListMessage
@@ -491,61 +490,23 @@ export default function ChatPage() {
         }
 
         case "insight": {
-          const outcomes = listExplorerOutcomes();
-          const outcome = pickRandom(outcomes);
-          if (!outcome) {
-            append({
-              type: "text",
-              role: "assistant",
-              content: "No outcome data available yet. Try another action.",
-            } as ChatMessage);
-            break;
-          }
-
-          const megaStudy = getOutcomeMegaStudy(outcome.id);
-          const topRow = megaStudy?.rows[0];
-
-          if (topRow) {
-            appendMultiple(
-              {
-                type: "outcomeCard",
-                outcome: {
-                  label: outcome.label,
-                  topPredictor: topRow.predictorLabel ?? topRow.predictorId,
-                  score: topRow.score,
-                  id: outcome.id,
-                },
-              } as OutcomeCardMessage,
-              {
-                type: "hints",
-                buttons: [
-                  { label: "Show another insight", action: "insight" },
-                  { label: "Bust a myth", action: "myth" },
-                  { label: "Rate my mood", action: "mood" },
-                ],
-              } as ChatMessage,
-            );
-          } else {
-            appendMultiple(
-              {
-                type: "insight",
-                title: outcome.label,
-                body: `Explore what drives ${outcome.label.toLowerCase()} across jurisdictions.`,
-                actionLabel: "See full analysis",
-                onAction: () => {
-                  window.location.href = getOutcomeHubPath(outcome.id);
-                },
-              } as ChatMessage,
-              {
-                type: "hints",
-                buttons: [
-                  { label: "Show another insight", action: "insight" },
-                  { label: "Bust a myth", action: "myth" },
-                  { label: "Rate my mood", action: "mood" },
-                ],
-              } as ChatMessage,
-            );
-          }
+          appendMultiple(
+            {
+              type: "insight",
+              title: "Policy & Budget Analysis",
+              body: "I've graded every US policy A through F and found where the budget overspends 2-5× for worse outcomes.",
+              actionLabel: "See policy grades",
+              onAction: () => { window.location.href = "/agencies/dcbo"; },
+            } as ChatMessage,
+            {
+              type: "hints",
+              buttons: [
+                { label: "Show another insight", action: "insight" },
+                { label: "Bust a myth", action: "myth" },
+                { label: "Rate my mood", action: "mood" },
+              ],
+            } as ChatMessage,
+          );
           break;
         }
 
@@ -727,8 +688,7 @@ export default function ChatPage() {
     switch (m.type) {
       case "mythCard":
         return <MythBusterCard finding={m.finding} />;
-      case "outcomeCard":
-        return <OutcomeCard outcome={m.outcome} />;
+      // outcomeCard case removed — explorer deleted
       case "budgetResult":
         return <BudgetResultCard allocations={m.allocations} actualAllocations={m.actualAllocations} />;
       case "repCard":
@@ -998,12 +958,8 @@ export default function ChatPage() {
   );
 
   const handleInsightAction = useCallback(
-    (title: string) => {
-      const outcomes = listExplorerOutcomes();
-      const match = outcomes.find((o) => o.label === title);
-      if (match) {
-        window.location.href = getOutcomeHubPath(match.id);
-      }
+    (_title: string) => {
+      window.location.href = "/agencies/dcbo";
     },
     [],
   );

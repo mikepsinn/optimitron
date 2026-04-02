@@ -42,8 +42,7 @@ export const ROUTES = {
   // Analysis
   compare: "/compare",
   misconceptions: "/misconceptions",
-  outcomes: "/outcomes",
-  studies: "/studies",
+  // outcomes and studies routes removed — explorer replaced by /agencies/domb and /agencies/dcbo
   // Player
   profile: "/profile",
   dashboard: "/dashboard",
@@ -108,13 +107,8 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
   });
 }
 
-export const studiesLink: NavItem = {
-  href: ROUTES.outcomes,
-  label: "Studies",
-  emoji: "🧪",
-  description: "What actually causes what. Your species has been sitting on the data for decades. You mostly used it to sell yoghurt.",
-  matchPrefixes: [ROUTES.outcomes, ROUTES.studies],
-};
+// policiesLink removed — was pointing to deleted /outcomes explorer.
+// Use policiesLink (/agencies/dcbo) instead.
 
 export const compareLink: NavItem = {
   href: ROUTES.compare,
@@ -206,7 +200,7 @@ export const agenciesLink: NavItem = {
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
   referendumLink,
-  studiesLink,
+  policiesLink,
   compareLink,
   policiesLink,
   budgetLink,
@@ -415,7 +409,7 @@ export interface NavSection {
 export const navSections: NavSection[] = [
   { id: "play", label: "Play", items: [dashboardLink, profileLink, censusLink, checkInLink, settingsLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
   { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
-  { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, studiesLink] },
+  { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, policiesLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
 ];
 

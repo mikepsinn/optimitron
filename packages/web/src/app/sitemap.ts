@@ -19,7 +19,7 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: ROUTES.video, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.demo, priority: 0.8, changeFrequency: "monthly" },
   // Analysis
-  { path: ROUTES.outcomes, priority: 0.8, changeFrequency: "weekly" },
+  { path: ROUTES.dcbo, priority: 0.8, changeFrequency: "weekly" },
   { path: ROUTES.compare, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.misconceptions, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.discoveries, priority: 0.6, changeFrequency: "weekly" },

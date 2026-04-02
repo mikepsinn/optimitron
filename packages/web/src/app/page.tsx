@@ -30,7 +30,7 @@ import {
   alignmentLink,
   prizeLink,
   ROUTES,
-  studiesLink,
+  policiesLink,
   trackLink,
   wishocracyLink,
   misconceptionsLink,
@@ -115,7 +115,7 @@ const productWorkflows = [
     textColor: "text-brutal-cyan-foreground",
   },
   {
-    item: studiesLink,
+    item: policiesLink,
     label: "Studies",
     title: "Look at the actual numbers",
     description:

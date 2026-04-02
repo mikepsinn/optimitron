@@ -6,14 +6,13 @@ import {
   prizeLink,
   wishocracyLink,
   alignmentLink,
-  studiesLink,
+  policiesLink,
   referendumLink,
   iabLink,
   dtreasuryLink,
   scoreboardLink,
   trackLink,
   budgetLink,
-  policiesLink,
   toolsLink,
 } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -52,7 +51,7 @@ const shelves: Shelf[] = [
           { label: "SPEED", value: 9 },
         ],
         cost: "FREE",
-        link: { item: studiesLink, label: "Equip" },
+        link: { item: policiesLink, label: "Equip" },
         bgColor: "cyan",
       },
       {
@@ -97,7 +96,7 @@ const shelves: Shelf[] = [
           { label: "SPEED", value: 8 },
         ],
         cost: "FREE",
-        link: { item: studiesLink, label: "Equip" },
+        link: { item: policiesLink, label: "Equip" },
         bgColor: "cyan",
       },
       {
