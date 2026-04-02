@@ -18,6 +18,7 @@ const bgClasses = {
 export function SierraSlideWrapper({ children, className, act = 1 }: SierraSlideWrapperProps) {
   return (
     <div
+      data-testid="sierra-slide"
       className={cn(
         "relative w-full h-full flex flex-col items-center justify-center",
         "transition-colors duration-500",

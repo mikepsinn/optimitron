@@ -464,6 +464,7 @@ function DemoPlayerInner({
       <AnimatePresence mode="sync">
         <motion.div
           key={slide.id}
+          data-testid={`slide-${slide.slideId || slide.id}`}
           variants={crossfadeVariants}
           initial="initial"
           animate="animate"
