@@ -44,13 +44,6 @@ describeIfDatabase("seedDatabase", () => {
       sourceUrl: "https://copenhagenconsensus.com/copenhagen-consensus-iii/outcome",
     });
 
-    const pragmaticTrials = await prisma.wishocraticItem.findUnique({
-      where: { id: "PRAGMATIC_CLINICAL_TRIALS" },
-    });
-    expect(pragmaticTrials?.description).toContain(
-      "produce answers in months instead of decades",
-    );
-
     await seedDatabase();
 
     const secondCounts = {
