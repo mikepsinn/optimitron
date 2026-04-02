@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { budgetLink, federalReserveLink, wishocracyLink } from "@/lib/routes";
+import { obgLink, federalReserveLink, wishocracyLink } from "@/lib/routes";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   fmtRaw,
@@ -263,7 +263,7 @@ export default function DepartmentOfWarPage() {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <NavItemLink
-            item={budgetLink}
+            item={obgLink}
             variant="custom"
             className="inline-flex items-center justify-center gap-2 border-4 border-primary bg-foreground px-6 py-3 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
           >

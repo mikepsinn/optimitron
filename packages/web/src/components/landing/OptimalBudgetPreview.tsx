@@ -135,7 +135,7 @@ export function OptimalBudgetPreview() {
         </p>
 
         <div className="mt-6 text-center">
-          <GameCTA href="/agencies/domb" variant="primary">
+          <GameCTA href="/obg" variant="primary">
             See Full Budget Analysis &rarr;
           </GameCTA>
         </div>

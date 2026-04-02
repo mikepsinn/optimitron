@@ -25,8 +25,8 @@ export const ROUTES = {
   dtreasuryDssa: "/agencies/dtreasury/dssa",
   dfec: "/agencies/dfec",
   alignment: "/agencies/dfec/alignment",
-  dcbo: "/agencies/dcbo",
-  domb: "/agencies/domb",
+  opg: "/opg",
+  obg: "/obg",
   dgao: "/agencies/dgao",
   dih: "/agencies/dih",
   ddod: "/agencies/ddod",
@@ -40,9 +40,7 @@ export const ROUTES = {
   scoreboard: "/scoreboard",
   iab: "/iab",
   // Analysis
-  compare: "/compare",
-  misconceptions: "/misconceptions",
-  // outcomes and studies routes removed — explorer replaced by /agencies/domb and /agencies/dcbo
+  // compare and misconceptions deleted — OPG/OBG cover the same data better
   // Player
   profile: "/profile",
   dashboard: "/dashboard",
@@ -75,11 +73,11 @@ export interface NavItem {
 }
 
 export function getBudgetCategoryPath(name: string): string {
-  return `${ROUTES.domb}/${slugify(name)}`;
+  return `${ROUTES.obg}/${slugify(name)}`;
 }
 
 export function getPolicyPath(name: string): string {
-  return `${ROUTES.dcbo}/${slugify(name)}`;
+  return `${ROUTES.opg}/${slugify(name)}`;
 }
 
 export function getSignInPath(
@@ -107,35 +105,18 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
   });
 }
 
-// policiesLink removed — was pointing to deleted /outcomes explorer.
-// Use policiesLink (/agencies/dcbo) instead.
-
-export const compareLink: NavItem = {
-  href: ROUTES.compare,
-  label: "Compare",
-  emoji: "🌍",
-  description: "Same species, same planet, wildly different results. Some of you figured out healthcare. The rest are still arguing about it on your little phones.",
-};
-
-export const policiesLink: NavItem = {
-  href: ROUTES.dcbo,
-  label: "dCBO — Policy Scoring",
+export const opgLink: NavItem = {
+  href: ROUTES.opg,
+  label: "Optimal Policy Generator",
   emoji: "📋",
-  description: "Every policy ranked by whether it actually works. Most don't. You'll be unsurprised which ones.",
+  description: "Every policy ranked by whether it actually works. Causal inference on decades of data across dozens of countries. Most of your policies fail.",
 };
 
-export const budgetLink: NavItem = {
-  href: ROUTES.domb,
-  label: "dOMB — Budget Optimization",
+export const obgLink: NavItem = {
+  href: ROUTES.obg,
+  label: "Optimal Budget Generator",
   emoji: "💰",
-  description: "Your government's shopping receipt, annotated by someone who can do maths. You bought 604 murder machines for every stethoscope.",
-};
-
-export const misconceptionsLink: NavItem = {
-  href: ROUTES.misconceptions,
-  label: "Myth vs Data",
-  emoji: "🔍",
-  description: "Things your species confidently believes vs what the spreadsheet says. The spreadsheet wins.",
+  description: "Your government's shopping receipt, annotated by someone who can do maths. More money. Worse outcomes. On every line item.",
 };
 
 export const discoveriesLink: NavItem = {
@@ -200,11 +181,8 @@ export const agenciesLink: NavItem = {
 /** Pages under the "Explore" dropdown in the main nav */
 export const exploreLinks: NavItem[] = [
   referendumLink,
-  policiesLink,
-  compareLink,
-  policiesLink,
-  budgetLink,
-  misconceptionsLink,
+  opgLink,
+  obgLink,
   discoveriesLink,
   dtreasuryLink,
   agenciesLink,
@@ -408,8 +386,8 @@ export interface NavSection {
 
 export const navSections: NavSection[] = [
   { id: "play", label: "Play", items: [dashboardLink, profileLink, censusLink, checkInLink, settingsLink, wishocracyLink, alignmentLink, referendumLink, prizeLink, demoLink] },
-  { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, policiesLink, budgetLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
-  { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, compareLink, misconceptionsLink, policiesLink] },
+  { id: "optimized-gov", label: "Optimized Governance", items: [dtreasuryLink, opgLink, obgLink, transparencyLink, discoveriesLink, agenciesLink, departmentOfWarLink] },
+  { id: "earth", label: "Earth", items: [governmentsLink, politicianLeaderboardLink, opgLink] },
   { id: "fund", label: "Fund", items: [prizeLink, scoreboardLink, iabLink] },
 ];
 

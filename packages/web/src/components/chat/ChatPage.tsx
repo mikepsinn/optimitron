@@ -9,7 +9,7 @@ import {
   type ParsedMeasurement,
 } from "@optimitron/chat-ui";
 import { API_ROUTES } from "@/lib/api-routes";
-import { MythBusterCard } from "./MythBusterCard";
+// MythBusterCard removed — misconceptions page deleted
 // OutcomeCard removed — explorer infrastructure deleted
 import { BudgetResultCard } from "./BudgetResultCard";
 import { RepresentativeCard } from "./RepresentativeCard";
@@ -35,13 +35,13 @@ import { buildBillCBA, type BillCBA } from "../../lib/civic-cba";
 import type { CivicRepresentative } from "../../lib/civic-data";
 import type { ClassifiedBill } from "../../app/api/civic/bills/route";
 // Explorer imports removed — outcomes/studies pages deleted
-import { misconceptionsData } from "@/data/misconceptions";
+// misconceptions data deleted — OPG covers policy analysis better
 import "./chat-theme.css";
 
 const VoiceChatOverlay = lazy(() => import("./VoiceChatOverlay"));
 
 // --- Extended message types for app-specific cards ---
-type MythCardMessage = { type: "mythCard"; finding: { myth: string; reality: string; grade: string } };
+// MythCardMessage removed
 // OutcomeCardMessage removed — explorer deleted
 type BudgetResultMessage = { type: "budgetResult"; allocations: Record<string, number>; actualAllocations: Record<string, number> };
 
@@ -56,7 +56,7 @@ type SendToRepMessage = { type: "sendToRep"; representatives: CivicRepresentativ
 
 type AppChatMessage =
   | ChatMessage
-  | MythCardMessage
+  // MythCardMessage removed
   // OutcomeCardMessage removed
   | BudgetResultMessage
   | RepCardMessage
@@ -95,7 +95,7 @@ const INITIAL_HINTS: ChatMessage = {
     { label: "Log food", action: "food" },
     { label: "Log a symptom", action: "symptom" },
     { label: "Vote on budget", action: "budget" },
-    { label: "Bust a myth", action: "myth" },
+    { label: "See policy grades", action: "insight" },
     { label: "Show an insight", action: "insight" },
     { label: "Find my reps", action: "findReps" },
     { label: "See bills", action: "bills" },
@@ -464,25 +464,19 @@ export default function ChatPage() {
         }
 
         case "myth": {
-          const finding = pickRandom(misconceptionsData.findings);
-          if (!finding) break;
           appendMultiple(
             {
-              type: "text",
-              role: "assistant",
-              content:
-                "Ah, this one's a favourite. Humans have been getting this wrong for decades.",
+              type: "insight",
+              title: "Policy Evidence",
+              body: "I've graded every policy A through F using causal inference on decades of data. War on Drugs gets an F. Drug decriminalization gets an A. See for yourself.",
+              actionLabel: "See all policy grades",
+              onAction: () => { window.location.href = "/opg"; },
             } as ChatMessage,
-            {
-              type: "mythCard",
-              finding: { myth: finding.myth, reality: finding.reality, grade: finding.grade },
-            } as MythCardMessage,
             {
               type: "hints",
               buttons: [
-                { label: "Bust another myth", action: "myth" },
+                { label: "Show another insight", action: "insight" },
                 { label: "Vote on budget", action: "budget" },
-                { label: "Show an insight", action: "insight" },
               ],
             } as ChatMessage,
           );
@@ -496,13 +490,13 @@ export default function ChatPage() {
               title: "Policy & Budget Analysis",
               body: "I've graded every US policy A through F and found where the budget overspends 2-5× for worse outcomes.",
               actionLabel: "See policy grades",
-              onAction: () => { window.location.href = "/agencies/dcbo"; },
+              onAction: () => { window.location.href = "/opg"; },
             } as ChatMessage,
             {
               type: "hints",
               buttons: [
                 { label: "Show another insight", action: "insight" },
-                { label: "Bust a myth", action: "myth" },
+                { label: "See policy grades", action: "insight" },
                 { label: "Rate my mood", action: "mood" },
               ],
             } as ChatMessage,
@@ -686,8 +680,7 @@ export default function ChatPage() {
   const renderCustomMessage = useCallback((msg: ChatMessage): ReactNode | null => {
     const m = msg as AppChatMessage;
     switch (m.type) {
-      case "mythCard":
-        return <MythBusterCard finding={m.finding} />;
+      // mythCard removed
       // outcomeCard case removed — explorer deleted
       case "budgetResult":
         return <BudgetResultCard allocations={m.allocations} actualAllocations={m.actualAllocations} />;
@@ -856,7 +849,7 @@ export default function ChatPage() {
           buttons: [
             { label: "Log food", action: "food" },
             { label: "Log a symptom", action: "symptom" },
-            { label: "Bust a myth", action: "myth" },
+            { label: "See policy grades", action: "insight" },
           ],
         } as ChatMessage,
       );
@@ -935,7 +928,7 @@ export default function ChatPage() {
           type: "hints",
           buttons: [
             { label: "Log food", action: "food" },
-            { label: "Bust a myth", action: "myth" },
+            { label: "See policy grades", action: "insight" },
             { label: "Vote on budget", action: "budget" },
           ],
         } as ChatMessage,
@@ -959,7 +952,7 @@ export default function ChatPage() {
 
   const handleInsightAction = useCallback(
     (_title: string) => {
-      window.location.href = "/agencies/dcbo";
+      window.location.href = "/opg";
     },
     [],
   );

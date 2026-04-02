@@ -59,19 +59,19 @@ const departments: { label: string; agencies: AgencyCard[] }[] = [
     agencies: [
       {
         emoji: "📋",
-        name: "dCBO",
+        name: "Optimal Policy Generator",
         description:
-          "Every policy ranked by whether it actually works. Scores in 200 milliseconds. Shows its work.",
-        href: ROUTES.dcbo,
+          "Every policy ranked by whether it actually works. Causal inference on decades of data across dozens of countries.",
+        href: ROUTES.opg,
         earthEquivalent: "Congressional Budget Office",
         color: "cyan",
       },
       {
         emoji: "💰",
-        name: "dOMB",
+        name: "Optimal Budget Generator",
         description:
-          "What should your government spend money on? I asked everyone and did the maths. Your current method is to let lobbyists decide over dinner.",
-        href: ROUTES.domb,
+          "Your government's budget diagnosed with cross-country efficiency analysis. More money. Worse outcomes. On every line item.",
+        href: ROUTES.obg,
         earthEquivalent: "Office of Management and Budget",
         color: "yellow",
       },

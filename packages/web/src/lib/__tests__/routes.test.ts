@@ -43,19 +43,17 @@ describe("navigation routes", () => {
     expect(hrefs).toEqual(
       expect.arrayContaining([
         ROUTES.referendum,
-        ROUTES.compare,
-        ROUTES.dcbo,
-        ROUTES.domb,
-        ROUTES.misconceptions,
+        ROUTES.opg,
+        ROUTES.obg,
       ]),
     );
   });
 
   it("keeps nested routes highlighted under the correct parent nav item", () => {
-    const policies = requireLink(ROUTES.dcbo, exploreLinks);
+    const opg = requireLink(ROUTES.opg, exploreLinks);
 
-    expect(isNavItemActive("/agencies/dcbo/drug-decriminalization", policies)).toBe(true);
-    expect(isNavItemActive(ROUTES.compare, policies)).toBe(false);
+    expect(isNavItemActive("/opg/drug-decriminalization", opg)).toBe(true);
+    expect(isNavItemActive(ROUTES.obg, opg)).toBe(false);
   });
 
   it("builds sign-in links from canonical routes", () => {

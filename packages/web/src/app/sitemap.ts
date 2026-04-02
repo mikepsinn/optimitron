@@ -19,16 +19,13 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: ROUTES.video, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.demo, priority: 0.8, changeFrequency: "monthly" },
   // Analysis
-  { path: ROUTES.dcbo, priority: 0.8, changeFrequency: "weekly" },
-  { path: ROUTES.compare, priority: 0.7, changeFrequency: "weekly" },
-  { path: ROUTES.misconceptions, priority: 0.7, changeFrequency: "weekly" },
+  { path: ROUTES.opg, priority: 0.8, changeFrequency: "weekly" },
+  { path: ROUTES.obg, priority: 0.8, changeFrequency: "weekly" },
   { path: ROUTES.discoveries, priority: 0.6, changeFrequency: "weekly" },
   // Governance
   { path: ROUTES.agencies, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.governments, priority: 0.8, changeFrequency: "weekly" },
   { path: ROUTES.alignment, priority: 0.7, changeFrequency: "weekly" },
-  { path: ROUTES.dcbo, priority: 0.6, changeFrequency: "weekly" },
-  { path: ROUTES.domb, priority: 0.6, changeFrequency: "weekly" },
   { path: ROUTES.dgao, priority: 0.6, changeFrequency: "weekly" },
   { path: ROUTES.dtreasury, priority: 0.6, changeFrequency: "weekly" },
   { path: ROUTES.dtreasuryDfed, priority: 0.5, changeFrequency: "monthly" },

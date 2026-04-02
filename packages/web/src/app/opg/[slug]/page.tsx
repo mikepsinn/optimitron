@@ -1,6 +1,6 @@
 import { usPolicyAnalysis as policyData } from "@/data/us-policy-analysis";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { optimalPolicyGeneratorPaperLink, policiesLink } from "@/lib/routes";
+import { optimalPolicyGeneratorPaperLink, opgLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 
 /* ------------------------------------------------------------------ */
@@ -143,7 +143,7 @@ export default async function PolicyDetailPage({
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-foreground mb-4">Policy Not Found</h1>
-        <NavItemLink item={policiesLink} variant="custom" className="text-brutal-pink font-bold underline">
+        <NavItemLink item={opgLink} variant="custom" className="text-brutal-pink font-bold underline">
           ← Back to Policy Rankings
         </NavItemLink>
       </div>
@@ -162,7 +162,7 @@ export default async function PolicyDetailPage({
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       {/* Back link */}
       <NavItemLink
-        item={policiesLink}
+        item={opgLink}
         variant="custom"
         className="inline-block mb-6 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors uppercase"
       >
@@ -396,7 +396,7 @@ export default async function PolicyDetailPage({
       {/* Footer */}
       <div className="flex items-center justify-between">
         <NavItemLink
-          item={policiesLink}
+          item={opgLink}
           variant="custom"
           className="inline-block border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
         >

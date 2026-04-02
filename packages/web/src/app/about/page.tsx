@@ -16,7 +16,7 @@ import {
   allPaperLinks,
   prizeLink,
   ROUTES,
-  policiesLink,
+  opgLink,
   trackLink,
   transparencyLink,
   wishocracyLink,
@@ -46,7 +46,7 @@ const productSurfaces = [
     ctaColor: "text-brutal-yellow-foreground hover:text-brutal-pink",
   },
   {
-    item: policiesLink,
+    item: opgLink,
     title: "Inspect the evidence",
     desc: "Every claim, tested against data. No opinions. No vibes. Just receipts.",
     cta: "Browse Studies",

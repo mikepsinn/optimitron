@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, useInView, useReducedMotion, AnimatePresence } from "framer-motion";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { policiesLink } from "@/lib/routes";
+import { opgLink } from "@/lib/routes";
 import { naturalExperimentsData as experimentsRaw } from "@/data/natural-experiments";
 
 interface Outcome {
@@ -216,7 +216,7 @@ export function NaturalExperimentsChart() {
         className="text-center mt-8"
       >
         <NavItemLink
-          item={policiesLink}
+          item={opgLink}
           variant="custom"
           className="inline-flex items-center text-sm font-black text-brutal-pink hover:text-foreground uppercase transition-colors"
         >

@@ -95,7 +95,7 @@ export function OptimalPolicyPreview() {
         </div>
 
         <div className="mt-8 text-center">
-          <GameCTA href="/agencies/dcbo" variant="primary">
+          <GameCTA href="/opg" variant="primary">
             See All Policy Grades &rarr;
           </GameCTA>
         </div>
