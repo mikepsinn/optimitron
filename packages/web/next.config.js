@@ -1,4 +1,5 @@
 const path = require("node:path");
+const { withSentryConfig } = require("@sentry/nextjs");
 const { REDIRECTS } = require("./src/lib/redirects");
 
 /** @type {import('next').NextConfig} */
@@ -85,4 +86,10 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(nextConfig, {
+  org: "wishonia-org",
+  project: "optimitron-web",
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+});
