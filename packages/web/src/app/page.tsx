@@ -44,6 +44,8 @@ import {
 } from "@/lib/routes";
 import { GameCTA } from "@/components/ui/game-cta";
 import { DemoVideoSection } from "@/components/landing/DemoVideoSection";
+import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview";
+import { OptimalBudgetPreview } from "@/components/landing/OptimalBudgetPreview";
 import { CTA, TAGLINES } from "@/lib/messaging";
 import {
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
@@ -188,25 +190,35 @@ export default function Home() {
       {/* ── 5. What Happens If Nobody Plays — Stakes ── */}
       <WhyPlaySection />
 
-      {/* ── 6. The Problem — Invisible Graveyard ── */}
-      <InvisibleGraveyardSection />
+      {/* ── ARC 1: Money & Policy Evidence ── */}
 
-      {/* ── 7. The $101T Dysfunction Tax ── */}
+      {/* ── 6. The $101T Dysfunction Tax ── */}
       <PoliticalDysfunctionTaxSection />
 
-      {/* ── 8. The Solution — 1% Treaty ── */}
+      {/* ── 7. The Evidence — policies graded A-F ── */}
+      <OptimalPolicyPreview />
+
+      {/* ── 8. The Evidence — budgets: 4× overspend ── */}
+      <OptimalBudgetPreview />
+
+      {/* ── 9. The Solution — 1% Treaty ── */}
       <OnePercentTreatySection />
 
-      {/* ── 8b. Wishocracy Results — citizen vs government pie charts ── */}
+      {/* ── 10. Wishocracy — allocate your budget ── */}
       <WishocracyPreview />
 
-      {/* ── 9. The Tool — Decentralized FDA ── */}
+      {/* ── ARC 2: Health & Treatment ── */}
+
+      {/* ── 11. The Health Crisis — Invisible Graveyard ── */}
+      <InvisibleGraveyardSection />
+
+      {/* ── 12. The Tool — Decentralized FDA ── */}
       <DecentralizedFDASection />
 
-      {/* ── 9b. Outcome Labels — what dFDA actually produces ── */}
+      {/* ── 12b. Outcome Labels — what dFDA actually produces ── */}
       <OutcomeLabelsSection />
 
-      {/* ── 9c. Treatment Rankings — ranked by what works ── */}
+      {/* ── 12c. Treatment Rankings — ranked by what works ── */}
       <ComparativeEffectivenessSection />
 
       {/* ── 10. Two Futures — Wishonia vs Moronia ── */}
