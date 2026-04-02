@@ -19,7 +19,7 @@
 import type { DemoSlideId } from "@/components/demo/slides";
 import type { BrutalCardBgColor } from "@/components/ui/brutal-card";
 import {
-  fmtParam,
+  fmtSpeech,
   GLOBAL_DISEASE_DEATHS_DAILY,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
@@ -75,59 +75,69 @@ import {
   CONVENTIONAL_RETIREMENT_RETURN,
   GLOBAL_CYBERCRIME_CAGR,
 } from "@optimitron/data/parameters";
-// Precompute for narration strings (spoken-word, so use full words not abbreviations)
-const deathsDaily = Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value).toLocaleString();
-const milToTrialRatio = Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value);
-const dysfunctionCostT = Math.round(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value / 1e12);
-const dysfunctionPerPerson = fmtParam(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);
-const votePointValue = fmtParam(VOTE_TOKEN_VALUE);
-const poolMultiple = PRIZE_POOL_HORIZON_MULTIPLE.value.toFixed(0);
-const tippingPointM = Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6);
-const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_50PCT_YEAR.value);
-const trialCapacityX = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
-const oldQueue = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
-const newQueue = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
-const drugWarCostB = Math.round(US_GOV_WASTE_DRUG_WAR.value / 1e9);
-const treatyGainM = (TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value / 1e6).toFixed(1);
-const personalUpsideM = (TREATY_PERSONAL_UPSIDE_BLEND.value / 1e6).toFixed(1);
-const totalLivesSavedB = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value / 1e9).toFixed(1);
-const totalSufferingQuad = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.value / 1e15).toFixed(1);
-const treatyHaleGainYears = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
-const treatyIncomeMultiplier = Math.round(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
-const optimalGovernanceIncomeMultiplier = Math.round(WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER.value);
-const publicWealthT = `$${Math.round(GLOBAL_HOUSEHOLD_WEALTH_USD.value / 1e12).toLocaleString()} trillion`;
-const typeIIErrorRatio = Math.round(TYPE_II_ERROR_COST_RATIO.value).toLocaleString();
-const healthcareRoi = `$${ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT.value.toFixed(2)}`;
-const militaryRoi = `$${ECONOMIC_MULTIPLIER_MILITARY_SPENDING.value.toFixed(2)}`;
-const treatyCagr20 = (TREATY_TRAJECTORY_CAGR_YEAR_20.value * 100).toFixed(1);
-const currentIncome20 = `$${Math.round(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20.value / 1000).toLocaleString()},000`;
-const treatyIncome20 = `$${Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20.value / 1000).toLocaleString()},000`;
-const usMilitaryAnnualB = `$${(US_MILITARY_SPENDING_2024_ANNUAL.value / 1e9).toFixed(1)} billion`;
-const efficacyLagYears = EFFICACY_LAG_YEARS.value.toFixed(1);
-const fdaDelayDeathsM = Math.round(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL.value / 1e6);
-const diseaseBurdenGdpPct = Math.round(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100);
-const diseaseCostT = Math.round((GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL.value + GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL.value) / 1e12);
-const pragmaticTrialCost = Math.round(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value).toLocaleString();
-const traditionalTrialCostK = Math.round(TRADITIONAL_PHASE3_COST_PER_PATIENT.value / 1000);
-const trialCostReductionX = Math.round(DFDA_TRIAL_COST_REDUCTION_FACTOR.value);
-const recoveryTrialEfficiencyX = Math.round(RECOVERY_TRIAL_COST_REDUCTION_FACTOR.value);
-const currentHale = GLOBAL_HALE_CURRENT.value.toFixed(1);
-const targetHale = TREATY_PROJECTED_HALE_YEAR_15.value.toFixed(1);
-const currentAvgIncomeK15 = `${Math.round(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value / 100) / 10}`;
-const targetAvgIncomeK15 = Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value / 1000).toLocaleString();
-const prizeReturnPct = (PRIZE_POOL_ANNUAL_RETURN.value * 100).toFixed(0);
-const treatyFundingB = Math.round(TREATY_ANNUAL_FUNDING.value / 1e9);
-const taxComplianceCostB = Math.round(US_GOV_WASTE_TAX_COMPLIANCE.value / 1e9);
-const unexploredPct = (UNEXPLORED_RATIO.value * 100).toFixed(1);
-const timelineShiftYears = Math.round(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS.value);
-const compoundsProvenSafe = Math.round(PHASE_1_PASSED_COMPOUNDS_GLOBAL.value).toLocaleString();
-const singaporeLE = Math.round(SINGAPORE_LIFE_EXPECTANCY.value);
-const usLE = Math.round(US_LIFE_EXPECTANCY_2023.value);
-const breakEvenOneIn = Math.round(SHARING_BREAKEVEN_ONE_IN_TREATY.value / 1e6).toLocaleString();
-const warDeathsSince1900M = Math.round(WAR_DEATHS_SINCE_1900.value / 1e6);
-const cumMilitarySpendingT = Math.round(CUMULATIVE_MILITARY_SPENDING_FED_ERA.value / 1e12);
-const conventionalReturnPct = Math.round(CONVENTIONAL_RETIREMENT_RETURN.value * 100);
-const destructiveGrowthPct = Math.round(GLOBAL_CYBERCRIME_CAGR.value * 100);
+
+// ---------------------------------------------------------------------------
+// Speech-formatted parameter values for TTS narration.
+// fmtSpeech auto-scales large numbers with word suffixes ("27 billion"),
+// converts rates 0-1 → 0-100, and strips currency symbols.
+// Second arg = significant figures (2 = rounder, 3 = more precise).
+// ---------------------------------------------------------------------------
+const deathsDaily = fmtSpeech(GLOBAL_DISEASE_DEATHS_DAILY, 2);             // "150000"
+const milToTrialRatio = fmtSpeech(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO); // "604"
+const dysfunctionCost = fmtSpeech(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL, 2); // "100 trillion"
+const dysfunctionPerPerson = fmtSpeech(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);       // "12600"
+const votePointValue = fmtSpeech(VOTE_TOKEN_VALUE);                         // "8440"
+const poolMultiple = fmtSpeech(PRIZE_POOL_HORIZON_MULTIPLE, 2);            // "11"
+const tippingPoint = fmtSpeech(TREATY_CAMPAIGN_VOTING_BLOC_TARGET, 2);     // "280 million"
+const collapseYear = fmtSpeech(DESTRUCTIVE_ECONOMY_50PCT_YEAR);            // "2040"
+const trialCapacity = fmtSpeech(DFDA_TRIAL_CAPACITY_MULTIPLIER);           // "12.3"
+const oldQueue = fmtSpeech(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 2);           // "440"
+const newQueue = fmtSpeech(DFDA_QUEUE_CLEARANCE_YEARS, 2);                 // "36"
+const drugWarCost = fmtSpeech(US_GOV_WASTE_DRUG_WAR, 2);                   // "90 billion"
+const treatyGain = fmtSpeech(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, 2); // "15 million"
+const personalUpside = fmtSpeech(TREATY_PERSONAL_UPSIDE_BLEND, 2);         // "16 million"
+const totalLivesSaved = fmtSpeech(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED, 2); // "11 billion"
+const totalSuffering = fmtSpeech(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS, 2); // "1.9 quadrillion"
+const treatyHaleGain = fmtSpeech(TREATY_HALE_GAIN_YEAR_15, 2);             // "6.5"
+const treatyIncomeMultiplier = fmtSpeech(TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER, 2); // "12"
+const optimalGovernanceMultiplier = fmtSpeech(WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER, 2); // "40"
+const publicWealth = fmtSpeech(GLOBAL_HOUSEHOLD_WEALTH_USD, 2);            // "450 trillion"
+const typeIIErrorRatio = fmtSpeech(TYPE_II_ERROR_COST_RATIO, 2);           // "3100"
+const healthcareRoi = fmtSpeech(ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT, 2); // "4.3"
+const militaryRoi = fmtSpeech(ECONOMIC_MULTIPLIER_MILITARY_SPENDING, 2);   // "0.6"
+const treatyCagr = fmtSpeech(TREATY_TRAJECTORY_CAGR_YEAR_20, 2);           // "18"
+const currentIncome20 = fmtSpeech(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20);  // "20500"
+const treatyIncome20 = fmtSpeech(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20, 2); // "340000"
+const usMilitaryAnnual = fmtSpeech(US_MILITARY_SPENDING_2024_ANNUAL, 2);   // "890 billion"
+const efficacyLag = fmtSpeech(EFFICACY_LAG_YEARS);                         // "8.2"
+const fdaDelayDeaths = fmtSpeech(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL, 2); // "100 million"
+const diseaseBurdenPct = fmtSpeech(DISEASE_BURDEN_GDP_DRAG_PCT, 2);        // "13"
+const diseaseCost = fmtSpeech(                                              // "15 trillion"
+  { value: GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL.value + GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL.value, unit: "USD" }, 2);
+const pragmaticTrialCost = fmtSpeech(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT); // "929"
+const traditionalTrialCost = fmtSpeech(TRADITIONAL_PHASE3_COST_PER_PATIENT, 2); // "41000"
+const trialCostReduction = fmtSpeech(DFDA_TRIAL_COST_REDUCTION_FACTOR, 2); // "44"
+const recoveryEfficiency = fmtSpeech(RECOVERY_TRIAL_COST_REDUCTION_FACTOR, 2); // "82"
+const currentHale = fmtSpeech(GLOBAL_HALE_CURRENT);                        // "63.3"
+const targetHale = fmtSpeech(TREATY_PROJECTED_HALE_YEAR_15);               // "69.8"
+const currentAvgIncome = fmtSpeech(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15); // "18700"
+const targetAvgIncome = fmtSpeech(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15, 2); // "150000"
+const prizeReturn = fmtSpeech(PRIZE_POOL_ANNUAL_RETURN, 2);                // "17"
+const treatyFunding = fmtSpeech(TREATY_ANNUAL_FUNDING, 2);                 // "27 billion"
+const taxComplianceCost = fmtSpeech(US_GOV_WASTE_TAX_COMPLIANCE, 2);       // "550 billion"
+const unexploredPct = fmtSpeech(UNEXPLORED_RATIO);                         // "99.7"
+const timelineShift = fmtSpeech(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS, 2); // "210"
+const compoundsProvenSafe = fmtSpeech(PHASE_1_PASSED_COMPOUNDS_GLOBAL, 2); // "7500"
+const singaporeLE = fmtSpeech(SINGAPORE_LIFE_EXPECTANCY, 2);               // "84"
+const usLE = fmtSpeech(US_LIFE_EXPECTANCY_2023, 2);                        // "78"
+const leDifference = Math.round(SINGAPORE_LIFE_EXPECTANCY.value - US_LIFE_EXPECTANCY_2023.value); // 7
+const breakEvenOneIn = fmtSpeech(SHARING_BREAKEVEN_ONE_IN_TREATY, 2);      // "250 million"
+const warDeaths = fmtSpeech(WAR_DEATHS_SINCE_1900, 2);                     // "310 million"
+const cumMilitarySpending = fmtSpeech(CUMULATIVE_MILITARY_SPENDING_FED_ERA, 2); // "170 trillion"
+const conventionalReturn = fmtSpeech(CONVENTIONAL_RETIREMENT_RETURN, 2);   // "6.5"
+const destructiveGrowth = fmtSpeech(GLOBAL_CYBERCRIME_CAGR, 2);            // "15"
+// Inline computed ratio (only used once)
+const cumMilToTrialsYears = Math.round(CUMULATIVE_MILITARY_SPENDING_FED_ERA.value / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value).toLocaleString();
 
 export type SierraAct =
   | "I"
@@ -228,7 +238,7 @@ export const SEGMENTS = [
     bgColor: "foreground",
     tags: ["problem"],
     act: "I",
-    narration: `The parasitic economy — cybercrime, rent-seeking, military spending — grows at ${destructiveGrowthPct} percent per year. The productive economy grows at three percent. In fifteen years, it becomes more rational to steal than to produce. This is the clock.`,
+    narration: `The parasitic economy — cybercrime, rent-seeking, military spending — grows at ${destructiveGrowth} percent per year. The productive economy grows at three percent. In fifteen years, it becomes more rational to steal than to produce. This is the clock.`,
   },
   {
     id: "game-over-moronia",
@@ -258,7 +268,7 @@ export const SEGMENTS = [
     act: "II-solution",
     scoreAdd: 100_000,
     inventoryAdd: { id: "treaty", name: "1% TREATY", icon: "\u{1F4DC}" },
-    narration: `The fix is not complicated. Redirect one percent of global military spending — ${treatyFundingB} billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know.`,
+    narration: `The fix is not complicated. Redirect one percent of global military spending — ${treatyFunding} dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know.`,
   },
   {
     id: "trial-acceleration-12x",
@@ -268,7 +278,7 @@ export const SEGMENTS = [
     tags: ["solution", "evidence"],
     act: "II-solution",
     scoreAdd: 1_000_000,
-    narration: `This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue} years. The maths is not in dispute.`,
+    narration: `This would increase clinical trial capacity by ${trialCapacity} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue} years. The maths is not in dispute.`,
   },
   {
     id: "pluralistic-ignorance-bug",
@@ -360,7 +370,7 @@ export const SEGMENTS = [
     bgColor: "yellow",
     tags: ["problem", "mechanism"],
     act: "II-solution",
-    narration: `The public holds ${publicWealthT}. The concentrated interests who run your government hold $5 trillion. You outnumber them 90 to 1. Your species identified the exact collective action problem by which your governance fails, published it, assigned it in universities, and then continued to be governed by it for sixty years. You are not outgunned. You are just not coordinated.`,
+    narration: `The public holds ${publicWealth} dollars. The concentrated interests who run your government hold $5 trillion. You outnumber them 90 to 1. Your species identified the exact collective action problem by which your governance fails, published it, assigned it in universities, and then continued to be governed by it for sixty years. You are not outgunned. You are just not coordinated.`,
   },
   {
     id: "healthcare-vs-military-roi",
@@ -369,7 +379,7 @@ export const SEGMENTS = [
     bgColor: "cyan",
     tags: ["evidence", "financial", "solution"],
     act: "II-solution",
-    narration: `Healthcare spending returns ${healthcareRoi} per dollar invested. Your murder budget returns ${militaryRoi}. Your species has not noticed this because the murder budget has a better lobby.`,
+    narration: `Healthcare spending returns ${healthcareRoi} dollars per dollar invested. Your murder budget returns ${militaryRoi} dollars. Your species has not noticed this because the murder budget has a better lobby.`,
   },
   {
     id: "gdp-20-year-forecast",
@@ -378,7 +388,7 @@ export const SEGMENTS = [
     bgColor: "yellow",
     tags: ["evidence", "financial", "solution"],
     act: "II-solution",
-    narration: `At current trajectory, your economy grows at 2.5 percent. Redirect 1 percent of the explosions budget, and it compounds at ${treatyCagr20} percent. Over twenty years, that is the difference between ${currentIncome20} per person per year and ${treatyIncome20} per person per year. One slider. Twenty-seven times more money.`,
+    narration: `At current trajectory, your economy grows at 2.5 percent. Redirect 1 percent of the explosions budget, and it compounds at ${treatyCagr} percent. Over twenty years, that is the difference between ${currentIncome20} dollars per person per year and ${treatyIncome20} dollars per person per year. One slider. Twenty-seven times more money.`,
   },
   {
     id: "congress-military-trials-ratio",
@@ -387,7 +397,7 @@ export const SEGMENTS = [
     bgColor: "foreground",
     tags: ["problem", "evidence"],
     act: "II-accountability",
-    narration: `Your Congress spent ${usMilitaryAnnualB} on the military this year. And $810 million on clinical trials. That is a ratio of 1,094 to 1. For every dollar spent trying to stop diseases from killing you, 1,094 dollars on new ways to kill other people's children. Both parties voted for this. It is not a left-right problem. It is a math problem.`,
+    narration: `Your Congress spent ${usMilitaryAnnual} dollars on the military this year. And $810 million on clinical trials. That is a ratio of 1,094 to 1. For every dollar spent trying to stop diseases from killing you, 1,094 dollars on new ways to kill other people's children. Both parties voted for this. It is not a left-right problem. It is a math problem.`,
   },
   {
     id: "fda-approval-delay-8yr",
@@ -396,7 +406,7 @@ export const SEGMENTS = [
     bgColor: "foreground",
     tags: ["problem", "evidence", "feature"],
     act: "II-armory",
-    narration: `Vioxx killed 55,000 people from heart attacks. The FDA approved it. When patients started dying, someone filled out a PDF form. A PDF. Then they faxed it. Five years and tens of thousands of corpses later, someone noticed a pattern. This is your safety system. Meanwhile, your FDA makes treatments wait ${efficacyLagYears} years after they have already been proven safe. Just sitting there. Being safe. For every 1 person protected from a dangerous drug, ${typeIIErrorRatio} die waiting for a safe one locked in the approval cabinet. It is a lifeguard who confirms the life preserver floats, then locks it in a cabinet while a billion people drown in line for two life jackets.`,
+    narration: `Vioxx killed 55,000 people from heart attacks. The FDA approved it. When patients started dying, someone filled out a PDF form. A PDF. Then they faxed it. Five years and tens of thousands of corpses later, someone noticed a pattern. This is your safety system. Meanwhile, your FDA makes treatments wait ${efficacyLag} years after they have already been proven safe. Just sitting there. Being safe. For every 1 person protected from a dangerous drug, ${typeIIErrorRatio} die waiting for a safe one locked in the approval cabinet. It is a lifeguard who confirms the life preserver floats, then locks it in a cabinet while a billion people drown in line for two life jackets.`,
   },
   {
     id: "drug-policy-natural-experiment",
@@ -405,7 +415,7 @@ export const SEGMENTS = [
     bgColor: "cyan",
     tags: ["evidence", "feature"],
     act: "II-armory",
-    narration: `Portugal decriminalised all drugs in 2001. Overdose deaths dropped 80 percent. America spent $${drugWarCostB.toLocaleString()} billion a year on the War on Drugs. Overdose deaths rose 1,700 percent. One country looked at the evidence. The other one declared war on it.`,
+    narration: `Portugal decriminalised all drugs in 2001. Overdose deaths dropped 80 percent. America spent ${drugWarCost} a year on the War on Drugs. Overdose deaths rose 1,700 percent. One country looked at the evidence. The other one declared war on it.`,
   },
   {
     id: "disease-cure-supply-chain",
@@ -440,7 +450,7 @@ export const SEGMENTS = [
     slideId: "misaligned-superintelligence",
     bgColor: "foreground",
     tags: ["hook", "problem", "financial"],
-    narration: `Your governments cost you ${dysfunctionCostT} trillion dollars a year in dysfunction. That is ${dysfunctionPerPerson} per person, per year. Every person. Including the ones who cannot afford lunch. On my planet, when a system kills ${deathsDaily} people a day and costs ${dysfunctionCostT} trillion a year, we do not call it politics. We call it a bug. And we fix it.`,
+    narration: `Your governments cost you ${dysfunctionCost} dollars a year in dysfunction. That is ${dysfunctionPerPerson} dollars per person, per year. Every person. Including the ones who cannot afford lunch. On my planet, when a system kills ${deathsDaily} people a day and costs ${dysfunctionCost} dollars a year, we do not call it politics. We call it a bug. And we fix it.`,
   },
   {
     id: "hook-parasitic-economy",
@@ -448,7 +458,7 @@ export const SEGMENTS = [
     slideId: "economic-collapse-clock",
     bgColor: "foreground",
     tags: ["hook", "problem"],
-    narration: `The parasitic economy — military spending plus cybercrime — is growing at ${destructiveGrowthPct} percent per year. Productive GDP grows at three. At current rates, destruction exceeds fifty percent of GDP by ${collapseYear}. Every civilisation that reached this threshold collapsed. Soviet Union. Yugoslavia. Argentina. Zimbabwe. This is not a prediction. It is compound interest. You are currently on this trajectory. You chose it by not choosing.`,
+    narration: `The parasitic economy — military spending plus cybercrime — is growing at ${destructiveGrowth} percent per year. Productive GDP grows at three. At current rates, destruction exceeds fifty percent of GDP by ${collapseYear}. Every civilisation that reached this threshold collapsed. Soviet Union. Yugoslavia. Argentina. Zimbabwe. This is not a prediction. It is compound interest. You are currently on this trajectory. You chose it by not choosing.`,
   },
 
   // ── THE GAME ─────────────────────────────────────────────────────────────
@@ -466,7 +476,7 @@ export const SEGMENTS = [
     slideId: "three-scenarios-all-win",
     bgColor: "cyan",
     tags: ["mechanism", "financial"],
-    narration: `If the scoreboard metrics hit their targets in fifteen years, VOTE holders get paid. Each point could be worth ${votePointValue}. If the targets are missed, depositors split the prize pool at ${poolMultiple} times their original deposit. That still beats a retirement account. Every player wins. The only losing move is not playing.`,
+    narration: `If the scoreboard metrics hit their targets in fifteen years, VOTE holders get paid. Each point could be worth ${votePointValue} dollars. If the targets are missed, depositors split the prize pool at ${poolMultiple} times their original deposit. That still beats a retirement account. Every player wins. The only losing move is not playing.`,
   },
   {
     id: "game-the-question",
@@ -492,7 +502,7 @@ export const SEGMENTS = [
     slideId: "three-scenarios-all-win",
     bgColor: "pink",
     tags: ["mechanism", "financial"],
-    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturnPct} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn} million. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
+    narration: `The Prize is a dominant assurance contract. Deposit money. It grows at ${prizeReturn} percent annually in the Wishocratic Earth Optimization Fund. If the targets are met, VOTE holders split the pool. If they are missed, depositors get ${poolMultiple} times their money back. The break-even probability is one in ${breakEvenOneIn}. Even pessimists should take this bet. You are not donating. You are making a bet where the worst case is multiplying your money.`,
   },
   {
     id: "prize-no-downside",
@@ -509,7 +519,7 @@ export const SEGMENTS = [
     slideId: "one-percent-treaty",
     bgColor: "yellow",
     tags: ["solution"],
-    narration: `The fix is not complicated. Redirect one percent of global military spending — ${treatyFundingB} billion dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know. This would increase clinical trial capacity by ${trialCapacityX} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue}. The maths is not in dispute.`,
+    narration: `The fix is not complicated. Redirect one percent of global military spending — ${treatyFunding} dollars a year — to clinical trials. That is going from spending ninety-nine percent on bombs to ninety-eight percent on bombs. Radical, I know. This would increase clinical trial capacity by ${trialCapacity} times. It would compress the time to cure all diseases from ${oldQueue} years to ${newQueue}. The maths is not in dispute.`,
   },
 
   // ── EVIDENCE & UNIT ECONOMICS ───────────────────────────────────────────
@@ -519,7 +529,7 @@ export const SEGMENTS = [
     slideId: "viral-doubling-to-4b",
     bgColor: "yellow",
     tags: ["evidence", "mechanism"],
-    narration: `Tell two people. They each tell two more. Twenty-eight rounds of this reaches ${tippingPointM} million people — Chenoweth's three point five percent tipping point. No campaign in history that reached this threshold ever failed. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
+    narration: `Tell two people. They each tell two more. Twenty-eight rounds of this reaches ${tippingPoint} people — Chenoweth's three point five percent tipping point. No campaign in history that reached this threshold ever failed. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
   },
   {
     id: "evidence-personal-upside",
@@ -527,7 +537,7 @@ export const SEGMENTS = [
     slideId: "personal-income-3-timelines",
     bgColor: "cyan",
     tags: ["financial"],
-    narration: `You currently lose ${dysfunctionPerPerson} per year to political dysfunction. That is your share of the ${dysfunctionCostT} trillion dollar bug. If the one percent treaty passes, your lifetime income gains are ${treatyGainM} million dollars. Per person. Not per country. Per person. This is not philanthropy. This is the largest investment opportunity in the history of your species. The cost of not playing is ${treatyGainM} million dollars.`,
+    narration: `You currently lose ${dysfunctionPerPerson} dollars per year to political dysfunction. That is your share of the ${dysfunctionCost} dollar bug. If the one percent treaty passes, your lifetime income gains are ${treatyGain} dollars. Per person. Not per country. Per person. This is not philanthropy. This is the largest investment opportunity in the history of your species. The cost of not playing is ${treatyGain} dollars.`,
   },
 
   // ── COUNTRY COMPARISONS ──────────────────────────────────────────────────
@@ -545,7 +555,7 @@ export const SEGMENTS = [
     slideId: "government-track-record",
     bgColor: "cyan",
     tags: ["evidence"],
-    narration: `Singapore spends a quarter of what America spends on healthcare and their people live ${singaporeLE - usLE} years longer. It is like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible. Zero body count since independence. Zero nuclear warheads. Highest GDP per capita on the list. It is almost as if killing people is not actually a prerequisite for running a successful country. Weird.`,
+    narration: `Singapore spends a quarter of what America spends on healthcare and their people live ${leDifference} years longer. It is like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible. Zero body count since independence. Zero nuclear warheads. Highest GDP per capita on the list. It is almost as if killing people is not actually a prerequisite for running a successful country. Weird.`,
   },
   {
     id: "countries-body-count",
@@ -579,7 +589,7 @@ export const SEGMENTS = [
     slideId: "armory",
     bgColor: "cyan",
     tags: ["feature"],
-    narration: `Your FDA makes treatments wait ${efficacyLagYears} years after they have already been proven safe. Just sitting there. Being safe. While ${fdaDelayDeathsM} million people died waiting. The decentralized FDA runs pragmatic trials at two percent of the cost and ${trialCostReductionX} times the speed. Real patients, real conditions, real data. No eight-year queue to test something that already works.`,
+    narration: `Your FDA makes treatments wait ${efficacyLag} years after they have already been proven safe. Just sitting there. Being safe. While ${fdaDelayDeaths} people died waiting. The decentralized FDA runs pragmatic trials at two percent of the cost and ${trialCostReduction} times the speed. Real patients, real conditions, real data. No eight-year queue to test something that already works.`,
   },
   {
     id: "feature-optimizer",
@@ -647,7 +657,7 @@ export const SEGMENTS = [
     slideId: "armory",
     bgColor: "foreground",
     tags: ["evidence", "problem"],
-    narration: `The FDA requires ${efficacyLagYears} years of efficacy testing after a drug has already been proven safe. Over sixty-two years, this delay has killed an estimated ${fdaDelayDeathsM} million people. That is thirty-four thousand nine-elevens. Seventeen Holocausts. The drugs that did pass the review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. The total fines paid by those companies: thirty-nine billion. The total executives jailed: zero.`,
+    narration: `The FDA requires ${efficacyLag} years of efficacy testing after a drug has already been proven safe. Over sixty-two years, this delay has killed an estimated ${fdaDelayDeaths} people. That is thirty-four thousand nine-elevens. Seventeen Holocausts. The drugs that did pass the review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. The total fines paid by those companies: thirty-nine billion. The total executives jailed: zero.`,
   },
   {
     id: "agencies-money-printer",
@@ -713,7 +723,7 @@ export const SEGMENTS = [
     slideId: "final-call-to-action",
     bgColor: "pink",
     tags: ["cta", "financial"],
-    narration: `The break-even probability is one in ${breakEvenOneIn} million. The potential upside is ${treatyGainM} million dollars per person in lifetime income gains. These are not aspirational numbers. They are compound interest and published research. The question is not whether this works. The question is whether your species will use it.`,
+    narration: `The break-even probability is one in ${breakEvenOneIn}. The potential upside is ${treatyGain} dollars per person in lifetime income gains. These are not aspirational numbers. They are compound interest and published research. The question is not whether this works. The question is whether your species will use it.`,
   },
 
   // ── SIERRA HACKATHON — NEW SLIDES ─────────────────────────────────────────
@@ -761,7 +771,7 @@ export const SEGMENTS = [
     tags: ["solution", "evidence"],
     act: "II-solution",
     scoreAdd: 2_000_000,
-    narration: `Here is how that turns into wealth. Disease currently drags down ${diseaseBurdenGdpPct} percent of global GDP — ${diseaseCostT} trillion dollars a year in lost productivity and medical costs. Every disease you cure unlocks a permanent slice of that. Freed workers produce more. More production generates more tax revenue. More revenue funds more trials. More trials cure more diseases. It compounds. Healthcare spending returns ${healthcareRoi} per dollar invested versus ${militaryRoi} for military spending. At current trajectory, your economy grows at two point five percent. Redirect the spending, cure the diseases, and it compounds at ${treatyCagr20} percent. Over twenty years, that is the difference between ${currentIncome20} per person and ${treatyIncome20} per person. That is not a fantasy. That is compound interest applied to not killing people.`,
+    narration: `Here is how that turns into wealth. Disease currently drags down ${diseaseBurdenPct} percent of global GDP — ${diseaseCost} dollars a year in lost productivity and medical costs. Every disease you cure unlocks a permanent slice of that. Freed workers produce more. More production generates more tax revenue. More revenue funds more trials. More trials cure more diseases. It compounds. Healthcare spending returns ${healthcareRoi} dollars per dollar invested versus ${militaryRoi} dollars for military spending. At current trajectory, your economy grows at two point five percent. Redirect the spending, cure the diseases, and it compounds at ${treatyCagr} percent. Over twenty years, that is the difference between ${currentIncome20} dollars per person and ${treatyIncome20} dollars per person. That is not a fantasy. That is compound interest applied to not killing people.`,
   },
   {
     id: "dysfunction-tax-101t",
@@ -780,7 +790,7 @@ export const SEGMENTS = [
     tags: ["solution"],
     act: "II-solution",
     scoreAdd: 5_000_000,
-    narration: `The entire game comes down to two numbers. Healthy life expectancy: currently ${currentHale} years, target ${targetHale}. Median income: currently ${currentAvgIncomeK15} thousand dollars, target ${targetAvgIncomeK15} thousand. Move these two numbers and everything else follows. That is the scoreboard. Everything on this site exists to move it.`,
+    narration: `The entire game comes down to two numbers. Healthy life expectancy: currently ${currentHale} years, target ${targetHale}. Median income: currently ${currentAvgIncome} dollars, target ${targetAvgIncome} dollars. Move these two numbers and everything else follows. That is the scoreboard. Everything on this site exists to move it.`,
   },
   {
     id: "vote-value-asymmetry",
@@ -800,7 +810,7 @@ export const SEGMENTS = [
     tags: ["financial"],
     act: "II-money",
     scoreAdd: 650_000_000,
-    narration: `Step four: deposit into the Earth Optimization Prize Pool. The pool is not sitting in a savings account. It is invested across the most innovative startup companies on Earth — achieving ${prizeReturnPct} percent annual growth. Your retirement fund is parked in sclerotic rent-seeking corporations earning ${conventionalReturnPct} percent. The prize pool outperforms it by double. You were going to invest that money anyway. Invest it here, where the returns are better and the side effect is curing all disease.`,
+    narration: `Step four: deposit into the Earth Optimization Prize Pool. The pool is not sitting in a savings account. It is invested across the most innovative startup companies on Earth — achieving ${prizeReturn} percent annual growth. Your retirement fund is parked in sclerotic rent-seeking corporations earning ${conventionalReturn} percent. The prize pool outperforms it by double. You were going to invest that money anyway. Invest it here, where the returns are better and the side effect is curing all disease.`,
   },
   {
     id: "dominant-assurance-contract-full",
@@ -811,7 +821,7 @@ export const SEGMENTS = [
     act: "II-money",
     scoreAdd: 800_000_000,
     inventoryAdd: { id: "prize-deposit", name: "PRIZE DEPOSIT", icon: "🪙" },
-    narration: `Deposit one hundred dollars into the VC-diversified fund. Two things can happen. If Earth hits its targets, the pool unlocks and VOTE point holders split it. If Earth misses, your hundred dollars still grew at ${prizeReturnPct} percent a year — ${poolMultiple} times your money back. Both paths pay. There is no path where you lose.`,
+    narration: `Deposit one hundred dollars into the VC-diversified fund. Two things can happen. If Earth hits its targets, the pool unlocks and VOTE point holders split it. If Earth misses, your hundred dollars still grew at ${prizeReturn} percent a year — ${poolMultiple} times your money back. Both paths pay. There is no path where you lose.`,
   },
   {
     id: "vote-point-dollar-value",
@@ -822,7 +832,7 @@ export const SEGMENTS = [
     act: "II-money",
     scoreAdd: 1_000_000_000,
     inventoryAdd: { id: "vote-points", name: "VOTE POINTS ×2", icon: "🥈" },
-    narration: `Now for the Vote Points. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturnPct} percent instead of ${conventionalReturnPct}, each VOTE point is worth ${votePointValue}. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
+    narration: `Now for the Vote Points. Every friend you got to play earned you one point. If the world's retirement savings compound in the prize pool at ${prizeReturn} percent instead of ${conventionalReturn}, each VOTE point is worth ${votePointValue} dollars. Two friends playing: double that. Ten friends: ten times. Points cannot be bought. They can only be earned by getting real people to play the game. The more friends you bring in, the bigger the prize pool gets, the more valuable everyone's points become.`,
   },
   {
     id: "three-scenarios-all-win-full",
@@ -832,7 +842,7 @@ export const SEGMENTS = [
     tags: ["financial", "cta"],
     act: "II-money",
     scoreAdd: 1_500_000_000,
-    narration: `But wait — if humanity wins, does my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have Vote Points worth far more than your deposit. Second: if humanity wins, everyone is ${treatyIncomeMultiplier} times richer. Your one hundred dollar deposit vanishes into a world where your lifetime income just increased by ${treatyGainM} million dollars. You do not mourn the one hundred dollars. You are too busy being a multimillionaire in a civilisation that cured all disease. The only way to lose is not to play.`,
+    narration: `But wait — if humanity wins, does my deposit go to VOTE holders instead of back to me? Yes. And here is why that is fine. First: get even two friends to play and you have Vote Points worth far more than your deposit. Second: if humanity wins, everyone is ${treatyIncomeMultiplier} times richer. Your one hundred dollar deposit vanishes into a world where your lifetime income just increased by ${treatyGain} dollars. You do not mourn the one hundred dollars. You are too busy being a multimillionaire in a civilisation that cured all disease. The only way to lose is not to play.`,
   },
   {
     id: "alignment-switch",
@@ -852,7 +862,7 @@ export const SEGMENTS = [
     tags: ["feature"],
     act: "II-armory",
     scoreAdd: 4_200_000_000,
-    narration: `Your FDA makes treatments wait ${efficacyLagYears} years after they have already been proven safe. Just sitting there. Being safe. While ${fdaDelayDeathsM} million people died waiting. The decentralized FDA runs pragmatic trials at ${pragmaticTrialCost} dollars per patient instead of ${traditionalTrialCostK} thousand. Same patients. Real-world conditions instead of artificial ones. ${trialCostReductionX} times cheaper. ${trialCapacityX} times more trial capacity. The drugs that did pass the FDA's review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. Total executives jailed: zero. We can do better. We are doing better.`,
+    narration: `Your FDA makes treatments wait ${efficacyLag} years after they have already been proven safe. Just sitting there. Being safe. While ${fdaDelayDeaths} people died waiting. The decentralized FDA runs pragmatic trials at ${pragmaticTrialCost} dollars per patient instead of ${traditionalTrialCost} dollars. Same patients. Real-world conditions instead of artificial ones. ${trialCostReduction} times cheaper. ${trialCapacity} times more trial capacity. The drugs that did pass the FDA's review? Vioxx killed fifty-five thousand. OxyContin killed five hundred thousand. Total executives jailed: zero. We can do better. We are doing better.`,
   },
   {
     id: "incentive-alignment-bonds",
@@ -862,7 +872,7 @@ export const SEGMENTS = [
     tags: ["feature", "financial"],
     act: "II-armory",
     scoreAdd: 4_500_000_000,
-    narration: `Incentive Alignment Bonds. Sell one billion dollars of these on-chain. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFundingB} billion dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
+    narration: `Incentive Alignment Bonds. Sell one billion dollars of these on-chain. Use the proceeds to fund the one percent Treaty campaign. When the treaty passes, it generates ${treatyFunding} dollars per year. That revenue splits: eighty percent to clinical trials — the actual public good. Ten percent back to bond holders — your return on investment. Ten percent to a SuperPAC that funds politicians algorithmically based on their Alignment Score. Not based on who they had dinner with.`,
   },
   {
     id: "smart-contract-superpac",
@@ -922,7 +932,7 @@ export const SEGMENTS = [
     tags: ["solution"],
     act: "II-armory",
     scoreAdd: 5_800_000_000,
-    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with Vote Points worth ${votePointValue}, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
+    narration: `You are looking at this and thinking: this is impossibly complicated. Decentralized clinical trials, smart contracts, causal inference engines, immutable storage, algorithmic governance — who is going to build all of this? The answer: you do not need to know. Nobody knows how to make a pencil. Not one person on Earth. The wood comes from one country, the graphite from another, the rubber from a third, the paint from a fourth. Millions of people each doing one tiny step. No one coordinates them. The price system does. That is what the prize pool is. Four billion people, each with Vote Points worth ${votePointValue} dollars, will figure out how to build a decentralized FDA the same way they figured out how to build a pencil. You do not need a plan. You need an incentive. And the game does not pick which solution wins. Researcher discovers cheaper trials? Gets paid. Lobbyist passes legislation? Gets paid. Nonprofit gets a million people to play? Gets paid. Every approach competes. The best ones get funded. That is not central planning. That is a market for saving civilisation.`,
   },
   {
     id: "personal-income-upside",
@@ -932,8 +942,8 @@ export const SEGMENTS = [
     tags: ["financial", "cta"],
     act: "II-climax",
     scoreAdd: 6_000_000_000,
-    inventoryAdd: { id: "claim", name: `$${personalUpsideM}M CLAIM`, icon: "📋" },
-    narration: `If the one percent Treaty passes, your lifetime income gains are ${treatyGainM} million dollars. Per person. Not per country. Per person. You currently lose ${dysfunctionPerPerson} a year to political dysfunction — that is your share of the ${dysfunctionCostT} trillion dollar bug. This is not philanthropy. This is the largest investment opportunity in the history of your species. And the cost of not playing is ${treatyGainM} million dollars.`,
+    inventoryAdd: { id: "claim", name: `${personalUpside} CLAIM`, icon: "📋" },
+    narration: `If the one percent Treaty passes, your lifetime income gains are ${treatyGain} dollars. Per person. Not per country. Per person. You currently lose ${dysfunctionPerPerson} dollars a year to political dysfunction — that is your share of the ${dysfunctionCost} dollar bug. This is not philanthropy. This is the largest investment opportunity in the history of your species. And the cost of not playing is ${treatyGain} dollars.`,
   },
   {
     id: "ten-billion-lives-saved",
@@ -943,7 +953,7 @@ export const SEGMENTS = [
     tags: ["cta"],
     act: "III",
     scoreAdd: 7_500_000_000,
-    narration: `${deathsDaily} deaths per day. ${timelineShiftYears} years of treatment acceleration from the combined trial capacity increase and efficacy lag elimination. A third of those deaths are avoidable with earlier cures. Multiply it out: ${totalLivesSavedB} billion lives. More than the total number of humans who have ever lived in a single century. Every share, every vote, every conversation moves the probability. The question is not whether your effort matters. It is how many hundred million lives it is worth.`,
+    narration: `${deathsDaily} deaths per day. ${timelineShift} years of treatment acceleration from the combined trial capacity increase and efficacy lag elimination. A third of those deaths are avoidable with earlier cures. Multiply it out: ${totalLivesSaved} lives. More than the total number of humans who have ever lived in a single century. Every share, every vote, every conversation moves the probability. The question is not whether your effort matters. It is how many hundred million lives it is worth.`,
   },
 
   // ── PROTOCOL LABS HACKATHON — trimmed narration for ~3:30 ──────────────────
@@ -961,7 +971,7 @@ export const SEGMENTS = [
     slideId: "military-waste-170t",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `Since 1913, your governments have printed ${cumMilitarySpendingT} trillion dollars out of nothing and spent these nothing papers on murdering ${warDeathsSince1900M} million humans and destroying many valuable things those humans spent their entire lives building. Consequently your paycheck now buys 97 percent less due to the aforementioned destruction.`,
+    narration: `Since 1913, your governments have printed ${cumMilitarySpending} dollars out of nothing and spent these nothing papers on murdering ${warDeaths} humans and destroying many valuable things those humans spent their entire lives building. Consequently your paycheck now buys 97 percent less due to the aforementioned destruction.`,
   },
   {
     id: "opportunity-cost-170t",
@@ -969,7 +979,7 @@ export const SEGMENTS = [
     slideId: "170t-opportunity-cost",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `Instead of murdering ${warDeathsSince1900M} million people and destroying everything they built, they could have funded ${Math.round(CUMULATIVE_MILITARY_SPENDING_FED_ERA.value / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value).toLocaleString()} years of clinical trials. They bought the other thing. Through compounding effects, you would be ${optimalGovernanceIncomeMultiplier} times richer and significantly less diseased today if someone had aligned your governments properly in 1913. They did not. So that is what you are going to do.`,
+    narration: `Instead of murdering ${warDeaths} people and destroying everything they built, they could have funded ${cumMilToTrialsYears} years of clinical trials. They bought the other thing. Through compounding effects, you would be ${optimalGovernanceMultiplier} times richer and significantly less diseased today if someone had aligned your governments properly in 1913. They did not. So that is what you are going to do.`,
   },
   {
     id: "misaligned-superintelligence-brief",
@@ -993,7 +1003,7 @@ export const SEGMENTS = [
     slideId: "economic-collapse-clock",
     tags: ["problem"],
     act: "turn",
-    narration: `The parasitic economy — cybercrime plus military spending — is growing at ${destructiveGrowthPct} percent per year. The productive economy is growing at 3. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. By ${collapseYear}, Earth crosses the same threshold. Think Somalia, but everywhere. But there is a save file.`,
+    narration: `The parasitic economy — cybercrime plus military spending — is growing at ${destructiveGrowth} percent per year. The productive economy is growing at 3. Argentina collapsed at 38 percent. Yugoslavia at 40. The Soviet Union at 45. By ${collapseYear}, Earth crosses the same threshold. Think Somalia, but everywhere. But there is a save file.`,
   },
   {
     id: "compound-growth-scenarios",
@@ -1001,7 +1011,7 @@ export const SEGMENTS = [
     slideId: "compound-growth-scenarios",
     tags: ["solution"],
     act: "turn",
-    narration: `Three timelines over 15 years. Status quo: parasitic economy overtakes productive. You get poorer and deader. The 1 percent treaty: all nations redirect 1 percent of military spending to clinical trials simultaneously — no one loses strategic advantage. Healthy people work more, earn more, and spend less on healthcare. That compounds. ${treatyHaleGainYears} more healthy years, ${treatyIncomeMultiplier} times richer. Optimal governance: end the ${dysfunctionCostT} trillion dollar Political Dysfunction Tax. ${optimalGovernanceIncomeMultiplier} times richer. Choose.`,
+    narration: `Three timelines over 15 years. Status quo: parasitic economy overtakes productive. You get poorer and deader. The 1 percent treaty: all nations redirect 1 percent of military spending to clinical trials simultaneously — no one loses strategic advantage. Healthy people work more, earn more, and spend less on healthcare. That compounds. ${treatyHaleGain} more healthy years, ${treatyIncomeMultiplier} times richer. Optimal governance: end the ${dysfunctionCost} dollar Political Dysfunction Tax. ${optimalGovernanceMultiplier} times richer. Choose.`,
   },
   {
     id: "one-percent-treaty-brief",
@@ -1009,7 +1019,7 @@ export const SEGMENTS = [
     slideId: "one-percent-treaty",
     tags: ["solution"],
     act: "II-solution",
-    narration: `Redirect 1 percent of the global military budget to pragmatic trials integrated into standard healthcare — ${recoveryTrialEfficiencyX} times more efficient than traditional trials. ${treatyFundingB} billion dollars a year. Trial capacity increases ${trialCapacityX} times. ${oldQueue} years compresses to ${newQueue}.`,
+    narration: `Redirect 1 percent of the global military budget to pragmatic trials integrated into standard healthcare — ${recoveryEfficiency} times more efficient than traditional trials. ${treatyFunding} dollars a year. Trial capacity increases ${trialCapacity} times. ${oldQueue} years compresses to ${newQueue}.`,
   },
   {
     id: "pairwise-budget-allocation-brief",
@@ -1017,7 +1027,7 @@ export const SEGMENTS = [
     slideId: "pairwise-budget-allocation",
     tags: ["mechanism"],
     act: "II-game",
-    narration: `You have seen what happens when politicians allocate your money. ${warDeathsSince1900M} million dead and a ${milToTrialRatio} to 1 ratio of bombs to cures. Wishocracy lets you do it instead. Each player allocates the global budget through pairwise comparisons — clinical trials versus military spending, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.`,
+    narration: `You have seen what happens when politicians allocate your money. ${warDeaths} dead and a ${milToTrialRatio} to 1 ratio of bombs to cures. Wishocracy lets you do it instead. Each player allocates the global budget through pairwise comparisons — clinical trials versus military spending, education versus the drug war. Ten choices, two minutes. Eight billion preferences, one optimal budget.`,
   },
   {
     id: "eigenvector-budget-result",
@@ -1041,7 +1051,7 @@ export const SEGMENTS = [
     slideId: "win-conditions-hale-income",
     tags: ["mechanism"],
     act: "II-game",
-    narration: `The entire game comes down to two numbers. Healthy life expectancy: ${currentHale} years, target ${targetHale}. Median income: ${currentAvgIncomeK15} thousand dollars, target ${targetAvgIncomeK15} thousand. Your species has produced 4,000 pages of U.N. resolutions about these numbers. This game has two progress bars. We find the bars more effective.`,
+    narration: `The entire game comes down to two numbers. Healthy life expectancy: ${currentHale} years, target ${targetHale}. Median income: ${currentAvgIncome} dollars, target ${targetAvgIncome} dollars. Your species has produced 4,000 pages of U.N. resolutions about these numbers. This game has two progress bars. We find the bars more effective.`,
   },
   {
     id: "three-scenarios-all-win",
@@ -1049,7 +1059,7 @@ export const SEGMENTS = [
     slideId: "three-scenarios-all-win",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing ${prizeReturnPct} percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus ${prizeReturnPct} percent annual returns — your hundred dollars still becomes ${poolMultiple} hundred. Two out of three outcomes are wins. The third option is Somalia.`,
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Since your species requires small pieces of paper with presidents on them before you will do anything, you create the Earth Optimization Prize Fund. The target is 1 percent of global savings, diversified across the venture capital sector, producing ${prizeReturn} percent annual returns. If humanity hits the median income and healthy lifespan targets by 2040, your Vote Points pay out. If humanity fails, you get your deposit back plus ${prizeReturn} percent annual returns — your hundred dollars still becomes ${poolMultiple} hundred. Two out of three outcomes are wins. The third option is Somalia.`,
   },
   {
     id: "dominant-assurance-contract",
@@ -1057,7 +1067,7 @@ export const SEGMENTS = [
     slideId: "dominant-assurance-contract",
     tags: ["mechanism", "financial"],
     act: "II-money",
-    narration: `Vote, then share your referral link. Each friend who votes through your link earns you one VOTE point. Each point could be worth up to ${votePointValue}.`,
+    narration: `Vote, then share your referral link. Each friend who votes through your link earns you one VOTE point. Each point could be worth up to ${votePointValue} dollars.`,
   },
   {
     id: "armory-brief",
@@ -1073,7 +1083,7 @@ export const SEGMENTS = [
     slideId: "decentralized-fda",
     tags: ["feature"],
     act: "II-armory",
-    narration: `${compoundsProvenSafe} compounds are proven safe but ${unexploredPct} percent of their uses have never been tested. Your FDA makes patients wait ${efficacyLagYears} years after a drug is proven safe. The Decentralized FDA: real-time Outcome Labels and Treatment Rankings. ${trialCostReductionX} times cheaper. ${trialCapacityX} times more capacity.`,
+    narration: `${compoundsProvenSafe} compounds are proven safe but ${unexploredPct} percent of their uses have never been tested. Your FDA makes patients wait ${efficacyLag} years after a drug is proven safe. The Decentralized FDA: real-time Outcome Labels and Treatment Rankings. ${trialCostReduction} times cheaper. ${trialCapacity} times more capacity.`,
   },
   {
     id: "optimal-policy-generator",
@@ -1081,7 +1091,7 @@ export const SEGMENTS = [
     slideId: "optimal-policy-generator",
     tags: ["feature"],
     act: "II-armory",
-    narration: `The Optimal Policy Generator uses causal inference on hundreds of years of data across dozens of countries to grade every policy A through F by what actually happened. America spent ${drugWarCostB} billion dollars a year on the War on Drugs. Overdoses rose 1,700 percent. Portugal decriminalised drugs for almost nothing. Overdoses dropped 80 percent.`,
+    narration: `The Optimal Policy Generator uses causal inference on hundreds of years of data across dozens of countries to grade every policy A through F by what actually happened. America spent ${drugWarCost} dollars a year on the War on Drugs. Overdoses rose 1,700 percent. Portugal decriminalised drugs for almost nothing. Overdoses dropped 80 percent.`,
   },
   {
     id: "optimal-budget-generator",
@@ -1105,7 +1115,7 @@ export const SEGMENTS = [
     slideId: "decentralized-irs",
     tags: ["feature"],
     act: "II-armory",
-    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCostB} billion dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No lobbyist can bribe a smart contract to give their client a tax loophole.`,
+    narration: `Your tax code is 74,000 pages. It costs ${taxComplianceCost} dollars a year in compliance. A 0.5 percent transaction tax does the same job in four lines of Solidity. No filing. No accountants. No lobbyist can bribe a smart contract to give their client a tax loophole.`,
   },
   {
     id: "decentralized-welfare",
@@ -1145,7 +1155,7 @@ export const SEGMENTS = [
     slideId: "ten-billion-lives-saved",
     tags: ["cta"],
     act: "III",
-    narration: `${totalLivesSavedB} billion lives. ${totalSufferingQuad} quadrillion hours of suffering prevented. That is what 1 percent buys you.`,
+    narration: `${totalLivesSaved} lives. ${totalSuffering} hours of suffering prevented. That is what 1 percent buys you.`,
   },
   {
     id: "final-call-to-action-brief",

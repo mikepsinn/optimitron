@@ -179,6 +179,52 @@ export function getParameterValue(
   }
 }
 
+/**
+ * Format a parameter for text-to-speech / spoken narration.
+ *
+ * Produces clean, TTS-friendly strings:
+ *  - Large numbers get word suffixes: "27 billion", "102 million"
+ *  - No currency symbols or unit labels — provide context in surrounding text
+ *  - Percentages/rates auto-convert from 0–1 to 0–100
+ *  - Values under 1 million shown as plain numbers (no commas)
+ *
+ * @param sigFigs Significant figures (default 3). Use 2 for rounder numbers.
+ *
+ * @example
+ *   fmtSpeech(TREATY_ANNUAL_FUNDING)            // "27.2 billion"
+ *   fmtSpeech(TREATY_ANNUAL_FUNDING, 2)         // "27 billion"
+ *   fmtSpeech(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL) // "102 million"
+ *   fmtSpeech(EFFICACY_LAG_YEARS)               // "8.2"
+ *   fmtSpeech(DISEASE_BURDEN_GDP_DRAG_PCT)      // "13" (auto-converts %)
+ *   fmtSpeech(DFDA_TRIAL_CAPACITY_MULTIPLIER)   // "12.3"
+ */
+export function fmtSpeech(param: Pick<Parameter, 'value' | 'unit'>, sigFigs = 3): string {
+  const { value, unit } = param;
+  const u = (unit ?? "").toLowerCase();
+
+  // Percentages/rates: 0–1 → 0–100
+  if (u === "percentage" || u === "rate" || u === "percent") {
+    return speechNum(roundToSigFigs(value * 100, sigFigs));
+  }
+
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+
+  if (abs >= 1e15) return `${sign}${speechNum(roundToSigFigs(abs / 1e15, sigFigs))} quadrillion`;
+  if (abs >= 1e12) return `${sign}${speechNum(roundToSigFigs(abs / 1e12, sigFigs))} trillion`;
+  if (abs >= 1e9) return `${sign}${speechNum(roundToSigFigs(abs / 1e9, sigFigs))} billion`;
+  if (abs >= 1e6) return `${sign}${speechNum(roundToSigFigs(abs / 1e6, sigFigs))} million`;
+
+  return `${sign}${speechNum(roundToSigFigs(abs, sigFigs))}`;
+}
+
+/** Clean number display for speech — no trailing .0, predictable decimal places. */
+function speechNum(n: number): string {
+  const abs = Math.abs(n);
+  const dp = abs >= 100 ? 0 : abs >= 1 ? 1 : 2;
+  return String(parseFloat(n.toFixed(dp)));
+}
+
 export function fmtRaw(value: number, figures = 3): string {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
