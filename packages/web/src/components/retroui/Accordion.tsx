@@ -65,3 +65,7 @@ const AccordionComponent = Object.assign(Accordion, {
 });
 
 export { AccordionComponent as Accordion };
+
+// Individual named exports for use in server components (where the compound
+// `Accordion.Item` pattern can fail across the RSC client-reference boundary).
+export { AccordionItem, AccordionHeader, AccordionContent };

@@ -19,7 +19,7 @@ import {
 import { getRouteMetadata } from "@/lib/metadata";
 import { VoterPrizeTreasuryDeposit } from "@/components/prize/VoterPrizeTreasuryDeposit";
 import { CitizenDashboardWrapper } from "@/components/prize/CitizenDashboardWrapper";
-import { Accordion } from "@/components/retroui/Accordion";
+import { Accordion, AccordionItem, AccordionHeader, AccordionContent } from "@/components/retroui/Accordion";
 import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
 import { prisma } from "@/lib/prisma";
 
@@ -304,11 +304,11 @@ export default async function PrizePage() {
           Technical Details
         </h2>
         <Accordion type="multiple" className="border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <Accordion.Item value="trust" className="border-b-4 border-primary last:border-b-0">
-            <Accordion.Header className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+          <AccordionItem value="trust" className="border-b-4 border-primary last:border-b-0">
+            <AccordionHeader className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
               Trust &amp; Transparency
-            </Accordion.Header>
-            <Accordion.Content className="px-6">
+            </AccordionHeader>
+            <AccordionContent className="px-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-4">
                   <h4 className="font-mono font-black uppercase text-xs mb-2">
@@ -330,14 +330,14 @@ export default async function PrizePage() {
                   </p>
                 </div>
               </div>
-            </Accordion.Content>
-          </Accordion.Item>
+            </AccordionContent>
+          </AccordionItem>
 
-          <Accordion.Item value="contracts" className="border-b-4 border-primary last:border-b-0">
-            <Accordion.Header className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
+          <AccordionItem value="contracts" className="border-b-4 border-primary last:border-b-0">
+            <AccordionHeader className="px-6 py-4 font-pixel text-sm font-black uppercase tracking-wide text-foreground hover:no-underline hover:bg-muted">
               Contract Architecture
-            </Accordion.Header>
-            <Accordion.Content className="px-6">
+            </AccordionHeader>
+            <AccordionContent className="px-6">
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {contractDetails.map((item) => (
                   <div
@@ -366,8 +366,8 @@ export default async function PrizePage() {
                   VoterPrizeTreasury.sol, VoteToken.sol — full source on GitHub &rarr;
                 </NavItemLink>
               </div>
-            </Accordion.Content>
-          </Accordion.Item>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
       </section>
 
