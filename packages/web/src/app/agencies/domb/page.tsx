@@ -1,70 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import budgetData from "@/data/us-budget-analysis.json";
+import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 import { getBudgetCategoryPath } from "@/lib/routes";
 import { PrizeCTA } from "@/components/prize/PrizeCTA";
-// BudgetGapChart deleted — referenced old schema
 import { EfficientFrontierChart, EfficientFrontierSummary } from "@/components/landing/EfficientFrontierChart";
 
-interface Category {
-  name: string;
-  currentSpending: number;
-  optimalSpending: number;
-  gap: number;
-  gapPercent: number;
-  marginalReturn: number;
-  recommendation: string;
-  recommendedAction: string;
-  evidenceGrade: string;
-  evidenceDescription: string;
-  investmentStatus: string;
-  priorityScore: number;
-  elasticity?: number;
-  discretionary: boolean;
-  wesMethodology: string;
-  diminishingReturns?: {
-    modelType: string;
-    r2: number;
-    n: number;
-    lowFit: boolean;
-    smallSample: boolean;
-  };
-  welfareEffect: { incomeEffect: number; healthEffect: number };
-  oslCiLow?: number;
-  oslCiHigh?: number;
-  outcomeMetrics: { name: string; value: number; trend: string }[];
-}
-
-interface ConstrainedCategory {
-  name: string;
-  currentSpending: number;
-  constrainedOptimal: number;
-  reallocation: number;
-  reallocationPercent: number;
-  action: string;
-  evidenceGrade: string;
-  isNonDiscretionary: boolean;
-}
-
-interface ConstrainedReallocation {
-  totalBudget: number;
-  nonDiscretionaryTotal: number;
-  actionableBudget: number;
-  categories: ConstrainedCategory[];
-}
-
-interface BudgetData {
-  jurisdiction: string;
-  totalBudget: number;
-  categories: Category[];
-  constrainedReallocation: ConstrainedReallocation;
-  topRecommendations: string[];
-  generatedAt: string;
-}
-
-const data = budgetData as unknown as BudgetData;
+// All types flow from @optimitron/obg via the generated .ts file.
+// No local interfaces — if OBG changes, tsc catches it.
+const data = usBudgetAnalysis;
 
 function fmt(n: number | undefined | null): string {
   if (n == null) return "N/A";
@@ -72,11 +16,6 @@ function fmt(n: number | undefined | null): string {
   if (Math.abs(n) >= 1e9) return `$${(n / 1e9).toFixed(0)}B`;
   if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(0)}M`;
   return `$${n.toFixed(0)}`;
-}
-
-function pctSafe(n: number | undefined | null): string {
-  if (n == null) return "N/A";
-  return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 }
 
 function pct(n: number): string {
@@ -108,42 +47,17 @@ function actionLabel(action: string): string {
   }
 }
 
-function gradeBadgeColor(grade: string): string {
-  switch (grade) {
-    case "A": return "bg-brutal-cyan text-brutal-cyan-foreground";
-    case "B": return "bg-brutal-yellow text-brutal-yellow-foreground";
-    case "C": return "bg-brutal-yellow text-brutal-yellow-foreground";
-    case "D": return "bg-brutal-red text-brutal-red-foreground";
-    case "F": return "bg-brutal-red text-brutal-red-foreground";
-    default: return "bg-muted";
-  }
-}
-
 export default function BudgetPage() {
-  const [view, setView] = useState<"constrained" | "unconstrained">("constrained");
-
-  const isConstrained = view === "constrained";
-  const cr = data.constrainedReallocation;
-
   const sorted = [...data.categories].sort(
     (a, b) => Math.abs(b.gap) - Math.abs(a.gap)
   );
 
   const totalCurrent = data.categories.reduce((s, c) => s + c.currentSpending, 0);
-  const totalOptimal = data.categories.reduce((s, c) => s + (c.optimalSpending ?? 0), 0);
+  const totalOptimal = data.categories.reduce((s, c) => s + (c.optimalSpendingNominal ?? 0), 0);
 
-  // For constrained view, sort by reallocation amount
-  const constrainedSorted = cr
-    ? [...cr.categories].sort((a, b) => Math.abs(b.reallocation) - Math.abs(a.reallocation))
-    : [];
-
-  // Separate non-discretionary from discretionary for constrained view
-  const constrainedActionable = constrainedSorted.filter(c => !c.isNonDiscretionary);
-  const constrainedNonDisc = constrainedSorted.filter(c => c.isNonDiscretionary);
-
-  const maxSpending = isConstrained
-    ? Math.max(...constrainedActionable.flatMap(c => [c.currentSpending, c.constrainedOptimal]))
-    : Math.max(...data.categories.flatMap(c => [c.currentSpending, c.optimalSpending]));
+  const maxSpending = Math.max(
+    ...data.categories.flatMap(c => [c.currentSpending, c.optimalSpendingNominal ?? 0])
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -152,46 +66,17 @@ export default function BudgetPage() {
           The US Federal Budget, Diagnosed
         </h1>
         <p className="text-muted-foreground font-bold">
-          Your government&apos;s {fmt(data.totalBudget)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. Most of them wrong.
+          Your government&apos;s {fmt(data.totalSpendingNominal)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. Most of them wrong.
         </p>
       </div>
 
-      {/* View Toggle */}
-      <div className="flex gap-2 mb-6">
-        <button
-          onClick={() => setView("constrained")}
-          className={`px-4 py-2 text-sm font-black uppercase border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
-            isConstrained ? "bg-brutal-pink text-brutal-pink-foreground" : "bg-background text-foreground hover:bg-brutal-cyan"
-          }`}
-        >
-          Fixed Budget
-        </button>
-        <button
-          onClick={() => setView("unconstrained")}
-          className={`px-4 py-2 text-sm font-black uppercase border-4 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
-            !isConstrained ? "bg-brutal-pink text-brutal-pink-foreground" : "bg-background text-foreground hover:bg-brutal-cyan"
-          }`}
-        >
-          Unconstrained
-        </button>
-      </div>
-
       {/* Summary cards */}
-      {isConstrained && cr ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <SummaryCard label="Total Budget" value={fmt(cr.totalBudget)} />
-          <SummaryCard label="Non-Discretionary" value={fmt(cr.nonDiscretionaryTotal)} />
-          <SummaryCard label="Actionable Budget" value={fmt(cr.actionableBudget)} />
-          <SummaryCard label="Net Reallocation" value="$0" color="text-muted-foreground" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <SummaryCard label="Total Current" value={fmt(totalCurrent)} />
-          <SummaryCard label="Total Optimal" value={fmt(totalOptimal)} />
-          <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-brutal-cyan" : "text-brutal-red"} />
-          <SummaryCard label="Categories Analyzed" value={String(data.categories.length)} />
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <SummaryCard label="Total Current" value={fmt(totalCurrent)} />
+        <SummaryCard label="Total Optimal" value={fmt(totalOptimal)} />
+        <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-brutal-cyan" : "text-brutal-red"} />
+        <SummaryCard label="Categories Analyzed" value={String(data.categories.length)} />
+      </div>
 
       {/* Top Recommendations */}
       <section className="mb-10">
@@ -212,105 +97,42 @@ export default function BudgetPage() {
 
       {/* Bar chart */}
       <section className="mb-10">
-        <h2 className="section-title">
-          {isConstrained ? "Current vs Constrained Optimal" : "Current vs Optimal Spending"}
-        </h2>
-
-        {isConstrained && cr ? (
-          <div className="space-y-4">
-            {constrainedActionable.map((cat) => (
-              <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                  <h3 className="text-sm font-black text-foreground">{cat.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${gradeBadgeColor(cat.evidenceGrade)}`}>
-                      {cat.evidenceGrade}
+        <h2 className="section-title">Current vs Optimal Spending</h2>
+        <div className="space-y-4">
+          {sorted.map((cat) => (
+            <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                <h3 className="text-sm font-black text-foreground">{cat.name}</h3>
+                <div className="flex items-center gap-2">
+                  {cat.efficiency && (
+                    <span className="text-xs font-black px-2 py-0.5 border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
+                      {cat.efficiency.overspendRatio.toFixed(1)}× overspend
                     </span>
-                    <span className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${actionBadgeStyle(cat.action)}`}>
-                      {cat.action} {pct(cat.reallocationPercent)}
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16 font-bold">Current</span>
-                    <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
-                      <div className="h-full bar-current" style={{ width: `${(cat.currentSpending / maxSpending) * 100}%` }} />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.currentSpending)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16 font-bold">Optimal</span>
-                    <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
-                      <div className="h-full bar-optimal" style={{ width: `${(cat.constrainedOptimal / maxSpending) * 100}%` }} />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.constrainedOptimal)}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-            {/* Non-discretionary section */}
-            {constrainedNonDisc.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-xs font-black uppercase text-muted-foreground mb-3 tracking-wider">
-                  Non-Discretionary (Excluded from Reallocation)
-                </h3>
-                <div className="space-y-2">
-                  {constrainedNonDisc.map((cat) => (
-                    <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block opacity-60 hover:opacity-80 transition-opacity">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold text-muted-foreground">{cat.name}</h3>
-                        <span className="text-sm font-bold text-muted-foreground">{fmt(cat.currentSpending)}</span>
-                      </div>
-                    </Link>
-                  ))}
+                  )}
+                  <span className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${actionBadgeStyle(cat.recommendation)}`}>
+                    {actionLabel(cat.recommendation)} {pct(cat.gapPercent)}
+                  </span>
                 </div>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {sorted.map((cat) => (
-              <Link key={cat.name} href={getBudgetCategoryPath(cat.name)} className="card block hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                  <h3 className="text-sm font-black text-foreground">{cat.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${gradeBadgeColor(cat.evidenceGrade)}`}>
-                      {cat.evidenceGrade}
-                    </span>
-                    <span
-                      className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${actionBadgeStyle(cat.recommendedAction)}`}
-                    >
-                      {actionLabel(cat.recommendedAction)} {pct(cat.gapPercent)}
-                    </span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-16 font-bold">Current</span>
+                  <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
+                    <div className="h-full bg-brutal-red" style={{ width: `${(cat.currentSpending / maxSpending) * 100}%` }} />
                   </div>
+                  <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.currentSpending)}</span>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16 font-bold">Current</span>
-                    <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
-                      <div
-                        className="h-full bar-current"
-                        style={{ width: `${(cat.currentSpending / maxSpending) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.currentSpending)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-16 font-bold">Optimal</span>
+                  <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
+                    <div className="h-full bg-brutal-green" style={{ width: `${((cat.optimalSpendingNominal ?? 0) / maxSpending) * 100}%` }} />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16 font-bold">Optimal</span>
-                    <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
-                      <div
-                        className="h-full bar-optimal"
-                        style={{ width: `${(cat.optimalSpending / maxSpending) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.optimalSpending)}</span>
-                  </div>
+                  <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.optimalSpendingNominal)}</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Table */}
@@ -322,73 +144,35 @@ export default function BudgetPage() {
               <tr className="border-b-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
                 <th className="text-left py-3 px-2 font-black uppercase">Category</th>
                 <th className="text-right py-3 px-2 font-black uppercase">Current</th>
-                <th className="text-right py-3 px-2 font-black uppercase">
-                  {isConstrained ? "Constrained" : "Optimal"}
-                </th>
-                <th className="text-right py-3 px-2 font-black uppercase">
-                  {isConstrained ? "Reallocation" : "Gap %"}
-                </th>
-                <th className="text-center py-3 px-2 font-black uppercase">Grade</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Optimal</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Gap %</th>
+                <th className="text-right py-3 px-2 font-black uppercase">Overspend</th>
                 <th className="text-center py-3 px-2 font-black uppercase">Action</th>
               </tr>
             </thead>
             <tbody>
-              {isConstrained && cr ? (
-                constrainedSorted.map((cat) => (
-                  <tr key={cat.name} className={`border-b border-primary hover:bg-brutal-cyan ${cat.isNonDiscretionary ? "opacity-50" : ""}`}>
-                    <td className="py-3 px-2 text-foreground font-bold">
-                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
-                        {cat.name}
-                      </Link>
-                      {cat.isNonDiscretionary && (
-                        <span className="text-xs text-muted-foreground ml-1">(non-disc.)</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.currentSpending)}</td>
-                    <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.constrainedOptimal)}</td>
-                    <td className={`py-3 px-2 text-right font-bold ${cat.reallocation >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
-                      {cat.isNonDiscretionary ? "—" : `${cat.reallocation >= 0 ? "+" : ""}${fmt(cat.reallocation)}`}
-                    </td>
-                    <td className="py-3 px-2 text-center">
-                      <span className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${gradeBadgeColor(cat.evidenceGrade)}`}>
-                        {cat.evidenceGrade}
-                      </span>
-                    </td>
-                    <td className="py-3 px-2 text-center">
-                      <span className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${actionBadgeStyle(cat.action)}`}>
-                        {cat.action}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                sorted.map((cat) => (
-                  <tr key={cat.name} className="border-b border-primary hover:bg-brutal-cyan">
-                    <td className="py-3 px-2 text-foreground font-bold">
-                      <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
-                        {cat.name}
-                      </Link>
-                    </td>
-                    <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.currentSpending)}</td>
-                    <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.optimalSpending)}</td>
-                    <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
-                      {pct(cat.gapPercent)}
-                    </td>
-                    <td className="py-3 px-2 text-center">
-                      <span className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${gradeBadgeColor(cat.evidenceGrade)}`}>
-                        {cat.evidenceGrade}
-                      </span>
-                    </td>
-                    <td className="py-3 px-2 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${actionBadgeStyle(cat.recommendedAction)}`}
-                      >
-                        {actionLabel(cat.recommendedAction)}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
+              {sorted.map((cat) => (
+                <tr key={cat.name} className="border-b border-primary hover:bg-brutal-cyan">
+                  <td className="py-3 px-2 text-foreground font-bold">
+                    <Link href={getBudgetCategoryPath(cat.name)} className="underline hover:text-brutal-pink transition-colors">
+                      {cat.name}
+                    </Link>
+                  </td>
+                  <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.currentSpending)}</td>
+                  <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.optimalSpendingNominal)}</td>
+                  <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-brutal-cyan" : "text-brutal-red"}`}>
+                    {pct(cat.gapPercent)}
+                  </td>
+                  <td className="py-3 px-2 text-right font-bold text-brutal-yellow">
+                    {cat.efficiency ? `${cat.efficiency.overspendRatio.toFixed(1)}×` : "—"}
+                  </td>
+                  <td className="py-3 px-2 text-center">
+                    <span className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${actionBadgeStyle(cat.recommendation)}`}>
+                      {actionLabel(cat.recommendation)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

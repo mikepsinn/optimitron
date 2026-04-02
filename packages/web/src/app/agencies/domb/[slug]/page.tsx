@@ -1,4 +1,4 @@
-import budgetData from "@/data/us-budget-analysis.json";
+import { usBudgetAnalysis as budgetData } from "@/data/us-budget-analysis";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { budgetLink, optimalBudgetGeneratorPaperLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";

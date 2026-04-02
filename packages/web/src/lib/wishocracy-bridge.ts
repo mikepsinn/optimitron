@@ -9,7 +9,7 @@
 import type { Item } from '@optimitron/wishocracy';
 import type { WishocraticItemDefinition } from '@optimitron/data';
 import { WISHOCRATIC_ITEMS, type WishocraticItemId } from '@/lib/wishocracy-data';
-import budgetAnalysisData from '@/data/us-budget-analysis.json';
+import { usBudgetAnalysis as budgetAnalysisData } from '@/data/us-budget-analysis';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

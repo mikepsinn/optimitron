@@ -84,29 +84,10 @@ type OECDMapping = OECDCategoryMapping;
 
 // ─── Output Types (explicit interfaces for type safety + Zod schemas for runtime validation) ───
 
-export interface BudgetCategoryOutput {
-  id: string;
-  name: string;
-  currentSpending: number;
-  currentSpendingRealPerCapita: number;
-  optimalSpendingPerCapita: number | null;
-  optimalSpendingNominal: number | null;
-  gap: number;
-  gapPercent: number;
-  recommendation: string;
-  evidenceSource: string;
-  outcomeMetrics: Array<{ name: string; value: number; trend: string }>;
-  historicalRealPerCapita: Array<{ year: number; nominalBillions: number; realPerCapita: number }>;
-  diminishingReturns: {
-    modelType: string;
-    r2: number;
-    n: number;
-    marginalReturn: number;
-    elasticity: number | null;
-    outcomeName: string;
-  } | null;
-  efficiency: EfficiencyAnalysis | null;
-}
+// Use the canonical type from OBG — the web app imports the same type,
+// so any schema mismatch causes a build error in both places.
+export type { BudgetReportCategory as BudgetCategoryOutput } from '@optimitron/obg';
+import type { BudgetReportCategory as BudgetCategoryOutput } from '@optimitron/obg';
 
 export interface BudgetAnalysisOutput {
   jurisdiction: string;
@@ -251,59 +232,45 @@ function generateBudgetAnalysis() {
     const isNonDiscretionary = NON_DISCRETIONARY.has(cat.id);
     const mapping = OECD_MAPPINGS[cat.id];
 
-    let optimalPerCapita: number | null = null;
-    let optimalNominal: number | null = null;
-    let gap = 0;
-    let gapPercent = 0;
-    let recommendation = 'maintain';
-    let evidenceSource = 'none';
-    let drInfo: BudgetCategoryOutput['diminishingReturns'] = null;
-    let efficiencyInfo: EfficiencyAnalysis | null = null;
+    // Only include categories with actual OECD efficient frontier data.
+    // No guesses, no defaults — every number must be backed by cross-country evidence.
+    if (!mapping || isNonDiscretionary) continue;
 
-    // Run efficiency analysis for all OECD-mapped categories (even non-discretionary)
-    if (mapping) {
-      efficiencyInfo = runEfficiencyAnalysis(mapping);
-    }
+    const efficiencyInfo = runEfficiencyAnalysis(mapping);
+    if (!efficiencyInfo) continue;
 
-    if (isNonDiscretionary) {
-      evidenceSource = 'non-discretionary (mandated)';
-    } else if (mapping && efficiencyInfo) {
-      // Derive gap/optimal from EFFICIENCY FRONTIER (not OSL curve fitting).
-      // NOTE: OECD spending is total government (federal+state+local), while
-      // currentUsd is federal-only. The gap uses OECD per-capita values to be
-      // comparable across countries. Positive gap = US overspends vs floor.
-      optimalPerCapita = efficiencyInfo.floorSpendingPerCapita;
-      const usOECDSpendingTotal = efficiencyInfo.spendingPerCapita * US_POPULATION; // total gov, not federal
-      optimalNominal = efficiencyInfo.floorSpendingPerCapita * US_POPULATION;
-      gap = usOECDSpendingTotal - optimalNominal; // OECD total vs floor — positive = overspend
-      gapPercent = usOECDSpendingTotal > 0 ? (gap / usOECDSpendingTotal) * 100 : 0;
+    // Derive gap/optimal from EFFICIENCY FRONTIER.
+    // The frontier gives the overspend ratio for the OECD aggregate bucket
+    // (e.g., total social spending). Apply that ratio to this specific
+    // category's federal spending to get its individual optimal.
+    const overspendRatio = efficiencyInfo.overspendRatio;
+    const optimalNominal = Math.round(currentUsd / overspendRatio);
+    const optimalPerCapita = currentRealPerCapita / overspendRatio;
+    const gap = currentUsd - optimalNominal;
+    const gapPercent = currentUsd > 0 ? (gap / currentUsd) * 100 : 0;
 
-      const nCountries = efficiencyInfo.totalCountries;
-      evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${efficiencyInfo.rank}/${nCountries})`;
+    const nCountries = efficiencyInfo.totalCountries;
+    const evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${efficiencyInfo.rank}/${nCountries})`;
 
-      // Fit a diminishing returns model for informational context only
-      const modelInfo = fitModelInfo(mapping);
-      if (modelInfo) {
-        drInfo = {
-          modelType: modelInfo.model.type,
-          r2: Math.round(modelInfo.model.r2 * 1000) / 1000,
-          n: modelInfo.n,
-          marginalReturn: 0,
-          elasticity: null,
-          outcomeName: mapping.outcomeName,
-        };
-      }
+    // Recommendation from overspend ratio
+    let recommendation: string;
+    if (efficiencyInfo.overspendRatio >= 3) recommendation = 'major_decrease';
+    else if (efficiencyInfo.overspendRatio >= 1.5) recommendation = 'decrease';
+    else if (efficiencyInfo.overspendRatio <= 0.8) recommendation = 'increase';
+    else recommendation = 'maintain';
 
-      // Recommendation from overspend ratio
-      if (efficiencyInfo.overspendRatio >= 3) recommendation = 'major_decrease';
-      else if (efficiencyInfo.overspendRatio >= 1.5) recommendation = 'decrease';
-      else if (efficiencyInfo.overspendRatio <= 0.8) recommendation = 'increase';
-      else recommendation = 'maintain';
-    } else if (mapping) {
-      evidenceSource = 'OECD mapping available but insufficient data';
-    } else {
-      // No OECD mapping — just report metrics, no spending recommendation
-      evidenceSource = 'no cross-country data available';
+    // Fit a diminishing returns model for informational context
+    let drInfo: BudgetCategoryOutput['diminishingReturns'] = undefined;
+    const modelInfo = fitModelInfo(mapping);
+    if (modelInfo) {
+      drInfo = {
+        modelType: modelInfo.model.type,
+        r2: Math.round(modelInfo.model.r2 * 1000) / 1000,
+        n: modelInfo.n,
+        marginalReturn: 0,
+        elasticity: null,
+        outcomeName: mapping.outcomeName,
+      };
     }
 
     categories.push({
@@ -311,8 +278,8 @@ function generateBudgetAnalysis() {
       name: cat.name,
       currentSpending: currentUsd,
       currentSpendingRealPerCapita: Math.round(currentRealPerCapita * 100) / 100,
-      optimalSpendingPerCapita: optimalPerCapita !== null ? Math.round(optimalPerCapita * 100) / 100 : null,
-      optimalSpendingNominal: optimalNominal !== null ? Math.round(optimalNominal) : null,
+      optimalSpendingPerCapita: Math.round(optimalPerCapita * 100) / 100,
+      optimalSpendingNominal: optimalNominal,
       gap: Math.round(gap),
       gapPercent: Math.round(gapPercent * 10) / 10,
       recommendation,
@@ -523,20 +490,47 @@ function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]) {
 
 // ─── Main ────────────────────────────────────────────────────────────
 
+// ── Helper: write typed TS data file ──────────────────────────────
+
+function writeTypedDataFile(
+  filename: string,
+  exportName: string,
+  typeName: string,
+  typeImport: string,
+  data: unknown,
+): void {
+  const json = JSON.stringify(data, null, 2);
+  const ts = `// Auto-generated by generate-web-data.ts — do not edit manually.
+// Regenerate with: pnpm --filter @optimitron/examples run generate:web-data
+import type { ${typeName} } from "${typeImport}";
+
+export const ${exportName} = ${json} as const satisfies ${typeName};
+`;
+  writeFileSync(resolve(dataDir, filename), ts);
+}
+
+// ── Generate budget analysis ──────────────────────────────────────
+
 console.warn('Generating budget analysis...');
 const budgetAnalysis = generateBudgetAnalysis();
-writeFileSync(
-  resolve(dataDir, 'us-budget-analysis.json'),
-  JSON.stringify(budgetAnalysis, null, 2)
+writeTypedDataFile(
+  'us-budget-analysis.ts',
+  'usBudgetAnalysis',
+  'BudgetReportJSON',
+  '@optimitron/obg',
+  budgetAnalysis,
 );
-console.warn(`  ✅ ${budgetAnalysis.categories.length} categories → us-budget-analysis.json`);
+console.warn(`  ✅ ${budgetAnalysis.categories.length} categories → us-budget-analysis.ts`);
 
 const withOSL = budgetAnalysis.categories.filter(c => c.diminishingReturns !== null);
 const withRecs = budgetAnalysis.categories.filter(c => c.recommendation !== 'maintain');
 console.warn(`  📊 ${withOSL.length} with OECD-backed OSL, ${withRecs.length} with non-maintain recommendations`);
 
+// ── Generate policy analysis ──────────────────────────────────────
+
 console.warn('\nGenerating policy analysis...');
 const policyAnalysis = generatePolicyAnalysis(budgetAnalysis.categories);
+// Policy analysis still as JSON until OPG types are defined
 writeFileSync(
   resolve(dataDir, 'us-policy-analysis.json'),
   JSON.stringify(policyAnalysis, null, 2)
