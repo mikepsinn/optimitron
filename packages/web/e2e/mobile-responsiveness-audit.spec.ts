@@ -3,35 +3,42 @@
  *
  * Crawls every static route at a mobile viewport (390x844) and detects:
  *   1. Horizontal overflow (page wider than viewport)
- *   2. Elements extending beyond viewport right edge
+ *   2. Elements extending beyond viewport right edge (de-duplicated by ancestry)
  *   3. Clipped text (overflow:hidden with truncated content)
  *   4. Tiny tap targets (< 44x44 interactive elements)
  *   5. Images wider than viewport
+ *   6. Contrast violations at mobile viewport (axe + computed)
  *
  * Saves a mobile screenshot of every page.
  *
  * Run with dev server already up:
  *   SKIP_SERVER=1 pnpm --filter @optimitron/web exec playwright test e2e/mobile-responsiveness-audit.spec.ts
  */
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 import * as fs from "fs";
 import * as path from "path";
+import {
+  navigateAndSettle,
+  writeAuditReport,
+  getDeduplicatedOverflows,
+} from "./utils/audit-helpers";
+import { getContrastViolations } from "./utils/computed-contrast";
 
-// Force mobile viewport for this entire spec regardless of project
+// Force mobile viewport for this entire spec
 test.use({
   viewport: { width: 390, height: 844 },
   isMobile: true,
   hasTouch: true,
 });
 
-// Auto-discover all demo slide components from the sierra/ directory
+// Auto-discover all demo slide components
 const DEMO_SLIDES = fs
   .readdirSync(path.resolve(__dirname, "../src/components/demo/slides/sierra"))
   .filter((f) => f.startsWith("slide-") && f.endsWith(".tsx"))
   .map((f) => f.replace(/^slide-/, "").replace(/\.tsx$/, ""))
   .sort();
 
-// Same page list as contrast-audit.spec.ts
 const PAGES = [
   "/",
   "/prize",
@@ -63,6 +70,8 @@ const PAGES = [
   ...DEMO_SLIDES.map((id) => `/demo#${id}`),
 ];
 
+// ── Types ───────────────────────────────────────────────────────
+
 interface ResponsivenessIssue {
   page: string;
   type:
@@ -70,7 +79,9 @@ interface ResponsivenessIssue {
     | "element-overflow"
     | "clipped-text"
     | "tiny-tap-target"
-    | "oversized-image";
+    | "oversized-image"
+    | "contrast-axe"
+    | "contrast-computed";
   selector: string;
   details: string;
 }
@@ -86,19 +97,26 @@ const screenshotDir = path.resolve(
   "mobile",
 );
 
-// Ensure screenshot dir exists before tests run
 test.beforeAll(() => {
   fs.mkdirSync(screenshotDir, { recursive: true });
 });
 
 for (const url of PAGES) {
   test(`mobile: ${url}`, async ({ page }) => {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15_000 });
-    // Let client hydrate + animations settle
-    await page.waitForTimeout(2000);
+    await navigateAndSettle(page, url);
 
     const pageIssues: ResponsivenessIssue[] = [];
     const viewportWidth = 390;
+
+    // Scroll to bottom and back to trigger scroll-based content
+    await page.evaluate(() => {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+    });
+    await page.waitForTimeout(500);
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+    });
+    await page.waitForTimeout(300);
 
     // --- 1. Horizontal overflow ---
     const scrollInfo = await page.evaluate(() => ({
@@ -115,47 +133,28 @@ for (const url of PAGES) {
       });
     }
 
-    // --- 2. Elements overflowing viewport right edge ---
-    const overflowingElements = await page.evaluate((vw: number) => {
-      const results: { selector: string; right: number; width: number }[] = [];
-      const els = document.querySelectorAll("*");
-      for (const el of els) {
-        const rect = el.getBoundingClientRect();
-        // Skip invisible / zero-size elements
-        if (rect.width === 0 || rect.height === 0) continue;
-        // Skip elements fully off-screen vertically (not in current scroll view)
-        if (rect.right > vw + 5) {
-          // +5px tolerance
-          // Build a readable selector
-          const tag = el.tagName.toLowerCase();
-          const id = el.id ? `#${el.id}` : "";
-          const cls = el.className && typeof el.className === "string"
-            ? "." + el.className.trim().split(/\s+/).slice(0, 2).join(".")
-            : "";
-          const text = el.textContent?.trim().slice(0, 40) || "";
-          results.push({
-            selector: `${tag}${id}${cls}`,
-            right: Math.round(rect.right),
-            width: Math.round(rect.width),
-          });
-          if (results.length >= 20) break; // cap to avoid noise
-        }
-      }
-      return results;
-    }, viewportWidth);
-
+    // --- 2. Elements overflowing viewport (de-duplicated by ancestry) ---
+    const overflowingElements = await getDeduplicatedOverflows(
+      page,
+      viewportWidth,
+    );
     for (const el of overflowingElements) {
       pageIssues.push({
         page: url,
         type: "element-overflow",
         selector: el.selector,
-        details: `right=${el.right}px, width=${el.width}px (viewport=${viewportWidth}px)`,
+        details: `right=${el.right}px, width=${el.width}px (viewport=${viewportWidth}px) "${el.text}"`,
       });
     }
 
     // --- 3. Clipped text ---
     const clippedElements = await page.evaluate(() => {
-      const results: { selector: string; scrollW: number; clientW: number; text: string }[] = [];
+      const results: {
+        selector: string;
+        scrollW: number;
+        clientW: number;
+        text: string;
+      }[] = [];
       const els = document.querySelectorAll("*");
       for (const el of els) {
         const htmlEl = el as HTMLElement;
@@ -168,15 +167,17 @@ for (const url of PAGES) {
           const tag = htmlEl.tagName.toLowerCase();
           const id = htmlEl.id ? `#${htmlEl.id}` : "";
           const text = htmlEl.textContent?.trim().slice(0, 50) || "";
-          // Skip containers that intentionally clip (carousels, etc.)
+          // Skip containers that intentionally clip
           if (["html", "body", "main"].includes(tag)) continue;
+          // Skip intentional text-overflow: ellipsis
+          if (style.textOverflow === "ellipsis") continue;
+
           results.push({
             selector: `${tag}${id}`,
             scrollW: htmlEl.scrollWidth,
             clientW: htmlEl.clientWidth,
             text,
           });
-          if (results.length >= 15) break;
         }
       }
       return results;
@@ -193,27 +194,53 @@ for (const url of PAGES) {
 
     // --- 4. Tiny tap targets (< 44x44) ---
     const tinyTargets = await page.evaluate(() => {
-      const results: { selector: string; w: number; h: number; text: string }[] = [];
+      const results: {
+        selector: string;
+        w: number;
+        h: number;
+        text: string;
+      }[] = [];
       const interactiveEls = document.querySelectorAll(
         'a, button, [role="button"], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       for (const el of interactiveEls) {
         const rect = el.getBoundingClientRect();
-        // Skip invisible elements
         if (rect.width === 0 || rect.height === 0) continue;
         const style = window.getComputedStyle(el);
         if (style.display === "none" || style.visibility === "hidden") continue;
-        if (rect.width < 44 || rect.height < 44) {
-          const tag = el.tagName.toLowerCase();
-          const text = el.textContent?.trim().slice(0, 30) || "";
-          results.push({
-            selector: `${tag}${el.id ? "#" + el.id : ""}`,
-            w: Math.round(rect.width),
-            h: Math.round(rect.height),
-            text,
-          });
-          if (results.length >= 20) break;
+
+        // Check if the element OR a parent interactive element meets the size
+        // (a small icon inside a large button is fine)
+        if (rect.width >= 44 && rect.height >= 44) continue;
+
+        // Check if the closest interactive ancestor is large enough
+        let parent = el.parentElement;
+        let parentMeetsSize = false;
+        while (parent) {
+          const pTag = parent.tagName.toLowerCase();
+          if (
+            pTag === "a" ||
+            pTag === "button" ||
+            parent.getAttribute("role") === "button"
+          ) {
+            const pRect = parent.getBoundingClientRect();
+            if (pRect.width >= 44 && pRect.height >= 44) {
+              parentMeetsSize = true;
+            }
+            break;
+          }
+          parent = parent.parentElement;
         }
+        if (parentMeetsSize) continue;
+
+        const tag = el.tagName.toLowerCase();
+        const text = el.textContent?.trim().slice(0, 30) || "";
+        results.push({
+          selector: `${tag}${el.id ? "#" + el.id : ""}`,
+          w: Math.round(rect.width),
+          h: Math.round(rect.height),
+          text,
+        });
       }
       return results;
     });
@@ -229,7 +256,12 @@ for (const url of PAGES) {
 
     // --- 5. Oversized images ---
     const oversizedImages = await page.evaluate((vw: number) => {
-      const results: { selector: string; naturalW: number; renderedW: number; src: string }[] = [];
+      const results: {
+        selector: string;
+        naturalW: number;
+        renderedW: number;
+        src: string;
+      }[] = [];
       const imgs = document.querySelectorAll("img");
       for (const img of imgs) {
         const rect = img.getBoundingClientRect();
@@ -254,8 +286,38 @@ for (const url of PAGES) {
       });
     }
 
+    // --- 6. Contrast at mobile viewport ---
+    // axe-core
+    const axeResults = await new AxeBuilder({ page })
+      .withRules(["color-contrast"])
+      .analyze();
+    for (const v of axeResults.violations) {
+      for (const node of v.nodes) {
+        const msg = node.any?.[0]?.message ?? "";
+        const ratioMatch = msg.match(/contrast of ([\d.]+)/);
+        pageIssues.push({
+          page: url,
+          type: "contrast-axe",
+          selector: node.target.join(" > "),
+          details: `ratio=${ratioMatch?.[1] ?? "?"} — ${node.html.replace(/<[^>]+>/g, "").slice(0, 60).trim()}`,
+        });
+      }
+    }
+
+    // custom computed-contrast
+    const computed = await getContrastViolations(page);
+    for (const c of computed) {
+      pageIssues.push({
+        page: url,
+        type: "contrast-computed",
+        selector: c.selector,
+        details: `ratio=${c.ratio} (need ${c.required}:1) fg=${c.fg} bg=${c.bg} "${c.text.slice(0, 50)}"`,
+      });
+    }
+
     // --- Take screenshot ---
-    const filename = url === "/" ? "home" : url.replace(/[/#]/g, "_").replace(/^_/, "");
+    const filename =
+      url === "/" ? "home" : url.replace(/[/#]/g, "_").replace(/^_/, "");
     await page.screenshot({
       path: path.join(screenshotDir, `${filename}.png`),
       fullPage: true,
@@ -277,10 +339,12 @@ for (const url of PAGES) {
   });
 }
 
+// ── Summary + report ────────────────────────────────────────────
+
 test.afterAll(() => {
   if (allIssues.length > 0) {
     console.log(`\n${"#".repeat(60)}`);
-    console.log(`TOTAL MOBILE RESPONSIVENESS ISSUES: ${allIssues.length}`);
+    console.log(`TOTAL MOBILE ISSUES: ${allIssues.length}`);
     console.log("#".repeat(60));
 
     // Group by type
@@ -315,8 +379,15 @@ test.afterAll(() => {
       );
     }
   } else {
-    console.log("\nNo mobile responsiveness issues found across all pages!");
+    console.log("\n✅ No mobile responsiveness issues found across all pages!");
   }
 
-  console.log(`\nMobile screenshots saved to: ${screenshotDir}`);
+  // Write JSON report
+  const reportPath = writeAuditReport("mobile-responsiveness-audit", {
+    timestamp: new Date().toISOString(),
+    totalIssues: allIssues.length,
+    issues: allIssues,
+  });
+  console.log(`\nReport written to: ${reportPath}`);
+  console.log(`Mobile screenshots saved to: ${screenshotDir}`);
 });
