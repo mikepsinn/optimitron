@@ -107,7 +107,11 @@ export function PoliticianScorecardTable({
     setSortKey("ratio");
   };
 
-  const indicator = (key: SortKey) => compact ? "" : sortKey === key ? (sortAsc ? " ↑" : " ↓") : "";
+  const indicator = (key: SortKey) => {
+    if (compact) return "";
+    if (key === "ratio") return sortKey === "ratio" ? (rankMode === "worst" ? " ↓" : " ↑") : "";
+    return sortKey === key ? (sortAsc ? " ↑" : " ↓") : "";
+  };
 
   const hdrClass = `p-2 text-xs font-black uppercase text-muted-foreground whitespace-nowrap text-left${compact ? "" : " cursor-pointer hover:text-foreground transition-colors"}`;
 
@@ -130,13 +134,26 @@ export function PoliticianScorecardTable({
         </div>
       )}
 
-      {/* Title + search row */}
+      {/* Rank mode toggle + search */}
       <div className="flex items-end justify-between mb-2 gap-4">
-        {sortKey === "ratio" ? (
-          <h3 className="text-lg font-black uppercase">
-            {sortAsc ? "Least Bad Players" : "Worst Players"}
-          </h3>
-        ) : <div />}
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={rankMode === "worst" ? "default" : "outline"}
+            onClick={() => handleRankMode("worst")}
+            className="text-xs font-black uppercase"
+          >
+            Worst Players
+          </Button>
+          <Button
+            size="sm"
+            variant={rankMode === "least-bad" ? "default" : "outline"}
+            onClick={() => handleRankMode("least-bad")}
+            className="text-xs font-black uppercase"
+          >
+            Least Bad Players
+          </Button>
+        </div>
         {!compact && (
           <input
             type="text"
@@ -147,6 +164,9 @@ export function PoliticianScorecardTable({
           />
         )}
       </div>
+      <p className="text-xs font-bold text-muted-foreground mb-3">
+        Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+      </p>
 
       {/* Table */}
       <div className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">

@@ -10,6 +10,7 @@ import {
   getMilitaryToGovernmentClinicalTrialRatio,
   getMilitaryToGovernmentMedicalResearchRatio,
 } from "@optimitron/data";
+import { Button } from "@/components/retroui/Button";
 import { Tooltip } from "@/components/retroui/Tooltip";
 import {
   GOVERNMENT_LEADERBOARD_COLUMN_META,
@@ -140,6 +141,8 @@ function SortableHeader({
   );
 }
 
+type RankMode = "worst" | "least-bad";
+
 interface GovernmentLeaderboardProps {
   /** Max rows to show (default: all) */
   limit?: number;
@@ -167,15 +170,31 @@ function GovernmentRowLink({
 }
 
 export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLeaderboardProps) {
+  const [rankMode, setRankMode] = useState<RankMode>("worst");
   const [sortKey, setSortKey] = useState<SortKey>(
     GOVERNMENT_LEADERBOARD_DEFAULT_SORT_KEY,
   );
   const [sortAsc, setSortAsc] = useState(
     GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC,
   );
+  const [search, setSearch] = useState("");
 
   const allGovs = getGovernmentsByHALE();
-  const sorted = [...allGovs].sort((a, b) => {
+  const searchLower = search.toLowerCase();
+  const filtered = search
+    ? allGovs.filter((g) => g.name.toLowerCase().includes(searchLower) || g.code.toLowerCase().includes(searchLower))
+    : allGovs;
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortKey === "trialRatio" || sortKey === "rank") {
+      // Multi-key: ratio, then military spend, then least clinical trial
+      const dir = rankMode === "worst" ? 1 : -1;
+      const aRatio = getSortValue(a, "trialRatio");
+      const bRatio = getSortValue(b, "trialRatio");
+      if (aRatio !== bRatio) return dir * (bRatio - aRatio);
+      const milDiff = b.militarySpendingAnnual.value - a.militarySpendingAnnual.value;
+      if (milDiff !== 0) return dir * milDiff;
+      return -dir * ((b.clinicalTrialSpending?.value ?? 0) - (a.clinicalTrialSpending?.value ?? 0));
+    }
     if (sortKey === "country") {
       const comparison = a.name.localeCompare(b.name);
       return sortAsc ? comparison : -comparison;
@@ -186,7 +205,11 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
   const govs = limit ? sorted.slice(0, limit) : sorted;
 
   const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
+    if (key === "trialRatio" || key === "rank") {
+      const next: RankMode = rankMode === "worst" ? "least-bad" : "worst";
+      setRankMode(next);
+      setSortKey(key);
+    } else if (sortKey === key) {
       setSortAsc(!sortAsc);
     } else {
       setSortKey(key);
@@ -194,11 +217,49 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
     }
   };
 
+  const handleRankMode = (mode: RankMode) => {
+    setRankMode(mode);
+    setSortKey("trialRatio");
+  };
+
   const headerClass =
     "text-xs font-black uppercase text-muted-foreground cursor-pointer hover:text-foreground transition-colors whitespace-nowrap";
 
   return (
     <Tooltip.Provider delayDuration={100}>
+      {/* Rank mode toggle + search */}
+      <div className="flex items-end justify-between mb-2 gap-4">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={rankMode === "worst" ? "default" : "outline"}
+            onClick={() => handleRankMode("worst")}
+            className="text-xs font-black uppercase"
+          >
+            Worst Governments
+          </Button>
+          <Button
+            size="sm"
+            variant={rankMode === "least-bad" ? "default" : "outline"}
+            onClick={() => handleRankMode("least-bad")}
+            className="text-xs font-black uppercase"
+          >
+            Least Bad Governments
+          </Button>
+        </div>
+        {!compact && (
+          <input
+            type="text"
+            placeholder="Search country..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink w-48"
+          />
+        )}
+      </div>
+      <p className="text-xs font-bold text-muted-foreground mb-3">
+        Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+      </p>
       <div className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
         <table className="w-full">
           <thead>
