@@ -4,12 +4,14 @@ interface SavingsImpactProps {
   annualSavings: string;
   savingsComparison: string;
   wishoniaQuote: string;
+  accentColor?: "pink" | "cyan" | "yellow" | "green";
 }
 
 export function SavingsImpact({
   annualSavings,
   savingsComparison,
   wishoniaQuote,
+  accentColor = "pink",
 }: SavingsImpactProps) {
   return (
     <section className="mb-16">
@@ -17,14 +19,14 @@ export function SavingsImpact({
         The Savings
       </h2>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <BrutalCard bgColor="pink" shadowSize={8} padding="lg">
-          <div className="text-4xl font-black text-brutal-pink-foreground sm:text-5xl">
+        <BrutalCard bgColor={accentColor} shadowSize={8} padding="lg">
+          <div className="text-4xl font-black sm:text-5xl">
             {annualSavings}
           </div>
-          <div className="mt-2 text-xs font-black uppercase tracking-[0.1em] text-background">
+          <div className="mt-2 text-xs font-black uppercase tracking-[0.1em]">
             Annual Savings
           </div>
-          <p className="mt-4 text-sm font-bold leading-relaxed text-muted-foreground">
+          <p className="mt-4 text-sm font-bold leading-relaxed opacity-80">
             {savingsComparison}
           </p>
         </BrutalCard>

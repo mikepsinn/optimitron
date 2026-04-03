@@ -380,6 +380,10 @@ Project-specific components that wrap RetroUI primitives with domain styling.
 - `bg-gray-50`, `bg-gray-100`, etc. — use `bg-muted` or `bg-background`
 - Gradients (`bg-gradient-to-*`) — flat colors only
 
+## Environment Variables
+
+All env vars live in the **root `.env`** file (not `packages/web/.env`). Next.js picks them up from there via the monorepo workspace. For local dev, `NEXTAUTH_URL` must be `http://localhost:3001`.
+
 ## Tooling
 
 - **Monorepo**: pnpm workspaces

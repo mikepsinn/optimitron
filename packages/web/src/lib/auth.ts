@@ -123,8 +123,16 @@ export function getConfiguredProviders() {
   };
 }
 
+const DEBUG_AUTH = process.env.DEBUG_AUTH === "true";
+
+function authLog(label: string, data?: unknown) {
+  if (!DEBUG_AUTH) return;
+  console.log(`[AUTH DEBUG] ${label}`, data !== undefined ? JSON.stringify(data, null, 2) : "");
+}
+
 export const authOptions: NextAuthOptions = {
   secret: serverEnv.NEXTAUTH_SECRET,
+  debug: DEBUG_AUTH,
   adapter: createAuthAdapter(),
   session: {
     strategy: "jwt",
@@ -136,6 +144,13 @@ export const authOptions: NextAuthOptions = {
   },
   providers,
   events: {
+    async signIn({ user, account }) {
+      authLog("signIn event", {
+        userId: user.id,
+        provider: account?.provider,
+        NEXTAUTH_URL: serverEnv.NEXTAUTH_URL,
+      });
+    },
     async createUser({ user }) {
       const referralUser = await getSessionIdentity(user.id);
       if (!referralUser) {
@@ -151,12 +166,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, trigger }) {
+      authLog("jwt callback", { trigger, hasUser: !!user, userId: user?.id, tokenSub: token.sub });
       const identityUserId =
         user?.id ??
         (trigger === "update" && typeof token.id === "string" ? token.id : undefined);
 
       if (identityUserId) {
         const identity = await getSessionIdentity(identityUserId);
+        authLog("jwt identity lookup", { identityUserId, found: !!identity });
         if (identity) {
           token.id = identity.id;
           token.email = identity.email;

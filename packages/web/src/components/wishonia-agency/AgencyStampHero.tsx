@@ -1,13 +1,24 @@
+type CardColor = "pink" | "cyan" | "yellow" | "green";
+
+const dNameColorClasses: Record<CardColor, string> = {
+  pink: "text-brutal-pink",
+  cyan: "text-brutal-cyan",
+  yellow: "text-brutal-yellow",
+  green: "text-brutal-green",
+};
+
 interface AgencyStampHeroProps {
   agencyName: string;
   dName: string;
   tagline: string;
+  cardColor?: CardColor;
 }
 
 export function AgencyStampHero({
   agencyName,
   dName,
   tagline,
+  cardColor,
 }: AgencyStampHeroProps) {
   return (
     <section className="mb-16">
@@ -16,7 +27,9 @@ export function AgencyStampHero({
           <span className="inline-block border-4 border-brutal-red bg-brutal-red px-4 py-1 text-sm font-black uppercase tracking-[0.15em] text-brutal-red-foreground -rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             Deprecated
           </span>
-          <span className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">
+          <span
+            className={`text-sm font-black uppercase tracking-[0.2em] ${cardColor ? dNameColorClasses[cardColor] : "text-muted-foreground"}`}
+          >
             {dName}
           </span>
         </div>

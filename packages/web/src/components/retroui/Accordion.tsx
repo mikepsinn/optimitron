@@ -43,16 +43,25 @@ const AccordionHeader = React.forwardRef<
 ));
 AccordionHeader.displayName = AccordionPrimitive.Header.displayName;
 
+interface AccordionContentProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
+  /** Remove default background/padding — pass `true` for transparent inline menus */
+  unstyled?: boolean;
+}
+
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  AccordionContentProps
+>(({ className, children, unstyled, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="overflow-hidden font-body bg-background text-foreground data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up"
+    className={cn(
+      "overflow-hidden font-body data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
+      !unstyled && "bg-background text-foreground",
+    )}
     {...props}
   >
-    <div className={cn("px-4 pt-2 pb-4", className)}>{children}</div>
+    <div className={cn(!unstyled && "px-4 pt-2 pb-4", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 
