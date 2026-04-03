@@ -1,9 +1,8 @@
-import { z } from 'zod';
 import type { FullAnalysisResult } from '@optimitron/optimizer';
 import type { CausalConfidenceScore } from './bradford-hill.js';
+import type { EvidenceGrade } from './policy.js';
 
-export const PolicyEvidenceGradeSchema = z.enum(['A', 'B', 'C', 'D', 'F']);
-export type PolicyEvidenceGrade = z.infer<typeof PolicyEvidenceGradeSchema>;
+export type PolicyEvidenceGrade = EvidenceGrade;
 
 const CONSISTENCY_SIGNAL_THRESHOLD = 0.6;
 const NO_SIGNAL_THRESHOLD = 0.1;

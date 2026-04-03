@@ -11,21 +11,10 @@
  * 
  * @example
  * ```typescript
- * import {
- *   fetchOECDSpending,
- *   fetchWorldBankHealthData,
- *   OECD_SPENDING_CATEGORIES,
- *   WB_INDICATORS,
- * } from '@optimitron/data';
- * 
+ * import { fetchers } from '@optimitron/data';
+ *
  * // Fetch health spending for OECD countries
- * const spending = await fetchOECDSpending({
- *   categories: ['HEALTH', 'EDUCATION'],
- *   period: { startYear: 2018, endYear: 2022 },
- * });
- * 
- * // Fetch health outcomes
- * const health = await fetchWorldBankHealthData({
+ * const spending = await fetchers.fetchOECDHealthExpenditure({
  *   jurisdictions: ['USA', 'GBR', 'DEU', 'JPN'],
  * });
  * ```
@@ -34,11 +23,7 @@
 // Types
 export * from './types';
 
-// Data sources (legacy)
-export * from './sources/index';
-
 // API fetchers (OECD, World Bank, WHO, FRED)
-// Exported as namespace to avoid name collisions with legacy sources
 export * as fetchers from './fetchers/index';
 
 // CSV loader (Gapminder-format parser).

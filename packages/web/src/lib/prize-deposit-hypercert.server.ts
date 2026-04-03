@@ -1,18 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { ethers } from "ethers";
-import {
-  ACTIVITY_COLLECTION,
-  buildHyperscanDataUrl,
-  createAppPasswordAgent,
-  createAtprotoPublisher,
-  createDepositHypercertDraft,
-  publishDepositHypercertDraft,
-} from "@optimitron/hypercerts";
 import { getProvider, getVoterPrizeTreasuryContract } from "@/lib/contracts/server-client";
 import { createLogger } from "@/lib/logger";
 
 const logger = createLogger("prize-deposit-hypercert");
 const TX_HASH_PATTERN = /^0x[a-fA-F0-9]{64}$/;
+const ACTIVITY_COLLECTION = "org.hypercerts.claim.activity";
 const ACTIVITY_RKEY_PREFIX = "prize-deposit-";
 const MEASUREMENT_RKEY_PREFIX = "prize-deposit-m-";
 
@@ -56,6 +49,18 @@ function getActivityRkey(txHash: string) {
 
 function getMeasurementRkey(txHash: string) {
   return `${MEASUREMENT_RKEY_PREFIX}${txHash.toLowerCase().replace(/^0x/, "")}`;
+}
+
+function buildHyperscanDataUrl(
+  did: string,
+  collection: string = ACTIVITY_COLLECTION,
+  rkey?: string,
+) {
+  const params = new URLSearchParams({ did, collection });
+  if (rkey) {
+    params.set("rkey", rkey);
+  }
+  return `https://www.hyperscan.dev/data?${params.toString()}`;
 }
 
 async function fetchPublishedPrizeDepositActivity(
@@ -155,6 +160,13 @@ export async function publishPrizeDepositHypercert(
   deposit: PrizeDepositEvent,
   options: { depositorName?: string } = {},
 ): Promise<PrizeDepositHypercertPublicationResult> {
+  // Avoid loading the AT Protocol stack on dashboard reads.
+  const {
+    createAppPasswordAgent,
+    createAtprotoPublisher,
+    createDepositHypercertDraft,
+    publishDepositHypercertDraft,
+  } = await import("@optimitron/hypercerts");
   const contributorDid = getAtprotoContributorDid();
   const password = process.env.ATPROTO_PASSWORD;
   if (!contributorDid || !password) {

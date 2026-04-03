@@ -106,7 +106,8 @@ describe("prize-deposit-hypercert helpers", () => {
     expect(result).toEqual({
       uri: "at://did:plc:optimitron/org.hypercerts.claim.activity/prize-deposit-abc",
       cid: "cid-1",
-      href: "https://www.hyperscan.dev/data?rkey=prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      href:
+        "https://www.hyperscan.dev/data?did=did%3Aplc%3Aoptimitron&collection=org.hypercerts.claim.activity&rkey=prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       rkey: "prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     });
   });
@@ -157,7 +158,8 @@ describe("prize-deposit-hypercert helpers", () => {
       ref: {
         uri: "at://did:plc:optimitron/org.hypercerts.claim.activity/prize-deposit-abc",
         cid: "cid-activity",
-        href: "https://www.hyperscan.dev/data?rkey=prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        href:
+          "https://www.hyperscan.dev/data?did=did%3Aplc%3Aoptimitron&collection=org.hypercerts.claim.activity&rkey=prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         rkey: "prize-deposit-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       },
     });

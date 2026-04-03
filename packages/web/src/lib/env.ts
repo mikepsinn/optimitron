@@ -2,8 +2,9 @@
  * Validated, typed environment variables.
  *
  * Import this module instead of reading `process.env` directly.
- * Next.js loads env from the symlinked .env file (created by `ensure-env`),
- * then Zod validates every variable listed here.  Missing required vars
+ * Next.js loads env from `packages/web/.env`, which `ensure-env` recreates
+ * from the monorepo root `.env` before local web commands run. Zod then
+ * validates every variable listed here. Missing required vars
  * cause a hard crash at startup with a clear message.
  *
  * Client-side code can only access the `clientEnv` export (NEXT_PUBLIC_*).

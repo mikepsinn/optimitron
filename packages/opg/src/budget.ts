@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { EvidenceGradeSchema, WelfareEffectSchema } from './index.js';
+import { EvidenceGradeSchema } from './policy.js';
+import { WelfareEffectSchema } from './welfare.js';
 
 /**
  * Budget types and schemas for the Optimal Budget Generator (OBG)
