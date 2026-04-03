@@ -264,9 +264,6 @@ export const moroniaLink: NavItem = {
   cta: "See Moronia",
 };
 
-/** @deprecated Use transmitLink instead */
-export const trackLink = transmitLink;
-
 export const dashboardLink: NavItem = {
   href: ROUTES.dashboard,
   label: "Dashboard",
@@ -311,13 +308,6 @@ export const settingsLink: NavItem = {
 
   cta: "Open Settings",
 };
-
-export const appLinks: NavItem[] = [
-  wishocracyLink,
-  alignmentLink,
-  trackLink,
-  profileLink,
-];
 
 export const transparencyLink: NavItem = {
   href: ROUTES.dgao,
@@ -424,12 +414,6 @@ export const videoLink: NavItem = {
   cta: "Watch Video",
 };
 
-/** @deprecated Use dtreasuryLink instead */
-export const treasuryLink = dtreasuryLink;
-
-/** @deprecated Use dtreasuryLink instead — /money page removed */
-export const moneyLink = dtreasuryLink;
-
 export const contributeLink: NavItem = {
   href: ROUTES.contribute,
   label: "Contribute",
@@ -438,17 +422,6 @@ export const contributeLink: NavItem = {
 
   cta: "Contribute",
 };
-
-/** Top-level nav items (not in dropdown) */
-export const topLinks: NavItem[] = [
-  wishocracyLink,
-  alignmentLink,
-  prizeLink,
-  iabLink,
-  moneyLink,
-  transparencyLink,
-  aboutLink,
-];
 
 export interface NavSection {
   id: string;
@@ -471,7 +444,7 @@ export const footerAppLinks: NavItem[] = [
   profileLink,
   censusLink,
   settingsLink,
-  trackLink,
+  transmitLink,
   aboutLink,
 ];
 

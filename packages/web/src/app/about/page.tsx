@@ -17,7 +17,7 @@ import {
   prizeLink,
   ROUTES,
   opgLink,
-  trackLink,
+  transmitLink,
   transparencyLink,
   wishocracyLink,
 } from "@/lib/routes";
@@ -31,7 +31,7 @@ const productSurfaces: { item: typeof wishocracyLink; bgColor: BrutalCardBgColor
   { item: wishocracyLink, bgColor: "pink" },
   { item: alignmentLink, bgColor: "yellow" },
   { item: opgLink, bgColor: "cyan" },
-  { item: trackLink, bgColor: "cyan" },
+  { item: transmitLink, bgColor: "cyan" },
 ];
 
 const openSourceButtons = communityLinks.filter(

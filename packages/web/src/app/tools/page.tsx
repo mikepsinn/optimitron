@@ -11,7 +11,7 @@ import {
   iabLink,
   dtreasuryLink,
   scoreboardLink,
-  trackLink,
+  transmitLink,
   obgLink,
   toolsLink,
 } from "@/lib/routes";
@@ -329,7 +329,7 @@ const shelves: Shelf[] = [
           { label: "SASS", value: 10 },
         ],
         cost: "FREE",
-        link: { item: trackLink, label: "Equip" },
+        link: { item: transmitLink, label: "Equip" },
         bgColor: "cyan",
       },
       {
