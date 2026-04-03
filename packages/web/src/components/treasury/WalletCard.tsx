@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   useAccount,
   useConnect,
@@ -11,6 +12,8 @@ import { sepolia } from "wagmi/chains";
 import { formatWish, useTreasuryData } from "@/hooks/useTreasuryData";
 
 export function WalletCard() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
@@ -25,7 +28,15 @@ export function WalletCard() {
           Connect Wallet
         </h3>
 
-        {!isConnected ? (
+        {!mounted ? (
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-muted-foreground mb-4">
+              Connect your wallet to check your $WISH balance, register for UBI,
+              and trigger distributions. This is the $WISH monetary system — not
+              the IAB public goods pool.
+            </p>
+          </div>
+        ) : !isConnected ? (
           <div className="space-y-3">
             <p className="text-xs font-bold text-muted-foreground mb-4">
               Connect your wallet to check your $WISH balance, register for UBI,
