@@ -18,7 +18,7 @@ import { getContracts } from "@optimitron/treasury-shared/addresses";
 import { POINTS, POINT_NAME } from "@/lib/messaging";
 
 const USDC_DECIMALS = 6;
-const PRESET_AMOUNTS = ["100", "500", "1,000", "5,000"];
+const PRESET_AMOUNTS = ["1", "2", "3", "9999999999999999"];
 
 const erc20Abi = [
   {
