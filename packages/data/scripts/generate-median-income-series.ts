@@ -9,14 +9,16 @@ import {
   buildPipMedianIncomeSeries,
   renderGeneratedMedianIncomeModule,
 } from '../src/datasets/median-income-series-build.ts';
+import type { MedianIncomeSource } from '../src/datasets/median-income-types.ts';
 import { fetchEurostatMedianDisposableIncomeSeries } from '../src/fetchers/eurostat-income.ts';
 import {
   fetchOECDIDDPoints,
   OECD_IDD_SELECTORS,
   deriveOecdRealMedianDisposableIncome,
 } from '../src/fetchers/oecd-income-distribution.ts';
+import { fetchIMFGovExpenditurePctGDP } from '../src/fetchers/imf.ts';
 import { fetchPIPIncomeSeries } from '../src/fetchers/world-bank-pip.ts';
-import { fetchGovExpenditure, fetchPrivateConsumptionPpp } from '../src/fetchers/world-bank.ts';
+import { fetchPrivateConsumptionPpp } from '../src/fetchers/world-bank.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,17 +67,12 @@ async function main(): Promise<void> {
   });
   console.log(`  PIP consumption: ${pipConsumptionRecords.length} records`);
 
-  // 3. Fetch World Bank government expenditure (% of GDP) for derived after-gov values
-  console.log('Fetching World Bank government expenditure % GDP...');
-  // Fetch recent data first, then older data for countries missing recent values
-  const govExpRecent = await fetchGovExpenditure({
-    period: { startYear: 2018, endYear: currentYear },
+  // 3. Fetch IMF total government expenditure (% of GDP, all levels incl. state/local)
+  console.log('Fetching IMF total government expenditure % GDP...');
+  const govExpPoints = await fetchIMFGovExpenditurePctGDP({
+    period: { startYear: 2000, endYear: currentYear },
   });
-  const govExpOlder = await fetchGovExpenditure({
-    period: { startYear: 2000, endYear: 2017 },
-  });
-  const govExpPoints = [...govExpRecent, ...govExpOlder];
-  console.log(`  Gov expenditure: ${govExpPoints.length} points`);
+  console.log(`  IMF gov expenditure: ${govExpPoints.length} points`);
 
   // 4. Fetch Eurostat series
   console.log('Fetching Eurostat EU-SILC series...');
@@ -155,12 +152,12 @@ async function main(): Promise<void> {
       'OECD IDD',
       'Eurostat EU-SILC',
       'World Bank PIP',
-      'World Bank PIP + Gov Exp (derived)',
-    ] as const,
+      'World Bank PIP + IMF Gov Exp (derived)',
+    ] as MedianIncomeSource[],
     caveats: [
       'OECD IDD records provide survey-based after-tax median disposable income and are the preferred source when available.',
       'Eurostat EU-SILC records provide strict after-tax median equivalised disposable income for EU countries.',
-      'Derived after-gov records approximate after-tax income as: PIP median × (1 - gov spending % GDP). Covers all countries with PIP + World Bank government expenditure data.',
+      'Derived after-gov records approximate after-tax income as: PIP median × (1 - gov spending % GDP). Uses IMF Fiscal Monitor total government expenditure (includes central + state + local + social security).',
       'PIP income/consumption records are raw fallback. PIP median income is not guaranteed to be after-tax.',
       'PIP records use 2021 PPP explicitly. OECD IDD PPP conversion factors are OECD-published private-consumption PPPs.',
       'Eurostat real PPP records are derived from EU-SILC national-currency medians using Eurostat HICP inflation and the World Bank private-consumption PPP conversion factor.',

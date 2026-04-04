@@ -80,7 +80,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href={ROUTES.home}
-            className="text-xl font-black uppercase tracking-tight hover:underline decoration-4"
+            className="text-xl font-black uppercase tracking-tight"
           >
             <span className="sm:hidden">Optimitron</span>
             <span className="hidden sm:inline">⚡ Optimitron</span>

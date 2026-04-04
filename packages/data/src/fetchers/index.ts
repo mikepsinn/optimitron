@@ -11,3 +11,4 @@ export * from './world-bank-pip';
 export * from './oecd-income-distribution';
 export * from './eurostat-income';
 export * from './median-income';
+export * from './imf';

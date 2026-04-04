@@ -245,7 +245,7 @@ export function buildDerivedAfterGovMedianIncomeSeries(
         concept: 'after_tax_median_disposable_income' as const,
         priceBasis: 'real' as const,
         purchasingPower: 'ppp' as const,
-        source: 'World Bank PIP + Gov Exp (derived)' as const,
+        source: 'World Bank PIP + IMF Gov Exp (derived)' as const,
         derivation: 'derived' as const,
         isAfterTax: true,
         taxScope: 'derived_from_gov_spending' as const,

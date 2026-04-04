@@ -87,9 +87,12 @@ const nextConfig = {
   },
 };
 
-module.exports = withSentryConfig(nextConfig, {
-  org: "wishonia-org",
-  project: "optimitron-web",
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-});
+const isDev = process.env.NODE_ENV === 'development';
+module.exports = isDev
+  ? nextConfig
+  : withSentryConfig(nextConfig, {
+      org: "wishonia-org",
+      project: "optimitron-web",
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+    });

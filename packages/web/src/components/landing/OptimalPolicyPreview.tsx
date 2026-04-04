@@ -1,41 +1,43 @@
+import Link from "next/link";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { GameCTA } from "@/components/ui/game-cta";
+import { getPolicyPath } from "@/lib/routes";
+import { usPolicyAnalysis } from "@/data/us-policy-analysis";
+import type { PolicyReportJSON } from "@optimitron/opg";
 
-type Grade = "A" | "B" | "D" | "F";
-type Action = "ENACT" | "MAINTAIN" | "REPLACE" | "REPEAL";
-
-interface PolicyRow {
-  policy: string;
-  health: number;
-  income: number;
-  grade: Grade;
-  action: Action;
-}
-
-// Sourced from real natural experiments (see slide-optimal-policy-generator.tsx comments)
-const POLICIES: PolicyRow[] = [
-  { policy: "🇵🇹 Drug Decriminalization", health: 0.25, income: 0.01, grade: "A", action: "ENACT" },
-  { policy: "🏥 Universal Healthcare", health: 0.40, income: 0.05, grade: "B", action: "MAINTAIN" },
-  { policy: "🚬 Tobacco Tax Reform", health: 0.25, income: -0.02, grade: "A", action: "REPLACE" },
-  { policy: "⚔️ War on Drugs", health: -0.15, income: -0.01, grade: "F", action: "REPEAL" },
-  { policy: "🏦 Quantitative Easing", health: 0.0, income: -0.03, grade: "D", action: "REPEAL" },
-];
+type Grade = "A" | "B" | "C" | "D" | "F";
 
 const GRADE_COLOR: Record<Grade, string> = {
   A: "bg-brutal-green text-brutal-green-foreground",
   B: "bg-brutal-cyan text-brutal-cyan-foreground",
+  C: "bg-brutal-yellow text-brutal-yellow-foreground",
   D: "bg-brutal-red text-brutal-red-foreground",
   F: "bg-brutal-red text-brutal-red-foreground",
 };
 
-const ACTION_ICON: Record<Action, string> = {
-  ENACT: "✅",
-  MAINTAIN: "✅",
-  REPLACE: "🔄",
-  REPEAL: "❌",
+const ACTION_LABEL: Record<string, { icon: string; label: string }> = {
+  implement: { icon: "✅", label: "IMPLEMENT" },
+  reallocate: { icon: "🔄", label: "REALLOCATE" },
+  repeal: { icon: "❌", label: "REPEAL" },
+  maintain: { icon: "✅", label: "MAINTAIN" },
 };
+
+/** Hand-picked policies that showcase diversity of categories and effects */
+const PREVIEW_NAMES = [
+  "Shift Drug Policy from Criminal to Health Approach",
+  "Universal Pre-K (Ages 3-4)",
+  "Pragmatic Clinical Trial Funding Reform",
+  "Military: Adopt Switzerland's Approach",
+  "Housing Supply Deregulation",
+];
+
+const PREVIEW_POLICIES = PREVIEW_NAMES.map((name) =>
+  (usPolicyAnalysis as PolicyReportJSON).policies.find(
+    (p) => p.name === name,
+  ),
+).filter((p): p is NonNullable<typeof p> => p != null);
 
 function formatEffect(value: number, unit: string): string {
   if (value === 0) return "0.00" + unit;
@@ -71,25 +73,35 @@ export function OptimalPolicyPreview() {
               </tr>
             </thead>
             <tbody>
-              {POLICIES.map((p) => (
-                <tr key={p.policy} className="border-b-2 border-primary hover:bg-muted transition-colors">
-                  <td className="py-3 px-4 font-black text-foreground">{p.policy}</td>
-                  <td className={`py-3 px-4 text-right font-black ${effectColor(p.health)}`}>
-                    {formatEffect(p.health, " yrs")}
-                  </td>
-                  <td className={`py-3 px-4 text-right font-black ${effectColor(p.income)}`}>
-                    {formatEffect(p.income, " pp")}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`inline-block px-3 py-1 font-black text-sm border-2 border-primary ${GRADE_COLOR[p.grade]}`}>
-                      {p.grade}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center font-black text-sm">
-                    {ACTION_ICON[p.action]} {p.action}
-                  </td>
-                </tr>
-              ))}
+              {PREVIEW_POLICIES.map((p) => {
+                const grade = p.evidenceGrade as Grade;
+                const action = ACTION_LABEL[p.recommendationType] ?? {
+                  icon: "📋",
+                  label: p.recommendationType.toUpperCase(),
+                };
+                return (
+                  <tr key={p.name} className="border-b-2 border-primary hover:bg-muted transition-colors relative">
+                    <td className="py-3 px-4 font-black text-foreground">
+                      <Link href={getPolicyPath(p.name)} className="absolute inset-0" aria-label={p.name} />
+                      {p.name}
+                    </td>
+                    <td className={`py-3 px-4 text-right font-black ${effectColor(p.healthEffect)}`}>
+                      {formatEffect(p.healthEffect, " yrs")}
+                    </td>
+                    <td className={`py-3 px-4 text-right font-black ${effectColor(p.incomeEffect)}`}>
+                      {formatEffect(p.incomeEffect, " pp")}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <span className={`inline-block px-3 py-1 font-black text-sm border-2 border-primary ${GRADE_COLOR[grade] ?? GRADE_COLOR.D}`}>
+                        {grade}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-center font-black text-sm">
+                      {action.icon} {action.label}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

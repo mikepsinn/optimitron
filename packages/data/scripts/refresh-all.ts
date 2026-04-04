@@ -20,7 +20,8 @@ const __dirname = dirname(__filename);
 const scripts = [
   { name: "Health Outcomes (WHO)", file: "generate-health-outcomes.ts" },
   { name: "Economic Indicators (World Bank)", file: "generate-economic-indicators.ts" },
-  { name: "Median Income (Eurostat + PIP)", file: "generate-median-income-series.ts" },
+  { name: "Median Income (OECD IDD + Eurostat + PIP + IMF)", file: "generate-median-income-series.ts" },
+  { name: "Country Panel (unified cross-country dataset)", file: "generate-country-panel.ts" },
   { name: "Agency Performance (Gemini)", file: "generate-agency-data.ts" },
   { name: "Politician Scorecards (Congress.gov)", file: "generate-politician-scorecards.ts" },
 ];

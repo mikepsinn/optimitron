@@ -14,7 +14,8 @@ export type MedianIncomeSource =
   | 'OECD IDD'
   | 'Eurostat EU-SILC'
   | 'World Bank PIP'
-  | 'World Bank PIP + Gov Exp (derived)';
+  | 'World Bank PIP + Gov Exp (derived)'
+  | 'World Bank PIP + IMF Gov Exp (derived)';
 
 export type MedianIncomeTaxScope =
   | 'after_direct_taxes_and_cash_transfers'

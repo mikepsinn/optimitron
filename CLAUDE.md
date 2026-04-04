@@ -402,6 +402,8 @@ Before committing, always run:
 pnpm check    # runs: typecheck + lint + test
 ```
 
+**Do NOT run `pnpm build` or `next build`** — the dev server is normally running and handles compilation. `pnpm check` (typecheck + lint + test) is fine. Only run a full build if explicitly asked.
+
 The tsc config can't be invoked directly on a single file due to jsx/alias issues — need to use the project-level pnpm typecheck.
 
 - **TypeScript strict mode** is ON (noUncheckedIndexedAccess, noImplicitOverride)

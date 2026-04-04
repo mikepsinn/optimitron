@@ -44,6 +44,7 @@ export * from './agency-historical-trends';
 export * from './earth-agencies';
 export * from './economic-theft-series';
 export * from './median-income-series';
+export * from './country-panel';
 export * from './us-policy-recommendations';
 export * from './oecd-category-mappings';
 export * from './us-preventable-deaths';

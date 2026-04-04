@@ -2,6 +2,9 @@ import { usPolicyAnalysis as policyData } from "@/data/us-policy-analysis";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { optimalPolicyGeneratorPaperLink, opgLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
+import { getPolicyEvidence, type MatchedExperiment, type MatchedComparison } from "@/data/policy-evidence-map";
+import { ExperimentTimeSeriesChart } from "@/components/opg/ExperimentTimeSeriesChart";
+import type { CountryDrugPolicy, CountryHealthData, CountryEducationData, CountryCriminalJustice } from "@optimitron/data/datasets/international-comparisons";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                             */
@@ -158,6 +161,9 @@ export default async function PolicyDetailPage({
   const sorted = [...data.policies].sort((a, b) => b.policyImpactScore - a.policyImpactScore);
   const rank = sorted.findIndex((p) => p.name === policy.name) + 1;
 
+  // Match supporting evidence
+  const evidence = getPolicyEvidence(policy.name, policy.category, policy.description);
+
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       {/* Back link */}
@@ -281,6 +287,16 @@ export default async function PolicyDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Natural Experiments */}
+      {evidence.experiments.length > 0 && (
+        <NaturalExperimentsSection experiments={evidence.experiments} />
+      )}
+
+      {/* International Comparison */}
+      {evidence.comparison && (
+        <InternationalComparisonSection comparison={evidence.comparison} />
+      )}
 
       {/* Details */}
       <section className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
@@ -417,4 +433,237 @@ function Detail({ label, value }: { label: string; value: string }) {
       <div className="text-sm font-bold text-foreground capitalize">{value}</div>
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Natural Experiments Section                                       */
+/* ------------------------------------------------------------------ */
+
+function NaturalExperimentsSection({ experiments }: { experiments: MatchedExperiment[] }) {
+  return (
+    <section className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
+      <h2 className="text-lg font-black uppercase text-foreground mb-4">
+        🧪 Natural Experiments
+      </h2>
+      <p className="text-sm font-bold text-muted-foreground mb-6">
+        Real-world before/after data from jurisdictions that implemented this policy.
+      </p>
+
+      <div className="space-y-8">
+        {experiments.map((exp) => (
+          <div key={`${exp.computed.jurisdiction}-${exp.computed.policy}`}>
+            {/* Experiment header */}
+            <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-4 mb-4">
+              <h3 className="text-sm font-black uppercase">
+                {exp.computed.jurisdiction} — {exp.computed.policy}
+              </h3>
+              <p className="text-xs font-bold mt-1">
+                Intervention year: {exp.computed.interventionYear} · {exp.timeSeries.description}
+              </p>
+            </div>
+
+            {/* Outcome stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              {exp.computed.outcomes.map((outcome) => (
+                <div
+                  key={outcome.metric}
+                  className="border-4 border-primary p-3 bg-background"
+                >
+                  <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">
+                    {outcome.metric}
+                  </div>
+                  <div className={`text-lg font-black ${outcome.percentChange < 0 ? (outcome.direction === "lower" ? "text-brutal-green" : "text-brutal-red") : (outcome.direction === "higher" ? "text-brutal-green" : "text-brutal-red")}`}>
+                    {outcome.percentChange > 0 ? "+" : ""}
+                    {outcome.percentChange.toFixed(1)}%
+                  </div>
+                  <div className="text-[10px] font-bold text-muted-foreground mt-1">
+                    p={outcome.pValue < 0.001 ? "<0.001" : outcome.pValue.toFixed(3)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Time-series charts */}
+            <ExperimentTimeSeriesChart
+              outcomes={exp.timeSeries.outcomes}
+              interventionYear={exp.timeSeries.interventionYear}
+              jurisdiction={exp.timeSeries.jurisdiction}
+            />
+
+            {/* Sources */}
+            {exp.timeSeries.sources.length > 0 && (
+              <div className="mt-3">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground">
+                  Sources:{" "}
+                </span>
+                <span className="text-[10px] font-bold text-muted-foreground">
+                  {exp.timeSeries.sources.join(" · ")}
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  International Comparison Section                                  */
+/* ------------------------------------------------------------------ */
+
+function InternationalComparisonSection({ comparison }: { comparison: MatchedComparison }) {
+  return (
+    <section className="border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
+      <h2 className="text-lg font-black uppercase text-foreground mb-4">
+        🌍 {comparison.label}
+      </h2>
+      <p className="text-sm font-bold text-muted-foreground mb-4">
+        How countries compare on this policy domain. The US row is highlighted.
+      </p>
+
+      <div className="overflow-x-auto">
+        {comparison.type === "drug" && (
+          <DrugComparisonTable data={comparison.data as CountryDrugPolicy[]} />
+        )}
+        {comparison.type === "health" && (
+          <HealthComparisonTable data={comparison.data as CountryHealthData[]} />
+        )}
+        {comparison.type === "education" && (
+          <EducationComparisonTable data={comparison.data as CountryEducationData[]} />
+        )}
+        {comparison.type === "criminal_justice" && (
+          <CriminalJusticeComparisonTable data={comparison.data as CountryCriminalJustice[]} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function isUS(iso3: string): string {
+  return iso3 === "USA"
+    ? "bg-brutal-yellow text-brutal-yellow-foreground font-black"
+    : "text-foreground";
+}
+
+function DrugComparisonTable({ data }: { data: CountryDrugPolicy[] }) {
+  const sorted = [...data].sort((a, b) => a.drugDeathsPer100K - b.drugDeathsPer100K);
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b-4 border-primary bg-foreground text-background">
+          <Th>Country</Th>
+          <Th align="left">Approach</Th>
+          <Th align="right">Drug Deaths/100K</Th>
+          <Th align="right">Incarceration/100K</Th>
+          <Th align="right">Treatment Access</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((c) => (
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+            <Td className={isUS(c.iso3)}>{c.country}</Td>
+            <Td className={isUS(c.iso3)}>{c.approach}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.drugDeathsPer100K.toFixed(1)}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.incarcerationRatePer100K}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.treatmentAccessRate}%</Td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function HealthComparisonTable({ data }: { data: CountryHealthData[] }) {
+  const sorted = [...data].sort((a, b) => b.lifeExpectancy - a.lifeExpectancy);
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b-4 border-primary bg-foreground text-background">
+          <Th>Country</Th>
+          <Th align="right">$/Capita</Th>
+          <Th align="right">Life Exp.</Th>
+          <Th align="right">Infant Mort.</Th>
+          <Th align="left">System</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((c) => (
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+            <Td className={isUS(c.iso3)}>{c.country}</Td>
+            <Td align="right" className={isUS(c.iso3)}>${c.healthSpendingPerCapita.toLocaleString()}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.lifeExpectancy.toFixed(1)}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.infantMortality.toFixed(1)}</Td>
+            <Td className={isUS(c.iso3)}>{c.systemType}</Td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function EducationComparisonTable({ data }: { data: CountryEducationData[] }) {
+  const sorted = [...data].sort((a, b) => b.pisaScoreMath - a.pisaScoreMath);
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b-4 border-primary bg-foreground text-background">
+          <Th>Country</Th>
+          <Th align="right">Spend % GDP</Th>
+          <Th align="right">PISA Math</Th>
+          <Th align="right">PISA Reading</Th>
+          <Th align="right">PISA Science</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((c) => (
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+            <Td className={isUS(c.iso3)}>{c.country}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.educationSpendingPctGDP.toFixed(1)}%</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.pisaScoreMath}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.pisaScoreReading}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.pisaScoreScience}</Td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function CriminalJusticeComparisonTable({ data }: { data: CountryCriminalJustice[] }) {
+  const sorted = [...data].sort((a, b) => a.homicideRatePer100K - b.homicideRatePer100K);
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b-4 border-primary bg-foreground text-background">
+          <Th>Country</Th>
+          <Th align="right">Incarceration/100K</Th>
+          <Th align="right">Homicide/100K</Th>
+          <Th align="right">Recidivism</Th>
+          <Th align="left">Approach</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((c) => (
+          <tr key={c.iso3} className={`border-b-2 border-primary ${c.iso3 === "USA" ? "bg-brutal-yellow text-brutal-yellow-foreground" : ""}`}>
+            <Td className={isUS(c.iso3)}>{c.country}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.incarcerationRatePer100K}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{c.homicideRatePer100K.toFixed(1)}</Td>
+            <Td align="right" className={isUS(c.iso3)}>{(c.recidivismRate * 100).toFixed(0)}%</Td>
+            <Td className={isUS(c.iso3)}>{c.approach}</Td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function Th({ children, align = "left" }: { children: React.ReactNode; align?: "left" | "right" | "center" }) {
+  const alignCls = align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left";
+  return <th className={`py-2 px-3 font-black uppercase text-xs ${alignCls}`}>{children}</th>;
+}
+
+function Td({ children, align = "left", className = "" }: { children: React.ReactNode; align?: "left" | "right" | "center"; className?: string }) {
+  const alignCls = align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left";
+  return <td className={`py-2 px-3 font-bold ${alignCls} ${className}`}>{children}</td>;
 }

@@ -416,7 +416,7 @@ export function VoterPrizeTreasuryDeposit() {
                 )}
                 <button
                   onClick={() => disconnect()}
-                  className="border-4 border-primary bg-background px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-red/20 transition-colors"
+                  className="border-4 border-primary bg-background text-foreground px-3 py-1.5 text-xs font-black uppercase hover:bg-brutal-red/20 transition-colors"
                 >
                   Disconnect
                 </button>
@@ -459,7 +459,7 @@ export function VoterPrizeTreasuryDeposit() {
 
             {/* PRIZE share info */}
             {hasDeposit && (
-              <div className="border-4 border-primary bg-green-50 p-2">
+              <div className="border-4 border-primary bg-muted p-2">
                 <div className="text-[10px] font-black uppercase text-muted-foreground">
                   Your PRIZE Shares / USDC Value
                 </div>
@@ -508,12 +508,12 @@ export function VoterPrizeTreasuryDeposit() {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="1000"
+                placeholder="1"
                 value={amount}
                 onChange={(e) =>
                   setAmount(e.target.value.replace(/[^0-9.,]/g, ""))
                 }
-                className="flex-1 border-4 border-primary bg-background px-3 py-2 text-lg font-black focus:outline-none focus:border-brutal-pink"
+                className="flex-1 border-4 border-primary bg-background text-foreground px-3 py-2 text-lg font-black focus:outline-none focus:border-brutal-pink"
                 disabled={!isConnected || !isDeployed || isBusy}
               />
               <button
@@ -550,7 +550,7 @@ export function VoterPrizeTreasuryDeposit() {
               <button
                 key={preset}
                 onClick={() => setAmount(preset)}
-                className="flex-1 border-4 border-primary bg-background px-2 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/20 transition-colors disabled:opacity-50"
+                className="flex-1 border-4 border-primary bg-background text-foreground px-2 py-1.5 text-xs font-black uppercase hover:bg-brutal-yellow/20 transition-colors disabled:opacity-50"
                 disabled={!isConnected || !isDeployed || isBusy}
               >
                 ${preset}
@@ -662,7 +662,7 @@ export function VoterPrizeTreasuryDeposit() {
             Live Prize Status
           </h3>
           <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Total Value Locked
               </div>
@@ -672,7 +672,7 @@ export function VoterPrizeTreasuryDeposit() {
                   : "\u2014"}
               </div>
             </div>
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Depositors
               </div>
@@ -682,7 +682,7 @@ export function VoterPrizeTreasuryDeposit() {
                   : "\u2014"}
               </div>
             </div>
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Maturity Date
               </div>
@@ -692,7 +692,7 @@ export function VoterPrizeTreasuryDeposit() {
                   : "\u2014"}
               </div>
             </div>
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Threshold Status
               </div>
@@ -708,7 +708,7 @@ export function VoterPrizeTreasuryDeposit() {
 
           {/* Metrics */}
           <div className="grid gap-3 grid-cols-2 mt-3">
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Health Metric (bps)
               </div>
@@ -721,7 +721,7 @@ export function VoterPrizeTreasuryDeposit() {
                 </span>
               </div>
             </div>
-            <div className="border-4 border-primary bg-background p-2">
+            <div className="border-4 border-primary bg-background text-foreground p-2">
               <div className="text-[10px] font-black uppercase text-muted-foreground">
                 Income Metric (bps)
               </div>

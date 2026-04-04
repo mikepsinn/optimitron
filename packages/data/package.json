@@ -19,6 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "generate:median-income": "tsx ./scripts/generate-median-income-series.ts",
+    "generate:country-panel": "tsx ./scripts/generate-country-panel.ts",
     "data:refresh": "tsx ./scripts/refresh-all.ts",
     "data:refresh:health": "tsx ./scripts/generate-health-outcomes.ts",
     "data:refresh:economic": "tsx ./scripts/generate-economic-indicators.ts",
