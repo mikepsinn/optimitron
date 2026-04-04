@@ -59,7 +59,7 @@ describe('textToMeasurements', () => {
         const result = await textToMeasurements({
           text: 'took 500 mg magnesium',
           apiKey: 'fake-key',
-          provider: 'openai',
+          provider: 'gemini',
         });
         // Should fall back to regex
         expect(result).toHaveLength(1);
@@ -81,7 +81,7 @@ describe('textToMeasurements', () => {
         const result = await textToMeasurements({
           text: 'mood 3/5',
           apiKey: 'bad-key',
-          provider: 'openai',
+          provider: 'gemini',
         });
         // Should fall back to regex
         expect(result).toHaveLength(1);
@@ -93,7 +93,7 @@ describe('textToMeasurements', () => {
   });
 
   describe('LLM response parsing', () => {
-    it('parses valid OpenAI-style response', async () => {
+    it('parses valid Gemini-style response', async () => {
       const mockResponse = JSON.stringify({
         measurements: [
           {
@@ -114,7 +114,7 @@ describe('textToMeasurements', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            choices: [{ message: { content: mockResponse } }],
+            candidates: [{ content: { parts: [{ text: mockResponse }] } }],
           }),
       });
 
@@ -122,7 +122,7 @@ describe('textToMeasurements', () => {
         const result = await textToMeasurements({
           text: 'took 5000 IU vitamin D',
           apiKey: 'test-key',
-          provider: 'openai',
+          provider: 'gemini',
         });
         expect(result).toHaveLength(1);
         expect(result[0]).toMatchObject({
@@ -144,7 +144,7 @@ describe('textToMeasurements', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            choices: [{ message: { content: mockResponse } }],
+            candidates: [{ content: { parts: [{ text: mockResponse }] } }],
           }),
       });
 
@@ -152,7 +152,7 @@ describe('textToMeasurements', () => {
         const result = await textToMeasurements({
           text: 'coffee',
           apiKey: 'test-key',
-          provider: 'openai',
+          provider: 'gemini',
         });
         // Should fall back to regex
         expect(result).toHaveLength(1);
@@ -183,7 +183,7 @@ describe('textToMeasurements', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            choices: [{ message: { content: mockResponse } }],
+            candidates: [{ content: { parts: [{ text: mockResponse }] } }],
           }),
       });
 
@@ -191,7 +191,7 @@ describe('textToMeasurements', () => {
         const result = await textToMeasurements({
           text: 'test',
           apiKey: 'test-key',
-          provider: 'openai',
+          provider: 'gemini',
         });
         expect(result).toHaveLength(1);
         // Should default to 'Treatment' for invalid category

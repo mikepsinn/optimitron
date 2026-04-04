@@ -138,7 +138,7 @@ export class ConversationContext {
 
     // Build context-aware prompt and parse with LLM
     try {
-      const result = await this.parseWithLLMContext(text, apiKey, provider ?? 'openai', model);
+      const result = await this.parseWithLLMContext(text, apiKey, provider ?? 'gemini', model);
       this.allMeasurements.push(...result.measurements);
 
       // Add assistant response to history
@@ -328,7 +328,7 @@ async function callLLMRaw(
   const DEFAULT_MODELS: Record<LLMProvider, string> = {
     openai: 'gpt-4o-mini',
     anthropic: 'claude-sonnet-4-20250514',
-    gemini: 'gemini-2.0-flash',
+    gemini: 'gemini-3.1-flash-lite-preview',
   };
 
   const selectedModel = model ?? DEFAULT_MODELS[provider];

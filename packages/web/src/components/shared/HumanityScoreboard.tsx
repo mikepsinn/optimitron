@@ -41,9 +41,18 @@ export function HumanityScoreboard() {
           Please Select an Earth
         </span>
         <p className="text-sm font-bold text-muted-foreground mt-3 max-w-2xl mx-auto">
-          The only two numbers that matter: how long you live in good health,
-          and how much money you keep. Three scenarios — doing nothing, the 1%
-          Treaty, or governance that actually optimises for humans.
+          Projected 2040 values for the only two numbers that matter: how long
+          you live in good health, and how much money you keep. Three scenarios
+          — doing nothing, the 1% Treaty, or governance that actually optimises
+          for humans.{" "}
+          <a
+            href="https://manual.warondisease.org/knowledge/economics/gdp-trajectories"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brutal-pink font-black underline hover:text-foreground transition-colors"
+          >
+            See the full projections ↗
+          </a>
         </p>
       </div>
 
@@ -54,17 +63,17 @@ export function HumanityScoreboard() {
           <div />
           <div className="text-center">
             <span className="text-xs font-black uppercase text-muted-foreground">
-              Current
+              Current (2025)
             </span>
           </div>
           <div className="text-center">
             <span className="text-xs font-black uppercase text-brutal-cyan">
-              1% Treaty
+              1% Treaty (2040)
             </span>
           </div>
           <div className="text-center">
             <span className="text-xs font-black uppercase text-brutal-pink">
-              Optimal Governance
+              Optimal Governance (2040)
             </span>
           </div>
         </div>
@@ -190,8 +199,8 @@ export function HumanityScoreboard() {
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-muted-foreground">
-                Current
+              <span className="text-[10px] font-black uppercase text-muted-foreground">
+                Now
               </span>
               <div className="text-xl sm:text-2xl font-black text-muted-foreground line-through mt-1">
                 <ParameterValue param={GLOBAL_HALE_CURRENT} />
@@ -205,8 +214,8 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-brutal-cyan">
-                1% Treaty
+              <span className="text-[10px] font-black uppercase text-brutal-cyan">
+                Treaty 2040
               </span>
               <div className="text-xl sm:text-2xl font-black text-brutal-cyan mt-1">
                 <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
@@ -223,8 +232,8 @@ export function HumanityScoreboard() {
               </p>
             </div>
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-brutal-pink">
-                Optimal
+              <span className="text-[10px] font-black uppercase text-brutal-pink">
+                Optimal 2040
               </span>
               <div className="text-xl sm:text-2xl font-black text-brutal-pink mt-1">
                 <ParameterValue param={WISHONIA_PROJECTED_HALE_YEAR_15} />
@@ -250,8 +259,8 @@ export function HumanityScoreboard() {
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-muted-foreground">
-                Current
+              <span className="text-[10px] font-black uppercase text-muted-foreground">
+                Now
               </span>
               <div className="text-xl sm:text-2xl font-black text-muted-foreground line-through mt-1">
                 <ParameterValue
@@ -268,8 +277,8 @@ export function HumanityScoreboard() {
               />
             </div>
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-brutal-cyan">
-                1% Treaty
+              <span className="text-[10px] font-black uppercase text-brutal-cyan">
+                Treaty 2040
               </span>
               <div className="text-xl sm:text-2xl font-black text-brutal-cyan mt-1">
                 <ParameterValue
@@ -289,8 +298,8 @@ export function HumanityScoreboard() {
               </p>
             </div>
             <div className="text-center">
-              <span className="text-xs font-black uppercase text-brutal-pink">
-                Optimal
+              <span className="text-[10px] font-black uppercase text-brutal-pink">
+                Optimal 2040
               </span>
               <div className="text-xl sm:text-2xl font-black text-brutal-pink mt-1">
                 <ParameterValue

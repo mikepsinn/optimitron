@@ -270,7 +270,7 @@ async function callGemini(
 const DEFAULT_MODELS: Record<LLMProvider, string> = {
   openai: 'gpt-4o-mini',
   anthropic: 'claude-sonnet-4-20250514',
-  gemini: 'gemini-2.0-flash',
+  gemini: 'gemini-3.1-flash-lite-preview',
 };
 
 // ---------------------------------------------------------------------------
@@ -386,7 +386,7 @@ export async function textToMeasurements(
   const {
     text,
     apiKey,
-    provider = 'openai',
+    provider = 'gemini',
     currentLocalDateTime,
     model,
   } = options;
