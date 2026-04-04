@@ -7,11 +7,13 @@ import {
   getGovernmentsByHALE,
   getAgencyPerformanceByCountry,
   ALL_HISTORICAL_TRENDS,
+  getMilitaryToGovernmentClinicalTrialRatio,
+  getMilitaryToGovernmentMedicalResearchRatio,
 } from "@optimitron/data";
 import { GameCTA } from "@/components/ui/game-cta";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { SpendingBar } from "@/components/ui/spending-bar";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import { AgencyGradeChart } from "@/components/shared/AgencyGradeChart";
 import { HistoricalTrendChart } from "@/components/shared/HistoricalTrendChart";
 import {
@@ -49,20 +51,36 @@ function formatUSD(value: number): string {
 interface StatCardProps {
   label: string;
   value: string;
+  emoji?: string;
   subtitle?: string;
   source?: string;
   url?: string;
+  barValue?: number;
+  barMax?: number;
+  barColor?: "red" | "cyan" | "green" | "yellow";
 }
 
-function StatCard({ label, value, subtitle, source, url }: StatCardProps) {
+function StatCard({ label, value, emoji, subtitle, source, url, barValue, barMax, barColor }: StatCardProps) {
   return (
     <BrutalCard bgColor="background" shadowSize={4} padding="md">
-      <div className="text-xs font-black uppercase text-muted-foreground mb-1">
-        {label}
+      <div className="flex items-center gap-1.5 mb-1">
+        {emoji && <span className="text-base">{emoji}</span>}
+        <div className="text-xs font-black uppercase text-muted-foreground">
+          {label}
+        </div>
       </div>
       <div className="text-2xl sm:text-3xl font-black text-foreground">
         {value}
       </div>
+      {barValue != null && barMax != null && barColor && (
+        <SpendingBar
+          value={barValue}
+          max={barMax}
+          color={barColor}
+          height="sm"
+          className="mt-2"
+        />
+      )}
       {subtitle && (
         <div className="text-sm font-bold text-muted-foreground mt-1">
           {subtitle}
@@ -101,6 +119,31 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
     ? TREATY_PROJECTED_HALE_YEAR_15.value - gov.hale.value
     : null;
 
+  // Compute maxes across all governments for bar scaling
+  const maxMilitary = Math.max(...haleRanked.map((g) => g.militarySpendingAnnual.value), 1);
+  const maxHale = Math.max(...haleRanked.map((g) => g.hale?.value ?? 0), 1);
+  const maxGdpPC = Math.max(...haleRanked.map((g) => g.gdpPerCapita.value), 1);
+  const maxKilled = Math.max(...haleRanked.map((g) => g.militaryDeathsCaused.value), 1);
+  const maxHealthPC = Math.max(...haleRanked.map((g) => g.healthSpendingPerCapita.value), 1);
+  const maxTrialRatio = Math.max(
+    ...haleRanked
+      .map((g) => getMilitaryToGovernmentClinicalTrialRatio(g))
+      .filter((r): r is number => r !== null && r < 999_999),
+    1,
+  );
+
+  const trialRatio = getMilitaryToGovernmentClinicalTrialRatio(gov);
+  const researchRatio = getMilitaryToGovernmentMedicalResearchRatio(gov);
+
+  // Bar config for spending profile cards
+  const spendingBarConfig: Record<string, { value: number; max: number; color: "red" | "cyan" | "green" | "yellow" }> = {
+    "Military Spending/yr": { value: gov.militarySpendingAnnual.value, max: maxMilitary, color: "red" },
+    "Health Spending/capita": { value: gov.healthSpendingPerCapita.value, max: maxHealthPC, color: "cyan" },
+    "Life Expectancy": { value: gov.lifeExpectancy.value, max: 90, color: "green" },
+    "Military : Trials Ratio": { value: trialRatio ?? 0, max: maxTrialRatio, color: "red" },
+    "Military : Research Ratio": { value: researchRatio ?? 0, max: Math.max(trialRatio ?? 0, researchRatio ?? 0, 100), color: "red" },
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
@@ -124,91 +167,232 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* Score card — full width like politician page */}
+      {trialRatio !== null && (
+        <section className="mb-6">
+          <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <div className="text-xs font-black uppercase text-brutal-yellow-foreground mb-1">
+                  ⚔️ Military : 🧪 Trials Ratio
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-brutal-red">
+                  {trialRatio >= 1000 ? `${Math.round(trialRatio).toLocaleString()}:1` : `${trialRatio.toFixed(1)}:1`}
+                </div>
+              </div>
+              <p className="text-xs font-bold text-muted-foreground max-w-xs">
+                For every $1 spent finding out which medicines work, {gov.name} spends ${Math.round(trialRatio).toLocaleString()} on military.
+              </p>
+            </div>
+            <SpendingBar
+              value={trialRatio}
+              max={maxTrialRatio}
+              color="red"
+              height="md"
+              className="mt-3"
+            />
+          </BrutalCard>
+        </section>
+      )}
+
       {/* Game Metrics — the two numbers that matter */}
       <section className="mb-12">
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
-          Game Metrics
+          🎮 Game Metrics
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <BrutalCard bgColor="background" shadowSize={8} padding="lg">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-2">
-              Healthy Life Years (HALE)
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <BrutalCard bgColor="cyan" shadowSize={8} padding="lg">
+            <div className="text-xs font-black uppercase text-foreground mb-2">
+              ❤️ Healthy Life Years (HALE)
             </div>
             <div className="text-5xl sm:text-6xl font-black text-foreground mb-2">
               {gov.hale?.value.toFixed(1) ?? "—"}
             </div>
-            <div className="text-lg font-bold text-foreground">
-              Global average: <ParameterValue param={GLOBAL_HALE_CURRENT} /> &middot; Treaty target: <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
+            <SpendingBar
+              value={gov.hale?.value ?? 0}
+              max={maxHale}
+              color="cyan"
+              height="md"
+              className="mb-3"
+            />
+            <div className="text-base font-bold text-foreground">
+              Global avg: <ParameterValue param={GLOBAL_HALE_CURRENT} /> · Target: <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
             </div>
             {haleGap !== null && haleGap > 0 && (
-              <div className="text-base font-bold text-muted-foreground mt-1">
+              <div className="text-sm font-bold text-muted-foreground mt-1">
                 Needs +{haleGap.toFixed(1)} years to hit treaty target
               </div>
             )}
           </BrutalCard>
 
-          <BrutalCard bgColor="background" shadowSize={8} padding="lg">
-            <div className="text-xs font-black uppercase text-muted-foreground mb-2">
-              GDP Per Capita
+          <BrutalCard bgColor="green" shadowSize={8} padding="lg">
+            <div className="text-xs font-black uppercase text-brutal-green-foreground mb-2">
+              💰 GDP Per Capita
             </div>
-            <div className="text-5xl sm:text-6xl font-black text-foreground mb-2">
+            <div className="text-5xl sm:text-6xl font-black text-brutal-green-foreground mb-2">
               {formatUSD(gov.gdpPerCapita.value)}
             </div>
+            <SpendingBar
+              value={gov.gdpPerCapita.value}
+              max={maxGdpPC}
+              color="green"
+              height="md"
+              className="mb-3"
+            />
             {gov.medianIncome && (
-              <div className="text-lg font-bold text-foreground">
+              <div className="text-base font-bold text-brutal-green-foreground">
                 Median income: {formatUSD(gov.medianIncome.value)}
               </div>
             )}
-            <div className="text-base font-bold text-muted-foreground mt-1">
+            <div className="text-sm font-bold text-muted-foreground mt-1">
               {gov.gdpPerCapita.source}
             </div>
           </BrutalCard>
         </div>
+      </section>
 
-        {/* Humanity's Scoreboard for context */}
-        <HumanityScoreboard />
+      {/* Military vs Medicine — big comparison bars */}
+      <section className="mb-12">
+        <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
+          💣 Military vs 🧪 Medicine
+        </h2>
+        <div className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between items-baseline mb-1">
+                <span className="text-xs font-black uppercase text-brutal-red">
+                  💣 Military Spending
+                </span>
+                <span className="text-sm font-black text-foreground">
+                  {formatUSD(gov.militarySpendingAnnual.value)}/yr
+                </span>
+              </div>
+              <SpendingBar
+                value={gov.militarySpendingAnnual.value}
+                max={maxMilitary}
+                color="red"
+                height="md"
+              />
+            </div>
+            {gov.clinicalTrialSpending && (
+              <div>
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-xs font-black uppercase text-brutal-cyan">
+                    🧪 Clinical Trials
+                  </span>
+                  <span className="text-sm font-black text-foreground">
+                    {formatUSD(gov.clinicalTrialSpending.value)}/yr
+                  </span>
+                </div>
+                <SpendingBar
+                  value={gov.clinicalTrialSpending.value}
+                  max={gov.militarySpendingAnnual.value}
+                  color="cyan"
+                  height="md"
+                />
+                <p className="text-[10px] font-bold text-muted-foreground mt-1">
+                  Scaled to the same axis as military — the bar is {
+                    gov.militarySpendingAnnual.value > 0
+                      ? `${(gov.clinicalTrialSpending.value / gov.militarySpendingAnnual.value * 100).toFixed(2)}%`
+                      : "a fraction"
+                  } of military spending
+                </p>
+              </div>
+            )}
+            {gov.govMedicalResearchSpending && (
+              <div>
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-xs font-black uppercase text-brutal-cyan">
+                    🧬 Total Medical Research
+                  </span>
+                  <span className="text-sm font-black text-foreground">
+                    {formatUSD(gov.govMedicalResearchSpending.value)}/yr
+                  </span>
+                </div>
+                <SpendingBar
+                  value={gov.govMedicalResearchSpending.value}
+                  max={gov.militarySpendingAnnual.value}
+                  color="cyan"
+                  height="md"
+                />
+              </div>
+            )}
+            {gov.healthSpendingPerCapita && (
+              <div>
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-xs font-black uppercase text-brutal-green">
+                    🏥 Health Spending / Capita
+                  </span>
+                  <span className="text-sm font-black text-foreground">
+                    {formatUSD(gov.healthSpendingPerCapita.value)}
+                  </span>
+                </div>
+                <SpendingBar
+                  value={gov.healthSpendingPerCapita.value}
+                  max={maxHealthPC}
+                  color="green"
+                  height="md"
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
       {/* Spending Profile */}
       <section className="mb-12">
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
-          Spending Profile
+          📊 Spending Profile
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {detailSections.spendingProfile.map((stat) => (
-            <StatCard
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              subtitle={stat.subtitle}
-              source={stat.source}
-              url={stat.url}
-            />
-          ))}
+          {detailSections.spendingProfile.map((stat) => {
+            const bar = spendingBarConfig[stat.label];
+            return (
+              <StatCard
+                key={stat.label}
+                label={stat.label}
+                emoji={stat.emoji}
+                value={stat.value}
+                subtitle={stat.subtitle}
+                source={stat.source}
+                url={stat.url}
+                barValue={bar?.value}
+                barMax={bar?.max}
+                barColor={bar?.color}
+              />
+            );
+          })}
         </div>
       </section>
 
       {/* Body Count */}
       <section className="mb-12">
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
-          Body Count
+          💀 Body Count
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {detailSections.bodyCount.map((stat) => (
-            <StatCard
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              subtitle={stat.subtitle}
-              source={stat.source}
-              url={stat.url}
-            />
-          ))}
+          {detailSections.bodyCount.map((stat) => {
+            const isBodyCount = stat.label === "Body Count";
+            return (
+              <StatCard
+                key={stat.label}
+                label={stat.label}
+                emoji={stat.emoji}
+                value={stat.value}
+                subtitle={stat.subtitle}
+                source={stat.source}
+                url={stat.url}
+                barValue={isBodyCount ? gov.militaryDeathsCaused.value : undefined}
+                barMax={isBodyCount ? maxKilled : undefined}
+                barColor={isBodyCount ? "red" : undefined}
+              />
+            );
+          })}
         </div>
         {gov.countriesBombed && gov.countriesBombed.value > 0 && (
           <div className="mt-4 border-4 border-primary bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-xs font-black uppercase text-muted-foreground mb-1">
-              Countries Bombed
+              💥 Countries Bombed
             </p>
             <p className="text-sm font-bold text-foreground">
               {gov.countriesBombed.list}
@@ -219,7 +403,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
           <div className="mt-6 border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <div className="border-b-4 border-primary px-4 py-3">
               <h3 className="text-sm font-black uppercase text-foreground">
-                Death Ledger
+                📜 Death Ledger
               </h3>
               <p className="mt-1 text-sm font-bold text-muted-foreground">
                 Sourced regime and conflict entries summed into the body-count total.
@@ -267,7 +451,14 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
                     <div className="text-lg font-black text-foreground">
                       {entry.deaths.toLocaleString()}
                     </div>
-                    <div className="text-[10px] font-black uppercase text-muted-foreground">
+                    <SpendingBar
+                      value={entry.deaths}
+                      max={Math.max(...(gov.deathLedgerEntries ?? []).map((e) => e.deaths), 1)}
+                      color="red"
+                      height="sm"
+                      className="mt-1"
+                    />
+                    <div className="text-[10px] font-black uppercase text-muted-foreground mt-1">
                       {entry.method}
                     </div>
                   </div>
@@ -281,13 +472,14 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       {/* Justice & Domestic */}
       <section className="mb-12">
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
-          Justice &amp; Domestic
+          ⚖️ Justice &amp; Domestic
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {detailSections.justiceAndDomestic.map((stat) => (
             <StatCard
               key={stat.label}
               label={stat.label}
+              emoji={stat.emoji}
               value={stat.value}
               subtitle={stat.subtitle}
               source={stat.source}
@@ -304,7 +496,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
         return (
           <section className="mb-12">
             <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-2">
-              Agency Report Cards
+              🏛️ Agency Report Cards
             </h2>
             <p className="text-base font-bold text-muted-foreground mb-6">
               Spending over time vs. outcomes over time. If the lines diverge —
@@ -324,7 +516,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       {gov.code === "US" && ALL_HISTORICAL_TRENDS.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-2">
-            Before vs After: Did the Agency Change the Trend?
+            📈 Before vs After: Did the Agency Change the Trend?
           </h2>
           <p className="text-base font-bold text-muted-foreground mb-6">
             The red dashed line shows when each agency was created. If the trend
@@ -345,33 +537,35 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
 
       {/* Politician Alignment */}
       <section className="mb-12">
-        <div className="border-4 border-primary bg-background p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
-            {gov.name} Politician Alignment
+        <BrutalCard bgColor="pink" shadowSize={8} padding="lg">
+          <h2 className="mb-3 text-2xl font-black uppercase text-brutal-pink-foreground">
+            🗳️ {gov.name} Politician Alignment
           </h2>
-          <p className="mb-6 text-lg font-bold text-foreground">
-            How do {gov.name}&apos;s politicians actually vote compared to what
-            citizens want? The scoreboard makes the gap impossible to ignore.
+          <p className="mb-6 text-lg font-bold text-brutal-pink-foreground">
+            Every politician&apos;s votes scored against what citizens actually want
+            via pairwise comparison. The gap between what they vote for and what
+            you&apos;d vote for, expressed as a single number.
           </p>
           <GameCTA
             href={`/governments/${gov.code}/politicians`}
-            variant="secondary"
+            variant="primary"
             size="lg"
           >
             See Politician Scores
           </GameCTA>
-        </div>
+        </BrutalCard>
       </section>
 
       {/* CTA */}
-      <section className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <section className="border-4 border-primary bg-brutal-cyan p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
-          Fix {gov.name}&apos;s Score
+          🎯 Fix {gov.name}&apos;s Score
         </h2>
         <p className="mx-auto mb-6 max-w-2xl text-lg font-bold text-foreground">
-          These numbers change when enough people demand it. Vote on the 1%
-          Treaty, share with friends, and make {gov.name}&apos;s dysfunction
-          impossible to ignore.
+          {gov.name} spends {formatUSD(gov.militarySpendingAnnual.value)}/yr on
+          military and {gov.clinicalTrialSpending ? formatUSD(gov.clinicalTrialSpending.value) : "almost nothing"}/yr
+          testing which medicines work. The 1% Treaty redirects 1% of the first
+          number to the second. The deposit funds the campaign to make it happen.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <GameCTA href="/#vote" variant="primary" size="lg">

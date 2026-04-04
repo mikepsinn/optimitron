@@ -43,7 +43,7 @@ export function GlobalProgressCard({ progress }: GlobalProgressCardProps) {
           </Tooltip.Provider>
         </Card.Title>
         <Card.Description className="text-foreground font-bold">
-          We need <ParameterValue param={GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT} display="withUnit" /> of the global population to create unstoppable change
+          Historical threshold: when <ParameterValue param={GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT} display="withUnit" /> of a population actively participates, no campaign has ever failed
         </Card.Description>
       </Card.Header>
       <Card.Content>

@@ -73,23 +73,24 @@ export const CTA = {
 
 export const TAGLINES = {
   gameObjective:
-    "Redirect resources from the things that make you poor and dead to things that make you healthy and wealthy!",
-  onlyWayToLose: "The only way to lose is to not play.",
+    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons for every $1 testing which medicines work. 150,000 humans permanently stop every 24 hours. That's fifty 9/11s a day, except nobody invades anyone about it because diseases don't have oil.`,
+  onlyWayToLose:
+    `Your deposit grows at ~10% for 15 years either way. The break-even probability is 1 in 15,000. You lose money by not depositing.`,
   hedgeLine: "Your deposit is a hedge against your own species.",
   arcadeHook:
-    `The only arcade game where you get your coins back ${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x if you lose.`,
+    `Deposit $100. If the plan fails, you get $${Math.round(100 * PRIZE_POOL_HORIZON_MULTIPLE.value)} back. If it works, you helped prevent 10.7 billion deaths. The maths are not complicated.`,
   winBothWays:
-    "Recruit voters too and you win in both scenarios. The only losing move is not playing.",
+    `Depositors get ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x returns on failure. Recruiters get prize shares on success. Both scenarios pay.`,
   everyPlayerWins:
-    "Every player wins. The only losing move is not playing.",
+    `Failure pays ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x via Aave yield. Success pays from the prize pool. The only scenario that costs you money is not depositing.`,
   awarenessBarrier:
-    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on weapons than clinical trials. Everyone wants that fixed. Nobody knows everyone else does too. That's the bug. The game fixes it.`,
+    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. 95% of diseases have zero FDA-approved treatments. There are 9,500 known safe compounds and 99.7% of their potential uses have never been tested. At the current rate, testing them all takes 443 years. You will be dead in 80.`,
   pluralisticIgnorance:
-    `4 billion people would rather be healthy and rich than funding ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more weapons than cures. They just can't see each other yet.`,
+    `Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on the first problem. You'd think someone would mention this. They did. You nailed him to a piece of wood.`,
   alignTheSuperintelligence:
-    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on weapons than clinical trials. Let's fix that!`,
+    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. Since 1913, that's $170T on things that make humans stop — enough for 38,000 years of clinical trials. You bought the other thing.`,
   theObjective:
-    "Reallocate humanity's resources from things making you poorer and deader to things that make you healthier and wealthier.",
+    "Maximize median healthy life years and median after-tax inflation-adjusted income. Two numbers. Everything else is a distraction your politicians use to avoid being measured.",
   rewardFunction:
     "Maximize median healthy life years and median after-tax inflation-adjusted income. That's the entire objective. Two numbers.",
 };
@@ -171,23 +172,23 @@ export const VOTE_SECTION = {
 };
 
 export const VOTE_VALUE = {
-  heading: "What Your Vote Could Be Worth",
+  heading: "The Maths on Your Vote",
   subheading:
-    "You just cast a free vote. If enough people and foundations deposit into the prize fund, that vote could be worth six figures. On my planet, we call that 'good maths.'",
+    "You cast a free vote. Deposits into the prize fund back it with real money. The expected value calculation is below. On my planet, we do this in primary school.",
   failHeading: "If the Plan Fails",
-  failBody: "annual returns — better than most hedge funds. Their money grew while sitting in the Wishocratic Earth Optimization Fund for 15 years.",
+  failBody: "annual returns from Aave yield — better than most hedge funds. The money compounds for 15 years regardless.",
   successHeading: "If the Plan Succeeds",
   successBody: `${POINT_NAME} Point holders claim proportional shares of the prize pool.`,
   breakEvenPrefix: "The break-even probability is 1 in",
-  breakEvenSuffix: "Even pessimists should take this bet.",
-  deadlineHeading: "The Clock Is Ticking",
+  breakEvenSuffix: "If you believe there's even a 0.0067% chance the plan works, depositing is positive expected value.",
+  deadlineHeading: "Your Civilisation Has a Countdown",
   deadlineBody:
-    "The parasitic economy — military spending, cybercrime, regulatory capture — is growing faster than the productive economy. When it hits 50% of GDP, stealing beats creating and the system collapses. That's not a prediction. It's compound interest.",
+    "The parasitic economy — military spending ($2.7T), cybercrime ($10.5T), regulatory capture — is $13.2T/yr and growing at 15% annually. The Soviet Union collapsed at 15% military-to-GDP. You're approaching that ratio with better technology and no plan. The Soviets had a terrible plan, and their terrible plan beat your no plan.",
   deadlineQuip:
-    `Your ${POINT_NAME} Points pay out if enough people play. Worth nothing if they don't. The deadline doesn't care about your schedule.`,
-  flywheelHeading: "The Flywheel",
+    `Combined destructive economy is 11.5% of global GDP and growing faster than the productive economy. Once stealing pays better than building, production becomes irrational. You have a name for places where this already happened. You call them "failed states."`,
+  flywheelHeading: "The Incentive Structure",
   flywheelDescription:
-    `Retirement funds, foundations, billionaires — they all have an incentive to deposit because the returns beat conventional investing either way. You have an incentive to get your friends to play because each voter increases your ${POINT_NAME} Point value.`,
+    `Billionaires prefer not dying of horrible diseases. There are 2,800 of them. Statistically, at least one prefers living. They deposit because returns beat conventional investing either way. Each verified voter increases the political leverage, which increases the probability of treaty passage, which increases the expected value of every ${POINT_NAME} Point.`,
   shopkeeperQuip:
     "You don't need to be altruistic. You just need to be numerate.",
 };

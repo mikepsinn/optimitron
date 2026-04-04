@@ -28,8 +28,7 @@ export function HowToWinSection() {
         {/* The awareness insight */}
         <div className="text-center mb-8 max-w-3xl mx-auto">
           <p className="text-xl sm:text-2xl font-black">
-            {TAGLINES.pluralisticIgnorance} Get <ParameterValue param={GLOBAL_COORDINATION_TARGET_SUPPORTERS} figures={1} /> to show they want
-            this and it becomes unstoppable.
+            {TAGLINES.pluralisticIgnorance}
           </p>
         </div>
 

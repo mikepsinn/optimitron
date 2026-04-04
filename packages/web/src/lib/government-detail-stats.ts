@@ -7,6 +7,7 @@ import {
 export interface GovernmentDetailStatCard {
   label: string;
   value: string;
+  emoji: string;
   subtitle?: string;
   source?: string;
   url?: string;
@@ -47,6 +48,7 @@ export function getGovernmentDetailSections(
   const spendingProfile: GovernmentDetailStatCard[] = [
     {
       label: "Military Spending/yr",
+      emoji: "💣",
       value: formatUSD(government.militarySpendingAnnual.value),
       subtitle: `${government.militaryPctGDP.value}% of GDP`,
       source: government.militarySpendingAnnual.source,
@@ -54,12 +56,14 @@ export function getGovernmentDetailSections(
     },
     {
       label: "Health Spending/capita",
+      emoji: "🏥",
       value: formatUSD(government.healthSpendingPerCapita.value),
       source: government.healthSpendingPerCapita.source,
       url: government.healthSpendingPerCapita.url,
     },
     {
       label: "Life Expectancy",
+      emoji: "⏳",
       value: `${government.lifeExpectancy.value} yrs`,
       source: government.lifeExpectancy.source,
       url: government.lifeExpectancy.url,
@@ -69,6 +73,7 @@ export function getGovernmentDetailSections(
   if (clinicalTrialRatio !== null) {
     spendingProfile.push({
       label: "Military : Trials Ratio",
+      emoji: "⚖️",
       value: formatRatio(clinicalTrialRatio),
       subtitle: "Weapons per $1 of government clinical trials",
     });
@@ -77,6 +82,7 @@ export function getGovernmentDetailSections(
   if (medicalResearchRatio !== null) {
     spendingProfile.push({
       label: "Military : Research Ratio",
+      emoji: "🔬",
       value: formatRatio(medicalResearchRatio),
       subtitle: "Weapons per $1 of total government medical research",
     });
@@ -85,6 +91,7 @@ export function getGovernmentDetailSections(
   if (government.govMedicalResearchSpending) {
     spendingProfile.push({
       label: "Gov Medical Research/yr",
+      emoji: "🧬",
       value: formatUSD(government.govMedicalResearchSpending.value),
       subtitle: "Total research budget (basic science + overhead + admin)",
       source: government.govMedicalResearchSpending.source,
@@ -95,6 +102,7 @@ export function getGovernmentDetailSections(
   if (government.clinicalTrialSpending) {
     spendingProfile.push({
       label: "Gov Clinical Trials/yr",
+      emoji: "🧪",
       value: formatUSD(government.clinicalTrialSpending.value),
       subtitle: "Actual interventional trials, not total research overhead",
       source: government.clinicalTrialSpending.source,
@@ -104,6 +112,7 @@ export function getGovernmentDetailSections(
 
   spendingProfile.push({
     label: "Arms Exports/yr",
+    emoji: "🔫",
     value: formatUSD(government.armsExportsAnnual.value),
     source: government.armsExportsAnnual.source,
     url: government.armsExportsAnnual.url,
@@ -111,6 +120,7 @@ export function getGovernmentDetailSections(
 
   spendingProfile.push({
     label: "Debt",
+    emoji: "💳",
     value: `${government.debtPctGDP.value}% of GDP`,
     source: government.debtPctGDP.source,
   });
@@ -118,6 +128,7 @@ export function getGovernmentDetailSections(
   if (government.corporateWelfareAnnual) {
     spendingProfile.push({
       label: "Corporate Welfare/yr",
+      emoji: "🏦",
       value: formatUSD(government.corporateWelfareAnnual.value),
       source: government.corporateWelfareAnnual.source,
       url: government.corporateWelfareAnnual.url,
@@ -127,6 +138,7 @@ export function getGovernmentDetailSections(
   if (government.fossilFuelSubsidies) {
     spendingProfile.push({
       label: "Fossil Fuel Subsidies/yr",
+      emoji: "🛢️",
       value: formatUSD(government.fossilFuelSubsidies.value),
       source: government.fossilFuelSubsidies.source,
       url: government.fossilFuelSubsidies.url,
@@ -136,6 +148,7 @@ export function getGovernmentDetailSections(
   if (government.farmSubsidies) {
     spendingProfile.push({
       label: "Farm Subsidies/yr",
+      emoji: "🌾",
       value: formatUSD(government.farmSubsidies.value),
       source: government.farmSubsidies.source,
       url: government.farmSubsidies.url,
@@ -145,6 +158,7 @@ export function getGovernmentDetailSections(
   const bodyCount: GovernmentDetailStatCard[] = [
     {
       label: "Body Count",
+      emoji: "💀",
       value: formatNumber(government.militaryDeathsCaused.value),
       subtitle: government.militaryDeathsCaused.period,
       source: government.militaryDeathsCaused.source,
@@ -152,6 +166,7 @@ export function getGovernmentDetailSections(
     },
     {
       label: "Nuclear Warheads",
+      emoji: "☢️",
       value: formatNumber(government.nuclearWarheads.value),
       source: government.nuclearWarheads.source,
       url: government.nuclearWarheads.url,
@@ -161,6 +176,7 @@ export function getGovernmentDetailSections(
   if (government.civilianDeathsCaused) {
     bodyCount.push({
       label: "Civilian Deaths",
+      emoji: "🪦",
       value: formatNumber(government.civilianDeathsCaused.value),
       source: government.civilianDeathsCaused.source,
       url: government.civilianDeathsCaused.url,
@@ -170,6 +186,7 @@ export function getGovernmentDetailSections(
   if (government.countriesBombed) {
     bodyCount.push({
       label: "Countries Bombed",
+      emoji: "💥",
       value: formatNumber(government.countriesBombed.value),
       source: government.countriesBombed.source,
       url: government.countriesBombed.url,
@@ -179,6 +196,7 @@ export function getGovernmentDetailSections(
   if (government.droneStrikes) {
     bodyCount.push({
       label: "Drone Strikes",
+      emoji: "🎯",
       value: formatNumber(government.droneStrikes.value),
       source: government.droneStrikes.source,
       url: government.droneStrikes.url,
@@ -188,6 +206,7 @@ export function getGovernmentDetailSections(
   if (government.refugeesCreated) {
     bodyCount.push({
       label: "Refugees Created",
+      emoji: "🏃",
       value: formatNumber(government.refugeesCreated.value),
       source: government.refugeesCreated.source,
       url: government.refugeesCreated.url,
@@ -197,6 +216,7 @@ export function getGovernmentDetailSections(
   if (government.sanctionsDeathsAttributed) {
     bodyCount.push({
       label: "Sanctions Deaths",
+      emoji: "🚫",
       value: formatNumber(government.sanctionsDeathsAttributed.value),
       source: government.sanctionsDeathsAttributed.source,
       url: government.sanctionsDeathsAttributed.url,
@@ -206,12 +226,14 @@ export function getGovernmentDetailSections(
   const justiceAndDomestic: GovernmentDetailStatCard[] = [
     {
       label: "Homicide Rate /100K",
+      emoji: "🔪",
       value: government.homicideRate.value.toFixed(1),
       source: government.homicideRate.source,
       url: government.homicideRate.url,
     },
     {
       label: "Incarceration /100K",
+      emoji: "⛓️",
       value: formatNumber(government.incarcerationRate.value),
       source: government.incarcerationRate.source,
       url: government.incarcerationRate.url,
@@ -221,6 +243,7 @@ export function getGovernmentDetailSections(
   if (government.murderClearanceRate) {
     justiceAndDomestic.push({
       label: "Murders Solved",
+      emoji: "🔍",
       value: `${government.murderClearanceRate.value}%`,
       source: government.murderClearanceRate.source,
       url: government.murderClearanceRate.url,
@@ -230,6 +253,7 @@ export function getGovernmentDetailSections(
   if (government.drugPrisoners) {
     justiceAndDomestic.push({
       label: "Drug Prisoners",
+      emoji: "🚔",
       value: formatNumber(government.drugPrisoners.value),
       source: government.drugPrisoners.source,
       url: government.drugPrisoners.url,
@@ -239,6 +263,7 @@ export function getGovernmentDetailSections(
   if (government.drugWarSpendingAnnual) {
     justiceAndDomestic.push({
       label: "Drug War Spending/yr",
+      emoji: "💊",
       value: formatUSD(government.drugWarSpendingAnnual.value),
       source: government.drugWarSpendingAnnual.source,
       url: government.drugWarSpendingAnnual.url,
@@ -248,6 +273,7 @@ export function getGovernmentDetailSections(
   if (government.drugOverdoseDeaths) {
     justiceAndDomestic.push({
       label: "Overdose Deaths/yr",
+      emoji: "☠️",
       value: formatNumber(government.drugOverdoseDeaths.value),
       source: government.drugOverdoseDeaths.source,
       url: government.drugOverdoseDeaths.url,
@@ -257,6 +283,7 @@ export function getGovernmentDetailSections(
   if (government.policeKillingsAnnual) {
     justiceAndDomestic.push({
       label: "Police Killings/yr",
+      emoji: "🚨",
       value: formatNumber(government.policeKillingsAnnual.value),
       source: government.policeKillingsAnnual.source,
       url: government.policeKillingsAnnual.url,
@@ -266,6 +293,7 @@ export function getGovernmentDetailSections(
   if (government.privatePrisonPopulation) {
     justiceAndDomestic.push({
       label: "Private Prison Population",
+      emoji: "🏗️",
       value: formatNumber(government.privatePrisonPopulation.value),
       source: government.privatePrisonPopulation.source,
       url: government.privatePrisonPopulation.url,

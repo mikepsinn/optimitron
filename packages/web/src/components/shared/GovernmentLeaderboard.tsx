@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { HelpCircle } from "lucide-react";
 import {
   type GovernmentMetrics,
   getGovernmentsByHALE,
@@ -11,7 +10,8 @@ import {
   getMilitaryToGovernmentMedicalResearchRatio,
 } from "@optimitron/data";
 import { Button } from "@/components/retroui/Button";
-import { Tooltip } from "@/components/retroui/Tooltip";
+import { SpendingBar } from "@/components/ui/spending-bar";
+import { ColumnHelp } from "@/components/ui/column-help";
 import {
   GOVERNMENT_LEADERBOARD_COLUMN_META,
   GOVERNMENT_LEADERBOARD_DEFAULT_SORT_ASC,
@@ -29,37 +29,11 @@ function formatUSD(value: number): string {
   return `$${value.toLocaleString()}`;
 }
 
-function ratioColor(
-  ratio: number | null,
-  denominator: "trials" | "research",
-): string {
-  if (ratio === null) return "text-muted-foreground";
-  if (denominator === "trials") {
-    if (ratio < 250) return "text-foreground";
-    if (ratio < 1000) return "text-foreground";
-    return "text-brutal-red";
-  }
-  if (ratio < 20) return "text-foreground";
-  if (ratio < 100) return "text-foreground";
-  return "text-brutal-red";
-}
-
 function formatRatio(ratio: number): string {
   if (ratio >= 1000) return `${Math.round(ratio).toLocaleString()}:1`;
   if (ratio >= 100) return `${ratio.toFixed(0)}:1`;
   return `${ratio.toFixed(1)}:1`;
 }
-
-const rankColumnWidthClass = "w-14 min-w-14";
-const countryColumnWidthClass = "min-w-[10rem]";
-const stickyRankHeaderClass =
-  "";
-const stickyCountryHeaderClass =
-  "sticky left-0 z-30 border-r-4 border-primary bg-background";
-const stickyRankCellClass =
-  "";
-const stickyCountryCellClass =
-  "sticky left-0 z-10 border-r-4 border-primary bg-background group-hover:bg-muted";
 
 function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
   switch (key) {
@@ -79,66 +53,6 @@ function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
     case "researchRatio":
       return getMilitaryToGovernmentMedicalResearchRatio(gov) ?? 999_999_999;
   }
-}
-
-function stopEventPropagation(event: {
-  stopPropagation: () => void;
-}): void {
-  event.stopPropagation();
-}
-
-interface SortableHeaderProps {
-  sortKey: SortKey;
-  activeSortKey: SortKey;
-  sortAsc: boolean;
-  headerClass: string;
-  align?: "left" | "right";
-  onSort: (key: SortKey) => void;
-}
-
-function SortableHeader({
-  sortKey,
-  activeSortKey,
-  sortAsc,
-  headerClass,
-  align = "right",
-  onSort,
-}: SortableHeaderProps) {
-  const meta = GOVERNMENT_LEADERBOARD_COLUMN_META[sortKey];
-  const indicator =
-    activeSortKey === sortKey ? (sortAsc ? " ↑" : " ↓") : "";
-  const alignmentClass = align === "left" ? "text-left" : "text-right";
-  const justifyClass = align === "left" ? "justify-start" : "justify-end";
-
-  return (
-    <th
-      className={`p-3 ${alignmentClass} ${headerClass}`}
-      onClick={() => onSort(sortKey)}
-    >
-      <div className={`inline-flex items-center gap-1 ${justifyClass}`}>
-        <span>{meta.label}{indicator}</span>
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <button
-              type="button"
-              aria-label={`Explain ${meta.label}`}
-              className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current/40 text-[10px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              onClick={stopEventPropagation}
-              onPointerDown={stopEventPropagation}
-            >
-              <HelpCircle className="h-3 w-3" />
-            </button>
-          </Tooltip.Trigger>
-          <Tooltip.Content
-            sideOffset={8}
-            className="max-w-xs border-4 border-primary bg-background p-3 text-left text-xs font-semibold text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-          >
-            {meta.description}
-          </Tooltip.Content>
-        </Tooltip>
-      </div>
-    </th>
-  );
 }
 
 type RankMode = "worst" | "least-bad";
@@ -169,6 +83,20 @@ function GovernmentRowLink({
   );
 }
 
+const COLUMN_HELP_TEXT: Record<string, string> = {
+  country: "Country name. Click to sort alphabetically.",
+  trialRatio: "Military spending per $1 of government clinical trial spending. Higher = worse.",
+  rank: "Current table rank based on the default Mil/Trials ranking.",
+  killed: "Estimated total people killed by that government's military actions.",
+  hale: "Healthy life expectancy at birth: expected years lived in full health.",
+  lifeExpectancy: "Total life expectancy at birth, including years with illness or disability.",
+  medianIncome: "GDP per capita minus government spending per capita (PPP). What citizens actually keep.",
+  militaryPerCapitaPPP: "Military spending per person in PPP terms.",
+  militarySpending: "Annual military spending in USD.",
+  healthSpending: "Annual health spending per person.",
+  researchRatio: "Military spending per $1 of total government medical research spending.",
+};
+
 export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLeaderboardProps) {
   const [rankMode, setRankMode] = useState<RankMode>("worst");
   const [sortKey, setSortKey] = useState<SortKey>(
@@ -180,13 +108,40 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
   const [search, setSearch] = useState("");
 
   const allGovs = getGovernmentsByHALE();
+
+  // Compute max values for bar scaling
+  const maxMilitary = useMemo(
+    () => Math.max(...allGovs.map((g) => g.militarySpendingAnnual.value), 1),
+    [allGovs],
+  );
+  const maxKilled = useMemo(
+    () => Math.max(...allGovs.map((g) => g.militaryDeathsCaused.value), 1),
+    [allGovs],
+  );
+  const maxHale = useMemo(
+    () => Math.max(...allGovs.map((g) => g.hale?.value ?? 0), 1),
+    [allGovs],
+  );
+  const maxIncome = useMemo(
+    () => Math.max(...allGovs.map((g) => g.gdpPerCapita.value - g.governmentSpendingPerCapita.value), 1),
+    [allGovs],
+  );
+  const maxTrialRatio = useMemo(
+    () => Math.max(
+      ...allGovs
+        .map((g) => getMilitaryToGovernmentClinicalTrialRatio(g))
+        .filter((r): r is number => r !== null && r < 999_999),
+      1,
+    ),
+    [allGovs],
+  );
+
   const searchLower = search.toLowerCase();
   const filtered = search
     ? allGovs.filter((g) => g.name.toLowerCase().includes(searchLower) || g.code.toLowerCase().includes(searchLower))
     : allGovs;
   const sorted = [...filtered].sort((a, b) => {
     if (sortKey === "trialRatio" || sortKey === "rank") {
-      // Multi-key: ratio, then military spend, then least clinical trial
       const dir = rankMode === "worst" ? 1 : -1;
       const aRatio = getSortValue(a, "trialRatio");
       const bRatio = getSortValue(b, "trialRatio");
@@ -222,13 +177,19 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
     setSortKey("trialRatio");
   };
 
-  const headerClass =
-    "text-xs font-black uppercase text-muted-foreground cursor-pointer hover:text-foreground transition-colors whitespace-nowrap";
+  const indicator = (key: SortKey) => {
+    if (key === "trialRatio" || key === "rank") {
+      return sortKey === key ? (rankMode === "worst" ? " ↓" : " ↑") : "";
+    }
+    return sortKey === key ? (sortAsc ? " ↑" : " ↓") : "";
+  };
+
+  const hdrClass = "p-2 text-xs font-black uppercase text-muted-foreground whitespace-nowrap cursor-pointer hover:text-foreground transition-colors";
 
   return (
-    <Tooltip.Provider delayDuration={100}>
+    <div className="bg-background text-foreground border-4 border-primary p-2 sm:p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       {/* Rank mode toggle + search */}
-      <div className="flex items-end justify-between mb-2 gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-2 gap-2 sm:gap-4">
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -252,179 +213,253 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
           placeholder="Search country..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink w-48"
+          className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brutal-pink w-full sm:w-48"
         />
       </div>
       <p className="text-xs font-bold text-muted-foreground mb-3">
         Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
       </p>
-      <div className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
+
+      {/* Table */}
+      <div className="border-2 border-primary overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b-4 border-primary">
-              <SortableHeader
-                sortKey="country"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={`${headerClass} ${countryColumnWidthClass} ${stickyCountryHeaderClass}`}
-                align="left"
-                onSort={handleSort}
-              />
-              <SortableHeader
-                sortKey="trialRatio"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
-              <SortableHeader
-                sortKey="rank"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={`${headerClass} ${rankColumnWidthClass} ${stickyRankHeaderClass}`}
-                onSort={handleSort}
-              />
-              <SortableHeader
-                sortKey="killed"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
-              <SortableHeader
-                sortKey="hale"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
+              {/* # — hidden on mobile */}
+              <th className={`${hdrClass} w-8 hidden md:table-cell`} onClick={() => handleSort("rank")}>
+                #{indicator("rank")}<ColumnHelp text={COLUMN_HELP_TEXT.rank!} />
+              </th>
+              {/* Country — always visible, sticky */}
+              <th
+                className={`${hdrClass} text-left sticky left-0 z-30 bg-background border-r-4 border-primary min-w-[8rem]`}
+                onClick={() => handleSort("country")}
+              >
+                Country{indicator("country")}<ColumnHelp text={COLUMN_HELP_TEXT.country!} />
+              </th>
+              {/* Military — hidden on mobile */}
+              <th className={`${hdrClass} text-right hidden lg:table-cell`} onClick={() => handleSort("militarySpending")}>
+                Military{indicator("militarySpending")}<ColumnHelp text={COLUMN_HELP_TEXT.militarySpending!} />
+              </th>
+              {/* Killed — hidden on mobile */}
+              <th className={`${hdrClass} text-right hidden lg:table-cell`} onClick={() => handleSort("killed")}>
+                Killed{indicator("killed")}<ColumnHelp text={COLUMN_HELP_TEXT.killed!} />
+              </th>
+              {/* Mil/Trials — always visible */}
+              <th className={`${hdrClass} text-right`} onClick={() => handleSort("trialRatio")}>
+                Mil/Trials{indicator("trialRatio")}<ColumnHelp text={COLUMN_HELP_TEXT.trialRatio!} />
+              </th>
+              {/* HALE — hidden on small mobile */}
+              <th className={`${hdrClass} text-right hidden sm:table-cell`} onClick={() => handleSort("hale")}>
+                HALE{indicator("hale")}<ColumnHelp text={COLUMN_HELP_TEXT.hale!} />
+              </th>
+              {/* Life Exp — hidden unless full */}
               {!compact && (
-                <SortableHeader
-                  sortKey="lifeExpectancy"
-                  activeSortKey={sortKey}
-                  sortAsc={sortAsc}
-                  headerClass={headerClass}
-                  onSort={handleSort}
-                />
+                <th className={`${hdrClass} text-right hidden xl:table-cell`} onClick={() => handleSort("lifeExpectancy")}>
+                  Life Exp{indicator("lifeExpectancy")}<ColumnHelp text={COLUMN_HELP_TEXT.lifeExpectancy!} />
+                </th>
               )}
-              <SortableHeader
-                sortKey="medianIncome"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
+              {/* What You Keep — hidden on small mobile */}
+              <th className={`${hdrClass} text-right hidden sm:table-cell`} onClick={() => handleSort("medianIncome")}>
+                What You Keep{indicator("medianIncome")}<ColumnHelp text={COLUMN_HELP_TEXT.medianIncome!} />
+              </th>
               {!compact && (
                 <>
-                  <SortableHeader
-                    sortKey="militaryPerCapitaPPP"
-                    activeSortKey={sortKey}
-                    sortAsc={sortAsc}
-                    headerClass={headerClass}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    sortKey="militarySpending"
-                    activeSortKey={sortKey}
-                    sortAsc={sortAsc}
-                    headerClass={headerClass}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    sortKey="healthSpending"
-                    activeSortKey={sortKey}
-                    sortAsc={sortAsc}
-                    headerClass={headerClass}
-                    onSort={handleSort}
-                  />
+                  <th className={`${hdrClass} text-right hidden xl:table-cell`} onClick={() => handleSort("militaryPerCapitaPPP")}>
+                    Mil/cap PPP{indicator("militaryPerCapitaPPP")}<ColumnHelp text={COLUMN_HELP_TEXT.militaryPerCapitaPPP!} />
+                  </th>
+                  <th className={`${hdrClass} text-right hidden xl:table-cell`} onClick={() => handleSort("healthSpending")}>
+                    Health/cap{indicator("healthSpending")}<ColumnHelp text={COLUMN_HELP_TEXT.healthSpending!} />
+                  </th>
                 </>
               )}
-              <SortableHeader
-                sortKey="researchRatio"
-                activeSortKey={sortKey}
-                sortAsc={sortAsc}
-                headerClass={headerClass}
-                onSort={handleSort}
-              />
+              <th className={`${hdrClass} text-right hidden md:table-cell`} onClick={() => handleSort("researchRatio")}>
+                Mil/Research{indicator("researchRatio")}<ColumnHelp text={COLUMN_HELP_TEXT.researchRatio!} />
+              </th>
             </tr>
           </thead>
           <tbody>
             {govs.map((gov, i) => {
-              const clinicalTrialRatio =
-                getMilitaryToGovernmentClinicalTrialRatio(gov);
-              const medicalResearchRatio =
-                getMilitaryToGovernmentMedicalResearchRatio(gov);
-              const militaryPerCapitaPPP =
-                getMilitarySpendingPerCapitaPPP(gov);
+              const clinicalTrialRatio = getMilitaryToGovernmentClinicalTrialRatio(gov);
+              const medicalResearchRatio = getMilitaryToGovernmentMedicalResearchRatio(gov);
+              const militaryPerCapitaPPP = getMilitarySpendingPerCapitaPPP(gov);
+              const income = gov.gdpPerCapita.value - gov.governmentSpendingPerCapita.value;
               const detailHref = `/governments/${gov.code}`;
               return (
                 <tr
                   key={gov.code}
-                  className="group border-b-2 border-primary last:border-b-0 hover:bg-muted transition-colors cursor-pointer"
+                  className="group border-b border-primary last:border-b-0 hover:bg-muted transition-colors"
                 >
-                  <td className={`p-3 ${countryColumnWidthClass} ${stickyCountryCellClass}`}>
+                  {/* # — hidden on mobile */}
+                  <td className="p-2 text-xs font-bold text-muted-foreground hidden md:table-cell">
+                    {i + 1}
+                  </td>
+
+                  {/* Country — sticky, with inline mini bars on mobile */}
+                  <td className="p-2 sticky left-0 z-10 bg-background group-hover:bg-muted border-r-4 border-primary">
                     <GovernmentRowLink href={detailHref}>
-                      <span className="font-black text-foreground">{gov.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-lg leading-none">{gov.flag}</span>
+                        <span className="font-black text-foreground text-sm">{gov.name}</span>
+                      </div>
                     </GovernmentRowLink>
+                    {/* Mini bars — visible below lg */}
+                    <div className="mt-1.5 space-y-1 lg:hidden">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black text-brutal-red w-7 shrink-0">MIL</span>
+                        <SpendingBar
+                          value={gov.militarySpendingAnnual.value}
+                          max={maxMilitary}
+                          color="red"
+                          height="sm"
+                          className="flex-1"
+                        />
+                        <span className="text-[10px] font-black text-foreground w-12 text-right shrink-0">
+                          {formatUSD(gov.militarySpendingAnnual.value)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black text-brutal-cyan w-7 shrink-0">HP</span>
+                        <SpendingBar
+                          value={gov.hale?.value ?? 0}
+                          max={maxHale}
+                          color="cyan"
+                          height="sm"
+                          className="flex-1"
+                        />
+                        <span className="text-[10px] font-black text-foreground w-12 text-right shrink-0">
+                          {gov.hale?.value.toFixed(1) ?? "—"}
+                        </span>
+                      </div>
+                    </div>
                   </td>
-                  <td className={`p-3 text-right font-black ${ratioColor(clinicalTrialRatio, "trials")}`}>
+
+                  {/* Military — hidden on mobile */}
+                  <td className="p-2 text-right min-w-[100px] hidden lg:table-cell">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {clinicalTrialRatio !== null ? formatRatio(clinicalTrialRatio) : "—"}
+                      <div className="text-sm font-black text-foreground">
+                        {formatUSD(gov.militarySpendingAnnual.value)}
+                      </div>
+                      <SpendingBar
+                        value={gov.militarySpendingAnnual.value}
+                        max={maxMilitary}
+                        color="red"
+                        height="sm"
+                        className="mt-1"
+                      />
                     </GovernmentRowLink>
                   </td>
-                  <td
-                    className={`p-3 text-right font-black text-muted-foreground ${rankColumnWidthClass} ${stickyRankCellClass}`}
-                  >
+
+                  {/* Killed — hidden on mobile */}
+                  <td className="p-2 text-right min-w-[100px] hidden lg:table-cell">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {i + 1}
+                      <div className="text-sm font-black text-foreground">
+                        {gov.militaryDeathsCaused.value.toLocaleString()}
+                      </div>
+                      <SpendingBar
+                        value={gov.militaryDeathsCaused.value}
+                        max={maxKilled}
+                        color="red"
+                        height="sm"
+                        className="mt-1"
+                      />
                     </GovernmentRowLink>
                   </td>
-                  <td className="p-3 text-right font-black text-foreground">
+
+                  {/* Mil/Trials ratio — always visible */}
+                  <td className="p-2 text-right min-w-[80px] sm:min-w-[110px]">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {gov.militaryDeathsCaused.value.toLocaleString()}
+                      <div className={`text-xs sm:text-sm font-black ${
+                        clinicalTrialRatio !== null && clinicalTrialRatio >= 500
+                          ? "text-brutal-red"
+                          : "text-foreground"
+                      }`}>
+                        {clinicalTrialRatio !== null ? formatRatio(clinicalTrialRatio) : "—"}
+                      </div>
+                      {clinicalTrialRatio !== null && clinicalTrialRatio < 999_999 && (
+                        <SpendingBar
+                          value={clinicalTrialRatio}
+                          max={maxTrialRatio}
+                          color="red"
+                          height="sm"
+                          className="mt-1"
+                        />
+                      )}
                     </GovernmentRowLink>
                   </td>
-                  <td className="p-3 text-right font-black text-foreground">
+
+                  {/* HALE — hidden on small mobile */}
+                  <td className="p-2 text-right min-w-[80px] hidden sm:table-cell">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {gov.hale?.value.toFixed(1) ?? "—"}
+                      <div className="text-sm font-black text-foreground">
+                        {gov.hale?.value.toFixed(1) ?? "—"}
+                      </div>
+                      {gov.hale && (
+                        <SpendingBar
+                          value={gov.hale.value}
+                          max={maxHale}
+                          color="cyan"
+                          height="sm"
+                          className="mt-1"
+                        />
+                      )}
                     </GovernmentRowLink>
                   </td>
+
+                  {/* Life Exp — full only */}
                   {!compact && (
-                    <td className="p-3 text-right font-bold text-foreground">
+                    <td className="p-2 text-right hidden xl:table-cell">
                       <GovernmentRowLink href={detailHref} className="text-right">
-                        {gov.lifeExpectancy.value.toFixed(1)}
+                        <span className="text-sm font-bold text-foreground">
+                          {gov.lifeExpectancy.value.toFixed(1)}
+                        </span>
                       </GovernmentRowLink>
                     </td>
                   )}
-                  <td className="p-3 text-right font-black text-foreground">
+
+                  {/* What You Keep — hidden on small mobile */}
+                  <td className="p-2 text-right min-w-[80px] hidden sm:table-cell">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {formatUSD(gov.gdpPerCapita.value - gov.governmentSpendingPerCapita.value)}
+                      <div className="text-sm font-black text-foreground">
+                        {formatUSD(income)}
+                      </div>
+                      <SpendingBar
+                        value={Math.max(income, 0)}
+                        max={maxIncome}
+                        color="green"
+                        height="sm"
+                        className="mt-1"
+                      />
                     </GovernmentRowLink>
                   </td>
+
                   {!compact && (
                     <>
-                      <td className="p-3 text-right font-bold text-foreground">
+                      <td className="p-2 text-right hidden xl:table-cell">
                         <GovernmentRowLink href={detailHref} className="text-right">
-                          {militaryPerCapitaPPP !== null
-                            ? formatUSD(militaryPerCapitaPPP)
-                            : "—"}
+                          <span className="text-sm font-bold text-foreground">
+                            {militaryPerCapitaPPP !== null ? formatUSD(militaryPerCapitaPPP) : "—"}
+                          </span>
                         </GovernmentRowLink>
                       </td>
-                      <td className="p-3 text-right font-bold text-foreground">
+                      <td className="p-2 text-right hidden xl:table-cell">
                         <GovernmentRowLink href={detailHref} className="text-right">
-                          {formatUSD(gov.militarySpendingAnnual.value)}
-                        </GovernmentRowLink>
-                      </td>
-                      <td className="p-3 text-right font-bold text-foreground">
-                        <GovernmentRowLink href={detailHref} className="text-right">
-                          {formatUSD(gov.healthSpendingPerCapita.value)}
+                          <span className="text-sm font-bold text-foreground">
+                            {formatUSD(gov.healthSpendingPerCapita.value)}
+                          </span>
                         </GovernmentRowLink>
                       </td>
                     </>
                   )}
-                  <td className={`p-3 text-right font-black ${ratioColor(medicalResearchRatio, "research")}`}>
+
+                  {/* Mil/Research — hidden on mobile */}
+                  <td className={`p-2 text-right hidden md:table-cell ${
+                    medicalResearchRatio !== null && medicalResearchRatio >= 100
+                      ? "text-brutal-red" : ""
+                  }`}>
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {medicalResearchRatio !== null ? formatRatio(medicalResearchRatio) : "—"}
+                      <span className="text-sm font-black">
+                        {medicalResearchRatio !== null ? formatRatio(medicalResearchRatio) : "—"}
+                      </span>
                     </GovernmentRowLink>
                   </td>
                 </tr>
@@ -433,6 +468,6 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
           </tbody>
         </table>
       </div>
-    </Tooltip.Provider>
+    </div>
   );
 }

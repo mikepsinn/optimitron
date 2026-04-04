@@ -424,8 +424,7 @@ export function CitizenDashboard() {
           </Tooltip.Provider>
         </div>
         <p className="text-sm font-bold mb-3">
-          We need {TIPPING_POINT_PCT}% of the global population to create
-          unstoppable change
+          Historical threshold: {TIPPING_POINT_PCT}% active participation — no campaign has ever failed past this point
         </p>
         <div className="flex justify-between text-sm font-bold mb-2">
           <span>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateTTestPValue, mean } from '../statistics.js';
+import { calculateTTestPValue } from '../statistics.js';
 import type { AlignedPair } from '../types.js';
 
 // ─── Helper ──────────────────────────────────────────────────────────
@@ -7,6 +7,14 @@ import type { AlignedPair } from '../types.js';
 /** Create an AlignedPair with minimal timestamp info */
 function pair(pv: number, ov: number): AlignedPair {
   return { predictorValue: pv, outcomeValue: ov, predictorTimestamp: 0, outcomeTimestamp: 0 };
+}
+
+function createDeterministicRandom(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
 }
 
 /**
@@ -18,14 +26,15 @@ function generateSplitPairs(
   lowPred: number, lowOutMean: number,
   highPred: number, highOutMean: number,
   noise: number = 0,
+  random: () => number = createDeterministicRandom(0x1badf00d),
 ): AlignedPair[] {
   const pairs: AlignedPair[] = [];
   const half = Math.floor(n / 2);
   for (let i = 0; i < half; i++) {
-    pairs.push(pair(lowPred, lowOutMean + (noise ? (Math.random() - 0.5) * noise : 0)));
+    pairs.push(pair(lowPred, lowOutMean + (noise ? (random() - 0.5) * noise : 0)));
   }
   for (let i = 0; i < n - half; i++) {
-    pairs.push(pair(highPred, highOutMean + (noise ? (Math.random() - 0.5) * noise : 0)));
+    pairs.push(pair(highPred, highOutMean + (noise ? (random() - 0.5) * noise : 0)));
   }
   return pairs;
 }
@@ -53,11 +62,9 @@ describe('calculateTTestPValue', () => {
   });
 
   it('returns high p-value when there is no real difference', () => {
-    // Both groups have outcome ~5 with same noise.
-    // Use a fixed seed-like approach: large N + small noise → p should be high.
-    // With random data, ~5% of the time p < 0.05 by definition, so use a
-    // generous threshold and large sample to avoid flakiness.
-    const pairs = generateSplitPairs(500, 0, 5, 10, 5, 0.5);
+    // Both groups have outcome ~5 with the same deterministic noise profile.
+    // This verifies equal means with non-zero variance without relying on luck.
+    const pairs = generateSplitPairs(500, 0, 5, 10, 5, 0.5, createDeterministicRandom(0xdecafbad));
     const p = calculateTTestPValue(pairs);
     expect(p).toBeGreaterThan(0.01);
   });
@@ -73,7 +80,8 @@ describe('calculateTTestPValue', () => {
 
   it('handles all identical predictor values (one group empty)', () => {
     // All predictors equal → all go to one group → insufficient split
-    const pairs = Array.from({ length: 20 }, () => pair(5, Math.random() * 10));
+    const random = createDeterministicRandom(0xabcdef01);
+    const pairs = Array.from({ length: 20 }, () => pair(5, random() * 10));
     const p = calculateTTestPValue(pairs);
     expect(p).toBe(1); // Can't split into two meaningful groups
   });
@@ -140,8 +148,9 @@ describe('calculateTTestPValue', () => {
   it('single predictor value per group (no variance in predictor)', () => {
     // All low-pred are exactly 0, all high-pred are exactly 10
     const pairs: AlignedPair[] = [];
-    for (let i = 0; i < 30; i++) pairs.push(pair(0, 3 + Math.random()));
-    for (let i = 0; i < 30; i++) pairs.push(pair(10, 7 + Math.random()));
+    const random = createDeterministicRandom(0x12345678);
+    for (let i = 0; i < 30; i++) pairs.push(pair(0, 3 + random()));
+    for (let i = 0; i < 30; i++) pairs.push(pair(10, 7 + random()));
     const p = calculateTTestPValue(pairs);
     expect(p).toBeLessThan(0.05);
   });
@@ -149,9 +158,10 @@ describe('calculateTTestPValue', () => {
   it('works with continuous predictor values', () => {
     // Predictor values drawn from a range, outcome linearly related
     const pairs: AlignedPair[] = [];
+    const random = createDeterministicRandom(0x0ddc0ffe);
     for (let i = 0; i < 100; i++) {
-      const pred = Math.random() * 10;
-      const out = pred * 0.5 + (Math.random() - 0.5) * 2;
+      const pred = random() * 10;
+      const out = pred * 0.5 + (random() - 0.5) * 2;
       pairs.push(pair(pred, out));
     }
     const p = calculateTTestPValue(pairs);

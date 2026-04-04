@@ -1,4 +1,5 @@
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { SpendingBar } from "@/components/ui/spending-bar";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   GLOBAL_HALE_CURRENT,
@@ -23,6 +24,10 @@ const wishoniaIncomeMultiplier = Math.round(
     CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value,
 );
 
+// Max values for bar scaling
+const haleMax = WISHONIA_PROJECTED_HALE_YEAR_15.value;
+const incomeMax = WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value;
+
 /**
  * Humanity's Scoreboard — the two metrics that define the game.
  * Shows current values, treaty targets, and optimal governance targets.
@@ -33,8 +38,13 @@ export function HumanityScoreboard() {
     <BrutalCard bgColor="background" shadowSize={8} className="p-4 sm:p-6 md:p-8">
       <div className="text-center mb-6">
         <span className="text-xs font-black px-2.5 py-1 bg-foreground text-background uppercase">
-          Humanity&apos;s Scoreboard
+          Please Select an Earth
         </span>
+        <p className="text-sm font-bold text-muted-foreground mt-3 max-w-2xl mx-auto">
+          The only two numbers that matter: how long you live in good health,
+          and how much money you keep. Three scenarios — doing nothing, the 1%
+          Treaty, or governance that actually optimises for humans.
+        </p>
       </div>
 
       {/* Desktop: 4-column table layout (hidden on mobile) */}
@@ -54,28 +64,42 @@ export function HumanityScoreboard() {
           </div>
           <div className="text-center">
             <span className="text-xs font-black uppercase text-brutal-pink">
-              Optimal
+              Optimal Governance
             </span>
           </div>
         </div>
 
         {/* HALE row */}
-        <div className="grid grid-cols-4 gap-4 items-center py-4 border-b-4 border-primary">
+        <div className="grid grid-cols-4 gap-4 items-start py-4 border-b-4 border-primary">
           <div>
             <p className="text-lg font-black uppercase text-foreground">
-              Healthy Life Years
+              ❤️ Healthy Life Years
             </p>
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-black text-muted-foreground line-through">
               <ParameterValue param={GLOBAL_HALE_CURRENT} />
             </div>
+            <SpendingBar
+              value={GLOBAL_HALE_CURRENT.value}
+              max={haleMax}
+              color="red"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-black text-brutal-cyan">
               <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
             </div>
-            <p className="text-sm font-bold text-muted-foreground">
+            <SpendingBar
+              value={TREATY_PROJECTED_HALE_YEAR_15.value}
+              max={haleMax}
+              color="cyan"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
+            <p className="text-sm font-bold text-muted-foreground mt-1">
               +{haleGain} yrs
             </p>
           </div>
@@ -83,17 +107,24 @@ export function HumanityScoreboard() {
             <div className="text-3xl md:text-4xl font-black text-brutal-pink">
               <ParameterValue param={WISHONIA_PROJECTED_HALE_YEAR_15} />
             </div>
-            <p className="text-sm font-bold text-muted-foreground">
+            <SpendingBar
+              value={WISHONIA_PROJECTED_HALE_YEAR_15.value}
+              max={haleMax}
+              color="cyan"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
+            <p className="text-sm font-bold text-muted-foreground mt-1">
               +{wishoniaHaleGain} yrs
             </p>
           </div>
         </div>
 
         {/* Income row */}
-        <div className="grid grid-cols-4 gap-4 items-center py-4">
+        <div className="grid grid-cols-4 gap-4 items-start py-4">
           <div>
             <p className="text-lg font-black uppercase text-foreground">
-              Median Income
+              💰 Median Income
             </p>
           </div>
           <div className="text-center">
@@ -103,6 +134,13 @@ export function HumanityScoreboard() {
                 className="text-muted-foreground"
               />
             </div>
+            <SpendingBar
+              value={CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+              max={incomeMax}
+              color="red"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-black text-brutal-cyan">
@@ -111,7 +149,14 @@ export function HumanityScoreboard() {
                 className="text-brutal-cyan"
               />
             </div>
-            <p className="text-sm font-bold text-muted-foreground">
+            <SpendingBar
+              value={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+              max={incomeMax}
+              color="green"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
+            <p className="text-sm font-bold text-muted-foreground mt-1">
               {treatyIncomeMultiplier}x
             </p>
           </div>
@@ -122,7 +167,14 @@ export function HumanityScoreboard() {
                 className="text-brutal-pink"
               />
             </div>
-            <p className="text-sm font-bold text-muted-foreground">
+            <SpendingBar
+              value={WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+              max={incomeMax}
+              color="green"
+              height="sm"
+              className="mt-2 mx-auto max-w-[10rem]"
+            />
+            <p className="text-sm font-bold text-muted-foreground mt-1">
               {wishoniaIncomeMultiplier}x
             </p>
           </div>
@@ -134,7 +186,7 @@ export function HumanityScoreboard() {
         {/* HALE block */}
         <div className="border-b-4 border-primary pb-6">
           <p className="text-base font-black uppercase text-foreground mb-3">
-            Healthy Life Years
+            ❤️ Healthy Life Years
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
@@ -144,6 +196,13 @@ export function HumanityScoreboard() {
               <div className="text-xl sm:text-2xl font-black text-muted-foreground line-through mt-1">
                 <ParameterValue param={GLOBAL_HALE_CURRENT} />
               </div>
+              <SpendingBar
+                value={GLOBAL_HALE_CURRENT.value}
+                max={haleMax}
+                color="red"
+                height="sm"
+                className="mt-1"
+              />
             </div>
             <div className="text-center">
               <span className="text-xs font-black uppercase text-brutal-cyan">
@@ -152,6 +211,13 @@ export function HumanityScoreboard() {
               <div className="text-xl sm:text-2xl font-black text-brutal-cyan mt-1">
                 <ParameterValue param={TREATY_PROJECTED_HALE_YEAR_15} />
               </div>
+              <SpendingBar
+                value={TREATY_PROJECTED_HALE_YEAR_15.value}
+                max={haleMax}
+                color="cyan"
+                height="sm"
+                className="mt-1"
+              />
               <p className="text-xs font-bold text-muted-foreground">
                 +{haleGain} yrs
               </p>
@@ -163,6 +229,13 @@ export function HumanityScoreboard() {
               <div className="text-xl sm:text-2xl font-black text-brutal-pink mt-1">
                 <ParameterValue param={WISHONIA_PROJECTED_HALE_YEAR_15} />
               </div>
+              <SpendingBar
+                value={WISHONIA_PROJECTED_HALE_YEAR_15.value}
+                max={haleMax}
+                color="cyan"
+                height="sm"
+                className="mt-1"
+              />
               <p className="text-xs font-bold text-muted-foreground">
                 +{wishoniaHaleGain} yrs
               </p>
@@ -173,7 +246,7 @@ export function HumanityScoreboard() {
         {/* Income block */}
         <div>
           <p className="text-base font-black uppercase text-foreground mb-3">
-            Median Income
+            💰 Median Income
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
@@ -186,6 +259,13 @@ export function HumanityScoreboard() {
                   className="text-muted-foreground"
                 />
               </div>
+              <SpendingBar
+                value={CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+                max={incomeMax}
+                color="red"
+                height="sm"
+                className="mt-1"
+              />
             </div>
             <div className="text-center">
               <span className="text-xs font-black uppercase text-brutal-cyan">
@@ -197,6 +277,13 @@ export function HumanityScoreboard() {
                   className="text-brutal-cyan"
                 />
               </div>
+              <SpendingBar
+                value={TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+                max={incomeMax}
+                color="green"
+                height="sm"
+                className="mt-1"
+              />
               <p className="text-xs font-bold text-muted-foreground">
                 {treatyIncomeMultiplier}x
               </p>
@@ -211,6 +298,13 @@ export function HumanityScoreboard() {
                   className="text-brutal-pink"
                 />
               </div>
+              <SpendingBar
+                value={WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value}
+                max={incomeMax}
+                color="green"
+                height="sm"
+                className="mt-1"
+              />
               <p className="text-xs font-bold text-muted-foreground">
                 {wishoniaIncomeMultiplier}x
               </p>

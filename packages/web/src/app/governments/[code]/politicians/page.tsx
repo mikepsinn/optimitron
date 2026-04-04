@@ -215,11 +215,11 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
       <SectionContainer bgColor="cyan" borderPosition="none" padding="lg">
         <Container className="text-center">
           <h2 className="text-2xl font-black uppercase text-foreground mb-4">
-            Make Your Voice Count
+            How Would You Allocate the Budget?
           </h2>
           <p className="text-lg font-bold text-foreground mb-6 max-w-2xl mx-auto">
-            Express your budget preferences. The alignment scores update automatically
-            when enough people vote.
+            Do pairwise comparisons between budget categories. The system computes
+            how each politician&apos;s votes compare to what citizens actually want.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <GameCTA href={ROUTES.wishocracy} variant="primary" size="lg">
