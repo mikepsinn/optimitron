@@ -69,7 +69,7 @@ function getSortValue(gov: GovernmentMetrics, key: SortKey): number {
     case "killed": return gov.militaryDeathsCaused.value;
     case "hale": return gov.hale?.value ?? 0;
     case "lifeExpectancy": return gov.lifeExpectancy.value;
-    case "gdpPerCapita": return gov.gdpPerCapita.value;
+    case "medianIncome": return gov.gdpPerCapita.value - gov.governmentSpendingPerCapita.value;
     case "militaryPerCapitaPPP":
       return getMilitarySpendingPerCapitaPPP(gov) ?? 0;
     case "militarySpending": return gov.militarySpendingAnnual.value;
@@ -308,7 +308,7 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                 />
               )}
               <SortableHeader
-                sortKey="gdpPerCapita"
+                sortKey="medianIncome"
                 activeSortKey={sortKey}
                 sortAsc={sortAsc}
                 headerClass={headerClass}
@@ -398,7 +398,7 @@ export function GovernmentLeaderboard({ limit, compact = false }: GovernmentLead
                   )}
                   <td className="p-3 text-right font-black text-foreground">
                     <GovernmentRowLink href={detailHref} className="text-right">
-                      {formatUSD(gov.gdpPerCapita.value)}
+                      {formatUSD(gov.gdpPerCapita.value - gov.governmentSpendingPerCapita.value)}
                     </GovernmentRowLink>
                   </td>
                   {!compact && (

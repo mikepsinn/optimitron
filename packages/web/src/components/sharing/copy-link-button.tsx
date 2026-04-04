@@ -9,15 +9,23 @@ interface CopyLinkButtonProps {
   url?: string;
   variant?: "default" | "landing";
   className?: string;
+  idleLabel?: string;
+  copiedLabel?: string;
 }
 
 export function CopyLinkButton({
   url,
   variant = "default",
   className,
+  idleLabel,
+  copiedLabel,
 }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
   const targetUrl = url ?? "";
+  const defaultIdleLabel = variant === "landing" ? "Copy Referral Link" : "Copy Link";
+  const defaultCopiedLabel = variant === "landing" ? "Link Copied" : "Copied";
+  const copyLabel = idleLabel ?? defaultIdleLabel;
+  const copiedText = copiedLabel ?? defaultCopiedLabel;
 
   async function handleCopy() {
     if (!targetUrl) {
@@ -33,19 +41,27 @@ export function CopyLinkButton({
     return (
       <Button
         type="button"
-        onClick={handleCopy}
+        onClick={() => {
+          void handleCopy();
+        }}
         className={cn("h-12 w-auto gap-2 font-black uppercase", className)}
       >
         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        {copied ? "Link Copied" : "Copy Referral Link"}
+        {copied ? copiedText : copyLabel}
       </Button>
     );
   }
 
   return (
-    <Button type="button" onClick={handleCopy} className={cn("gap-2", className)}>
+    <Button
+      type="button"
+      onClick={() => {
+        void handleCopy();
+      }}
+      className={cn("gap-2", className)}
+    >
       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-      {copied ? "Copied" : "Copy Link"}
+      {copied ? copiedText : copyLabel}
     </Button>
   );
 }

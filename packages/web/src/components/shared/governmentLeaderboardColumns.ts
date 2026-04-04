@@ -4,7 +4,7 @@ export type GovernmentLeaderboardSortKey =
   | "killed"
   | "hale"
   | "lifeExpectancy"
-  | "gdpPerCapita"
+  | "medianIncome"
   | "militaryPerCapitaPPP"
   | "militarySpending"
   | "healthSpending"
@@ -45,9 +45,9 @@ export const GOVERNMENT_LEADERBOARD_COLUMN_META: Record<
     label: "Life Exp",
     description: "Total life expectancy at birth, including years lived with illness or disability.",
   },
-  gdpPerCapita: {
-    label: "Income",
-    description: "GDP per capita. This table uses it as a rough income proxy, not median income.",
+  medianIncome: {
+    label: "What You Keep",
+    description: "GDP per capita minus total government spending per capita (PPP). Captures all forms of taxation: direct taxes, inflation, debt, and regulatory overhead.",
   },
   militaryPerCapitaPPP: {
     label: "Mil/cap PPP",
