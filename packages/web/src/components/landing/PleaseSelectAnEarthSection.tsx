@@ -4,22 +4,17 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { GameCTA } from "@/components/ui/game-cta";
 import {
   GLOBAL_AVG_INCOME_2025,
+  GLOBAL_HALE_CURRENT,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_15,
+  TREATY_PROJECTED_HALE_YEAR_15,
   WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15,
+  WISHONIA_PROJECTED_HALE_YEAR_15,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
-  TREATY_HALE_GAIN_YEAR_15,
-  WISHONIA_HALE_GAIN_YEAR_15,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
 } from "@optimitron/data/parameters";
 
-const collapseYearsLeft = Math.round(DESTRUCTIVE_ECONOMY_50PCT_YEAR.value) - 2026;
+const collapseYear = Math.round(DESTRUCTIVE_ECONOMY_50PCT_YEAR.value);
 const globalDysfunctionCostT = Math.round(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value / 1e12);
-const treatyHaleGain = Math.round(TREATY_HALE_GAIN_YEAR_15.value * 10) / 10;
-const wishoniaHaleGain = Math.round(WISHONIA_HALE_GAIN_YEAR_15.value * 10) / 10;
-const trialCapacityX = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
-const livesSavedB = (DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value / 1e9).toFixed(1);
 
 function formatCurrency(value: number): string {
   if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
@@ -30,37 +25,34 @@ function formatCurrency(value: number): string {
 const scenarios = [
   {
     name: "Status Quo",
-    emoji: "☢️",
     subtitle: "Somalia, But Everywhere",
     income: formatCurrency(Math.round(GLOBAL_AVG_INCOME_2025.value)),
-    detail: `Parasitic economy overtakes productive in ${collapseYearsLeft} years`,
+    hale: GLOBAL_HALE_CURRENT.value,
     color: "text-muted-foreground",
   },
   {
     name: "1% Treaty",
-    emoji: "🧪",
     subtitle: "Minimum Acceptable Governance",
     income: formatCurrency(Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value)),
-    detail: `+${treatyHaleGain} healthy yrs · ${trialCapacityX}× trial capacity · ${livesSavedB}B lives saved`,
+    hale: TREATY_PROJECTED_HALE_YEAR_15.value,
     color: "text-brutal-cyan",
   },
   {
     name: "Optimal Governance",
-    emoji: "🌍",
-    subtitle: `End the $${globalDysfunctionCostT}T/yr Political Dysfunction Tax`,
+    subtitle: `End the $${globalDysfunctionCostT}T/yr Dysfunction Tax`,
     income: formatCurrency(Math.round(WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value)),
-    detail: `+${wishoniaHaleGain} healthy yrs`,
-    color: "text-brutal-yellow",
+    hale: WISHONIA_PROJECTED_HALE_YEAR_15.value,
+    color: "text-brutal-green",
   },
 ];
 
-export function TwoFuturesSection() {
+export function PleaseSelectAnEarthSection() {
   return (
     <SectionContainer bgColor="background" borderPosition="both" padding="lg">
       <Container>
         <SectionHeader
           title="Please Select an Earth"
-          subtitle="You are currently on Path A. You chose it by not choosing. Which is very on-brand for your species."
+          subtitle={`Projected outcomes by ${collapseYear}. You are currently on Path A. You chose it by not choosing. Which is very on-brand for your species.`}
           size="lg"
         />
 
@@ -74,8 +66,8 @@ export function TwoFuturesSection() {
                 <th className="p-3 text-right text-xs font-black uppercase text-muted-foreground">
                   Income / Person / Year
                 </th>
-                <th className="p-3 text-left text-xs font-black uppercase text-muted-foreground">
-                  What Changes
+                <th className="p-3 text-right text-xs font-black uppercase text-muted-foreground">
+                  Median HALE
                 </th>
               </tr>
             </thead>
@@ -87,7 +79,7 @@ export function TwoFuturesSection() {
                 >
                   <td className="p-3">
                     <div className={`font-black text-sm uppercase ${s.color}`}>
-                      {s.emoji} {s.name}
+                      {s.name}
                     </div>
                     <div className="text-xs font-bold text-muted-foreground">
                       {s.subtitle}
@@ -96,8 +88,8 @@ export function TwoFuturesSection() {
                   <td className={`p-3 text-right font-black text-lg ${s.color}`}>
                     {s.income}
                   </td>
-                  <td className="p-3 font-bold text-sm text-foreground">
-                    {s.detail}
+                  <td className={`p-3 text-right font-black text-lg ${s.color}`}>
+                    {s.hale} yrs
                   </td>
                 </tr>
               ))}

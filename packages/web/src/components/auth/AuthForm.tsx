@@ -169,22 +169,26 @@ export function AuthForm({
       ) : null}
 
       <div className="space-y-4">
-        <Button
-          type="button"
-          disabled={isLoading}
-          className={`w-full font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${buttonClassName}`}
-          onClick={() => {
-            void handleDemoSignIn();
-          }}
-        >
-          {pendingAction === "demo" ? "Signing in..." : "Try Demo — No Account Needed"}
-        </Button>
+        {process.env.NODE_ENV !== "production" && (
+          <>
+            <Button
+              type="button"
+              disabled={isLoading}
+              className={`w-full font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${buttonClassName}`}
+              onClick={() => {
+                void handleDemoSignIn();
+              }}
+            >
+              {pendingAction === "demo" ? "Signing in..." : "Try Demo — No Account Needed"}
+            </Button>
 
-        <div className="flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          <span>or create an account</span>
-          <span className="h-px flex-1 bg-border" />
-        </div>
+            <div className="flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground">
+              <span className="h-px flex-1 bg-border" />
+              <span>or create an account</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          </>
+        )}
 
         {googleEnabled ? (
           <Button

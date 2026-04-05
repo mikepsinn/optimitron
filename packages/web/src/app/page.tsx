@@ -9,7 +9,8 @@ import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
 import { DecentralizedFDASection } from "@/components/landing/DecentralizedFDASection";
 import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
-import { TwoFuturesSection } from "@/components/landing/TwoFuturesSection";
+import { PleaseSelectAnEarthSection } from "@/components/landing/PleaseSelectAnEarthSection";
+import { DecisionMatrixSection } from "@/components/landing/DecisionMatrixSection";
 import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySection";
 import { PoliticalDysfunctionTaxSection } from "@/components/landing/PoliticalDysfunctionTaxSection";
 import { OptimizedGovernancePreview } from "@/components/landing/OptimizedGovernancePreview";
@@ -132,8 +133,11 @@ export default function Home() {
       {/* ── 12c. Treatment Rankings — ranked by what works ── */}
       <ComparativeEffectivenessSection />
 
-      {/* ── 10. Two Futures — Wishonia vs Moronia ── */}
-      <TwoFuturesSection />
+      {/* ── 10. Please Select an Earth — 3 trajectory comparison ── */}
+      <PleaseSelectAnEarthSection />
+
+      {/* ── 10b. Decision Matrix — deposit vs don't, dominant strategy ── */}
+      <DecisionMatrixSection />
 
       {/* ── 13. Government Report Cards — mini leaderboard ── */}
       <GovernmentReportCardPreview />
