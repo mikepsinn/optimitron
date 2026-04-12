@@ -105,8 +105,11 @@ export function completeMatrix(
 
   // Diagonal
   for (let i = 0; i < n; i++) {
-    logRatio[i]![i] = 0;
-    hops[i]![i] = 0;
+    const logRow = logRatio[i];
+    const hopRow = hops[i];
+    if (!logRow || !hopRow) continue;
+    logRow[i] = 0;
+    hopRow[i] = 0;
   }
 
   // Seed observed entries
@@ -116,10 +119,16 @@ export function completeMatrix(
     const j = idx.get(e.itemBId);
     if (i === undefined || j === undefined) continue;
 
-    logRatio[i]![j] = Math.log(e.ratio);
-    logRatio[j]![i] = -Math.log(e.ratio); // reciprocal in log-space
-    hops[i]![j] = 0;
-    hops[j]![i] = 0;
+    const logRowI = logRatio[i];
+    const logRowJ = logRatio[j];
+    const hopRowI = hops[i];
+    const hopRowJ = hops[j];
+    if (!logRowI || !logRowJ || !hopRowI || !hopRowJ) continue;
+
+    logRowI[j] = Math.log(e.ratio);
+    logRowJ[i] = -Math.log(e.ratio); // reciprocal in log-space
+    hopRowI[j] = 0;
+    hopRowJ[i] = 0;
 
     observedKeys.add(pairKey(e.itemAId, e.itemBId));
   }
@@ -129,20 +138,31 @@ export function completeMatrix(
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
         if (i === j) continue;
-        const lrIK = logRatio[i]![k]!;
-        const lrKJ = logRatio[k]![j]!;
+        const logRowI = logRatio[i];
+        const logRowK = logRatio[k];
+        const hopRowI = hops[i];
+        const hopRowK = hops[k];
+        if (!logRowI || !logRowK || !hopRowI || !hopRowK) continue;
+
+        const lrIK = logRowI[k];
+        const lrKJ = logRowK[j];
+        if (lrIK === undefined || lrKJ === undefined) continue;
         if (Number.isNaN(lrIK) || Number.isNaN(lrKJ)) continue;
 
         const candidateLR = lrIK + lrKJ;
-        const candidateHops = hops[i]![k]! + hops[k]![j]! + 1;
+        const hopIK = hopRowI[k];
+        const hopKJ = hopRowK[j];
+        if (hopIK === undefined || hopKJ === undefined) continue;
+        const candidateHops = hopIK + hopKJ + 1;
 
         if (candidateHops > maxHops) continue;
 
-        const currentHops = hops[i]![j]!;
+        const currentHops = hopRowI[j];
+        if (currentHops === undefined) continue;
         // Prefer fewer hops; if tied, keep existing (direct observations win)
         if (candidateHops < currentHops) {
-          logRatio[i]![j] = candidateLR;
-          hops[i]![j] = candidateHops;
+          logRowI[j] = candidateLR;
+          hopRowI[j] = candidateHops;
         }
       }
     }
@@ -151,8 +171,9 @@ export function completeMatrix(
   // Build output
   const ratioMatrix: number[][] = Array.from({ length: n }, (_, i) =>
     Array.from({ length: n }, (_, j) => {
-      const lr = logRatio[i]![j]!;
-      return Number.isNaN(lr) ? 1 : Math.exp(lr); // default 1 for unreachable
+      const logRow = logRatio[i];
+      const lr = logRow?.[j];
+      return lr === undefined || Number.isNaN(lr) ? 1 : Math.exp(lr); // default 1 for unreachable
     }),
   );
 
@@ -164,9 +185,16 @@ export function completeMatrix(
 
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      const key = pairKey(items[i]!, items[j]!);
-      const lr = logRatio[i]![j]!;
-      const h = hops[i]![j]!;
+      const itemAId = items[i];
+      const itemBId = items[j];
+      const logRow = logRatio[i];
+      const hopRow = hops[i];
+      if (!itemAId || !itemBId || !logRow || !hopRow) continue;
+
+      const key = pairKey(itemAId, itemBId);
+      const lr = logRow[j];
+      const h = hopRow[j];
+      if (lr === undefined || h === undefined) continue;
 
       if (observedKeys.has(key)) {
         observedPairs++;
@@ -181,8 +209,8 @@ export function completeMatrix(
       }
 
       allEntries.push({
-        itemAId: items[i]!,
-        itemBId: items[j]!,
+        itemAId,
+        itemBId,
         ratio: Math.exp(lr),
         count: observedKeys.has(key)
           ? (observedEntries.find(

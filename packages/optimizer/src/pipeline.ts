@@ -32,7 +32,6 @@ import {
   pearsonCorrelation,
   spearmanCorrelation,
   calculateCorrelation,
-  calculateReversePearson,
   calculatePredictivePearson,
 } from './statistics.js';
 import {

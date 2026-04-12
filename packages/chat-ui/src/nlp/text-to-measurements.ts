@@ -63,6 +63,10 @@ function getStringField(record: JsonRecord, key: string): string | undefined {
   return getString(record[key]);
 }
 
+function isUnknownArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
 function parseNumericValue(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
@@ -76,24 +80,24 @@ function parseNumericValue(value: unknown): number {
 
 function extractOpenAIContent(payload: unknown): string | undefined {
   if (!isRecord(payload)) return undefined;
-  const choices = payload.choices;
-  if (!Array.isArray(choices) || choices.length === 0) return undefined;
+  const choices = payload['choices'];
+  if (!isUnknownArray(choices) || choices.length === 0) return undefined;
 
   const firstChoice = choices[0];
-  if (!isRecord(firstChoice) || !isRecord(firstChoice.message)) return undefined;
+  if (!isRecord(firstChoice) || !isRecord(firstChoice['message'])) return undefined;
 
-  return getString(firstChoice.message.content);
+  return getString(firstChoice['message']['content']);
 }
 
 function extractAnthropicContent(payload: unknown): string | undefined {
   if (!isRecord(payload)) return undefined;
-  const content = payload.content;
-  if (!Array.isArray(content)) return undefined;
+  const content = payload['content'];
+  if (!isUnknownArray(content)) return undefined;
 
   for (const block of content) {
     if (!isRecord(block)) continue;
-    if (block.type !== 'text') continue;
-    const text = getString(block.text);
+    if (block['type'] !== 'text') continue;
+    const text = getString(block['text']);
     if (text) return text;
   }
 
@@ -102,19 +106,19 @@ function extractAnthropicContent(payload: unknown): string | undefined {
 
 function extractGeminiContent(payload: unknown): string | undefined {
   if (!isRecord(payload)) return undefined;
-  const candidates = payload.candidates;
-  if (!Array.isArray(candidates) || candidates.length === 0) return undefined;
+  const candidates = payload['candidates'];
+  if (!isUnknownArray(candidates) || candidates.length === 0) return undefined;
 
   const firstCandidate = candidates[0];
-  if (!isRecord(firstCandidate) || !isRecord(firstCandidate.content)) return undefined;
+  if (!isRecord(firstCandidate) || !isRecord(firstCandidate['content'])) return undefined;
 
-  const parts = firstCandidate.content.parts;
-  if (!Array.isArray(parts) || parts.length === 0) return undefined;
+  const parts = firstCandidate['content']['parts'];
+  if (!isUnknownArray(parts) || parts.length === 0) return undefined;
 
   const firstPart = parts[0];
   if (!isRecord(firstPart)) return undefined;
 
-  return getString(firstPart.text);
+  return getString(firstPart['text']);
 }
 
 function extractMeasurementItems(payload: unknown): JsonRecord[] {
@@ -125,12 +129,14 @@ function extractMeasurementItems(payload: unknown): JsonRecord[] {
     return [];
   }
 
-  if (Array.isArray(payload.measurements)) {
-    return payload.measurements.filter(isRecord);
+  const measurements = payload['measurements'];
+  if (isUnknownArray(measurements)) {
+    return measurements.filter(isRecord);
   }
 
-  if (Array.isArray(payload.data)) {
-    return payload.data.filter(isRecord);
+  const data = payload['data'];
+  if (isUnknownArray(data)) {
+    return data.filter(isRecord);
   }
 
   return [];
@@ -429,7 +435,7 @@ function parseLLMResponse(raw: string, originalText: string, currentLocalDateTim
 
     results.push({
       variableName: rawVariableName ?? 'Unknown',
-      value: parseNumericValue(item.value),
+      value: parseNumericValue(item['value']),
       unitAbbreviation,
       categoryName,
       combinationOperation,

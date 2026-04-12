@@ -88,7 +88,6 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
     reversePearson,
     predictivePearson,
     pValue,
-    effectSize,
     baselineFollowup,
     optimalValues,
     bradfordHill,

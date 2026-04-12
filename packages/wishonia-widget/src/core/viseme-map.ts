@@ -54,7 +54,7 @@ export const EXPRESSION_MOUTHS: Record<Expression, MouthShape[]> = {
 
 /** Get the sprite name for a given expression + viseme, with fallback */
 export function getHeadName(expression: Expression, viseme: MouthShape): string {
-  const available = EXPRESSION_MOUTHS[expression] ?? EXPRESSION_MOUTHS.neutral;
+  const available = EXPRESSION_MOUTHS[expression];
   let mouth: MouthShape = available.includes(viseme) ? viseme : "closed";
   if (!available.includes(mouth)) mouth = available[0] ?? "closed";
   return `${expression}-${mouth}`;
@@ -62,7 +62,7 @@ export function getHeadName(expression: Expression, viseme: MouthShape): string 
 
 /** Get the idle (resting) sprite name for a given expression */
 export function getIdleHead(expression: Expression): string {
-  const available = EXPRESSION_MOUTHS[expression] ?? ["smile"];
+  const available = EXPRESSION_MOUTHS[expression];
   if (available.includes("smile")) return `${expression}-smile`;
   if (available.includes("closed")) return `${expression}-closed`;
   return `${expression}-${available[0]}`;

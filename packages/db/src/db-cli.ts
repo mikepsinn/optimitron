@@ -129,11 +129,19 @@ export function parseDbCliArgs(argv: string[]): DbCliArgs {
 }
 
 export async function readSqlText(sqlArg: string | null): Promise<string> {
-  if (sqlArg && sqlArg.trim()) return sqlArg.trim();
+  if (sqlArg?.trim()) return sqlArg.trim();
 
   const stdinChunks: Buffer[] = [];
   for await (const chunk of process.stdin) {
-    stdinChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    if (Buffer.isBuffer(chunk)) {
+      stdinChunks.push(chunk);
+      continue;
+    }
+    if (typeof chunk === "string" || chunk instanceof Uint8Array) {
+      stdinChunks.push(Buffer.from(chunk));
+      continue;
+    }
+    stdinChunks.push(Buffer.from(String(chunk)));
   }
 
   const stdinSql = Buffer.concat(stdinChunks).toString("utf8").trim();
@@ -145,7 +153,7 @@ export async function readSqlText(sqlArg: string | null): Promise<string> {
 export function formatDbCliOutput(value: unknown): string {
   return JSON.stringify(
     value,
-    (_key, item) => (typeof item === "bigint" ? item.toString() : item),
+    (_key, item: unknown) => (typeof item === "bigint" ? item.toString() : item),
     2,
   );
 }
@@ -163,12 +171,12 @@ export async function runDbCli(argv: string[]): Promise<void> {
   try {
     if (mode === "query") {
       const rows = await prisma.$queryRawUnsafe(sql);
-      console.log(formatDbCliOutput(rows));
+      process.stdout.write(`${formatDbCliOutput(rows)}\n`);
       return;
     }
 
     const count = await prisma.$executeRawUnsafe(sql);
-    console.log(formatDbCliOutput({ count }));
+    process.stdout.write(`${formatDbCliOutput({ count })}\n`);
   } finally {
     await prisma.$disconnect();
   }

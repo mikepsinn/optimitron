@@ -144,7 +144,10 @@ function aggregateWithWeights(
     if (!pairMap.has(key)) {
       pairMap.set(key, []);
     }
-    pairMap.get(key)!.push(comp);
+    const pairComparisons = pairMap.get(key);
+    if (pairComparisons) {
+      pairComparisons.push(comp);
+    }
   }
   
   const entries: MatrixEntry[] = [];
@@ -255,7 +258,7 @@ export function calculateWeightedMatrix(
     useTimeDecay = false,
     decayLambda = DEFAULT_DECAY_LAMBDA,
     referenceDate = new Date(),
-    participantCRs = new Map(),
+    participantCRs = new Map<string, number>(),
   } = options ?? {};
   
   // If no weighting requested, fall back to equal weights (standard aggregation)

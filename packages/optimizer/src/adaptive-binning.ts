@@ -51,7 +51,7 @@ function uniqueEdges(values: number[], minGap: number): number[] {
   const edges: number[] = [];
   for (const value of sorted) {
     const last = edges[edges.length - 1];
-    if (last == null || Math.abs(value - last) >= minGap) {
+    if (last === undefined || Math.abs(value - last) >= minGap) {
       edges.push(value);
     }
   }

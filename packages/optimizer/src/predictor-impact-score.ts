@@ -20,7 +20,6 @@ import type {
   AlignedPair,
   BradfordHillScores,
   CorrelationResult,
-  EffectSize,
   OptimalValue,
   PredictorImpactScore,
   DataQuality,

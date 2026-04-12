@@ -43,5 +43,7 @@ export const CONTRACT_ADDRESSES = {
 export type SupportedChainId = keyof typeof CONTRACT_ADDRESSES;
 
 export function getContracts(chainId: number) {
-  return CONTRACT_ADDRESSES[chainId as SupportedChainId] ?? null;
+  return chainId in CONTRACT_ADDRESSES
+    ? CONTRACT_ADDRESSES[chainId as SupportedChainId]
+    : null;
 }

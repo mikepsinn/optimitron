@@ -1295,7 +1295,7 @@ export function getTopPerformers<T extends Record<string, unknown>>(
  * @param datasetName - Label for the dataset (used in the result)
  * @returns ComparisonResult or null if either country is not found
  */
-export function getCountryComparison<T extends Record<string, unknown>>(
+export function getCountryComparison<T extends { country: string; iso3: string }>(
   country1: string,
   country2: string,
   dataset: T[],
@@ -1304,25 +1304,27 @@ export function getCountryComparison<T extends Record<string, unknown>>(
   const find = (name: string) =>
     dataset.find(
       (d) =>
-        (d['country'] as string).toLowerCase() === name.toLowerCase() ||
-        (d['iso3'] as string).toLowerCase() === name.toLowerCase(),
+        d.country.toLowerCase() === name.toLowerCase() ||
+        d.iso3.toLowerCase() === name.toLowerCase(),
     );
 
   const c1 = find(country1);
   const c2 = find(country2);
   if (!c1 || !c2) return null;
 
+  const c1Record = c1 as Record<string, unknown>;
+  const c2Record = c2 as Record<string, unknown>;
   const differences: Record<string, number> = {};
-  for (const key of Object.keys(c1)) {
-    if (typeof c1[key] === 'number' && typeof c2[key] === 'number') {
-      differences[key] = c1[key] - c2[key];
+  for (const key of Object.keys(c1Record)) {
+    if (typeof c1Record[key] === 'number' && typeof c2Record[key] === 'number') {
+      differences[key] = c1Record[key] - c2Record[key];
     }
   }
 
   return {
     dataset: datasetName,
-    country1: { ...(c1 as Record<string, unknown>) },
-    country2: { ...(c2 as Record<string, unknown>) },
+    country1: { ...c1Record },
+    country2: { ...c2Record },
     differences,
   };
 }

@@ -6,7 +6,7 @@
  * @see https://opg.warondisease.org
  */
 
-import type { PolicyRecommendation, Policy, EvidenceGrade } from './policy.js';
+import type { PolicyRecommendation, Policy } from './policy.js';
 import type { Jurisdiction } from './jurisdiction.js';
 import type { BradfordHillScores } from './bradford-hill.js';
 import { describeGrade, fmt, reportTimestamp } from '@optimitron/optimizer';
@@ -39,7 +39,7 @@ export interface PolicyRankingResult {
  * Describe causal confidence as a human-readable label.
  */
 function describeCausalConfidence(ccs?: number): string {
-  if (ccs === undefined || ccs === null) return '—';
+  if (ccs === undefined) return '—';
   if (ccs >= 0.80) return 'Very High';
   if (ccs >= 0.60) return 'High';
   if (ccs >= 0.40) return 'Moderate';
@@ -204,8 +204,7 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
     lines.push('| Rank | Policy | Recommendation | Welfare Score | Welfare 95% CI | Evidence | Causal Confidence |');
     lines.push('|------|--------|----------------|--------------|----------------|----------|-------------------|');
 
-    for (let i = 0; i < ranked.length; i++) {
-      const p = ranked[i]!;
+    for (const [i, p] of ranked.entries()) {
       const ws = welfareScore(p.recommendation);
       const wsCi = welfareScoreConfidenceInterval(p.recommendation);
       const grade = p.recommendation.evidenceGrade;
@@ -230,7 +229,8 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
       lines.push('');
 
       for (const p of policiesWithBH) {
-        const bh = p.bradfordHillScores!;
+        const bh = p.bradfordHillScores;
+        if (!bh) continue;
         lines.push(`### ${p.policy.name}`);
         lines.push('');
         lines.push(`**Evidence Grade:** ${p.recommendation.evidenceGrade} — ${describeGrade(p.recommendation.evidenceGrade)}`);
@@ -282,8 +282,7 @@ export function generatePolicyReport(analysis: PolicyRankingResult): string {
       lines.push('');
     } else {
       if (actionable.length > 0) {
-        for (let i = 0; i < actionable.length; i++) {
-          const p = actionable[i]!;
+        for (const [i, p] of actionable.entries()) {
           const rec = p.recommendation;
           const action = describeRecommendationType(rec.recommendationType);
           const grade = rec.evidenceGrade;

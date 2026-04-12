@@ -107,7 +107,11 @@ function computeWeightMap(
   const weights = principalEigenvector(matrix);
   const out: Record<string, number> = {};
   for (let i = 0; i < items.length; i++) {
-    out[items[i]!] = weights[i]!;
+    const itemId = items[i];
+    const weight = weights[i];
+    if (itemId !== undefined && weight !== undefined) {
+      out[itemId] = weight;
+    }
   }
   return out;
 }
@@ -142,7 +146,8 @@ function generateBoostComparisons(
   const comps: PairwiseComparison[] = [];
   for (let i = 0; i < count; i++) {
     const otherIdx = Math.floor(rng() * others.length);
-    const otherId = others[otherIdx]!;
+    const otherId = others[otherIdx];
+    if (!otherId) continue;
     comps.push({
       id: `adversary-boost-${i}`,
       participantId: '__adversary__',
@@ -171,7 +176,8 @@ function generateSuppressComparisons(
   const comps: PairwiseComparison[] = [];
   for (let i = 0; i < count; i++) {
     const otherIdx = Math.floor(rng() * others.length);
-    const otherId = others[otherIdx]!;
+    const otherId = others[otherIdx];
+    if (!otherId) continue;
     comps.push({
       id: `adversary-suppress-${i}`,
       participantId: '__adversary__',

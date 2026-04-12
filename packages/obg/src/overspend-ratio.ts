@@ -63,7 +63,7 @@ function toCountryResult(
   floor: MinimumEffectiveSpendingResult,
   country: CountrySpending,
 ): CountryOverspendResult {
-  const actual = country.spending[floor.categoryId]!;
+  const actual = country.spending[floor.categoryId] ?? 0;
   const ratio = actual / floor.floorSpending;
   return {
     countryCode: country.countryCode,

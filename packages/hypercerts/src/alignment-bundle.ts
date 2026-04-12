@@ -31,8 +31,6 @@ const AlignmentItemScoreSchema = z.object({
   politicianVotedPct: z.number().optional(),
 });
 
-type AlignmentItemScore = z.infer<typeof AlignmentItemScoreSchema>;
-
 export const AlignmentHypercertInputSchema = z.object({
   politicianId: z.string().min(1),
   politicianName: z.string().min(1),

@@ -167,7 +167,8 @@ function toTimeSeries(annual: AnnualTimeSeries): TimeSeries {
   const sortedYears = [...annual.annualValues.keys()].sort();
 
   for (const year of sortedYears) {
-    const value = annual.annualValues.get(year)!;
+    const value = annual.annualValues.get(year);
+    if (value === undefined) continue;
     measurements.push({
       timestamp: new Date(`${year}-07-01`).getTime(), // mid-year
       value,

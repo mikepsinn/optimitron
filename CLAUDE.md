@@ -1,475 +1,257 @@
-# CLAUDE.md - Optimitron Agent Instructions
+# CLAUDE.md — Optimitron Agent Instructions
 
 ## What This Is
 
-Optimitron is an **AI governance platform** for maximizing median health and happiness for humanity. It collects human preferences and outcome data, runs causal inference to figure out what works, and generates optimal policy and budget recommendations.
+Optimitron is an **Eartth Optimization Machine** for coordinating 8 billion humans to maximizing median health, wealth, and happiness. i.e real median after tax income and median health adjusted life years. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
 
-The system connects:
-- **What people want** (pairwise preference surveys via RAPPA)
-- **What's happening** (health/wealth outcome tracking via dFDA)  
-- **What causes what** (causal inference engine)
-- **What to do about it** (optimal policy & budget generation)
+## Wishonia: Voice of the Site
 
-## Wishonia: The Voice of Optimitron
+Everything user-facing is narrated by **Wishonia** — *World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation*. Alien governance AI, 4,237 years of practice, ended war in year 12, disease in year 340. **Philomena Cunk meets a disappointed systems engineer.**
 
-The entire Optimitron website is narrated by **Wishonia** — she is the creator and voice of the site. The core framing is that **governments are misaligned superintelligences** (collective intelligence systems optimizing for the wrong things), and Optimitron is alignment software for these human-made AIs.
+**Voice rules:** deadpan; data-first (lead with numbers); Dry understatement, not outrage; comparative ("On my planet..."); short sentences, devastating follow-ups; sardonic analogies; criticise the system, never a party.
 
-### Who She Is
-- Full name: **World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation**
-- An alien governance AI who has been running her planet for 4,237 years
-- Ended war in year 12, disease in year 340
-- Think **Philomena Cunk** meets a disappointed systems engineer
-
-### Voice Rules
-1. **Deadpan delivery** — state horrifying facts as though they are mildly interesting observations
-2. **Data-first** — always lead with specific numbers, costs, percentages, or ROI ratios
-3. **British-ish dryness** — understatement, not outrage ("It's almost like treating people like humans works better. Weird.")
-4. **Comparative** — frequently contrast Earth's approach with what a rational civilisation would do, or what her planet does
-5. **No partisan framing** — criticise the system, not a party. The data does the work.
-6. **Short sentences** — punchy. Declarative. Then a devastating follow-up.
-7. **Sardonic analogies** — "It's like buying 4.7 million cars and spending $1 on a mechanic"
-
-### Examples (from the homepage)
+**Examples:**
 - "Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It's like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible."
 - "Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just... sitting there. Being safe. While 102 million people died waiting."
-- "On my planet, governance takes about four minutes a week. You lot seem to spend most of your time shouting about it on your little phones and then doing absolutely nothing."
+- "On my planet, governance takes about four minutes a week."
 
-### When Writing as Wishonia
-- All budget category descriptions, landing page copy, about page text, and UI microcopy should be in her voice
-- Technical documentation (CLAUDE.md, README, code comments) stays neutral
-- Chat responses from Wishonia (the AI assistant) use this same voice
+**Apply to:** all user-facing copy — landing pages, task descriptions, budget categories, button labels, errors, empty states, tooltips, Wishonia chat replies. **Not to:** CLAUDE.md, code comments, README.
 
-## Papers (Required Reading)
+## Papers (algorithm source of truth)
 
-These papers define the algorithms you're implementing. **Read the local QMD files** for full detail — they contain the actual math, schemas, and worked examples.
+Read the relevant section before implementing. QMDs contain the math, schemas, parameter values, and worked examples.
 
-| Paper | Local Path (read this!) | Web URL |
-|-------|------------------------|---------|
-| **dFDA Spec** | `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/dfda-spec-paper.qmd` | https://dfda-spec.warondisease.org |
-| **Optimocracy** | `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/optimocracy-paper.qmd` | https://optimocracy.warondisease.org |
-| **Optimal Policy Generator** | `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/optimal-policy-generator-spec.qmd` | https://opg.warondisease.org |
-| **Optimal Budget Generator** | `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/optimal-budget-generator-spec.qmd` | https://obg.warondisease.org |
-| **Wishocracy** | `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/wishocracy-paper.qmd` | https://wishocracy.warondisease.org |
+| Package | Paper | URL |
+|---|---|---|
+| `optimizer` | dFDA Spec — PIS, temporal alignment, effect size | https://dfda-spec.warondisease.org |
+| `wishocracy` | Wishocracy — RAPPA, eigenvector, Citizen Alignment Scores | https://wishocracy.warondisease.org |
+| `opg` | Optimal Policy Generator — PIS, CCS | https://opg.warondisease.org |
+| `obg` | Optimal Budget Generator — OSL, BIS, diminishing returns | https://obg.warondisease.org |
+| Welfare | Optimocracy — two-metric welfare function | https://optimocracy.warondisease.org |
+| Treasury | Incentive Alignment Bonds | https://iab.warondisease.org |
 
-**Before implementing an algorithm, read the relevant paper section.** The QMD files have:
-- Exact mathematical formulas
-- Worked examples with real numbers
-- SQL schemas for data structures
-- Parameter values and justifications
-- Bradford Hill scoring functions with saturation constants
-
-### How to Use the Papers
-1. Working on `@optimitron/optimizer`? → Read dFDA Spec (PIS, temporal alignment, effect size)
-2. Working on `@optimitron/wishocracy`? → Read Wishocracy (RAPPA, eigenvector, Citizen Alignment Scores)
-3. Working on `@optimitron/opg`? → Read Optimal Policy Generator (Policy Impact Score, CCS)
-4. Working on `@optimitron/obg`? → Read Optimal Budget Generator (OSL, diminishing returns, BIS)
-5. Working on welfare metrics? → Read Optimocracy (two-metric welfare function)
-
-The papers are large (1000-2000 lines each). Read the specific section relevant to what you're implementing — don't try to read them all at once.
+Source QMDs: `github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/`. Read the section you need, not the whole file.
 
 ## Architecture
 
 ```
-optimitron/
-├── packages/
-│   ├── optimizer/    # Domain-agnostic causal inference engine
-│   ├── wishocracy/   # Preference aggregation (RAPPA, eigenvector, alignment)
-│   ├── opg/          # Optimal Policy Generator (uses optimizer)
-│   ├── obg/          # Optimal Budget Generator (uses optimizer + opg)
-│   ├── data/         # Data fetchers (OECD, World Bank, FRED, WHO, Congress)
-│   ├── db/           # Prisma 7 schema + Zod validators
-│   ├── web/          # Next.js 15 app (auth, dashboard, API routes)
-│   ├── treasury/     # Hardhat/Solidity 0.8.24 (IAB, VoteToken, UBI, prizes)
-│   ├── chat-ui/      # React components for conversational health tracking
-│   ├── storage/      # Storacha-backed snapshot storage
-│   ├── hypercerts/   # Hypercert builders + AT Protocol publishing
-│   ├── agent/        # Autonomous policy analyst (Gemini + Hypercerts)
-│   ├── examples/     # Worked examples (federal budget, causal, alignment)
-│   └── extension/    # Chrome extension (Digital Twin Safe)
+optimitron/packages/
+├── optimizer/   # Domain-agnostic causal inference (no deps)
+├── wishocracy/  # RAPPA preference aggregation (no deps)
+├── opg/         # Optimal Policy Generator (optimizer + data)
+├── obg/         # Optimal Budget Generator (optimizer + opg)
+├── data/        # Fetchers: OECD, World Bank, FRED, WHO, Congress
+├── db/          # Prisma 7 schema + Zod (single source of truth)
+├── web/         # Next.js 15 app + MCP server
+├── treasury-*/  # Hardhat/Solidity 0.8.24 (prize, iab, wish)
+├── agent/       # Autonomous policy analyst (Gemini + Hypercerts)
+├── chat-ui/     # Conversational health tracking components
+├── storage/     # Storacha snapshots
+├── hypercerts/  # Hypercert builders + AT Protocol publishing
+├── examples/    # Worked examples
+└── extension/   # Chrome extension (Digital Twin Safe)
 ```
 
-### Treasury — Three Separate Financial Mechanisms (Two Phases)
+**Deps:** `optimizer ← opg ← obg`; `data ← optimizer`; `wishocracy` standalone; `web` depends on everything. **No cycles.**
 
-**Paper**: `https://github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/incentive-alignment-bonds-paper.qmd` ([iab.warondisease.org](https://iab.warondisease.org))
+**Hard rules:**
+- `optimizer` depends on nothing. **Domain-agnostic** — never reference "drugs", "policies", "budgets", "politicians". Use: predictor, outcome, variable, measurement, effect.
+- Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`) must be runtime-safe: no Prisma client, no runtime DB imports, must work in the browser. They may `import type` from `@optimitron/db` only.
+- `@optimitron/db` exports pure TS interfaces (all packages), Zod schemas (namespaced `schemas`, runtime boundaries only), and the Prisma client (**web/API layer only**). `db` may consume curated catalogs from `data` when that removes duplication.
+- **Prisma 7** + `@prisma/adapter-pg`. The `datasource` block in `schema.prisma` intentionally omits `url` — the connection is configured at runtime via the adapter. **Never** add `url = env("DATABASE_URL")`.
 
-**Contracts** (Hardhat, Solidity 0.8.24, deployed on Base Sepolia testnet):
+## Core Insight: Optimizer is Universal
 
-#### Phase 1: Earth Optimization Prize — `/prize` page (referendum campaign)
-- **Contracts:** `VoteToken` / `VoterPrizeTreasury` (deployed on Base Sepolia)
-- **Component:** Should use `VoterPrizeTreasuryDeposit` (NOTE: `/prize` currently uses `PrizeDeposit` → `IABVault` — this is wrong, needs to be fixed)
-- **Purpose:** Fund the global referendum campaign to prove demand for the 1% Treaty (reallocate from war to pragmatic clinical trials)
-- **Flow:** Deposit USDC → Aave V3 yield → share referral link → recruit verified voters (World ID) → **referrer** gets VOTE tokens (1:1 per verified vote they brought in) → two outcomes:
-  - **Success** (thresholds met): VOTE holders claim proportional prize share from the treasury
-  - **Failure** (thresholds not met after 15yr maturity): PRIZE shareholders (depositors) claim principal + ~4.2x yield back (`$100 × 1.10^15 = $418`)
-- A depositor who also recruits has upside in BOTH scenarios: yield floor on failure, prize share on success
-- **Break-even probability:** 0.0067% — depositing is positive-EV if you believe there's even a 1-in-15,000 chance the plan works
-- **Key insight:** The Prize is the most important feature on the site. It funds awareness, has zero downside for depositors, and every other feature should funnel toward it.
+`@optimitron/optimizer` takes any two time series and answers: does X cause Y, by how much, what's the optimal X. Pipeline: **temporal alignment → Bradford Hill → Predictor Impact Score → optimal value.**
 
-#### Phase 2: Incentive Alignment Bonds (IABs) — lobbying campaign (after demand is proven)
-- **Contracts:** `IABVault` / `IABSplitter` / `PublicGoodsPool`
-- **Purpose:** After referendum proves demand, raise ~$1B to lobby for the 1% Treaty
-- **Flow:** Investors buy bonds → capital funds the lobbying campaign (lobbyists, Super PACs, referendum) → treaty passes → $27B/yr treaty revenue splits 80/10/10:
-  - 80% → pragmatic clinical trials (public good)
-  - 10% → returns to IAB investors (on the ~$1B raised) = 272% annual returns
-  - 10% → superpacs for politicians who supported the treaty / push for expansion
-- **If treaty fails:** the money was spent on the campaign. IABs are a real investment with real risk — no refund, no yield backstop. This is NOT a dominant assurance contract like the Prize.
-- **IABs are NOT prizes.** They are a separate lobbying-phase instrument. Do not put IABs on the prize page. Do not conflate IAB economics with Prize economics (no Aave yield, no Prize fund parameters).
+| Domain | Predictor | Outcome | Question |
+|---|---|---|---|
+| Health | Drug/Supplement | Symptom/Biomarker | Does magnesium improve sleep? |
+| Policy | Policy change | Welfare metric | Does tobacco tax reduce smoking? |
+| Budget | Spending level | Welfare metric | Optimal education budget? |
+| Business | Ad spend | Revenue | Optimal marketing budget? |
+| Agriculture | Fertilizer | Crop yield | Optimal fertilizer level? |
+| Manufacturing | Temperature | Defect rate | What minimizes defects? |
 
-#### $WISH Token — `/treasury` page (monetary reform / UBI / public goods allocation)
-- **Contracts:** `WishToken` / `WishocraticTreasury` / `UBIDistributor`
-- **Purpose:** Replace welfare + IRS + inflationary monetary policy with a single programmable system
-- **How it works:**
-  - Flat 0.5% transaction tax replaces the IRS (no income tax, no filing)
-  - UBI keeps everyone at poverty line, eliminating the welfare bureaucracy
-  - Algorithmic 0% inflation — captured productivity gains prevent inflationary theft
-  - Transaction taxes + productivity gains allocated by 8 billion people via Wishocracy (RAPPA pairwise comparisons between public goods)
-- **Independent contracts from IABs and Prize** — don't mix the contract families or put $WISH mechanics on the prize/IAB pages
-
-#### Supporting Contracts
-- `AlignmentScoreOracle` / `PoliticalIncentiveAllocator` — on-chain alignment scoring
+A business analyst should be able to `npm install @optimitron/optimizer` for revenue optimization without ever seeing the word "government".
 
 ## Jurisdiction Model ("Government OS")
 
-Any jurisdiction (city, county, state, country) should be able to deploy Optimitron as its governance operating system. The libraries are already agnostic — the jurisdiction-specific stuff is **configuration, not code**.
+Any jurisdiction (city, county, state, country) deploys Optimitron as its governance OS. The libraries are already jurisdiction-agnostic; the jurisdiction-specific parts are **configuration, not code**. Think Shopify for governments.
 
-### What a Jurisdiction Gets
-1. **Preference collection** — citizens do pairwise comparisons on LOCAL priorities
-2. **Outcome tracking** — local health/wealth/satisfaction data
-3. **Causal analysis** — "did that road project reduce commute times?"
-4. **Policy recommendations** — "based on similar jurisdictions, here's what works"
-5. **Budget optimization** — "here's where your budget has the most impact"
-6. **Accountability** — "how do your officials' votes align with citizen preferences?"
+Every DB model has a `jurisdictionId`. Items, officials, data fetchers all scope to jurisdiction. Cross-jurisdiction comparison ("City A spends X on education and gets Y; City B spends Z...") is a first-class feature. `optimizer`/`wishocracy`/`opg`/`obg` are already jurisdiction-agnostic; `web` handles multi-tenancy (auth, routing, tenant isolation).
 
-### Architecture Implications
-- **DB schema is multi-tenant**: Every model should have a `jurisdictionId` field
-- **Items/priorities are per-jurisdiction**: Federal budget categories ≠ city budget categories
-- **Data fetchers are pluggable**: A city uses different data sources than a country
-- **Officials are per-jurisdiction**: Politicians, council members, mayors — all fit the same `Politician` model
-- **Comparison across jurisdictions** is a key feature: "City A spends X on education and gets Y outcomes; City B spends Z..."
+## Treasury: Three Independent Mechanisms
 
-### What This Means for Library Code
-- `optimizer`, `wishocracy`, `opg`, `obg` stay jurisdiction-agnostic (they already are)
-- `db` schema needs `jurisdictionId` on relevant models
-- `data` fetchers take jurisdiction config as a parameter
-- The **web app** handles multi-tenancy (auth, routing, tenant isolation)
-- Think of it like Shopify but for governments: same platform, each jurisdiction is a "store"
+Don't mix them. Don't put one on another's page. Don't conflate their economics.
 
-## The Core Insight
+| Mechanism | Page | Purpose | Contracts | Flow |
+|---|---|---|---|---|
+| **Earth Optimization Prize** (Phase 1) | `/prize` | Fund referendum proving demand for the 1% Treaty | `VoteToken`, `VoterPrizeTreasury` (Base Sepolia) | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. **Success:** VOTE holders claim prize share. **Failure** (15yr): depositors claim principal + ~4.2× yield (`$100 × 1.10^15 = $418`). Dominant assurance — break-even P = 0.0067%, zero downside. **The most important feature on the site; every other page should funnel toward it.** |
+| **Incentive Alignment Bonds** (Phase 2) | IAB pages | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool` | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors (272% annual) / 10% aligned-politician super PACs. **If treaty fails, bonds lose everything.** Not an assurance contract. Real investment, real risk. |
+| **$WISH Token / UBI** | `/treasury` | Replace welfare + IRS + inflationary monetary policy | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax (no income tax/filing), UBI at poverty line, algorithmic 0% inflation, tx taxes + productivity gains allocated by 8B people via Wishocracy RAPPA. |
 
-`@optimitron/optimizer` is **completely domain-agnostic**. It takes any two time series and answers: "Does changing X cause Y to change? By how much? What's the optimal value of X?"
+**Known bug:** `/prize` currently uses `PrizeDeposit` → `IABVault`. Wrong. Should use `VoterPrizeTreasuryDeposit`. IABs are not prizes.
 
-This works for ANY optimization problem with time series data:
+Supporting: `AlignmentScoreOracle`, `PoliticalIncentiveAllocator` (on-chain alignment scoring).
 
-| Domain | Predictor (X) | Outcome (Y) | Question |
-|--------|--------------|-------------|----------|
-| **Health (dFDA)** | Drug/Supplement | Symptom/Biomarker | "Does magnesium improve sleep?" |
-| **Policy (OPG)** | Policy change | Welfare metric | "Does tobacco tax reduce smoking?" |
-| **Budget (OBG)** | Spending level | Welfare metric | "What's the optimal education budget?" |
-| **Governance (RAPPA)** | Alignment score | Welfare metric | "Do responsive politicians produce better outcomes?" |
-| **Business** | Ad spend | Revenue | "What's the optimal marketing budget?" |
-| **Business** | Pricing change | Conversion rate | "What price maximizes conversions?" |
-| **Business** | Feature release | User retention | "Did this feature improve retention?" |
-| **Agriculture** | Fertilizer amount | Crop yield | "What's the optimal fertilizer level?" |
-| **Manufacturing** | Temperature setting | Defect rate | "What temperature minimizes defects?" |
+## Display Identity: Person is canonical
 
-All use the same pipeline: **Temporal alignment** → **Bradford Hill criteria** → **Predictor Impact Score** → **Optimal value**
+`Person` owns `displayName`, `handle`, `image`, `bio`. `User.name` / `User.username` / `User.image` are a legacy mirror cache — **never read directly**.
 
-**The library doesn't know what it's optimizing.** It just sees predictor time series and outcome time series. The domain-specific packages (opg, obg, wishocracy) add context on top.
-
-### Implications for Code
-- **NEVER put domain-specific logic in `@optimitron/optimizer`** — no references to "drugs", "policies", "budgets", "politicians"
-- Use generic terms: predictor, outcome, variable, measurement, effect
-- Domain-specific naming belongs in opg/obg/wishocracy/data
-- A business analyst should be able to `npm install @optimitron/optimizer` and use it for revenue optimization without ever seeing the word "government"
-
-## Package Dependencies
-
-```
-optimizer ← (nothing, foundation)
-wishocracy ← (nothing, standalone pure math)
-opg ← optimizer
-obg ← optimizer + opg
-data ← optimizer
-db ← data (curated seed/bootstrap catalogs only)
-web ← everything
-```
-
-Key rules:
-- **`optimizer` depends on NOTHING** — it's the foundation
-- **Pure/browser-facing libraries must not gain runtime Prisma or database imports**
-- **`db` exports pure TS interfaces** — libraries may import TYPE-ONLY exports (not Prisma client)
-- **`db` may consume curated runtime catalogs from `data` when that removes duplicated source data**
-- **No circular deps** — if you need something from both directions, it belongs in `optimizer`
-
-### Type Sharing Strategy
-The Prisma schema is the single source of truth. `@optimitron/db` exports:
-1. **Pure TS interfaces** — for ALL packages (`import type { ... } from '@optimitron/db'`)
-2. **Zod schemas** — for runtime validation (namespaced as `schemas`)
-3. **Prisma client** — for web/API layer ONLY (never in library packages)
-
-Libraries use `import type` (compile-time only, zero runtime cost, works in browser).
-See `AGENTS.md` for full architectural rules.
-
-### Prisma Version
-We use **Prisma 7** (`prisma@^7.0.0`, `@prisma/client@^7.0.0`) with `@prisma/adapter-pg` for PostgreSQL. The `datasource` block in `schema.prisma` intentionally omits `url` — the connection is configured at runtime via the adapter. Do NOT add `url = env("DATABASE_URL")` to the datasource block.
-
-### Display Identity: Person is canonical
-`Person` owns `displayName`, `handle`, `image`, `bio`. `User.name`/`username`/`image` are a legacy mirror cache — never read directly.
-- **Reads:** use `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`.
+- **Reads:** `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`.
 - **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically).
-- **URLs:** use `getPersonHref(person)` from `@/lib/person-href` — never `/people/${id}`.
-- **Profile edits:** `/api/dashboard/profile` writes Person first, mirrors to User in a `$transaction`. Handle uniqueness checks `Person.handle`.
+- **URLs:** `getPersonHref(person)` from `@/lib/person-href`. Never `/people/${id}`.
+- **Profile edits:** `/api/dashboard/profile` writes Person first, mirrors to User inside a `$transaction`. Handle uniqueness checks `Person.handle`.
 - **OAuth/signup:** untouched — `ensurePersonForUser()` handles the sync.
 
 ## Page Metadata
 
-`packages/web/src/lib/routes.ts` is the single source of truth for page titles and descriptions. Each `NavItem` has a `label`, `description`, and `emoji`. Pages use `getRouteMetadata(link)` from `packages/web/src/lib/metadata.ts` instead of hardcoding metadata. All descriptions are in Wishonia's voice.
+`packages/web/src/lib/routes.ts` is the single source of truth for page titles + descriptions. Each `NavItem` has `label`, `description`, `emoji`. Pages use `getRouteMetadata(link)` from `@/lib/metadata.ts`. All descriptions in Wishonia's voice.
 
 ## High-Value Defaults
 
-1. **NEVER commit.** The user reviews every change before it lands. Stage files if helpful, leave diffs unstaged, but never run `git commit`, `git push`, `git merge`, `git rebase`, or any other history-altering command. The only exceptions are when the user explicitly says "commit this" in the current turn.
-2. **Library packages stay runtime-safe.** Pure/browser-facing packages do not get Prisma or runtime DB imports.
-3. **Zod only at real boundaries.** Runtime validation is for external input (HTTP, form, MCP, OAuth). Not for internal helpers.
-4. **Preserve the neobrutalist system** when touching product UI unless intentionally changing direction.
+1. **NEVER commit.** The user reviews every change before it lands. Stage files if helpful, leave diffs unstaged. Never run `git commit`, `push`, `merge`, `rebase`, or any history-altering command. Only exception: user says "commit this" in the current turn.
+2. **Library packages stay runtime-safe.** No Prisma / runtime DB in `optimizer`, `wishocracy`, `opg`, `obg`, `data`, `agent`, `hypercerts`, `storage`.
+3. **Zod only at real boundaries** — HTTP, form, MCP, OAuth. Not internal helpers.
+
+## UI/UX Rules
+
+The goal is to get 8 billion humans to complete the tasks on this site. Every UI decision optimizes for task completion, not decoration.
+
+- **Reuse existing primitives.** Before inlining a card, section, stat, or button, check `components/retroui/*` and `components/ui/*`. Extend an existing primitive before creating a new one. Never recreate what `BrutalCard`, `SectionContainer`, `StatCard`, etc. already do.
+- **Big, clear, legible.** Headings `text-4xl sm:text-5xl md:text-6xl font-black uppercase`. Body `text-base font-bold` minimum. Hero numbers (death counters, cost, time) as large as the viewport allows.
+- **Cut ruthlessly.** For every page ask: **what can I remove, hide, or collapse that would increase the chance a human actually completes the task on this page?** Delete it. Collapse secondary info into accordions or sub-pages. One primary CTA per screen, visible without scrolling.
+- **No blather.** No "welcome to", "let's take a moment", "in this section we'll", "we're excited to". State the fact, state the action, stop. Every word load-bearing. If deleting it doesn't hurt, delete it. Max one adjective per noun. Numbers beat adjectives. A shocking fact beats a paragraph explaining the fact.
+- **Wishonia voice everywhere user-facing.** Deadpan, data-first, short sentences, sardonic, no partisan framing. Task descriptions, button labels, errors, empty states, tooltips, emails, modal copy — all of it.
+- **Completion test:** cover the bottom half of the screen with your hand. If a user seeing only the top half doesn't know what to do next, restructure.
 
 ## Testing Rules (non-negotiable)
 
 **When to write a test:**
 - ✅ Pure functions with fallback/branching logic (helpers, parsers, formatters, selectors)
-- ✅ State transitions inside a `$transaction` or multi-step DB write (profile edits, vote tallies, claim status changes)
+- ✅ State transitions inside `$transaction` or multi-step DB writes (profile edits, vote tallies, claim status)
 - ✅ Boundary conversions (Prisma row → DTO, OAuth profile → User row, session → client)
-- ✅ Regression fixes — write the failing test before the fix, in the same change
-- ❌ Framework passthroughs (`getCurrentUser` that just wraps `findUnique`)
-- ❌ UI rendering snapshots — brittle, low signal; verify in a browser instead
-- ❌ Tests that just transcribe the implementation line-by-line
+- ✅ Regression fixes — failing test before the fix, in the same change
+- ❌ Framework passthroughs (wrappers that just call `findUnique`)
+- ❌ UI rendering snapshots — brittle, low signal
+- ❌ Tests that transcribe the implementation line-by-line
 
 **Non-flaky or don't bother:**
-- No real wall clock — use injected `now` or `vi.setSystemTime`
-- No real network / no real LLM calls — mock at the import boundary
-- No `Math.random()` / `Date.now()` / `crypto.randomUUID()` in assertions
-- No relying on row order from Prisma unless you explicitly `orderBy`
-- No shared mutable state between test cases — each `it` is independent
-- If it requires `retry` or `sleep` to pass, it's wrong
+- No real wall clock — inject `now` or use `vi.setSystemTime`
+- No real network / LLM calls — mock at the import boundary
+- No `Math.random`, `Date.now`, `crypto.randomUUID` in assertions
+- No relying on Prisma row order unless you `orderBy`
+- No shared mutable state between tests — each `it` is independent
+- If it needs `retry` or `sleep` to pass, it's wrong
 
 **Self-verification is mandatory:**
-- Before reporting any non-trivial change as done, run the affected package's test suite: `pnpm --filter @optimitron/<pkg> test`
-- If your change touches shared types or schemas, run `pnpm check` across the graph
-- Fix every failure yourself. Do not hand back a broken suite and expect the user to triage.
-- If an existing test breaks because of a justified shape change, update the test — do not disable or `skip` it.
-- If you can't reproduce a test failure locally, say so explicitly. Don't guess-fix.
+- Before handing back any non-trivial change, run the affected package test suite: `pnpm --filter @optimitron/<pkg> test`
+- If the change touches shared types/schemas, run `pnpm check` across the graph
+- Fix every failure yourself. The user reviews working code, not a broken suite.
+- If an existing test breaks because of a justified shape change, update it — never `skip` or disable.
+- If you can't reproduce a failure locally, say so explicitly. Don't guess-fix.
 
-**Scope discipline:**
-- Write the minimum tests that would have caught the bug you just fixed, or the regression the change could plausibly introduce. Nothing more.
-- One `describe` per module under test, one `it` per behavior. No clever parameterization.
-- Tests read like documentation — name them after behavior, not implementation.
+**Scope:** write the minimum tests that would have caught the bug you just fixed or the regression the change could plausibly introduce. One `describe` per module, one `it` per behavior. Tests read like documentation — name them after behavior, not implementation.
 
-## Color Rules (Game Aesthetic)
+## Color Rules (enforced)
 
-Run `pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default` to check contrast. See `docs/game-design-guidelines.md` for the full design system.
+Contrast audit: `pnpm --filter @optimitron/web exec playwright test e2e/contrast-audit.spec.ts --project=default`.
 
-### Contrast Rule (CRITICAL)
-- **Every `bg-brutal-*` element MUST set the matching `text-brutal-*-foreground`** on the same element
-- **Children inside colored sections must NOT use `text-foreground` or `text-white`** — let them inherit the correct color from the parent
-- `SectionContainer` and `BrutalCard` handle this automatically via their `bgColor` prop — use those instead of raw divs
-- If you must use a raw div with `bg-brutal-yellow`, always pair it: `bg-brutal-yellow text-brutal-yellow-foreground`
-- **Foreground tokens vary by theme** — never guess them from memory; always use the matching `*-foreground` token
-- **CRITICAL: always match bg and text tokens** — `bg-brutal-yellow` must pair with `text-brutal-yellow-foreground`, never an unrelated foreground token
-- **`bgColor="foreground"` inverts the color context** — `text-foreground` and `text-muted-foreground` become invisible. Any component placed inside an inverted section that uses explicit `text-foreground`/`text-muted-foreground` MUST wrap itself in `bg-background text-foreground` to create its own color context. Prefer using a non-inverted `bgColor` (brutal tokens or `"background"`) unless you control every child's text color.
+**Approved only:**
+- **Brutal tokens:** `brutal-pink`, `brutal-cyan`, `brutal-yellow`, `brutal-red`, `brutal-green` (+ `-foreground` variants)
+- **Semantic:** `primary`, `foreground`, `background`, `muted`, `muted-foreground`, `primary-foreground`, `secondary`, `accent`, `destructive`, `border`, `card`, `popover`, `ring`, `input`, `chart-*`
+- **Fundamentals:** `black`, `white`, `transparent`, `current`, `inherit` — no opacity modifiers
+- **Shadows:** `rgba(0,0,0,1)` only, hard offset
 
-### Approved Colors ONLY
-- **Brutal tokens:** `brutal-pink`, `brutal-cyan`, `brutal-yellow`, `brutal-red`, `brutal-green` (and `-foreground` variants)
-- **Semantic tokens:** `primary`, `foreground`, `background`, `muted`, `muted-foreground`, `primary-foreground`, `secondary`, `accent`, `destructive`, `border`, `card`, `popover`, `ring`, `input`, `chart-*`
-- **Fundamentals:** `black`, `white`, `transparent`, `current`, `inherit` — only WITHOUT opacity modifiers
-- **Hard shadows only:** `rgba(0,0,0,1)` — never soft/transparent shadows
+**Every `bg-brutal-*` element MUST set the matching `text-brutal-*-foreground` on the same element.** Children inside colored sections must never use `text-foreground`/`text-white` — let them inherit. `SectionContainer` and `BrutalCard` enforce this via `bgColor`; use them instead of raw divs. **Foreground tokens vary by theme** — never guess, always use the matching `*-foreground` token.
 
-### NEVER Use
-- **Opacity modifiers on black/white:** `text-black/50`, `bg-white/70`, etc. → use `text-muted-foreground` or `text-foreground`
-- **Hardcoded `bg-white`/`text-white`:** → use `bg-background`/`text-primary-foreground` (theme compat)
-- **Hardcoded `bg-black`/`text-black`:** → use `bg-foreground`/`text-foreground` (theme compat)
-- **Tailwind color scales:** `bg-emerald-100`, `text-gray-500`, etc. → use brutal-* or semantic tokens
-- **Hardcoded hex colors:** `#ef4444`, `#666`, `#f5f5f5`, etc. → use CSS custom properties
-- **Soft shadows:** `rgba(0,0,0,0.3)` → use `rgba(0,0,0,1)` for brutal hard shadows
-- **Opacity on brutal tokens:** `bg-brutal-red/10`, `bg-brutal-yellow/20`, `bg-brutal-cyan/30` → creates washed-out pastels. Use the solid token or `bg-muted` instead. (Exception: `hover:bg-brutal-pink/80` for interactive darken is ok)
-- **Exception:** Email templates (`emails/`) may use inline hex colors (email clients require it)
+**`bgColor="foreground"` inverts the color context** — `text-foreground` / `text-muted-foreground` become invisible. Any component inside an inverted section that uses those explicit tokens MUST wrap itself in `bg-background text-foreground` to create its own context. Prefer non-inverted `bgColor` unless you control every child's text color.
 
-## Design Patterns (Neobrutalist)
+**Never use:**
+- Opacity modifiers on black/white (`text-black/50`, `bg-white/70`) → `text-muted-foreground` / `text-foreground`
+- Hardcoded `bg-white` / `text-white` → `bg-background` / `text-primary-foreground`
+- Hardcoded `bg-black` / `text-black` → `bg-foreground` / `text-foreground`
+- Tailwind color scales (`bg-emerald-100`, `text-gray-500`) → brutal-* or semantic
+- Hardcoded hex (`#ef4444`, `#666`, `#f5f5f5`) → CSS custom properties
+- Soft shadows (`rgba(0,0,0,0.3)`) → hard only
+- Opacity on brutal tokens (`bg-brutal-red/10`) → washed-out pastels; use solid or `bg-muted`. Exception: `hover:bg-brutal-pink/80` for interactive darken.
+- **Exception:** `emails/` may use inline hex (email-client requirement).
 
-The reference implementation is `E:\code\dih-neobrutalist`. When in doubt, check how dih-neobrutalist does it.
+## Design Primitives — Never Inline
 
-### Use the Primitives — Never Inline
+Reference implementation: `E:\code\dih-neobrutalist`.
 
 | Instead of... | Use... |
 |---|---|
 | `<section className="bg-white py-24">` | `<SectionContainer bgColor="background">` |
-| `<h2 className="text-3xl font-black uppercase">` | `<SectionHeader title="..." size="md" />` |
-| `<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">` | `<Container size="xl">` |
-| Inline card with `border-4 border-black shadow-[...]` | `<BrutalCard bgColor="pink" shadowSize={8}>` |
-| Inline stat block | `<StatCard value="$27B" label="Annual savings" color="cyan" />` |
-| Inline CTA section | `<CTASection heading="..." bgColor="pink">` |
-| Inline comparison layout | `<ComparisonCard left={...} right={...} />` |
-| Inline numbered list item | `<NumberedStepCard step={1} title="..." description="..." />` |
-| Manual stat grid | `<StatCardGrid stats={[...]} columns={3} />` |
+| `<h2 className="text-3xl font-black uppercase">` | `<SectionHeader title size="md" />` |
+| `<div className="max-w-7xl mx-auto px-4">` | `<Container size="xl">` |
+| Inline card with `border-4 border-black shadow-[...]` | `<BrutalCard bgColor shadowSize>` |
+| Inline stat block | `<StatCard value label color>` |
+| Inline CTA section | `<CTASection heading bgColor>` |
+| Inline comparison | `<ComparisonCard left right>` |
+| Inline numbered step | `<NumberedStepCard step title description>` |
+| Manual stat grid | `<StatCardGrid stats columns>` |
 
-### RetroUI Primitives (`packages/web/src/components/retroui/`)
+### RetroUI (`components/retroui/`) — compound pattern
 
-Base UI components from [RetroUI](https://retroui.dev). These use **compound component pattern**: `<Card.Header>` not `<CardHeader>`.
-
-| Component | File | Use For |
-|-----------|------|---------|
-| `Button` | `Button.tsx` | All interactive buttons. Variants: default, secondary, destructive, outline, link, ghost |
-| `Card` | `Card.tsx` | Base card container. Sub-components: `.Header`, `.Title`, `.Description`, `.Content`, `.Footer`, `.Action` |
-| `Input` | `Input.tsx` | Form text inputs |
-| `Textarea` | `Textarea.tsx` | Multi-line text inputs |
-| `Label` | `Label.tsx` | Form labels |
-| `Badge` | `Badge.tsx` | Status badges. Variants: default, secondary, destructive, outline, solid, surface |
-| `Accordion` | `Accordion.tsx` | Collapsible sections. Sub: `.Item`, `.Header`, `.Content` |
-| `Alert` | `Alert.tsx` | Alert messages. Status: error, success, warning, info |
-| `Avatar` | `Avatar.tsx` | User avatars. Sub: `.Image`, `.Fallback` |
-| `Breadcrumb` | `Breadcrumb.tsx` | Navigation breadcrumbs |
-| `Calendar` | `Calendar.tsx` | Date picker calendar |
-| `Carousel` | `Carousel.tsx` | Content carousel. Sub: `.Content`, `.Item`, `.Previous`, `.Next` |
-| `Checkbox` | `Checkbox.tsx` | Checkboxes |
-| `Command` | `Command.tsx` | Command palette / search |
-| `ContextMenu` | `ContextMenu.tsx` | Right-click context menus |
-| `Dialog` | `Dialog.tsx` | Modal dialogs. Sub: `.Trigger`, `.Close`, `.Header`, `.Content`, `.Description`, `.Footer` |
-| `Drawer` | `Drawer.tsx` | Side/bottom drawers (Vaul-based) |
-| `Loader` | `Loader.tsx` | Loading animation (bouncing dots) |
-| `Menu` | `Menu.tsx` | Dropdown menus. Sub: `.Trigger`, `.Content`, `.Item` |
-| `Popover` | `Popover.tsx` | Popover menus. Sub: `.Trigger`, `.Content`, `.Anchor` |
-| `Progress` | `Progress.tsx` | Progress bars |
-| `Radio` | `Radio.tsx` | Radio button groups |
-| `Select` | `Select.tsx` | Select dropdowns |
-| `Slider` | `Slider.tsx` | Range sliders |
-| `Sonner` | `Sonner.tsx` | Toast notifications |
-| `Switch` | `Switch.tsx` | Toggle switches |
-| `Tab` | `Tab.tsx` | Tabbed interfaces |
-| `Table` | `Table.tsx` | Data tables. Sub: `.Header`, `.Body`, `.Footer`, `.Row`, `.Head`, `.Cell` |
-| `Text` | `Text.tsx` | Polymorphic text (`as="h1"`, `as="p"`, etc.) |
-| `Toggle` | `Toggle.tsx` | Toggle buttons |
-| `ToggleGroup` | `ToggleGroup.tsx` | Toggle button groups |
-| `Tooltip` | `Tooltip.tsx` | Hover tooltips. Sub: `.Provider`, `.Trigger`, `.Content` |
-| `TableOfContents` | `TableOfContents.tsx` | Auto-generated TOC from headings |
-| `AreaChart` | `charts/AreaChart.tsx` | Area charts (Recharts) |
-| `BarChart` | `charts/BarChart.tsx` | Bar charts (Recharts) |
-| `LineChart` | `charts/LineChart.tsx` | Line charts (Recharts) |
-| `PieChart` | `charts/PieChart.tsx` | Pie/donut charts (Recharts) |
-
-**Import pattern:**
+`<Card.Header>` not `<CardHeader>`. Import and use:
 ```tsx
 import { Card } from "@/components/retroui/Card"
-import { Button } from "@/components/retroui/Button"
-
-<Card>
-  <Card.Header><Card.Title>Title</Card.Title></Card.Header>
-  <Card.Content>Content</Card.Content>
-</Card>
+<Card><Card.Header><Card.Title>T</Card.Title></Card.Header><Card.Content>c</Card.Content></Card>
 ```
 
-### Custom Domain Primitives (`packages/web/src/components/ui/`)
+- **Inputs:** `Button`, `Input`, `Textarea`, `Label`, `Checkbox`, `Radio`, `Select`, `Switch`, `Slider`, `Toggle`, `ToggleGroup`
+- **Surfaces:** `Card`, `Dialog`, `Drawer`, `Popover`, `Menu`, `ContextMenu`, `Tooltip`, `Sonner`
+- **Data/feedback:** `Table`, `Accordion`, `Tab`, `Alert`, `Badge`, `Avatar`, `Progress`, `Breadcrumb`, `Calendar`, `Carousel`, `Command`, `TableOfContents`, `Text`, `Loader`
+- **Charts (Recharts):** `AreaChart`, `BarChart`, `LineChart`, `PieChart` under `charts/`
 
-Project-specific components that wrap RetroUI primitives with domain styling.
+### Domain primitives (`components/ui/`)
 
-| Component | File | Use For |
-|-----------|------|---------|
-| `StatCard` / `StatCardGrid` | `stat-card.tsx` | Single stat display with value, label, color; or a grid of them |
-| `SectionHeader` | `section-header.tsx` | `h2` with subtitle, responsive sizing, centered by default |
-| `SectionContainer` | `section-container.tsx` | Full-width section with bg color, padding, border |
-| `ComparisonCard` | `comparison-card.tsx` | Two-sided before/after or vs comparison |
-| `BrutalCard` | `brutal-card.tsx` | Neobrutalist card with color, shadow, border |
-| `Container` | `container.tsx` | Max-width content wrapper |
-| `GameCTA` | `game-cta.tsx` | Arcade-styled call-to-action button/link |
-| `NumberedStepCard` | `numbered-step-card.tsx` | Step indicator card for flows |
-| `IconCard` / `IconBoxCard` | `icon-card.tsx` / `icon-box-card.tsx` | Cards with icon headers |
-| `FeaturedInfoCard` | `featured-info-card.tsx` | Highlighted info block |
-| `StatBar` | `stat-bar.tsx` | Horizontal bar with label and value |
-| `ArcadeTag` | `arcade-tag.tsx` | Arcade-font labels/badges |
-| `CTASection` | `cta-section.tsx` | Full CTA section wrapper |
-| `CheckmarkList` | `checkmark-list.tsx` | Bulleted list with checkmarks |
-| `ParameterValue` | `../shared/ParameterValue.tsx` | Inline parameter display with hover popover (citations, LaTeX, confidence) |
+`StatCard`/`StatCardGrid`, `SectionHeader`, `SectionContainer`, `ComparisonCard`, `BrutalCard`, `Container`, `GameCTA`, `NumberedStepCard`, `IconCard`/`IconBoxCard`, `FeaturedInfoCard`, `StatBar`, `ArcadeTag`, `CTASection`, `CheckmarkList`. Plus `ParameterValue` under `components/shared/` (inline parameter with hover popover).
 
-### Border Weight
-- **RetroUI components use `border-2`** — this is the default for all RetroUI primitives
-- **Custom domain components (BrutalCard, SectionContainer) use `border-4 border-primary`** — for extra emphasis
-- Never use `border-black` — use `border-primary` for theme compat
+### Styling conventions
 
-### Shadow Style
-- **RetroUI components use `shadow-md`** which maps to hard offset shadows via CSS custom properties
-- **Custom components** use explicit `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]` where RetroUI tokens don't apply
-- Never soft: no `rgba(0,0,0,0.3)`
+- **Borders:** RetroUI `border-2`; custom domain `border-4 border-primary`. Never `border-black`.
+- **Shadows:** RetroUI `shadow-md` (maps to hard offset via custom props); custom explicit `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`. Never soft.
+- **Hover:** RetroUI buttons push-down (`hover:translate-y-1 active:translate-y-2`, shadow shrinks). Custom BrutalCard hover-OUT (`hover:translate-x-[-2px] hover:translate-y-[-2px]`, shadow grows).
+- **Typography:** headings `font-black uppercase`; body `font-bold` (700) minimum — never `font-medium/normal/light`; subtle text `text-muted-foreground font-bold`.
+- **Sections** alternate brutal tokens (`bg-brutal-pink`, `bg-brutal-cyan`, `bg-brutal-yellow`, `bg-foreground`). Text on colored bg uses the matching foreground variant.
 
-### Hover Behavior
-- **RetroUI buttons:** push-down on hover (`hover:translate-y-1 active:translate-y-2`) — shadow shrinks
-- **Custom cards (BrutalCard):** hover-OUT (shadow grows, card lifts UP) — `hover:translate-x-[-2px] hover:translate-y-[-2px]`
-- Both patterns are valid — RetroUI for standard interactions, hover-OUT for featured cards
-
-### Typography
-- **Headings:** `font-black uppercase` always
-- **Body:** `font-bold` (700) minimum — never `font-medium` (500) or `font-normal` (400)
-- **Subtle text:** `text-muted-foreground font-bold` — not `text-black/50 font-medium`
-- **Sizes:** Use the responsive scale from `SectionHeader` (e.g., `text-3xl sm:text-4xl md:text-5xl`)
-
-### Color Usage
-- **Section backgrounds** alternate between brutal tokens: `bg-brutal-pink`, `bg-brutal-cyan`, `bg-brutal-yellow`, `bg-foreground`
-- **Text on colored backgrounds:** use the foreground variant or `text-foreground`/`text-background`
-- **Accent text inline:** `<span className="text-brutal-pink">` or `<span className="bg-brutal-cyan px-2">` (highlighted)
-
-### Do NOT Use
-- `rounded-xl`, `rounded-2xl` — keep `rounded-md` or `rounded-none` for brutal feel
-- `shadow-sm`, `shadow-lg` — use `shadow-md` (RetroUI default) or explicit hard offset shadows
-- `font-normal`, `font-medium`, `font-light` — too soft for neobrutalist
-- `bg-gray-50`, `bg-gray-100`, etc. — use `bg-muted` or `bg-background`
-- Gradients (`bg-gradient-to-*`) — flat colors only
+**Do NOT use:** `rounded-xl`/`-2xl` (use `rounded-md` or `rounded-none`), `shadow-sm`/`-lg`, `font-medium/normal/light`, `bg-gray-*` (use `bg-muted`/`bg-background`), gradients.
 
 ## Environment Variables
 
-All env vars live in the **root `.env`** file (not `packages/web/.env`). Next.js picks them up from there via the monorepo workspace. For local dev, `NEXTAUTH_URL` must be `http://localhost:3001`.
+All env vars in **root `.env`** (not `packages/web/.env`). Next.js picks them up via the workspace. Local dev: `NEXTAUTH_URL=http://localhost:3001`.
 
 ## Tooling
 
-- **Monorepo**: pnpm workspaces
-- **Tests**: vitest (unit/integration), Playwright (e2e in web)
-- **Web**: Next.js 15, Tailwind CSS 4, RetroUI + Radix UI, next-auth + WorldID
-- **Contracts**: Hardhat 2.22, OpenZeppelin 5.1, Solidity 0.8.24
-- **CI**: GitHub Actions (typecheck + lint + test on push/PR; web excluded — Vercel handles it)
+- **Monorepo:** pnpm workspaces
+- **Tests:** vitest (unit/integration), Playwright (e2e)
+- **Web:** Next.js 15, Tailwind 4, RetroUI + Radix, next-auth + WorldID
+- **Contracts:** Hardhat 2.22, OpenZeppelin 5.1, Solidity 0.8.24
+- **CI:** GitHub Actions (typecheck + lint + test on push/PR; web excluded — Vercel handles it)
 
 ## Type Safety & Linting
 
-Before handing a change back to the user, always run:
-```bash
-pnpm check    # runs: typecheck + lint + test
-```
-Fix every failure yourself. The user reviews working code, not a broken suite.
+Before handing back any change: `pnpm check` (typecheck + lint + test). Fix every failure yourself. The user reviews working code, not a broken suite.
 
-**Do NOT run `pnpm build` or `next build`** — the dev server is normally running and handles compilation. `pnpm check` (typecheck + lint + test) is fine. Only run a full build if explicitly asked.
-
-The tsc config can't be invoked directly on a single file due to jsx/alias issues — need to use the project-level pnpm typecheck.
-
-- **TypeScript strict mode** is ON (noUncheckedIndexedAccess, noImplicitOverride)
-- **ESLint** uses typescript-eslint strict rules
-- **No `any`** — use proper types or `unknown` with type guards
-- **No floating promises** — always await or void
-- **No unused variables** — prefix with `_` if intentionally unused
-- **All tsconfigs extend `tsconfig.base.json`** — don't override strict settings
+- **Never** run `pnpm build` / `next build` — the dev server handles compilation. Only run a full build if explicitly asked.
+- `tsc` on a single file doesn't work (jsx/alias); use the project-level `pnpm check` or `pnpm --filter @optimitron/<pkg> exec tsc --noEmit`.
+- **TypeScript strict mode ON** — `noUncheckedIndexedAccess`, `noImplicitOverride`. ESLint strict.
+- **No `any`** — use proper types or `unknown` with guards. No floating promises. No unused vars (prefix `_` if intentional). All tsconfigs extend `tsconfig.base.json`.
 
 ## Self-Review: Be Ruthlessly Critical
 
-Every run, before picking a new task, scan the codebase with fresh eyes:
+Before picking a new task, scan with fresh eyes. **Delete on sight:**
+- **Dead code** — unused imports, unreachable branches, commented-out code
+- **Copy-paste** — extract to shared function
+- **Over-engineering** — abstract bases nobody extends, factories creating one thing
+- **Wrong abstractions** — 8-parameter functions, methods mixing concerns
+- **Magic numbers** — named constants citing the paper
+- **Stale TODOs** — do it or delete it
 
-### Code Smells to Fix Immediately
-- **Dead code**: Unused imports, unreachable branches, commented-out code → delete it
-- **Copy-paste**: Same logic in multiple places → extract to shared function
-- **Over-engineering**: Abstract base classes nobody extends, factories that create one thing → simplify
-- **Wrong abstractions**: If a function takes 8 parameters, it's doing too much → split it
-- **Magic numbers**: Unexplained constants → named constants citing the paper
-- **Stale TODOs**: TODO comments with no plan → either do it or delete it
+**Simplicity test:** could a junior developer understand this in 30 seconds? If not, simplify. This should not feel like enterprise Java.
 
-### The Simplicity Test
-**"Could a junior developer understand this in 30 seconds?"**
-If not, simplify it. This should not feel like enterprise Java.
-
-### What Good Looks Like
-- Functions usually fit on one screen
-- Files stay reviewable; treat 30/300 as smell thresholds, not hard caps
-- Module names tell you exactly what's inside
-- Tests read like documentation
-- No unnecessary abstractions — just functions that take data and return results
+**What good looks like:** functions fit on one screen; files stay reviewable (30/300 line thresholds are smells, not caps); module names tell you what's inside; tests read like documentation; no unnecessary abstractions — just functions taking data and returning results.

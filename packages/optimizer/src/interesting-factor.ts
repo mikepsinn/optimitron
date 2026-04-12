@@ -75,15 +75,15 @@ export function editDistance(a: string, b: string): number {
     for (let j = 1; j <= lb; j++) {
       const cost = a[i - 1] === b[j - 1] ? 0 : 1;
       curr[j] = Math.min(
-        prev[j]! + 1,       // deletion
-        curr[j - 1]! + 1,   // insertion
-        prev[j - 1]! + cost, // substitution
+        (prev[j] ?? 0) + 1,        // deletion
+        (curr[j - 1] ?? 0) + 1,    // insertion
+        (prev[j - 1] ?? 0) + cost, // substitution
       );
     }
     [prev, curr] = [curr, prev];
   }
 
-  return prev[lb]!;
+  return prev[lb] ?? 0;
 }
 
 // ─── Core Functions ──────────────────────────────────────────────────
@@ -114,7 +114,7 @@ export function calculateInterestingFactor(config: InterestingFactorConfig): num
     return 0.25;
   }
 
-  if (predictorCategory != null && outcomeCategory != null) {
+  if (predictorCategory !== undefined && outcomeCategory !== undefined) {
     const predCat = normalizeCategory(predictorCategory);
     const outCat = normalizeCategory(outcomeCategory);
 
@@ -165,7 +165,10 @@ export function isTrivial(
   }
 
   // If we have category info, check same-category rule
-  if (config?.predictorCategory != null && config?.outcomeCategory != null) {
+  if (
+    config?.predictorCategory !== undefined &&
+    config.outcomeCategory !== undefined
+  ) {
     const predCat = normalizeCategory(config.predictorCategory);
     const outCat = normalizeCategory(config.outcomeCategory);
 

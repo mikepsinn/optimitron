@@ -84,7 +84,7 @@ async function main(): Promise<void> {
     DATABASE_URL: databaseUrl,
   };
 
-  console.log("Using local test database at postgresql://postgres:postgres@localhost:5432/optimitron");
+  process.stdout.write("Using local test database at postgresql://postgres:postgres@localhost:5432/optimitron\n");
 
   try {
     await ensureDatabaseExists(databaseUrl);

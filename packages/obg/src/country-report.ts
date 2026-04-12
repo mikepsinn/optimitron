@@ -7,7 +7,7 @@
  * @see https://obg.warondisease.org — Optimal Budget Generator
  */
 
-import type { CountryAnalysisResult, JurisdictionResult } from './country-analysis.js';
+import type { CountryAnalysisResult } from './country-analysis.js';
 import { formatUsd } from './report.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────

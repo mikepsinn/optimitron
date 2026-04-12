@@ -53,8 +53,11 @@ export function pearsonCorrelation(x: number[], y: number[]): number {
   let denomY = 0;
   
   for (let i = 0; i < n; i++) {
-    const dx = x[i]! - meanX;
-    const dy = y[i]! - meanY;
+    const xValue = x[i];
+    const yValue = y[i];
+    if (xValue === undefined || yValue === undefined) continue;
+    const dx = xValue - meanX;
+    const dy = yValue - meanY;
     numerator += dx * dy;
     denomX += dx * dx;
     denomY += dy * dy;
@@ -87,20 +90,26 @@ function toRanks(values: number[]): number[] {
   const indexed = values.map((v, i) => ({ value: v, index: i }));
   indexed.sort((a, b) => a.value - b.value);
   
-  const ranks = new Array(values.length);
+  const ranks: number[] = Array.from({ length: values.length }, () => 0);
   let i = 0;
   
   while (i < indexed.length) {
+    const indexedI = indexed[i];
+    if (!indexedI) break;
     // Find all tied values
     let j = i;
-    while (j < indexed.length && indexed[j]!.value === indexed[i]!.value) {
+    while (j < indexed.length) {
+      const indexedJ = indexed[j];
+      if (indexedJ?.value !== indexedI.value) break;
       j++;
     }
     
     // Assign average rank to all tied values
     const avgRank = (i + j + 1) / 2; // +1 because ranks are 1-indexed
     for (let k = i; k < j; k++) {
-      ranks[indexed[k]!.index] = avgRank;
+      const indexedK = indexed[k];
+      if (!indexedK) continue;
+      ranks[indexedK.index] = avgRank;
     }
     
     i = j;
@@ -205,9 +214,11 @@ function gamma(z: number): number {
     1.5056327351493116e-7,
   ];
   
-  let x = c[0]!;
+  let x = c[0] ?? 0;
   for (let i = 1; i < g + 2; i++) {
-    x += c[i]! / (z + i);
+    const coefficient = c[i];
+    if (coefficient === undefined) continue;
+    x += coefficient / (z + i);
   }
   
   const t = z + g + 0.5;
@@ -268,7 +279,7 @@ export function calculateCorrelation(pairs: AlignedPair[]): CorrelationResult {
  *   p = (1/sqrt(2π)) * exp(-0.5 * t²)    (normal approximation)
  *   clamp p >= 0.001
  */
-export function calculateTTestPValue(pairs: AlignedPair[], outcomeMean?: number): number {
+export function calculateTTestPValue(pairs: AlignedPair[], _outcomeMean?: number): number {
   if (pairs.length < 4) return 1; // Not enough data
 
   const predictorValues = pairs.map(p => p.predictorValue);
@@ -465,8 +476,10 @@ export function aggregateNOf1VariableRelationships(
     let sum = 0;
     let count = 0;
     for (let i = 0; i < values.length; i++) {
-      const val = values[i]!;
-      const sig = nOf1VariableRelationships[i]!.statisticalSignificance;
+      const val = values[i];
+      const relationship = nOf1VariableRelationships[i];
+      if (val === undefined || !relationship) continue;
+      const sig = relationship.statisticalSignificance;
       const weight = avgSignificance > 0 ? sig / avgSignificance : 1;
       sum += val * weight;
       count++;
@@ -485,7 +498,7 @@ export function aggregateNOf1VariableRelationships(
     const validEntries: { value: number; significance: number }[] = [];
     for (const u of nOf1VariableRelationships) {
       const val = extractor(u);
-      if (val !== undefined && val !== null) {
+      if (val !== undefined) {
         validEntries.push({ value: val, significance: u.statisticalSignificance });
       }
     }
@@ -574,7 +587,10 @@ export function diminishingReturnsDetection(x: number[], y: number[]): Diminishi
   }
 
   // Create pairs and sort by x to handle non-monotonic input
-  const pairs = x.map((xi, i) => ({ x: xi, y: y[i]! }));
+  const pairs = x.flatMap((xi, i) => {
+    const yi = y[i];
+    return yi === undefined ? [] : [{ x: xi, y: yi }];
+  });
   pairs.sort((a, b) => a.x - b.x);
 
   const mid = Math.floor(pairs.length / 2);
@@ -623,4 +639,3 @@ export function diminishingReturnsDetection(x: number[], y: number[]): Diminishi
     slopeRatio,
   };
 }
-

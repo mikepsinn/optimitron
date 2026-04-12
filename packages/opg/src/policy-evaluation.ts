@@ -369,10 +369,10 @@ export function runNaturalExperiment(
 
     const preMean = preData.length > 0
       ? preData.reduce((s, d) => s + d.value, 0) / preData.length
-      : sortedData[0]!.value;
+      : (sortedData[0]?.value ?? 0);
     const postMean = postData.length > 0
       ? postData.reduce((s, d) => s + d.value, 0) / postData.length
-      : sortedData[sortedData.length - 1]!.value;
+      : (sortedData[sortedData.length - 1]?.value ?? 0);
 
     const absoluteChange = postMean - preMean;
     const percentChange = preMean !== 0 ? (absoluteChange / preMean) * 100 : 0;
@@ -406,7 +406,7 @@ export function runNaturalExperiment(
         outcomeMetric: outcome.metric,
         preDataPoints: preData.length,
         postDataPoints: postData.length,
-        yearRange: `${sortedData[0]!.year}-${sortedData[sortedData.length - 1]!.year}`,
+        yearRange: `${sortedData[0]?.year ?? experiment.interventionYear}-${sortedData[sortedData.length - 1]?.year ?? experiment.interventionYear}`,
         preMean,
         postMean,
         absoluteChange,

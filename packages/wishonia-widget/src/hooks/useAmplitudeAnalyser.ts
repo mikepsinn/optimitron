@@ -18,9 +18,7 @@ export function useAmplitudeAnalyser(
     }
 
     // Reuse existing context or create new one
-    if (!contextRef.current) {
-      contextRef.current = new AudioContext();
-    }
+    contextRef.current ??= new AudioContext();
     const ctx = contextRef.current;
 
     // Only create one source per audio element

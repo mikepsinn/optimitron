@@ -462,7 +462,7 @@ function gainThresholdPassed(
   const relativeEnabled = minRelativeGainPercent > 0;
   const absolutePass = !absoluteEnabled || candidate.gain >= minAbsoluteGain;
   const relativePass = !relativeEnabled || (
-    candidate.relativeGainPercent != null &&
+    candidate.relativeGainPercent !== null &&
     candidate.relativeGainPercent >= minRelativeGainPercent
   );
   const magnitudePass = absoluteEnabled && relativeEnabled
@@ -699,7 +699,7 @@ export function estimateSaturationRange(
     let isFlatRun = true;
     for (let offset = 0; offset < minConsecutiveSlopes; offset++) {
       const slope = slopes[start + offset];
-      if (slope == null || Math.abs(slope) > flatSlopeThreshold) {
+      if (slope === undefined || Math.abs(slope) > flatSlopeThreshold) {
         isFlatRun = false;
         break;
       }
@@ -709,14 +709,14 @@ export function estimateSaturationRange(
       break;
     }
   }
-  if (plateauStartSlopeIndex == null) {
+  if (plateauStartSlopeIndex === null) {
     return createNoSaturationResult(bins, slopes, 'no_plateau_zone_detected', support);
   }
 
   let plateauEndSlopeIndex = plateauStartSlopeIndex + minConsecutiveSlopes - 1;
   while (plateauEndSlopeIndex + 1 < slopes.length) {
     const nextSlope = slopes[plateauEndSlopeIndex + 1];
-    if (nextSlope == null || Math.abs(nextSlope) > flatSlopeThreshold) break;
+    if (nextSlope === undefined || Math.abs(nextSlope) > flatSlopeThreshold) break;
     plateauEndSlopeIndex += 1;
   }
 
@@ -842,20 +842,16 @@ export function deriveSupportConstrainedTargets(
   const observedLowerBound = bins[0]?.lowerBound;
   const observedUpperBound = bins[bins.length - 1]?.upperBound;
   const rawWithinObservedRange =
-    rawModelOptimalValue == null ||
-    observedLowerBound == null ||
-    observedUpperBound == null
+    observedLowerBound === undefined ||
+    observedUpperBound === undefined
       ? null
       : rawModelOptimalValue >= observedLowerBound && rawModelOptimalValue <= observedUpperBound;
-  const rawWithinSupportRange =
-    rawModelOptimalValue == null
-      ? null
-      : inBin(
-          rawModelOptimalValue,
-          supportConstrainedRange.lowerBound,
-          supportConstrainedRange.upperBound,
-          supportConstrainedRange.isUpperInclusive,
-        );
+  const rawWithinSupportRange = inBin(
+    rawModelOptimalValue,
+    supportConstrainedRange.lowerBound,
+    supportConstrainedRange.upperBound,
+    supportConstrainedRange.isUpperInclusive,
+  );
 
   const predictorsSorted = points
     .map((point) => point.predictorValue)
@@ -887,12 +883,9 @@ export function deriveSupportConstrainedTargets(
   const robustOptimalValue = robustBestBin?.predictorMedian ?? null;
   const robustRange = robustBestBin ? toRange(robustBestBin) : null;
 
-  const rawToSupportAbsolute =
-    rawModelOptimalValue == null || supportConstrainedOptimalValue == null
-      ? null
-      : rawModelOptimalValue - supportConstrainedOptimalValue;
+  const rawToSupportAbsolute = rawModelOptimalValue - supportConstrainedOptimalValue;
   const rawToRobustAbsolute =
-    rawModelOptimalValue == null || robustOptimalValue == null
+    robustOptimalValue === null
       ? null
       : rawModelOptimalValue - robustOptimalValue;
 
@@ -909,13 +902,10 @@ export function deriveSupportConstrainedTargets(
     rawWithinSupportRange,
     deltas: {
       rawToSupportAbsolute,
-      rawToSupportPercent:
-        rawModelOptimalValue == null || supportConstrainedOptimalValue == null
-          ? null
-          : percentDelta(supportConstrainedOptimalValue, rawModelOptimalValue),
+      rawToSupportPercent: percentDelta(supportConstrainedOptimalValue, rawModelOptimalValue),
       rawToRobustAbsolute,
       rawToRobustPercent:
-        rawModelOptimalValue == null || robustOptimalValue == null
+        robustOptimalValue === null
           ? null
           : percentDelta(robustOptimalValue, rawModelOptimalValue),
     },

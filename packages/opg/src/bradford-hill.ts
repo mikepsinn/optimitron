@@ -21,7 +21,7 @@ export interface BradfordHillScores {
   strength: number;
   consistency: number;
   temporality: number;
-  gradient: number;
+  gradient: number | null;
   experiment: number;
   plausibility: number;
   coherence: number;
@@ -227,12 +227,10 @@ export function calculateCCS(
     totalWeight += weights[key];
   }
   
-  // Add gradient if available (renormalize weights if excluded)
-  if (scores.gradient !== null && scores.gradient !== undefined) {
+  if (scores.gradient !== null) {
     weightedSum += weights.gradient * scores.gradient;
     totalWeight += weights.gradient;
   }
   
   return weightedSum / totalWeight;
 }
-

@@ -38,7 +38,6 @@
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
     "alignment:sync": "pnpm --filter @optimitron/web run sync:alignment-politicians",
-    "review:mega-studies": "pnpm --filter @optimitron/examples run review:mega-studies",
     "review:test-output": "pnpm --filter @optimitron/agent run review:test-output --",
     "prepare": "husky"
   },

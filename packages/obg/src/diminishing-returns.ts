@@ -64,8 +64,9 @@ export function fitLogModel(
   let denominator = 0;
   
   for (let i = 0; i < n; i++) {
-    const ls = logSpending[i]!;
-    const oi = outcomes[i]!;
+    const ls = logSpending[i];
+    const oi = outcomes[i];
+    if (ls === undefined || oi === undefined) continue;
     numerator += (ls - meanLogS) * (oi - meanY);
     denominator += (ls - meanLogS) ** 2;
   }
@@ -81,7 +82,7 @@ export function fitLogModel(
   
   // Calculate R²
   const predictions = logSpending.map(ls => alpha + beta * ls);
-  const ssRes = outcomes.reduce((sum, y, i) => sum + (y - predictions[i]!) ** 2, 0);
+  const ssRes = outcomes.reduce((sum, y, i) => sum + (y - (predictions[i] ?? 0)) ** 2, 0);
   const ssTot = outcomes.reduce((sum, y) => sum + (y - meanY) ** 2, 0);
   // Guard: constant outcomes → ssTot = 0 → R² undefined; treat as 0
   const r2 = ssTot === 0 ? 0 : 1 - ssRes / ssTot;
@@ -99,7 +100,7 @@ export function fitSaturationModel(
 ): DiminishingReturnsModel {
   // Use median spending as initial gamma estimate
   const sortedSpending = [...data.map(d => d.spending)].sort((a, b) => a - b);
-  const gamma = initialGamma ?? sortedSpending[Math.floor(sortedSpending.length / 2)]!;
+  const gamma = initialGamma ?? sortedSpending[Math.floor(sortedSpending.length / 2)] ?? 0.001;
   
   // Guard: if gamma <= 0, transformed values blow up; clamp
   const safeGamma = gamma > 0 ? gamma : 0.001;
@@ -118,8 +119,9 @@ export function fitSaturationModel(
   let denominator = 0;
   
   for (let i = 0; i < n; i++) {
-    const ti = transformed[i]!;
-    const oi = outcomes[i]!;
+    const ti = transformed[i];
+    const oi = outcomes[i];
+    if (ti === undefined || oi === undefined) continue;
     numerator += (ti - meanX) * (oi - meanY);
     denominator += (ti - meanX) ** 2;
   }
@@ -134,7 +136,7 @@ export function fitSaturationModel(
   
   // Calculate R²
   const predictions = transformed.map(x => alpha + beta * x);
-  const ssRes = outcomes.reduce((sum, y, i) => sum + (y - predictions[i]!) ** 2, 0);
+  const ssRes = outcomes.reduce((sum, y, i) => sum + (y - (predictions[i] ?? 0)) ** 2, 0);
   const ssTot = outcomes.reduce((sum, y) => sum + (y - meanY) ** 2, 0);
   // Guard: constant outcomes → ssTot = 0 → R² undefined; treat as 0
   const r2 = ssTot === 0 ? 0 : 1 - ssRes / ssTot;
@@ -155,7 +157,7 @@ export function predictOutcome(
     const safeSpending = Math.max(spending, 0.001);
     return model.alpha + model.beta * Math.log(safeSpending);
   } else {
-    const gamma = model.gamma!;
+    const gamma = model.gamma ?? 0.001;
     return model.alpha + model.beta * (spending / (spending + gamma));
   }
 }
@@ -174,7 +176,7 @@ export function marginalReturn(
     const safeSpending = Math.max(spending, 0.001);
     return model.beta / safeSpending;
   } else {
-    const gamma = model.gamma!;
+    const gamma = model.gamma ?? 0.001;
     return (model.beta * gamma) / (spending + gamma) ** 2;
   }
 }
@@ -191,7 +193,7 @@ export function findOSL(
     return model.beta / opportunityCost;
   } else {
     // β×γ/(S+γ)² = r → solve quadratic
-    const gamma = model.gamma!;
+    const gamma = model.gamma ?? 0.001;
     const a = opportunityCost;
     const b = 2 * opportunityCost * gamma;
     const c = opportunityCost * gamma ** 2 - model.beta * gamma;
@@ -200,7 +202,7 @@ export function findOSL(
     const discriminant = b ** 2 - 4 * a * c;
     if (discriminant < 0) {
       // No real solution, return high spending (flat returns)
-      return model.gamma! * 10;
+      return gamma * 10;
     }
     return (-b + Math.sqrt(discriminant)) / (2 * a);
   }
@@ -225,9 +227,10 @@ export function estimateOSL(
   // Bootstrap for CI
   const bootstrapOSLs: number[] = [];
   for (let i = 0; i < bootstrapSamples; i++) {
-    const sample = Array.from({ length: data.length }, () => 
-      data[Math.floor(Math.random() * data.length)]!
-    );
+    const sample = Array.from({ length: data.length }, () => {
+      const point = data[Math.floor(Math.random() * data.length)];
+      return point ?? data[0];
+    }).filter((point): point is SpendingOutcomePoint => point !== undefined);
     const bootModel = model.type === 'log' ? fitLogModel(sample) : fitSaturationModel(sample);
     bootstrapOSLs.push(findOSL(bootModel, opportunityCost));
   }

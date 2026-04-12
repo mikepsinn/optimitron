@@ -152,8 +152,9 @@ export function selectNextPairs(
 
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      const a = items[i]!;
-      const b = items[j]!;
+      const a = items[i];
+      const b = items[j];
+      if (!a || !b) continue;
       const key = pairKey(a, b);
       const count = pairCounts[key] ?? 0;
 
@@ -221,7 +222,8 @@ export function selectRandomPair(
   const candidates = result.recommendations;
   const totalScore = candidates.reduce((s, c) => s + c.priorityScore, 0);
 
-  if (totalScore <= 0) return candidates[0]!;
+  const firstCandidate = candidates[0];
+  if (totalScore <= 0) return firstCandidate ?? null;
 
   const r = rng() * totalScore;
   let cumulative = 0;
@@ -230,5 +232,5 @@ export function selectRandomPair(
     if (cumulative >= r) return c;
   }
 
-  return candidates[candidates.length - 1]!;
+  return candidates.at(-1) ?? null;
 }

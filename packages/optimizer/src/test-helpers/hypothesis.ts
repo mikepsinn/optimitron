@@ -12,7 +12,5 @@ export function runHypothesisTest<T>(
 ): HypothesisTestCase<T> {
   const { actualOutcome, passed } = testCase.testFn();
   const result = { ...testCase, actualOutcome, passed };
-  const status = passed ? 'PASS' : 'FAIL';
-  console.info(`[${status}] ${testCase.id}: ${testCase.hypothesis}`);
   return result;
 }

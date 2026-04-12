@@ -62,7 +62,11 @@ export const PairStudyCoverageSchema = z
     outcomeMissingFraction: z.number().min(0).max(1).optional(),
   })
   .superRefine((coverage, ctx) => {
-    if (coverage.yearMin != null && coverage.yearMax != null && coverage.yearMin > coverage.yearMax) {
+    if (
+      coverage.yearMin !== undefined &&
+      coverage.yearMax !== undefined &&
+      coverage.yearMin > coverage.yearMax
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'yearMin must be <= yearMax.',
@@ -365,4 +369,3 @@ export function collectPairStudyQualityFlags(result: PairStudyResult): PairStudy
 export function hasBlockingQualityFlags(result: PairStudyResult): boolean {
   return collectPairStudyQualityFlags(result).some(flag => flag.severity === 'error');
 }
-

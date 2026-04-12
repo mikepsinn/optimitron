@@ -99,7 +99,8 @@ export function findMinimumEffectiveSpending(
     const deciles = normalizeDeciles(category.deciles);
     if (deciles.length === 0) return emptyResult(category);
 
-    const top = deciles[deciles.length - 1]!;
+    const top = deciles[deciles.length - 1];
+    if (!top) return emptyResult(category);
     const floor = deciles.find(d =>
       isWithinTolerance(d.outcome, top.outcome, direction, tolerance),
     ) ?? top;

@@ -405,7 +405,8 @@ export function generateBudgetReport(
     lines.push('');
 
     for (const cat of catsWithDR) {
-      const model = cat.diminishingReturnsModel!;
+      const model = cat.diminishingReturnsModel;
+      if (!model) continue;
       const status = investmentStatus(cat.gap.gapPct);
       lines.push(`### ${cat.category.name}`);
       lines.push('');
@@ -461,8 +462,7 @@ export function generateBudgetReport(
       lines.push('All categories are at or near optimal spending levels.');
       lines.push('');
     } else {
-      for (let i = 0; i < actionable.length; i++) {
-        const cat = actionable[i]!;
+      for (const [i, cat] of actionable.entries()) {
         const desc = describeAction(
           cat.gap.recommendedAction,
           cat.gap.categoryName,
@@ -531,8 +531,7 @@ export function generateBudgetReport(
     } else {
       lines.push('| Rank | Category | Reallocation Move | Priority | Gap ($) | WES | Evidence |');
       lines.push('|------|----------|-------------------|----------|---------|-----|----------|');
-      for (let i = 0; i < frontier.length; i++) {
-        const cat = frontier[i]!;
+      for (const [i, cat] of frontier.entries()) {
         lines.push(
           `| ${i + 1} ` +
           `| ${cat.category.name} ` +
@@ -582,7 +581,7 @@ export function generateBudgetReport(
         `| ${formatNum(wes, 2)} ` +
         `| ${grade} ` +
         `| ${methodLabel} ` +
-        `| ${n !== undefined ? n : '—'} ` +
+        `| ${n ?? '—'} ` +
         `| ${describeGrade(grade)} |`
       );
     }

@@ -63,17 +63,6 @@ function seededRng(seed: number): () => number {
 }
 
 /**
- * Fisher-Yates shuffle (in-place) using the supplied rng.
- */
-function shuffle<T>(arr: T[], rng: () => number): T[] {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
-  }
-  return arr;
-}
-
-/**
  * Extract unique item ids from comparisons.
  */
 function extractItems(comparisons: PairwiseComparison[]): string[] {
@@ -103,7 +92,11 @@ function computeWeights(
   const weights = principalEigenvector(matrix);
   const out: Record<string, number> = {};
   for (let i = 0; i < items.length; i++) {
-    out[items[i]!] = weights[i]!;
+    const itemId = items[i];
+    const weight = weights[i];
+    if (itemId !== undefined && weight !== undefined) {
+      out[itemId] = weight;
+    }
   }
   return out;
 }
@@ -168,11 +161,17 @@ export function analyseConvergence(
       const subset: PairwiseComparison[] = [];
       for (let s = 0; s < sampleSize; s++) {
         const idx = Math.floor(rng() * n);
-        subset.push(comparisons[idx]!);
+        const comparison = comparisons[idx];
+        if (comparison !== undefined) {
+          subset.push(comparison);
+        }
       }
       const w = computeWeights(subset, items);
       for (const id of items) {
-        weightVectors[id]!.push(w[id]!);
+        const weightVector = weightVectors[id];
+        if (weightVector) {
+          weightVector.push(w[id] ?? 0);
+        }
       }
     }
 
@@ -180,7 +179,8 @@ export function analyseConvergence(
     const perItemVar: Record<string, number> = {};
     const meanW: Record<string, number> = {};
     for (const id of items) {
-      const vals = weightVectors[id]!;
+      const vals = weightVectors[id];
+      if (!vals || vals.length === 0) continue;
       const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
       const variance = vals.reduce((sum, v) => sum + (v - mean) ** 2, 0) / vals.length;
       perItemVar[id] = variance;

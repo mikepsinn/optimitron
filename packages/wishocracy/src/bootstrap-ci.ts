@@ -73,7 +73,10 @@ function resampleWithReplacement<T>(
   const result: T[] = [];
   for (let i = 0; i < n; i++) {
     const idx = Math.floor(rng() * arr.length);
-    result.push(arr[idx]!);
+    const item = arr[idx];
+    if (item !== undefined) {
+      result.push(item);
+    }
   }
   return result;
 }
@@ -93,7 +96,11 @@ function computeWeights(
   const weights = principalEigenvector(matrix);
   const out: Record<string, number> = {};
   for (let i = 0; i < items.length; i++) {
-    out[items[i]!] = weights[i]!;
+    const itemId = items[i];
+    const weight = weights[i];
+    if (itemId !== undefined && weight !== undefined) {
+      out[itemId] = weight;
+    }
   }
   return out;
 }
@@ -104,9 +111,11 @@ function percentile(sorted: number[], p: number): number {
   const idx = (p / 100) * (sorted.length - 1);
   const lo = Math.floor(idx);
   const hi = Math.ceil(idx);
-  if (lo === hi) return sorted[lo]!;
+  const loValue = sorted[lo];
+  if (lo === hi && loValue !== undefined) return loValue;
   const frac = idx - lo;
-  return sorted[lo]! * (1 - frac) + sorted[hi]! * frac;
+  const hiValue = sorted[hi];
+  return (loValue ?? 0) * (1 - frac) + (hiValue ?? 0) * frac;
 }
 
 // ─── Main export ─────────────────────────────────────────────────────
@@ -159,13 +168,17 @@ export function bootstrapConfidenceIntervals(
     const resampled = resampleWithReplacement(comparisons, n, rng);
     const w = computeWeights(resampled, items);
     for (const id of items) {
-      distributions[id]!.push(w[id]!);
+      const distribution = distributions[id];
+      if (distribution) {
+        distribution.push(w[id] ?? 0);
+      }
     }
   }
 
   // Sort distributions for percentile calculation
   for (const id of items) {
-    distributions[id]!.sort((a, b) => a - b);
+    const distribution = distributions[id];
+    distribution?.sort((a, b) => a - b);
   }
 
   // Calculate CI bounds
@@ -176,10 +189,11 @@ export function bootstrapConfidenceIntervals(
   // Build PreferenceWeight[] with CIs
   const weightEntries: Array<{ itemId: string; weight: number; ciLow: number; ciHigh: number }> = [];
   for (const id of items) {
-    const dist = distributions[id]!;
+    const dist = distributions[id];
+    if (!dist) continue;
     weightEntries.push({
       itemId: id,
-      weight: pointWeights[id]!,
+      weight: pointWeights[id] ?? 0,
       ciLow: percentile(dist, lowerPct),
       ciHigh: percentile(dist, upperPct),
     });

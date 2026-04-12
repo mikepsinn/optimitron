@@ -33,14 +33,13 @@ const PRISMA_TO_OPTIMIZER: Record<PrismaFillingType, OptimizerFillingType> = {
  * @throws {Error} if the input is not a valid optimizer filling type
  */
 export function fillingTypeToPrisma(optimizerType: string): PrismaFillingType {
-  const result = OPTIMIZER_TO_PRISMA[optimizerType as OptimizerFillingType];
-  if (!result) {
+  if (!(optimizerType in OPTIMIZER_TO_PRISMA)) {
     throw new Error(
       `Unknown optimizer FillingType: "${optimizerType}". ` +
       `Expected one of: ${Object.keys(OPTIMIZER_TO_PRISMA).join(', ')}`,
     );
   }
-  return result;
+  return OPTIMIZER_TO_PRISMA[optimizerType as OptimizerFillingType];
 }
 
 /**
@@ -49,12 +48,11 @@ export function fillingTypeToPrisma(optimizerType: string): PrismaFillingType {
  * @throws {Error} if the input is not a valid Prisma filling type
  */
 export function fillingTypeFromPrisma(prismaType: string): OptimizerFillingType {
-  const result = PRISMA_TO_OPTIMIZER[prismaType as PrismaFillingType];
-  if (!result) {
+  if (!(prismaType in PRISMA_TO_OPTIMIZER)) {
     throw new Error(
       `Unknown Prisma FillingType: "${prismaType}". ` +
       `Expected one of: ${Object.keys(PRISMA_TO_OPTIMIZER).join(', ')}`,
     );
   }
-  return result;
+  return PRISMA_TO_OPTIMIZER[prismaType as PrismaFillingType];
 }

@@ -35,7 +35,10 @@ export function aggregateComparisons(
     if (!pairMap.has(key)) {
       pairMap.set(key, []);
     }
-    pairMap.get(key)!.push(comp);
+    const pairComparisons = pairMap.get(key);
+    if (pairComparisons) {
+      pairComparisons.push(comp);
+    }
   }
   
   const entries: MatrixEntry[] = [];
@@ -105,9 +108,13 @@ export function buildComparisonMatrix(
     const j = indexMap.get(entry.itemBId);
     
     if (i === undefined || j === undefined) continue;
-    
-    matrix[i]![j] = entry.ratio;
-    matrix[j]![i] = 1 / entry.ratio;
+
+    const rowI = matrix[i];
+    const rowJ = matrix[j];
+    if (!rowI || !rowJ) continue;
+
+    rowI[j] = entry.ratio;
+    rowJ[i] = 1 / entry.ratio;
   }
   
   return matrix;
