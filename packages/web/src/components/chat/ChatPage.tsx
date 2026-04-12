@@ -105,7 +105,6 @@ function pickRandom<T>(arr: T[]): T | undefined {
 
 export default function ChatPage() {
   const { status } = useSession();
-  const [showVoice, setShowVoice] = useState(false);
 
   if (status === "loading") {
     return (
@@ -121,7 +120,7 @@ export default function ChatPage() {
         <div className="opto-chat-auth__card">
           <h2 className="opto-chat-auth__title">TALK TO WISHONIA</h2>
           <p className="opto-chat-auth__text">
-            Sign in to start chatting. I've been running a planet for 4,237 years — the least you can do is log in.
+            Sign in to start chatting. I&apos;ve been running a planet for 4,237 years — the least you can do is log in.
           </p>
           <button
             className="opto-chat-auth__btn"
@@ -135,6 +134,11 @@ export default function ChatPage() {
     );
   }
 
+  return <ChatPageInner />;
+}
+
+function ChatPageInner() {
+  const [showVoice, setShowVoice] = useState(false);
   const [messages, setMessages] = useState<AppChatMessage[]>([
     {
       type: "text",

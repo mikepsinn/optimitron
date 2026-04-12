@@ -16,8 +16,7 @@ export function MermaidBlock({ code }: { code: string }) {
 
   useEffect(() => {
     if (!loaded || !ref.current) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const win = window as any;
+    const win = window as unknown as Record<string, unknown>;
     const mermaid = win["mermaid"] as
       | {
           initialize: (config: Record<string, unknown>) => void;

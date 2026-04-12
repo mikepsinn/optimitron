@@ -166,7 +166,7 @@ export function WishocracyEditSection({
                       <p className="font-bold text-brutal-yellow-foreground">Warning: Item Removal</p>
                       <p className="text-sm text-brutal-yellow-foreground mt-1">
                         Removing an item will permanently delete all allocations involving that item.
-                        You'll need to redo those allocations if you change your mind.
+                        You&apos;ll need to redo those allocations if you change your mind.
                       </p>
                       <p className="text-xs font-bold text-brutal-yellow-foreground mt-2">
                         Categories to be removed: {Array.from(itemsToDelete).map(id => WISHOCRATIC_ITEMS[id].name).join(", ")}

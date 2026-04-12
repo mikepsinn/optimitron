@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import type { StoredSnapshotFilter } from "@optimitron/storage";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -37,12 +38,11 @@ export async function GET(
     const { verifyHistoryChain } = await import("@optimitron/storage");
     const gatewayUrlBuilder = await getIpfsStorageGatewayUrlBuilder();
 
-    const filter: { type?: string; jurisdictionId?: string } = {};
-    if (typeFilter) filter.type = typeFilter;
+    const filter: StoredSnapshotFilter = {};
+    if (typeFilter) filter.type = typeFilter as StoredSnapshotFilter["type"];
     if (jurisdictionFilter) filter.jurisdictionId = jurisdictionFilter;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- filter shape matches StoredSnapshotFilter
-    const verification = await verifyHistoryChain(trimmed, depth, fetch, filter as any, gatewayUrlBuilder);
+    const verification = await verifyHistoryChain(trimmed, depth, fetch, filter, gatewayUrlBuilder);
 
     return NextResponse.json(verification, {
       headers: { "Cache-Control": "public, s-maxage=600" },

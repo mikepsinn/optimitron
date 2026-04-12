@@ -25,7 +25,7 @@ export function WishocracyAllocationCard({
         <div className="text-left">
           <h3 className="font-black text-lg uppercase">Your Budget Allocation</h3>
           <p className="text-xs text-muted-foreground">
-            Percentages show how you'd split 100% of the budget among all considered priorities
+            Percentages show how you&apos;d split 100% of the budget among all considered priorities
           </p>
         </div>
 

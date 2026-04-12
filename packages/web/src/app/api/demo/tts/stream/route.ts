@@ -73,11 +73,9 @@ export async function GET(request: Request) {
               },
             },
           },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+        } as unknown as Parameters<typeof client.models.generateContentStream>[0]);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        for await (const chunk of stream as any) {
+        for await (const chunk of stream as AsyncIterable<{ candidates?: Array<{ content?: { parts?: Array<{ inlineData?: { data?: string } }> } }> }>) {
           const parts = chunk.candidates?.[0]?.content?.parts;
           if (!parts) continue;
           for (const part of parts) {

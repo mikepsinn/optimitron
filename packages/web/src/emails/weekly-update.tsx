@@ -103,7 +103,7 @@ export const WeeklyUpdateEmail = ({
               margin: "0 0 30px 0",
             }}
           >
-            Hello {userName}. I've been watching your progress. Here's your game update, which I'm told is more engaging than your species' other weekly reports.
+            Hello {userName}. I&apos;ve been watching your progress. Here&apos;s your game update, which I&apos;m told is more engaging than your species&apos; other weekly reports.
           </Text>
 
           {/* Stats Grid */}
@@ -357,7 +357,7 @@ export const WeeklyUpdateEmail = ({
                 margin: "0 0 20px 0",
               }}
             >
-              Tell two more friends. Every player brings the tipping point closer. On my planet, this process took four minutes total. I'm trying not to judge.
+              Tell two more friends. Every player brings the tipping point closer. On my planet, this process took four minutes total. I&apos;m trying not to judge.
             </Text>
             <SocialShareButtons referralLink={referralLink} />
           </Section>

@@ -101,7 +101,7 @@ export const WelcomeImpactEmail = ({
               lineHeight: "1.6",
             }}
           >
-            Hello {userName}. You just voted for the 1% Treaty, which means you've done more for your species in 30 seconds than most of your governments do in a fiscal quarter. Here's what one vote does:
+            Hello {userName}. You just voted for the 1% Treaty, which means you&apos;ve done more for your species in 30 seconds than most of your governments do in a fiscal quarter. Here&apos;s what one vote does:
           </Text>
 
           {/* Impact Stats */}
@@ -267,7 +267,7 @@ export const WelcomeImpactEmail = ({
                 lineHeight: "1.6",
               }}
             >
-              The game is simple. You tell two friends. They tell two friends. On my planet this is called "talking to people" and is not considered revolutionary, but here we are.
+              The game is simple. You tell two friends. They tell two friends. On my planet this is called &quot;talking to people&quot; and is not considered revolutionary, but here we are.
             </Text>
             <Text
               style={{
@@ -279,7 +279,7 @@ export const WelcomeImpactEmail = ({
                 lineHeight: "1.6",
               }}
             >
-              Share your link with two people who'd prefer being alive:
+              Share your link with two people who&apos;d prefer being alive:
             </Text>
 
             <ReferralLinkBox referralLink={referralLink} />
@@ -310,7 +310,7 @@ export const WelcomeImpactEmail = ({
                 lineHeight: "1.6",
               }}
             >
-              Your vote is counted toward the tipping point — {fmtRaw(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value)} verified humans who'd
+              Your vote is counted toward the tipping point — {fmtRaw(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value)} verified humans who&apos;d
               prefer living to exploding. When you get there, the 1% Treaty passes and your
               governments redirect 1% of bomb money to medicine money.
             </Text>

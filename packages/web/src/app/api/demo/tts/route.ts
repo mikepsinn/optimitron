@@ -57,8 +57,7 @@ export async function POST(request: Request) {
 
     // Collect PCM chunks as they arrive
     const pcmChunks: Buffer[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Gemini TTS stream chunks not fully typed
-    for await (const chunk of stream as any) {
+    for await (const chunk of stream as AsyncIterable<{ candidates?: Array<{ content?: { parts?: Array<{ inlineData?: { data?: string } }> } }> }>) {
       const candidate = chunk.candidates?.[0];
       const parts = candidate?.content?.parts;
       if (!parts) continue;

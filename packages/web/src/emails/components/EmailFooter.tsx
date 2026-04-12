@@ -27,7 +27,7 @@ export function EmailFooter({
           margin: "0 0 10px 0",
         }}
       >
-        You're receiving this because {reason}.
+        You&apos;re receiving this because {reason}.
       </Text>
       <Text
         style={{

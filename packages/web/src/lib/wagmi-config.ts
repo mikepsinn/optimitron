@@ -13,7 +13,7 @@ function buildConnectors(): CreateConnectorFn[] {
   const list: CreateConnectorFn[] = [injected()];
 
   if (typeof window !== "undefined" && projectId) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const { walletConnect } = require("wagmi/connectors") as typeof import("wagmi/connectors");
     list.push(walletConnect({ projectId }));
   }

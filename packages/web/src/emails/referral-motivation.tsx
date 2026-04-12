@@ -155,7 +155,7 @@ export const ReferralMotivationEmail = ({
                   margin: "0 0 15px 0",
                 }}
               >
-                YOU HAVEN'T TOLD ANYONE YET
+                YOU HAVEN&apos;T TOLD ANYONE YET
               </Text>
               <Text
                 style={{
@@ -167,7 +167,7 @@ export const ReferralMotivationEmail = ({
                 }}
               >
                 Each friend who votes adds roughly {livesSavedPerReferral} lives to the ledger. Two text messages.
-                That's the whole game. On my planet, toddlers manage this level of social coordination.
+                That&apos;s the whole game. On my planet, toddlers manage this level of social coordination.
               </Text>
             </Section>
           )}
@@ -250,8 +250,8 @@ export const ReferralMotivationEmail = ({
             >
               After 10 rounds: 1,024 players. After 28 rounds: {fmtRaw(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value)}. Your species already
               turns out at 50-65% for elections that pay nothing. This one takes 30 seconds on a phone
-              and the outcome is "less death." The participation barrier is not motivation. It's that
-              nobody's told them yet. That's your job.
+              and the outcome is &quot;less death.&quot; The participation barrier is not motivation. It&apos;s that
+              nobody&apos;s told them yet. That&apos;s your job.
             </Text>
           </Section>
 
@@ -335,7 +335,7 @@ export const ReferralMotivationEmail = ({
                 margin: "20px 0 0 0",
               }}
             >
-              These players have brought the most friends into the game. On my planet we call them "slightly less oblivious than average."
+              These players have brought the most friends into the game. On my planet we call them &quot;slightly less oblivious than average.&quot;
             </Text>
           </Section>
 
@@ -371,7 +371,7 @@ export const ReferralMotivationEmail = ({
                 margin: "0 0 20px 0",
               }}
             >
-              Share with two people who'd prefer being alive. That's a low bar but I've learned not to assume with your species.
+              Share with two people who&apos;d prefer being alive. That&apos;s a low bar but I&apos;ve learned not to assume with your species.
             </Text>
 
             <SocialShareButtons
@@ -411,7 +411,7 @@ export const ReferralMotivationEmail = ({
               }}
             >
               Every friend who votes makes the democratic signal louder. Your governments will notice
-              eventually. They're slow but not technically plants. — Wishonia
+              eventually. They&apos;re slow but not technically plants. — Wishonia
             </Text>
           </Section>
         </Container>

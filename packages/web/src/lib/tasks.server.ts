@@ -155,12 +155,6 @@ const impactEstimateSetSelect = {
 const taskListSelect = {
   actualCashCostUsd: true,
   actualEffortSeconds: true,
-  parentTask: {
-    select: {
-      id: true,
-      title: true,
-    },
-  },
   _count: {
     select: {
       childTasks: true,

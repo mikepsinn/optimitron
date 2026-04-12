@@ -23,8 +23,7 @@ export function ChartBlock({ config }: { config: ChartConfig }) {
 
   useEffect(() => {
     if (!loaded || !canvasRef.current) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const win = window as any;
+    const win = window as unknown as Record<string, unknown>;
     const ChartCtor = win["Chart"] as
       | {
           new (ctx: CanvasRenderingContext2D, config: unknown): {

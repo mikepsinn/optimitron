@@ -52,6 +52,7 @@ import {
   earthOptimizationPrizeWinCondition,
   EARTH_OPTIMIZATION_PRIZE_DEADLINE,
   EARTH_OPTIMIZATION_PRIZE_DEADLINE_YEAR,
+  EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
 } from "@optimitron/data/parameters";
 import { WORLD_LEADERS } from "@optimitron/data/datasets/world-leaders";
 import {
