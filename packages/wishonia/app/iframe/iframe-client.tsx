@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { useSearchParams } from "next/navigation";
 import { WishoniaNarrator } from "@/lib/widget/components/WishoniaNarrator";
 import type { Expression, BodyPose } from "@/lib/widget/types";
@@ -11,7 +11,7 @@ import type { Expression, BodyPose } from "@/lib/widget/types";
  * Query params: ?text=...&expression=...&bodyPose=...&size=140&voice=Kore
  * Dynamic control: host page sends postMessage({ type: "wishonia:speak", text, expression })
  */
-export function IframeClient() {
+export function IframeClient(): JSX.Element {
   const searchParams = useSearchParams();
 
   const initialText = searchParams.get("text") ?? "";

@@ -5,6 +5,7 @@
 
 "use client";
 
+import type { JSX } from "react";
 import { renderMarkdown } from "@/lib/markdown";
 
 interface RagDebugCardProps {
@@ -14,7 +15,12 @@ interface RagDebugCardProps {
   indexSize?: number;
 }
 
-export function RagDebugCard({ transcript, ragContext, systemPrompt, indexSize }: RagDebugCardProps) {
+export function RagDebugCard({
+  transcript,
+  ragContext,
+  systemPrompt,
+  indexSize,
+}: RagDebugCardProps): JSX.Element {
   const charCount = (systemPrompt?.length ?? 0) + transcript.length + ragContext.length;
   const summary = ragContext
     ? `📚 Sent ${charCount.toLocaleString()} chars to Gemini Live`

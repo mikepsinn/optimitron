@@ -5,13 +5,14 @@
 
 "use client";
 
+import type { JSX } from "react";
 import { type SourceLink, extractReadMoreLinks } from "@/lib/source-links";
 
 export function extractSourceLinks(text: string): { links: SourceLink[]; cleanText: string } {
   return extractReadMoreLinks(text);
 }
 
-export function SourcePills({ links }: { links: SourceLink[] }) {
+export function SourcePills({ links }: { links: SourceLink[] }): JSX.Element | null {
   if (links.length === 0) return null;
 
   return (

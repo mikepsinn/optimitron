@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type JSX } from "react";
 import type { Expression } from "../types";
 import { useWishoniaAnimator } from "../hooks/useWishoniaAnimator";
 import { preloadTier0 } from "../core/sprite-loader";
@@ -31,7 +31,7 @@ export function WishoniaCharacter({
   spriteFormat = "png",
   className,
   onClick,
-}: WishoniaCharacterProps) {
+}: WishoniaCharacterProps): JSX.Element {
   const { headSrc, bodySrc } = useWishoniaAnimator({
     analyserNode,
     expression,

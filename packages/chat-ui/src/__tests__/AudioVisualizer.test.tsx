@@ -1,8 +1,23 @@
 import { render } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AudioVisualizer } from '../components/AudioVisualizer.js';
 
 describe('AudioVisualizer', () => {
+  let originalGetContext: typeof HTMLCanvasElement.prototype.getContext;
+
+  beforeEach(() => {
+    originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+      clearRect: vi.fn(),
+      fillRect: vi.fn(),
+      fillStyle: '#000',
+    })) as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
+  afterEach(() => {
+    HTMLCanvasElement.prototype.getContext = originalGetContext;
+  });
+
   it('renders nothing when analyserNode is null', () => {
     const { container } = render(<AudioVisualizer analyserNode={null} />);
     expect(container.firstChild).toBeNull();

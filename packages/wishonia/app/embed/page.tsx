@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { WishoniaNarrator } from "@/lib/widget/components/WishoniaNarrator";
 import { EXPRESSIONS, BODY_POSES } from "@/lib/widget/types";
 import { WISHONIA_EXAMPLE_QUOTES } from "@/lib/widget/core/voice-config";
 import type { Expression, BodyPose } from "@/lib/widget/types";
 
-export default function DemoPage() {
+export default function DemoPage(): JSX.Element {
   const [text, setText] = useState("");
   const [inputText, setInputText] = useState("");
   const [expression, setExpression] = useState<Expression>("neutral");

@@ -5,7 +5,9 @@
 
 "use client";
 
-export function VolumeVisualizer({ volume }: { volume: number }) {
+import type { JSX } from "react";
+
+export function VolumeVisualizer({ volume }: { volume: number }): JSX.Element {
   // Generate 5 bar heights from the volume level with slight variation
   const bars = [0.3, 0.6, 1.0, 0.7, 0.4].map((weight) =>
     Math.max(4, volume * weight * 28)

@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, type JSX } from "react";
 import { renderMarkdown } from "@/lib/markdown";
 import { SourcePills } from "./SourcePills";
 import type { SourceLink } from "@/lib/source-links";
@@ -30,7 +30,7 @@ interface ChatMessageProps {
 
 export function ChatMessage({
   role, text, isStreaming, sourceLinks, relevantImage, thinkingText, onPlayTTS, isTTSPlaying,
-}: ChatMessageProps) {
+}: ChatMessageProps): JSX.Element {
   const [copied, setCopied] = useState(false);
 
   // Strip expression tags

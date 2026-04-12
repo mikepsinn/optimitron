@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   loadAggregatedNOf1DrugEnforcementPanel,
   type AggregatedNOf1DrugEnforcementRow,
-} from "@optimitron/data";
+} from "@optimitron/data/datasets/aggregated-nof1-drug-enforcement";
 import {
   alignTimeSeries,
   buildAdaptiveNumericBins,

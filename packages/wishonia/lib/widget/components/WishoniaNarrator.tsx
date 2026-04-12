@@ -17,7 +17,7 @@
  * ```
  */
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties, type JSX } from "react";
 import type { Expression, BodyPose } from "../types";
 import { WishoniaWidget } from "./WishoniaWidget";
 import { useWishoniaAnimator } from "../hooks/useWishoniaAnimator";
@@ -83,7 +83,7 @@ export function WishoniaNarrator({
   onConnectionChange,
   spritePath,
   spriteFormat,
-}: WishoniaNarratorProps) {
+}: WishoniaNarratorProps): JSX.Element | null {
   const prevTextRef = useRef<string | undefined>(undefined);
   const onNarrationEndRef = useRef(onNarrationEnd);
   const onNarrationStartRef = useRef(onNarrationStart);

@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, JSX } from "react";
 import type { Expression } from "../types";
 import { WishoniaCharacter } from "./WishoniaCharacter";
 
@@ -51,7 +51,7 @@ export function WishoniaWidget({
   spritePath,
   spriteFormat,
   onClick,
-}: WishoniaWidgetProps) {
+}: WishoniaWidgetProps): JSX.Element | null {
   if (hidden) return null;
 
   const posStyle =
