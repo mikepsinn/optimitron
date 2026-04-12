@@ -67,3 +67,4 @@ NUL
 screenshots/
 packages/wishonia/.tmp-visuals-body.json
 .claude/settings.local.json
+packages/web/public/audio/tts-test/
