@@ -14,7 +14,6 @@
   ],
   "scripts": {
     "dev": "pnpm --filter @optimitron/web dev",
-    "dev:wishonia": "pnpm --filter @optimitron/wishonia dev",
     "build": "pnpm -r build",
     "postinstall": "pnpm --filter @optimitron/db prisma:generate",
     "test": "pnpm -r test",
