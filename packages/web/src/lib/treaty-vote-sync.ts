@@ -4,8 +4,8 @@ import { storage } from "./storage";
 import type { Session } from "next-auth";
 import { getUsernameOrReferralCode } from "./referral.client";
 import { API_ROUTES } from "./api-routes";
+import { TREATY_REFERENDUM_SLUG } from "./treaty";
 import { getTreatyWishocraticAllocation } from "./treaty-vote";
-import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
 const DEFAULT_REFERENDUM_SLUG = TREATY_REFERENDUM_SLUG;
 
