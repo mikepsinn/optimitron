@@ -33,16 +33,25 @@ const VOICES = [
   "Puck",    // lighter male
 ] as const;
 
-const STYLES: Record<string, string> = {
-  solemn:    "Speak slowly and solemnly.",
-  grave:     "Speak as if reading a death toll.",
-  building:  "Start quiet, build intensity.",
-  calm:      "Calm and measured. Let the facts speak.",
-  angry:     "Controlled anger. Barely contained.",
-  chaplin:   "Like the final speech in The Great Dictator.",
-  narrator:  "Documentary narrator. Authoritative.",
-  bare:      "", // no instructions — raw voice
+// Each style is a phrase that fits after "Say " — e.g. `Say slowly and solemnly: "..."`
+// The bare string (no preamble) is also supported.
+export const STYLES: Record<string, string> = {
+  solemn:    "slowly and solemnly",
+  grave:     "as if reading a death toll",
+  building:  "starting quiet and building in intensity",
+  calm:      "calmly and measured, letting the facts speak for themselves",
+  angry:     "with controlled, barely contained anger",
+  chaplin:   "like the final speech in The Great Dictator",
+  narrator:  "as an authoritative documentary narrator",
+  wishonia:  "in a patient, warm, slightly quick tone",
+  bare:      "", // no style direction — raw voice
 };
+
+/** Build a Gemini TTS prompt in the "director format". */
+export function buildTtsPrompt(style: string, text: string): string {
+  const safeText = text.replace(/"/g, "'");
+  return style ? `Say ${style}: "${safeText}"` : `Say: "${safeText}"`;
+}
 
 const DEFAULT_TEXT =
   "They have permitted 150 thousand people to die of diseases every day, " +
@@ -112,7 +121,7 @@ async function generateSpeech(
   apiKey: string,
 ): Promise<Uint8Array> {
   const client = new GoogleGenAI({ apiKey });
-  const prompt = instructions ? `${instructions}\n\n${text}` : text;
+  const prompt = buildTtsPrompt(instructions, text);
   const result = await client.models.generateContent({
     model,
     contents: [{ role: "user", parts: [{ text: prompt }] }],

@@ -32,28 +32,14 @@ import { shareableSnippets } from "@optimitron/data/parameters";
 // ---------------------------------------------------------------------------
 
 import { GoogleGenAI } from "@google/genai";
+import { STYLES, buildTtsPrompt } from "./test-tts-voices.ts";
 
 // ---------- Voice config ----------
-// Currently: pro-kore-angry — more gravitas and controlled emotion
-let VOICE = "Kore";
-let INSTRUCTIONS = "Controlled anger. Barely contained.";
-let MODEL = "gemini-2.5-pro-preview-tts";
-
-// Previous config (uncomment to switch back):
-// let VOICE = "Kore";
-// let INSTRUCTIONS =
-//   "Speak in a patient, warm, slightly quick tone. You are an alien governance AI reading a declaration aloud.";
-// let MODEL = "gemini-2.5-flash-preview-tts";
-//
-// try {
-//   // eslint-disable-next-line @typescript-eslint/no-require-imports
-//   const w = require("@optimitron/wishonia-widget");
-//   VOICE = w.WISHONIA_VOICE ?? VOICE;
-//   INSTRUCTIONS = w.WISHONIA_SPEAKING_INSTRUCTIONS ?? INSTRUCTIONS;
-//   MODEL = w.WISHONIA_TTS_MODEL ?? MODEL;
-// } catch {
-//   // defaults are fine
-// }
+// Pick which style from STYLES to use for the declaration narration.
+// To switch voice personality, just change STYLE_KEY.
+const VOICE = "Kore";
+const STYLE_KEY: keyof typeof STYLES = "wishonia";
+const MODEL = "gemini-2.5-pro-preview-tts";
 
 // ---------------------------------------------------------------------------
 // Slide generation (mirrors DeclarationStepper.tsx logic exactly)
@@ -165,12 +151,11 @@ async function generateSpeechOnce(
   modelId: string,
 ): Promise<Uint8Array> {
   const client = new GoogleGenAI({ apiKey });
-  const plainText = softenForTts(stripMarkdown(text));
+  const plainText = stripMarkdown(text);
+  const prompt = buildTtsPrompt(STYLES[STYLE_KEY]!, plainText);
   const result = await client.models.generateContent({
     model: modelId,
-    contents: [
-      { role: "user", parts: [{ text: `${INSTRUCTIONS}\n\n${plainText}` }] },
-    ],
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
     config: {
       responseModalities: ["AUDIO"],
       speechConfig: {
