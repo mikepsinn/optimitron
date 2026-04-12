@@ -155,6 +155,12 @@ const impactEstimateSetSelect = {
 const taskListSelect = {
   actualCashCostUsd: true,
   actualEffortSeconds: true,
+  parentTask: {
+    select: {
+      id: true,
+      title: true,
+    },
+  },
   _count: {
     select: {
       childTasks: true,
@@ -1077,6 +1083,43 @@ export async function getTaskDetailData(
     viewer,
     viewerClaim,
   };
+}
+
+/**
+ * Walk up parentTaskId from the given task to the root, returning ancestors
+ * ordered root → immediate parent. Excludes the task itself. Cycle-safe with
+ * a seen-set. Depth capped at 16 so a pathological tree can't spin forever.
+ */
+export async function getTaskAncestors(
+  taskId: string,
+): Promise<Array<{ id: string; title: string }>> {
+  const seen = new Set<string>([taskId]);
+  const ancestors: Array<{ id: string; title: string }> = [];
+  let currentId: string | null = taskId;
+
+  for (let depth = 0; depth < 16; depth += 1) {
+    const current: { parentTaskId: string | null } | null =
+      await prisma.task.findUnique({
+        where: { id: currentId },
+        select: { parentTaskId: true },
+      });
+    if (!current?.parentTaskId || seen.has(current.parentTaskId)) {
+      break;
+    }
+    const parent: { id: string; title: string } | null =
+      await prisma.task.findUnique({
+        where: { id: current.parentTaskId },
+        select: { id: true, title: true },
+      });
+    if (!parent) {
+      break;
+    }
+    ancestors.unshift(parent);
+    seen.add(parent.id);
+    currentId = parent.id;
+  }
+
+  return ancestors;
 }
 
 export async function listTasks(options?: {

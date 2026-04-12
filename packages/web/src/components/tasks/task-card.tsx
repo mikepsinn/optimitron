@@ -72,6 +72,7 @@ export interface TaskCardTask {
   interestTags: string[];
   isPublic: boolean;
   maxClaims: number | null;
+  parentTask?: { id: string; title: string } | null;
   roleTitle: string | null;
   recommendationScore?: number;
   sourceUrl: string | null;
@@ -283,6 +284,14 @@ export function TaskCard({
                 </p>
               </div>
             </div>
+          ) : null}
+          {task.parentTask ? (
+            <Link
+              href={`/tasks/${task.parentTask.id}`}
+              className="inline-block text-xs font-black uppercase tracking-[0.18em] text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              ↑ {task.parentTask.title}
+            </Link>
           ) : null}
           <Link href={`/tasks/${task.id}`} className="block">
             <h3 className="text-2xl font-black uppercase leading-tight underline-offset-4 hover:underline">

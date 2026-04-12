@@ -38,7 +38,7 @@ import {
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { readLeaderActivityContext, readTaskContextSections } from "@/lib/tasks/task-context";
-import { getTaskDetailData } from "@/lib/tasks.server";
+import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
 import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
@@ -127,11 +127,12 @@ export default async function TaskDetailPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const [data, commentFeed, activityTimeline, wishoniaUserId] = await Promise.all([
+  const [data, commentFeed, activityTimeline, wishoniaUserId, ancestors] = await Promise.all([
     getTaskDetailData(id, userId),
     getTaskCommentFeed({ taskId: id, sort: "new", limit: 100, currentUserId: userId }),
     getTaskActivityTimeline(id, 50),
     getWishoniaUserId().catch(() => null),
+    getTaskAncestors(id),
   ]);
 
   if (!data) {
@@ -192,17 +193,17 @@ export default async function TaskDetailPage({
           <Link className="underline underline-offset-4" href={ROUTES.tasks}>
             Tasks
           </Link>
-          {task.parentTask ? (
-            <>
+          {ancestors.map((ancestor) => (
+            <span key={ancestor.id} className="flex items-center gap-2">
               <span>/</span>
               <Link
                 className="underline underline-offset-4"
-                href={`/tasks/${task.parentTask.id}`}
+                href={`/tasks/${ancestor.id}`}
               >
-                {task.parentTask.title}
+                {ancestor.title}
               </Link>
-            </>
-          ) : null}
+            </span>
+          ))}
           <span>/</span>
           <span className="text-muted-foreground">{task.title}</span>
         </nav>

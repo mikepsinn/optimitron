@@ -109,6 +109,16 @@ Supporting: `AlignmentScoreOracle`, `PoliticalIncentiveAllocator` (on-chain alig
 
 `packages/web/src/lib/routes.ts` is the single source of truth for page titles + descriptions. Each `NavItem` has `label`, `description`, `emoji`. Pages use `getRouteMetadata(link)` from `@/lib/metadata.ts`. All descriptions in Wishonia's voice.
 
+## Task Tree
+
+The task tree has a single root: `win-earth-optimization-prize` (taskKey `program:earth-optimization-prize:win`). Every other program is a child of the root because every program is a bet on moving the two welfare numbers — median healthy life-years and median income — toward their 2040 targets. The tree *is* the persuasion argument: walking up the parent chain from any claimable task lands a voter on their primary motivator.
+
+- **Targets**: `earthOptimizationPrizeWinCondition` in `packages/data/src/parameters/earth-optimization-prize.ts`. Single source of truth for HALE baseline/target, median-income baseline/target, and the 2040 deadline. Reads from the generated `TREATY_*` parameter constants — do not duplicate the numbers anywhere else. Manual refs: `manual.warondisease.org/knowledge/strategy/earth-optimization-prize.html`, `.../economics/gdp-trajectories.html`.
+- **Attribution**: use `computeParentContributionShare(parent, child)` in `packages/web/src/lib/tasks/impact.ts`. Computes `child.delta / parent.delta` for HALE and income. Nothing stored, nothing to drift.
+- **Adding a new program**: it must be a child of `win-earth-optimization-prize` (or of one of the programs beneath it). Do not add a new `parentTaskId: null` task. If a task isn't a bet on HALE or income, it should not exist.
+- **Ancestors on task detail**: `getTaskAncestors(taskId)` walks `parentTaskId` up to root (depth-capped, cycle-safe). Use this, not ad-hoc recursive Prisma selects.
+- **Onboarding tasks** (dashboard welcome tasks) stay out of this tree — they're private onboarding state, not part of the global prize tree.
+
 ## High-Value Defaults
 
 1. **NEVER commit.** The user reviews every change before it lands. Stage files if helpful, leave diffs unstaged. Never run `git commit`, `push`, `merge`, `rebase`, or any history-altering command. Only exception: user says "commit this" in the current turn.

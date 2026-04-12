@@ -2,10 +2,12 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { Button } from "@/components/retroui/Button";
+import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { getTasksPageData } from "@/lib/tasks.server";
+import { earthOptimizationPrizeWinCondition } from "@optimitron/data/parameters";
 
 export const metadata = getRouteMetadata(tasksLink);
 
@@ -50,11 +52,59 @@ export default async function TasksPage() {
           ) : null}
         </section>
 
-        {data.topLevelTasks.length > 0 ? (
-          <Section title="Top Tasks">
-            <SortableTaskList tasks={data.topLevelTasks} />
-          </Section>
-        ) : null}
+        {(() => {
+          const prizeRoot = data.topLevelTasks.find(
+            (t) => t.id === "win-earth-optimization-prize",
+          );
+          const otherRoots = data.topLevelTasks.filter(
+            (t) => t.id !== "win-earth-optimization-prize",
+          );
+          const { hale, medianIncome, deadlineYear } =
+            earthOptimizationPrizeWinCondition;
+          return (
+            <>
+              {prizeRoot ? (
+                <section className="space-y-4">
+                  <Link href={`/tasks/${prizeRoot.id}`} className="block">
+                    <BrutalCard bgColor="yellow" shadowSize={8} className="p-6">
+                      <div className="flex flex-col gap-3">
+                        <span className="text-xs font-black uppercase">
+                          The Goal
+                        </span>
+                        <h2 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+                          {prizeRoot.title}
+                        </h2>
+                        <p className="text-sm font-bold">
+                          By {deadlineYear}: hit{" "}
+                          <span className="font-black">
+                            {hale.target.toFixed(1)} healthy life-years
+                          </span>{" "}
+                          (now {hale.baseline.toFixed(1)}) and median income of{" "}
+                          <span className="font-black">
+                            ${Math.round(medianIncome.target).toLocaleString()}
+                          </span>{" "}
+                          (now ${Math.round(medianIncome.baseline).toLocaleString()}).
+                          Every task below is a bet on moving these two numbers.
+                        </p>
+                      </div>
+                    </BrutalCard>
+                  </Link>
+                  {prizeRoot.childTasks && prizeRoot.childTasks.length > 0 ? (
+                    <Section title="Programs">
+                      <SortableTaskList tasks={prizeRoot.childTasks} />
+                    </Section>
+                  ) : null}
+                </section>
+              ) : null}
+
+              {otherRoots.length > 0 ? (
+                <Section title="Other Top-Level Tasks">
+                  <SortableTaskList tasks={otherRoots} />
+                </Section>
+              ) : null}
+            </>
+          );
+        })()}
 
         {userId && data.ownedPrivateTasks.length > 0 ? (
           <Section title="My Private Tasks">

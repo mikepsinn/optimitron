@@ -209,7 +209,7 @@ Right now. With this code. Not in some theoretical future where humans have lear
 | Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optimitron/optimizer`](packages/optimizer/) |
 | Optimize a budget | 34+ categories, diminishing returns, overspend diagnostics | [`/agencies/domb`](packages/web/) |
 | Score policies | 12+ policies with Bradford Hill evidence grading | [`/agencies/dcbo`](packages/web/) |
-| Generate policy reports | Evidence-grade scoring, causal confidence | [`@optimitron/examples`](packages/examples/) |
+| Generate policy reports | Evidence-grade scoring, causal confidence | [`/agencies/dcbo`](packages/web/) |
 | Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optimitron/storage`](packages/storage/) |
 | Chat-based health tracking | NLP text-to-measurement parsing for symptoms, mood, food | [`@optimitron/chat-ui`](packages/chat-ui/) |
 
@@ -242,16 +242,6 @@ pnpm dev
 # Sync benchmark politicians from Congress.gov into the web app database
 pnpm alignment:sync
 
-# Run example demos / generators
-pnpm --filter @optimitron/examples demo:causal
-pnpm --filter @optimitron/examples demo:budget
-pnpm --filter @optimitron/examples demo:health
-pnpm --filter @optimitron/examples demo:alignment
-pnpm --filter @optimitron/examples generate:policy
-pnpm --filter @optimitron/examples generate:budget
-pnpm --filter @optimitron/examples generate:government-size
-pnpm --filter @optimitron/examples generate:health
-# ... and 10+ more generators (drug-war, education, cross-country, mega-studies, etc.)
 ```
 
 ---
@@ -354,7 +344,6 @@ Auth: Google OAuth, magic-link email, World ID. Referral system with VOTE point 
 | [`@optimitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
 | [`@optimitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optimitron outputs | Verifiable publication layer |
 | [`@optimitron/agent`](packages/agent/) | Autonomous policy analyst helpers: Gemini reasoning, image generation, manifests, review flows, and ERC-8004 identity/reputation helpers | AI orchestration layer |
-| [`@optimitron/examples`](packages/examples/) | Runnable demos and reproducible report generators for budget, policy, causal, and alignment analyses | Best place to see outputs fast |
 | [`@optimitron/extension`](packages/extension/) | Chrome extension scaffold for the Digital Twin Safe / local-first health workflow | Early Layer 1 scaffold |
 
 ---

@@ -27,7 +27,10 @@ export function HowToWinSection() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <GameCTA href="/scoreboard" variant="primary">
+          <GameCTA href="/tasks/win-earth-optimization-prize" variant="primary">
+            Work the Top Task
+          </GameCTA>
+          <GameCTA href="/scoreboard" variant="secondary">
             View Full Scoreboard
           </GameCTA>
           <GameCTA href="/prize" variant="secondary">
