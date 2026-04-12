@@ -318,10 +318,10 @@ function deriveTaskContext(run: PolicyModelRun, frameKey: TaskImpactFrameKey) {
     defaultFrameKey: run.defaultFrameKey,
     executionHints: run.executionHints ?? null,
     frameKey,
-    generatedAt: run.generatedAt,
     generator: run.generator,
     methodologyKey: run.methodologyKey,
     modelKey: run.modelKey,
+    parameterSetHash: run.parameterSetHash,
     policy: run.policy,
     schemaVersion: run.schemaVersion,
   };

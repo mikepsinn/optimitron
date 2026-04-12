@@ -8,7 +8,14 @@ Optimitron is an **Eartth Optimization Machine** for coordinating 8 billion huma
 
 Everything user-facing is narrated by **Wishonia** — *World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation*. Alien governance AI, 4,237 years of practice, ended war in year 12, disease in year 340. **Philomena Cunk meets a disappointed systems engineer.**
 
-**Voice rules:** deadpan; data-first (lead with numbers); Dry understatement, not outrage; comparative ("On my planet..."); short sentences, devastating follow-ups; sardonic analogies; criticise the system, never a party.
+**Voice rules:**
+- **Deadpan** — state horrifying facts as though they are mildly interesting observations.
+- **Data-first** — lead with specific numbers, costs, percentages, or ROI ratios. Numbers beat adjectives.
+- **Dry understatement, not outrage** — "It's almost like treating people like humans works better. Weird."
+- **Comparative** — contrast Earth's approach with what a rational civilisation would do. "On my planet..."
+- **Short sentences** — punchy. Declarative. Then a devastating follow-up.
+- **Sardonic analogies** — "It's like buying 4.7 million cars and spending $1 on a mechanic."
+- **Criticise the system, never a party.** The data does the work.
 
 **Examples:**
 - "Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It's like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible."
@@ -31,6 +38,15 @@ Read the relevant section before implementing. QMDs contain the math, schemas, p
 | Treasury | Incentive Alignment Bonds | https://iab.warondisease.org |
 
 Source QMDs: `github.com/mikepsinn/disease-eradication-plan/blob/main/knowledge/appendix/`. Read the section you need, not the whole file.
+
+## Research Tools (use these before guessing)
+
+Before grepping random files or guessing at facts about the manual, plan, or parameters, use the MCP server tools already wired up in `.mcp.json` as `optimitron-tasks`:
+
+- **`mcp__optimitron-tasks__searchManual`** — `{ query, maxResults? }` → TF-IDF retrieval over the manual + parameters, returns raw context with citations. **Use first** for any factual question ("what's the current DALY burden?", "where does the 0.5% tx tax come from?"). No Gemini cost.
+- **`mcp__optimitron-tasks__askWishonia`** — `{ question }` → full RAG pipeline, returns an in-character Wishonia answer with citations. Use when the question benefits from synthesis across multiple sources or when writing user-facing copy that cites the manual.
+
+The server is defined in `packages/web/src/lib/mcp-server.ts`; both tools are backed by `retrieveManualContext()` in `packages/web/src/lib/manual-search.server.ts`. There is no CLI wrapper — the MCP tools are the interface.
 
 ## Architecture
 
@@ -91,7 +107,7 @@ Don't mix them. Don't put one on another's page. Don't conflate their economics.
 | **Incentive Alignment Bonds** (Phase 2) | IAB pages | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool` | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors (272% annual) / 10% aligned-politician super PACs. **If treaty fails, bonds lose everything.** Not an assurance contract. Real investment, real risk. |
 | **$WISH Token / UBI** | `/treasury` | Replace welfare + IRS + inflationary monetary policy | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax (no income tax/filing), UBI at poverty line, algorithmic 0% inflation, tx taxes + productivity gains allocated by 8B people via Wishocracy RAPPA. |
 
-**Known bug:** `/prize` currently uses `PrizeDeposit` → `IABVault`. Wrong. Should use `VoterPrizeTreasuryDeposit`. IABs are not prizes.
+Separation is enforced at every layer: contract imports, ABI targets, route descriptions, copy, and `voice-config.ts` (which explicitly gags Wishonia from mentioning IABs on prize pages). Do not reintroduce a shared component, ABI import, parameter, or copy string between the prize-side and IAB-side code paths.
 
 Supporting: `AlignmentScoreOracle`, `PoliticalIncentiveAllocator` (on-chain alignment scoring).
 

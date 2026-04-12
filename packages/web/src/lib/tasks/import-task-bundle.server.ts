@@ -16,6 +16,7 @@ interface UpsertImportedTaskBundleOptions {
   jurisdictionId?: string | null;
   ownerUserId?: string | null;
   parentTaskId?: string | null;
+  taskId?: string | null;
   verifiedByUserId?: string | null;
 }
 
@@ -417,6 +418,7 @@ export async function upsertImportedTaskBundle(
         taskKey: bundle.task.taskKey,
       },
       create: {
+        id: options?.taskId?.trim() || undefined,
         assigneeOrganizationId: assigneeOrganization?.id ?? null,
         assigneePersonId: options?.assigneePersonId ?? null,
         assigneeAffiliationSnapshot: bundle.task.assigneeAffiliationSnapshot,
@@ -538,7 +540,7 @@ export async function upsertImportedTaskBundle(
       taskKey: task.taskKey,
     };
   }, {
-    maxWait: 10_000,
-    timeout: 30_000,
+    maxWait: 30_000,
+    timeout: 120_000,
   });
 }

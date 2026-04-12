@@ -24,6 +24,7 @@ import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
+import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
@@ -38,6 +39,7 @@ import {
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { readLeaderActivityContext, readTaskContextSections } from "@/lib/tasks/task-context";
+import { buildTaskPressureShareText, getTaskReviewUi } from "@/lib/tasks/task-review-ui";
 import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
 import {
   getTaskActivityTimeline,
@@ -163,17 +165,11 @@ export default async function TaskDetailPage({
   const childDelaySummary = aggregateTaskDelayStats(task.childTasks);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const shareText = buildTaskShareText({
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    targetLabel,
-    taskTitle: task.title,
-  });
+  const shareText = buildTaskPressureShareText(task, delayStats);
   const fallbackInitials = getFallbackInitials(targetLabel);
   const contextSections = readTaskContextSections(task.contextJson);
   const activityContext = readLeaderActivityContext(task.contextJson);
+  const reviewUi = getTaskReviewUi(task);
   const econValue = task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? null;
   const dalysValue = task.impact?.selectedFrame?.expectedDalysAvertedBase ?? null;
   const isHarmful = (econValue != null && econValue < 0) || (dalysValue != null && dalysValue < 0);
@@ -215,7 +211,7 @@ export default async function TaskDetailPage({
               ? [
                   {
                     id: "subtasks",
-                    label: "Leaders",
+                    label: reviewUi.childSectionNavLabel,
                     count: task.childTasks.length,
                   },
                 ]
@@ -250,7 +246,7 @@ export default async function TaskDetailPage({
           {task.isPublic ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold uppercase text-muted-foreground">
-                Share:
+                {reviewUi.blockerBanner ? "Pressure This Employee:" : "Share:"}
               </span>
               <TaskShareButtons
                 taskId={task.id}
@@ -270,7 +266,12 @@ export default async function TaskDetailPage({
                 organization={task.assigneeOrganization}
                 roleTitle={task.roleTitle}
                 affiliationSnapshot={task.assigneeAffiliationSnapshot}
+                label={reviewUi.assigneeLabel}
               />
+
+              {reviewUi.blockerBanner ? (
+                <EmployeeReviewBanner {...reviewUi.blockerBanner} />
+              ) : null}
 
               {/* Inline action bar — replaces the old yellow sidebar */}
               <div className="flex flex-wrap items-center gap-3 border-t-2 border-foreground/20 pt-4">
@@ -664,7 +665,7 @@ export default async function TaskDetailPage({
         {task.childTasks.length > 0 ? (
           <section id="subtasks" className="scroll-mt-32 space-y-3">
             <h2 className="text-lg font-bold uppercase tracking-wide">
-              Leaders ({task.childTasks.length})
+              {reviewUi.childSectionHeading} ({task.childTasks.length})
             </h2>
             <SortableTaskList
               tasks={task.childTasks as unknown as TaskCardTask[]}

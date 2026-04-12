@@ -7,12 +7,14 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
-  buildTreatySupporterTaskDrafts,
   TREATY_DUE_AT,
-  TREATY_PARENT_TASK_KEY,
-  TREATY_SIGNER_TASK_KEY_PREFIX,
-  type TreatySignerSlot,
 } from "./treaty-signer-network";
+import {
+  TREATY_PARENT_TASK_ID,
+  TREATY_PARENT_TASK_KEY,
+  TREATY_PARENT_TASK_TITLE,
+  TREATY_SIGNER_TASK_KEY_PREFIX,
+} from "./task-keys";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
@@ -39,9 +41,10 @@ export async function ensureTreatyParentTask(
       skillTags: ["organizing", "diplomacy", "public-pressure"],
       sortOrder: -100,
       status: TaskStatus.ACTIVE,
-      title: "Ratify the 1% Treaty",
+      title: TREATY_PARENT_TASK_TITLE,
     },
     create: {
+      id: TREATY_PARENT_TASK_ID,
       category: TaskCategory.GOVERNANCE,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       description:
@@ -55,7 +58,7 @@ export async function ensureTreatyParentTask(
       sortOrder: -100,
       status: TaskStatus.ACTIVE,
       taskKey: TREATY_PARENT_TASK_KEY,
-      title: "Ratify the 1% Treaty",
+      title: TREATY_PARENT_TASK_TITLE,
     },
     select: {
       id: true,
@@ -63,91 +66,6 @@ export async function ensureTreatyParentTask(
       title: true,
     },
   });
-}
-
-export async function syncTreatySupporterTasks(
-  input: {
-    assigneeOrganizationId?: string | null;
-    parentTaskId: string;
-    slot: TreatySignerSlot;
-  },
-  db: DbClient = prisma,
-) {
-  const drafts = buildTreatySupporterTaskDrafts(input.slot);
-
-  for (const draft of drafts) {
-    await db.task.upsert({
-      where: {
-        taskKey: draft.taskKey,
-      },
-      create: {
-        assigneeAffiliationSnapshot: draft.assigneeAffiliationSnapshot,
-        assigneeOrganizationId: input.assigneeOrganizationId ?? null,
-        category: draft.category,
-        claimPolicy: draft.claimPolicy,
-        contactLabel: draft.contactLabel,
-        contactTemplate: draft.contactTemplate,
-        contactUrl: draft.contactUrl,
-        contextJson: draft.contextJson as Prisma.InputJsonValue,
-        description: draft.description,
-        difficulty: draft.difficulty,
-        dueAt: draft.dueAt,
-        estimatedEffortHours: draft.estimatedEffortHours,
-        impactStatement: draft.impactStatement,
-        interestTags: draft.interestTags,
-        isPublic: true,
-        parentTaskId: input.parentTaskId,
-        roleTitle: draft.roleTitle,
-        skillTags: draft.skillTags,
-        sortOrder: draft.sortOrder,
-        status: draft.status,
-        taskKey: draft.taskKey,
-        title: draft.title,
-      },
-      update: {
-        assigneeAffiliationSnapshot: draft.assigneeAffiliationSnapshot,
-        assigneeOrganizationId: input.assigneeOrganizationId ?? null,
-        category: draft.category,
-        claimPolicy: draft.claimPolicy,
-        contactLabel: draft.contactLabel,
-        contactTemplate: draft.contactTemplate,
-        contactUrl: draft.contactUrl,
-        contextJson: draft.contextJson as Prisma.InputJsonValue,
-        deletedAt: null,
-        description: draft.description,
-        difficulty: draft.difficulty,
-        dueAt: draft.dueAt,
-        estimatedEffortHours: draft.estimatedEffortHours,
-        impactStatement: draft.impactStatement,
-        interestTags: draft.interestTags,
-        isPublic: true,
-        parentTaskId: input.parentTaskId,
-        roleTitle: draft.roleTitle,
-        skillTags: draft.skillTags,
-        sortOrder: draft.sortOrder,
-        status: draft.status,
-        title: draft.title,
-      },
-    });
-  }
-
-  const supporterTaskKeys = drafts.map((draft) => draft.taskKey);
-
-  await db.task.updateMany({
-    where: {
-      deletedAt: null,
-      parentTaskId: input.parentTaskId,
-      taskKey: {
-        notIn: supporterTaskKeys,
-        startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:${input.slot.countryCode.toLowerCase()}:support:`,
-      },
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
-
-  return drafts;
 }
 
 export async function softDeleteMissingTreatySignerNetworkTasks(
@@ -159,7 +77,7 @@ export async function softDeleteMissingTreatySignerNetworkTasks(
       deletedAt: null,
       taskKey: {
         notIn: liveTaskKeys,
-        startsWith: TREATY_SIGNER_TASK_KEY_PREFIX,
+        startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:`,
       },
     },
     data: {

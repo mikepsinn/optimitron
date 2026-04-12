@@ -216,7 +216,7 @@ export function createOnePercentTreatyCompileConfig(input: {
     ],
     executionHints: {
       decompositionNotes:
-        "Treat the signer task as the public accountability anchor. Supporter tasks for coalition building, media pressure, legislative strategy, and diplomacy should be generated separately under this parent task.",
+        "Treat the signer task as the public blocker page. Public pressure should happen by sharing the blocker page and contacting the assigned official until they sign.",
       parentTaskDescription:
         "Secure United States signature and sustained implementation of the 1% Treaty that redirects 1% of military spending to clinical trials and disease eradication.",
       parentTaskTitle: "President of the United States signs the 1% Treaty",

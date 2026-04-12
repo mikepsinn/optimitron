@@ -17,6 +17,7 @@ import {
   type Parameter,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { isTreatyParentTaskKey, isTreatySignerTaskKey } from "@/lib/tasks/task-keys";
 
 interface HighlightRow {
   label: string;
@@ -47,18 +48,18 @@ const DFDA_HIGHLIGHTS: HighlightRow[] = [
 
 function getHighlights(taskKey: string | null | undefined): HighlightRow[] | null {
   if (!taskKey) return null;
-  if (taskKey === "program:one-percent-treaty:ratify") return TREATY_HIGHLIGHTS;
+  if (isTreatyParentTaskKey(taskKey)) return TREATY_HIGHLIGHTS;
   if (taskKey === "program:dfda:create") return DFDA_HIGHLIGHTS;
-  if (taskKey.startsWith("program:one-percent-treaty:signer:")) return TREATY_HIGHLIGHTS;
+  if (isTreatySignerTaskKey(taskKey)) return TREATY_HIGHLIGHTS;
   return null;
 }
 
 function showsTreatyPersonalUpside(taskKey: string | null | undefined): boolean {
   if (!taskKey) return false;
   return (
-    taskKey === "program:one-percent-treaty:ratify" ||
+    isTreatyParentTaskKey(taskKey) ||
     taskKey === "program:dfda:create" ||
-    taskKey.startsWith("program:one-percent-treaty:signer:")
+    isTreatySignerTaskKey(taskKey)
   );
 }
 

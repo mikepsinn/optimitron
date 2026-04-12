@@ -31,6 +31,7 @@ import {
 } from "../src/lib/optimize-earth-page-context";
 import { enrichTaskTreeWithManualGrounding } from "../src/lib/optimize-earth-grounding.server";
 import { getEarthExecutionPolicy } from "../src/lib/tasks/action-policy";
+import { TREATY_SIGNER_TASK_KEY_PREFIX } from "../src/lib/tasks/task-keys";
 import { getTreatySignerSlots, syncTreatySigners } from "./sync-treaty-signers";
 
 interface ParsedArgs {
@@ -498,17 +499,12 @@ async function main() {
     });
   }
 
-  const targetSignerCount = getTreatySignerSlots({ roster: "full" }).length;
+  const targetSignerCount = getTreatySignerSlots().length;
   const existingSignerCount = await prisma.task.count({
     where: {
       deletedAt: null,
       taskKey: {
-        startsWith: "program:one-percent-treaty:signer:",
-      },
-      NOT: {
-        taskKey: {
-          contains: ":support:",
-        },
+        startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:`,
       },
     },
   });
@@ -517,9 +513,7 @@ async function main() {
     await syncTreatySigners({
       countryCodes: null,
       importDb: true,
-      parametersPath: "E:/code/disease-eradication-plan/assets/json/parameters.json",
       printJson: false,
-      roster: "full",
     });
   }
 
@@ -619,12 +613,7 @@ async function main() {
         isPublic: true,
         status: TaskStatus.ACTIVE,
         taskKey: {
-          startsWith: "program:one-percent-treaty:signer:",
-        },
-        NOT: {
-          taskKey: {
-            contains: ":support:",
-          },
+          startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:`,
         },
       },
     }),

@@ -85,3 +85,53 @@ export function readLeaderActivityContext(contextJson: unknown): LeaderActivityC
     wishoniaComment: typeof contextJson.wishoniaComment === "string" ? contextJson.wishoniaComment : null,
   };
 }
+
+export interface TreatySignerSlotContext {
+  annualRedirectAmountUsd: number;
+  countryCode: string;
+  countryName: string;
+  decisionMakerLabel: string;
+  governmentName: string;
+  militaryBudgetSharePct: number;
+  militaryBudgetShareRatio: number;
+  militaryBudgetUsd: number;
+  snapshotYear: number;
+  worldMilitarySpendingUsd: number;
+}
+
+export function readTreatySignerSlotContext(
+  contextJson: unknown,
+): TreatySignerSlotContext | null {
+  if (!isRecord(contextJson) || !isRecord(contextJson.treatySignerSlot)) {
+    return null;
+  }
+
+  const slot = contextJson.treatySignerSlot;
+  if (
+    typeof slot.annualRedirectAmountUsd !== "number" ||
+    typeof slot.countryCode !== "string" ||
+    typeof slot.countryName !== "string" ||
+    typeof slot.decisionMakerLabel !== "string" ||
+    typeof slot.governmentName !== "string" ||
+    typeof slot.militaryBudgetSharePct !== "number" ||
+    typeof slot.militaryBudgetShareRatio !== "number" ||
+    typeof slot.militaryBudgetUsd !== "number" ||
+    typeof slot.snapshotYear !== "number" ||
+    typeof slot.worldMilitarySpendingUsd !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    annualRedirectAmountUsd: slot.annualRedirectAmountUsd,
+    countryCode: slot.countryCode,
+    countryName: slot.countryName,
+    decisionMakerLabel: slot.decisionMakerLabel,
+    governmentName: slot.governmentName,
+    militaryBudgetSharePct: slot.militaryBudgetSharePct,
+    militaryBudgetShareRatio: slot.militaryBudgetShareRatio,
+    militaryBudgetUsd: slot.militaryBudgetUsd,
+    snapshotYear: slot.snapshotYear,
+    worldMilitarySpendingUsd: slot.worldMilitarySpendingUsd,
+  };
+}

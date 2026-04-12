@@ -10,9 +10,13 @@ import { buildUserReferralUrl } from "@/lib/url";
 
 interface TreatySignButtonProps {
   alreadySigned: boolean;
+  referralCode?: string | null;
 }
 
-export function TreatySignButton({ alreadySigned }: TreatySignButtonProps) {
+export function TreatySignButton({
+  alreadySigned,
+  referralCode = null,
+}: TreatySignButtonProps) {
   const { data: session } = useSession();
   const [state, setState] = useState<"unsigned" | "signing" | "signed">(
     alreadySigned ? "signed" : "unsigned",
@@ -31,7 +35,10 @@ export function TreatySignButton({ alreadySigned }: TreatySignButtonProps) {
       const response = await fetch(`/api/referendums/${TREATY_REFERENDUM_SLUG}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answer: "YES" }),
+        body: JSON.stringify({
+          answer: "YES",
+          ref: referralCode ?? undefined,
+        }),
       });
 
       if (!response.ok) {
@@ -53,8 +60,8 @@ export function TreatySignButton({ alreadySigned }: TreatySignButtonProps) {
           <div className="space-y-2 text-center">
             <p className="text-2xl font-black uppercase">Treaty Signed</p>
             <p className="text-sm font-bold">
-              Your signature is recorded. Now share from your official social media account to verify
-              your identity and pressure other leaders to follow.
+              Your signature is recorded. Share your link to bring in more signatures
+              and pressure leaders to follow.
             </p>
           </div>
         </BrutalCard>
@@ -66,8 +73,8 @@ export function TreatySignButton({ alreadySigned }: TreatySignButtonProps) {
           emailSubject="I signed the 1% Treaty"
         />
 
-        <p className="text-xs font-bold text-muted-foreground">
-          Your referral link: {referralUrl}
+        <p className="break-all text-xs font-bold text-muted-foreground">
+          Personal referral link: {referralUrl}
         </p>
       </div>
     );

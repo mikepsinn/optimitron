@@ -50,6 +50,21 @@ function buildMailtoHref(base: string, subject: string, body: string) {
   return `${base}${separator}subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
+function buildOfficeSearchHref(task: TaskContactLike) {
+  const parts = [
+    task.assigneePerson?.displayName,
+    task.roleTitle,
+    task.assigneeOrganization?.name,
+    "official contact",
+  ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+
+  if (parts.length === 0) {
+    return null;
+  }
+
+  return `https://www.google.com/search?q=${encodeURIComponent(parts.join(" "))}`;
+}
+
 function getTargetLabel(task: TaskContactLike) {
   return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
 }
@@ -117,14 +132,24 @@ export function resolveTaskContactAction(input: {
   }
 
   const contactEmail = input.task.assigneeOrganization?.contactEmail?.trim();
-  if (!contactEmail) {
+  if (contactEmail) {
+    return {
+      channel: "email",
+      href: buildMailtoHref(`mailto:${contactEmail}`, subject, message),
+      label: input.task.contactLabel?.trim() || "Email assignee",
+      message,
+    };
+  }
+
+  const officeSearchHref = buildOfficeSearchHref(input.task);
+  if (!officeSearchHref) {
     return null;
   }
 
   return {
-    channel: "email",
-    href: buildMailtoHref(`mailto:${contactEmail}`, subject, message),
-    label: input.task.contactLabel?.trim() || "Email assignee",
+    channel: "link",
+    href: officeSearchHref,
+    label: "Find office contact",
     message,
   };
 }

@@ -183,6 +183,10 @@ export type ParameterExportEntry = z.infer<typeof ParameterExportEntrySchema>;
 export type PolicyModelCompileConfig = z.infer<typeof PolicyModelCompileConfigSchema>;
 export type EstimateBinding = z.infer<typeof EstimateBindingSchema>;
 
+function getCalculationRunArtifactKey(config: Pick<PolicyModelCompileConfig, "modelKey" | "parameterSetHash">) {
+  return `calculation-run:${config.modelKey}:${config.parameterSetHash}`;
+}
+
 function slugify(value: string) {
   return value
     .trim()
@@ -300,13 +304,15 @@ function buildSourceArtifacts(
     versionKey: config.parameterSetHash,
   });
 
-  artifacts.set(`calculation-run:${config.modelKey}:${config.generatedAt}`, {
-    artifactKey: `calculation-run:${config.modelKey}:${config.generatedAt}`,
+  const calculationRunArtifactKey = getCalculationRunArtifactKey(config);
+
+  artifacts.set(calculationRunArtifactKey, {
+    artifactKey: calculationRunArtifactKey,
     artifactType: "CALCULATION_RUN",
     sourceRef: config.methodologyKey,
     sourceSystem: config.generator.kind === "gemini_grounded" ? "COMBINED" : "CURATED",
     title: `${config.title} calculation run`,
-    versionKey: config.generatedAt,
+    versionKey: config.parameterSetHash,
   });
 
   for (const [parameterKey, entry] of Object.entries(exportData.parameters)) {
@@ -430,7 +436,7 @@ export function buildPolicyModelRunFromParameterExport(
       outputKey: parameterKey,
       sourceArtifactKeys: [
         `parameter-set:${config.modelKey}`,
-        `calculation-run:${config.modelKey}:${config.generatedAt}`,
+        getCalculationRunArtifactKey(config),
       ],
       unit: entry.unit ?? "unitless",
     }));

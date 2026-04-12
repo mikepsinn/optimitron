@@ -1,119 +1,22 @@
-import type { CountryPanelRow } from "@optimitron/data";
-import type { TreatySignerSlot } from "./treaty-signer-network";
+import type { WorldLeaderRow } from "./world-leaders";
+import { getLeader } from "./world-leaders";
 
-type TreatySignerRosterRow = Pick<
-  CountryPanelRow,
-  | "gdpPerCapitaPpp"
-  | "jurisdictionIso3"
-  | "jurisdictionName"
-  | "militarySpendingPctGdp"
-  | "militarySpendingPerCapitaPpp"
-  | "population"
->;
-
-export const COUNTRY_PANEL_AGGREGATE_ISO3 = new Set([
-  "AFE",
-  "AFW",
-  "ARB",
-  "CEB",
-  "CSS",
-  "EAP",
-  "EAR",
-  "EAS",
-  "ECA",
-  "ECS",
-  "EMU",
-  "EUU",
-  "FCS",
-  "HPC",
-  "IBD",
-  "IBT",
-  "IDA",
-  "IDB",
-  "IDX",
-  "LAC",
-  "LCN",
-  "LDC",
-  "LMY",
-  "LTE",
-  "MAE",
-  "MEA",
-  "MIC",
-  "MNA",
-  "NAC",
-  "OED",
-  "OSS",
-  "PRE",
-  "PSS",
-  "PST",
-  "SAS",
-  "SSA",
-  "SSF",
-  "SST",
-  "TEA",
-  "TEC",
-  "TLA",
-  "TMN",
-  "TSA",
-  "TSS",
-  "WLD",
-]);
-
-export const NON_SOVEREIGN_TREATY_SIGNER_ISO3 = new Set([
-  "ABW",
-  "AIA",
-  "BMU",
-  "CYM",
-  "GRL",
-  "HKG",
-  "MAC",
-  "MSR",
-  "PRI",
-  "SXM",
-  "TCA",
-  "UVK",
-  "VIR",
-]);
-
-const COUNTRY_DISPLAY_NAME_OVERRIDES: Record<string, string> = {
-  BHS: "Bahamas",
-  CZE: "Czechia",
-  EGY: "Egypt",
-  FSM: "Micronesia",
-  GMB: "Gambia",
-  IRN: "Iran",
-  KGZ: "Kyrgyzstan",
-  KOR: "South Korea",
-  LAO: "Laos",
-  RUS: "Russia",
-  SVK: "Slovakia",
-  SYR: "Syria",
-  TUR: "Türkiye",
-  USA: "United States",
-  VAT: "Holy See (Vatican City)",
-  VEN: "Venezuela",
-  YEM: "Yemen",
-};
-
-const EXTRA_SOVEREIGN_SIGNER_ROWS: TreatySignerRosterRow[] = [
-  {
-    gdpPerCapitaPpp: null,
-    jurisdictionIso3: "VAT",
-    jurisdictionName: "Holy See (Vatican City)",
-    militarySpendingPctGdp: null,
-    militarySpendingPerCapitaPpp: null,
-    population: 882,
-  },
-];
-
-export interface GovernmentOfficeMetadataOverride
-  extends Partial<Omit<TreatySignerSlot, "sortOrder">> {
+export interface GovernmentOfficeMetadata {
   sourceIso3: string;
+  countryCode?: string;
+  countryName?: string;
+  contactEmail?: string | null;
+  contactLabel?: string | null;
+  contactUrl?: string | null;
+  governmentName?: string | null;
+  governmentWebsite?: string | null;
+  headOfGovernmentLabel?: string | null;
+  headOfGovernmentTitle?: string | null;
+  militaryBudgetUsd?: number | null;
+  officialSourceUrl?: string | null;
 }
 
-// Temporary generic office metadata enrichment layered onto the impact-ranked signer roster.
-// This is not treaty-specific data and should eventually live in @optimitron/data.
-export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetadataOverride[] = [
+export const GOVERNMENT_OFFICE_METADATA: GovernmentOfficeMetadata[] = [
   {
     sourceIso3: "USA",
     countryCode: "US",
@@ -121,12 +24,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "White House contact form",
     contactUrl: "https://www.whitehouse.gov/contact/",
-    decisionMakerLabel: "President of the United States",
     governmentName: "United States Government",
     governmentWebsite: "https://www.whitehouse.gov/",
+    headOfGovernmentLabel: "President of the United States",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 997_000_000_000,
     officialSourceUrl: "https://www.whitehouse.gov/administration/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "CHN",
@@ -135,12 +38,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "State Council contact page",
     contactUrl: "https://english.www.gov.cn/contactus/",
-    decisionMakerLabel: "President of the People's Republic of China",
     governmentName: "Government of the People's Republic of China",
     governmentWebsite: "https://english.www.gov.cn/",
+    headOfGovernmentLabel: "President of the People's Republic of China",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 314_000_000_000,
     officialSourceUrl: "https://english.www.gov.cn/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "RUS",
@@ -149,12 +52,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Kremlin contacts",
     contactUrl: "http://en.kremlin.ru/contacts",
-    decisionMakerLabel: "President of Russia",
     governmentName: "Government of the Russian Federation",
     governmentWebsite: "http://government.ru/en/",
+    headOfGovernmentLabel: "President of Russia",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 149_000_000_000,
     officialSourceUrl: "http://en.kremlin.ru/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "DEU",
@@ -163,12 +66,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "internetpost@bundeskanzler.de",
     contactLabel: "Federal Government contact page",
     contactUrl: "https://www.bundesregierung.de/breg-en/service/contact/contact-the-federal-government-1957540",
-    decisionMakerLabel: "Chancellor of Germany",
     governmentName: "Federal Government of Germany",
     governmentWebsite: "https://www.bundesregierung.de/breg-en",
+    headOfGovernmentLabel: "Chancellor of Germany",
+    headOfGovernmentTitle: "Chancellor",
     militaryBudgetUsd: 88_500_000_000,
     officialSourceUrl: "https://www.bundesregierung.de/breg-en/federal-government",
-    roleTitle: "Chancellor",
   },
   {
     sourceIso3: "IND",
@@ -177,12 +80,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Write to the Prime Minister",
     contactUrl: "https://www.pmindia.gov.in/en/interact-with-honble-pm/",
-    decisionMakerLabel: "Prime Minister of India",
     governmentName: "Government of India",
     governmentWebsite: "https://www.pmindia.gov.in/en/",
+    headOfGovernmentLabel: "Prime Minister of India",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 86_100_000_000,
     officialSourceUrl: "https://www.pmindia.gov.in/en/",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "GBR",
@@ -191,12 +94,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Email Number 10",
     contactUrl: "https://email.number10.gov.uk/",
-    decisionMakerLabel: "Prime Minister of the United Kingdom",
     governmentName: "Government of the United Kingdom",
     governmentWebsite: "https://www.gov.uk/government/organisations/prime-ministers-office-10-downing-street",
+    headOfGovernmentLabel: "Prime Minister of the United Kingdom",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 81_800_000_000,
     officialSourceUrl: "https://www.gov.uk/government/people/the-prime-minister",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "SAU",
@@ -205,12 +108,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Saudi government portal",
     contactUrl: "https://www.my.gov.sa/wps/portal/snp/main",
-    decisionMakerLabel: "Prime Minister of Saudi Arabia",
     governmentName: "Government of Saudi Arabia",
     governmentWebsite: "https://www.my.gov.sa/wps/portal/snp/main",
+    headOfGovernmentLabel: "Prime Minister of Saudi Arabia",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 80_300_000_000,
     officialSourceUrl: "https://www.my.gov.sa/wps/portal/snp/aboutksa/government",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "UKR",
@@ -219,12 +122,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Contact the President of Ukraine",
     contactUrl: "https://www.president.gov.ua/en/office/contacts",
-    decisionMakerLabel: "President of Ukraine",
     governmentName: "Government of Ukraine",
     governmentWebsite: "https://www.president.gov.ua/en",
+    headOfGovernmentLabel: "President of Ukraine",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 64_700_000_000,
     officialSourceUrl: "https://www.president.gov.ua/en",
-    roleTitle: "President",
   },
   {
     sourceIso3: "FRA",
@@ -233,12 +136,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Write to the President",
     contactUrl: "https://www.elysee.fr/ecrire-au-president-de-la-republique/",
-    decisionMakerLabel: "President of France",
     governmentName: "Government of France",
     governmentWebsite: "https://www.elysee.fr/en/",
+    headOfGovernmentLabel: "President of France",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 64_700_000_000,
     officialSourceUrl: "https://www.elysee.fr/en/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "JPN",
@@ -247,12 +150,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Prime Minister's Office contact page",
     contactUrl: "https://www.kantei.go.jp/foreign/forms/comment_ssl.html",
-    decisionMakerLabel: "Prime Minister of Japan",
     governmentName: "Government of Japan",
     governmentWebsite: "https://www.kantei.go.jp/foreign/",
+    headOfGovernmentLabel: "Prime Minister of Japan",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 55_300_000_000,
     officialSourceUrl: "https://www.kantei.go.jp/foreign/",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "KOR",
@@ -261,12 +164,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Office of the President of Korea",
     contactUrl: "https://www.president.go.kr/",
-    decisionMakerLabel: "President of South Korea",
     governmentName: "Government of the Republic of Korea",
     governmentWebsite: "https://www.korea.net/",
+    headOfGovernmentLabel: "President of South Korea",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 47_600_000_000,
     officialSourceUrl: "https://www.president.go.kr/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "ISR",
@@ -275,12 +178,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "pm_eng@pmo.gov.il",
     contactLabel: "Contact the Prime Minister",
     contactUrl: "https://www.gov.il/en/pages/contact_the_prime_minister",
-    decisionMakerLabel: "Prime Minister of Israel",
     governmentName: "Government of Israel",
     governmentWebsite: "https://www.gov.il/en/departments/prime_ministers_office/govil-landing-page",
+    headOfGovernmentLabel: "Prime Minister of Israel",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 46_500_000_000,
     officialSourceUrl: "https://www.gov.il/en/departments/prime_ministers_office/govil-landing-page",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "POL",
@@ -289,12 +192,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "kontakt@kprm.gov.pl",
     contactLabel: "Contact the Prime Minister",
     contactUrl: "https://www.gov.pl/web/primeminister/contact",
-    decisionMakerLabel: "Prime Minister of Poland",
     governmentName: "Government of Poland",
     governmentWebsite: "https://www.gov.pl/web/primeminister",
+    headOfGovernmentLabel: "Prime Minister of Poland",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 38_000_000_000,
     officialSourceUrl: "https://www.gov.pl/web/primeminister",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "ITA",
@@ -303,12 +206,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "presidente@governo.it",
     contactLabel: "Contact the Government",
     contactUrl: "https://www.governo.it/en/contact-us",
-    decisionMakerLabel: "Prime Minister of Italy",
     governmentName: "Government of Italy",
     governmentWebsite: "https://www.governo.it/en",
+    headOfGovernmentLabel: "Prime Minister of Italy",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 38_000_000_000,
     officialSourceUrl: "https://www.governo.it/en/il-governo",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "AUS",
@@ -317,12 +220,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Contact the Prime Minister",
     contactUrl: "https://www.pm.gov.au/contact-your-pm",
-    decisionMakerLabel: "Prime Minister of Australia",
     governmentName: "Government of Australia",
     governmentWebsite: "https://www.pm.gov.au/",
+    headOfGovernmentLabel: "Prime Minister of Australia",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 33_800_000_000,
     officialSourceUrl: "https://www.pm.gov.au/your-pm",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "CAN",
@@ -331,12 +234,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "pm@pm.gc.ca",
     contactLabel: "Contact the Prime Minister",
     contactUrl: "https://pm.gc.ca/en/connect/contact",
-    decisionMakerLabel: "Prime Minister of Canada",
     governmentName: "Government of Canada",
     governmentWebsite: "https://pm.gc.ca/en",
+    headOfGovernmentLabel: "Prime Minister of Canada",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 29_300_000_000,
     officialSourceUrl: "https://pm.gc.ca/en",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "TUR",
@@ -345,12 +248,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Contact the Presidency",
     contactUrl: "https://www.tccb.gov.tr/en/contact/",
-    decisionMakerLabel: "President of Türkiye",
     governmentName: "Government of Türkiye",
     governmentWebsite: "https://www.tccb.gov.tr/en/",
+    headOfGovernmentLabel: "President of Türkiye",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 25_000_000_000,
     officialSourceUrl: "https://www.tccb.gov.tr/en/president/",
-    roleTitle: "President",
   },
   {
     sourceIso3: "ESP",
@@ -359,12 +262,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "presidente.gobierno@la-moncloa.es",
     contactLabel: "Contact Moncloa",
     contactUrl: "https://www.lamoncloa.gob.es/contacto/Paginas/index.aspx",
-    decisionMakerLabel: "Prime Minister of Spain",
     governmentName: "Government of Spain",
     governmentWebsite: "https://www.lamoncloa.gob.es/lang/en/Paginas/index.aspx",
+    headOfGovernmentLabel: "Prime Minister of Spain",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 24_600_000_000,
     officialSourceUrl: "https://www.lamoncloa.gob.es/lang/en/presidente/Paginas/index.aspx",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "NLD",
@@ -373,12 +276,12 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: "ministerpresident@minaz.nl",
     contactLabel: "Contact the Dutch Government",
     contactUrl: "https://www.government.nl/contact",
-    decisionMakerLabel: "Prime Minister of the Netherlands",
     governmentName: "Government of the Netherlands",
     governmentWebsite: "https://www.government.nl/",
+    headOfGovernmentLabel: "Prime Minister of the Netherlands",
+    headOfGovernmentTitle: "Prime Minister",
     militaryBudgetUsd: 23_200_000_000,
     officialSourceUrl: "https://www.government.nl/government/members-of-cabinet",
-    roleTitle: "Prime Minister",
   },
   {
     sourceIso3: "DZA",
@@ -387,118 +290,53 @@ export const CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES: GovernmentOfficeMetad
     contactEmail: null,
     contactLabel: "Presidency of Algeria",
     contactUrl: "https://www.el-mouradia.dz/en/",
-    decisionMakerLabel: "President of Algeria",
     governmentName: "Government of Algeria",
     governmentWebsite: "https://www.el-mouradia.dz/en/",
+    headOfGovernmentLabel: "President of Algeria",
+    headOfGovernmentTitle: "President",
     militaryBudgetUsd: 21_800_000_000,
     officialSourceUrl: "https://www.el-mouradia.dz/en/",
-    roleTitle: "President",
   },
 ];
 
-function displayCountryName(row: TreatySignerRosterRow) {
-  return COUNTRY_DISPLAY_NAME_OVERRIDES[row.jurisdictionIso3] ?? row.jurisdictionName.trim();
+const officeMetadataByIso3 = new Map(
+  GOVERNMENT_OFFICE_METADATA.map((entry) => [entry.sourceIso3.toUpperCase(), entry] as const),
+);
+
+const officeMetadataByCountryCode = new Map(
+  GOVERNMENT_OFFICE_METADATA
+    .filter((entry): entry is GovernmentOfficeMetadata & { countryCode: string } => typeof entry.countryCode === "string")
+    .map((entry) => [entry.countryCode.toUpperCase(), entry] as const),
+);
+
+export function getGovernmentOfficeMetadataByIso3(sourceIso3: string) {
+  return officeMetadataByIso3.get(sourceIso3.toUpperCase());
 }
 
-export function isSovereignTreatySignerRow(row: TreatySignerRosterRow) {
-  if (
-    COUNTRY_PANEL_AGGREGATE_ISO3.has(row.jurisdictionIso3) ||
-    NON_SOVEREIGN_TREATY_SIGNER_ISO3.has(row.jurisdictionIso3)
-  ) {
-    return false;
-  }
-
-  if (row.jurisdictionName.trim() === row.jurisdictionIso3) {
-    return false;
-  }
-
-  return true;
+export function getGovernmentOfficeMetadata(countryCode: string) {
+  return officeMetadataByCountryCode.get(countryCode.toUpperCase());
 }
 
-export function estimateTreatySignerMilitaryBudgetUsd(row: TreatySignerRosterRow) {
-  const perCapita = row.militarySpendingPerCapitaPpp;
-  const population = row.population;
-  if (perCapita != null && population != null && perCapita > 0 && population > 0) {
-    return Math.max(perCapita * population, 1);
-  }
-
-  const gdpPerCapita = row.gdpPerCapitaPpp;
-  const militaryPct = row.militarySpendingPctGdp;
-  if (
-    gdpPerCapita != null &&
-    population != null &&
-    militaryPct != null &&
-    gdpPerCapita > 0 &&
-    population > 0 &&
-    militaryPct > 0
-  ) {
-    return Math.max((militaryPct / 100) * gdpPerCapita * population, 1);
-  }
-
-  if (gdpPerCapita != null && population != null && gdpPerCapita > 0 && population > 0) {
-    return Math.max(gdpPerCapita * population * 0.005, 1);
-  }
-
-  return 1;
+export interface GovernmentWithLeader {
+  countryCode: string;
+  countryName: string | null;
+  leader: WorldLeaderRow | null;
+  office: GovernmentOfficeMetadata | null;
 }
 
-function buildGenericTreatySignerSlot(row: TreatySignerRosterRow): TreatySignerSlot {
-  const countryName = displayCountryName(row);
-  const iso3 = row.jurisdictionIso3.toUpperCase();
+export function getGovernmentWithLeader(countryCode: string): GovernmentWithLeader | null {
+  const normalizedCountryCode = countryCode.trim().toUpperCase();
+  if (!normalizedCountryCode) {
+    return null;
+  }
+
+  const office = getGovernmentOfficeMetadata(normalizedCountryCode) ?? null;
+  const leader = getLeader(normalizedCountryCode) ?? null;
 
   return {
-    contactEmail: null,
-    contactLabel: null,
-    contactUrl: null,
-    countryCode: iso3,
-    countryName,
-    decisionMakerLabel: `Head of government of ${countryName}`,
-    governmentName: `Government of ${countryName}`,
-    governmentWebsite: null,
-    militaryBudgetUsd: estimateTreatySignerMilitaryBudgetUsd(row),
-    officialSourceUrl: null,
-    roleTitle: "Head of Government",
-    sortOrder: 0,
+    countryCode: normalizedCountryCode,
+    countryName: office?.countryName ?? leader?.countryName ?? null,
+    leader,
+    office,
   };
-}
-
-function applyGovernmentOfficeMetadataOverride(
-  slot: TreatySignerSlot,
-  override?: GovernmentOfficeMetadataOverride,
-): TreatySignerSlot {
-  if (!override) {
-    return slot;
-  }
-
-  const { sourceIso3: _sourceIso3, ...slotOverride } = override;
-
-  return {
-    ...slot,
-    ...slotOverride,
-    countryCode: override.countryCode ?? slot.countryCode,
-    countryName: override.countryName ?? slot.countryName,
-    sortOrder: slot.sortOrder,
-  };
-}
-
-export function buildFullTreatySignerSlots(
-  rows: TreatySignerRosterRow[],
-  overrides: GovernmentOfficeMetadataOverride[] = CURATED_GOVERNMENT_OFFICE_METADATA_OVERRIDES,
-) {
-  const overridesByIso3 = new Map(
-    overrides.map((override) => [override.sourceIso3.toUpperCase(), override] as const),
-  );
-  const dedupedRows = [...rows, ...EXTRA_SOVEREIGN_SIGNER_ROWS].filter(isSovereignTreatySignerRow);
-  return dedupedRows
-    .map((row) =>
-      applyGovernmentOfficeMetadataOverride(
-        buildGenericTreatySignerSlot(row),
-        overridesByIso3.get(row.jurisdictionIso3.toUpperCase()),
-      ),
-    )
-    .sort((left, right) => right.militaryBudgetUsd - left.militaryBudgetUsd)
-    .map((slot, index) => ({
-      ...slot,
-      sortOrder: index,
-    }));
 }

@@ -15,7 +15,6 @@ import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard, type BrutalCardBgColor } from "@/components/ui/brutal-card";
 import { getSignInPath, ROUTES } from "@/lib/routes";
 import {
-  buildTaskShareText,
   formatCompactCount,
   formatCompactCurrency,
   formatDelayDuration,
@@ -27,6 +26,7 @@ import type {
 } from "@/lib/tasks/impact";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { readLeaderActivityContext } from "@/lib/tasks/task-context";
+import { buildTaskPressureShareText, getTaskPressurePrompt, getTaskReviewUi } from "@/lib/tasks/task-review-ui";
 
 export interface TaskCardTask {
   activeClaimCount: number;
@@ -48,6 +48,7 @@ export interface TaskCardTask {
     id: string;
     image: string | null;
     isPublicFigure: boolean;
+    sourceRef?: string | null;
   } | null;
   category: TaskCategory;
   claimPolicy: TaskClaimPolicy;
@@ -196,6 +197,7 @@ export function TaskCard({
   task: TaskCardTask;
 }) {
   const activityContext = readLeaderActivityContext(task.contextJson);
+  const reviewUi = getTaskReviewUi(task);
   const delayStats = getTaskDelayStats(task);
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
@@ -210,14 +212,8 @@ export function TaskCard({
   const signInHref = getSignInPath(ROUTES.tasks);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const shareText = buildTaskShareText({
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    targetLabel,
-    taskTitle: task.title,
-  });
+  const shareText = buildTaskPressureShareText(task, delayStats);
+  const pressurePrompt = getTaskPressurePrompt(task, delayStats);
   const fallbackInitials = targetLabel
     .split(/\s+/)
     .slice(0, 2)
@@ -268,7 +264,7 @@ export function TaskCard({
               </Avatar>
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
-                  Assignee
+                  {reviewUi.assigneeLabel}
                 </p>
                 <p className="truncate text-sm font-black uppercase">
                   {task.assigneePerson ? (
@@ -298,6 +294,11 @@ export function TaskCard({
               {task.title}
             </h3>
           </Link>
+          {pressurePrompt ? (
+            <p className="text-xs font-black uppercase leading-5 text-brutal-red">
+              {pressurePrompt}
+            </p>
+          ) : null}
           <p className="text-sm font-bold leading-6">
             {getTaskDescriptionSummary(task.description, 220)}
           </p>
@@ -306,7 +307,7 @@ export function TaskCard({
         <div className="space-y-2 text-sm font-bold">
           {task.assigneePerson ? (
             <p>
-              Assigned to{" "}
+              {reviewUi.assignedBylinePrefix}{" "}
               <span className="underline underline-offset-4">
                 {task.assigneePerson.displayName}
               </span>
@@ -315,7 +316,7 @@ export function TaskCard({
           ) : null}
           {!task.assigneePerson && task.assigneeOrganization ? (
             <p>
-              Assigned to{" "}
+              {reviewUi.assignedBylinePrefix}{" "}
               <span className="underline underline-offset-4">
                 {task.assigneeOrganization.name}
               </span>
@@ -371,12 +372,12 @@ export function TaskCard({
           >
             Details
           </Link>
-          {task.assigneePerson?.isPublicFigure ? (
+          {task.assigneePerson ? (
             <Link
               className="text-sm font-black uppercase underline underline-offset-4"
               href={getPersonHref(task.assigneePerson)}
             >
-              Full Record
+              {reviewUi.recordLinkLabel}
             </Link>
           ) : null}
           {task.sourceUrl ? (

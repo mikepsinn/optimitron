@@ -160,5 +160,12 @@ describe("buildPolicyModelRunFromParameterExport", () => {
     expect(run.artifacts.find((artifact) => artifact.sourceRef === "sipri-global-military-spending")?.title).toBe(
       "SIPRI military expenditure database",
     );
+    expect(run.artifacts.find((artifact) => artifact.artifactType === "CALCULATION_RUN")).toMatchObject({
+      artifactKey: "calculation-run:policy:usa-federal:one-percent-treaty:sha256:test",
+      versionKey: "sha256:test",
+    });
+    expect(run.calculations[0]?.sourceArtifactKeys).toContain(
+      "calculation-run:policy:usa-federal:one-percent-treaty:sha256:test",
+    );
   });
 });

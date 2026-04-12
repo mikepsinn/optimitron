@@ -1,31 +1,37 @@
 import "./load-env";
-import { createHash } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import { dirname, resolve } from "path";
 import { buildOnePercentTreatyPolicyModelRun } from "../src/lib/tasks/one-percent-treaty-policy-model";
 import { buildImportedTaskBundleFromPolicyModelRun } from "../src/lib/tasks/policy-model-run-to-imported-task-bundle";
+import {
+  buildTreatyParameterExport,
+  getTreatyParameterSetHash,
+} from "../src/lib/tasks/treaty-parameter-export";
 import { ensureTreatyParentTask } from "../src/lib/tasks/treaty-program.server";
 import { TREATY_DUE_AT } from "../src/lib/tasks/treaty-signer-network";
-import { buildTreatySignerMilestones } from "../src/lib/tasks/treaty-milestones";
 
-const DEFAULT_PARAMETERS_PATH = "E:/code/disease-eradication-plan/assets/json/parameters.json";
 const DEFAULT_OUTPUT_PATH = "tmp/one-percent-treaty-policy-model-run.json";
 
 interface CliOptions {
   importDb: boolean;
   outputPath: string | null;
-  parametersPath: string;
   printJson: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
   const getValue = (prefix: string) =>
     argv.find((arg) => arg.startsWith(`${prefix}=`))?.slice(prefix.length + 1) ?? null;
+  const ignoredParametersPath = getValue("--parameters");
+
+  if (ignoredParametersPath) {
+    console.warn(
+      `[IMPORT TREATY MODEL] Ignoring --parameters=${ignoredParametersPath}. Treaty parameters now come from @optimitron/data/parameters.`,
+    );
+  }
 
   return {
     importDb: argv.includes("--import-db"),
     outputPath: getValue("--output"),
-    parametersPath: getValue("--parameters") ?? DEFAULT_PARAMETERS_PATH,
     printJson: argv.includes("--print-json"),
   };
 }
@@ -47,11 +53,9 @@ async function resolveJurisdictionId(
 }
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const parametersPath = resolve(process.cwd(), options.parametersPath);
-  const rawJson = await readFile(parametersPath, "utf8");
-  const rawExport = JSON.parse(rawJson);
+  const rawExport = buildTreatyParameterExport();
   const generatedAt = new Date().toISOString();
-  const parameterSetHash = `sha256:${createHash("sha256").update(rawJson).digest("hex")}`;
+  const parameterSetHash = getTreatyParameterSetHash();
   const run = buildOnePercentTreatyPolicyModelRun(rawExport, {
     calculationVersion: "one-percent-treaty-compiler-v1",
     generatedAt,
@@ -137,7 +141,7 @@ async function main() {
       sortOrder: 0,
     },
   });
-  await syncTaskMilestones(result.taskId, buildTreatySignerMilestones());
+  await syncTaskMilestones(result.taskId, []);
 
   console.log(
     JSON.stringify(

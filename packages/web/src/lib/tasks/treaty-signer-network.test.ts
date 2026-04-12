@@ -13,11 +13,25 @@ import { describe, expect, it } from "vitest";
 import type { PolicyModelRunImportDraft } from "./policy-model-run-to-imported-task-bundle";
 import {
   buildTreatySignerImportDraft,
-  buildTreatySupporterTaskDrafts,
   SIPRI_WORLD_MILITARY_SPENDING_USD_2024,
-  TOP_TREATY_SIGNER_SLOTS,
   TREATY_DUE_AT,
+  type TreatySignerSlot,
 } from "./treaty-signer-network";
+
+const sampleUsSignerSlot: TreatySignerSlot = {
+  contactEmail: null,
+  contactLabel: "White House contact form",
+  contactUrl: "https://www.whitehouse.gov/contact/",
+  countryCode: "US",
+  countryName: "United States",
+  decisionMakerLabel: "President of the United States",
+  governmentName: "United States Government",
+  governmentWebsite: "https://www.whitehouse.gov/",
+  militaryBudgetUsd: 997_000_000_000,
+  officialSourceUrl: "https://www.whitehouse.gov/administration/",
+  roleTitle: "President",
+  sortOrder: 0,
+};
 
 function buildBaseDraft(): PolicyModelRunImportDraft {
   return {
@@ -165,7 +179,7 @@ function buildBaseDraft(): PolicyModelRunImportDraft {
 
 describe("treaty signer network", () => {
   it("scales a signer draft by military budget share and injects slot metadata", () => {
-    const slot = TOP_TREATY_SIGNER_SLOTS[0];
+    const slot = sampleUsSignerSlot;
     const result = buildTreatySignerImportDraft({
       baseDraft: buildBaseDraft(),
       slot,
@@ -196,22 +210,5 @@ describe("treaty signer network", () => {
         artifact.sourceKey.startsWith("external:sipri:military-expenditure-2024:"),
       ),
     ).toBe(true);
-  });
-
-  it("builds a stable supporter ladder under each signer task", () => {
-    const slot = TOP_TREATY_SIGNER_SLOTS[0];
-    const drafts = buildTreatySupporterTaskDrafts(slot);
-
-    expect(drafts).toHaveLength(4);
-    expect(drafts.every((draft) => draft.claimPolicy === TaskClaimPolicy.OPEN_MANY)).toBe(true);
-    expect(drafts.map((draft) => draft.taskKey)).toEqual([
-      "program:one-percent-treaty:signer:us:support:contact-office",
-      "program:one-percent-treaty:signer:us:support:publish-explainer",
-      "program:one-percent-treaty:signer:us:support:secure-endorsement",
-      "program:one-percent-treaty:signer:us:support:track-evidence",
-    ]);
-    expect(drafts[0]?.contactUrl).toBe(slot.contactUrl);
-    expect(drafts[0]?.title).toContain("Contact President of the United States");
-    expect(drafts[3]?.category).toBe(TaskCategory.RESEARCH);
   });
 });

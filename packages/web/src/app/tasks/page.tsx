@@ -38,7 +38,7 @@ export default async function TasksPage() {
         <section className="space-y-2">
           <h1 className="text-3xl font-bold">Tasks</h1>
           <p className="text-sm font-bold text-muted-foreground">
-            Open tasks ranked by expected value. Click to see subtasks and details.
+            Blocking tasks ranked by expected value. Start with the people who can unblock the biggest gains fastest.
           </p>
           {!userId ? (
             <div className="flex items-center gap-3 border-2 border-primary bg-muted/30 px-4 py-3">
@@ -90,7 +90,7 @@ export default async function TasksPage() {
                     </BrutalCard>
                   </Link>
                   {prizeRoot.childTasks && prizeRoot.childTasks.length > 0 ? (
-                    <Section title="Programs">
+                    <Section title="Highest-Value Blocking Programs">
                       <SortableTaskList tasks={prizeRoot.childTasks} />
                     </Section>
                   ) : null}
@@ -98,7 +98,7 @@ export default async function TasksPage() {
               ) : null}
 
               {otherRoots.length > 0 ? (
-                <Section title="Other Top-Level Tasks">
+                <Section title="Other Blocking Programs">
                   <SortableTaskList tasks={otherRoots} />
                 </Section>
               ) : null}

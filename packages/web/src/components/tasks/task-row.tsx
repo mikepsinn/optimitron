@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
-  buildTaskShareText,
   formatCompactCurrency,
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
 import { getPersonHref } from "@/lib/person-href";
+import { buildTaskPressureShareText, getTaskPressurePrompt } from "@/lib/tasks/task-review-ui";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
@@ -163,14 +163,8 @@ export function TaskRow({
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 
-  const shareText = buildTaskShareText({
-    currentDelayDays: delayStats.currentDelayDays,
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-    targetLabel,
-    taskTitle: task.title,
-  });
+  const shareText = buildTaskPressureShareText(task, delayStats);
+  const pressurePrompt = getTaskPressurePrompt(task, delayStats);
 
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
 
@@ -235,6 +229,11 @@ export function TaskRow({
         >
           {task.title}
         </Link>
+        {pressurePrompt ? (
+          <p className="mt-1 truncate text-[11px] font-black uppercase text-brutal-red">
+            {pressurePrompt}
+          </p>
+        ) : null}
         {/* Mobile badges — show data from hidden columns */}
         <div className="mt-1 flex flex-wrap gap-1 lg:hidden">
           {isOverdue ? (

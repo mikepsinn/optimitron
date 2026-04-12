@@ -1,7 +1,4 @@
 import "./load-env";
-import { createHash } from "crypto";
-import { readFile } from "fs/promises";
-import { resolve } from "path";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
 import { getCountryPanelLatest } from "@optimitron/data";
@@ -14,41 +11,60 @@ import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.se
 import { syncTaskMilestones } from "../src/lib/tasks/milestones.server";
 import { buildImportedTaskBundleFromPolicyModelRun } from "../src/lib/tasks/policy-model-run-to-imported-task-bundle";
 import {
+  buildTreatyParameterExport,
+  getTreatyParameterSetHash,
+} from "../src/lib/tasks/treaty-parameter-export";
+import {
+  attachTreatySignerSyncHash,
+  buildTreatySignerSyncHash,
+  canSkipTreatySignerSync,
+  getTreatySignerSyncMismatchReasons,
+} from "../src/lib/tasks/treaty-sync";
+import {
   buildTreatySignerImportDraft,
-  buildTreatySupporterTaskDrafts,
-  getTreatySignerTaskKey,
-  TOP_TREATY_SIGNER_SLOTS,
   TREATY_DUE_AT,
   type TreatySignerSlot,
 } from "../src/lib/tasks/treaty-signer-network";
 import { buildFullTreatySignerSlots } from "../src/lib/tasks/treaty-signer-roster";
+import { getTreatySignerTaskId, getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
 import {
   ensureTreatyParentTask,
   softDeleteMissingTreatySignerNetworkTasks,
-  syncTreatySupporterTasks,
 } from "../src/lib/tasks/treaty-program.server";
-import { buildTreatySignerMilestones } from "../src/lib/tasks/treaty-milestones";
 
-const DEFAULT_PARAMETERS_PATH = "E:/code/disease-eradication-plan/assets/json/parameters.json";
-const DEFAULT_ROSTER = "full";
-const SYNC_CONCURRENCY = 8;
+const SYNC_CONCURRENCY = 2;
 
-export type TreatySignerRosterMode = "full" | "top";
+interface PersistedTreatySignerSyncResult {
+  action: "skipped" | "updated";
+  assigneeOrganizationId: string;
+  countryCode: string;
+  signerTaskId: string;
+  signerTaskKey: string;
+}
 
 export interface SyncTreatySignerCliOptions {
   countryCodes: string[] | null;
   importDb: boolean;
-  parametersPath: string;
   printJson: boolean;
-  roster: TreatySignerRosterMode;
 }
 
 export function parseArgs(argv: string[]): SyncTreatySignerCliOptions {
   const getValue = (prefix: string) =>
     argv.find((arg) => arg.startsWith(`${prefix}=`))?.slice(prefix.length + 1) ?? null;
   const countryCodeValue = getValue("--country-codes");
-  const rosterValue = getValue("--roster");
-  const roster = rosterValue === "top" ? "top" : DEFAULT_ROSTER;
+  const ignoredParametersPath = getValue("--parameters");
+  const ignoredRosterValue = getValue("--roster");
+
+  if (ignoredParametersPath) {
+    console.warn(
+      `[TREATY SYNC] Ignoring --parameters=${ignoredParametersPath}. Treaty parameters now come from @optimitron/data/parameters.`,
+    );
+  }
+  if (ignoredRosterValue) {
+    console.warn(
+      `[TREATY SYNC] Ignoring --roster=${ignoredRosterValue}. Signer tasks now always use the full impact-ranked roster.`,
+    );
+  }
 
   return {
     countryCodes:
@@ -59,18 +75,15 @@ export function parseArgs(argv: string[]): SyncTreatySignerCliOptions {
             .map((value) => value.trim().toUpperCase())
             .filter(Boolean),
     importDb: argv.includes("--import-db"),
-    parametersPath: getValue("--parameters") ?? DEFAULT_PARAMETERS_PATH,
     printJson: argv.includes("--print-json"),
-    roster,
   };
 }
 
 export function getTreatySignerSlots(options: {
   countryCodes?: string[] | null;
-  roster?: TreatySignerRosterMode;
 } = {}): TreatySignerSlot[] {
-  const fullRoster = buildFullTreatySignerSlots(getCountryPanelLatest(), TOP_TREATY_SIGNER_SLOTS);
-  const selectedRoster = options.roster === "top" ? TOP_TREATY_SIGNER_SLOTS : fullRoster;
+  const countryPanel = getCountryPanelLatest();
+  const selectedRoster = buildFullTreatySignerSlots(countryPanel);
 
   if (options.countryCodes == null) {
     return selectedRoster;
@@ -91,11 +104,9 @@ function chunkArray<TValue>(values: TValue[], size: number) {
 }
 
 export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
-  const parametersPath = resolve(process.cwd(), options.parametersPath);
-  const rawJson = await readFile(parametersPath, "utf8");
-  const rawExport = JSON.parse(rawJson);
+  const rawExport = buildTreatyParameterExport();
   const generatedAt = new Date().toISOString();
-  const parameterSetHash = `sha256:${createHash("sha256").update(rawJson).digest("hex")}`;
+  const parameterSetHash = getTreatyParameterSetHash();
 
   const baseRun = buildOnePercentTreatyPolicyModelRun(rawExport, {
     calculationVersion: "one-percent-treaty-compiler-v1",
@@ -111,7 +122,6 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
 
   const selectedSlots = getTreatySignerSlots({
     countryCodes: options.countryCodes,
-    roster: options.roster,
   });
 
   if (selectedSlots.length === 0) {
@@ -123,16 +133,14 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
       baseDraft,
       slot,
     });
-    const supporterDrafts = buildTreatySupporterTaskDrafts(slot);
 
     return {
       signerDraft,
       slot,
-      supporterDrafts,
     };
   });
 
-  const summary = drafts.map(({ signerDraft, slot, supporterDrafts }) => {
+  const summary = drafts.map(({ signerDraft, slot }) => {
     const frame = signerDraft.bundle.impactEstimate.frames[0];
     const annualRedirectMetric = frame?.metrics.find(
       (metric) => metric.metricKey === "annual_redirect_amount_usd",
@@ -143,7 +151,6 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
       countryCode: slot.countryCode,
       countryName: slot.countryName,
       signerTaskKey: signerDraft.bundle.task.taskKey,
-      supporterTaskCount: supporterDrafts.length,
       treatyTarget: slot.decisionMakerLabel,
     };
   });
@@ -153,7 +160,7 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
   }
 
   if (!options.importDb) {
-    console.log("skip db sync (pass --import-db to persist signer and supporter tasks)");
+    console.log("skip db sync (pass --import-db to persist signer tasks)");
     return;
   }
 
@@ -162,11 +169,11 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
   });
 
   const liveTaskKeys: string[] = [];
-  const persisted: Array<Record<string, unknown>> = [];
+  const persisted: PersistedTreatySignerSyncResult[] = [];
 
   for (const chunk of chunkArray(drafts, SYNC_CONCURRENCY)) {
     const chunkResults = await Promise.all(
-      chunk.map(async ({ signerDraft, slot, supporterDrafts }) => {
+      chunk.map(async ({ signerDraft, slot }) => {
         const organization = await findOrCreateOrganization({
           name: slot.governmentName,
           sourceRef: `organization:government:${slot.countryCode.toLowerCase()}`,
@@ -215,12 +222,80 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
           }
         }
 
+        const syncHash = buildTreatySignerSyncHash({
+          assigneeOrganizationId: organization.id,
+          assigneePersonId: person.id,
+          bundle: signerDraft.bundle,
+          parentTaskId: parentTask.id,
+          sortOrder: slot.sortOrder,
+        });
+
+        attachTreatySignerSyncHash(signerDraft.bundle, syncHash);
+
+        const existingTask = await prisma.task.findUnique({
+          where: {
+            taskKey: signerDraft.bundle.task.taskKey,
+          },
+          select: {
+            assigneeOrganizationId: true,
+            assigneePersonId: true,
+            contextJson: true,
+            currentImpactEstimateSet: {
+              select: {
+                parameterSetHash: true,
+              },
+            },
+            deletedAt: true,
+            id: true,
+            parentTaskId: true,
+            sortOrder: true,
+            taskKey: true,
+          },
+        });
+
+        if (
+          canSkipTreatySignerSync({
+            assigneeOrganizationId: organization.id,
+            assigneePersonId: person.id,
+            existingTask,
+            parameterSetHash,
+            parentTaskId: parentTask.id,
+            sortOrder: slot.sortOrder,
+            syncHash,
+          })
+        ) {
+          return {
+            action: "skipped" as const,
+            assigneeOrganizationId: organization.id,
+            countryCode: slot.countryCode,
+            liveTaskKeys: [getTreatySignerTaskKey(slot)],
+            signerTaskId: existingTask!.id,
+            signerTaskKey: existingTask!.taskKey,
+            sortOrder: slot.sortOrder,
+          };
+        }
+
+        if (process.env.DEBUG_TREATY_SYNC === "1") {
+          console.warn(
+            `[TREATY SYNC] ${slot.countryCode} update reasons: ${getTreatySignerSyncMismatchReasons({
+              assigneeOrganizationId: organization.id,
+              assigneePersonId: person.id,
+              existingTask,
+              parameterSetHash,
+              parentTaskId: parentTask.id,
+              sortOrder: slot.sortOrder,
+              syncHash,
+            }).join(", ")}`,
+          );
+        }
+
         const result = await upsertImportedTaskBundle(signerDraft.bundle, {
           assigneeOrganizationId: organization.id,
           assigneePersonId: person.id,
           isPublic: true,
           jurisdictionId: null,
           parentTaskId: parentTask.id,
+          taskId: getTreatySignerTaskId(slot),
         });
 
         await prisma.task.update({
@@ -232,24 +307,16 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
           },
         });
 
-        await syncTaskMilestones(result.taskId, buildTreatySignerMilestones());
-        await syncTreatySupporterTasks({
-          assigneeOrganizationId: organization.id,
-          parentTaskId: result.taskId,
-          slot,
-        });
+        await syncTaskMilestones(result.taskId, []);
 
         return {
+          action: "updated" as const,
           assigneeOrganizationId: organization.id,
           countryCode: slot.countryCode,
-          liveTaskKeys: [
-            getTreatySignerTaskKey(slot),
-            ...supporterDrafts.map((draft) => draft.taskKey),
-          ],
+          liveTaskKeys: [getTreatySignerTaskKey(slot)],
           signerTaskId: result.taskId,
           signerTaskKey: result.taskKey,
           sortOrder: slot.sortOrder,
-          supporterTaskKeys: supporterDrafts.map((draft) => draft.taskKey),
         };
       }),
     );
@@ -257,11 +324,11 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
     for (const chunkResult of chunkResults.sort((left, right) => left.sortOrder - right.sortOrder)) {
       liveTaskKeys.push(...chunkResult.liveTaskKeys);
       persisted.push({
+        action: chunkResult.action,
         assigneeOrganizationId: chunkResult.assigneeOrganizationId,
         countryCode: chunkResult.countryCode,
         signerTaskId: chunkResult.signerTaskId,
         signerTaskKey: chunkResult.signerTaskKey,
-        supporterTaskKeys: chunkResult.supporterTaskKeys,
       });
     }
   }
@@ -274,9 +341,10 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
     JSON.stringify(
       {
         parentTaskId: parentTask.id,
-        roster: options.roster,
+        skippedCount: persisted.filter((entry) => entry.action === "skipped").length,
         signerCount: persisted.length,
         synced: persisted,
+        updatedCount: persisted.filter((entry) => entry.action === "updated").length,
       },
       null,
       2,

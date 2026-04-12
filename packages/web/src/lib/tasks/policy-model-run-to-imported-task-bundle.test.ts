@@ -109,6 +109,12 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
     expect(draft.bundle.task.claimPolicy).toBe(TaskClaimPolicy.ASSIGNED_ONLY);
     expect(draft.bundle.task.title).toBe("President of the United States signs the 1% Treaty");
     expect(draft.bundle.task.contactLabel).toBe("White House contact form");
+    expect(draft.bundle.task.contextJson).toMatchObject({
+      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
+      modelKey: "policy:usa-federal:one-percent-treaty",
+      parameterSetHash: "sha256:test",
+    });
+    expect(draft.bundle.task.contextJson).not.toHaveProperty("generatedAt");
     expect(draft.bundle.impactEstimate.calculationVersion).toBe("treaty-compiler-v1");
     expect(draft.bundle.impactEstimate.frames[0]?.frameSlug).toBe("twenty-year");
     expect(draft.bundle.impactEstimate.frames[0]?.metrics[0]?.metricKey).toBe(

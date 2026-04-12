@@ -88,4 +88,27 @@ describe("task contact helpers", () => {
     expect(emailAction?.href).toContain("subject=");
     expect(emailAction?.href).toContain("body=");
   });
+
+  it("falls back to a search link when no direct office contact exists", () => {
+    const searchAction = resolveTaskContactAction({
+      delayStats,
+      task: {
+        assigneeOrganization: {
+          name: "Example Government",
+        },
+        assigneePerson: {
+          displayName: "President Example",
+        },
+        roleTitle: "President",
+        title: "Sign the 1% Treaty",
+      },
+    });
+
+    expect(searchAction).toMatchObject({
+      channel: "link",
+      label: "Find office contact",
+    });
+    expect(searchAction?.href).toContain("google.com/search");
+    expect(searchAction?.href).toContain(encodeURIComponent("President Example President Example Government official contact"));
+  });
 });

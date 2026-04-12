@@ -5,12 +5,15 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getGovernment } from "@optimitron/data";
 import Image from "next/image";
+import { DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT } from "@optimitron/data/parameters";
+import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { GameCTA } from "@/components/ui/game-cta";
 import { SpendingBar } from "@/components/ui/spending-bar";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { ROUTES } from "@/lib/routes";
 import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
+import { formatCompactCount } from "@/lib/tasks/accountability";
 
 interface PageProps {
   params: Promise<{ code: string; bioguideId: string }>;
@@ -139,6 +142,9 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
 
   // Max bill amount for scaling bill-level progress bars
   const maxBillAmount = Math.max(...yeaVotes.map((v) => v.amount), 1);
+  const militaryPatientsFundable = Math.round(
+    politician.militaryDollarsVotedFor / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value,
+  );
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
@@ -181,6 +187,34 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="mb-8">
+        <EmployeeReviewBanner
+          eyebrow="Employee Performance Review"
+          title="Budget influence review."
+          description={`${politician.name} is a public employee. This review tracks the federal budget this office backed instead of pretending congressional votes are just vibes. At ${DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value.toLocaleString("en-US")} dollars per patient, the military dollars this office backed could have funded pragmatic trials for about ${formatCompactCount(militaryPatientsFundable)} patients.`}
+          metrics={[
+            {
+              detail: "Bills this office backed that expand military spending",
+              label: "Military $ Backed",
+              tone: "red",
+              value: formatDollars(politician.militaryDollarsVotedFor),
+            },
+            {
+              detail: "Bills this office backed that include clinical trial funding",
+              label: "Clinical Trials $",
+              tone: "cyan",
+              value: formatDollars(politician.clinicalTrialDollarsVotedFor),
+            },
+            {
+              detail: "Higher means more military than medicine",
+              label: "Military : Medicine",
+              tone: "yellow",
+              value: formatRatio(politician.ratio),
+            },
+          ]}
+        />
       </section>
 
       {/* Spending bars — replaces pie chart */}

@@ -14,6 +14,8 @@
 
 import "./load-env";
 import { pathToFileURL } from "url";
+import "../../data/src/generated/country-panel";
+import { getCountryPanelLatest } from "@optimitron/data";
 import { OrgType } from "@optimitron/db";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
@@ -27,11 +29,8 @@ import {
   buildActivityTaskBundle,
   buildLeaderPersonDraft,
 } from "../src/lib/tasks/leader-accountability-network";
-import {
-  getTreatySignerTaskKey,
-  TOP_TREATY_SIGNER_SLOTS,
-  TREATY_SIGNER_TASK_KEY_PREFIX,
-} from "../src/lib/tasks/treaty-signer-network";
+import { buildFullTreatySignerSlots } from "../src/lib/tasks/treaty-signer-roster";
+import { getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
 
 const SYNC_CONCURRENCY = 8;
 
@@ -76,17 +75,6 @@ function chunkArray<T>(values: T[], size: number): T[][] {
 // ---------------------------------------------------------------------------
 
 async function syncLeaderAccountability(options: SyncOptions) {
-  // Filter slots by country codes if requested
-  const selectedSlots = options.countryCodes
-    ? TOP_TREATY_SIGNER_SLOTS.filter((slot) =>
-        options.countryCodes!.includes(slot.countryCode.toUpperCase()),
-      )
-    : TOP_TREATY_SIGNER_SLOTS;
-
-  if (selectedSlots.length === 0) {
-    throw new Error("No treaty signer slots matched the requested filter.");
-  }
-
   // Group activities by country
   const activitiesByCountry = new Map<string, typeof LEADER_ACTIVITIES>();
   for (const activity of LEADER_ACTIVITIES) {
@@ -95,6 +83,20 @@ async function syncLeaderAccountability(options: SyncOptions) {
       activitiesByCountry.set(cc, []);
     }
     activitiesByCountry.get(cc)!.push(activity);
+  }
+
+  const fullRoster = buildFullTreatySignerSlots(getCountryPanelLatest());
+  const selectedSlots = fullRoster.filter((slot) => {
+    const countryCode = slot.countryCode.toUpperCase();
+    if (!activitiesByCountry.has(countryCode)) {
+      return false;
+    }
+
+    return options.countryCodes ? options.countryCodes.includes(countryCode) : true;
+  });
+
+  if (selectedSlots.length === 0) {
+    throw new Error("No treaty signer slots matched the requested filter.");
   }
 
   // Build summary for print/preview
@@ -160,18 +162,7 @@ async function syncLeaderAccountability(options: SyncOptions) {
           },
         });
 
-        // 4. Also backlink supporter tasks to this Person
-        await prisma.task.updateMany({
-          where: {
-            taskKey: { startsWith: `${treatyTaskKey}:support:` },
-            deletedAt: null,
-          },
-          data: {
-            assigneePersonId: person.id,
-          },
-        });
-
-        // 5. Upsert each activity task
+        // 4. Upsert each activity task
         const activityResults: Array<{ taskKey: string; taskId: string }> = [];
         for (const activity of activities) {
           const bundle = buildActivityTaskBundle(slot, activity);

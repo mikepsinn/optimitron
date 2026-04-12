@@ -8,6 +8,7 @@
 import { fetchWorldLeaders } from "@optimitron/data/fetchers/world-leaders";
 import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
+import { getTreatySignerTaskKey } from "./task-keys";
 
 /**
  * For each country, fetch the current leader from Wikidata, create/update
@@ -37,7 +38,9 @@ export async function syncLeaderPersons() {
     });
 
     // Find the treaty signer task for this country code
-    const signerTaskKey = `program:one-percent-treaty:signer:${leader.countryCode.toLowerCase()}`;
+    const signerTaskKey = getTreatySignerTaskKey({
+      countryCode: leader.countryCode,
+    });
     const task = await prisma.task.findFirst({
       where: {
         taskKey: signerTaskKey,
