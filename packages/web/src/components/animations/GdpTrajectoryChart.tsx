@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   DESTRUCTIVE_BASE_T,
@@ -98,6 +98,8 @@ export function GdpTrajectoryChart({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const { trajectories, maxY } = generateAllTrajectories();
   const collapseYears = computeCollapseYears();
@@ -115,7 +117,7 @@ export function GdpTrajectoryChart({ className = "" }: { className?: string }) {
   const xTicks: number[] = [];
   for (let y = START_YEAR; y <= END_YEAR; y += 5) xTicks.push(y);
 
-  const shouldAnimate = isInView && !prefersReducedMotion;
+  const shouldAnimate = mounted && isInView && !prefersReducedMotion;
 
   return (
     <div ref={ref} className={className}>
@@ -207,25 +209,38 @@ export function GdpTrajectoryChart({ className = "" }: { className?: string }) {
         </motion.text>
 
         {/* Trajectory lines */}
-        {trajectories.map((traj, i) => (
-          <motion.path
-            key={traj.label}
-            d={buildPath(traj.points, maxY)}
-            fill="none"
-            stroke={traj.color}
-            strokeWidth={i === 0 ? 2 : 3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray={i === 0 ? "4 4" : undefined}
-            initial={{ pathLength: 0 }}
-            animate={
-              shouldAnimate
-                ? { pathLength: 1 }
-                : { pathLength: prefersReducedMotion ? 1 : 0 }
-            }
-            transition={{ duration: 2, ease: "easeInOut", delay: i * 0.2 }}
-          />
-        ))}
+        {trajectories.map((traj, i) =>
+          mounted ? (
+            <motion.path
+              key={traj.label}
+              d={buildPath(traj.points, maxY)}
+              fill="none"
+              stroke={traj.color}
+              strokeWidth={i === 0 ? 2 : 3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={i === 0 ? "4 4" : undefined}
+              initial={{ pathLength: 0 }}
+              animate={
+                shouldAnimate
+                  ? { pathLength: 1 }
+                  : { pathLength: prefersReducedMotion ? 1 : 0 }
+              }
+              transition={{ duration: 2, ease: "easeInOut", delay: i * 0.2 }}
+            />
+          ) : (
+            <path
+              key={traj.label}
+              d={buildPath(traj.points, maxY)}
+              fill="none"
+              stroke={traj.color}
+              strokeWidth={i === 0 ? 2 : 3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={i === 0 ? "4 4" : undefined}
+            />
+          ),
+        )}
 
         {/* Legend */}
         <g transform={`translate(${PADDING.left + 10}, ${PADDING.top + 10})`}>
