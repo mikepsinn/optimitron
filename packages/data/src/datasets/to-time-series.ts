@@ -12,7 +12,7 @@
  * @see https://opg.warondisease.org — Optimal Policy Generator
  */
 
-import type { TimeSeries, Measurement } from '@optimitron/optimizer';
+import type { TimeSeries } from '@optimitron/optimizer';
 import {
   HEALTH_SYSTEM_COMPARISON,
   DRUG_POLICY_COMPARISON,
@@ -122,7 +122,7 @@ export function drugPolicyCountryToTimeSeries(
 export function drugPolicyToTimeSeries(): Map<string, TimeSeries[]> {
   const result = new Map<string, TimeSeries[]>();
   for (const country of DRUG_POLICY_COMPARISON) {
-    const existing = result.get(country.iso3) || [];
+    const existing = result.get(country.iso3) ?? [];
     result.set(country.iso3, [...existing, ...drugPolicyCountryToTimeSeries(country)]);
   }
   return result;
@@ -148,7 +148,7 @@ export function educationCountryToTimeSeries(
 export function educationToTimeSeries(): Map<string, TimeSeries[]> {
   const result = new Map<string, TimeSeries[]>();
   for (const country of EDUCATION_COMPARISON) {
-    const existing = result.get(country.iso3) || [];
+    const existing = result.get(country.iso3) ?? [];
     result.set(country.iso3, [...existing, ...educationCountryToTimeSeries(country)]);
   }
   return result;
@@ -173,7 +173,7 @@ export function criminalJusticeCountryToTimeSeries(
 export function criminalJusticeToTimeSeries(): Map<string, TimeSeries[]> {
   const result = new Map<string, TimeSeries[]>();
   for (const country of CRIMINAL_JUSTICE_COMPARISON) {
-    const existing = result.get(country.iso3) || [];
+    const existing = result.get(country.iso3) ?? [];
     result.set(country.iso3, [...existing, ...criminalJusticeCountryToTimeSeries(country)]);
   }
   return result;
@@ -226,7 +226,7 @@ export function allDatasetsToTimeSeries(): Map<string, TimeSeries[]> {
   // Merge function: append to existing or create new entry
   const merge = (source: Map<string, TimeSeries[]>) => {
     for (const [key, series] of source) {
-      const existing = result.get(key) || [];
+      const existing = result.get(key) ?? [];
       result.set(key, [...existing, ...series]);
     }
   };
@@ -237,7 +237,7 @@ export function allDatasetsToTimeSeries(): Map<string, TimeSeries[]> {
   merge(criminalJusticeToTimeSeries());
 
   // US federal budget as its own jurisdiction
-  const usSeries = result.get('USA') || [];
+  const usSeries = result.get('USA') ?? [];
   result.set('USA', [...usSeries, ...budgetToTimeSeries(), ...budgetOutcomesToTimeSeries()]);
 
   return result;

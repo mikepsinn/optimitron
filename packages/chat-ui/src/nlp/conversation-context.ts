@@ -60,6 +60,82 @@ function nowLocalISO(): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 }
 
+type JsonRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is JsonRecord {
+  return typeof value === 'object' && value !== null;
+}
+
+function getString(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function getStringField(record: JsonRecord, key: string): string | undefined {
+  return getString(record[key]);
+}
+
+function parseNumericValue(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function isValidCategoryName(value: string): value is VariableCategoryName {
+  return (VariableCategoryNames as readonly string[]).includes(value);
+}
+
+function isValidUnitAbbreviation(value: string): value is UnitAbbreviation {
+  return (UnitAbbreviations as readonly string[]).includes(value);
+}
+
+function extractOpenAIContent(payload: unknown): string | undefined {
+  if (!isRecord(payload)) return undefined;
+  const choices = payload.choices;
+  if (!Array.isArray(choices) || choices.length === 0) return undefined;
+
+  const firstChoice = choices[0];
+  if (!isRecord(firstChoice) || !isRecord(firstChoice.message)) return undefined;
+
+  return getString(firstChoice.message.content);
+}
+
+function extractAnthropicContent(payload: unknown): string | undefined {
+  if (!isRecord(payload)) return undefined;
+  const content = payload.content;
+  if (!Array.isArray(content)) return undefined;
+
+  for (const block of content) {
+    if (!isRecord(block)) continue;
+    if (block.type !== 'text') continue;
+    const text = getString(block.text);
+    if (text) return text;
+  }
+
+  return undefined;
+}
+
+function extractGeminiContent(payload: unknown): string | undefined {
+  if (!isRecord(payload)) return undefined;
+  const candidates = payload.candidates;
+  if (!Array.isArray(candidates) || candidates.length === 0) return undefined;
+
+  const firstCandidate = candidates[0];
+  if (!isRecord(firstCandidate) || !isRecord(firstCandidate.content)) return undefined;
+
+  const parts = firstCandidate.content.parts;
+  if (!Array.isArray(parts) || parts.length === 0) return undefined;
+
+  const firstPart = parts[0];
+  if (!isRecord(firstPart)) return undefined;
+
+  return getString(firstPart.text);
+}
+
 // ---------------------------------------------------------------------------
 // Conversation Context class
 // ---------------------------------------------------------------------------
@@ -269,43 +345,53 @@ If no time specified, use current time: ${currentDT}`;
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) return { measurements: [] };
 
-      const parsed = JSON.parse(jsonMatch[0]);
+      const parsed: unknown = JSON.parse(jsonMatch[0]);
       const measurements: ParsedMeasurement[] = [];
+      const parsedRecord = isRecord(parsed) ? parsed : undefined;
 
-      const items = Array.isArray(parsed.measurements) ? parsed.measurements : [];
+      const items = Array.isArray(parsedRecord?.measurements)
+        ? parsedRecord.measurements.filter(isRecord)
+        : [];
       for (const item of items) {
-        if (item.itemType === 'unknown') continue;
+        if (getStringField(item, 'itemType') === 'unknown') continue;
+
+        const rawCategoryName = getStringField(item, 'categoryName');
+        const rawUnitAbbreviation = getStringField(item, 'unitAbbreviation');
+        const rawStartAt = getStringField(item, 'startAt');
+        const rawVariableName = getStringField(item, 'variableName');
+        const rawEndAt = getStringField(item, 'endAt');
+        const rawNote = getStringField(item, 'note');
 
         const categoryName: VariableCategoryName =
-          (VariableCategoryNames as readonly string[]).includes(item.categoryName)
-            ? item.categoryName as VariableCategoryName
+          rawCategoryName && isValidCategoryName(rawCategoryName)
+            ? rawCategoryName
             : 'Treatment';
 
         const unitAbbreviation: UnitAbbreviation =
-          (UnitAbbreviations as readonly string[]).includes(item.unitAbbreviation)
-            ? item.unitAbbreviation as UnitAbbreviation
+          rawUnitAbbreviation && isValidUnitAbbreviation(rawUnitAbbreviation)
+            ? rawUnitAbbreviation
             : CATEGORY_DEFAULTS[categoryName].unit;
 
-        let startAt = item.startAt ?? currentDT;
+        let startAt = rawStartAt ?? currentDT;
         if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(startAt)) {
           startAt = currentDT;
         }
 
         measurements.push({
-          variableName: item.variableName || 'Unknown',
-          value: typeof item.value === 'number' ? item.value : parseFloat(String(item.value)) || 0,
+          variableName: rawVariableName ?? 'Unknown',
+          value: parseNumericValue(item.value),
           unitAbbreviation,
           categoryName,
-          combinationOperation: item.combinationOperation === 'MEAN' ? 'MEAN' : 'SUM',
+          combinationOperation: getStringField(item, 'combinationOperation') === 'MEAN' ? 'MEAN' : 'SUM',
           startAt,
-          endAt: item.endAt ?? null,
-          note: item.note || text,
+          endAt: rawEndAt ?? null,
+          note: rawNote ?? text,
         });
       }
 
       return {
         measurements,
-        followUpQuestion: parsed.followUpQuestion || undefined,
+        followUpQuestion: parsedRecord ? getStringField(parsedRecord, 'followUpQuestion') : undefined,
       };
     } catch {
       console.warn('Failed to parse context LLM response:', response.slice(0, 200));
@@ -353,8 +439,12 @@ async function callLLMRaw(
         }),
       });
       if (!res.ok) throw new Error(`OpenAI error: ${res.status}`);
-      const data = await res.json();
-      return data.choices[0].message.content;
+      const data: unknown = await res.json();
+      const content = extractOpenAIContent(data);
+      if (!content) {
+        throw new Error('OpenAI response missing message content');
+      }
+      return content;
     }
 
     case 'anthropic': {
@@ -374,9 +464,8 @@ async function callLLMRaw(
         }),
       });
       if (!res.ok) throw new Error(`Anthropic error: ${res.status}`);
-      const data = await res.json();
-      const textBlock = data.content.find((b: { type: string }) => b.type === 'text');
-      return textBlock?.text ?? '{"measurements":[]}';
+      const data: unknown = await res.json();
+      return extractAnthropicContent(data) ?? '{"measurements":[]}';
     }
 
     case 'gemini': {
@@ -390,8 +479,12 @@ async function callLLMRaw(
         }),
       });
       if (!res.ok) throw new Error(`Gemini error: ${res.status}`);
-      const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
+      const data: unknown = await res.json();
+      const content = extractGeminiContent(data);
+      if (!content) {
+        throw new Error('Gemini response missing content text');
+      }
+      return content;
     }
 
     default:

@@ -583,7 +583,7 @@ export async function* streamParseAppleHealthXML(
   const recordRegex = /<Record\s[^>]*\/>/gi;
 
   try {
-    while (true) {
+    for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
 
@@ -655,8 +655,17 @@ export function summarizeAppleHealthExport(
 
   const variableCounts: Record<string, number> = {};
   const sources = new Set<string>();
-  let earliest = records[0]!.startAt;
-  let latest = records[0]!.startAt;
+  const firstRecord = records[0];
+  if (!firstRecord) {
+    return {
+      totalRecords: 0,
+      dateRange: null,
+      variableCounts: {},
+      sourceNames: [],
+    };
+  }
+  let earliest = firstRecord.startAt;
+  let latest = firstRecord.startAt;
 
   for (const r of records) {
     variableCounts[r.variableName] =

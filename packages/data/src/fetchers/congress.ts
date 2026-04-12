@@ -306,7 +306,7 @@ async function fetchCongressText(url: string): Promise<string | null> {
  * Parse a raw member list item into a CongressMember.
  */
 export function parseMemberListItem(raw: RawMemberListItem): CongressMember {
-  const terms: CongressTerm[] = (raw.terms?.item ?? []).map((t) => ({
+  const terms: CongressTerm[] = raw.terms.item.map((t) => ({
     chamber: t.chamber,
     startYear: t.startYear,
     endYear: t.endYear,
@@ -638,9 +638,9 @@ export async function fetchRollCallVote(
  */
 function parseRollCallVote(
   raw: RawRollCallVote,
-  congress: number,
-  chamber: string,
-  session: number,
+  _congress: number,
+  _chamber: string,
+  _session: number,
 ): Vote {
   const memberVotes: MemberVotePosition[] = (raw.members ?? [])
     .filter((m) => m.bioguideId && m.votePosition)
@@ -651,12 +651,12 @@ function parseRollCallVote(
 
   return {
     rollCallNumber: raw.rollCallNumber,
-    congress: raw.congress ?? congress,
-    chamber: raw.chamber ?? chamber,
-    session: raw.session ?? session,
-    date: raw.date ?? '',
-    question: raw.question ?? '',
-    result: raw.result ?? '',
+    congress: raw.congress,
+    chamber: raw.chamber,
+    session: raw.session,
+    date: raw.date,
+    question: raw.question,
+    result: raw.result,
     memberVotes,
   };
 }
@@ -705,7 +705,7 @@ function extractCongressNameParts(name: string): { firstName: string; lastName: 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   return {
     firstName: parts[0] ?? '',
-    lastName: parts.slice(1).join(' ') || parts[0] || '',
+    lastName: parts.slice(1).join(' ') || parts[0] ?? '',
   };
 }
 

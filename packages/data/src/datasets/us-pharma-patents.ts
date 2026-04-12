@@ -3,8 +3,6 @@
  * Source: I-MAK, FDA Orange Book, academic patent analysis
  */
 
-import type { TimePoint } from "./agency-performance";
-
 export interface PatentAbuseStat {
   metric: string;
   value: string;

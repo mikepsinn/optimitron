@@ -26,7 +26,7 @@
  */
 
 import type { ParsedHealthRecord } from './apple-health';
-import { buildImportSummary, type ImportSummary, type GenericCsvOptions, type CsvColumnMapping } from './types';
+import { buildImportSummary, type ImportSummary, type GenericCsvOptions } from './types';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -44,7 +44,7 @@ function parseCsvLine(line: string, delimiter: string): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
     if (inQuotes) {
       if (ch === '"') {
         if (i + 1 < line.length && line[i + 1] === '"') {
@@ -155,7 +155,11 @@ export function autoDetectCsvColumns(text: string): DetectedColumns {
     return { delimiter, headers: [], dateColumn: null, valueColumns: [], sampleValues: {} };
   }
 
-  const headers = parseCsvLine(lines[0]!, delimiter);
+  const headerLine = lines[0];
+  if (headerLine === undefined) {
+    return { delimiter, headers: [], dateColumn: null, valueColumns: [], sampleValues: {} };
+  }
+  const headers = parseCsvLine(headerLine, delimiter);
   const sampleRows = lines.slice(1, Math.min(11, lines.length)).map((l) => parseCsvLine(l, delimiter));
 
   let dateColumn: string | null = null;
@@ -163,7 +167,10 @@ export function autoDetectCsvColumns(text: string): DetectedColumns {
   const sampleValues: Record<string, string[]> = {};
 
   for (let col = 0; col < headers.length; col++) {
-    const header = headers[col]!;
+    const header = headers[col];
+    if (header === undefined) {
+      continue;
+    }
     const samples = sampleRows.map((r) => r[col] ?? '').filter(Boolean);
     sampleValues[header] = samples.slice(0, 3);
 
@@ -188,9 +195,9 @@ export function autoDetectCsvColumns(text: string): DetectedColumns {
     for (const name of dateNames) {
       const idx = lowerHeaders.indexOf(name);
       if (idx >= 0) {
-        dateColumn = headers[idx]!;
+        dateColumn = headers[idx] ?? null;
         // Remove from value columns if present
-        const valIdx = valueColumns.indexOf(dateColumn);
+        const valIdx = dateColumn === null ? -1 : valueColumns.indexOf(dateColumn);
         if (valIdx >= 0) valueColumns.splice(valIdx, 1);
         break;
       }
@@ -223,7 +230,11 @@ export function parseGenericCsv(
   const lines = text.split(/\r?\n/).filter((l) => l.trim() !== '');
   if (lines.length < 2) return [];
 
-  const headers = parseCsvLine(lines[0]!, delimiter);
+  const headerLine = lines[0];
+  if (headerLine === undefined) {
+    return [];
+  }
+  const headers = parseCsvLine(headerLine, delimiter);
   const rows = lines.slice(1).map((l) => parseCsvLine(l, delimiter));
   const sourceName = options.sourceName ?? DEFAULT_SOURCE;
   const unitName = options.unitName ?? 'Count';

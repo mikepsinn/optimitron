@@ -138,17 +138,28 @@ function interpolateMissing(
 
   // For each pair of consecutive known dates, interpolate the gap
   for (let i = 0; i < knownDates.length - 1; i++) {
-    const startDate = knownDates[i]!;
-    const endDate = knownDates[i + 1]!;
-    const startVal = knownValues.get(startDate)!.value;
-    const endVal = knownValues.get(endDate)!.value;
+    const startDate = knownDates[i];
+    const endDate = knownDates[i + 1];
+    if (startDate === undefined || endDate === undefined) {
+      continue;
+    }
+    const startValue = knownValues.get(startDate);
+    const endValue = knownValues.get(endDate);
+    if (!startValue || !endValue) {
+      continue;
+    }
+    const startVal = startValue.value;
+    const endVal = endValue.value;
 
     const startIdx = allDates.indexOf(startDate);
     const endIdx = allDates.indexOf(endDate);
     const span = endIdx - startIdx;
 
     for (let j = startIdx + 1; j < endIdx; j++) {
-      const date = allDates[j]!;
+      const date = allDates[j];
+      if (date === undefined) {
+        continue;
+      }
       if (knownValues.has(date)) continue; // already has a value
 
       const fraction = (j - startIdx) / span;
@@ -231,12 +242,14 @@ export function aggregateToDaily(
 
   // ── Step 3: Determine date range ───────────────────────────────────────
   const allDateKeys = [...knownValues.keys()].sort();
+  const firstDateKey = allDateKeys[0];
+  const lastDateKey = allDateKeys[allDateKeys.length - 1];
   const rangeStart = config.startDate
     ? formatDateKey(config.startDate)
-    : allDateKeys[0]!;
+    : firstDateKey ?? '';
   const rangeEnd = config.endDate
     ? formatDateKey(config.endDate)
-    : allDateKeys[allDateKeys.length - 1]!;
+    : lastDateKey ?? '';
 
   // ── Step 4: Fill missing days ──────────────────────────────────────────
   if (config.fillingType === 'NONE') {
@@ -252,7 +265,10 @@ export function aggregateToDaily(
     const interpolated = interpolateMissing(fullRange, knownValues);
     return fullRange
       .filter((d) => interpolated.has(d))
-      .map((d) => interpolated.get(d)!);
+      .flatMap((d) => {
+        const value = interpolated.get(d);
+        return value ? [value] : [];
+      });
   }
 
   // ZERO or VALUE filling

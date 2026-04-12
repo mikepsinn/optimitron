@@ -191,7 +191,12 @@ export function deflateToRealDollars(
 ): number {
   assertYearInRange(year, 'year');
   assertYearInRange(baseYear, 'baseYear');
-  return nominalBillions * (CPI[baseYear]! / CPI[year]!);
+  const baseYearCpi = CPI[baseYear];
+  const yearCpi = CPI[year];
+  if (baseYearCpi === undefined || yearCpi === undefined) {
+    throw new Error(`Missing CPI data for ${baseYear} or ${year}`);
+  }
+  return nominalBillions * (baseYearCpi / yearCpi);
 }
 
 /**
@@ -204,7 +209,11 @@ export function deflateToRealDollars(
 export function toPerCapita(totalBillions: number, year: number): number {
   assertYearInRange(year, 'year');
   // totalBillions * 1e9 / (populationMillions * 1e6) = totalBillions * 1000 / populationMillions
-  return (totalBillions * 1_000) / POPULATION_MILLIONS[year]!;
+  const populationMillions = POPULATION_MILLIONS[year];
+  if (populationMillions === undefined) {
+    throw new Error(`Missing population data for ${year}`);
+  }
+  return (totalBillions * 1_000) / populationMillions;
 }
 
 /**

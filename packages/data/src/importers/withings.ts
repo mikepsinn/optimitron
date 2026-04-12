@@ -44,7 +44,7 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
     if (inQuotes) {
       if (ch === '"') {
         if (i + 1 < line.length && line[i + 1] === '"') {
@@ -74,7 +74,8 @@ function parseCsv(text: string): { headers: string[]; rows: string[][]; delimite
   if (lines.length === 0) return { headers: [], rows: [], delimiter: ',' };
 
   // Detect delimiter: Withings uses comma or semicolon depending on locale
-  const firstLine = lines[0]!;
+  const firstLine = lines[0];
+  if (firstLine === undefined) return { headers: [], rows: [], delimiter: ',' };
   const delimiter = firstLine.includes(';') && !firstLine.includes(',') ? ';' : ',';
 
   const headers = parseCsvLine(firstLine, delimiter);

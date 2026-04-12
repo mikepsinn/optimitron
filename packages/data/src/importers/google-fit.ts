@@ -56,11 +56,6 @@ function nanosToIso(nanos: string | number): string {
   return Number.isNaN(d.getTime()) ? String(nanos) : d.toISOString();
 }
 
-function toIso(dateStr: string): string {
-  const d = new Date(dateStr);
-  return Number.isNaN(d.getTime()) ? dateStr : d.toISOString();
-}
-
 function rec(
   variableName: string,
   categoryName: string,

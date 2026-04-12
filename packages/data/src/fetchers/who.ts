@@ -177,7 +177,7 @@ async function fetchIndicatorRecords(url: string, indicatorCode: string): Promis
  */
 export function parseGHORecords(records: GHORecord[], indicatorCode: string): DataPoint[] {
   return records
-    .filter((r) => r.NumericValue !== null && r.NumericValue !== undefined && r.SpatialDim)
+    .filter((r) => r.NumericValue !== null)
     .map((r) => ({
       jurisdictionIso3: r.SpatialDim,
       year: parseInt(r.TimeDim, 10),

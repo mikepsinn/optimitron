@@ -1048,7 +1048,7 @@ for (const gov of GOVERNMENTS) {
     })[0] ?? null;
   if (best) {
     // Convert equivalised household values to per capita
-    const isEquivalised = best.unit?.includes("equivalised") ?? false;
+    const isEquivalised = best.unit.includes("equivalised");
     const ratio = isEquivalised
       ? (EQUIVALISED_TO_PER_CAPITA_RATIO[iso3] ?? DEFAULT_EQUIV_RATIO)
       : 1;

@@ -80,7 +80,10 @@ export function parseGapminderCsv(
   }
 
   // Header row — parse year columns
-  const headerLine = lines[0]!;
+  const headerLine = lines[0];
+  if (headerLine === undefined) {
+    return [];
+  }
   const headers = parseCsvLine(headerLine);
   const yearColumns: { index: number; year: number }[] = [];
 
@@ -99,7 +102,11 @@ export function parseGapminderCsv(
   const results: CsvTimeSeries[] = [];
 
   for (let rowIndex = 1; rowIndex < lines.length; rowIndex++) {
-    const fields = parseCsvLine(lines[rowIndex]!);
+    const line = lines[rowIndex];
+    if (line === undefined) {
+      continue;
+    }
+    const fields = parseCsvLine(line);
     const entityName = (fields[0] ?? '').trim();
 
     if (entityName.length === 0) continue;
@@ -141,7 +148,7 @@ function parseCsvLine(line: string): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
 
     if (inQuotes) {
       if (ch === '"') {

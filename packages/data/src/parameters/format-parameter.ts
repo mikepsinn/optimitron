@@ -149,7 +149,7 @@ export function fmtParamValueOnly(param: Parameter, figures = 3): string {
 
   // Strip trailing unit words (e.g., " deaths", " years", " deaths/year")
   if (unit && !unit.startsWith("usd")) {
-    const unitWord = unit.split("/")[0]!;
+    const unitWord = unit.split("/")[0] ?? unit;
     const regex = new RegExp(`\\s+${unitWord}.*$`, "i");
     return full.replace(regex, "").trim();
   }

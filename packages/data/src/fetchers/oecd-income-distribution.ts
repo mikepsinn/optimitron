@@ -258,7 +258,7 @@ export function extractOecdIddPoints(
       observations,
     )) {
       const timeValue =
-        timeDimension.values?.[parseInt(observationKey, 10)]?.id;
+        timeDimension.values[parseInt(observationKey, 10)]?.id;
       const numericValue = observationValue[0];
 
       if (

@@ -3,8 +3,6 @@
  * Source: KFF, state insurance commission reports, AMA surveys
  */
 
-import type { TimePoint } from "./agency-performance";
-
 export interface InsurerDenialRate {
   insurer: string;
   denialRate: number; // percentage

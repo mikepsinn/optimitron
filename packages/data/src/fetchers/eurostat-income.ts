@@ -31,7 +31,7 @@ export type {
   EurostatJsonStatResponse,
 } from './eurostat-income-shared';
 function decodeEurostatPosition(position: number, sizes: number[]): number[] {
-  const coordinates = new Array(sizes.length).fill(0);
+  const coordinates = Array.from({ length: sizes.length }, () => 0);
   let remainder = position;
 
   for (let index = sizes.length - 1; index >= 0; index -= 1) {

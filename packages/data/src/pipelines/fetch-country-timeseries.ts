@@ -22,8 +22,7 @@ import {
   fetchGovDebt, fetchGovRevenue, fetchLaborForceParticipation,
   fetchCO2Emissions,
 } from '../fetchers/world-bank';
-import { fetchWHOLifeExpectancy, fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who';
-import { fetchFREDSeries } from '../fetchers/fred';
+import { fetchWHOHealthyLifeExpectancy, fetchWHOUHCIndex } from '../fetchers/who';
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -80,7 +79,11 @@ function dataPointsToTimeSeries(
     if (!byCountry.has(p.jurisdictionIso3)) {
       byCountry.set(p.jurisdictionIso3, []);
     }
-    byCountry.get(p.jurisdictionIso3)!.push({
+    const measurements = byCountry.get(p.jurisdictionIso3);
+    if (!measurements) {
+      continue;
+    }
+    measurements.push({
       timestamp: new Date(`${p.year}-07-01`).getTime(), // mid-year
       value: p.value,
       unit: p.unit,
@@ -111,7 +114,11 @@ function mergeIntoCountries(
     if (!countries.has(iso3)) {
       countries.set(iso3, { iso3, variables: new Map() });
     }
-    countries.get(iso3)!.variables.set(variableId, series);
+    const country = countries.get(iso3);
+    if (!country) {
+      continue;
+    }
+    country.variables.set(variableId, series);
   }
 }
 

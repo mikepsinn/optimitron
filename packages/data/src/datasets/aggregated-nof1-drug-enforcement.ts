@@ -40,7 +40,7 @@ function parseCsvLine(line: string): string[] {
   let inQuotes = false;
 
   for (let index = 0; index < line.length; index += 1) {
-    const char = line[index]!;
+    const char = line.charAt(index);
     if (inQuotes) {
       if (char === '"') {
         if (index + 1 < line.length && line[index + 1] === '"') {
@@ -108,11 +108,15 @@ export function parseAggregatedNOf1DrugEnforcementCsv(
 
   if (lines.length < 2) return [];
 
-  const mapping = headerIndexMap(lines[0]!);
+  const headerLine = lines[0];
+  if (headerLine === undefined) return [];
+  const mapping = headerIndexMap(headerLine);
   const rows: AggregatedNOf1DrugEnforcementRow[] = [];
 
   for (let rowIndex = 1; rowIndex < lines.length; rowIndex += 1) {
-    const fields = parseCsvLine(lines[rowIndex]!);
+    const line = lines[rowIndex];
+    if (line === undefined) continue;
+    const fields = parseCsvLine(line);
     const iso3Raw = getField(fields, mapping, 'iso3')?.trim() ?? '';
     const year = parseRequiredYear(getField(fields, mapping, 'year'));
     if (iso3Raw.length !== 3 || year == null) continue;

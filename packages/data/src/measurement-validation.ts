@@ -14,10 +14,6 @@
  */
 
 import { getUnitDefinition, normalizeUnit } from './unit-conversion';
-import {
-  STANDARD_VARIABLES,
-  type StandardVariableDefinition,
-} from './importers/standard-variable-names';
 
 // ---------------------------------------------------------------------------
 // Types

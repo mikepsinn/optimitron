@@ -213,17 +213,55 @@ See `AGENTS.md` for full architectural rules.
 ### Prisma Version
 We use **Prisma 7** (`prisma@^7.0.0`, `@prisma/client@^7.0.0`) with `@prisma/adapter-pg` for PostgreSQL. The `datasource` block in `schema.prisma` intentionally omits `url` — the connection is configured at runtime via the adapter. Do NOT add `url = env("DATABASE_URL")` to the datasource block.
 
+### Display Identity: Person is canonical
+`Person` owns `displayName`, `handle`, `image`, `bio`. `User.name`/`username`/`image` are a legacy mirror cache — never read directly.
+- **Reads:** use `getUserDisplayName/Handle/Avatar/Href/Label` from `@/lib/user-display`.
+- **Queries:** spread `userDisplaySelect` into the Prisma select (joins Person automatically).
+- **URLs:** use `getPersonHref(person)` from `@/lib/person-href` — never `/people/${id}`.
+- **Profile edits:** `/api/dashboard/profile` writes Person first, mirrors to User in a `$transaction`. Handle uniqueness checks `Person.handle`.
+- **OAuth/signup:** untouched — `ensurePersonForUser()` handles the sync.
+
 ## Page Metadata
 
 `packages/web/src/lib/routes.ts` is the single source of truth for page titles and descriptions. Each `NavItem` has a `label`, `description`, and `emoji`. Pages use `getRouteMetadata(link)` from `packages/web/src/lib/metadata.ts` instead of hardcoding metadata. All descriptions are in Wishonia's voice.
 
 ## High-Value Defaults
 
-1. **Test behavior, regressions, and non-trivial logic changes.** Do not require a bespoke test for every tiny wrapper.
-2. **Run the relevant checks before committing.** Use `pnpm check` for broad changes; at minimum run the affected package build/test/lint surface.
-3. **Library packages should stay runtime-safe.** Pure/browser-facing packages do not get Prisma or runtime DB imports.
-4. **Use Zod where runtime validation protects a real boundary.** Do not cargo-cult it into every internal helper.
-5. **When touching product UI, preserve the existing neobrutalist system unless you are intentionally changing the design direction.**
+1. **NEVER commit.** The user reviews every change before it lands. Stage files if helpful, leave diffs unstaged, but never run `git commit`, `git push`, `git merge`, `git rebase`, or any other history-altering command. The only exceptions are when the user explicitly says "commit this" in the current turn.
+2. **Library packages stay runtime-safe.** Pure/browser-facing packages do not get Prisma or runtime DB imports.
+3. **Zod only at real boundaries.** Runtime validation is for external input (HTTP, form, MCP, OAuth). Not for internal helpers.
+4. **Preserve the neobrutalist system** when touching product UI unless intentionally changing direction.
+
+## Testing Rules (non-negotiable)
+
+**When to write a test:**
+- ✅ Pure functions with fallback/branching logic (helpers, parsers, formatters, selectors)
+- ✅ State transitions inside a `$transaction` or multi-step DB write (profile edits, vote tallies, claim status changes)
+- ✅ Boundary conversions (Prisma row → DTO, OAuth profile → User row, session → client)
+- ✅ Regression fixes — write the failing test before the fix, in the same change
+- ❌ Framework passthroughs (`getCurrentUser` that just wraps `findUnique`)
+- ❌ UI rendering snapshots — brittle, low signal; verify in a browser instead
+- ❌ Tests that just transcribe the implementation line-by-line
+
+**Non-flaky or don't bother:**
+- No real wall clock — use injected `now` or `vi.setSystemTime`
+- No real network / no real LLM calls — mock at the import boundary
+- No `Math.random()` / `Date.now()` / `crypto.randomUUID()` in assertions
+- No relying on row order from Prisma unless you explicitly `orderBy`
+- No shared mutable state between test cases — each `it` is independent
+- If it requires `retry` or `sleep` to pass, it's wrong
+
+**Self-verification is mandatory:**
+- Before reporting any non-trivial change as done, run the affected package's test suite: `pnpm --filter @optimitron/<pkg> test`
+- If your change touches shared types or schemas, run `pnpm check` across the graph
+- Fix every failure yourself. Do not hand back a broken suite and expect the user to triage.
+- If an existing test breaks because of a justified shape change, update the test — do not disable or `skip` it.
+- If you can't reproduce a test failure locally, say so explicitly. Don't guess-fix.
+
+**Scope discipline:**
+- Write the minimum tests that would have caught the bug you just fixed, or the regression the change could plausibly introduce. Nothing more.
+- One `describe` per module under test, one `it` per behavior. No clever parameterization.
+- Tests read like documentation — name them after behavior, not implementation.
 
 ## Color Rules (Game Aesthetic)
 
@@ -396,10 +434,11 @@ All env vars live in the **root `.env`** file (not `packages/web/.env`). Next.js
 
 ## Type Safety & Linting
 
-Before committing, always run:
+Before handing a change back to the user, always run:
 ```bash
 pnpm check    # runs: typecheck + lint + test
 ```
+Fix every failure yourself. The user reviews working code, not a broken suite.
 
 **Do NOT run `pnpm build` or `next build`** — the dev server is normally running and handles compilation. `pnpm check` (typecheck + lint + test) is fine. Only run a full build if explicitly asked.
 

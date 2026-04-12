@@ -1,5 +1,3 @@
-/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
-
 import type { DerivedOecdMedianDisposableIncomePoint } from '../fetchers/oecd-income-distribution';
 import type { DerivedEurostatMedianDisposableIncomePoint } from '../fetchers/eurostat-income';
 import type { PIPCountryData } from '../fetchers/world-bank-pip';
@@ -233,12 +231,16 @@ export function buildDerivedAfterGovMedianIncomeSeries(
   return pipRecords
     .filter((record) => {
       const govExp = govExpByCountry.get(record.countryCode);
-      return govExp != null && record.medianAnnual > 0;
+      return govExp !== undefined && record.medianAnnual > 0;
     })
-    .map((record) => {
-      const govPct = govExpByCountry.get(record.countryCode)!.value;
+    .flatMap((record) => {
+      const govExp = govExpByCountry.get(record.countryCode);
+      if (!govExp) {
+        return [];
+      }
+      const govPct = govExp.value;
       const afterGovValue = record.medianAnnual * (1 - govPct / 100);
-      return {
+      return [{
         jurisdictionIso3: record.countryCode,
         jurisdictionName: record.countryName,
         year: record.year,
@@ -257,7 +259,7 @@ export function buildDerivedAfterGovMedianIncomeSeries(
         welfareType: record.welfareType,
         pppBasisNote: `Derived: PIP median ($${Math.round(record.medianAnnual)}) × (1 - ${govPct.toFixed(1)}% gov spending).`,
         sourceUrl: record.sourceUrl,
-      } satisfies MedianIncomeSeriesRecord;
+      } satisfies MedianIncomeSeriesRecord];
     });
 }
 

@@ -12701,11 +12701,11 @@ export function formatCitation(
 ): string {
   if (!citation) return '';
 
-  const author = citation.author?.[0]?.literal ||
+  const author = citation.author?.[0]?.literal ??
                  (citation.author?.[0]?.family
-                   ? `${citation.author[0].family}, ${citation.author[0].given || ''}`
+                   ? `${citation.author[0].family}, ${citation.author[0].given ?? ''}`
                    : 'Unknown Author');
-  const year = citation.issued?.['date-parts']?.[0]?.[0] || 'n.d.';
+  const year = citation.issued?.['date-parts']?.[0]?.[0] ?? 'n.d.';
   const title = citation.title;
 
   if (style === 'apa') {

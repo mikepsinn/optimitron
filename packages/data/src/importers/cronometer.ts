@@ -35,7 +35,7 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
     if (inQuotes) {
       if (ch === '"') {
         if (i + 1 < line.length && line[i + 1] === '"') {
@@ -63,7 +63,9 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
 function parseCsv(text: string): { headers: string[]; rows: string[][] } {
   const lines = text.split(/\r?\n/).filter((l) => l.trim() !== '');
   if (lines.length === 0) return { headers: [], rows: [] };
-  const headers = parseCsvLine(lines[0]!);
+  const headerLine = lines[0];
+  if (headerLine === undefined) return { headers: [], rows: [] };
+  const headers = parseCsvLine(headerLine);
   const rows = lines.slice(1).map((l) => parseCsvLine(l));
   return { headers, rows };
 }
@@ -237,7 +239,9 @@ export function parseCronometerExport(csv: string): ParsedHealthRecord[] {
   const colMappings: Array<{ colIdx: number; def: NutrientDef }> = [];
   for (let i = 0; i < headers.length; i++) {
     if (i === dateIdx) continue;
-    const def = matchNutrient(headers[i]!);
+    const header = headers[i];
+    if (!header) continue;
+    const def = matchNutrient(header);
     if (def) {
       colMappings.push({ colIdx: i, def });
     }
@@ -293,7 +297,9 @@ export function parseCronometerFoodDiary(csv: string): ParsedHealthRecord[] {
     // Map nutrient columns
     for (let i = 0; i < headers.length; i++) {
       if (i === dateIdx || i === foodIdx || i === groupIdx) continue;
-      const def = matchNutrient(headers[i]!);
+      const header = headers[i];
+      if (!header) continue;
+      const def = matchNutrient(header);
       if (!def) continue;
 
       const raw = row[i];

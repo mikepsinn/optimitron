@@ -75,7 +75,10 @@ function groupByJurisdictionYear(points: DataPoint[]): Map<string, Map<number, n
     if (!grouped.has(dp.jurisdictionIso3)) {
       grouped.set(dp.jurisdictionIso3, new Map());
     }
-    const byYear = grouped.get(dp.jurisdictionIso3)!;
+    const byYear = grouped.get(dp.jurisdictionIso3);
+    if (!byYear) {
+      continue;
+    }
     const existing = byYear.get(dp.year);
     if (existing) {
       existing.sum += dp.value;
@@ -123,4 +126,3 @@ export function dataPointsToTimeSeries(
 
   return result;
 }
-

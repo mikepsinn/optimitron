@@ -76,8 +76,18 @@ export function buildImportSummary(
 
   const variableCounts: Record<string, number> = {};
   const sources = new Set<string>();
-  let earliest = records[0]!.startAt;
-  let latest = records[0]!.startAt;
+  const firstRecord = records[0];
+  if (!firstRecord) {
+    return {
+      totalRecords: 0,
+      dateRange: null,
+      variableCounts: {},
+      sourceNames: [],
+      warnings,
+    };
+  }
+  let earliest = firstRecord.startAt;
+  let latest = firstRecord.startAt;
 
   for (const r of records) {
     variableCounts[r.variableName] = (variableCounts[r.variableName] ?? 0) + 1;

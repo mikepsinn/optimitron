@@ -6,7 +6,7 @@
  * keeping agency-specific content out of page files.
  */
 
-import { FDA_APPROVED_DRUG_DISASTERS, FDA_DRUG_DISASTER_SUMMARY } from "./us-fda-approved-drug-deaths";
+import { FDA_APPROVED_DRUG_DISASTERS } from "./us-fda-approved-drug-deaths";
 import { PHARMA_PATENT_STATS, DRUG_MANUFACTURING_VS_RETAIL } from "./us-pharma-patents";
 import { IRONIC_LAWS, type IronicLaw } from "./us-ironic-laws";
 import { GOVERNMENT_LIES, type GovernmentLie } from "./us-government-lies";
@@ -14,9 +14,9 @@ import { LOBBYING_BY_INDUSTRY, type LobbyingIndustry } from "./us-lobbying";
 import { REVOLVING_DOOR_STATS, type RevolvingDoorStat } from "./us-revolving-door";
 import { CIA_COUPS } from "./us-cia-coups";
 import { HEALTHCARE_WASTE_CATEGORIES } from "./us-healthcare-waste";
-import { INSURER_DENIAL_RATES, DENIAL_SYSTEM_STATS } from "./us-insurance-denials";
+import { INSURER_DENIAL_RATES } from "./us-insurance-denials";
 import { PREVENTABLE_DEATH_CATEGORIES } from "./us-preventable-deaths";
-import { CORPORATE_TAX_RATE_EFFECTIVE, ZERO_TAX_COMPANIES_2020 } from "./us-corporate-tax";
+import { ZERO_TAX_COMPANIES_2020 } from "./us-corporate-tax";
 import { IMMIGRATION_KEY_STATISTICS } from "./us-immigration-impact";
 import { US_OVERDOSE_DEATHS_HISTORICAL } from "./us-drug-war";
 import { US_HEALTHCARE_SPENDING_DATA } from "./us-healthcare-spending";
@@ -26,8 +26,8 @@ import { TARIFF_COLLATERAL_DAMAGE } from "./us-tariff-history";
 import { US_CLIMATE_SPENDING_DATA } from "./us-climate-spending";
 import { US_FOREIGN_AID_DATA } from "./us-foreign-aid";
 import { GOLD_WAGE_THEFT_SUMMARY } from "./us-gold-standard-wages";
-import { PRE_FED_SUMMARY, BANKING_PANICS_US_VS_CANADA } from "./us-pre-fed-prosperity";
-import { PRODUCTIVITY_VS_WAGES, WEALTH_DISTRIBUTION } from "./economic-theft-series";
+import { PRE_FED_SUMMARY } from "./us-pre-fed-prosperity";
+import { PRODUCTIVITY_VS_WAGES } from "./economic-theft-series";
 import { CEO_TO_WORKER_RATIO, HOME_PRICE_TO_INCOME, STUDENT_LOAN_DEBT, MEDICAL_BANKRUPTCY_PCT, VACANT_VS_HOMELESS } from "./us-inequality-detail";
 import { CONGRESSIONAL_TRADING_STATS } from "./us-congressional-trading";
 import type { FDAApprovedDrugDisaster } from "./us-fda-approved-drug-deaths";
@@ -195,7 +195,8 @@ function buildSections(agencyId: string): SupplementarySection[] {
         })),
       });
       if (US_HEALTHCARE_SPENDING_DATA.length > 0) {
-        const latest = US_HEALTHCARE_SPENDING_DATA[US_HEALTHCARE_SPENDING_DATA.length - 1]!;
+        const latest = US_HEALTHCARE_SPENDING_DATA.at(-1);
+        if (!latest) break;
         sections.push({
           id: "hhs-us-vs-oecd",
           type: "stat-cards",
@@ -218,8 +219,9 @@ function buildSections(agencyId: string): SupplementarySection[] {
       const drugFree = findLaw("drug-free-america");
       if (drugFree) sections.push({ id: "dea-ironic-law", type: "ironic-law", title: "The Law", data: drugFree });
       if (US_OVERDOSE_DEATHS_HISTORICAL.length > 0) {
-        const earliest = US_OVERDOSE_DEATHS_HISTORICAL[0]!;
-        const latest = US_OVERDOSE_DEATHS_HISTORICAL[US_OVERDOSE_DEATHS_HISTORICAL.length - 1]!;
+        const earliest = US_OVERDOSE_DEATHS_HISTORICAL[0];
+        const latest = US_OVERDOSE_DEATHS_HISTORICAL.at(-1);
+        if (!earliest || !latest) break;
         sections.push({
           id: "dea-historical-overdoses",
           type: "stat-cards",
@@ -268,7 +270,8 @@ function buildSections(agencyId: string): SupplementarySection[] {
       const iranContra = findLie("iran-contra");
       if (iranContra) sections.push({ id: "state-iran-contra", type: "lie", title: "Iran-Contra", data: iranContra });
       if (US_FOREIGN_AID_DATA.length > 0) {
-        const latest = US_FOREIGN_AID_DATA[US_FOREIGN_AID_DATA.length - 1]!;
+        const latest = US_FOREIGN_AID_DATA.at(-1);
+        if (!latest) break;
         sections.push({
           id: "state-foreign-aid",
           type: "stat-cards",
@@ -341,7 +344,8 @@ function buildSections(agencyId: string): SupplementarySection[] {
       const flint = findLie("flint-water");
       if (flint) sections.push({ id: "epa-flint", type: "lie", title: "", data: flint });
       if (US_CLIMATE_SPENDING_DATA.length > 0) {
-        const latest = US_CLIMATE_SPENDING_DATA[US_CLIMATE_SPENDING_DATA.length - 1]!;
+        const latest = US_CLIMATE_SPENDING_DATA.at(-1);
+        if (!latest) break;
         sections.push({
           id: "epa-climate",
           type: "stat-cards",
@@ -362,7 +366,8 @@ function buildSections(agencyId: string): SupplementarySection[] {
       const patriot = findLaw("patriot-act");
       if (patriot) sections.push({ id: "fbi-patriot", type: "ironic-law", title: "The Law", data: patriot });
       if (US_POLICE_SPENDING_DATA.length > 0) {
-        const latest = US_POLICE_SPENDING_DATA[US_POLICE_SPENDING_DATA.length - 1]!;
+        const latest = US_POLICE_SPENDING_DATA.at(-1);
+        if (!latest) break;
         sections.push({
           id: "fbi-police-spending",
           type: "stat-cards",
@@ -380,8 +385,9 @@ function buildSections(agencyId: string): SupplementarySection[] {
       const fair = findLaw("fair-sentencing");
       if (fair) sections.push({ id: "bop-fair-sentencing", type: "ironic-law", title: "The Law", data: fair });
       if (US_INCARCERATION_DATA.length > 0) {
-        const latest = US_INCARCERATION_DATA[US_INCARCERATION_DATA.length - 1]!;
-        const earliest = US_INCARCERATION_DATA[0]!;
+        const latest = US_INCARCERATION_DATA.at(-1);
+        const earliest = US_INCARCERATION_DATA[0];
+        if (!latest || !earliest) break;
         sections.push({
           id: "bop-mass-incarceration",
           type: "stat-cards",

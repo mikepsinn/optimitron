@@ -13,8 +13,6 @@
  * (e.g., Education), the comparison reflects the overall system.
  */
 
-import type { OECDBudgetPanelDataPoint } from './oecd-budget-panel';
-
 export type OECDSpendingField = 'healthSpendingPerCapitaPpp' | 'educationSpendingPerCapitaPpp' | 'militarySpendingPerCapitaPpp' | 'socialSpendingPerCapitaPpp' | 'rdSpendingPerCapitaPpp';
 export type OECDOutcomeField = 'lifeExpectancyYears' | 'infantMortalityPer1000' | 'pisaMathScore' | 'afterTaxMedianIncomePpp';
 

@@ -39,7 +39,7 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
     if (inQuotes) {
       if (ch === '"') {
         if (i + 1 < line.length && line[i + 1] === '"') {
@@ -68,7 +68,9 @@ function parseCsv(text: string, delimiter = ','): { headers: string[]; rows: str
   const lines = text.split(/\r?\n/).filter((l) => l.trim() !== '');
   if (lines.length === 0) return { headers: [], rows: [] };
 
-  const headers = parseCsvLine(lines[0]!, delimiter);
+  const headerLine = lines[0];
+  if (headerLine === undefined) return { headers: [], rows: [] };
+  const headers = parseCsvLine(headerLine, delimiter);
   const rows = lines.slice(1).map((l) => parseCsvLine(l, delimiter));
   return { headers, rows };
 }
@@ -167,7 +169,8 @@ export function parseMyFitnessPalExport(csv: string): ParsedHealthRecord[] {
   // Build column → nutrient mappings
   const colMappings: Array<{ colIdx: number; mapping: (typeof NUTRIENT_MAP)[string] }> = [];
   for (let i = 0; i < lowerHeaders.length; i++) {
-    const key = lowerHeaders[i]!;
+    const key = lowerHeaders[i];
+    if (!key) continue;
     const mapping = NUTRIENT_MAP[key];
     if (mapping) {
       colMappings.push({ colIdx: i, mapping });

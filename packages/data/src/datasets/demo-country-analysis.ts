@@ -13,7 +13,6 @@
 import type { TimeSeries } from '@optimitron/optimizer';
 import {
   healthComparisonToTimeSeries,
-  getCrossCountryVariable,
 } from './to-time-series';
 import { HEALTH_SYSTEM_COMPARISON } from './international-comparisons';
 
@@ -106,8 +105,12 @@ export function printDemoAnalysis(): void {
   console.log();
 
   // Singapore vs US comparison
-  const sg = result.countries.find((c) => c.iso3 === 'SGP')!;
-  const us = result.countries.find((c) => c.iso3 === 'USA')!;
+  const sg = result.countries.find((c) => c.iso3 === 'SGP');
+  const us = result.countries.find((c) => c.iso3 === 'USA');
+  if (!sg || !us) {
+    console.log('Singapore or US comparison data is unavailable.');
+    return;
+  }
   console.log('─── Singapore vs United States ───');
   console.log(
     `  Singapore: $${sg.spending}/capita → ${sg.lifeExpectancy} years`,

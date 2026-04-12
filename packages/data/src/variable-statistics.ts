@@ -83,9 +83,14 @@ export interface GlobalVariableStatistics {
 function medianOfSorted(sorted: number[]): number {
   const mid = Math.floor(sorted.length / 2);
   if (sorted.length % 2 === 0) {
-    return (sorted[mid - 1]! + sorted[mid]!) / 2;
+    const lower = sorted[mid - 1];
+    const upper = sorted[mid];
+    if (lower === undefined || upper === undefined) {
+      return 0;
+    }
+    return (lower + upper) / 2;
   }
-  return sorted[mid]!;
+  return sorted[mid] ?? 0;
 }
 
 /**
@@ -157,11 +162,30 @@ export function calculateNOf1VariableStatistics(
   }
 
   // ── Basic aggregates ───────────────────────────────────────────────────
+  const firstValue = values[0];
+  if (firstValue === undefined) {
+    return {
+      mean: 0,
+      median: 0,
+      standardDeviation: 0,
+      variance: 0,
+      skewness: 0,
+      kurtosis: 0,
+      minimumRecordedValue: 0,
+      maximumRecordedValue: 0,
+      numberOfMeasurements: 0,
+      numberOfUniqueValues: 0,
+      mostCommonValue: null,
+      secondMostCommonValue: null,
+      lastMeasurementAt: null,
+      firstMeasurementAt: null,
+      medianSecondsBetweenMeasurements: null,
+    };
+  }
   let sum = 0;
-  let min = values[0]!;
-  let max = values[0]!;
-  for (let i = 0; i < n; i++) {
-    const value = values[i]!;
+  let min = firstValue;
+  let max = firstValue;
+  for (const value of values) {
     sum += value;
     if (value < min) min = value;
     if (value > max) max = value;
@@ -174,8 +198,8 @@ export function calculateNOf1VariableStatistics(
 
   // ── Variance (population) ──────────────────────────────────────────────
   let sumSqDiff = 0;
-  for (let i = 0; i < n; i++) {
-    const diff = values[i]! - mean;
+  for (const value of values) {
+    const diff = value - mean;
     sumSqDiff += diff * diff;
   }
   const variance = n > 1 ? sumSqDiff / (n - 1) : 0; // sample variance
@@ -185,8 +209,8 @@ export function calculateNOf1VariableStatistics(
   let skewness = 0;
   if (n >= 3 && standardDeviation > 0) {
     let sumCubed = 0;
-    for (let i = 0; i < n; i++) {
-      const z = (values[i]! - mean) / standardDeviation;
+    for (const value of values) {
+      const z = (value - mean) / standardDeviation;
       sumCubed += z * z * z;
     }
     skewness = (n / ((n - 1) * (n - 2))) * sumCubed;
@@ -196,8 +220,8 @@ export function calculateNOf1VariableStatistics(
   let kurtosis = 0;
   if (n >= 4 && standardDeviation > 0) {
     let sumFourth = 0;
-    for (let i = 0; i < n; i++) {
-      const z = (values[i]! - mean) / standardDeviation;
+    for (const value of values) {
+      const z = (value - mean) / standardDeviation;
       sumFourth += z * z * z * z;
     }
     // Excess kurtosis with bias correction
@@ -218,14 +242,19 @@ export function calculateNOf1VariableStatistics(
 
   if (timestamps && timestamps.length > 0) {
     const sortedTs = [...timestamps].sort((a, b) => a.getTime() - b.getTime());
-    firstMeasurementAt = sortedTs[0]!;
-    lastMeasurementAt = sortedTs[sortedTs.length - 1]!;
+    firstMeasurementAt = sortedTs[0] ?? null;
+    lastMeasurementAt = sortedTs[sortedTs.length - 1] ?? null;
 
     if (sortedTs.length >= 2) {
       const diffs: number[] = [];
       for (let i = 1; i < sortedTs.length; i++) {
+        const current = sortedTs[i];
+        const previous = sortedTs[i - 1];
+        if (!current || !previous) {
+          continue;
+        }
         const diffSec =
-          (sortedTs[i]!.getTime() - sortedTs[i - 1]!.getTime()) / 1000;
+          (current.getTime() - previous.getTime()) / 1000;
         diffs.push(diffSec);
       }
       diffs.sort((a, b) => a - b);

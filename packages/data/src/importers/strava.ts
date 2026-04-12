@@ -41,7 +41,7 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
+    const ch = line.charAt(i);
     if (inQuotes) {
       if (ch === '"') {
         if (i + 1 < line.length && line[i + 1] === '"') {
@@ -69,7 +69,9 @@ function parseCsvLine(line: string, delimiter = ','): string[] {
 function parseCsv(text: string): { headers: string[]; rows: string[][] } {
   const lines = text.split(/\r?\n/).filter((l) => l.trim() !== '');
   if (lines.length === 0) return { headers: [], rows: [] };
-  const headers = parseCsvLine(lines[0]!);
+  const headerLine = lines[0];
+  if (headerLine === undefined) return { headers: [], rows: [] };
+  const headers = parseCsvLine(headerLine);
   const rows = lines.slice(1).map((l) => parseCsvLine(l));
   return { headers, rows };
 }
