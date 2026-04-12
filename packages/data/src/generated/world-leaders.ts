@@ -1,7 +1,7 @@
 /**
  * Auto-generated world leader dataset.
  * DO NOT EDIT — regenerate with: pnpm --filter @optimitron/data data:refresh:leaders
- * Generated: 2026-04-11T18:30:37.110Z
+ * Generated: 2026-04-12T20:59:20.926Z
  */
 
 export interface WorldLeaderRow {
@@ -474,7 +474,7 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
     "countryCode": "FR",
     "countryName": "France",
     "leaderImageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/S%C3%A9bastien%20Lecornu%202024%20%282x3%20crop%29.jpg",
-    "leaderName": "Michel Barnier",
+    "leaderName": "Sébastien Lecornu",
     "roleTitle": "Head of Government",
     "wikidataId": "Q20089181"
   },
@@ -578,7 +578,7 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
     "countryCode": "HN",
     "countryName": "Honduras",
     "leaderImageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Secretary%20Rubio%20Meets%20with%20Honduran%20President-Elect%20%2855037313932%29%20%28cropped%29.jpg",
-    "leaderName": "Q16146159",
+    "leaderName": "Nasry Asfura",
     "roleTitle": "Head of Government",
     "wikidataId": "Q16146159"
   },
@@ -978,7 +978,7 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
     "countryCode": "MX",
     "countryName": "Mexico",
     "leaderImageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Claudia%20Sheinbaum%20en%20su%20conferencia%20matutina%20%28cropped%29.jpg",
-    "leaderName": "Q5771800",
+    "leaderName": "Claudia Sheinbaum",
     "roleTitle": "Head of Government",
     "wikidataId": "Q5771800"
   },
@@ -1274,9 +1274,9 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
     "countryCode": "SM",
     "countryName": "San Marino",
     "leaderImageUrl": null,
-    "leaderName": "Dalibor Riccardi",
+    "leaderName": "Denise Bronzetti",
     "roleTitle": "Head of State",
-    "wikidataId": "Q130360479"
+    "wikidataId": "Q57546"
   },
   {
     "countryCode": "SN",
@@ -1497,8 +1497,8 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
   {
     "countryCode": "VE",
     "countryName": "Venezuela",
-    "leaderImageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Delcy%20Rodr%C3%ADguez%20-%2002%20%2819-01-2026%29%20%28cropped%202%29.jpg",
-    "leaderName": "Q15081116",
+    "leaderImageUrl": null,
+    "leaderName": "Nicolás Maduro",
     "roleTitle": "Head of State",
     "wikidataId": "Q15081116"
   },
