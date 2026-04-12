@@ -49,7 +49,7 @@ describe("task contact helpers", () => {
     });
 
     expect(message).toBe(
-      'President Example has delayed "Sign the 1% Treaty" for 42 days overdue at a cost of 1K lives.',
+      'President Example has delayed "Sign the 1% Treaty" for 42 days overdue at a cost of 1.2K lives.',
     );
   });
 

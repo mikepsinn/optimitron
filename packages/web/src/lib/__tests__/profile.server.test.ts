@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
     nOf1VariableCount: vi.fn(),
     nOf1VariableUpdate: vi.fn(),
     nOf1VariableUpsert: vi.fn(),
+    personFindFirst: vi.fn(),
     subjectUpsert: vi.fn(),
     unitUpsert: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
@@ -97,6 +98,9 @@ function createTransactionClient() {
       update: mocks.tx.nOf1VariableUpdate,
       upsert: mocks.tx.nOf1VariableUpsert,
     },
+    person: {
+      findFirst: mocks.tx.personFindFirst,
+    },
     subject: {
       upsert: mocks.tx.subjectUpsert,
     },
@@ -143,6 +147,7 @@ function mockCatalogDefaults() {
   mocks.tx.subjectUpsert.mockResolvedValue({ id: "subject_1" });
   mocks.tx.nOf1VariableUpsert.mockResolvedValue({ id: "n1_1" });
   mocks.tx.nOf1VariableCount.mockResolvedValue(1);
+  mocks.tx.personFindFirst.mockResolvedValue(null);
   mocks.tx.measurementFindMany.mockResolvedValue([
     { startTime: new Date("2026-03-12T10:00:00.000Z"), value: 4 },
   ]);

@@ -173,10 +173,11 @@ export function formatCompactCount(value: number | null | undefined, options?: I
     return "n/a";
   }
 
+  const absoluteValue = Math.abs(value);
+
   return new Intl.NumberFormat("en-US", {
-    maximumSignificantDigits: 3,
-    minimumSignificantDigits: Math.abs(value) >= 1 ? 3 : 1,
-    notation: Math.abs(value) >= 1000 ? "compact" : "standard",
+    maximumFractionDigits: absoluteValue >= 1000 ? 1 : 2,
+    notation: absoluteValue >= 1000 ? "compact" : "standard",
     ...options,
   }).format(value);
 }

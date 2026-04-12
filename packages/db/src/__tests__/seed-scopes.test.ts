@@ -3,7 +3,7 @@ import { parseSeedScopes } from "../../prisma/seed-scopes.ts";
 
 describe("parseSeedScopes", () => {
   it("defaults to all scopes when no args are provided", () => {
-    expect(parseSeedScopes([])).toEqual(["reference", "bootstrap", "demo"]);
+    expect(parseSeedScopes([])).toEqual(["reference", "bootstrap", "demo", "tasks"]);
   });
 
   it("supports comma-separated scope lists", () => {
@@ -24,12 +24,13 @@ describe("parseSeedScopes", () => {
       "reference",
       "bootstrap",
       "demo",
+      "tasks",
     ]);
   });
 
   it("rejects invalid scopes", () => {
     expect(() => parseSeedScopes(["--scope", "invalid"])).toThrow(
-      'Invalid seed scope "invalid". Expected one of: all, reference, bootstrap, demo.',
+      'Invalid seed scope "invalid". Expected one of: all, reference, bootstrap, demo, tasks.',
     );
   });
 });

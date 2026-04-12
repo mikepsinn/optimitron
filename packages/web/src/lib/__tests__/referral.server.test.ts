@@ -60,6 +60,16 @@ describe("referral server helpers", () => {
     await findUserByUsernameOrReferralCode(" ReF123 ");
 
     expect(mocks.findFirst).toHaveBeenCalledWith({
+      include: {
+        person: {
+          select: {
+            displayName: true,
+            handle: true,
+            id: true,
+            image: true,
+          },
+        },
+      },
       where: {
         OR: [
           {
@@ -72,6 +82,14 @@ describe("referral server helpers", () => {
             username: {
               equals: "ReF123",
               mode: "insensitive",
+            },
+          },
+          {
+            person: {
+              handle: {
+                equals: "ReF123",
+                mode: "insensitive",
+              },
             },
           },
         ],

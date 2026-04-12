@@ -1,6 +1,3 @@
-import { Suspense, createElement } from "react";
-import { IframeClient } from "./iframe-client";
+"use client";
 
-export default function IframePage() {
-  return createElement(Suspense, null, createElement(IframeClient));
-}
+export { IframeClient as default } from "./iframe-client";

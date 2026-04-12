@@ -180,7 +180,7 @@ describe("treaty signer network", () => {
     );
 
     expect(result.bundle.task.taskKey).toBe("program:one-percent-treaty:signer:us");
-    expect(result.bundle.task.title).toBe("President of the United States signs the 1% Treaty");
+    expect(result.bundle.task.title).toBe("Sign the 1% Treaty");
     expect(result.bundle.task.dueAt?.toISOString()).toBe(TREATY_DUE_AT.toISOString());
     expect(result.bundle.task.description).toContain("United States Government");
     expect(frame?.expectedDalysAvertedBase).toBeCloseTo(5_000_000_000 * factor, 3);

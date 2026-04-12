@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   getPendingTreatyVote: vi.fn(),
@@ -125,7 +126,7 @@ describe("treaty vote sync", () => {
     });
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      "/api/referendums/1-percent-treaty/vote",
+      `/api/referendums/${TREATY_REFERENDUM_SLUG}/vote`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
