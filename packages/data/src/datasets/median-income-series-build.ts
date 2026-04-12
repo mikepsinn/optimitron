@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
+
 import type { DerivedOecdMedianDisposableIncomePoint } from '../fetchers/oecd-income-distribution';
 import type { DerivedEurostatMedianDisposableIncomePoint } from '../fetchers/eurostat-income';
 import type { PIPCountryData } from '../fetchers/world-bank-pip';

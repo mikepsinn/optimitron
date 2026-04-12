@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
+
 /**
  * Withings (Health Mate) Export Importer
  *

@@ -4,8 +4,10 @@ import { parseArgs } from 'node:util';
 import { formatTestOutputReview, reviewTestOutput } from './test-output-review.js';
 
 async function readStdin(): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of stdin) chunks.push(Buffer.from(chunk));
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of stdin as AsyncIterable<string | Uint8Array>) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
   return Buffer.concat(chunks).toString('utf8');
 }
 
@@ -48,4 +50,8 @@ const review = await reviewTestOutput({
   sourceLabel,
 });
 
-console.log(args.values.json || passthroughFlag('json') ? JSON.stringify(review, null, 2) : formatTestOutputReview(review));
+const output = args.values.json || passthroughFlag('json')
+  ? JSON.stringify(review, null, 2)
+  : formatTestOutputReview(review);
+
+process.stdout.write(`${output}\n`);

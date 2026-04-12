@@ -186,7 +186,7 @@ function buildActionPlan(input: {
 }): EarthExecutionPlan {
   const economics = input.action.economics;
   const references = Array.from(
-    new Set([...(input.action.groundingRefs ?? []), ...(input.task.sourceUrls ?? [])].filter(Boolean)),
+    new Set([...(input.action.groundingRefs), ...(input.task.sourceUrls ?? [])].filter(Boolean)),
   );
 
   if (input.action.actionKind === 'PREPARE_PROCUREMENT') {

@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- explicit CLI/demo reporting in these source utilities */
+
 /**
  * Demo: Run the optimizer on country health data
  *

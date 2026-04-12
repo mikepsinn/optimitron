@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
+
 import { fetchPrivateConsumptionPpp } from './world-bank';
 import {
   EUROSTAT_API_BASE,

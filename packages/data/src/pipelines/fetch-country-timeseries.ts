@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- explicit CLI/demo reporting in these source utilities */
+
 /**
  * Fetch real multi-country, multi-year time series data from public APIs.
  * 

@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
+
 import type { DataPoint, FetchOptions } from '../types';
 
 const OECD_IDD_BASE = 'https://sdmx.oecd.org/public/rest/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,';

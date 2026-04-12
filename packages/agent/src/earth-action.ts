@@ -316,7 +316,7 @@ function baseExpectedEconomicValueUsd(task: EarthActionTask) {
 
   const expectedValuePerHourUsd = task.impact?.expectedValuePerHourUsd ?? 0;
   const effort = task.estimatedEffortHours ?? task.selectedImpactFrame?.estimatedEffortHoursBase ?? 1;
-  return clampNonNegative(expectedValuePerHourUsd) * Math.max(1, effort ?? 1);
+  return clampNonNegative(expectedValuePerHourUsd) * Math.max(1, effort);
 }
 
 function baseExpectedValuePerHourUsd(task: EarthActionTask) {
@@ -475,11 +475,12 @@ function deriveCanAgentDoDirectly(
   agent: EarthActionAgentCapabilities,
   existing: ReturnType<typeof readExecutionContext>,
 ) {
-  if (existing?.canAgentDoDirectly != null) {
-    return existing.canAgentDoDirectly;
+  const existingCanAgentDoDirectly = existing?.canAgentDoDirectly;
+  if (existingCanAgentDoDirectly !== null && existingCanAgentDoDirectly !== undefined) {
+    return existingCanAgentDoDirectly;
   }
 
-  if (task.activeChildTaskCount != null && task.activeChildTaskCount > 0) {
+  if (task.activeChildTaskCount !== null && task.activeChildTaskCount !== undefined && task.activeChildTaskCount > 0) {
     return false;
   }
 
@@ -499,8 +500,12 @@ function explicitEstimatedCashCostUsd(
   task: EarthActionTask,
   existing: ReturnType<typeof readExecutionContext>,
 ) {
-  if (existing?.estimatedExternalCostUsd != null) {
-    return clampNonNegative(existing.estimatedExternalCostUsd);
+  const existingEstimatedExternalCostUsd = existing?.estimatedExternalCostUsd;
+  if (
+    existingEstimatedExternalCostUsd !== null &&
+    existingEstimatedExternalCostUsd !== undefined
+  ) {
+    return clampNonNegative(existingEstimatedExternalCostUsd);
   }
 
   if (typeof task.selectedImpactFrame?.estimatedCashCostUsdBase === 'number') {
@@ -523,8 +528,9 @@ function estimateExternalCostUsd(
 }
 
 function deriveMaxRationalSpendUsd(task: EarthActionTask, existing: ReturnType<typeof readExecutionContext>) {
-  if (existing?.maxRationalSpendUsd != null) {
-    return clampNonNegative(existing.maxRationalSpendUsd);
+  const existingMaxRationalSpendUsd = existing?.maxRationalSpendUsd;
+  if (existingMaxRationalSpendUsd !== null && existingMaxRationalSpendUsd !== undefined) {
+    return clampNonNegative(existingMaxRationalSpendUsd);
   }
 
   return Math.max(
@@ -591,9 +597,10 @@ function mergeExecutionContext(input: {
   );
   const maxRationalSpendUsd = deriveMaxRationalSpendUsd(input.task, existing);
   const availableBudgetUsd = clampNonNegative(input.policy.availableExternalBudgetUsd);
+  const existingFundingGapUsd = existing?.fundingGapUsd;
   const fundingGapUsd =
-    existing?.fundingGapUsd != null
-      ? clampNonNegative(existing.fundingGapUsd)
+    existingFundingGapUsd !== null && existingFundingGapUsd !== undefined
+      ? clampNonNegative(existingFundingGapUsd)
       : Math.max(0, (estimatedExternalCostUsd ?? 0) - availableBudgetUsd);
   const groundingRefs = normalizeStringArray(existing?.groundingRefs, defaultGroundingRefs(input.task));
   const lawfulSpendTypes = normalizeStringArray(
@@ -764,7 +771,7 @@ export function evaluateEarthTaskEconomics(input: {
     executionV1,
     expectedEconomicValueUsd: options.expectedEconomicValueUsd,
     expectedValuePerHourUsd: options.expectedValuePerHourUsd,
-    fundingGapUsd: executionV1.fundingGapUsd ?? 0,
+    fundingGapUsd: executionV1.fundingGapUsd,
     lawfulSpendTypes: executionV1.lawfulSpendTypes,
     maxRationalSpendUsd: executionV1.maxRationalSpendUsd,
     options: options.options,
@@ -937,7 +944,28 @@ export function selectNextEarthAction(input: {
     })
     .sort((left, right) => right.scoreUsd - left.scoreUsd);
 
-  const winner = rankedCandidates[0]!;
+  const winner = rankedCandidates[0];
+  if (!winner) {
+    return {
+      actionKind: 'QUEUE_REPAIR',
+      audit: review.audit,
+      autoExecutable: false,
+      economics: null,
+      groundingRefs: [],
+      queueRepairPlan: {
+        candidateTaskKeys: review.proposal.candidates
+          .map((candidate) => candidate.taskKey)
+          .filter((value): value is string => typeof value === 'string' && value.length > 0),
+        summary: review.proposal.review.summary,
+      },
+      rationale: [
+        'No ranked executable task remained after filtering for queue repair and follow-through coverage.',
+        review.proposal.review.summary,
+      ],
+      requiredApproval: false,
+      task: null,
+    };
+  }
   const rationale = [
     queueNeedsRepair
       ? 'The queue audit is not clean, so queue-repair/system-fix work is being prioritized.'
@@ -946,12 +974,12 @@ export function selectNextEarthAction(input: {
     `Delay cost per day: ${winner.economics.delayEconomicValueUsdLostPerDay.toFixed(2)} USD.`,
   ];
 
-  if (winner.economics.estimatedExternalCostUsd != null) {
+  if (winner.economics.estimatedExternalCostUsd !== null) {
     rationale.push(
       `Estimated external cost: ${winner.economics.estimatedExternalCostUsd.toFixed(2)} USD.`,
     );
   }
-  if ((winner.economics.fundingGapUsd ?? 0) > 0) {
+  if (winner.economics.fundingGapUsd > 0) {
     rationale.push(`Funding gap: ${winner.economics.fundingGapUsd.toFixed(2)} USD.`);
   }
 

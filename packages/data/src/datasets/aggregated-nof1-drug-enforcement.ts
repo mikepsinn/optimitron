@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
+
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -131,7 +131,7 @@ function fallbackCommands(output: string): string[] {
 
 function fallbackRootCause(output: string): string {
   const firstFailureLine = extractReviewSnippet(output, 400).split('\n')[0];
-  return firstFailureLine || 'Failure markers detected, but no single root cause was extracted.';
+  return firstFailureLine ?? 'Failure markers detected, but no single root cause was extracted.';
 }
 
 function deterministicReview(output: string, sourceLabel: string, hasSignals: boolean): TestOutputReview {
