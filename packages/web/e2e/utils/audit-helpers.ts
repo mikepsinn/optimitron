@@ -92,6 +92,7 @@ export async function navigateAndSettle(
   if (isDemoSlide) {
     const slideId = url.split("#")[1]!;
     await waitForDemoSlide(page, slideId);
+    await freezeDemoPlayback(page);
   } else {
     // Regular page — wait for hydration
     await page.waitForTimeout(2000);
@@ -101,6 +102,21 @@ export async function navigateAndSettle(
   await forceAnimationsComplete(page);
 
   return response;
+}
+
+async function freezeDemoPlayback(page: Page): Promise<void> {
+  await retryAfterNavigation(page, async () => {
+    await page.evaluate(() => {
+      const nav = (window as Window & {
+        __demoNav?: { getSlide: () => number; setSlide: (index: number) => void };
+      }).__demoNav;
+
+      if (!nav) return;
+      nav.setSlide(nav.getSlide());
+    });
+  });
+
+  await page.waitForTimeout(150);
 }
 
 /**

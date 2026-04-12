@@ -115,7 +115,12 @@ function assertAuditLocation(
     `${url} redirected to ${current.pathname} before contrast auditing.`,
   ).toBe(expectedPath);
 
-  if (expectedHash) {
+  // The demo player resolves `/demo#<slideId>` to the first matching segment and
+  // then normalizes the hash to that segment id for sharing. For contrast audits
+  // we only need to verify that the correct slide rendered, which
+  // `navigateAndSettle()` already does, so exact hash preservation is not stable
+  // or meaningful for `/demo`.
+  if (expectedHash && expectedPath !== "/demo") {
     expect(
       current.hash,
       `${url} should preserve its hash target during contrast auditing.`,
