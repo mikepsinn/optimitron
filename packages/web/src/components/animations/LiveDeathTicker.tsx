@@ -121,7 +121,11 @@ export function LiveDeathTicker({
               {c.format(0)}
             </span>
           </div>
-          <p className="mt-2 max-w-xs mx-auto text-sm sm:text-base font-bold uppercase tracking-wider opacity-80">
+          <p
+            className={`mt-2 mx-auto max-w-xs text-sm font-bold uppercase tracking-wider sm:text-base ${
+              surface === "dark" ? "text-zinc-100" : "text-muted-foreground"
+            }`}
+          >
             {c.label}
           </p>
         </div>

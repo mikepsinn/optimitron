@@ -56,15 +56,16 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
     });
   });
 
-  // Framer Motion sets opacity via inline style (JS-driven), which CSS
-  // !important on attribute selectors can't reliably override.
-  // Force all inline opacity:0 to 1 via JavaScript.
+  // Framer Motion sets opacity via inline styles while animating, which CSS
+  // overrides can't reliably normalize. Force any inline opacity below 1 up to
+  // 1 so audits measure the settled UI state rather than a transient frame.
   await retryAfterNavigation(page, async () => {
     await page.evaluate(() => {
       const all = document.querySelectorAll("*");
       for (const el of all) {
         const htmlEl = el as HTMLElement;
-        if (htmlEl.style.opacity === "0" || htmlEl.style.opacity === "0.0") {
+        const inlineOpacity = Number.parseFloat(htmlEl.style.opacity);
+        if (Number.isFinite(inlineOpacity) && inlineOpacity < 1) {
           htmlEl.style.opacity = "1";
         }
       }
