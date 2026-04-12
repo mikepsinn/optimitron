@@ -8,7 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { treatyLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { prisma } from "@/lib/prisma";
-import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 export const metadata = getRouteMetadata(treatyLink);
 

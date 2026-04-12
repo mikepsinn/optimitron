@@ -1,3 +1,10 @@
-"use client";
+import { Suspense } from "react";
+import { IframeClient } from "./iframe-client";
 
-export { IframeClient as default } from "./iframe-client";
+export default function IframePage() {
+  return (
+    <Suspense fallback={null}>
+      <IframeClient />
+    </Suspense>
+  );
+}

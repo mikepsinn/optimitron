@@ -5,8 +5,8 @@ import { useSession } from "next-auth/react";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { Button } from "@/components/retroui/Button";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
-import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
 interface TreatySignButtonProps {
   alreadySigned: boolean;
