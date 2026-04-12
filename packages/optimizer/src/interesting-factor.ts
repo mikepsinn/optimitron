@@ -114,11 +114,9 @@ export function calculateInterestingFactor(config: InterestingFactorConfig): num
     return 0.25;
   }
 
-  const hasBothCategories = predictorCategory != null && outcomeCategory != null;
-
-  if (hasBothCategories) {
-    const predCat = normalizeCategory(predictorCategory!);
-    const outCat = normalizeCategory(outcomeCategory!);
+  if (predictorCategory != null && outcomeCategory != null) {
+    const predCat = normalizeCategory(predictorCategory);
+    const outCat = normalizeCategory(outcomeCategory);
 
     // Look up known pair score
     const key = `${predCat}|${outCat}`;

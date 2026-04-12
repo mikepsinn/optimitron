@@ -1257,7 +1257,7 @@ export function rankCountries<T extends Record<string, any>>(
   ascending = true,
 ): RankedCountry[] {
   const entries = dataset
-    .filter((d) => typeof d[metric] === 'number' && Number.isFinite(d[metric] as number))
+    .filter((d) => typeof d[metric] === 'number' && Number.isFinite(d[metric]))
     .map((d) => ({
       country: d['country'] as string,
       iso3: d['iso3'] as string,
@@ -1315,7 +1315,7 @@ export function getCountryComparison<T extends Record<string, any>>(
   const differences: Record<string, number> = {};
   for (const key of Object.keys(c1)) {
     if (typeof c1[key] === 'number' && typeof c2[key] === 'number') {
-      differences[key] = (c1[key] as number) - (c2[key] as number);
+      differences[key] = c1[key] - c2[key];
     }
   }
 
