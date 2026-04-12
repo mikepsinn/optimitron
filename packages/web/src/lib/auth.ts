@@ -22,6 +22,17 @@ async function getSessionIdentity(userId: string) {
       name: true,
       newsletterSubscribed: true,
       personId: true,
+      // Include the linked Person so the session callback can populate
+      // session.user.{name, image} from Person.{displayName, image} —
+      // Person is canonical, the User columns are a transitional mirror.
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
       personhoodVerifications: {
         where: {
           deletedAt: null,
@@ -179,15 +190,19 @@ export const authOptions: NextAuthOptions = {
         if (identity) {
           token.id = identity.id;
           token.email = identity.email;
-          token.name = identity.name;
+          // Person.displayName is canonical; User.name is the legacy mirror.
+          // Same for image. The session shape stays unchanged so callers
+          // reading session.user.name keep working.
+          token.name = identity.person?.displayName ?? identity.name;
           token.personId = identity.personId;
           token.personhoodProvider = identity.personhoodProvider;
           token.personhoodVerificationLevel = identity.personhoodVerificationLevel;
           token.personhoodVerified = identity.isVerified;
           token.personhoodVerifiedAt = identity.personhoodVerifiedAt;
-          token.picture = identity.image;
+          token.picture = identity.person?.image ?? identity.image;
           token.referralCode = identity.referralCode;
-          token.username = identity.username;
+          // Person.handle is canonical; User.username is the legacy mirror.
+          token.username = identity.person?.handle ?? identity.username;
           token.verifiedProviders = identity.verifiedProviders;
         }
       }

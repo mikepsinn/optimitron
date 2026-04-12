@@ -7,6 +7,7 @@ import { getPersonalAlignmentState } from "@/lib/alignment-report.server";
 import { alignmentLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { buildUserAlignmentUrl, getBaseUrl } from "@/lib/url";
+import { getUserDisplayLabel } from "@/lib/user-display";
 
 export const metadata = getRouteMetadata(alignmentLink);
 
@@ -44,7 +45,7 @@ export default async function AlignmentPage() {
       <AlignmentReport
         state={state}
         shareUrl={shareUrl}
-        ownerLabel={user.username ? `@${user.username}` : user.name ?? null}
+        ownerLabel={getUserDisplayLabel(user)}
       />
     </div>
   );

@@ -7,6 +7,12 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { getPersonHref } from "@/lib/person-href";
+import {
+  getUserDisplayAvatar,
+  getUserDisplayHandle,
+  getUserDisplayHref,
+  getUserDisplayName,
+} from "@/lib/user-display";
 
 interface CommentUser {
   id: string;
@@ -589,13 +595,10 @@ function CommentNode({
   const isOwn = comment.authorUserId === currentUserId;
   const canReply = currentUserId != null && !isDeleted;
   const handle =
-    comment.authorUser.person?.handle ??
-    comment.authorUser.username ??
-    comment.authorUser.name ??
-    "unknown";
-  const personHref = comment.authorUser.person
-    ? getPersonHref(comment.authorUser.person)
-    : null;
+    getUserDisplayHandle(comment.authorUser) ??
+    getUserDisplayName(comment.authorUser);
+  const avatar = getUserDisplayAvatar(comment.authorUser);
+  const personHref = getUserDisplayHref(comment.authorUser);
   const citations = extractCitations(comment.citationsJson);
 
   return (
@@ -605,7 +608,7 @@ function CommentNode({
           {personHref ? (
             <Link href={personHref} className="shrink-0">
               <Avatar className="h-7 w-7 border-2 border-foreground bg-muted">
-                <Avatar.Image alt={handle} src={comment.authorUser.image ?? undefined} />
+                <Avatar.Image alt={handle} src={avatar ?? undefined} />
                 <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
                   {handle.slice(0, 2).toUpperCase()}
                 </Avatar.Fallback>
@@ -613,7 +616,7 @@ function CommentNode({
             </Link>
           ) : (
             <Avatar className="h-7 w-7 shrink-0 border-2 border-foreground bg-muted">
-              <Avatar.Image alt={handle} src={comment.authorUser.image ?? undefined} />
+              <Avatar.Image alt={handle} src={avatar ?? undefined} />
               <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
                 {handle.slice(0, 2).toUpperCase()}
               </Avatar.Fallback>
@@ -822,16 +825,14 @@ function CommentNode({
 
 function ActivityRow({ activity }: { activity: TaskActivityRow }) {
   const handle =
-    activity.user.person?.handle ??
-    activity.user.username ??
-    activity.user.name ??
-    "unknown";
-  const personHref = activity.user.person ? getPersonHref(activity.user.person) : null;
+    getUserDisplayHandle(activity.user) ?? getUserDisplayName(activity.user);
+  const avatar = getUserDisplayAvatar(activity.user);
+  const personHref = getUserDisplayHref(activity.user);
   const label = formatActivityType(activity.type);
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-muted-foreground">
       <Avatar className="h-4 w-4 shrink-0 border border-foreground">
-        <Avatar.Image alt={handle} src={activity.user.image ?? undefined} />
+        <Avatar.Image alt={handle} src={avatar ?? undefined} />
         <Avatar.Fallback className="bg-brutal-pink text-[8px] font-black text-background">
           {handle.slice(0, 1).toUpperCase()}
         </Avatar.Fallback>

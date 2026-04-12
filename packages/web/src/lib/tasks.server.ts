@@ -201,6 +201,16 @@ const taskListSelect = {
           id: true,
           name: true,
           username: true,
+          image: true,
+          email: true,
+          person: {
+            select: {
+              id: true,
+              handle: true,
+              displayName: true,
+              image: true,
+            },
+          },
         },
       },
       userId: true,

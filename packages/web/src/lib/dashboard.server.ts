@@ -1,6 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { ActivityType } from "@optimitron/db";
 import {
+  getUserDisplayAvatar,
+  getUserDisplayHandle,
+  getUserDisplayLabel,
+  getUserDisplayName,
+} from "@/lib/user-display";
+import {
   getWishBalance,
   getWishReasonLabel,
   getWishReasonEmoji,
@@ -41,6 +47,14 @@ export async function getDashboardData(
     where: { id: userId },
     include: {
       badges: true,
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
       activities: {
         orderBy: { createdAt: "desc" },
         take: 10,
@@ -213,8 +227,10 @@ export async function getDashboardData(
   return {
     user: {
       id: user.id,
-      name: user.name || "User",
-      username: user.username || null,
+      // Prefer Person.displayName / handle / image over the legacy User mirror
+      // columns. Falls back through getUserDisplay* helpers when Person is null.
+      name: getUserDisplayName(user),
+      username: getUserDisplayHandle(user),
       email: user.email,
       bio: user.bio || "",
       headline: user.headline || null,
@@ -222,7 +238,7 @@ export async function getDashboardData(
       coverImage: user.coverImage || null,
       isPublic: user.isPublic,
       referralCode: user.referralCode,
-      image: user.image || null,
+      image: getUserDisplayAvatar(user),
       newsletterSubscribed: user.newsletterSubscribed,
     },
     stats: {
@@ -279,6 +295,15 @@ export async function getTopReferrers(): Promise<LeaderboardEntry[]> {
       name: true,
       username: true,
       image: true,
+      email: true,
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
       _count: {
         select: { referrals: true },
       },
@@ -292,8 +317,8 @@ export async function getTopReferrers(): Promise<LeaderboardEntry[]> {
   return topUsers.map((user, index) => ({
     rank: index + 1,
     userId: user.id,
-    name: user.username || user.name || "Anonymous User",
-    image: user.image,
+    name: getUserDisplayLabel(user),
+    image: getUserDisplayAvatar(user),
     referrals: user._count.referrals,
   }));
 }

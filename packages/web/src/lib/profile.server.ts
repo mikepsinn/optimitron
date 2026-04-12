@@ -616,14 +616,27 @@ async function ensureSubject(
   tx: Prisma.TransactionClient,
   user: { email: string | null; id: string; name: string | null },
 ) {
+  // Subject display name is internal (used by measurement time-series), but
+  // we still prefer Person.displayName when one exists to keep the entire app
+  // aligned on Person as canonical. Falls back to legacy User.name → email.
+  const linkedPerson = await tx.person.findFirst({
+    where: { user: { id: user.id } },
+    select: { displayName: true },
+  });
+  const displayName =
+    linkedPerson?.displayName?.trim() ||
+    user.name ||
+    user.email ||
+    "Optimitron User";
+
   return tx.subject.upsert({
     where: { externalId: user.id },
     update: {
-      displayName: user.name ?? user.email ?? "Optimitron User",
+      displayName,
       subjectType: SubjectType.USER,
     },
     create: {
-      displayName: user.name ?? user.email ?? "Optimitron User",
+      displayName,
       externalId: user.id,
       subjectType: SubjectType.USER,
     },

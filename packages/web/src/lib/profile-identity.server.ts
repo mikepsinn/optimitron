@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import type { DashboardUser, DashboardSocialAccount } from "@/types/dashboard";
+import {
+  getUserDisplayAvatar,
+  getUserDisplayHandle,
+  getUserDisplayName,
+} from "@/lib/user-display";
 
 export interface ProfileIdentityData {
   user: DashboardUser;
@@ -13,6 +18,14 @@ export async function getProfileIdentityData(
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
       accounts: {
         where: { deletedAt: null },
         select: { provider: true },
@@ -28,8 +41,8 @@ export async function getProfileIdentityData(
   return {
     user: {
       id: user.id,
-      name: user.name || "User",
-      username: user.username || null,
+      name: getUserDisplayName(user),
+      username: getUserDisplayHandle(user),
       email: user.email,
       bio: user.bio || "",
       headline: user.headline || null,
@@ -37,7 +50,7 @@ export async function getProfileIdentityData(
       coverImage: user.coverImage || null,
       isPublic: user.isPublic,
       referralCode: user.referralCode,
-      image: user.image || null,
+      image: getUserDisplayAvatar(user),
       newsletterSubscribed: user.newsletterSubscribed,
     },
     socialAccounts: user.socialAccounts.map((sa) => ({

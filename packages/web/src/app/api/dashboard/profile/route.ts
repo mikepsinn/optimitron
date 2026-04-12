@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(req: NextRequest) {
@@ -7,13 +8,13 @@ export async function PATCH(req: NextRequest) {
     const { userId } = await requireAuth();
     const data = await req.json();
 
-    let normalizedUsername: string | null | undefined = undefined;
+    let normalizedHandle: string | null | undefined = undefined;
 
     if ("username" in data) {
       const raw = (data.username ?? "").trim();
 
       if (raw === "") {
-        normalizedUsername = null;
+        normalizedHandle = null;
       } else {
         if (raw.length < 3 || raw.length > 24) {
           return NextResponse.json(
@@ -32,39 +33,70 @@ export async function PATCH(req: NextRequest) {
           );
         }
 
-        const existingUser = await prisma.user.findFirst({
+        // Handles live on Person now (canonical), so the uniqueness check
+        // queries Person.handle. The User.username column is still mirrored
+        // below for legacy callers, but is no longer the source of truth.
+        const lowered = raw.toLowerCase();
+        const collision = await prisma.person.findFirst({
           where: {
-            username: { equals: raw, mode: "insensitive" },
-            NOT: { id: userId },
+            handle: lowered,
+            user: { NOT: { id: userId } },
           },
           select: { id: true },
         });
 
-        if (existingUser) {
+        if (collision) {
           return NextResponse.json(
             { error: "That player name is already taken. Please choose another." },
             { status: 400 },
           );
         }
 
-        normalizedUsername = raw;
+        normalizedHandle = lowered;
       }
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        name: data.name,
-        bio: data.bio,
-        isPublic: data.isPublic,
-        newsletterSubscribed: data.newsletterSubscribed,
-        website: data.website,
-        headline: data.headline,
-        coverImage: data.coverImage,
-        ...(normalizedUsername !== undefined
-          ? { username: normalizedUsername }
-          : {}),
-      },
+    // Make sure a Person row exists and is linked. ensurePersonForUser is
+    // idempotent and safe to call before any Person update.
+    await ensurePersonForUser(userId);
+
+    await prisma.$transaction(async (tx) => {
+      const userRecord = await tx.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: { personId: true },
+      });
+
+      // Person is canonical for displayName / handle / image. Write here first.
+      if (userRecord.personId) {
+        await tx.person.update({
+          where: { id: userRecord.personId },
+          data: {
+            ...(typeof data.name === "string"
+              ? { displayName: data.name }
+              : {}),
+            ...(normalizedHandle !== undefined ? { handle: normalizedHandle } : {}),
+            ...(typeof data.bio === "string" ? { bio: data.bio } : {}),
+          },
+        });
+      }
+
+      // Mirror displayName/handle to the legacy User columns so that any code
+      // path still reading them keeps working until Phase 3 drops the columns.
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          name: data.name,
+          bio: data.bio,
+          isPublic: data.isPublic,
+          newsletterSubscribed: data.newsletterSubscribed,
+          website: data.website,
+          headline: data.headline,
+          coverImage: data.coverImage,
+          ...(normalizedHandle !== undefined
+            ? { username: normalizedHandle }
+            : {}),
+        },
+      });
     });
 
     return NextResponse.json({ success: true });

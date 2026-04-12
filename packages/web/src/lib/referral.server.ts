@@ -9,6 +9,9 @@ export async function findUserByUsernameOrReferralCode(identifier: string | null
     return null;
   }
 
+  // Username is mirrored from Person.handle so existing username-based lookups
+  // still work; we also include the linked Person on the result so callers can
+  // route display reads through the user-display helpers.
   return prisma.user.findFirst({
     where: {
       OR: [
@@ -24,7 +27,25 @@ export async function findUserByUsernameOrReferralCode(identifier: string | null
             mode: "insensitive",
           },
         },
+        {
+          person: {
+            handle: {
+              equals: value,
+              mode: "insensitive",
+            },
+          },
+        },
       ],
+    },
+    include: {
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
     },
   });
 }

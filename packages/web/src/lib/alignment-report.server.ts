@@ -11,6 +11,11 @@ import {
 import { loadAlignmentBenchmarkProfiles } from "@/lib/alignment-politicians.server";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
+import {
+  getUserDisplayHandle,
+  getUserDisplayLabel,
+  getUserDisplayName,
+} from "@/lib/user-display";
 
 export interface AlignmentReportOwner {
   id: string;
@@ -76,11 +81,11 @@ export async function findAlignmentReportOwnerByIdentifier(
 
   return {
     id: user.id,
-    name: user.name,
-    username: user.username,
+    name: getUserDisplayName(user),
+    username: getUserDisplayHandle(user),
     referralCode: user.referralCode,
     publicIdentifier: getUsernameOrReferralCode(user) ?? user.referralCode,
-    displayName: user.username ? `@${user.username}` : user.name ?? "Anonymous citizen",
+    displayName: getUserDisplayLabel(user),
   };
 }
 

@@ -8,6 +8,7 @@ import {
 } from "@/lib/referral-email-sequence";
 import { sendResendEmail, isResendConfigured } from "@/lib/resend";
 import { buildUserReferralUrl } from "@/lib/url";
+import { getUserDisplayName } from "@/lib/user-display";
 import { EmailLogStatus, Prisma } from "@optimitron/db";
 
 interface ReferralSequenceUser {
@@ -20,6 +21,15 @@ interface ReferralSequenceUser {
   referralEmailSequenceLastSentAt: Date | null;
   referralEmailSequenceStep: number;
   username: string | null;
+  // Optional so callers that haven't widened their query yet still typecheck.
+  // The user-display helpers tolerate a missing person and fall back to the
+  // legacy User columns.
+  person?: {
+    id: string;
+    handle: string | null;
+    displayName: string | null;
+    image: string | null;
+  } | null;
 }
 
 interface ReferralSequenceMessage {
@@ -58,7 +68,7 @@ function buildReferralSequenceMessage(
   return buildReferralSequenceEmail({
     step,
     referralCount,
-    name: user.name,
+    name: getUserDisplayName(user),
     shareUrl: buildUserReferralUrl(user),
   });
 }
@@ -240,6 +250,14 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
       referralEmailSequenceLastSentAt: true,
       referralEmailSequenceStep: true,
       username: true,
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
     },
   });
 

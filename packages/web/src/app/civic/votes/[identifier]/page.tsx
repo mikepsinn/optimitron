@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { buildCivicVoteUrl, getBaseUrl } from "@/lib/url";
+import { getUserDisplayLabel } from "@/lib/user-display";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 
@@ -35,7 +36,25 @@ export default async function CivicVotePage({
   const { identifier } = await params;
   const vote = await prisma.citizenBillVote.findUnique({
     where: { shareIdentifier: identifier },
-    include: { user: { select: { name: true, username: true } } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          email: true,
+          person: {
+            select: {
+              id: true,
+              handle: true,
+              displayName: true,
+              image: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!vote) {
@@ -43,9 +62,7 @@ export default async function CivicVotePage({
   }
 
   const shareUrl = buildCivicVoteUrl(vote.shareIdentifier, getBaseUrl());
-  const displayName = vote.user.username
-    ? `@${vote.user.username}`
-    : vote.user.name ?? "Anonymous citizen";
+  const displayName = getUserDisplayLabel(vote.user);
 
   interface CBASnapshot {
     structural?: { overallSignal?: string };

@@ -14,6 +14,7 @@ import { TaskDescription } from "@/components/tasks/task-description";
 import { TaskHeroStats } from "@/components/tasks/task-hero-stats";
 import { TaskMetadataTags } from "@/components/tasks/task-metadata-tags";
 import { TaskSectionNav } from "@/components/tasks/task-section-nav";
+import { getUserDisplayLabel } from "@/lib/user-display";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
@@ -639,9 +640,7 @@ export default async function TaskDetailPage({
                   className="space-y-3 border-t-4 border-primary pt-4 first:border-t-0 first:pt-0"
                 >
                   <p className="text-lg font-black uppercase">
-                    {(claim.user.username && `@${claim.user.username}`) ||
-                      claim.user.name ||
-                      claim.userId}
+                    {getUserDisplayLabel(claim.user) || claim.userId}
                   </p>
                   {claim.completionEvidence ? (
                     <p className="text-sm font-bold text-muted-foreground">
