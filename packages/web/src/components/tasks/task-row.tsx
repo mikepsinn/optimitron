@@ -2,32 +2,45 @@ import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
   buildTaskShareText,
-  formatCompactCount,
   formatCompactCurrency,
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import { getPersonHref } from "@/lib/person-href";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
+import { DeathCounter } from "./death-counter";
 
 export type TaskSortKey =
   | "title"
   | "assignee"
   | "status"
-  | "annualHealthyYears"
-  | "annualEconLoss"
-  | "costPerHealthyYear";
+  | "deathsLockedIn"
+  | "cost"
+  | "time";
 
-/** Format cost per healthy year with enough precision for sub-penny values (e.g. $0.00177). */
-function formatCostPerHealthyYear(value: number): string {
-  if (value >= 1) {
-    return formatCompactCurrency(value);
-  }
-  if (value >= 0.01) {
-    return `$${value.toFixed(2)}`;
-  }
-  // Sub-penny — use 3 significant figures
-  return `$${value.toPrecision(3)}`;
+/** Below this threshold, cost is treated as −∞ for display purposes. */
+const NEGATIVE_INFINITY_COST_THRESHOLD = -1e17;
+/** Healthy life-years lost per averted death (child-skewed global average). */
+const YEARS_PER_AVERTED_DEATH = 40;
+
+/** Format raw cost. Renders "−∞" for sentinel values. */
+function formatCost(value: number | null | undefined): string {
+  if (value == null) return "—";
+  if (value <= NEGATIVE_INFINITY_COST_THRESHOLD) return "−∞";
+  if (value < 0) return `−${formatCompactCurrency(Math.abs(value))}`;
+  if (value === 0) return "$0";
+  return formatCompactCurrency(value);
+}
+
+/** Format an estimated effort duration. Sub-minute → seconds, sub-hour → minutes, else hours. */
+function formatDuration(hours: number | null | undefined): string {
+  if (hours == null || hours <= 0) return "—";
+  const seconds = hours * 3600;
+  if (seconds < 60) return `${Math.round(seconds)}s`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
+  if (hours < 24) return `${hours.toFixed(hours < 10 ? 1 : 0)}h`;
+  return `${Math.round(hours / 24)}d`;
 }
 
 function formatDueDate(value: Date) {
@@ -90,9 +103,9 @@ const SORT_LABELS: Record<TaskSortKey, string> = {
   title: "Task",
   assignee: "Assignee",
   status: "Status",
-  annualHealthyYears: "Healthy Years / Year",
-  annualEconLoss: "Economic Loss / Year",
-  costPerHealthyYear: "Cost / Healthy Year",
+  deathsLockedIn: "Deaths Locked In",
+  cost: "Cost",
+  time: "Time",
 };
 
 export function TaskTableHeader({
@@ -125,9 +138,9 @@ export function TaskTableHeader({
       {headerCell("assignee", `hidden w-36 shrink-0 sm:block ${hdr}`)}
       {headerCell("title", `min-w-0 flex-1 ${hdr}`)}
       {headerCell("status", `hidden shrink-0 sm:block ${hdr}`)}
-      {headerCell("annualHealthyYears", `hidden w-32 shrink-0 text-right lg:block ${hdr}`)}
-      {headerCell("annualEconLoss", `hidden w-32 shrink-0 text-right lg:block ${hdr}`)}
-      {headerCell("costPerHealthyYear", `hidden w-28 shrink-0 text-right xl:block ${hdr}`)}
+      {headerCell("deathsLockedIn", `hidden w-36 shrink-0 text-right lg:block ${hdr}`)}
+      {headerCell("cost", `hidden w-24 shrink-0 text-right lg:block ${hdr}`)}
+      {headerCell("time", `hidden w-16 shrink-0 text-right xl:block ${hdr}`)}
       <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
         Share
       </span>
@@ -161,18 +174,21 @@ export function TaskRow({
 
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
 
-  // Annualized rates: per-day × 365 = per-year delay cost
   const perDayDalys = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
-  const perDayEcon = task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase;
-  const annualHealthyYears = perDayDalys != null && perDayDalys > 0 ? perDayDalys * 365 : null;
-  const annualEconLoss = perDayEcon != null && perDayEcon > 0 ? perDayEcon * 365 : null;
-  const costPerHealthyYear = task.impact?.costPerDalyUsd;
+  const cost = task.impact?.selectedFrame?.estimatedCashCostUsdBase ?? null;
+  const time = task.estimatedEffortHours;
+
+  // Continuous death counter inputs: convert per-day healthy life-years lost
+  // into per-second, then divide by years-per-death to get deaths/sec.
+  const yearsPerSecond = perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
+  const deathClockStartMs = task.dueAt?.getTime() ?? null;
+  const showDeathCounter = yearsPerSecond != null && deathClockStartMs != null && isOverdue;
 
   const calculationsUrl =
     (task.currentImpactEstimateSet?.assumptionsJson as { calculationsUrl?: string } | null)
       ?.calculationsUrl ?? null;
   const assigneeHref = task.assigneePerson
-    ? `/people/${task.assigneePerson.id}`
+    ? getPersonHref(task.assigneePerson)
     : null;
 
   const avatarEl = (
@@ -232,14 +248,21 @@ export function TaskRow({
           ) : task.status === "VERIFIED" ? (
             <StatusBadge variant="done">verified</StatusBadge>
           ) : null}
-          {annualHealthyYears != null ? (
-            <StatusBadge>{formatCompactCount(annualHealthyYears)} healthy years/yr lost</StatusBadge>
+          {showDeathCounter ? (
+            <StatusBadge variant="overdue">
+              <DeathCounter
+                yearsPerSecond={yearsPerSecond}
+                startMs={deathClockStartMs}
+                yearsPerDeath={YEARS_PER_AVERTED_DEATH}
+              />
+              <span className="ml-1">deaths locked in</span>
+            </StatusBadge>
           ) : null}
-          {annualEconLoss != null ? (
-            <StatusBadge>{formatCompactCurrency(annualEconLoss)}/yr lost</StatusBadge>
+          {cost != null ? (
+            <StatusBadge>cost {formatCost(cost)}</StatusBadge>
           ) : null}
-          {costPerHealthyYear != null ? (
-            <StatusBadge>{formatCostPerHealthyYear(costPerHealthyYear)}/healthy year</StatusBadge>
+          {time != null && time > 0 ? (
+            <StatusBadge>{formatDuration(time)}</StatusBadge>
           ) : null}
         </div>
       </div>
@@ -259,25 +282,48 @@ export function TaskRow({
         ) : null}
       </div>
 
-      {/* Healthy Years Lost Per Year — desktop */}
+      {/* Live death counter — desktop */}
+      <div className="hidden w-36 shrink-0 text-right text-xs font-bold lg:block">
+        {showDeathCounter ? (
+          calculationsUrl ? (
+            <a
+              href={calculationsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brutal-red underline underline-offset-4 hover:text-foreground"
+            >
+              <DeathCounter
+                yearsPerSecond={yearsPerSecond}
+                startMs={deathClockStartMs}
+                yearsPerDeath={YEARS_PER_AVERTED_DEATH}
+              />
+            </a>
+          ) : (
+            <span className="text-brutal-red">
+              <DeathCounter
+                yearsPerSecond={yearsPerSecond}
+                startMs={deathClockStartMs}
+                yearsPerDeath={YEARS_PER_AVERTED_DEATH}
+              />
+            </span>
+          )
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </div>
+
+      {/* Cost — desktop */}
       <ImpactCell
-        value={annualHealthyYears != null ? formatCompactCount(annualHealthyYears) : "—"}
+        value={formatCost(cost)}
         href={calculationsUrl}
-        className="hidden w-32 lg:block"
+        className="hidden w-24 lg:block"
       />
 
-      {/* Economic Loss Per Year — desktop */}
+      {/* Time required — xl desktop */}
       <ImpactCell
-        value={annualEconLoss != null ? formatCompactCurrency(annualEconLoss) : "—"}
-        href={calculationsUrl}
-        className="hidden w-32 lg:block"
-      />
-
-      {/* Cost per Healthy Year — xl desktop */}
-      <ImpactCell
-        value={costPerHealthyYear != null ? formatCostPerHealthyYear(costPerHealthyYear) : "—"}
-        href={calculationsUrl}
-        className="hidden w-28 xl:block"
+        value={formatDuration(time)}
+        href={null}
+        className="hidden w-16 xl:block"
       />
 
       <div className="hidden shrink-0 md:block">
@@ -298,17 +344,17 @@ export function TaskRow({
 
 export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string | number {
   switch (key) {
-    case "annualHealthyYears": {
+    case "deathsLockedIn": {
+      // Higher deaths locked in = bigger problem; sort desc by default
       const perDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
-      return perDay != null ? perDay * 365 : 0;
+      return perDay != null ? perDay : 0;
     }
-    case "annualEconLoss": {
-      const perDay = task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase;
-      return perDay != null ? perDay * 365 : 0;
-    }
-    case "costPerHealthyYear":
-      // Lower cost/DALY = more cost-effective, so put best-first via ascending sort
-      return task.impact?.costPerDalyUsd ?? Infinity;
+    case "cost":
+      // Lower cost = better; ascending puts the −∞ treaty first
+      return task.impact?.selectedFrame?.estimatedCashCostUsdBase ?? Infinity;
+    case "time":
+      // Lower time required = easier; ascending puts fastest first
+      return task.estimatedEffortHours ?? Infinity;
     case "assignee":
       return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? "";
     case "status":

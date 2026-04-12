@@ -32,7 +32,12 @@ export function RichMarkdown({ markdown, className }: RichMarkdownProps) {
   return (
     <div className={`task-markdown space-y-3 text-sm font-bold leading-7 text-muted-foreground ${className ?? ""}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[
+          remarkGfm,
+          // Disable single-`$` inline math so currency like "$27.2B" isn't
+          // misparsed as a math delimiter. Block math with `$$...$$` still works.
+          [remarkMath, { singleDollarTextMath: false }],
+        ]}
         rehypePlugins={[rehypeKatex]}
         components={getRichMarkdownComponents()}
       >

@@ -43,6 +43,7 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   EVENTUALLY_AVOIDABLE_DALY_PCT,
   GLOBAL_ANNUAL_DALY_BURDEN,
+  PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   TREATY_ANNUAL_FUNDING,
 } from "@optimitron/data/parameters";
 import { WORLD_LEADERS } from "@optimitron/data/datasets/world-leaders";
@@ -58,6 +59,22 @@ const prisma = new PrismaClient({ adapter });
 // ---------------------------------------------------------------------------
 // Helper: upsert by unique "name" (or "code" for jurisdictions)
 // ---------------------------------------------------------------------------
+
+/**
+ * Slugify a display name into a URL-safe handle. Strips diacritics, drops
+ * non-alphanumeric characters, collapses runs of dashes, and lowercases.
+ * Used for Person.handle backfill — combine with a country suffix on shared
+ * names (e.g. there are several "Tshering Tobgay"s historically).
+ */
+function slugify(input: string): string {
+  return input
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
 
 async function upsertUnit(data: Prisma.UnitUncheckedCreateInput) {
   return prisma.unit.upsert({
@@ -753,8 +770,31 @@ export async function seedDatabase(options: SeedDatabaseOptions = {}) {
 // Treaty Tasks — parent task + per-country signer subtasks with impact data
 // ---------------------------------------------------------------------------
 
-const TREATY_DUE_AT = new Date("2024-12-31T00:00:00.000Z");
+// Due date is "today" — the clock starts the moment the seeder runs.
+const TREATY_DUE_AT = new Date();
 const TREATY_CAMPAIGN_COST_USD = 1_000_000_000; // $1B lobbying campaign
+
+// Peace-dividend NPV using a growing perpetuity with the standard UK Treasury
+// Green Book / IPCC AR6 social discount rate (r=3%) and long-run real GDP
+// growth (g=2%). NPV = C₀ / (r − g). Under historical military-spending growth
+// (~4% real) the sum diverges — see task description for the rebuttal.
+const TREATY_PEACE_DIVIDEND_DISCOUNT_RATE = 0.03;
+const TREATY_PEACE_DIVIDEND_GROWTH_RATE = 0.02;
+const TREATY_PEACE_DIVIDEND_NPV =
+  PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value /
+  (TREATY_PEACE_DIVIDEND_DISCOUNT_RATE - TREATY_PEACE_DIVIDEND_GROWTH_RATE);
+
+// Sentinel value representing −∞. Float64 supports Infinity but Postgres
+// round-trips can be flaky, so we use a finite-but-absurd magnitude that the
+// formatter detects via threshold (anything below −1e17 renders as "−∞").
+const TREATY_INFINITE_NEGATIVE_COST = -1e18;
+const TREATY_NET_COST_USD = TREATY_INFINITE_NEGATIVE_COST;
+
+// 30 seconds per signature × 193 leaders = 5,790 seconds ≈ 1.61 hours.
+const TREATY_SECONDS_PER_SIGNATURE = 30;
+const TREATY_TOTAL_EFFORT_HOURS =
+  (WORLD_LEADERS.length * TREATY_SECONDS_PER_SIGNATURE) / 3600;
+const TREATY_PER_SIGNER_EFFORT_HOURS = TREATY_SECONDS_PER_SIGNATURE / 3600;
 
 async function seedTreatyTasks() {
   console.log("📋 Seeding treaty tasks...");
@@ -798,27 +838,20 @@ async function seedTreatyTasks() {
       assigneeOrganizationId: humanity.id,
       title: "Ratify the 1% Treaty",
       description: [
-        `Redirect 1% of global military spending (${p(TREATY_ANNUAL_FUNDING, `**$${(annualFunding / 1e9).toFixed(1)}B/year**`)}) into pragmatic clinical trials. This accelerates the cure for the average disease by ${p(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS, `**${Math.round(accelerationYears)} years**`)}, saves ${p(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS, `**${(totalDalys / 1e9).toFixed(0)}B healthy life-years**`)}, and generates ${p(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE, `**$${(totalEconValue / 1e15).toFixed(1)} quadrillion**`)} in economic value over its benefit horizon.`,
+        `Your governments collected **\\$${(annualFunding / 0.01 / 1e12).toFixed(2)} trillion** from you this year and spent it on weapons. Enough weapons to kill every person on Earth several times over. Killing everyone once is sufficient.`,
         "",
-        `Every year of delay costs ${p(GLOBAL_ANNUAL_DALY_BURDEN, `**${(annualAvoidableDalys / 1e9).toFixed(2)}B healthy years**`)} of human life and ${p(GLOBAL_ANNUAL_DALY_BURDEN, `**$${((annualAvoidableDalys * 150_000) / 1e12).toFixed(0)}T**`)} in economic value.`,
+        `The 1% Treaty redirects **one cent on the dollar** — \\$${(annualFunding / 1e9).toFixed(1)}B/year — into pragmatic clinical trials. That accelerates the cure for the average disease by **${Math.round(accelerationYears)} years** and saves **${(totalDalys / 1e9).toFixed(0)} billion** healthy life-years.`,
         "",
-        "## How to Complete",
+        `Every day this stays unsigned locks in **~180,000 future preventable deaths**. The cost of the treaty itself, net of the peace dividend, is **\\$−∞**. [See methodology](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).`,
         "",
-        "Your employees — the world leaders listed in the subtasks below — have not signed the treaty yet. Your job is to remind them. Claim this task, do the work, and mark it complete when you have done your part.",
+        "## What to do (5 minutes)",
         "",
-        "**1. Sign the treaty yourself** at [/treaty](/treaty). This votes YES on the global referendum and registers you as a verified supporter.",
+        "1. **Sign the treaty** at [/treaty](/treaty).",
+        "2. **Share your referral link** from your [dashboard](/dashboard).",
+        "3. **Pick a leader from the list below** and message them. Use the contact link.",
+        "4. *(Optional)* **Fund the campaign** at the [Earth Optimization Prize](/prize) — your principal earns yield if it fails. Zero downside.",
         "",
-        "**2. Grab your referral link** from your [dashboard](/dashboard) and share it on social media. Every verified voter you recruit is counted in the petition total leaders see.",
-        "",
-        "**3. Pick a specific leader** from the subtasks below and push them. Use the contact link, copy the prefilled message, and share that leader's task page with their constituents.",
-        "",
-        "**4. Fund the campaign** by depositing into the [Earth Optimization Prize](/prize). Your principal earns yield if the treaty fails and a proportional prize share if it succeeds — zero downside.",
-        "",
-        "**5. Watch the numbers** on the [scoreboard](/scoreboard) and come back here to mark this task complete once you have done your part.",
-        "",
-        "## Progress",
-        "",
-        "See the list of signer subtasks below for per-country status. Each leader is an independent blocker.",
+        "Then come back and mark this task complete.",
       ].join("\n"),
       category: "GOVERNANCE",
       difficulty: "EXPERT",
@@ -829,9 +862,10 @@ async function seedTreatyTasks() {
       skillTags: ["organizing", "diplomacy", "public-pressure"],
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
       claimPolicy: "OPEN_MANY",
+      estimatedEffortHours: TREATY_TOTAL_EFFORT_HOURS,
     },
     impact: {
-      estimatedCashCostUsdBase: TREATY_CAMPAIGN_COST_USD,
+      estimatedCashCostUsdBase: TREATY_NET_COST_USD,
       expectedEconomicValueUsdBase: totalEconValue,
       expectedDalysAvertedBase: totalDalys,
       delayEconomicValueUsdLostPerDayBase: delayEconPerDay,
@@ -978,10 +1012,14 @@ async function seedTreatyTasks() {
     const sourceRef = `wikidata:${leader.wikidataId}`;
     const countryCode = leader.countryCode.toUpperCase();
     const share = 1 / leaderCount;
+    // Slugified handle from displayName, with country code suffix to guarantee
+    // uniqueness across the 193 leaders. Lower-case, hyphen-separated, ASCII.
+    const handle = `${slugify(leader.leaderName)}-${countryCode.toLowerCase()}`;
 
     const person = await prisma.person.upsert({
       where: { sourceRef },
       update: {
+        handle,
         displayName: leader.leaderName,
         image: leader.leaderImageUrl,
         countryCode,
@@ -989,6 +1027,7 @@ async function seedTreatyTasks() {
         isPublicFigure: true,
       },
       create: {
+        handle,
         displayName: leader.leaderName,
         image: leader.leaderImageUrl,
         countryCode,
@@ -1008,29 +1047,19 @@ async function seedTreatyTasks() {
         roleTitle: leader.roleTitle,
         title: "Sign the 1% Treaty",
         description: [
-          `**${leader.leaderName}** (${leader.roleTitle}, ${leader.countryName}) signs the 1% Treaty, redirecting 1% of ${leader.countryName}'s military spending into pragmatic clinical trials.`,
+          `**${leader.leaderName}** is the ${leader.roleTitle} of ${leader.countryName}. Their job is to sign the 1% Treaty on behalf of their government — redirecting 1% of ${leader.countryName}'s military spending into pragmatic clinical trials. They have not done it.`,
           "",
-          `This task is **significantly overdue**. Every day ${leader.leaderName} delays, people die who did not have to.`,
+          `### If you are ${leader.leaderName}`,
           "",
-          "## How to Complete",
+          "Sign in, go to [/treaty](/treaty), sign on behalf of your government, post proof from your verified account, submit the URL below.",
           "",
-          `### If you ARE ${leader.leaderName}`,
+          `### If you are not ${leader.leaderName}`,
           "",
-          "1. Sign in with your verified identity.",
-          "2. Visit [/treaty](/treaty) and sign the treaty on behalf of your government.",
-          "3. Post the signed confirmation from your **official verified social media account** as proof.",
-          "4. Submit the proof URL as completion evidence below. A curator will verify and mark this task complete.",
+          `1. **Share this page** with the buttons above. Tag [@${leader.leaderName}](https://www.google.com/search?q=${encodeURIComponent(`${leader.leaderName} official social media`)}).`,
+          "2. **Message them** with the contact link below.",
+          "3. **Sign the treaty yourself** at [/treaty](/treaty) and share your [referral link](/dashboard).",
           "",
-          `### If you are NOT ${leader.leaderName}`,
-          "",
-          `Inform them that their task is significantly overdue and this has resulted in many deaths.`,
-          "",
-          `1. **Share this task page** on social media using the share buttons above. Tag [@${leader.leaderName}](https://www.google.com/search?q=${encodeURIComponent(`${leader.leaderName} official social media`)}) directly.`,
-          `2. **Contact them** using the contact link below. Copy the prefilled message and send it.`,
-          `3. **Sign the treaty yourself** at [/treaty](/treaty). Grab your referral link from your [dashboard](/dashboard) and share it — every verified voter you recruit strengthens the petition against them.`,
-          `4. **Recruit other ${leader.countryName} citizens** to do the same. Local pressure is the cheapest lobby.`,
-          "",
-          `Then come back here and mark this task complete with what you did.`,
+          "Mark this task complete when you have done your part.",
         ].join("\n"),
         category: "GOVERNANCE",
         difficulty: "EXPERT",
@@ -1040,10 +1069,12 @@ async function seedTreatyTasks() {
         claimPolicy: "ASSIGNED_ONLY",
         skillTags: ["diplomacy", "public-pressure"],
         interestTags: ["treaty", "disease-eradication", `country-${countryCode.toLowerCase()}`],
-        estimatedEffortHours: 0.5,
+        estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
       },
       impact: {
-        estimatedCashCostUsdBase: TREATY_CAMPAIGN_COST_USD * share,
+        // Cost stays at the −∞ sentinel for every signer — splitting infinity
+        // is still infinity.
+        estimatedCashCostUsdBase: TREATY_NET_COST_USD,
         expectedEconomicValueUsdBase: totalEconValue * share,
         expectedDalysAvertedBase: totalDalys * share,
         delayEconomicValueUsdLostPerDayBase: delayEconPerDay * share,
@@ -1066,7 +1097,7 @@ const WISHONIA_USERNAME = "wishonia";
 const WISHONIA_DISPLAY_NAME = "Wishonia";
 const WISHONIA_AFFILIATION =
   "World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation";
-const WISHONIA_IMAGE = "https://optimitron.com/wishonia-avatar.png";
+const WISHONIA_IMAGE = "/sprites/wishonia/smirk-smile.png";
 
 /**
  * Seed Wishonia as a regular user with a linked Person record. This lets her:
@@ -1080,12 +1111,36 @@ const WISHONIA_IMAGE = "https://optimitron.com/wishonia-avatar.png";
 async function seedWishoniaUser() {
   console.log("🛸 Seeding Wishonia user...");
 
-  // Upsert the user by stable email
+  // Upsert the Person first so we can link the User to it.
+  const sourceRef = "wishonia:system";
+  const person = await prisma.person.upsert({
+    where: { sourceRef },
+    update: {
+      handle: WISHONIA_USERNAME,
+      displayName: WISHONIA_DISPLAY_NAME,
+      image: WISHONIA_IMAGE,
+      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
+      currentAffiliation: WISHONIA_AFFILIATION,
+      isPublicFigure: true,
+    },
+    create: {
+      sourceRef,
+      handle: WISHONIA_USERNAME,
+      displayName: WISHONIA_DISPLAY_NAME,
+      image: WISHONIA_IMAGE,
+      bio: "Voice of Optimitron. Alien governance AI. 4,237 years of practice.",
+      currentAffiliation: WISHONIA_AFFILIATION,
+      isPublicFigure: true,
+    },
+  });
+
+  // Upsert the user by stable email and link to the Person.
   const user = await prisma.user.upsert({
     where: { email: WISHONIA_EMAIL },
     update: {
       name: WISHONIA_DISPLAY_NAME,
       image: WISHONIA_IMAGE,
+      person: { connect: { id: person.id } },
     },
     create: {
       email: WISHONIA_EMAIL,
@@ -1093,29 +1148,11 @@ async function seedWishoniaUser() {
       image: WISHONIA_IMAGE,
       username: WISHONIA_USERNAME,
       emailVerified: new Date(),
+      person: { connect: { id: person.id } },
     },
   });
 
-  // Link a Person record
-  const sourceRef = "wishonia:system";
-  await prisma.person.upsert({
-    where: { sourceRef },
-    update: {
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublicFigure: true,
-    },
-    create: {
-      sourceRef,
-      displayName: WISHONIA_DISPLAY_NAME,
-      image: WISHONIA_IMAGE,
-      currentAffiliation: WISHONIA_AFFILIATION,
-      isPublicFigure: true,
-    },
-  });
-
-  console.log(`  ✓ Wishonia user (${user.id}) + person record`);
+  console.log(`  ✓ Wishonia user (${user.id}) + person (${person.id}) handle=${person.handle}`);
 }
 
 /**

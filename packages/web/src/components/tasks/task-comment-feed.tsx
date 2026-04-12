@@ -6,12 +6,17 @@ import { ArrowDown, ArrowUp, MessageSquare, Send, Trash2 } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
+import { getPersonHref } from "@/lib/person-href";
 
 interface CommentUser {
   id: string;
   name: string | null;
   username: string | null;
   image: string | null;
+  person?: {
+    id: string;
+    handle: string | null;
+  } | null;
 }
 
 interface Citation {
@@ -40,6 +45,8 @@ interface TaskCommentRow {
   createdAt: string | Date;
   authorUser: CommentUser;
   viewerVote?: 1 | -1 | 0;
+  /** Client-only: true while Wishonia is actively streaming tokens into this row. */
+  isStreaming?: boolean;
 }
 
 interface TaskActivityRow {
@@ -62,6 +69,15 @@ interface TaskCommentFeedProps {
 
 type SortMode = "new" | "top";
 
+type StreamEvent =
+  | { type: "user"; comment: TaskCommentRow }
+  | { type: "wishonia-skip"; reason: string }
+  | { type: "wishonia-start"; parentCommentId: string }
+  | { type: "wishonia-chunk"; delta: string }
+  | { type: "wishonia-done"; comment: TaskCommentRow }
+  | { type: "wishonia-error"; error: string }
+  | { type: "error"; error: string };
+
 const MAX_MESSAGE_LENGTH = 20_000;
 const POLL_INTERVAL_MS = 10_000;
 
@@ -82,7 +98,21 @@ export function TaskCommentFeed({
   const [replyDraft, setReplyDraft] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
+  const [wishoniaNotice, setWishoniaNotice] = useState<string | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showWishoniaNotice = useCallback((message: string) => {
+    setWishoniaNotice(message);
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setWishoniaNotice(null), 6000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    };
+  }, []);
 
   const commentsById = useMemo(() => {
     const map = new Map<string, TaskCommentRow>();
@@ -165,22 +195,29 @@ export function TaskCommentFeed({
   ) {
     setSubmitting(true);
     setPostError(null);
+
+    // Synthetic placeholder id for Wishonia's streaming row. Replaced by the
+    // real server-assigned id once the stream emits `wishonia-done`.
+    const streamingPlaceholderId = `streaming:${crypto.randomUUID()}`;
+
     try {
       const res = await fetch(`/api/tasks/${taskId}/comments`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/x-ndjson",
+        },
         body: JSON.stringify({ message, parentCommentId, mediaUrl }),
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string } | null;
         throw new Error(body?.error ?? `Failed with status ${res.status}`);
       }
-      const { comment } = (await res.json()) as { comment: TaskCommentRow };
-      setComments((prev) => {
-        const map = new Map(prev.map((c) => [c.id, c] as const));
-        map.set(comment.id, comment);
-        return [...map.values()];
-      });
+      if (!res.body) {
+        throw new Error("Empty response body");
+      }
+
+      // Clear drafts immediately so the UI responds before the stream completes
       if (parentCommentId) {
         setReplyingTo(null);
         setReplyDraft("");
@@ -188,9 +225,134 @@ export function TaskCommentFeed({
         setDraft("");
         setDraftMediaUrl("");
       }
-      // Wishonia reply will land via polling
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let wishoniaStarted = false;
+
+      const upsert = (next: TaskCommentRow) => {
+        setComments((prev) => {
+          const map = new Map(prev.map((c) => [c.id, c] as const));
+          map.set(next.id, next);
+          return [...map.values()];
+        });
+      };
+
+      const appendStreamingChunk = (delta: string) => {
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === streamingPlaceholderId
+              ? { ...c, message: c.message + delta }
+              : c,
+          ),
+        );
+      };
+
+      const removeStreamingPlaceholder = () => {
+        setComments((prev) => prev.filter((c) => c.id !== streamingPlaceholderId));
+      };
+
+      const replaceStreamingPlaceholder = (real: TaskCommentRow) => {
+        setComments((prev) => {
+          const map = new Map(
+            prev.filter((c) => c.id !== streamingPlaceholderId).map((c) => [c.id, c] as const),
+          );
+          map.set(real.id, real);
+          return [...map.values()];
+        });
+      };
+
+      // Process NDJSON stream line-by-line
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          let newlineIdx = buffer.indexOf("\n");
+          while (newlineIdx !== -1) {
+            const line = buffer.slice(0, newlineIdx).trim();
+            buffer = buffer.slice(newlineIdx + 1);
+            if (line.length > 0) {
+              try {
+                const event = JSON.parse(line) as StreamEvent;
+                handleStreamEvent(event);
+              } catch (err) {
+                console.error("[TaskCommentFeed] Failed to parse NDJSON line:", line, err);
+              }
+            }
+            newlineIdx = buffer.indexOf("\n");
+          }
+        }
+        if (done) break;
+      }
+
+      function handleStreamEvent(event: StreamEvent) {
+        switch (event.type) {
+          case "user":
+            upsert(event.comment);
+            break;
+          case "wishonia-start": {
+            wishoniaStarted = true;
+            // Insert an empty streaming placeholder that the chunks fill in
+            const placeholder: TaskCommentRow = {
+              id: streamingPlaceholderId,
+              taskId,
+              parentCommentId: event.parentCommentId,
+              authorUserId: wishoniaUserId ?? "wishonia",
+              message: "",
+              mediaUrl: null,
+              upvoteCount: 0,
+              downvoteCount: 0,
+              voteScore: 0,
+              replyCount: 0,
+              citationsJson: null,
+              editedAt: null,
+              deletedAt: null,
+              hiddenByCurator: false,
+              path: "",
+              createdAt: new Date().toISOString(),
+              authorUser: {
+                id: wishoniaUserId ?? "wishonia",
+                name: "Wishonia",
+                username: "wishonia",
+                image: "/sprites/wishonia/smirk-smile.png",
+              },
+              isStreaming: true,
+            };
+            setComments((prev) => [...prev, placeholder]);
+            break;
+          }
+          case "wishonia-chunk":
+            appendStreamingChunk(event.delta);
+            break;
+          case "wishonia-done":
+            replaceStreamingPlaceholder(event.comment);
+            break;
+          case "wishonia-skip":
+            showWishoniaNotice(
+              event.reason === "too-short"
+                ? "Wishonia skipped: add a bit more context for a substantive reply."
+                : event.reason === "rate-limited"
+                  ? "Wishonia has already replied 3 times on this task in the last hour."
+                  : event.reason === "disabled"
+                    ? "Wishonia auto-reply is disabled."
+                    : `Wishonia skipped (${event.reason}).`,
+            );
+            if (wishoniaStarted) removeStreamingPlaceholder();
+            break;
+          case "wishonia-error":
+            showWishoniaNotice(`Wishonia failed: ${event.error}`);
+            if (wishoniaStarted) removeStreamingPlaceholder();
+            break;
+          case "error":
+            console.error("[TaskCommentFeed] Stream error:", event.error);
+            break;
+        }
+      }
     } catch (err) {
       setPostError(err instanceof Error ? err.message : "Failed to post comment");
+      // Clean up any streaming placeholder that was inserted before the error
+      setComments((prev) => prev.filter((c) => c.id !== streamingPlaceholderId));
     } finally {
       setSubmitting(false);
     }
@@ -338,6 +500,11 @@ export function TaskCommentFeed({
           {postError ? (
             <p className="mt-2 text-xs font-bold text-brutal-red">{postError}</p>
           ) : null}
+          {wishoniaNotice ? (
+            <p className="mt-2 text-xs font-bold italic text-muted-foreground">
+              {wishoniaNotice}
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="flex items-center justify-between border-2 border-primary bg-muted/30 p-3">
@@ -422,27 +589,46 @@ function CommentNode({
   const isOwn = comment.authorUserId === currentUserId;
   const canReply = currentUserId != null && !isDeleted;
   const handle =
-    comment.authorUser.username ?? comment.authorUser.name ?? "unknown";
+    comment.authorUser.person?.handle ??
+    comment.authorUser.username ??
+    comment.authorUser.name ??
+    "unknown";
+  const personHref = comment.authorUser.person
+    ? getPersonHref(comment.authorUser.person)
+    : null;
   const citations = extractCitations(comment.citationsJson);
 
   return (
     <div className={depth > 0 ? "ml-6 border-l-2 border-primary/40 pl-4" : ""}>
       <article className="border-2 border-primary bg-background p-3">
         <header className="mb-2 flex items-center gap-2">
-          <Link href={`/people/${comment.authorUserId}`} className="shrink-0">
-            <Avatar className="h-7 w-7 border-2 border-foreground bg-muted">
+          {personHref ? (
+            <Link href={personHref} className="shrink-0">
+              <Avatar className="h-7 w-7 border-2 border-foreground bg-muted">
+                <Avatar.Image alt={handle} src={comment.authorUser.image ?? undefined} />
+                <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
+                  {handle.slice(0, 2).toUpperCase()}
+                </Avatar.Fallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <Avatar className="h-7 w-7 shrink-0 border-2 border-foreground bg-muted">
               <Avatar.Image alt={handle} src={comment.authorUser.image ?? undefined} />
               <Avatar.Fallback className="bg-brutal-pink text-[10px] font-black text-background">
                 {handle.slice(0, 2).toUpperCase()}
               </Avatar.Fallback>
             </Avatar>
-          </Link>
-          <Link
-            href={`/people/${comment.authorUserId}`}
-            className="text-sm font-bold underline-offset-4 hover:underline"
-          >
-            @{handle}
-          </Link>
+          )}
+          {personHref ? (
+            <Link
+              href={personHref}
+              className="text-sm font-bold underline-offset-4 hover:underline"
+            >
+              @{handle}
+            </Link>
+          ) : (
+            <span className="text-sm font-bold">@{handle}</span>
+          )}
           {isWishonia ? (
             <span className="border-2 border-foreground bg-brutal-pink px-1.5 py-0 text-[10px] font-bold uppercase text-brutal-pink-foreground">
               Wishonia
@@ -471,7 +657,26 @@ function CommentNode({
           <p className="text-sm font-bold italic text-muted-foreground">[deleted]</p>
         ) : (
           <>
-            <RichMarkdown markdown={comment.message} />
+            {comment.isStreaming && comment.message.length === 0 ? (
+              <p className="flex items-center gap-2 text-sm font-bold italic text-muted-foreground">
+                <span className="inline-flex gap-1">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brutal-pink" />
+                </span>
+                Wishonia is writing...
+              </p>
+            ) : (
+              <div className="relative">
+                <RichMarkdown markdown={comment.message} />
+                {comment.isStreaming ? (
+                  <span
+                    aria-hidden
+                    className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-brutal-pink align-middle"
+                  />
+                ) : null}
+              </div>
+            )}
             {comment.mediaUrl ? (
               <a
                 href={comment.mediaUrl}
@@ -616,7 +821,12 @@ function CommentNode({
 }
 
 function ActivityRow({ activity }: { activity: TaskActivityRow }) {
-  const handle = activity.user.username ?? activity.user.name ?? "unknown";
+  const handle =
+    activity.user.person?.handle ??
+    activity.user.username ??
+    activity.user.name ??
+    "unknown";
+  const personHref = activity.user.person ? getPersonHref(activity.user.person) : null;
   const label = formatActivityType(activity.type);
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-muted-foreground">
@@ -626,12 +836,13 @@ function ActivityRow({ activity }: { activity: TaskActivityRow }) {
           {handle.slice(0, 1).toUpperCase()}
         </Avatar.Fallback>
       </Avatar>
-      <Link
-        href={`/people/${activity.userId}`}
-        className="underline-offset-4 hover:underline"
-      >
-        @{handle}
-      </Link>
+      {personHref ? (
+        <Link href={personHref} className="underline-offset-4 hover:underline">
+          @{handle}
+        </Link>
+      ) : (
+        <span>@{handle}</span>
+      )}
       <span>{label}</span>
       <span className="ml-auto">{formatRelative(activity.createdAt)}</span>
     </div>

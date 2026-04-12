@@ -5,6 +5,7 @@ import {
   type TaskCategory,
   type TaskDifficulty,
 } from "@optimitron/db";
+import { getPersonHref } from "@/lib/person-href";
 import { getTaskDescriptionSummary } from "@/components/tasks/task-description";
 import { TaskContactActions } from "@/components/tasks/TaskContactActions";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
@@ -43,6 +44,7 @@ export interface TaskCardTask {
     countryCode: string | null;
     currentAffiliation: string | null;
     displayName: string;
+    handle?: string | null;
     id: string;
     image: string | null;
     isPublicFigure: boolean;
@@ -271,7 +273,7 @@ export function TaskCard({
                   {task.assigneePerson ? (
                     <Link
                       className="underline underline-offset-4"
-                      href={`/people/${task.assigneePerson.id}`}
+                      href={getPersonHref(task.assigneePerson)}
                     >
                       {targetLabel}
                     </Link>
@@ -363,7 +365,7 @@ export function TaskCard({
           {task.assigneePerson?.isPublicFigure ? (
             <Link
               className="text-sm font-black uppercase underline underline-offset-4"
-              href={`/people/${task.assigneePerson.id}`}
+              href={getPersonHref(task.assigneePerson)}
             >
               Full Record
             </Link>

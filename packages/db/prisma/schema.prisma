@@ -433,6 +433,10 @@ model Person {
   /// Unique identifier for this person
   id String @id @default(cuid())
 
+  /// Public, human-readable handle used in URLs (e.g. /people/wishonia).
+  /// Lower-case, hyphen-separated, globally unique. Falls back to `id` when null.
+  handle String? @unique
+
   /// Public display name
   displayName String
 
@@ -444,6 +448,10 @@ model Person {
 
   /// Optional short biography
   bio String?
+
+  /// Optional public links (twitter, website, wikipedia, etc.) as a JSON object
+  /// keyed by platform name. Shape: { twitter: "url", website: "url", ... }
+  links Json?
 
   /// Optional current affiliation or institution
   currentAffiliation String?

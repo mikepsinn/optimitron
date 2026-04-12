@@ -10,13 +10,20 @@ import {
 import type { TaskCardTask } from "./task-card";
 
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
-  { key: "annualEconLoss", label: "Annual Delay Cost ($)" },
-  { key: "annualHealthyYears", label: "Annual Delay Cost (Healthy Years)" },
-  { key: "costPerHealthyYear", label: "Cost per Healthy Year" },
+  { key: "deathsLockedIn", label: "Deaths Locked In" },
+  { key: "cost", label: "Cost" },
+  { key: "time", label: "Time" },
   { key: "title", label: "Task Name" },
   { key: "assignee", label: "Assignee" },
   { key: "status", label: "Due Date" },
 ];
+
+const ASC_SORT_KEYS: ReadonlySet<TaskSortKey> = new Set([
+  "title",
+  "assignee",
+  "cost",
+  "time",
+]);
 
 function matchesFilter(task: TaskCardTask, filter: string): boolean {
   if (!filter) return true;
@@ -33,7 +40,7 @@ function matchesFilter(task: TaskCardTask, filter: string): boolean {
 
 export function SortableTaskList({
   tasks,
-  defaultSortKey = "annualEconLoss",
+  defaultSortKey = "deathsLockedIn",
   defaultSortDir = "desc",
 }: {
   tasks: TaskCardTask[];
@@ -65,7 +72,7 @@ export function SortableTaskList({
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortKey(key);
-      setSortDir(key === "title" || key === "assignee" || key === "costPerHealthyYear" ? "asc" : "desc");
+      setSortDir(ASC_SORT_KEYS.has(key) ? "asc" : "desc");
     }
   }
 
@@ -93,7 +100,7 @@ export function SortableTaskList({
             onChange={(e) => {
               const key = e.target.value as TaskSortKey;
               setSortKey(key);
-              setSortDir(key === "title" || key === "assignee" || key === "costPerHealthyYear" ? "asc" : "desc");
+              setSortDir(ASC_SORT_KEYS.has(key) ? "asc" : "desc");
             }}
           >
             {SORT_OPTIONS.map((opt) => (

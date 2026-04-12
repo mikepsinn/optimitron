@@ -165,7 +165,10 @@ export function deriveImpactRatios(frame: TaskImpactFrameSummary | null | undefi
   }
 
   const effortHours = Math.max(frame.estimatedEffortHoursBase ?? 0, 0.0001);
-  const costUsd = Math.max(frame.estimatedCashCostUsdBase ?? 0, 0.0001);
+  const rawCostUsd = frame.estimatedCashCostUsdBase ?? 0;
+  // Clamp magnitude away from zero so expectedValuePerDollar stays finite, but
+  // preserve sign so net-negative costs (e.g. treaty peace dividend) flow through.
+  const costUsd = Math.abs(rawCostUsd) < 0.0001 ? 0.0001 : rawCostUsd;
 
   const expectedValuePerHourDalys = (frame.expectedDalysAvertedBase ?? 0) / effortHours;
   const expectedValuePerHourUsd = (frame.expectedEconomicValueUsdBase ?? 0) / effortHours;

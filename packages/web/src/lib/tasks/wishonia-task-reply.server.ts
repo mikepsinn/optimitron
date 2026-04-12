@@ -17,15 +17,37 @@
 
 import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
-import { retrieveManualContext } from "@/lib/manual-search.server";
+import {
+  retrieveManualContext,
+  type ManualSearchCitation,
+} from "@/lib/manual-search.server";
 import { WISHONIA_VOICE_SYSTEM_PROMPT, RAG_MODEL } from "@/lib/voice-config";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 import { countUserCommentsInWindow, postComment } from "@/lib/tasks/task-comments.server";
 
-const WISHONIA_MIN_COMMENT_LENGTH = 20;
+const WISHONIA_MIN_COMMENT_LENGTH = 5;
 const WISHONIA_TASK_REPLY_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const WISHONIA_MAX_REPLIES_PER_TASK_PER_HOUR = 3;
 const WISHONIA_GENERATION_TIMEOUT_MS = 30_000;
+
+/**
+ * Reason Wishonia decided not to reply. Used by the streaming route to emit
+ * a skip event so the client can hide the "writing..." placeholder.
+ */
+export type WishoniaSkipReason =
+  | "disabled"
+  | "self-reply"
+  | "too-short"
+  | "rate-limited"
+  | "task-not-found"
+  | "no-api-key";
+
+export interface WishoniaReplyPreparation {
+  wishoniaUserId: string;
+  systemPrompt: string;
+  userPrompt: string;
+  citations: ManualSearchCitation[];
+}
 
 /**
  * System prompt wrapper for task comment replies. Augments the base Wishonia
@@ -108,6 +130,146 @@ async function buildImpactSummary(taskId: string): Promise<string | null> {
 }
 
 /**
+ * Prepare the inputs for a Wishonia reply (eligibility checks, RAG lookup,
+ * system prompt construction). Returns either a `WishoniaReplyPreparation`
+ * ready for generation, or a skip reason explaining why we won't reply.
+ *
+ * Shared by the non-streaming background path (`generateAndPostWishoniaReply`)
+ * and the streaming route path (`streamWishoniaReply`).
+ */
+export async function prepareWishoniaReply(input: {
+  taskId: string;
+  userComment: string;
+  userCommentAuthorId: string;
+}): Promise<
+  | { status: "ready"; prep: WishoniaReplyPreparation }
+  | { status: "skip"; reason: WishoniaSkipReason }
+> {
+  if (process.env.WISHONIA_AUTO_REPLY_ENABLED === "false") {
+    return { status: "skip", reason: "disabled" };
+  }
+
+  const wishoniaUserId = await getWishoniaUserId();
+
+  if (input.userCommentAuthorId === wishoniaUserId) {
+    return { status: "skip", reason: "self-reply" };
+  }
+
+  if (input.userComment.trim().length < WISHONIA_MIN_COMMENT_LENGTH) {
+    return { status: "skip", reason: "too-short" };
+  }
+
+  const recentReplyCount = await countUserCommentsInWindow(
+    input.taskId,
+    wishoniaUserId,
+    WISHONIA_TASK_REPLY_WINDOW_MS,
+  );
+  if (recentReplyCount >= WISHONIA_MAX_REPLIES_PER_TASK_PER_HOUR) {
+    return { status: "skip", reason: "rate-limited" };
+  }
+
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return { status: "skip", reason: "no-api-key" };
+  }
+
+  const task = await prisma.task.findUnique({
+    where: { id: input.taskId },
+    select: { id: true, title: true, description: true },
+  });
+  if (!task) {
+    return { status: "skip", reason: "task-not-found" };
+  }
+
+  const impactSummary = await buildImpactSummary(input.taskId);
+  const ragQuery = `${input.userComment}\n\nTask: ${task.title}`;
+  const ragResult = await retrieveManualContext(ragQuery, { maxResults: 5 });
+
+  const systemPrompt = buildTaskReplySystemPrompt({
+    taskTitle: task.title,
+    taskDescription: task.description,
+    impactSummary,
+    retrievedContext: ragResult.context,
+  });
+
+  const userPrompt = `A user just commented on a task page:\n\n"${input.userComment}"\n\nRespond as Wishonia. Keep it under 4 short paragraphs. Lead with specific numbers from the context.`;
+
+  return {
+    status: "ready",
+    prep: {
+      wishoniaUserId,
+      systemPrompt,
+      userPrompt,
+      citations: ragResult.citations,
+    },
+  };
+}
+
+/**
+ * Build the Prisma JSON blob for citation metadata on a Wishonia comment.
+ */
+export function buildCitationsJson(
+  citations: ManualSearchCitation[],
+): Prisma.InputJsonValue | null {
+  if (citations.length === 0) return null;
+  return {
+    citations: citations.map((c) => ({
+      title: c.title,
+      url: c.url,
+      path: c.path ?? null,
+      description: c.description ?? null,
+    })),
+  } as Prisma.InputJsonValue;
+}
+
+/**
+ * Stream a Wishonia reply. Yields `{ type: "chunk", delta }` for each Gemini
+ * chunk, then a final `{ type: "done", fullText }` when the stream completes.
+ *
+ * Caller is responsible for posting the final comment to the DB.
+ */
+export async function* streamWishoniaReplyText(
+  prep: WishoniaReplyPreparation,
+): AsyncGenerator<
+  { type: "chunk"; delta: string } | { type: "done"; fullText: string },
+  void,
+  void
+> {
+  const { GoogleGenAI } = await import("@google/genai");
+  const genai = new GoogleGenAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
+  });
+
+  const streamResponse = await genai.models.generateContentStream({
+    model: RAG_MODEL,
+    contents: [{ role: "user", parts: [{ text: prep.userPrompt }] }],
+    config: {
+      systemInstruction: prep.systemPrompt.replace(
+        "Keep every response to 2-4 sentences. This is voice, not a lecture.",
+        "Keep responses focused — under 4 short paragraphs. You are writing, not speaking.",
+      ),
+    },
+  });
+
+  const deadline = Date.now() + WISHONIA_GENERATION_TIMEOUT_MS;
+  let fullText = "";
+
+  for await (const chunk of streamResponse) {
+    if (Date.now() > deadline) {
+      throw new Error(
+        `Wishonia generation exceeded ${WISHONIA_GENERATION_TIMEOUT_MS}ms`,
+      );
+    }
+    const delta = chunk.text ?? "";
+    if (delta.length > 0) {
+      fullText += delta;
+      yield { type: "chunk", delta };
+    }
+  }
+
+  yield { type: "done", fullText: fullText.trim() };
+}
+
+/**
  * Generate and post a Wishonia reply to a user's comment on a task.
  *
  * Called in the background from the POST /api/tasks/:id/comments route
@@ -121,123 +283,35 @@ export async function generateAndPostWishoniaReply(input: {
   userCommentAuthorId: string;
 }): Promise<void> {
   try {
-    if (process.env.WISHONIA_AUTO_REPLY_ENABLED === "false") {
-      return;
-    }
-
-    const wishoniaUserId = await getWishoniaUserId();
-
-    // Don't reply to Wishonia's own comments
-    if (input.userCommentAuthorId === wishoniaUserId) {
-      return;
-    }
-
-    // Skip very short comments — no RAG on "👍"
-    if (input.userComment.trim().length < WISHONIA_MIN_COMMENT_LENGTH) {
-      return;
-    }
-
-    // Rate limit: max 3 Wishonia replies per task per hour
-    const recentReplyCount = await countUserCommentsInWindow(
-      input.taskId,
-      wishoniaUserId,
-      WISHONIA_TASK_REPLY_WINDOW_MS,
-    );
-    if (recentReplyCount >= WISHONIA_MAX_REPLIES_PER_TASK_PER_HOUR) {
+    const result = await prepareWishoniaReply({
+      taskId: input.taskId,
+      userComment: input.userComment,
+      userCommentAuthorId: input.userCommentAuthorId,
+    });
+    if (result.status === "skip") {
       console.log(
-        `[wishonia-task-reply] Rate limit hit for task ${input.taskId} (${recentReplyCount} replies this hour)`,
+        `[wishonia-task-reply] Skipping reply on task ${input.taskId}: ${result.reason}`,
       );
       return;
     }
+    const { prep } = result;
 
-    // Fetch task metadata for context
-    const task = await prisma.task.findUnique({
-      where: { id: input.taskId },
-      select: { id: true, title: true, description: true },
-    });
-    if (!task) {
-      console.warn(`[wishonia-task-reply] Task ${input.taskId} not found`);
-      return;
+    let fullText = "";
+    for await (const event of streamWishoniaReplyText(prep)) {
+      if (event.type === "done") fullText = event.fullText;
     }
 
-    const impactSummary = await buildImpactSummary(input.taskId);
-
-    // RAG retrieval
-    const ragQuery = `${input.userComment}\n\nTask: ${task.title}`;
-    const ragResult = await retrieveManualContext(ragQuery, { maxResults: 5 });
-
-    const systemPrompt = buildTaskReplySystemPrompt({
-      taskTitle: task.title,
-      taskDescription: task.description,
-      impactSummary,
-      retrievedContext: ragResult.context,
-    });
-
-    // Generate the reply with timeout
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    if (!apiKey) {
-      console.warn("[wishonia-task-reply] GOOGLE_GENERATIVE_AI_API_KEY not configured");
-      return;
-    }
-
-    // Dynamic import so we don't pull in GoogleGenAI at build time for every route
-    const { GoogleGenAI } = await import("@google/genai");
-    const genai = new GoogleGenAI({ apiKey });
-
-    const generatePromise = genai.models.generateContent({
-      model: RAG_MODEL,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `A user just commented on a task page:\n\n"${input.userComment}"\n\nRespond as Wishonia. Keep it under 4 short paragraphs. Lead with specific numbers from the context.`,
-            },
-          ],
-        },
-      ],
-      config: {
-        systemInstruction: systemPrompt.replace(
-          "Keep every response to 2-4 sentences. This is voice, not a lecture.",
-          "Keep responses focused — under 4 short paragraphs. You are writing, not speaking.",
-        ),
-      },
-    });
-
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(
-        () => reject(new Error(`Wishonia generation exceeded ${WISHONIA_GENERATION_TIMEOUT_MS}ms`)),
-        WISHONIA_GENERATION_TIMEOUT_MS,
-      ),
-    );
-
-    const response = await Promise.race([generatePromise, timeoutPromise]);
-    const answer = response.text?.trim();
-
-    if (!answer) {
+    if (!fullText) {
       console.warn("[wishonia-task-reply] Empty response from Gemini");
       return;
     }
 
-    // Post the reply
-    const citationsJson: Prisma.InputJsonValue | null =
-      ragResult.citations.length > 0
-        ? ({
-            citations: ragResult.citations.map((c) => ({
-              title: c.title,
-              url: c.url,
-              path: c.path ?? null,
-              description: c.description ?? null,
-            })),
-          } as Prisma.InputJsonValue)
-        : null;
-
     await postComment({
       taskId: input.taskId,
-      authorUserId: wishoniaUserId,
+      authorUserId: prep.wishoniaUserId,
       parentCommentId: input.parentCommentId,
-      message: answer,
-      citationsJson,
+      message: fullText,
+      citationsJson: buildCitationsJson(prep.citations),
     });
 
     console.log(

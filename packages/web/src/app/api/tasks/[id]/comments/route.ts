@@ -12,7 +12,12 @@ import {
   postComment,
   type CommentSortKey,
 } from "@/lib/tasks/task-comments.server";
-import { generateAndPostWishoniaReply } from "@/lib/tasks/wishonia-task-reply.server";
+import {
+  buildCitationsJson,
+  generateAndPostWishoniaReply,
+  prepareWishoniaReply,
+  streamWishoniaReplyText,
+} from "@/lib/tasks/wishonia-task-reply.server";
 
 export const runtime = "nodejs";
 
@@ -120,7 +125,21 @@ export async function POST(
       mediaUrl,
     });
 
-    // Background-fire Wishonia reply. Do not await.
+    // If the client asked for NDJSON streaming, return a live stream that
+    // emits the user comment, then pipes Wishonia's generation chunks, then
+    // a final comment object once posted.
+    const acceptHeader = request.headers.get("accept") ?? "";
+    if (acceptHeader.includes("application/x-ndjson")) {
+      return streamCommentResponse({
+        taskId,
+        comment,
+        userMessage: message,
+        userId: currentUser.id,
+      });
+    }
+
+    // Non-streaming clients (MCP, curl, older browsers): background-fire
+    // Wishonia reply so the user's comment returns immediately.
     void generateAndPostWishoniaReply({
       taskId,
       parentCommentId: comment.id,
@@ -133,5 +152,126 @@ export async function POST(
     console.error("[TASKS] Failed to post comment:", error);
     return NextResponse.json({ error: "Failed to post comment." }, { status: 500 });
   }
+}
+
+/**
+ * Stream an NDJSON response that emits:
+ *   { type: "user", comment }
+ *   { type: "wishonia-skip", reason }           (if not eligible)
+ *   { type: "wishonia-start", parentCommentId } (if eligible)
+ *   { type: "wishonia-chunk", delta } × N
+ *   { type: "wishonia-done", comment }
+ *
+ * Each event is a single JSON object followed by a newline. The client reads
+ * the body as a ReadableStream and parses line-by-line.
+ */
+function streamCommentResponse(args: {
+  taskId: string;
+  comment: Awaited<ReturnType<typeof postComment>>;
+  userMessage: string;
+  userId: string;
+}): Response {
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send = (event: unknown) => {
+        controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
+      };
+
+      try {
+        // 1. Echo the user comment immediately so the client can render it
+        send({ type: "user", comment: args.comment });
+
+        // 2. Check Wishonia eligibility
+        const prepResult = await prepareWishoniaReply({
+          taskId: args.taskId,
+          userComment: args.userMessage,
+          userCommentAuthorId: args.userId,
+        });
+
+        if (prepResult.status === "skip") {
+          send({ type: "wishonia-skip", reason: prepResult.reason });
+          controller.close();
+          return;
+        }
+
+        const { prep } = prepResult;
+
+        // 3. Signal that a Wishonia reply is starting (so the client can
+        //    render a placeholder attached to this parent)
+        send({
+          type: "wishonia-start",
+          parentCommentId: args.comment.id,
+        });
+
+        // 4. Stream Gemini chunks
+        let fullText = "";
+        try {
+          for await (const event of streamWishoniaReplyText(prep)) {
+            if (event.type === "chunk") {
+              fullText += event.delta;
+              send({ type: "wishonia-chunk", delta: event.delta });
+            } else {
+              fullText = event.fullText;
+            }
+          }
+        } catch (err) {
+          console.error("[TASKS] Wishonia stream failed:", err);
+          send({
+            type: "wishonia-error",
+            error: err instanceof Error ? err.message : "Generation failed",
+          });
+          controller.close();
+          return;
+        }
+
+        if (!fullText) {
+          send({ type: "wishonia-error", error: "Empty response" });
+          controller.close();
+          return;
+        }
+
+        // 5. Persist the reply to the DB and return the canonical row
+        const wishoniaComment = await postComment({
+          taskId: args.taskId,
+          authorUserId: prep.wishoniaUserId,
+          parentCommentId: args.comment.id,
+          message: fullText,
+          citationsJson: buildCitationsJson(prep.citations),
+        });
+
+        send({ type: "wishonia-done", comment: wishoniaComment });
+      } catch (err) {
+        console.error("[TASKS] Comment stream error:", err);
+        try {
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: "error",
+                error: err instanceof Error ? err.message : "Stream failed",
+              }) + "\n",
+            ),
+          );
+        } catch {
+          // controller already closed
+        }
+      } finally {
+        try {
+          controller.close();
+        } catch {
+          // already closed
+        }
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }
 

@@ -11,9 +11,9 @@ import { TaskAssignee } from "@/components/tasks/task-assignee";
 import { TaskCard, type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
-import { TaskImpactHighlights } from "@/components/tasks/task-impact-highlights";
-import { TaskImpactStats } from "@/components/tasks/task-impact-stats";
+import { TaskHeroStats } from "@/components/tasks/task-hero-stats";
 import { TaskMetadataTags } from "@/components/tasks/task-metadata-tags";
+import { TaskSectionNav } from "@/components/tasks/task-section-nav";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
@@ -187,25 +187,46 @@ export default async function TaskDetailPage({
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
-        <div className="space-y-4">
-          <nav className="flex flex-wrap items-center gap-2 text-sm font-black uppercase">
-            <Link className="underline underline-offset-4" href={ROUTES.tasks}>
-              Tasks
-            </Link>
-            {task.parentTask ? (
-              <>
-                <span>/</span>
-                <Link
-                  className="underline underline-offset-4"
-                  href={`/tasks/${task.parentTask.id}`}
-                >
-                  {task.parentTask.title}
-                </Link>
-              </>
-            ) : null}
-            <span>/</span>
-            <span className="text-muted-foreground">{task.title}</span>
-          </nav>
+        <nav className="flex flex-wrap items-center gap-2 text-sm font-black uppercase">
+          <Link className="underline underline-offset-4" href={ROUTES.tasks}>
+            Tasks
+          </Link>
+          {task.parentTask ? (
+            <>
+              <span>/</span>
+              <Link
+                className="underline underline-offset-4"
+                href={`/tasks/${task.parentTask.id}`}
+              >
+                {task.parentTask.title}
+              </Link>
+            </>
+          ) : null}
+          <span>/</span>
+          <span className="text-muted-foreground">{task.title}</span>
+        </nav>
+
+        <TaskSectionNav
+          links={[
+            { id: "overview", label: "Overview" },
+            ...(task.childTasks.length > 0
+              ? [
+                  {
+                    id: "subtasks",
+                    label: "Leaders",
+                    count: task.childTasks.length,
+                  },
+                ]
+              : []),
+            {
+              id: "discussion",
+              label: "Discussion",
+              count: commentFeed.comments.filter((c) => !c.deletedAt).length,
+            },
+          ]}
+        />
+
+        <section id="overview" className="scroll-mt-32 space-y-4">
           <TaskMetadataTags
             category={task.category}
             status={task.status}
@@ -215,36 +236,31 @@ export default async function TaskDetailPage({
           <h1 className="text-4xl font-black uppercase leading-tight sm:text-5xl">
             {task.title}
           </h1>
+          <TaskHeroStats
+            perDayDalys={task.impact?.selectedFrame?.delayDalysLostPerDayBase}
+            costUsd={task.impact?.selectedFrame?.estimatedCashCostUsdBase}
+            effortHours={task.estimatedEffortHours}
+            dueAt={task.dueAt}
+          />
           <div className="max-w-5xl">
             <TaskDescription markdown={task.description} />
           </div>
           {task.isPublic ? (
-            <div className="space-y-2">
-              {task.assigneePerson && delayStats.isOverdue ? (
-                <p className="text-sm font-bold text-foreground">
-                  Please inform {task.assigneePerson.displayName} that their task is{" "}
-                  {formatDelayDuration(delayStats.currentDelayDays)} overdue
-                  {delayStats.delayDalysLostPerDay != null
-                    ? ` and this is resulting in ${formatCompactCount(delayStats.delayDalysLostPerDay)} DALYs lost per day.`
-                    : "."}
-                </p>
-              ) : null}
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-xs font-bold uppercase text-muted-foreground">
-                  Share:
-                </span>
-                <TaskShareButtons
-                  taskId={task.id}
-                  shareText={shareText}
-                  taskTitle={task.title}
-                  variant="icon"
-                />
-              </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs font-bold uppercase text-muted-foreground">
+                Share:
+              </span>
+              <TaskShareButtons
+                taskId={task.id}
+                shareText={shareText}
+                taskTitle={task.title}
+                variant="icon"
+              />
             </div>
           ) : null}
-        </div>
+        </section>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(340px,1fr)]">
+        <div className="space-y-6">
           <BrutalCard bgColor="background" padding="lg">
             <div className="space-y-6">
               <TaskAssignee
@@ -253,6 +269,39 @@ export default async function TaskDetailPage({
                 roleTitle={task.roleTitle}
                 affiliationSnapshot={task.assigneeAffiliationSnapshot}
               />
+
+              {/* Inline action bar — replaces the old yellow sidebar */}
+              <div className="flex flex-wrap items-center gap-3 border-t-2 border-foreground/20 pt-4">
+                {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
+                  <TaskClaimButton
+                    canClaim={canClaim}
+                    signedIn={Boolean(userId)}
+                    signInHref={signInHref}
+                    taskId={task.id}
+                    viewerHasClaim={task.viewerHasClaim}
+                  />
+                ) : task.status !== TaskStatus.VERIFIED && hasOtherPersonAssignee ? (
+                  <p className="text-sm font-bold">
+                    Assigned to {task.assigneePerson?.displayName}. If that&apos;s
+                    you, sign in with your verified account to mark this complete.
+                  </p>
+                ) : null}
+                {!userId ? (
+                  <Button asChild className="font-black uppercase" variant="outline">
+                    <Link href={signInHref}>Sign In</Link>
+                  </Button>
+                ) : null}
+                {viewerClaim ? (
+                  <span className="text-xs font-black uppercase text-brutal-pink">
+                    Your claim: {viewerClaim.status.toLowerCase()}
+                  </span>
+                ) : null}
+              </div>
+              {viewerClaim &&
+              (viewerClaim.status === TaskClaimStatus.CLAIMED ||
+                viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
+                <TaskCompleteForm taskId={task.id} />
+              ) : null}
 
               {isHarmful ? (
                 <>
@@ -391,20 +440,7 @@ export default async function TaskDetailPage({
                     </BrutalCard>
                   ) : null}
                 </>
-              ) : (
-                <>
-                  <TaskImpactStats
-                    delayStats={delayStats}
-                    calculationsUrl={
-                      (task.currentImpactEstimateSet?.assumptionsJson as { calculationsUrl?: string } | null)?.calculationsUrl
-                    }
-                    totalHealthyYears={task.impact?.selectedFrame?.expectedDalysAvertedBase}
-                    totalEconomicValue={task.impact?.selectedFrame?.expectedEconomicValueUsdBase}
-                    benefitDurationYears={task.impact?.selectedFrame?.benefitDurationYears}
-                  />
-                  <TaskImpactHighlights taskKey={task.taskKey} />
-                </>
-              )}
+              ) : null}
 
               {task.status !== TaskStatus.VERIFIED && (task.assigneePerson || task.assigneeOrganization) ? (
                 <TaskContactActions
@@ -418,66 +454,6 @@ export default async function TaskDetailPage({
                   task={task}
                   taskId={task.id}
                 />
-              ) : null}
-            </div>
-          </BrutalCard>
-
-          <BrutalCard bgColor={isHarmful ? "red" : isUnmeasured ? "yellow" : "yellow"} padding="lg">
-            <div className="space-y-4">
-              {isHarmful || isUnmeasured ? (
-                <p className="text-sm font-black uppercase text-brutal-pink">
-                  {isHarmful ? "Harm Record" : "Spending Record"}
-                </p>
-              ) : null}
-              {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
-                <TaskClaimButton
-                  canClaim={canClaim}
-                  signedIn={Boolean(userId)}
-                  signInHref={signInHref}
-                  taskId={task.id}
-                  viewerHasClaim={task.viewerHasClaim}
-                />
-              ) : task.status !== TaskStatus.VERIFIED && hasOtherPersonAssignee ? (
-                <p className="text-sm font-bold">
-                  Assigned to {task.assigneePerson?.displayName}. If that&apos;s you, sign in
-                  with your verified account to mark this complete. Otherwise, use the share
-                  and contact buttons below to push them.
-                </p>
-              ) : (
-                <p className="text-sm font-bold">
-                  {isHarmful
-                    ? "This activity has been completed and verified. The damage is done."
-                    : isUnmeasured
-                      ? "This spending occurred. Whether it helped anyone remains unmeasured."
-                      : "This task has been verified as complete."}
-                </p>
-              )}
-              {assignedToViewer ? (
-                <p className="text-sm font-bold">
-                  This task is addressed directly to your linked person record.
-                </p>
-              ) : null}
-              {viewerClaim ? (
-                <div className="space-y-2">
-                  <p className="text-sm font-black uppercase text-brutal-pink">
-                    Your Claim
-                  </p>
-                  <p className="text-sm font-bold">{viewerClaim.status.toLowerCase()}</p>
-                  {viewerClaim.completionEvidence ? (
-                    <p className="text-sm font-bold text-muted-foreground">
-                      {viewerClaim.completionEvidence}
-                    </p>
-                  ) : null}
-                  {(viewerClaim.status === TaskClaimStatus.CLAIMED ||
-                    viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
-                    <TaskCompleteForm taskId={task.id} />
-                  ) : null}
-                </div>
-              ) : null}
-              {!userId ? (
-                <Button asChild className="font-black uppercase" variant="outline">
-                  <Link href={signInHref}>Sign In</Link>
-                </Button>
               ) : null}
             </div>
           </BrutalCard>
@@ -686,15 +662,18 @@ export default async function TaskDetailPage({
         ) : null}
 
         {task.childTasks.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Subtasks</h2>
+          <section id="subtasks" className="scroll-mt-32 space-y-3">
+            <h2 className="text-lg font-bold uppercase tracking-wide">
+              Leaders ({task.childTasks.length})
+            </h2>
             <SortableTaskList
               tasks={task.childTasks as unknown as TaskCardTask[]}
             />
           </section>
         ) : null}
 
-        <TaskCommentFeed
+        <section id="discussion" className="scroll-mt-32">
+          <TaskCommentFeed
           taskId={task.id}
           initialComments={commentFeed.comments.map((c) => ({
             ...c,
@@ -710,6 +689,7 @@ export default async function TaskDetailPage({
           wishoniaUserId={wishoniaUserId}
           signInHref={signInHref}
         />
+        </section>
       </div>
     </div>
   );

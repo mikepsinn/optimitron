@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
+import { getPersonHref } from "@/lib/person-href";
 
 interface TaskAssigneeProps {
   person?: {
     id: string;
+    handle?: string | null;
     displayName: string;
     image: string | null;
     currentAffiliation: string | null;
@@ -55,7 +57,7 @@ export function TaskAssignee({
         <p className="text-xs font-bold uppercase text-brutal-pink">Assignee</p>
         <p className={`${nameSize} font-black`}>
           {person ? (
-            <Link className="underline underline-offset-4" href={`/people/${person.id}`}>
+            <Link className="underline underline-offset-4" href={getPersonHref(person)}>
               {label}
             </Link>
           ) : (

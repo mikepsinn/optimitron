@@ -36,6 +36,7 @@ export interface TaskCommentRow {
     name: string | null;
     username: string | null;
     image: string | null;
+    person: { id: string; handle: string | null } | null;
   };
   viewerVote?: 1 | -1 | 0;
 }
@@ -51,6 +52,7 @@ export interface TaskActivityRow {
     name: string | null;
     username: string | null;
     image: string | null;
+    person: { id: string; handle: string | null } | null;
   };
 }
 
@@ -124,7 +126,7 @@ export async function postComment(input: {
       },
       include: {
         authorUser: {
-          select: { id: true, name: true, username: true, image: true },
+          select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
         },
       },
     });
@@ -136,7 +138,7 @@ export async function postComment(input: {
       data: { path: newPath },
       include: {
         authorUser: {
-          select: { id: true, name: true, username: true, image: true },
+          select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
         },
       },
     });
@@ -315,7 +317,7 @@ export async function getTaskCommentFeed(input: {
     take: limit + 1,
     include: {
       authorUser: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
       },
     },
   });
@@ -362,7 +364,7 @@ export async function getTaskActivityTimeline(
     take: limit,
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, person: { select: { id: true, handle: true } } },
       },
     },
   });

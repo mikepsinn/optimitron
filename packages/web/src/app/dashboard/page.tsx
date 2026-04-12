@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTasksPageData } from "@/lib/tasks.server";
-import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
-import { TaskStatus } from "@optimitron/db";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
@@ -25,28 +23,15 @@ export default async function DashboardPage() {
     getTasksPageData(userId),
   ]);
 
+  // Top recommended tasks for the player. Use the same TaskCardTask shape
+  // the rest of the site uses so we can render them through SortableTaskList.
+  const topTasks = taskData.forYou.slice(0, 5);
+
   return (
     <DashboardClient
       initialData={initialData}
       leaderboard={leaderboard}
-      topTasks={taskData.forYou.slice(0, 3).map((task) => ({
-        canClaim: canTaskAcceptMoreClaims({
-          activeClaimCount: task.activeClaimCount,
-          claimPolicy: task.claimPolicy,
-          difficulty: task.difficulty,
-          estimatedEffortHours: task.estimatedEffortHours,
-          interestTags: [],
-          maxClaims: task.maxClaims ?? null,
-          skillTags: [],
-          status: TaskStatus.ACTIVE,
-        }),
-        description: task.description,
-        difficulty: task.difficulty,
-        estimatedEffortHours: task.estimatedEffortHours,
-        id: task.id,
-        title: task.title,
-        viewerHasClaim: task.viewerHasClaim,
-      }))}
+      topTasks={topTasks}
     />
   );
 }

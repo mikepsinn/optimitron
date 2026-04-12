@@ -15,11 +15,11 @@ import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard"
 import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
-import { TopTasksCard } from "@/components/dashboard/top-tasks-card"
+import { SortableTaskList } from "@/components/tasks/task-list-controls"
+import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
 import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
-import type { TaskDifficulty } from "@optimitron/db"
 
 export function DashboardClient({
   initialData,
@@ -28,15 +28,7 @@ export function DashboardClient({
 }: {
   initialData: DashboardData
   leaderboard: LeaderboardEntry[]
-  topTasks: Array<{
-    canClaim: boolean
-    description: string
-    difficulty: TaskDifficulty
-    estimatedEffortHours: number | null
-    id: string
-    title: string
-    viewerHasClaim: boolean
-  }>
+  topTasks: TaskCardTask[]
 }) {
   const referralLink = buildUserReferralUrl(initialData.user)
 
@@ -71,7 +63,14 @@ export function DashboardClient({
           <ReferralGoalCard stats={initialData.stats} />
         </div>
 
-        <TopTasksCard tasks={topTasks} />
+        {topTasks.length > 0 ? (
+          <section className="mb-8 space-y-3">
+            <h2 className="text-2xl font-black uppercase tracking-tight">
+              Top Tasks <span className="text-brutal-pink">For You</span>
+            </h2>
+            <SortableTaskList tasks={topTasks} />
+          </section>
+        ) : null}
 
         {/* Quest Checklist */}
         <QuestChecklistCard quests={initialData.questChecklist} />

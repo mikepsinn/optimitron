@@ -1204,45 +1204,65 @@ export async function searchTasks(
 }
 
 export async function getPersonTaskProfileData(
-  personId: string,
+  // Accepts either a Person.handle or a Person.id (cuid). Handle is preferred
+  // because it's stable + readable; cuid lookups are kept as a fallback so
+  // historical links never break.
+  handleOrId: string,
   userId?: string | null,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
-  const [person, tasks] = await Promise.all([
-    prisma.person.findFirst({
-      where: {
-        deletedAt: null,
-        id: personId,
-      },
+  // Look up by handle first (the readable URL), then by cuid as a fallback.
+  // We try them sequentially because Prisma's `OR` clause would scan both
+  // indexes; this is one indexed point-lookup followed by another only if
+  // the first misses.
+  let person = await prisma.person.findFirst({
+    where: { deletedAt: null, handle: handleOrId },
+    select: {
+      bio: true,
+      countryCode: true,
+      currentAffiliation: true,
+      displayName: true,
+      handle: true,
+      id: true,
+      image: true,
+      isPublicFigure: true,
+      sourceRef: true,
+      sourceUrl: true,
+    },
+  });
+  if (!person) {
+    person = await prisma.person.findFirst({
+      where: { deletedAt: null, id: handleOrId },
       select: {
         bio: true,
         countryCode: true,
         currentAffiliation: true,
         displayName: true,
+        handle: true,
         id: true,
         image: true,
         isPublicFigure: true,
         sourceRef: true,
         sourceUrl: true,
       },
-    }),
-    prisma.task.findMany({
-      where: {
-        assigneePersonId: personId,
-        deletedAt: null,
-        isPublic: true,
-      },
-      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-      select: taskListSelect,
-      take: 100,
-    }),
-  ]);
-
+    });
+  }
   if (!person) {
     return null;
   }
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      assigneePersonId: person.id,
+      deletedAt: null,
+      isPublic: true,
+    },
+    orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+    select: taskListSelect,
+    take: 100,
+  });
 
   const decoratedTasks = sortTasksForAccountability(
     tasks.map((task) =>
