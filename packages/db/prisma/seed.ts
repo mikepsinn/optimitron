@@ -30,6 +30,10 @@ import {
   ReferendumStatus,
   type Prisma,
 } from "../src/generated/prisma/client.js";
+import {
+  TREATY_REFERENDUM_SLUG,
+  DECLARATION_REFERENDUM_SLUG,
+} from "../src/constants.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { pathToFileURL } from "node:url";
 import {
@@ -698,11 +702,11 @@ async function seedReferendums() {
   console.log("🗳️  Seeding referendums...");
 
   await prisma.referendum.upsert({
-    where: { slug: "1-percent-treaty" },
+    where: { slug: TREATY_REFERENDUM_SLUG },
     update: {},
     create: {
       title: "The 1% Treaty",
-      slug: "1-percent-treaty",
+      slug: TREATY_REFERENDUM_SLUG,
       description:
         "Should your government redirect 1% of military spending to pragmatic clinical trials? " +
         "The 1% Treaty would fund evidence-based health optimization at a fraction of current costs. " +
@@ -713,11 +717,11 @@ async function seedReferendums() {
   console.log("  ✓ 1% Treaty referendum");
 
   await prisma.referendum.upsert({
-    where: { slug: "declaration-of-optimization" },
+    where: { slug: DECLARATION_REFERENDUM_SLUG },
     update: {},
     create: {
       title: "Declaration of Optimization",
-      slug: "declaration-of-optimization",
+      slug: DECLARATION_REFERENDUM_SLUG,
       description:
         "Sign the Declaration of Optimization to declare your support for evidence-based governance.",
       status: ReferendumStatus.ACTIVE,

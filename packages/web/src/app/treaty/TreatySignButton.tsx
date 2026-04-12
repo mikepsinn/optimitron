@@ -6,8 +6,7 @@ import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { Button } from "@/components/retroui/Button";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { buildUserReferralUrl } from "@/lib/url";
-
-const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
+import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
 interface TreatySignButtonProps {
   alreadySigned: boolean;

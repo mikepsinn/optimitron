@@ -176,6 +176,7 @@ const taskListSelect = {
       countryCode: true,
       currentAffiliation: true,
       displayName: true,
+      handle: true,
       id: true,
       image: true,
       isPublicFigure: true,

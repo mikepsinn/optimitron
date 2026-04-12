@@ -5,8 +5,9 @@ import type { Session } from "next-auth";
 import { getUsernameOrReferralCode } from "./referral.client";
 import { API_ROUTES } from "./api-routes";
 import { getTreatyWishocraticAllocation } from "./treaty-vote";
+import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
-const DEFAULT_REFERENDUM_SLUG = "1-percent-treaty";
+const DEFAULT_REFERENDUM_SLUG = TREATY_REFERENDUM_SLUG;
 
 async function syncTreatyWishocraticAllocation(): Promise<boolean> {
   const pendingAllocation = getTreatyWishocraticAllocation(storage.getPendingTreatyVote());

@@ -13,6 +13,9 @@ export * as schemas from './zod/index.js';
 // Shared database-adjacent types (re-exports from Prisma + custom interfaces)
 export * from './types.js';
 
+// Shared constants (slugs, etc.)
+export * from './constants.js';
+
 // FillingType case conversion utilities
 export {
   fillingTypeToPrisma,

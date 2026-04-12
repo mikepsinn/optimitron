@@ -8,10 +8,9 @@ import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { treatyLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { prisma } from "@/lib/prisma";
+import { TREATY_REFERENDUM_SLUG } from "@optimitron/db";
 
 export const metadata = getRouteMetadata(treatyLink);
-
-const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
 
 export default async function TreatyPage() {
   const session = await getServerSession(authOptions);
