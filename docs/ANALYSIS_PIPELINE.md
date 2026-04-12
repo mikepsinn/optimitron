@@ -27,7 +27,6 @@ The web app is the product surface for analysis outputs.
 - `packages/web`: production analysis scripts, generated artifacts, content loaders, and user-facing routes.
 - `packages/opg` and `packages/obg`: canonical policy and budget contracts, including legislation-brief types for drafting pipelines.
 - `packages/agent`: LLM-facing synthesis and drafting logic, including the typed legislation evidence bundle built from the parameter corpus.
-- `packages/examples`: demos, research scripts, experimental outputs, and longer-form exploratory analysis.
 - `content/legislation`: committed markdown drafts reviewed through normal GitHub PRs.
 - `reports/site`: removed. Do not recreate a second static analysis site unless there is a deliberate deployment target for it.
 

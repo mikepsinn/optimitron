@@ -49,6 +49,9 @@ import {
   GLOBAL_ANNUAL_DALY_BURDEN,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   TREATY_ANNUAL_FUNDING,
+  earthOptimizationPrizeWinCondition,
+  EARTH_OPTIMIZATION_PRIZE_DEADLINE,
+  EARTH_OPTIMIZATION_PRIZE_DEADLINE_YEAR,
 } from "@optimitron/data/parameters";
 import { WORLD_LEADERS } from "@optimitron/data/datasets/world-leaders";
 import {
@@ -834,11 +837,70 @@ async function seedTreatyTasks() {
   const p = (param: { calculationsUrl?: string }, label: string) =>
     param.calculationsUrl ? `[${label}](${param.calculationsUrl})` : label;
 
+  // --- Root: Win the Earth Optimization Prize ---
+  // Every other program on this site is a bet on moving these two numbers.
+  // Walking up the parent chain from any claimable task should land a voter
+  // on their primary motivator: more healthy years, more money.
+  const { hale, medianIncome } = earthOptimizationPrizeWinCondition;
+  const prizeRootTask = await createTaskWithImpact({
+    task: {
+      id: "win-earth-optimization-prize",
+      taskKey: "program:earth-optimization-prize:win",
+      assigneeOrganizationId: humanity.id,
+      title: "Win the Earth Optimization Prize",
+      description: [
+        `Your species has two numbers that matter: **how long you live in good health** and **how much money you keep**. Right now the global median is **${hale.baseline.toFixed(1)} healthy years** and **\\$${Math.round(medianIncome.baseline).toLocaleString()}** a year. This is not good.`,
+        "",
+        `By ${EARTH_OPTIMIZATION_PRIZE_DEADLINE_YEAR}, hit **${hale.target.toFixed(1)} healthy years** and **\\$${Math.round(medianIncome.target).toLocaleString()}** median income. That is the Earth Optimization Prize. That is how humanity wins.`,
+        "",
+        `Required delta: **+${hale.deltaRequired.toFixed(1)} HALE years** and **+\\$${Math.round(medianIncome.deltaRequired).toLocaleString()}** per median person in ${EARTH_OPTIMIZATION_PRIZE_DEADLINE_YEAR - new Date().getFullYear()} years. Every other task on this site is a bet on moving these two numbers. If a task does not eventually ladder up to HALE and income, it should not exist.`,
+        "",
+        "## How to contribute",
+        "",
+        "Pick one of the subtasks below. Each of them is a distinct, independently verifiable program. Together they are how we close the gap.",
+        "",
+        "- **Ratify the 1% Treaty** — redirect 1% of military spending into pragmatic clinical trials.",
+        "- **Create the Decentralized FDA** — build the trial infrastructure independent of politics.",
+        "- **Fund the Bed Nets Gap** — the most cost-effective marginal-life intervention that currently exists.",
+        "",
+        `Read the full win condition at [${hale.unit === 'years' ? 'the Earth Optimization Prize protocol' : 'the manual'}](${earthOptimizationPrizeWinCondition.manualUrl}) and the [GDP trajectories](${earthOptimizationPrizeWinCondition.gdpTrajectoriesUrl}).`,
+      ].join("\n"),
+      category: "GOVERNANCE",
+      difficulty: "EXPERT",
+      status: "ACTIVE",
+      isPublic: true,
+      dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
+      sortOrder: -1000,
+      skillTags: ["strategy", "coordination"],
+      interestTags: ["earth-optimization-prize", "hale", "median-income"],
+      claimPolicy: "OPEN_MANY",
+    },
+    impact: {
+      // Cost of the root is the sentinel for "whatever the children cost" —
+      // the aggregate is computed from children on read. Using 0 here; real
+      // accounting lives on the program-level children.
+      estimatedCashCostUsdBase: 0,
+      expectedEconomicValueUsdBase: totalEconValue,
+      expectedDalysAvertedBase: totalDalys,
+      delayEconomicValueUsdLostPerDayBase: delayEconPerDay,
+      delayDalysLostPerDayBase: delayDalysPerDay,
+      successProbabilityBase: 0.05,
+      benefitDurationYears: accelerationYears,
+      medianHealthyLifeYearsEffectBase: hale.deltaRequired,
+      medianIncomeGrowthEffectPpPerYearBase:
+        EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
+    },
+    methodologyKey: "earth-optimization-prize-win-condition",
+    calculationsUrl: earthOptimizationPrizeWinCondition.manualUrl,
+  });
+  console.log(`  ✓ Task: "${prizeRootTask.title}" (${prizeRootTask.id})`);
+
   // --- Task 1: Ratify the 1% Treaty ---
   const treatyTask = await createTaskWithImpact({
     task: {
       id: "1-pct-treaty",
       taskKey: "program:one-percent-treaty:ratify",
+      parentTaskId: prizeRootTask.id,
       assigneeOrganizationId: humanity.id,
       title: "Ratify the 1% Treaty",
       description: [
@@ -887,6 +949,7 @@ async function seedTreatyTasks() {
     task: {
       id: "dfda",
       taskKey: "program:dfda:create",
+      parentTaskId: prizeRootTask.id,
       assigneeOrganizationId: humanity.id,
       title: "Create the Decentralized FDA",
       description: [
@@ -964,6 +1027,7 @@ async function seedTreatyTasks() {
     task: {
       id: "bed-nets-funding-gap",
       taskKey: "program:amf:bed-nets-funding-gap",
+      parentTaskId: prizeRootTask.id,
       assigneeOrganizationId: amfOrg.id,
       title: "Fund the Bed Nets Funding Gap",
       description: [
@@ -1175,6 +1239,8 @@ async function createTaskWithImpact(input: {
     delayDalysLostPerDayBase: number;
     successProbabilityBase: number;
     benefitDurationYears: number;
+    medianHealthyLifeYearsEffectBase?: number;
+    medianIncomeGrowthEffectPpPerYearBase?: number;
   };
   methodologyKey: string;
   parameterSetHashSuffix?: string;
@@ -1264,6 +1330,8 @@ async function createTaskWithImpact(input: {
       delayDalysLostPerDayBase: input.impact.delayDalysLostPerDayBase,
       estimatedCashCostUsdBase: input.impact.estimatedCashCostUsdBase,
       estimatedEffortHoursBase: 0.5,
+      medianHealthyLifeYearsEffectBase: input.impact.medianHealthyLifeYearsEffectBase,
+      medianIncomeGrowthEffectPpPerYearBase: input.impact.medianIncomeGrowthEffectPpPerYearBase,
     },
   });
 

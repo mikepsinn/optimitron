@@ -48,6 +48,9 @@ export * from './measurement-validation';
 // Variable statistics (unit-level & global aggregation)
 export * from './variable-statistics';
 
+// Generic derived-series builders used by fiscal and outcome pipelines
+export * from './derived-series';
+
 // Canonical predictor/outcome registry for explorer workflows
 export * from './variable-registry';
 
