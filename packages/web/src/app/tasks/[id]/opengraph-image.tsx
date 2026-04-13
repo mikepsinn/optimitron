@@ -8,6 +8,10 @@ import {
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import {
+  getSignerDelayAttribution,
+  getTreatyLevelCostOfDelay,
+} from "@/lib/tasks/delay-attribution";
 import { readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskDetailData } from "@/lib/tasks.server";
 
@@ -60,12 +64,15 @@ export default async function TaskOpengraphImage({
   const delayStats = getTaskDelayStats(task);
   const context = readTaskContext(task.contextJson);
 
-  // Compute deaths-from-delay the same way the page hero does — DALYs/day × days / 40 years per death.
-  const delayDalysPerDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase ?? null;
-  const deathsFromDelay =
-    delayDalysPerDay != null && delayStats.currentDelayDays > 0
-      ? (delayDalysPerDay * delayStats.currentDelayDays) / 40
+  // Compute cost of delay — per-signer share if the task has a country
+  // military budget in its assigneeProfile, otherwise full treaty-level.
+  const assigneeBudget = context.assigneeProfile?.budgetUsdPerYear ?? null;
+  const signerAttribution =
+    assigneeBudget != null
+      ? getSignerDelayAttribution(assigneeBudget, delayStats.currentDelayDays)
       : null;
+  const treatyLevel = getTreatyLevelCostOfDelay(delayStats.currentDelayDays);
+  const costOfDelay = signerAttribution ?? treatyLevel;
 
   // Stat cells — only include ones with real values
   const stats: Array<{ label: string; value: string; tone: "red" | "yellow" }> = [];
@@ -76,20 +83,15 @@ export default async function TaskOpengraphImage({
       tone: "red",
     });
   }
-  if (deathsFromDelay != null && deathsFromDelay > 0) {
+  if (costOfDelay != null) {
     stats.push({
       label: "Deaths from delay",
-      value: formatCompactCount(deathsFromDelay),
+      value: formatCompactCount(costOfDelay.deathsFromDelay),
       tone: "red",
     });
-  }
-  if (
-    delayStats.currentEconomicValueUsdLost != null &&
-    delayStats.currentEconomicValueUsdLost > 0
-  ) {
     stats.push({
-      label: "Tax $ wasted by delay",
-      value: formatCompactCurrency(delayStats.currentEconomicValueUsdLost),
+      label: "Wasted by delay",
+      value: formatCompactCurrency(costOfDelay.wastedUsd),
       tone: "yellow",
     });
   }

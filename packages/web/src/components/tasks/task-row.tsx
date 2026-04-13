@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { FaArrowRight } from "react-icons/fa6";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
   buildTaskShareText,
+  formatCompactCount,
   formatCompactCurrency,
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import { getSignerDelayAttribution } from "@/lib/tasks/delay-attribution";
 import { getPersonHref } from "@/lib/person-href";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
@@ -114,7 +117,7 @@ const SORT_LABELS: Record<TaskSortKey, string> = {
   assignee: "Assignee",
   status: "Status",
   deathsLockedIn: "Deaths From Delay",
-  cost: "Tax $ Wasted By Delay",
+  cost: "Wasted By Delay",
   time: "Time",
   assigneeBudget: "Budget Controlled",
 };
@@ -148,16 +151,18 @@ export function TaskTableHeader({
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
   if (variant === "signer") {
-    // Dense signer leaderboard: photo · leader name · budget · remind · details
+    // Dense signer leaderboard: photo · name+role · budget · deaths · wasted · remind · details
     return (
-      <div className="flex items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2">
-        <span className="h-8 w-8 shrink-0" />
+      <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 md:flex">
+        <span className="h-14 w-14 shrink-0" />
         {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
-        {headerCell("assigneeBudget", `hidden w-32 shrink-0 text-right sm:block ${hdr}`)}
-        <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+        {headerCell("assigneeBudget", `w-24 shrink-0 text-right ${hdr}`)}
+        {headerCell("deathsLockedIn", `w-24 shrink-0 text-right ${hdr}`)}
+        {headerCell("cost", `w-24 shrink-0 text-right ${hdr}`)}
+        <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           Remind
         </span>
-        <span className="w-12 shrink-0" />
+        <span className="w-14 shrink-0" />
       </div>
     );
   }
@@ -240,38 +245,83 @@ export function TaskRow({
     </Avatar>
   );
 
-  // Dense signer leaderboard row — 4 cells: photo · name · budget · remind · details
+  // Dense signer leaderboard row — photo, name + role subtitle, 3 stats
+  // (budget, deaths from delay, wasted by delay — per-signer attributed via
+  // share of global military spending), and a send-reminder button.
   if (variant === "signer") {
+    const roleLabel =
+      task.assigneePerson?.currentAffiliation ?? task.roleTitle ?? null;
+    const attribution = getSignerDelayAttribution(
+      assigneeBudget,
+      delayStats.currentDelayDays,
+    );
+    const deathsText =
+      attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
+    const wastedText =
+      attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
+    const budgetText =
+      assigneeBudget != null ? formatCompactCurrency(assigneeBudget) : "—";
+
     return (
       <div
-        className={`flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
+        className={`flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
       >
         {assigneeHref ? (
           <Link href={assigneeHref} className="shrink-0" title={targetLabel}>
-            {avatarEl}
+            <Avatar className="h-12 w-12 shrink-0 border-2 border-foreground bg-muted sm:h-14 sm:w-14">
+              <Avatar.Image
+                alt={targetLabel}
+                src={task.assigneePerson?.image ?? undefined}
+              />
+              <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
+                {fallbackInitials || "?"}
+              </Avatar.Fallback>
+            </Avatar>
           </Link>
-        ) : (
-          avatarEl
-        )}
-        <Link
-          href={`/tasks/${task.id}`}
-          className="min-w-0 flex-1 truncate text-sm font-bold underline-offset-4 hover:underline"
-        >
-          {targetLabel}
-        </Link>
-        <div className="hidden w-32 shrink-0 text-right text-sm font-black sm:block">
-          {assigneeBudget != null ? formatCompactCurrency(assigneeBudget) : "—"}
-        </div>
-        <div className="hidden shrink-0 md:block">
-          {task.isPublic ? (
-            <TaskRowShare shareText={shareText} taskId={task.id} />
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <Link
+            href={`/tasks/${task.id}`}
+            className="block truncate text-sm font-black underline-offset-4 hover:underline sm:text-base"
+          >
+            {targetLabel}
+          </Link>
+          {roleLabel ? (
+            <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
+              {roleLabel}
+            </div>
+          ) : null}
+          {/* Mobile — packed caption with the 3 stats */}
+          {attribution != null ? (
+            <div className="mt-1 truncate text-[11px] font-bold text-muted-foreground md:hidden">
+              {budgetText} military · 💀 {deathsText} · 🔥 {wastedText}
+            </div>
+          ) : assigneeBudget != null ? (
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground md:hidden">
+              {budgetText} military
+            </div>
           ) : null}
         </div>
+        {/* Desktop — 3 separate stat columns */}
+        <div className="hidden w-24 shrink-0 text-right text-sm font-black md:block">
+          {budgetText}
+        </div>
+        <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
+          {deathsText}
+        </div>
+        <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
+          {wastedText}
+        </div>
+        {task.isPublic ? (
+          <TaskRowShare shareText={shareText} taskId={task.id} />
+        ) : null}
         <Link
           href={`/tasks/${task.id}`}
-          className="w-12 shrink-0 text-right text-xs font-bold uppercase underline underline-offset-4"
+          className="shrink-0 text-xs font-bold uppercase text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          title="Details"
         >
-          Details
+          <span className="hidden md:inline">Details</span>
+          <FaArrowRight className="h-4 w-4 md:hidden" />
         </Link>
       </div>
     );
@@ -438,13 +488,21 @@ export function TaskRow({
 export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string | number {
   switch (key) {
     case "deathsLockedIn": {
-      // Higher deaths from delay = bigger problem; sort desc by default
+      // Deaths from delay for signer tasks are proportional to share of
+      // global military spending → sort by budget to preserve order.
+      const budget = getMilitaryBudgetUsd(task);
+      if (budget != null) return budget;
       const perDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
       return perDay != null ? perDay : 0;
     }
-    case "cost":
-      // Higher taxpayer $ wasted per day of delay = more urgent; sort desc by default
+    case "cost": {
+      // "Wasted by delay" is proportional to share of global military spending
+      // for signer tasks → sorting by assigneeBudget preserves the order.
+      // Non-signer tasks fall through to per-day delay econ value.
+      const budget = getMilitaryBudgetUsd(task);
+      if (budget != null) return budget;
       return task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? 0;
+    }
     case "time":
       // Lower time required = easier; ascending puts fastest first
       return task.estimatedEffortHours ?? Infinity;

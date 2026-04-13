@@ -13,7 +13,7 @@ import type { TaskCardTask } from "./task-card";
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
   { key: "assigneeBudget", label: "Budget Controlled" },
   { key: "deathsLockedIn", label: "Deaths From Delay" },
-  { key: "cost", label: "Tax $ Wasted By Delay" },
+  { key: "cost", label: "Wasted By Delay" },
   { key: "time", label: "Time" },
   { key: "title", label: "Task Name" },
   { key: "assignee", label: "Assignee" },

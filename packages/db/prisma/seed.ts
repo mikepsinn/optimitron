@@ -1060,7 +1060,7 @@ async function seedTreatyTasks() {
       taskKey: "program:dfda:create",
       parentTaskId: prizeRootTask.id,
       assigneeOrganizationId: humanity.id,
-      title: "Create the Decentralized FDA",
+      title: "12× More Clinical Trials",
       description: [
         `Build and fund a **decentralized FDA platform** that runs pragmatic clinical trials at **12.3× current capacity**, accelerating the cure for the average disease by ${p(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS, `**${Math.round(accelerationYears)} years**`)} — the same impact as the 1% Treaty, but without political dependency.`,
         "",

@@ -267,10 +267,13 @@ export default async function TaskDetailPage({
             {task.title}
           </h1>
           <TaskHeroStats
-            perDayDalys={task.impact?.selectedFrame?.delayDalysLostPerDayBase}
-            perDayUsd={task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase}
             effortHours={task.estimatedEffortHours}
             dueAt={task.dueAt}
+            attributionShare={
+              context.assigneeProfile?.budgetUsdPerYear != null
+                ? context.assigneeProfile.budgetUsdPerYear / 2_720_000_000_000
+                : 1
+            }
           />
           <div className="max-w-5xl">
             <TaskDescription markdown={task.description} />

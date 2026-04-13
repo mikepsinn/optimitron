@@ -1,19 +1,23 @@
 import type { ReactNode } from "react";
 import { DeathCounter } from "./death-counter";
 import { MoneyCounter } from "./money-counter";
+import {
+  DAILY_DISEASE_COST_USD,
+  DAILY_DISEASE_DEATHS,
+} from "@/lib/tasks/delay-attribution";
 
 interface TaskHeroStatsProps {
-  /** Healthy life-years lost per day of delay (from impact frame). */
-  perDayDalys: number | null | undefined;
-  /** USD lost per day of delay (from impact frame). */
-  perDayUsd?: number | null | undefined;
   /** Estimated effort hours. */
   effortHours: number | null | undefined;
-  /** Due date — used as the death-counter clock origin. */
+  /** Due date — used as the delay clock origin. */
   dueAt: Date | null | undefined;
+  /**
+   * Optional attribution share (0 to 1). For a signer task, this is the
+   * country's share of global military spending. Defaults to 1 (full treaty-
+   * level cost) when not provided — used on parent tasks.
+   */
+  attributionShare?: number;
 }
-
-const YEARS_PER_AVERTED_DEATH = 40;
 
 function formatDuration(hours: number | null | undefined): string {
   if (hours == null || hours <= 0) return "—";
@@ -40,50 +44,52 @@ const BG_CLASS: Record<HeroCell["bg"], string> = {
 };
 
 /**
- * Stat strip that crowns any task detail page. Cells are rendered
- * conditionally based on what data the task actually has. Every task is
- * either a reallocation or a positive-ROI investment in the Earth Optimization
- * Machine frame — there is no "cost" cell because there is no cost. The
- * interesting numbers are all delay costs: deaths caused by the delay,
- * taxpayer money wasted by the delay, and the time it would take to ship it.
+ * Stat strip that crowns a task detail page. Cost of delay is computed from
+ * WHO/GBD hard-market numbers: 150K deaths/day + $40.8B/day of direct medical
+ * + productivity cost, scaled by the attribution share (1.0 for treaty-level
+ * views, country's share of global military for signer views).
  */
 export function TaskHeroStats({
-  perDayDalys,
-  perDayUsd,
   effortHours,
   dueAt,
+  attributionShare = 1,
 }: TaskHeroStatsProps) {
   const cells: HeroCell[] = [];
 
-  // Death counter — only when there's a delay rate AND a due date in the past
-  const yearsPerSecond =
-    perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
-  const usdPerSecond =
-    perDayUsd != null && perDayUsd > 0 ? perDayUsd / 86400 : null;
   const dueMs = dueAt?.getTime() ?? null;
   const isOverdue = dueMs != null && dueMs < Date.now();
-  if (yearsPerSecond != null && dueMs != null && isOverdue) {
+
+  // Deaths from delay — per-second rate × elapsed since dueAt
+  if (dueMs != null && isOverdue) {
+    const deathsPerSecond = (DAILY_DISEASE_DEATHS * attributionShare) / 86400;
     cells.push({
       label: "💀 Deaths from delay",
       bg: "red",
       value: (
         <DeathCounter
-          yearsPerSecond={yearsPerSecond}
+          yearsPerSecond={deathsPerSecond * 40}
           startMs={dueMs}
-          yearsPerDeath={YEARS_PER_AVERTED_DEATH}
+          yearsPerDeath={40}
         />
       ),
-      caption: "Preventable deaths while this task sits open.",
+      caption:
+        attributionShare < 1
+          ? "Your share of the preventable deaths, proportional to military spending."
+          : "Preventable deaths while this task sits open.",
     });
   }
 
-  // Money counter — taxpayer dollars wasted while the task waits
-  if (usdPerSecond != null && dueMs != null && isOverdue) {
+  // Wasted by delay — ticking dollar counter, attribution-scaled
+  if (dueMs != null && isOverdue) {
+    const usdPerSecond = (DAILY_DISEASE_COST_USD * attributionShare) / 86400;
     cells.push({
-      label: "🔥 Tax $ wasted by delay",
+      label: "🔥 Wasted by delay",
       bg: "red",
       value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
-      caption: "Foregone economic value every second this sits open.",
+      caption:
+        attributionShare < 1
+          ? "Your share of the wasted disease dollars, proportional to military spending."
+          : "Direct medical + productivity cost while this task sits open.",
     });
   }
 

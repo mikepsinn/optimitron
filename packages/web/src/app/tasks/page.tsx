@@ -10,6 +10,7 @@ import {
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import { getRouteMetadata } from "@/lib/metadata";
 import { tasksLink } from "@/lib/routes";
 import { getTasksPageData } from "@/lib/tasks.server";
@@ -40,16 +41,13 @@ function Section({
  */
 function ProgramCard({ task }: { task: TaskCardTask }) {
   const delayStats = getTaskDelayStats(task);
-  const delayDalysPerDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase ?? null;
-  const deathsFromDelay =
-    delayDalysPerDay != null && delayStats.currentDelayDays > 0
-      ? (delayDalysPerDay * delayStats.currentDelayDays) / 40
-      : null;
-  const moneyWasted = delayStats.currentEconomicValueUsdLost;
   const overdueLabel =
     delayStats.isOverdue && delayStats.currentDelayDays > 0
       ? formatDelayDuration(delayStats.currentDelayDays)
       : null;
+  // Full treaty-level cost of delay (150K deaths/day × days + $40.8B/day × days).
+  // This is the aggregate blocking cost for every parent task on the to-do list.
+  const costOfDelay = getTreatyLevelCostOfDelay(delayStats.currentDelayDays);
 
   return (
     <Link href={`/tasks/${task.id}`} className="block">
@@ -69,26 +67,22 @@ function ProgramCard({ task }: { task: TaskCardTask }) {
               </span>
             ) : null}
           </div>
-          {deathsFromDelay != null || moneyWasted != null ? (
+          {costOfDelay ? (
             <div className="flex flex-wrap gap-4 text-sm font-bold">
-              {deathsFromDelay != null && deathsFromDelay > 0 ? (
-                <span>
-                  💀{" "}
-                  <span className="font-black">
-                    {formatCompactCount(deathsFromDelay)}
-                  </span>{" "}
-                  deaths from delay
-                </span>
-              ) : null}
-              {moneyWasted != null && moneyWasted > 0 ? (
-                <span>
-                  🔥{" "}
-                  <span className="font-black">
-                    {formatCompactCurrency(moneyWasted)}
-                  </span>{" "}
-                  tax $ wasted by delay
-                </span>
-              ) : null}
+              <span>
+                💀{" "}
+                <span className="font-black">
+                  {formatCompactCount(costOfDelay.deathsFromDelay)}
+                </span>{" "}
+                deaths from delay
+              </span>
+              <span>
+                🔥{" "}
+                <span className="font-black">
+                  {formatCompactCurrency(costOfDelay.wastedUsd)}
+                </span>{" "}
+                wasted by delay
+              </span>
             </div>
           ) : null}
         </div>
@@ -162,8 +156,8 @@ export default async function TasksPage() {
             <div key={program.id} className="space-y-4">
               <ProgramCard task={program} />
               {isTreaty && programSignerCount > 0 ? (
-                <div className="ml-6 space-y-3 border-l-4 border-foreground/20 pl-6 sm:ml-10">
-                  <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                <div className="ml-2 space-y-3 border-l-4 border-foreground/20 pl-3 sm:ml-6 sm:pl-5">
+                  <h2 className="text-lg font-black tracking-tight sm:text-2xl">
                     ↳ {programSignerCount} of your employees have this on their to-do list
                   </h2>
                   <SortableTaskList
