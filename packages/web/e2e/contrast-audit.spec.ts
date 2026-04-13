@@ -20,12 +20,26 @@ import * as path from "path";
 import { navigateAndSettle, writeAuditReport } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { getContrastViolations } from "./utils/computed-contrast";
-import { ALL_PAGE_PATHS, AUTH_REQUIRED_PATHS } from "./utils/static-pages";
+import { ALL_PAGE_PATHS, AUTH_REQUIRED_PATHS, PUBLIC_PAGE_PATHS } from "./utils/static-pages";
 
 const SEVERE_NORMAL_CONTRAST_RATIO = 2.25;
 const SEVERE_LARGE_CONTRAST_RATIO = 2;
 const REDIRECT_ALLOWED_PATHS = new Set([
   "/politicians",
+]);
+const CONTRAST_SCOPE = process.env.PLAYWRIGHT_CONTRAST_SCOPE === "critical"
+  ? "critical"
+  : "full";
+const CRITICAL_PUBLIC_PATHS = new Set([
+  "/",
+  "/about",
+  "/agencies",
+  "/governments",
+  "/prize",
+  "/scoreboard",
+  "/tasks",
+  "/tools",
+  "/treaty",
 ]);
 
 function isSevereContrastFailure(ratio: number, required: number): boolean {
@@ -46,11 +60,13 @@ type AuditPage = {
 
 // All route pages + individual demo slides
 const PAGES: AuditPage[] = [
-  ...ALL_PAGE_PATHS.map((url) => ({
+  ...(CONTRAST_SCOPE === "critical" ? PUBLIC_PAGE_PATHS : ALL_PAGE_PATHS).filter((url) => (
+    CONTRAST_SCOPE !== "critical" || CRITICAL_PUBLIC_PATHS.has(url)
+  )).map((url) => ({
     requiresAuth: AUTH_REQUIRED_PATHS.has(url),
     url,
   })),
-  ...DEMO_SLIDES.map((id) => ({
+  ...(CONTRAST_SCOPE === "critical" ? [] : DEMO_SLIDES).map((id) => ({
     requiresAuth: false,
     url: `/demo#${id}`,
   })),
@@ -71,6 +87,8 @@ interface ContrastViolation {
 }
 
 const allViolations: ContrastViolation[] = [];
+
+console.log(`[contrast-audit] scope=${CONTRAST_SCOPE} pages=${PAGES.length}`);
 
 async function prepareAuditPage(
   page: import("@playwright/test").Page,

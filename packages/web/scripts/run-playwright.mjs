@@ -67,6 +67,12 @@ async function main() {
     delete env.SKIP_SERVER;
   }
 
+  if (mode === "smoke" && isCI) {
+    env.PLAYWRIGHT_CONTRAST_SCOPE = "critical";
+  } else {
+    delete env.PLAYWRIGHT_CONTRAST_SCOPE;
+  }
+
   const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs)];
 
   console.log(`[e2e] mode=${mode}`);
@@ -170,7 +176,7 @@ function printHelp() {
 
 Modes:
   all        Run smoke, contrast, and mobile audits (default)
-  smoke      Run smoke tests locally; in CI also includes the contrast audit
+  smoke      Run smoke tests locally; in CI also includes a critical-route contrast audit
   contrast   Run only the contrast audit
   mobile     Run only the mobile responsiveness audit
 

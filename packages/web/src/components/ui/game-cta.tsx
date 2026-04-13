@@ -3,7 +3,7 @@ import { CTA } from "@/lib/messaging";
 
 const variants = {
   primary:
-    "bg-brutal-pink text-brutal-pink-foreground",
+    "bg-brutal-pink text-black",
   secondary:
     "bg-foreground text-background",
   outline:

@@ -13,7 +13,7 @@ import { POINT } from "@/lib/messaging";
 /**
  * Interactive Prize return calculator.
  *
- * Fail scenario:  deposit × PRIZE_POOL_HORIZON_MULTIPLE (~11.1x over 15 years)
+ * Fail scenario:  deposit × PRIZE_POOL_HORIZON_MULTIPLE (~9x over 15 years)
  * Success scenario: VOTE Points × pro-rata share of pool (VOTE_TOKEN_VALUE per VOTE if canonical pool size)
  */
 
