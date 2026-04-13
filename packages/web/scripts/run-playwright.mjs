@@ -8,6 +8,14 @@ import process from "node:process";
 
 const require = createRequire(import.meta.url);
 const DEFAULT_BASE_URL = "http://127.0.0.1:3001";
+const LOCAL_REACHABILITY_PATHS = [
+  "/favicon.ico",
+  "/manifest.json",
+  "/",
+];
+const LOCAL_REACHABILITY_RETRIES = 3;
+const LOCAL_REACHABILITY_TIMEOUT_MS = 5_000;
+const LOCAL_REACHABILITY_RETRY_DELAY_MS = 750;
 const LOCAL_BASE_URL_CANDIDATES = [
   process.env.BASE_URL,
   DEFAULT_BASE_URL,
@@ -124,19 +132,58 @@ function hasExistingBuild() {
 }
 
 async function isReachable(baseUrl) {
+  const probeUrls = buildReachabilityProbeUrls(baseUrl);
+
+  for (let attempt = 0; attempt < LOCAL_REACHABILITY_RETRIES; attempt += 1) {
+    for (const probeUrl of probeUrls) {
+      if (await isReachableProbe(probeUrl)) {
+        return true;
+      }
+    }
+
+    if (attempt < LOCAL_REACHABILITY_RETRIES - 1) {
+      await sleep(LOCAL_REACHABILITY_RETRY_DELAY_MS);
+    }
+  }
+
+  return false;
+}
+
+function buildReachabilityProbeUrls(baseUrl) {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 1500);
-    const response = await fetch(baseUrl, {
+    const parsed = new URL(baseUrl);
+    return LOCAL_REACHABILITY_PATHS.map((pathname) => {
+      const probe = new URL(parsed);
+      probe.pathname = pathname;
+      probe.search = "";
+      probe.hash = "";
+      return probe.toString();
+    });
+  } catch {
+    return [baseUrl];
+  }
+}
+
+async function isReachableProbe(probeUrl) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), LOCAL_REACHABILITY_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(probeUrl, {
       method: "GET",
       redirect: "manual",
       signal: controller.signal,
     });
-    clearTimeout(timeout);
     return response.status >= 200 && response.status < 500;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function parseBoolean(value) {
