@@ -705,31 +705,35 @@ export interface SeedDatabaseOptions {
 async function seedReferendums() {
   console.log("🗳️  Seeding referendums...");
 
+  const treatyReferendumData = {
+    title: "The 1% Treaty",
+    slug: TREATY_REFERENDUM_SLUG,
+    description:
+      "Should your government redirect 1% of military spending to pragmatic clinical trials? " +
+      "The 1% Treaty would fund evidence-based health optimization at a fraction of current costs. " +
+      "Every verified vote makes pluralistic ignorance harder to maintain.",
+    status: ReferendumStatus.ACTIVE,
+  } satisfies Prisma.ReferendumUncheckedCreateInput;
+
   await prisma.referendum.upsert({
     where: { slug: TREATY_REFERENDUM_SLUG },
-    update: {},
-    create: {
-      title: "The 1% Treaty",
-      slug: TREATY_REFERENDUM_SLUG,
-      description:
-        "Should your government redirect 1% of military spending to pragmatic clinical trials? " +
-        "The 1% Treaty would fund evidence-based health optimization at a fraction of current costs. " +
-        "Every verified vote makes pluralistic ignorance harder to maintain.",
-      status: ReferendumStatus.ACTIVE,
-    },
+    update: treatyReferendumData,
+    create: treatyReferendumData,
   });
   console.log("  ✓ 1% Treaty referendum");
 
+  const declarationReferendumData = {
+    title: "Declaration of Optimization",
+    slug: DECLARATION_REFERENDUM_SLUG,
+    description:
+      "Sign the Declaration of Optimization to declare your support for evidence-based governance.",
+    status: ReferendumStatus.ACTIVE,
+  } satisfies Prisma.ReferendumUncheckedCreateInput;
+
   await prisma.referendum.upsert({
     where: { slug: DECLARATION_REFERENDUM_SLUG },
-    update: {},
-    create: {
-      title: "Declaration of Optimization",
-      slug: DECLARATION_REFERENDUM_SLUG,
-      description:
-        "Sign the Declaration of Optimization to declare your support for evidence-based governance.",
-      status: ReferendumStatus.ACTIVE,
-    },
+    update: declarationReferendumData,
+    create: declarationReferendumData,
   });
   console.log("  ✓ Declaration of Optimization referendum");
 }
@@ -808,16 +812,18 @@ async function seedTreatyTasks() {
   console.log("📋 Seeding treaty tasks...");
 
   // Create "Humanity" organization as assignee for top-level tasks
+  const humanityOrgData = {
+    name: "Humanity",
+    slug: "humanity",
+    type: "OTHER",
+    status: "APPROVED",
+    description: "All 8 billion of us.",
+  } satisfies Prisma.OrganizationUncheckedCreateInput;
+
   const humanity = await prisma.organization.upsert({
     where: { slug: "humanity" },
-    update: {},
-    create: {
-      name: "Humanity",
-      slug: "humanity",
-      type: "OTHER",
-      status: "APPROVED",
-      description: "All 8 billion of us.",
-    },
+    update: humanityOrgData,
+    create: humanityOrgData,
   });
 
   // Seed Wishonia as a regular User + Person so she can author task comments,
@@ -1011,17 +1017,19 @@ async function seedTreatyTasks() {
   const AMF_TOTAL_ECON_VALUE = AMF_ANNUAL_ECON_VALUE * AMF_BENEFIT_DURATION_YEARS;
   const AMF_TOTAL_COST = AMF_ANNUAL_FUNDING_GAP * AMF_BENEFIT_DURATION_YEARS;
 
+  const amfOrgData = {
+    name: "Against Malaria Foundation",
+    slug: "against-malaria-foundation",
+    type: "NONPROFIT",
+    status: "APPROVED",
+    description: "Distributes long-lasting insecticide-treated bed nets in sub-Saharan Africa. GiveWell's top-rated charity for cost-effective disease prevention.",
+    website: "https://www.againstmalaria.com",
+  } satisfies Prisma.OrganizationUncheckedCreateInput;
+
   const amfOrg = await prisma.organization.upsert({
     where: { slug: "against-malaria-foundation" },
-    update: {},
-    create: {
-      name: "Against Malaria Foundation",
-      slug: "against-malaria-foundation",
-      type: "NONPROFIT",
-      status: "APPROVED",
-      description: "Distributes long-lasting insecticide-treated bed nets in sub-Saharan Africa. GiveWell's top-rated charity for cost-effective disease prevention.",
-      website: "https://www.againstmalaria.com",
-    },
+    update: amfOrgData,
+    create: amfOrgData,
   });
 
   const bedNetsTask = await createTaskWithImpact({

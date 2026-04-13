@@ -60,4 +60,55 @@ describeIfDatabase("seedDatabase", () => {
 
     expect(secondCounts).toEqual(firstCounts);
   }, 15000);
+
+  it("restores seeded records when they drift before a re-run", async () => {
+    await seedDatabase();
+
+    const originalTask = await prisma.task.findUniqueOrThrow({
+      where: { id: "1-pct-treaty" },
+      select: { title: true, description: true },
+    });
+    const originalReferendum = await prisma.referendum.findUniqueOrThrow({
+      where: { slug: "one-percent-treaty" },
+      select: { title: true, description: true, status: true },
+    });
+    const originalOrganization = await prisma.organization.findUniqueOrThrow({
+      where: { slug: "humanity" },
+      select: { name: true, description: true, status: true },
+    });
+
+    await prisma.task.update({
+      where: { id: "1-pct-treaty" },
+      data: {
+        title: "drifted task title",
+        description: "drifted task description",
+      },
+    });
+    await prisma.referendum.update({
+      where: { slug: "one-percent-treaty" },
+      data: {
+        title: "drifted referendum title",
+        description: "drifted referendum description",
+      },
+    });
+    await prisma.organization.update({
+      where: { slug: "humanity" },
+      data: {
+        name: "Drifted Humanity",
+        description: "drifted organization description",
+      },
+    });
+
+    await seedDatabase();
+
+    await expect(
+      prisma.task.findUnique({ where: { id: "1-pct-treaty" } }),
+    ).resolves.toMatchObject(originalTask);
+    await expect(
+      prisma.referendum.findUnique({ where: { slug: "one-percent-treaty" } }),
+    ).resolves.toMatchObject(originalReferendum);
+    await expect(
+      prisma.organization.findUnique({ where: { slug: "humanity" } }),
+    ).resolves.toMatchObject(originalOrganization);
+  }, 15000);
 });
