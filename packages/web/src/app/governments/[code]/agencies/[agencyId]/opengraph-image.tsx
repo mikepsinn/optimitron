@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import {
-  getGovernment,
+  getGovernmentMetrics,
   getAgencyPerformance,
 } from "@optimitron/data";
 
@@ -19,7 +19,7 @@ export const revalidate = 86400;
 
 export default async function OGImage({ params }: { params: Promise<{ code: string; agencyId: string }> }) {
   const { code, agencyId } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   const agency = getAgencyPerformance(agencyId, code.toUpperCase());
 
   if (!gov || !agency) {

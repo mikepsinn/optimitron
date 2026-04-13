@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   GOVERNMENTS,
-  getGovernment,
+  getGovernmentMetrics,
   getAgencyPerformanceByCountry,
 } from "@optimitron/data";
 import { GameCTA } from "@/components/ui/game-cta";
@@ -21,7 +21,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   if (!gov) return { title: "Country Not Found" };
   return {
     title: `${gov.name} Agency Report Cards | Optimitron`,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AgenciesIndexPage({ params }: PageProps) {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   if (!gov) notFound();
 
   const agencies = getAgencyPerformanceByCountry(gov.code);

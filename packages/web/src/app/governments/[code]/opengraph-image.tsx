@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getGovernment } from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data";
 
 export const runtime = "nodejs";
 export const revalidate = 86400;
@@ -15,7 +15,7 @@ function fmt(v: number): string {
 
 export default async function OGImage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
 
   if (!gov) {
     return new ImageResponse(

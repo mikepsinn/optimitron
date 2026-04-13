@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GOVERNMENTS, getGovernment } from "@optimitron/data";
+import { GOVERNMENTS, getGovernmentMetrics } from "@optimitron/data";
 import {
   GOVERNMENT_SCATTERPLOT_DEFAULT_X,
   GOVERNMENT_SCATTERPLOT_DEFAULT_Y,
@@ -13,7 +13,7 @@ import {
 
 describe("governmentScatterplotMetrics", () => {
   it("extracts the default metric pair values", () => {
-    const singapore = getGovernment("SG");
+    const singapore = getGovernmentMetrics("SG");
     expect(singapore).toBeDefined();
     expect(
       getGovernmentScatterMetricValue(singapore!, GOVERNMENT_SCATTERPLOT_DEFAULT_X),
@@ -24,7 +24,7 @@ describe("governmentScatterplotMetrics", () => {
   });
 
   it("extracts military spending per capita PPP", () => {
-    const us = getGovernment("US");
+    const us = getGovernmentMetrics("US");
 
     expect(us).toBeDefined();
     expect(
@@ -33,7 +33,7 @@ describe("governmentScatterplotMetrics", () => {
   });
 
   it("extracts normalized government research, trial, and export values", () => {
-    const us = getGovernment("US");
+    const us = getGovernmentMetrics("US");
 
     expect(us).toBeDefined();
     expect(

@@ -2,10 +2,14 @@ import "./load-env";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
 import { getCountryPanelLatest } from "@optimitron/data";
-import { OrgType } from "@optimitron/db";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
+import {
+  buildGovernmentLeaderPersonDraft,
+  buildGovernmentOrganizationDraft,
+  getGovernmentTaskActorLabel,
+} from "../src/lib/tasks/government-task-assignee";
 import { buildOnePercentTreatyPolicyModelRun } from "../src/lib/tasks/one-percent-treaty-policy-model";
 import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.server";
 import { syncTaskMilestones } from "../src/lib/tasks/milestones.server";
@@ -151,7 +155,7 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
       countryCode: slot.countryCode,
       countryName: slot.countryName,
       signerTaskKey: signerDraft.bundle.task.taskKey,
-      treatyTarget: slot.decisionMakerLabel,
+      treatyTarget: getGovernmentTaskActorLabel(slot),
     };
   });
 
@@ -174,57 +178,13 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
   for (const chunk of chunkArray(drafts, SYNC_CONCURRENCY)) {
     const chunkResults = await Promise.all(
       chunk.map(async ({ signerDraft, slot }) => {
-        const organization = await findOrCreateOrganization({
-          name: slot.governmentName,
-          sourceRef: `organization:government:${slot.countryCode.toLowerCase()}`,
-          sourceUrl: slot.officialSourceUrl ?? slot.contactUrl ?? slot.governmentWebsite,
-          type: OrgType.GOVERNMENT,
-          website: slot.governmentWebsite,
-        });
-
-        // Create/find Person record so the leader has a profile page
-        const person = await findOrCreatePerson({
-          countryCode: slot.countryCode,
-          currentAffiliation: slot.governmentName,
-          displayName: slot.decisionMakerLabel,
-          email: slot.contactEmail ?? undefined,
-          isPublicFigure: true,
-          roleTitle: slot.roleTitle,
-          sourceUrl: slot.officialSourceUrl ?? slot.contactUrl ?? null,
-        });
-
-        // If we have a contact email, ensure a User record exists so the
-        // leader (or their staff) can sign in via magic link and sign the treaty.
-        if (slot.contactEmail) {
-          const normalizedEmail = slot.contactEmail.trim().toLowerCase();
-          const existingUser = await prisma.user.findUnique({
-            where: { email: normalizedEmail },
-            select: { id: true },
-          });
-
-          if (!existingUser) {
-            try {
-              await prisma.user.create({
-                data: {
-                  email: normalizedEmail,
-                  name: slot.decisionMakerLabel,
-                  personId: person.id,
-                },
-              });
-            } catch (userCreateError) {
-              // Race condition or constraint violation — user may have been
-              // created between the findUnique and create calls. Safe to skip.
-              console.warn(
-                `[TREATY SYNC] Could not create user for ${slot.countryCode} (${normalizedEmail}):`,
-                userCreateError instanceof Error ? userCreateError.message : userCreateError,
-              );
-            }
-          }
-        }
+        const organization = await findOrCreateOrganization(buildGovernmentOrganizationDraft(slot));
+        const personDraft = buildGovernmentLeaderPersonDraft(slot);
+        const person = personDraft ? await findOrCreatePerson(personDraft) : null;
 
         const syncHash = buildTreatySignerSyncHash({
           assigneeOrganizationId: organization.id,
-          assigneePersonId: person.id,
+          assigneePersonId: person?.id ?? null,
           bundle: signerDraft.bundle,
           parentTaskId: parentTask.id,
           sortOrder: slot.sortOrder,
@@ -256,7 +216,7 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
         if (
           canSkipTreatySignerSync({
             assigneeOrganizationId: organization.id,
-            assigneePersonId: person.id,
+            assigneePersonId: person?.id ?? null,
             existingTask,
             parameterSetHash,
             parentTaskId: parentTask.id,
@@ -278,11 +238,11 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
         if (process.env.DEBUG_TREATY_SYNC === "1") {
           console.warn(
             `[TREATY SYNC] ${slot.countryCode} update reasons: ${getTreatySignerSyncMismatchReasons({
-              assigneeOrganizationId: organization.id,
-              assigneePersonId: person.id,
-              existingTask,
-              parameterSetHash,
-              parentTaskId: parentTask.id,
+            assigneeOrganizationId: organization.id,
+            assigneePersonId: person?.id ?? null,
+            existingTask,
+            parameterSetHash,
+            parentTaskId: parentTask.id,
               sortOrder: slot.sortOrder,
               syncHash,
             }).join(", ")}`,
@@ -291,7 +251,7 @@ export async function syncTreatySigners(options: SyncTreatySignerCliOptions) {
 
         const result = await upsertImportedTaskBundle(signerDraft.bundle, {
           assigneeOrganizationId: organization.id,
-          assigneePersonId: person.id,
+          assigneePersonId: person?.id ?? null,
           isPublic: true,
           jurisdictionId: null,
           parentTaskId: parentTask.id,

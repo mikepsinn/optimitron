@@ -1,4 +1,6 @@
 import { DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT } from "@optimitron/data/parameters";
+import { getGovernmentProfile } from "@optimitron/data";
+import { buildTreatyBlockerCallout } from "@/lib/campaigns/one-percent-treaty";
 import {
   type TaskDelayStats,
   buildTaskShareText,
@@ -87,10 +89,15 @@ export interface TaskReviewUiModel {
 
 interface TreatySignerReviewContext {
   annualRedirectAmountUsd: number;
-  decisionMakerLabel: string;
-  governmentName: string;
+  countryCode: string;
+  countryIso3: string | null;
   militaryBudgetUsd: number;
   snapshotYear: number;
+}
+
+interface TreatySignerDisplayContext extends TreatySignerReviewContext {
+  decisionMakerLabel: string | null;
+  governmentName: string | null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -100,7 +107,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function readTreatySignerReviewContext(task: ReviewTaskLike): TreatySignerReviewContext | null {
   const slot = readTreatySignerSlotContext(task.contextJson);
   if (slot) {
-    return slot;
+    return {
+      ...slot,
+      countryIso3: slot.countryIso3 ?? null,
+    };
   }
 
   const assumptions = task.currentImpactEstimateSet?.assumptionsJson;
@@ -110,8 +120,7 @@ function readTreatySignerReviewContext(task: ReviewTaskLike): TreatySignerReview
 
   if (
     typeof assumptions.annualRedirectAmountUsd !== "number" ||
-    typeof assumptions.decisionMakerLabel !== "string" ||
-    typeof assumptions.governmentName !== "string" ||
+    typeof assumptions.countryCode !== "string" ||
     typeof assumptions.militaryBudgetUsd !== "number"
   ) {
     return null;
@@ -119,10 +128,39 @@ function readTreatySignerReviewContext(task: ReviewTaskLike): TreatySignerReview
 
   return {
     annualRedirectAmountUsd: assumptions.annualRedirectAmountUsd,
-    decisionMakerLabel: assumptions.decisionMakerLabel,
-    governmentName: assumptions.governmentName,
+    countryCode: assumptions.countryCode,
+    countryIso3: typeof assumptions.countryIso3 === "string" ? assumptions.countryIso3 : null,
     militaryBudgetUsd: assumptions.militaryBudgetUsd,
     snapshotYear: 2024,
+  };
+}
+
+function getTreatySignerDisplayContext(task: ReviewTaskLike): TreatySignerDisplayContext | null {
+  const reviewContext = readTreatySignerReviewContext(task);
+  if (!reviewContext) {
+    return null;
+  }
+
+  const governmentProfile =
+    getGovernmentProfile(reviewContext.countryCode) ??
+    (reviewContext.countryIso3 ? getGovernmentProfile(reviewContext.countryIso3) : null);
+
+  const assumptions = task.currentImpactEstimateSet?.assumptionsJson;
+
+  return {
+    ...reviewContext,
+    decisionMakerLabel:
+      task.assigneePerson?.displayName ??
+      governmentProfile?.leader?.leaderName ??
+      (isRecord(assumptions) && typeof assumptions.decisionMakerLabel === "string"
+        ? assumptions.decisionMakerLabel
+        : null),
+    governmentName:
+      task.assigneeOrganization?.name ??
+      governmentProfile?.governmentName ??
+      (isRecord(assumptions) && typeof assumptions.governmentName === "string"
+        ? assumptions.governmentName
+        : null),
   };
 }
 
@@ -148,14 +186,14 @@ export function buildTaskPressureShareText(
     });
   }
 
-  const employeeLabel = task.assigneePerson?.displayName ?? slot?.decisionMakerLabel ?? "this employee";
+  const employeeLabel = task.assigneePerson?.displayName ?? getTreatySignerDisplayContext(task)?.decisionMakerLabel ?? "this employee";
   const delayLabel =
     delayStats.currentDelayDays > 0
       ? `${formatDelayDuration(delayStats.currentDelayDays)} overdue`
       : "still unresolved";
   const lives = formatCompactCount(delayStats.currentHumanLivesLost);
   const opening = slot
-    ? `We pay ${slot.governmentName} to promote general welfare, not sit on ${formatCompactCurrency(slot.militaryBudgetUsd)} of military spending while disease keeps killing people.`
+    ? `We pay ${getTreatySignerDisplayContext(task)?.governmentName ?? "this government"} to promote general welfare, not sit on ${formatCompactCurrency(slot.militaryBudgetUsd)} of military spending while disease keeps killing people.`
     : "We pay governments to promote general welfare, not piss public money away on weapons while disease keeps killing people.";
   const close = slot
     ? `One signature redirects ${formatCompactCurrency(slot.annualRedirectAmountUsd)} per year into pragmatic clinical trials.`
@@ -245,18 +283,18 @@ export function isPublicOfficialTask(task: ReviewTaskLike) {
 export function getTaskReviewUi(task: ReviewTaskLike): TaskReviewUiModel {
   const officialTask = isPublicOfficialTask(task);
   const treatyMetrics = buildTreatyMetrics(task);
-  const slot = readTreatySignerReviewContext(task);
+  const slot = getTreatySignerDisplayContext(task);
   const blockerBanner =
     isTreatySignerTask(task)
       ? {
           callout: {
             description:
-              "Tell your employee to take 30 seconds to sign. Every extra day keeps the money in weapons while disease kills people.",
+              buildTreatyBlockerCallout(),
             eyebrow: "Blocking Task",
             title: task.title,
           },
           description: slot
-            ? `You are paying ${slot.governmentName} to promote the general welfare. Instead, ${task.assigneePerson?.displayName ?? slot.decisionMakerLabel} is still sitting on ${formatCompactCurrency(slot.militaryBudgetUsd)} of military spending while refusing to finish a 30-second task that would redirect ${formatCompactCurrency(slot.annualRedirectAmountUsd)} per year into pragmatic clinical trials.`
+            ? `You are paying ${slot.governmentName ?? "this government"} to promote the general welfare. Instead, ${task.assigneePerson?.displayName ?? slot.decisionMakerLabel ?? "this employee"} is still sitting on ${formatCompactCurrency(slot.militaryBudgetUsd)} of military spending while refusing to finish a 30-second task that would redirect ${formatCompactCurrency(slot.annualRedirectAmountUsd)} per year into pragmatic clinical trials.`
             : `You are paying this office to promote the general welfare. Instead, ${task.assigneePerson?.displayName ?? "this employee"} is still refusing to finish a 30-second signature task while disease keeps killing people.`,
           eyebrow: "Employee Performance Review",
           metrics: treatyMetrics,
@@ -281,7 +319,7 @@ export function buildPublicOfficialPersonReview(input: {
   person: ReviewPersonLike;
 }): EmployeeReviewBannerModel | null {
   const blockerTask = input.openTasks[0] ?? null;
-  const slot = blockerTask ? readTreatySignerReviewContext(blockerTask) : null;
+  const slot = blockerTask ? getTreatySignerDisplayContext(blockerTask) : null;
 
   if (!slot && !isPublicOfficialPerson(input.person)) {
     return null;
@@ -301,7 +339,7 @@ export function buildPublicOfficialPersonReview(input: {
         }
       : null,
     description: slot
-      ? `You are paying this office to promote the general welfare. Instead, ${input.person.displayName} is still sitting on ${formatCompactCurrency(slot.militaryBudgetUsd)} in annual military spending while a 30-second signature could redirect ${formatCompactCurrency(slot.annualRedirectAmountUsd)} per year into pragmatic clinical trials.`
+      ? `You are paying ${slot.governmentName ?? "this office"} to promote the general welfare. Instead, ${input.person.displayName} is still sitting on ${formatCompactCurrency(slot.militaryBudgetUsd)} in annual military spending while a 30-second signature could redirect ${formatCompactCurrency(slot.annualRedirectAmountUsd)} per year into pragmatic clinical trials.`
       : `You are paying this employee to improve public welfare. This page tracks the work they still have not finished.`,
     eyebrow: "Employee Performance Review",
     metrics,

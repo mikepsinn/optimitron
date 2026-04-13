@@ -1,4 +1,4 @@
-import { GOVERNMENTS } from "@optimitron/data";
+import { GOVERNMENTS, getGovernmentProfile } from "@optimitron/data";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { GameCTA } from "@/components/ui/game-cta";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
@@ -29,6 +29,10 @@ function formatNumber(value: number): string {
 }
 
 export default function GovernmentsPage() {
+  const auditedGovernmentProfiles = GOVERNMENTS
+    .map((government) => getGovernmentProfile(government.code))
+    .filter((government): government is NonNullable<typeof government> => government != null);
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
@@ -49,6 +53,9 @@ export default function GovernmentsPage() {
             military spending burned, civilians bombed, drug war prisoners caged,
             and murders they could not be bothered to solve. The data is public.
             Your governments just hope you never look at it all in one place.
+          </p>
+          <p className="text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
+            {auditedGovernmentProfiles.length} audited governments with joined office profiles
           </p>
         </div>
       </section>
@@ -121,7 +128,7 @@ export default function GovernmentsPage() {
           </div>
           <div className="border-4 border-primary bg-foreground text-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-2xl font-black">
-              {GOVERNMENTS.length}
+              {auditedGovernmentProfiles.length}
             </div>
             <div className="mt-1 text-xs font-black uppercase opacity-70">
               Governments Audited

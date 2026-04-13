@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  getGovernment,
+  getGovernmentMetrics,
   type GovernmentMetrics,
 } from "../../datasets/government-report-cards";
 import {
@@ -17,14 +17,14 @@ function createGovernment(
   overrides: Partial<GovernmentMetrics>,
 ): GovernmentMetrics {
   return {
-    ...getGovernment("US")!,
+    ...getGovernmentMetrics("US")!,
     ...overrides,
   };
 }
 
 describe("government spending ratios", () => {
   it("computes the military-to-government-clinical-trials ratio", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(getMilitaryToGovernmentClinicalTrialRatio(us)).toBeCloseTo(
       886_000_000_000 / 810_000_000,
@@ -33,7 +33,7 @@ describe("government spending ratios", () => {
   });
 
   it("computes the military-to-government-medical-research ratio", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(getMilitaryToGovernmentMedicalResearchRatio(us)).toBeCloseTo(
       886_000_000_000 / 47_100_000_000,
@@ -61,7 +61,7 @@ describe("government spending ratios", () => {
   });
 
   it("computes military spending per capita in PPP terms", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(getMilitarySpendingPerCapitaPPP(us)).toBeCloseTo(
       (3.4 / 100) * 80_035,
@@ -70,7 +70,7 @@ describe("government spending ratios", () => {
   });
 
   it("converts annual dollar flows into per-capita PPP values", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(
       getAnnualDollarFlowPerCapitaPPP(us, us.govMedicalResearchSpending?.value),
@@ -81,7 +81,7 @@ describe("government spending ratios", () => {
   });
 
   it("computes government medical research and clinical trials per capita PPP", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(getGovernmentMedicalResearchSpendingPerCapitaPPP(us)).toBeCloseTo(
       ((47_100_000_000 / 886_000_000_000) * (3.4 / 100) * 80_035),
@@ -94,7 +94,7 @@ describe("government spending ratios", () => {
   });
 
   it("computes arms exports per capita PPP", () => {
-    const us = getGovernment("US")!;
+    const us = getGovernmentMetrics("US")!;
 
     expect(getArmsExportsPerCapitaPPP(us)).toBeCloseTo(
       ((23_800_000_000 / 886_000_000_000) * (3.4 / 100) * 80_035),

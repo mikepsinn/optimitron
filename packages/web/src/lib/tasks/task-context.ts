@@ -89,14 +89,10 @@ export function readLeaderActivityContext(contextJson: unknown): LeaderActivityC
 export interface TreatySignerSlotContext {
   annualRedirectAmountUsd: number;
   countryCode: string;
-  countryName: string;
-  decisionMakerLabel: string;
-  governmentName: string;
+  countryIso3?: string | null;
   militaryBudgetSharePct: number;
-  militaryBudgetShareRatio: number;
   militaryBudgetUsd: number;
   snapshotYear: number;
-  worldMilitarySpendingUsd: number;
 }
 
 export function readTreatySignerSlotContext(
@@ -110,14 +106,9 @@ export function readTreatySignerSlotContext(
   if (
     typeof slot.annualRedirectAmountUsd !== "number" ||
     typeof slot.countryCode !== "string" ||
-    typeof slot.countryName !== "string" ||
-    typeof slot.decisionMakerLabel !== "string" ||
-    typeof slot.governmentName !== "string" ||
     typeof slot.militaryBudgetSharePct !== "number" ||
-    typeof slot.militaryBudgetShareRatio !== "number" ||
     typeof slot.militaryBudgetUsd !== "number" ||
-    typeof slot.snapshotYear !== "number" ||
-    typeof slot.worldMilitarySpendingUsd !== "number"
+    typeof slot.snapshotYear !== "number"
   ) {
     return null;
   }
@@ -125,13 +116,9 @@ export function readTreatySignerSlotContext(
   return {
     annualRedirectAmountUsd: slot.annualRedirectAmountUsd,
     countryCode: slot.countryCode,
-    countryName: slot.countryName,
-    decisionMakerLabel: slot.decisionMakerLabel,
-    governmentName: slot.governmentName,
+    countryIso3: typeof slot.countryIso3 === "string" ? slot.countryIso3 : null,
     militaryBudgetSharePct: slot.militaryBudgetSharePct,
-    militaryBudgetShareRatio: slot.militaryBudgetShareRatio,
     militaryBudgetUsd: slot.militaryBudgetUsd,
     snapshotYear: slot.snapshotYear,
-    worldMilitarySpendingUsd: slot.worldMilitarySpendingUsd,
   };
 }

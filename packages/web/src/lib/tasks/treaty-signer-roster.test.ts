@@ -7,19 +7,23 @@ describe("buildFullTreatySignerSlots", () => {
   it("expands the treaty roster to the modeled full signer set", () => {
     const slots = buildFullTreatySignerSlots(getCountryPanelLatest());
 
-    expect(slots).toHaveLength(195);
-    expect(slots.some((slot) => slot.countryCode === "VAT")).toBe(true);
-    expect(slots.some((slot) => slot.countryCode === "TWN")).toBe(true);
-    expect(slots.some((slot) => slot.countryCode === "XKX")).toBe(true);
+    expect(slots).toHaveLength(193);
+    expect(slots.some((slot) => slot.countryIso3 === "VAT")).toBe(true);
+    expect(slots.some((slot) => slot.countryIso3 === "TWN")).toBe(true);
+    expect(slots.some((slot) => slot.countryIso3 === "XKX")).toBe(true);
+    expect(slots.every((slot) => slot.countryCode.length === 2)).toBe(true);
+    expect(slots.some((slot) => slot.countryIso3 === "CUW")).toBe(false);
+    expect(slots.some((slot) => slot.countryIso3 === "FRO")).toBe(false);
   });
 
-  it("preserves curated metadata overrides on the canonical roster", () => {
+  it("pulls canonical office metadata from @optimitron/data", () => {
     const slots = buildFullTreatySignerSlots(getCountryPanelLatest());
     const unitedStates = slots.find((slot) => slot.countryName === "United States");
 
     expect(unitedStates?.countryCode).toBe("US");
+    expect(unitedStates?.countryIso3).toBe("USA");
     expect(unitedStates?.contactUrl).toBe("https://www.whitehouse.gov/contact/");
-    expect(unitedStates?.decisionMakerLabel).toBe("President of the United States");
+    expect(unitedStates?.leaderSourceRef).toBe("wikidata:Q22686");
   });
 
   it("ranks the canonical roster by estimated impact", () => {

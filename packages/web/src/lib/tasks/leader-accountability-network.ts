@@ -30,30 +30,6 @@ import {
 } from "./leader-activities";
 
 // ---------------------------------------------------------------------------
-// Person draft (input for findOrCreatePerson)
-// ---------------------------------------------------------------------------
-
-export interface LeaderPersonDraftInput {
-  countryCode: string | null;
-  currentAffiliation: string | null;
-  displayName: string;
-  isPublicFigure: boolean;
-  roleTitle: string | null;
-  sourceUrl: string | null;
-}
-
-export function buildLeaderPersonDraft(slot: TreatySignerSlot): LeaderPersonDraftInput {
-  return {
-    countryCode: slot.countryCode,
-    currentAffiliation: slot.governmentName,
-    displayName: slot.decisionMakerLabel,
-    isPublicFigure: true,
-    roleTitle: slot.roleTitle,
-    sourceUrl: slot.officialSourceUrl ?? slot.contactUrl ?? null,
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Source artifacts
 // ---------------------------------------------------------------------------
 

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getGovernment, GOVERNMENTS } from "@optimitron/data";
+import { getGovernmentMetrics, GOVERNMENTS } from "@optimitron/data";
 import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
 import { PoliticianAlignmentDashboard } from "@/components/scoreboard/PoliticianAlignmentDashboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
@@ -24,7 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines | Optimitron`;
   const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on ${getMilitarySynonym("politicians-meta-desc")} per dollar finding out which medicines work.`;
   return {
@@ -86,7 +86,7 @@ function formatDollars(value: number): string {
 export default async function GovernmentPoliticiansPage({ params }: PageProps) {
   const { code } = await params;
   const upperCode = code.toUpperCase();
-  const gov = getGovernment(upperCode);
+  const gov = getGovernmentMetrics(upperCode);
   if (!gov) notFound();
 
   const alignmentData = await getLatestAggregateScores(upperCode);

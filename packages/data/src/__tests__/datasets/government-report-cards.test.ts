@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  getGovernment,
+  getGovernmentMetrics,
   GOVERNMENTS,
 } from "../../datasets/government-report-cards";
 import {
@@ -28,22 +28,22 @@ describe("government report cards", () => {
   });
 
   it("captures the major revised regime totals from the Rummel-backed ledger", () => {
-    expect(getGovernment("RU")?.militaryDeathsCaused.value).toBe(61_911_000);
-    expect(getGovernment("CN")?.militaryDeathsCaused.value).toBe(80_202_000);
-    expect(getGovernment("DE")?.militaryDeathsCaused.value).toBe(20_946_091);
-    expect(getGovernment("JP")?.militaryDeathsCaused.value).toBe(5_964_000);
-    expect(getGovernment("TR")?.militaryDeathsCaused.value).toBe(1_883_000);
-    expect(getGovernment("PK")?.militaryDeathsCaused.value).toBe(1_503_000);
+    expect(getGovernmentMetrics("RU")?.militaryDeathsCaused.value).toBe(61_911_000);
+    expect(getGovernmentMetrics("CN")?.militaryDeathsCaused.value).toBe(80_202_000);
+    expect(getGovernmentMetrics("DE")?.militaryDeathsCaused.value).toBe(20_946_091);
+    expect(getGovernmentMetrics("JP")?.militaryDeathsCaused.value).toBe(5_964_000);
+    expect(getGovernmentMetrics("TR")?.militaryDeathsCaused.value).toBe(1_883_000);
+    expect(getGovernmentMetrics("PK")?.militaryDeathsCaused.value).toBe(1_503_000);
   });
 
   it("preserves documented minimum rows for the zero and low-count countries", () => {
-    expect(getGovernment("SG")?.militaryDeathsCaused.value).toBe(0);
-    expect(getGovernment("SG")?.deathLedgerEntries?.[0]?.sourceUrl).toContain(
+    expect(getGovernmentMetrics("SG")?.militaryDeathsCaused.value).toBe(0);
+    expect(getGovernmentMetrics("SG")?.deathLedgerEntries?.[0]?.sourceUrl).toContain(
       "mindef.gov.sg",
     );
 
-    expect(getGovernment("KR")?.militaryDeathsCaused.value).toBe(9_000);
-    expect(getGovernment("KR")?.deathLedgerEntries?.[0]?.sourceUrl).toContain(
+    expect(getGovernmentMetrics("KR")?.militaryDeathsCaused.value).toBe(9_000);
+    expect(getGovernmentMetrics("KR")?.deathLedgerEntries?.[0]?.sourceUrl).toContain(
       "tuoitre.vn",
     );
   });

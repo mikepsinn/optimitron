@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   GOVERNMENTS,
-  getGovernment,
+  getGovernmentMetrics,
   getAgencyPerformance,
   getAgencyPerformanceByCountry,
   getHistoricalTrend,
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { code, agencyId } = await params;
   const agency = getAgencyPerformance(agencyId, code.toUpperCase());
   if (!agency) return { title: "Agency Not Found" };
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   return {
     title: `${agency.emoji} ${agency.agencyName} — Grade ${agency.grade} | ${gov?.name ?? code} | Optimitron`,
     description: `${agency.agencyName} report card: ${agency.gradeRationale}`,
@@ -108,7 +108,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function AgencyDetailPage({ params }: PageProps) {
   const { code, agencyId } = await params;
   const upperCode = code.toUpperCase();
-  const gov = getGovernment(upperCode);
+  const gov = getGovernmentMetrics(upperCode);
   if (!gov) notFound();
 
   const agency = getAgencyPerformance(agencyId, upperCode);

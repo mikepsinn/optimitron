@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getGovernment } from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data";
 import { getGovernmentDetailSections } from "../government-detail-stats";
 
 function getLabels(code: string): string[] {
-  const government = getGovernment(code);
+  const government = getGovernmentMetrics(code);
   if (!government) {
     throw new Error(`Missing government ${code}`);
   }

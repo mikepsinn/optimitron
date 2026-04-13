@@ -8,6 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./parameters": "./src/parameters/index.ts",
+    "./datasets/government-code-map": "./src/datasets/government-code-map.ts",
+    "./datasets/governments": "./src/datasets/governments.ts",
     "./datasets/us-wishocratic-items": "./src/datasets/us-wishocratic-items.ts",
     "./datasets/government-report-cards": "./src/datasets/government-report-cards.ts",
     "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts",

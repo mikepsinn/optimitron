@@ -16,10 +16,14 @@ import "./load-env";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
 import { getCountryPanelLatest } from "@optimitron/data";
-import { OrgType } from "@optimitron/db";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
+import {
+  buildGovernmentLeaderPersonDraft,
+  buildGovernmentOrganizationDraft,
+  getGovernmentTaskActorLabel,
+} from "../src/lib/tasks/government-task-assignee";
 import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.server";
 import {
   LEADER_ACTIVITIES,
@@ -27,7 +31,6 @@ import {
 } from "../src/lib/tasks/leader-activities";
 import {
   buildActivityTaskBundle,
-  buildLeaderPersonDraft,
 } from "../src/lib/tasks/leader-accountability-network";
 import { buildFullTreatySignerSlots } from "../src/lib/tasks/treaty-signer-roster";
 import { getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
@@ -105,7 +108,7 @@ async function syncLeaderAccountability(options: SyncOptions) {
     return {
       countryCode: slot.countryCode,
       countryName: slot.countryName,
-      leader: slot.decisionMakerLabel,
+      leader: getGovernmentTaskActorLabel(slot),
       activityCount: activities.length,
       activities: activities.map((a) => ({
         taskKey: getActivityTaskKey(a.countryCode, a.activitySlug),
@@ -139,16 +142,14 @@ async function syncLeaderAccountability(options: SyncOptions) {
         }
 
         // 1. Create/find Person record for this leader
-        const person = await findOrCreatePerson(buildLeaderPersonDraft(slot));
+        const personDraft = buildGovernmentLeaderPersonDraft(slot);
+        if (!personDraft) {
+          return null;
+        }
+        const person = await findOrCreatePerson(personDraft);
 
         // 2. Create/find the government Organization
-        const organization = await findOrCreateOrganization({
-          name: slot.governmentName,
-          sourceRef: `organization:government:${slot.countryCode.toLowerCase()}`,
-          sourceUrl: slot.officialSourceUrl ?? slot.contactUrl ?? slot.governmentWebsite,
-          type: OrgType.GOVERNMENT,
-          website: slot.governmentWebsite,
-        });
+        const organization = await findOrCreateOrganization(buildGovernmentOrganizationDraft(slot));
 
         // 3. Backlink the existing treaty signer task to this Person
         const treatyTaskKey = getTreatySignerTaskKey(slot);
@@ -189,7 +190,7 @@ async function syncLeaderAccountability(options: SyncOptions) {
 
         return {
           countryCode: slot.countryCode,
-          leader: slot.decisionMakerLabel,
+          leader: getGovernmentTaskActorLabel(slot),
           personId: person.id,
           organizationId: organization.id,
           treatyTaskBacklinked: treatyTaskKey,

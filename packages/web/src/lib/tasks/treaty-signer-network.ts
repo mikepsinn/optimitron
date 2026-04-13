@@ -6,6 +6,12 @@ import {
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
+import {
+  buildTreatyAcceptanceCriteria,
+  buildTreatyImpactStatement,
+  buildTreatySignerContactTemplate,
+  buildTreatyTaskDescription,
+} from "@/lib/campaigns/one-percent-treaty";
 import type {
   ImportedImpactFrameDraft,
   ImportedImpactMetricDraft,
@@ -58,23 +64,18 @@ export interface TreatySignerSlot {
   contactLabel: string | null;
   contactUrl: string | null;
   countryCode: string;
+  countryIso3: string;
   countryName: string;
   decisionMakerLabel: string;
   governmentName: string;
   governmentWebsite: string | null;
+  leaderImageUrl?: string | null;
+  leaderName?: string | null;
+  leaderSourceRef?: string | null;
   militaryBudgetUsd: number;
   officialSourceUrl: string | null;
   roleTitle: string;
   sortOrder: number;
-}
-
-function formatCompactUsd(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    currency: "USD",
-    maximumFractionDigits: value >= 100 ? 0 : 1,
-    notation: Math.abs(value) >= 1000 ? "compact" : "standard",
-    style: "currency",
-  }).format(value);
 }
 
 function round(value: number, digits = 4) {
@@ -92,15 +93,6 @@ function uniqueArtifacts(artifacts: ImportedSourceArtifactDraft[]) {
     deduped.set(artifact.sourceKey, artifact);
   }
   return [...deduped.values()];
-}
-
-function buildSignerContactTemplate() {
-  return [
-    "Please complete {{taskTitle}}.",
-    "This task is already {{delayLabel}}.",
-    "Estimated delay cost so far: {{humanLives}} lives, {{sufferingHours}} suffering hours, and {{economicLoss}}.",
-    "Public task page: {{taskUrl}}",
-  ].join(" ");
 }
 
 function buildCountryInterestTags(slot: TreatySignerSlot) {
@@ -121,15 +113,6 @@ function buildCountrySkillTags(slot: TreatySignerSlot) {
   ];
 }
 
-function buildTreatyAcceptanceCriteria(slot: TreatySignerSlot) {
-  return [
-    `A treaty instrument, executive order, or equivalent commitment is prepared for ${slot.decisionMakerLabel}.`,
-    `${slot.decisionMakerLabel} publicly signs or commits to the 1% Treaty.`,
-    `${slot.governmentName} publicly names the implementation authority for the 1% redirect.`,
-    `A first implementation step is announced within 90 days of signature.`,
-  ];
-}
-
 function buildTreatySignerSourceArtifacts(
   slot: TreatySignerSlot,
 ): ImportedSourceArtifactDraft[] {
@@ -140,6 +123,7 @@ function buildTreatySignerSourceArtifacts(
       externalKey: `sipri-milex-2024:${slot.countryCode.toLowerCase()}`,
       payloadJson: {
         countryCode: slot.countryCode,
+        countryIso3: slot.countryIso3,
         countryName: slot.countryName,
         militaryBudgetUsd: slot.militaryBudgetUsd,
         snapshotYear: 2024,
@@ -166,6 +150,7 @@ function buildTreatySignerSourceArtifacts(
         contactLabel: slot.contactLabel,
         contactUrl: slot.contactUrl,
         countryCode: slot.countryCode,
+        countryIso3: slot.countryIso3,
         decisionMakerLabel: slot.decisionMakerLabel,
         governmentName: slot.governmentName,
       },
@@ -298,41 +283,44 @@ export function buildTreatySignerImportDraft(input: {
   const cloned = structuredClone(input.baseDraft);
   const taskKey = getTreatySignerTaskKey(slot);
 
-  cloned.assigneeHint = {
-    actorKey: null,
-    claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-    contactLabel: slot.contactLabel,
-    contactTemplate: buildSignerContactTemplate(),
-    contactUrl: slot.contactUrl,
-    currentAffiliation: slot.governmentName,
-    displayName: slot.decisionMakerLabel,
-    isPublicFigure: true,
-    organizationKey: null,
-    organizationName: null,
-    organizationType: null,
-    role: "decision_maker",
-    roleTitle: slot.roleTitle,
-  };
+  cloned.assigneeHint =
+    slot.leaderName && slot.leaderSourceRef
+      ? {
+          actorKey: slot.leaderSourceRef,
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          contactLabel: slot.contactLabel,
+          contactTemplate: buildTreatySignerContactTemplate(),
+          contactUrl: slot.contactUrl,
+          currentAffiliation: slot.governmentName,
+          displayName: slot.leaderName,
+          isPublicFigure: true,
+          organizationKey: `organization:government:${slot.countryCode.toLowerCase()}`,
+          organizationName: slot.governmentName,
+          organizationType: OrgType.GOVERNMENT,
+          role: "decision_maker",
+          roleTitle: slot.roleTitle,
+        }
+      : null;
 
   cloned.bundle.task.assigneeAffiliationSnapshot = slot.governmentName;
-  cloned.bundle.task.assigneeOrganizationName = null;
-  cloned.bundle.task.assigneeOrganizationSourceRef = null;
-  cloned.bundle.task.assigneeOrganizationType = null;
+  cloned.bundle.task.assigneeOrganizationName = slot.governmentName;
+  cloned.bundle.task.assigneeOrganizationSourceRef = `organization:government:${slot.countryCode.toLowerCase()}`;
+  cloned.bundle.task.assigneeOrganizationType = OrgType.GOVERNMENT;
   cloned.bundle.task.claimPolicy = TaskClaimPolicy.ASSIGNED_ONLY;
   cloned.bundle.task.contactLabel = slot.contactLabel;
-  cloned.bundle.task.contactTemplate = buildSignerContactTemplate();
+  cloned.bundle.task.contactTemplate = buildTreatySignerContactTemplate();
   cloned.bundle.task.contactUrl = slot.contactUrl;
-  cloned.bundle.task.description = [
-    `Secure ${slot.decisionMakerLabel}'s signature on the 1% Treaty.`,
-    `If completed, ${slot.governmentName} redirects about ${formatCompactUsd(redirectAmountUsd)} per year into pragmatic clinical trials and disease-eradication work.`,
-    `This slot represents about ${round(factor * 100, 1)}% of global military spending in the 2024 SIPRI snapshot.`,
-  ].join(" ");
+  cloned.bundle.task.description = buildTreatyTaskDescription({
+    actorLabel: slot.leaderName ?? slot.decisionMakerLabel,
+    annualRedirectAmountUsd: redirectAmountUsd,
+    governmentName: slot.governmentName,
+    militaryBudgetShareRatio: factor,
+  });
   cloned.bundle.task.difficulty = TaskDifficulty.EXPERT;
   cloned.bundle.task.dueAt = TREATY_DUE_AT;
-  cloned.bundle.task.impactStatement = [
-    `${formatCompactUsd(redirectAmountUsd)} per year redirected if completed.`,
-    "Thirty seconds for the signer. Large global downside from delay.",
-  ].join(" ");
+  cloned.bundle.task.impactStatement = buildTreatyImpactStatement({
+    annualRedirectAmountUsd: redirectAmountUsd,
+  });
   cloned.bundle.task.interestTags = buildCountryInterestTags(slot);
   cloned.bundle.task.roleTitle = slot.roleTitle;
   cloned.bundle.task.skillTags = buildCountrySkillTags(slot);
@@ -341,18 +329,17 @@ export function buildTreatySignerImportDraft(input: {
   cloned.bundle.task.title = TREATY_SIGNER_TASK_TITLE;
   cloned.bundle.task.contextJson = {
     ...cloned.bundle.task.contextJson,
-    acceptanceCriteria: buildTreatyAcceptanceCriteria(slot),
+    acceptanceCriteria: buildTreatyAcceptanceCriteria({
+      actorLabel: slot.leaderName ?? slot.decisionMakerLabel,
+      governmentName: slot.governmentName,
+    }),
     treatySignerSlot: {
       annualRedirectAmountUsd: redirectAmountUsd,
       countryCode: slot.countryCode,
-      countryName: slot.countryName,
-      decisionMakerLabel: slot.decisionMakerLabel,
-      governmentName: slot.governmentName,
+      countryIso3: slot.countryIso3,
       militaryBudgetSharePct: round(factor * 100, 2),
-      militaryBudgetShareRatio: factor,
       militaryBudgetUsd: slot.militaryBudgetUsd,
       snapshotYear: 2024,
-      worldMilitarySpendingUsd: SIPRI_WORLD_MILITARY_SPENDING_USD_2024,
     },
   };
 
@@ -360,9 +347,7 @@ export function buildTreatySignerImportDraft(input: {
     ...(cloned.bundle.impactEstimate.assumptionsJson ?? {}),
     annualRedirectAmountUsd: redirectAmountUsd,
     countryCode: slot.countryCode,
-    countryName: slot.countryName,
-    decisionMakerLabel: slot.decisionMakerLabel,
-    governmentName: slot.governmentName,
+    countryIso3: slot.countryIso3,
     militaryBudgetShareRatio: factor,
     militaryBudgetUsd: slot.militaryBudgetUsd,
     treatySignerScalingMethod: "scaled-by-share-of-2024-global-military-spending",

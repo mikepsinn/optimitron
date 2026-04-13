@@ -10,6 +10,7 @@ import {
   getGovernmentDeathLedgerEntries,
   getGovernmentDeathLedgerSummary,
 } from './government-death-ledger';
+import { getGovernmentIso3 } from './government-code-map';
 
 export interface SourcedValue {
   value: number;
@@ -982,12 +983,6 @@ for (const gov of GOVERNMENTS) {
 // ---------------------------------------------------------------------------
 import { getBestAvailableMedianIncomeSeries, rankMedianIncomeRecord } from './median-income-series';
 
-const ISO2_TO_ISO3: Record<string, string> = {
-  US: "USA", RU: "RUS", CN: "CHN", GB: "GBR", IL: "ISR", SA: "SAU",
-  SG: "SGP", FR: "FRA", TR: "TUR", IN: "IND", PK: "PAK", ET: "ETH",
-  IR: "IRN", JP: "JPN", DE: "DEU", AU: "AUS", CA: "CAN", KR: "KOR",
-};
-
 /**
  * Average household size by ISO3 code (UN Population Division 2023).
  * Used to convert OECD/Eurostat "per equivalised household" → per capita.
@@ -1028,7 +1023,7 @@ const EQUIVALISED_TO_PER_CAPITA_RATIO: Record<string, number> = {
 const DEFAULT_EQUIV_RATIO = 0.69; // OECD average
 
 for (const gov of GOVERNMENTS) {
-  const iso3 = ISO2_TO_ISO3[gov.code];
+  const iso3 = getGovernmentIso3(gov.code);
   if (!iso3) continue;
 
   // Get all PPP records for this country, pick by rank then recency
@@ -1064,8 +1059,8 @@ for (const gov of GOVERNMENTS) {
   }
 }
 
-/** Get a government by ISO code */
-export function getGovernment(code: string): GovernmentMetrics | undefined {
+/** Get report-card metrics for a government by ISO code */
+export function getGovernmentMetrics(code: string): GovernmentMetrics | undefined {
   return GOVERNMENTS.find((g) => g.code === code);
 }
 

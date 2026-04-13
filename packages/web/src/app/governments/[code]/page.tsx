@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   GOVERNMENTS,
-  getGovernment,
+  getGovernmentMetrics,
+  getGovernmentProfile,
   getGovernmentsByHALE,
   getAgencyPerformanceByCountry,
   ALL_HISTORICAL_TRENDS,
@@ -32,7 +33,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   if (!gov) return { title: "Country Not Found" };
   return {
     title: `${gov.name} Government Scorecard | The Earth Optimization Game`,
@@ -108,8 +109,9 @@ function StatCard({ label, value, emoji, subtitle, source, url, barValue, barMax
 
 export default async function GovernmentDetailPage({ params }: PageProps) {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
   if (!gov) notFound();
+  const governmentProfile = getGovernmentProfile(code.toUpperCase());
 
   const haleRanked = getGovernmentsByHALE();
   const haleRank = haleRanked.findIndex((g) => g.code === gov.code) + 1;
@@ -163,6 +165,21 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             <p className="text-lg font-bold text-muted-foreground">
               #{haleRank} of {haleRanked.length} by healthy life years
             </p>
+            {governmentProfile?.leader ? (
+              <p className="mt-2 text-sm font-black uppercase tracking-[0.14em] text-muted-foreground">
+                Current employee: {governmentProfile.leader.leaderName}
+              </p>
+            ) : null}
+            {governmentProfile?.governmentWebsite ? (
+              <a
+                href={governmentProfile.governmentWebsite}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-sm font-black uppercase text-brutal-pink hover:text-foreground transition-colors"
+              >
+                Official government site ↗
+              </a>
+            ) : null}
           </div>
         </div>
       </section>

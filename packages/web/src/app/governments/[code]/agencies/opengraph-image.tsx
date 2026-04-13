@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import {
-  getGovernment,
+  getGovernmentMetrics,
   getAgencyPerformanceByCountry,
 } from "@optimitron/data";
 
@@ -11,7 +11,7 @@ export const contentType = "image/png";
 
 export default async function OGImage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
 
   if (!gov) {
     return new ImageResponse(

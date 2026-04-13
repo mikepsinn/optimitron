@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getGovernment } from "@optimitron/data";
+import { getGovernmentMetrics } from "@optimitron/data";
 import Image from "next/image";
 import { DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT } from "@optimitron/data/parameters";
 import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";
@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { code, bioguideId } = await params;
   const data = loadScorecardData();
   const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
-  const gov = getGovernment(code.toUpperCase());
+  const gov = getGovernmentMetrics(code.toUpperCase());
 
   const title = politician
     ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines | Optimitron`
@@ -114,7 +114,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PoliticianDetailPage({ params }: PageProps) {
   const { code, bioguideId } = await params;
   const upperCode = code.toUpperCase();
-  const gov = getGovernment(upperCode);
+  const gov = getGovernmentMetrics(upperCode);
   if (!gov) notFound();
 
   const data = loadScorecardData();
