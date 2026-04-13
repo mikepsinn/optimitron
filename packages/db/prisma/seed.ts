@@ -39,6 +39,7 @@ import { pathToFileURL } from "node:url";
 import {
   US_WISHOCRATIC_JURISDICTION,
   getUSWishocraticCatalogRecords,
+  getGovernmentProfile,
 } from "@optimitron/data";
 import {
   DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV,
@@ -936,6 +937,59 @@ async function seedTreatyTasks() {
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
       claimPolicy: "OPEN_MANY",
       estimatedEffortHours: TREATY_TOTAL_EFFORT_HOURS,
+      contextJson: {
+        unlocks: [
+          {
+            kind: "inline",
+            icon: "🔓",
+            title: "12× More Clinical Trials",
+            summary: "Pragmatic trial infrastructure funded by the redirect. Same patients, same hospitals, same data. 44 times cheaper because nobody optimized the expensive version — because nobody's job depended on it.",
+            beforeAfter: [
+              { label: "Patients/yr", before: "1,900,000", after: "23,400,000" },
+              { label: "Cost/patient", before: "$41,000", after: "$929" },
+              { label: "Trial queue", before: "443 years", after: "36 years" },
+              { label: "Untested diseases", before: "9,000+", after: "0" },
+            ],
+            roiRatio: 45,
+          },
+          {
+            kind: "inline",
+            icon: "🔓",
+            title: "Approve Safe Treatments 8 Years Faster",
+            summary: "Treatments currently wait 8.2 years after being proven safe. They sit in a cabinet. Being safe. While 102 million people died waiting.",
+          },
+          {
+            kind: "inline",
+            icon: "🌍",
+            title: "If All 193 Governments Sign",
+            summary: "Lifetime gains per median human if the full treaty passes. Cost: 1% of the explosion budget.",
+            beforeAfter: [
+              { label: "Healthy lifespan", before: "63.3 yrs", after: "85.0 yrs" },
+              { label: "Median income", before: "$18,700", after: "$76,700" },
+              { label: "Lives saved by 2040", before: "—", after: "10.7 billion" },
+            ],
+          },
+        ],
+        contextComparisons: [
+          {
+            heading: "Things that take longer than 30 seconds",
+            items: [
+              { label: "Making toast", value: "120 seconds" },
+              { label: "COVID vaccine development", value: "314 days" },
+              { label: "Manhattan Project", value: "1,347 days" },
+              { label: "This treaty not being signed", value: "and counting", highlight: true },
+            ],
+          },
+          {
+            heading: "Things that take 30 seconds",
+            items: [
+              { label: "Signing the 1% Treaty", value: "30s" },
+              { label: "Tying a shoe", value: "30s" },
+              { label: "Sending a tweet shaming a world leader", value: "30s" },
+            ],
+          },
+        ],
+      } satisfies Prisma.InputJsonValue,
     },
     impact: {
       estimatedCashCostUsdBase: TREATY_NET_COST_USD,
@@ -1114,6 +1168,141 @@ async function seedTreatyTasks() {
       },
     });
 
+    // Pull country-level data for rich contextJson slots. Missing values
+    // just mean the relevant block no-ops on the task page.
+    const govProfile = getGovernmentProfile(countryCode);
+    const militaryBudget = govProfile?.metrics?.militarySpendingAnnual.value ?? null;
+    const clinicalTrialBudget = govProfile?.metrics?.clinicalTrialSpending?.value ?? null;
+    const annualRedirectUsd = militaryBudget != null ? militaryBudget * 0.01 : null;
+    const killCureRatio =
+      militaryBudget != null && clinicalTrialBudget != null && clinicalTrialBudget > 0
+        ? Math.round(militaryBudget / clinicalTrialBudget)
+        : null;
+    const contactUrl = govProfile?.office?.contactUrl ?? null;
+    const contactLabel = govProfile?.office?.contactLabel ?? null;
+    const headOfGovTitle =
+      govProfile?.office?.headOfGovernmentTitle ?? leader.roleTitle ?? "Head of Government";
+
+    const formatUsdCompact = (n: number): string => {
+      if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
+      if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+      if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+      return `$${Math.round(n).toLocaleString()}`;
+    };
+
+    const googleSearch = (query: string) =>
+      `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    const contactChannels: Array<{ kind: "twitter" | "bluesky" | "form"; label: string; href: string }> = [
+      {
+        kind: "twitter",
+        label: `Find on X`,
+        href: googleSearch(`${leader.leaderName} official X Twitter account`),
+      },
+      {
+        kind: "bluesky",
+        label: `Find on Bluesky`,
+        href: googleSearch(`${leader.leaderName} Bluesky account site:bsky.app`),
+      },
+    ];
+    if (contactUrl) {
+      contactChannels.push({
+        kind: "form",
+        label: contactLabel ?? "Official contact form",
+        href: contactUrl,
+      });
+    }
+
+    const signerContextJson: Prisma.InputJsonValue = {
+      assigneeProfile: {
+        role: headOfGovTitle,
+        employerLabel: `Government of ${leader.countryName}`,
+        employerCountLabel: "citizens",
+        ...(militaryBudget != null ? { budgetUsdPerYear: militaryBudget } : {}),
+        jobQuote: {
+          text: "promote the general welfare",
+          source: `${leader.countryName} — job description, every citizen, every day`,
+        },
+        contactChannels,
+      },
+      difficulty: {
+        whatItMeans:
+          annualRedirectUsd != null
+            ? `Redirect 1% of ${leader.countryName}'s military spending (${formatUsdCompact(annualRedirectUsd)}/yr) from weapons to pragmatic clinical trials.`
+            : `Redirect 1% of ${leader.countryName}'s military spending from weapons to pragmatic clinical trials.`,
+        label: "Sign a piece of paper",
+        timeRequiredSeconds: 30,
+        skillsRequired: "Holding a pen",
+      },
+      costOfDelayNote:
+        "Your employee has not done this 30-second task. People keep dying on schedule.",
+      ...(militaryBudget != null && clinicalTrialBudget != null && clinicalTrialBudget > 0
+        ? {
+            performanceReview: {
+              comparisonBars: [
+                { label: "Killing", valueUsd: militaryBudget, color: "red" as const },
+                { label: "Curing", valueUsd: clinicalTrialBudget, color: "green" as const },
+              ],
+              ...(killCureRatio != null
+                ? {
+                    ratio: {
+                      left: killCureRatio,
+                      right: 1,
+                      label: "killing to curing",
+                    },
+                  }
+                : {}),
+              narrative:
+                "No cost-benefit analysis was performed before choosing this ratio. None has ever been performed. By anyone. In the history of this government.",
+              rating: "F",
+              firedFromWendys: true,
+              scorecardUrl: `/governments/${countryCode.toLowerCase()}`,
+            },
+          }
+        : {}),
+      reminder: {
+        intro: `This is your employee. You pay their salary. They are {daysOverdue} days late on a 30-second task. Tell them to do their job.`,
+        messageTemplate: [
+          `${leader.leaderName} is {daysOverdue} days late on a 30-second task.`,
+          ``,
+          `Task: Sign the 1% Treaty.`,
+          `Difficulty: Hold pen. Sign paper.`,
+          `Time: 30 seconds.`,
+          ``,
+          `While this employee hasn't done it:`,
+          `💀 {deathsLocked} humans died waiting.`,
+          `🔥 {moneyDestroyed} burned.`,
+          ``,
+          `The job description, word for word: "promote the general welfare."`,
+          `Do your job, ${leader.leaderName}.`,
+          ``,
+          `{taskUrl}`,
+        ].join("\n"),
+      },
+      contextComparisons: [
+        {
+          heading: "Things that take longer than 30 seconds",
+          items: [
+            { label: "Making toast", value: "120 seconds" },
+            { label: "Developing the COVID vaccine", value: "314 days" },
+            { label: "The Manhattan Project", value: "1,347 days" },
+            {
+              label: `${leader.leaderName} not signing this`,
+              value: "{daysOverdue} days",
+              highlight: true,
+            },
+          ],
+        },
+        {
+          heading: "Things that take 30 seconds",
+          items: [
+            { label: "Signing the 1% Treaty", value: "30s" },
+            { label: "Tying a shoe", value: "30s" },
+            { label: "Sending a tweet", value: "30s" },
+          ],
+        },
+      ],
+    };
+
     await createTaskWithImpact({
       task: {
         id: `1-pct-treaty-signer-${countryCode.toLowerCase()}`,
@@ -1147,6 +1336,7 @@ async function seedTreatyTasks() {
         skillTags: ["diplomacy", "public-pressure"],
         interestTags: ["treaty", "disease-eradication", `country-${countryCode.toLowerCase()}`],
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
+        contextJson: signerContextJson,
       },
       impact: {
         // Cost stays at the −∞ sentinel for every signer — splitting infinity

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
+  buildTaskShareText,
   formatCompactCurrency,
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
 import { getPersonHref } from "@/lib/person-href";
-import { buildTaskPressureShareText, getTaskPressurePrompt } from "@/lib/tasks/task-review-ui";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
@@ -163,8 +163,15 @@ export function TaskRow({
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 
-  const shareText = buildTaskPressureShareText(task, delayStats);
-  const pressurePrompt = getTaskPressurePrompt(task, delayStats);
+  const shareText = buildTaskShareText({
+    currentDelayDays: delayStats.currentDelayDays,
+    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
+    currentHumanLivesLost: delayStats.currentHumanLivesLost,
+    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    targetLabel,
+    taskTitle: task.title,
+  });
+  const pressurePrompt: string | null = null;
 
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
 

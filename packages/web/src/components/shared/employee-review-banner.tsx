@@ -1,9 +1,28 @@
 import Link from "next/link";
 import { BrutalCard } from "@/components/ui/brutal-card";
-import type {
-  EmployeeReviewBannerModel,
-  EmployeeReviewMetric,
-} from "@/lib/tasks/task-review-ui";
+
+export interface EmployeeReviewMetric {
+  detail?: string | null;
+  label: string;
+  tone?: "background" | "cyan" | "green" | "pink" | "red" | "yellow";
+  value: string;
+}
+
+export interface EmployeeReviewCallout {
+  description: string;
+  href?: string;
+  hrefLabel?: string;
+  eyebrow: string;
+  title: string;
+}
+
+export interface EmployeeReviewBannerModel {
+  callout?: EmployeeReviewCallout | null;
+  description: string;
+  eyebrow: string;
+  metrics: EmployeeReviewMetric[];
+  title: string;
+}
 
 function EmployeeReviewMetricCard({ metric }: { metric: EmployeeReviewMetric }) {
   return (

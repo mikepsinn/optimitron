@@ -8,7 +8,7 @@ import {
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { TaskAssignee } from "@/components/tasks/task-assignee";
-import { TaskCard, type TaskCardTask } from "@/components/tasks/task-card";
+import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
 import { TaskHeroStats } from "@/components/tasks/task-hero-stats";
@@ -18,28 +18,33 @@ import { getUserDisplayLabel } from "@/lib/user-display";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
-import { TaskContactActions } from "@/components/tasks/TaskContactActions";
 import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
-import { Avatar } from "@/components/retroui/Avatar";
+import { TaskAssigneeCard } from "@/components/tasks/blocks/TaskAssigneeCard";
+import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
+import { TaskContextList } from "@/components/tasks/blocks/TaskContextList";
+import { TaskCostOfDelay } from "@/components/tasks/blocks/TaskCostOfDelay";
+import { TaskCurrentActivities } from "@/components/tasks/blocks/TaskCurrentActivities";
+import { TaskDifficultyStrip } from "@/components/tasks/blocks/TaskDifficultyStrip";
+import { TaskOverdueClock } from "@/components/tasks/blocks/TaskOverdueClock";
+import { TaskPerformanceReview } from "@/components/tasks/blocks/TaskPerformanceReview";
+import { TaskRemindEmployee } from "@/components/tasks/blocks/TaskRemindEmployee";
+import { TaskUnlocks } from "@/components/tasks/blocks/TaskUnlocks";
+import { TaskWhileYouRead } from "@/components/tasks/blocks/TaskWhileYouRead";
 import { Button } from "@/components/retroui/Button";
-import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
 import {
-  aggregateTaskDelayStats,
   buildTaskShareText,
   formatCompactCount,
   formatCompactCurrency,
-  formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
-import { readLeaderActivityContext, readTaskContextSections } from "@/lib/tasks/task-context";
-import { buildTaskPressureShareText, getTaskReviewUi } from "@/lib/tasks/task-review-ui";
+import { readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
 import {
   getTaskActivityTimeline,
@@ -64,14 +69,6 @@ function formatDueDate(value: Date) {
     month: "long",
     year: "numeric",
   });
-}
-
-function getFallbackInitials(value: string) {
-  return value
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
 }
 
 function getMilestoneStatusLabel(status: string) {
@@ -141,7 +138,7 @@ export default async function TaskDetailPage({
     notFound();
   }
 
-  const { contactActionCount, task, viewer, viewerClaim } = data;
+  const { task, viewer, viewerClaim } = data;
   const hasOtherPersonAssignee =
     task.assigneePerson != null && task.assigneePerson.id !== viewer?.personId;
   const canShowClaimButton = !hasOtherPersonAssignee;
@@ -162,18 +159,17 @@ export default async function TaskDetailPage({
     (claim) => claim.status === TaskClaimStatus.COMPLETED,
   );
   const delayStats = getTaskDelayStats(task);
-  const childDelaySummary = aggregateTaskDelayStats(task.childTasks);
+  const context = readTaskContext(task.contextJson);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const shareText = buildTaskPressureShareText(task, delayStats);
-  const fallbackInitials = getFallbackInitials(targetLabel);
-  const contextSections = readTaskContextSections(task.contextJson);
-  const activityContext = readLeaderActivityContext(task.contextJson);
-  const reviewUi = getTaskReviewUi(task);
-  const econValue = task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? null;
-  const dalysValue = task.impact?.selectedFrame?.expectedDalysAvertedBase ?? null;
-  const isHarmful = (econValue != null && econValue < 0) || (dalysValue != null && dalysValue < 0);
-  const isUnmeasured = task.status === TaskStatus.VERIFIED && econValue == null && dalysValue == null;
+  const shareText = buildTaskShareText({
+    currentDelayDays: delayStats.currentDelayDays,
+    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
+    currentHumanLivesLost: delayStats.currentHumanLivesLost,
+    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    targetLabel,
+    taskTitle: task.title,
+  });
   const completedMilestoneCount = task.milestones.filter(
     (milestone) => milestone.status === "COMPLETED" || milestone.status === "VERIFIED",
   ).length;
@@ -181,6 +177,36 @@ export default async function TaskDetailPage({
     task.currentImpactEstimateSet?.sourceArtifacts?.length
       ? task.currentImpactEstimateSet.sourceArtifacts
       : task.sourceArtifacts;
+
+  // Per-second rate hints for live counters — computed once from delay stats.
+  const delayDalysPerDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase ?? null;
+  const delayEconPerDay =
+    task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? null;
+  const ratePerSecond = {
+    deaths: delayDalysPerDay != null ? delayDalysPerDay / 86400 : null,
+    usd: delayEconPerDay != null ? delayEconPerDay / 86400 : null,
+  };
+
+  // Reminder template tokens resolved server-side.
+  const personHandle = task.assigneePerson?.handle ?? null;
+  const reminderTokens: Record<string, string | number | null> = {
+    handle: personHandle ?? targetLabel,
+    name: targetLabel,
+    daysOverdue: delayStats.currentDelayDays.toLocaleString(),
+    deathsLocked: formatCompactCount(delayStats.currentHumanLivesLost ?? 0),
+    moneyDestroyed: formatCompactCurrency(delayStats.currentEconomicValueUsdLost ?? 0),
+    sufferingHours: formatCompactCount(delayStats.currentSufferingHoursLost ?? 0),
+    salaryUsd:
+      context.assigneeProfile?.salaryUsdPerYear != null
+        ? formatCompactCurrency(context.assigneeProfile.salaryUsdPerYear)
+        : "",
+    budgetUsd:
+      context.assigneeProfile?.budgetUsdPerYear != null
+        ? formatCompactCurrency(context.assigneeProfile.budgetUsdPerYear)
+        : "",
+    taskTitle: task.title,
+    taskUrl: `/tasks/${task.id}`,
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -208,13 +234,7 @@ export default async function TaskDetailPage({
           links={[
             { id: "overview", label: "Overview" },
             ...(task.childTasks.length > 0
-              ? [
-                  {
-                    id: "subtasks",
-                    label: reviewUi.childSectionNavLabel,
-                    count: task.childTasks.length,
-                  },
-                ]
+              ? [{ id: "subtasks", label: "Subtasks", count: task.childTasks.length }]
               : []),
             {
               id: "discussion",
@@ -246,7 +266,7 @@ export default async function TaskDetailPage({
           {task.isPublic ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold uppercase text-muted-foreground">
-                {reviewUi.blockerBanner ? "Pressure This Employee:" : "Share:"}
+                Share:
               </span>
               <TaskShareButtons
                 taskId={task.id}
@@ -258,227 +278,75 @@ export default async function TaskDetailPage({
           ) : null}
         </section>
 
-        <div className="space-y-6">
-          <BrutalCard bgColor="background" padding="lg">
-            <div className="space-y-6">
-              <TaskAssignee
-                person={task.assigneePerson}
-                organization={task.assigneeOrganization}
-                roleTitle={task.roleTitle}
-                affiliationSnapshot={task.assigneeAffiliationSnapshot}
-                label={reviewUi.assigneeLabel}
-              />
+        <TaskBlockerCard context={context} />
+        <TaskAssigneeCard
+          assigneePerson={task.assigneePerson}
+          assigneeOrganization={task.assigneeOrganization}
+          context={context}
+        />
+        <TaskDifficultyStrip taskTitle={task.title} context={context} />
+        <TaskOverdueClock dueAt={task.dueAt} />
+        <TaskCostOfDelay
+          context={context}
+          delayStats={delayStats}
+          ratePerSecond={ratePerSecond}
+        />
+        <TaskUnlocks context={context} />
+        <TaskPerformanceReview context={context} />
+        <TaskRemindEmployee
+          reminder={context.reminder}
+          assigneeProfile={context.assigneeProfile}
+          tokens={reminderTokens}
+        />
+        <TaskContextList context={context} tokens={reminderTokens} />
+        <TaskCurrentActivities context={context} />
+        <TaskWhileYouRead
+          deathsPerSecond={ratePerSecond.deaths}
+          usdPerSecond={ratePerSecond.usd}
+        />
 
-              {reviewUi.blockerBanner ? (
-                <EmployeeReviewBanner {...reviewUi.blockerBanner} />
-              ) : null}
-
-              {/* Inline action bar — replaces the old yellow sidebar */}
-              <div className="flex flex-wrap items-center gap-3 border-t-2 border-foreground/20 pt-4">
-                {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
-                  <TaskClaimButton
-                    canClaim={canClaim}
-                    signedIn={Boolean(userId)}
-                    signInHref={signInHref}
-                    taskId={task.id}
-                    viewerHasClaim={task.viewerHasClaim}
-                  />
-                ) : task.status !== TaskStatus.VERIFIED && hasOtherPersonAssignee ? (
-                  <p className="text-sm font-bold">
-                    Assigned to {task.assigneePerson?.displayName}. If that&apos;s
-                    you, sign in with your verified account to mark this complete.
-                  </p>
-                ) : null}
-                {!userId ? (
-                  <Button asChild className="font-black uppercase" variant="outline">
-                    <Link href={signInHref}>Sign In</Link>
-                  </Button>
-                ) : null}
-                {viewerClaim ? (
-                  <span className="text-xs font-black uppercase text-brutal-pink">
-                    Your claim: {viewerClaim.status.toLowerCase()}
-                  </span>
-                ) : null}
-              </div>
-              {viewerClaim &&
-              (viewerClaim.status === TaskClaimStatus.CLAIMED ||
-                viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
-                <TaskCompleteForm taskId={task.id} />
-              ) : null}
-
-              {isHarmful ? (
-                <>
-                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                    {activityContext.taxpayerCostUsd != null ? (
-                      <div className="border-4 border-foreground bg-brutal-red text-brutal-red-foreground p-3">
-                        <p className="text-xs font-black uppercase tracking-[0.18em]">
-                          Taxpayer Cost
-                        </p>
-                        <p className="mt-2 text-2xl font-black uppercase">
-                          {formatCompactCurrency(activityContext.taxpayerCostUsd)}
-                        </p>
-                        <p className="text-xs font-bold uppercase">
-                          your money
-                        </p>
-                      </div>
-                    ) : econValue != null ? (
-                      <div className="border-4 border-foreground bg-brutal-red text-brutal-red-foreground p-3">
-                        <p className="text-xs font-black uppercase tracking-[0.18em]">
-                          Economic Damage
-                        </p>
-                        <p className="mt-2 text-2xl font-black uppercase">
-                          {formatCompactCurrency(Math.abs(econValue))}
-                        </p>
-                        <p className="text-xs font-bold uppercase">
-                          harm caused
-                        </p>
-                      </div>
-                    ) : null}
-                    {dalysValue != null ? (
-                      <div className="border-4 border-foreground bg-brutal-red text-brutal-red-foreground p-3">
-                        <p className="text-xs font-black uppercase tracking-[0.18em]">
-                          DALYs Caused
-                        </p>
-                        <p className="mt-2 text-2xl font-black uppercase">
-                          {formatCompactCount(Math.abs(dalysValue))}
-                        </p>
-                        <p className="text-xs font-bold uppercase">
-                          disability-adjusted life years
-                        </p>
-                      </div>
-                    ) : null}
-                    {task.impact?.selectedMetrics?.lives_saved_if_success?.baseValue != null ? (
-                      <div className="border-4 border-foreground bg-brutal-red text-brutal-red-foreground p-3">
-                        <p className="text-xs font-black uppercase tracking-[0.18em]">
-                          Casualties
-                        </p>
-                        <p className="mt-2 text-2xl font-black uppercase">
-                          {formatCompactCount(Math.abs(task.impact.selectedMetrics.lives_saved_if_success.baseValue))}
-                        </p>
-                        <p className="text-xs font-bold uppercase">
-                          lives lost
-                        </p>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  {activityContext.wishoniaComment ? (
-                    <BrutalCard bgColor="red" padding="md">
-                      <p className="text-sm font-bold italic leading-7">
-                        {activityContext.wishoniaComment}
-                      </p>
-                    </BrutalCard>
-                  ) : null}
-
-                  {activityContext.alternativeUse ? (
-                    <BrutalCard bgColor="green" padding="md">
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-green-foreground">
-                        What This Money Could Have Done
-                      </p>
-                      <p className="mt-2 text-sm font-bold leading-7">
-                        {activityContext.alternativeUse}
-                      </p>
-                    </BrutalCard>
-                  ) : null}
-                </>
-              ) : isUnmeasured ? (
-                <>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {activityContext.taxpayerCostUsd != null || task.impact?.selectedFrame?.estimatedCashCostUsdBase != null ? (
-                      <div className="border-4 border-foreground bg-brutal-yellow text-brutal-yellow-foreground p-3">
-                        <p className="text-xs font-black uppercase tracking-[0.18em]">
-                          Cost
-                        </p>
-                        <p className="mt-2 text-2xl font-black uppercase">
-                          {formatCompactCurrency(activityContext.taxpayerCostUsd ?? task.impact?.selectedFrame?.estimatedCashCostUsdBase ?? 0)}
-                        </p>
-                        <p className="text-xs font-bold uppercase">
-                          taxpayer money spent
-                        </p>
-                      </div>
-                    ) : null}
-                    <div className="border-4 border-foreground bg-brutal-yellow text-brutal-yellow-foreground p-3">
-                      <p className="text-xs font-black uppercase tracking-[0.18em]">
-                        Measured Value
-                      </p>
-                      <p className="mt-2 text-2xl font-black uppercase">
-                        ???
-                      </p>
-                      <p className="text-xs font-bold uppercase">
-                        nobody checked
-                      </p>
-                    </div>
-                  </div>
-
-                  {activityContext.claimedBenefit ? (
-                    <div className="space-y-1">
-                      <p className="text-sm font-black uppercase text-brutal-pink">Claimed Benefit</p>
-                      <p className="text-sm font-bold italic">{`"${activityContext.claimedBenefit}"`}</p>
-                    </div>
-                  ) : null}
-
-                  {activityContext.costEfficiencyNote ? (
-                    <div className="space-y-1">
-                      <p className="text-sm font-black uppercase text-brutal-pink">Reality Check</p>
-                      <p className="text-sm font-bold">{activityContext.costEfficiencyNote}</p>
-                    </div>
-                  ) : null}
-
-                  {activityContext.wishoniaComment ? (
-                    <BrutalCard bgColor="red" padding="md">
-                      <p className="text-sm font-bold italic leading-7">
-                        {activityContext.wishoniaComment}
-                      </p>
-                    </BrutalCard>
-                  ) : null}
-
-                  {activityContext.alternativeUse ? (
-                    <BrutalCard bgColor="green" padding="md">
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-green-foreground">
-                        What This Money Could Have Done
-                      </p>
-                      <p className="mt-2 text-sm font-bold leading-7">
-                        {activityContext.alternativeUse}
-                      </p>
-                    </BrutalCard>
-                  ) : null}
-                </>
-              ) : null}
-
-              {task.status !== TaskStatus.VERIFIED && (task.assigneePerson || task.assigneeOrganization) ? (
-                <TaskContactActions
-                  contactActionCount={contactActionCount}
-                  delayStats={{
-                    currentDelayDays: delayStats.currentDelayDays,
-                    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-                    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-                    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
-                  }}
-                  task={task}
+        {/* Claim / action card — existing generic flow */}
+        <BrutalCard bgColor="background" padding="lg">
+          <div className="space-y-6">
+            <TaskAssignee
+              person={task.assigneePerson}
+              organization={task.assigneeOrganization}
+              roleTitle={task.roleTitle}
+              affiliationSnapshot={task.assigneeAffiliationSnapshot}
+            />
+            <div className="flex flex-wrap items-center gap-3 border-t-2 border-foreground/20 pt-4">
+              {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
+                <TaskClaimButton
+                  canClaim={canClaim}
+                  signedIn={Boolean(userId)}
+                  signInHref={signInHref}
                   taskId={task.id}
+                  viewerHasClaim={task.viewerHasClaim}
                 />
+              ) : task.status !== TaskStatus.VERIFIED && hasOtherPersonAssignee ? (
+                <p className="text-sm font-bold">
+                  Assigned to {task.assigneePerson?.displayName}. If that&apos;s
+                  you, sign in with your verified account to mark this complete.
+                </p>
+              ) : null}
+              {!userId ? (
+                <Button asChild className="font-black uppercase" variant="outline">
+                  <Link href={signInHref}>Sign In</Link>
+                </Button>
+              ) : null}
+              {viewerClaim ? (
+                <span className="text-xs font-black uppercase text-brutal-pink">
+                  Your claim: {viewerClaim.status.toLowerCase()}
+                </span>
               ) : null}
             </div>
-          </BrutalCard>
-        </div>
-
-        {contextSections.acceptanceCriteria.length > 0 ? (
-          <BrutalCard bgColor="background" padding="lg">
-            <div className="space-y-4">
-              <p className="text-sm font-black uppercase text-brutal-pink">
-                Acceptance Criteria
-              </p>
-              <ul className="space-y-2">
-                {contextSections.acceptanceCriteria.map((criterion) => (
-                  <li key={criterion} className="flex items-start gap-3 text-sm font-bold">
-                    <span className="mt-0.5">[ ]</span>
-                    <span>{criterion}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </BrutalCard>
-        ) : null}
+            {viewerClaim &&
+            (viewerClaim.status === TaskClaimStatus.CLAIMED ||
+              viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
+              <TaskCompleteForm taskId={task.id} />
+            ) : null}
+          </div>
+        </BrutalCard>
 
         {task.milestones.length > 0 ? (
           <BrutalCard bgColor="cyan" padding="lg">
@@ -572,47 +440,6 @@ export default async function TaskDetailPage({
           </BrutalCard>
         ) : null}
 
-        {contextSections.currentActivities.length > 0 &&
-        !task.taskKey?.startsWith("program:one-percent-treaty:signer:") ? (
-          <BrutalCard bgColor="yellow" padding="lg">
-            <div className="space-y-4">
-              <p className="text-sm font-black uppercase text-brutal-pink">
-                Currently Doing Instead
-              </p>
-              <div className="space-y-4">
-                {contextSections.currentActivities.map((activity, index) => (
-                  <div key={activity.id ?? `${activity.description}-${index}`} className="border-4 border-foreground bg-background p-4">
-                    <p className="text-lg font-black uppercase">{activity.description}</p>
-                    {activity.impactSummary ? (
-                      <p className="mt-2 text-sm font-bold">{activity.impactSummary}</p>
-                    ) : null}
-                    {activity.methodology ? (
-                      <p className="mt-2 text-sm font-bold text-muted-foreground">
-                        Methodology: {activity.methodology}
-                      </p>
-                    ) : null}
-                    {activity.updated ? (
-                      <p className="mt-2 text-xs font-black uppercase text-muted-foreground">
-                        Updated {activity.updated}
-                      </p>
-                    ) : null}
-                    {activity.sourceUrl ? (
-                      <Link
-                        className="mt-2 inline-block text-sm font-black uppercase underline underline-offset-4"
-                        href={activity.sourceUrl}
-                        target="_blank"
-                      >
-                        Open Source
-                      </Link>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </BrutalCard>
-        ) : null}
-
-
         {viewer?.isAdmin &&
         task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY &&
         task.status !== TaskStatus.VERIFIED ? (
@@ -666,7 +493,7 @@ export default async function TaskDetailPage({
         {task.childTasks.length > 0 ? (
           <section id="subtasks" className="scroll-mt-32 space-y-3">
             <h2 className="text-lg font-bold uppercase tracking-wide">
-              {reviewUi.childSectionHeading} ({task.childTasks.length})
+              Subtasks ({task.childTasks.length})
             </h2>
             <SortableTaskList
               tasks={task.childTasks as unknown as TaskCardTask[]}

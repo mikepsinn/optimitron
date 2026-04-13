@@ -5,14 +5,12 @@ import { notFound } from "next/navigation";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { Avatar } from "@/components/retroui/Avatar";
-import { EmployeeReviewBanner } from "@/components/shared/employee-review-banner";
 import { isPublicOfficialPerson } from "@/lib/public-officials";
 import {
   aggregateTaskDelayStats,
   formatCompactCount,
   formatCompactCurrency,
 } from "@/lib/tasks/accountability";
-import { buildPublicOfficialPersonReview } from "@/lib/tasks/task-review-ui";
 import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
 
@@ -65,10 +63,6 @@ export default async function PersonDetailPage({
   const { openTasks, person, verifiedTasks } = data;
   const fallbackInitials = getFallbackInitials(person.displayName);
   const openSummary = aggregateTaskDelayStats(openTasks);
-  const employeeReview = buildPublicOfficialPersonReview({
-    openTasks,
-    person,
-  });
 
   const harmfulVerified = verifiedTasks.filter((task) => {
     const econ = (task as TaskCardTask).impact?.selectedFrame?.expectedEconomicValueUsdBase;
@@ -125,7 +119,6 @@ export default async function PersonDetailPage({
           {person.bio?.trim() ? (
             <p className="max-w-4xl text-sm font-bold text-muted-foreground">{person.bio}</p>
           ) : null}
-          {employeeReview ? <EmployeeReviewBanner {...employeeReview} /> : null}
         </header>
 
         {/* Stats — only show what matters */}

@@ -6,6 +6,7 @@ import {
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import { readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskDetailData } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -27,6 +28,7 @@ export default async function TaskOpengraphImage({
 
   const { task } = data;
   const delayStats = getTaskDelayStats(task);
+  const context = readTaskContext(task.contextJson);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
   const fallbackInitials = targetLabel
@@ -34,6 +36,43 @@ export default async function TaskOpengraphImage({
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+  const subtitle =
+    context.assigneeProfile?.role ?? context.assigneeProfile?.employerLabel ?? task.category;
+  const statCards: Array<{ label: string; value: string }> = [];
+  if (delayStats.currentDelayDays > 0) {
+    statCards.push({
+      label: "Delay So Far",
+      value: formatDelayDuration(delayStats.currentDelayDays),
+    });
+  }
+  if (
+    delayStats.currentHumanLivesLost != null &&
+    delayStats.currentHumanLivesLost > 0
+  ) {
+    statCards.push({
+      label: "Deaths From Delay",
+      value: formatCompactCount(delayStats.currentHumanLivesLost),
+    });
+  }
+  if (
+    delayStats.currentSufferingHoursLost != null &&
+    delayStats.currentSufferingHoursLost > 0
+  ) {
+    statCards.push({
+      label: "Suffering Hours",
+      value: formatCompactCount(delayStats.currentSufferingHoursLost),
+    });
+  }
+  if (
+    delayStats.currentEconomicValueUsdLost != null &&
+    delayStats.currentEconomicValueUsdLost > 0
+  ) {
+    statCards.push({
+      label: "Economic Loss",
+      value: formatCompactCurrency(delayStats.currentEconomicValueUsdLost),
+    });
+  }
+  const difficultyLabel = context.difficulty?.label ?? null;
 
   return new ImageResponse(
     <div
@@ -147,7 +186,7 @@ export default async function TaskOpengraphImage({
                 textTransform: "uppercase",
               }}
             >
-              1% Treaty Accountability
+              {subtitle}
             </div>
             <div
               style={{
@@ -180,24 +219,7 @@ export default async function TaskOpengraphImage({
               gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
             }}
           >
-            {[
-              {
-                label: "Delay So Far",
-                value: formatDelayDuration(delayStats.currentDelayDays),
-              },
-              {
-                label: "Deaths From Delay",
-                value: formatCompactCount(delayStats.currentHumanLivesLost),
-              },
-              {
-                label: "Suffering Hours",
-                value: formatCompactCount(delayStats.currentSufferingHoursLost),
-              },
-              {
-                label: "Economic Loss",
-                value: formatCompactCurrency(delayStats.currentEconomicValueUsdLost),
-              },
-            ].map((stat) => (
+            {statCards.map((stat) => (
               <div
                 key={stat.label}
                 style={{
@@ -247,7 +269,7 @@ export default async function TaskOpengraphImage({
           >
             <div style={{ display: "flex" }}>optimitron.earth/tasks/{task.id}</div>
             <div style={{ color: "#111111", display: "flex", textTransform: "uppercase" }}>
-              End war and disease faster
+              {difficultyLabel ? `Difficulty: ${difficultyLabel}` : "Do your job"}
             </div>
           </div>
         </div>

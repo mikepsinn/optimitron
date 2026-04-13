@@ -25,8 +25,7 @@ import type {
   TaskImpactMetricSummary,
 } from "@/lib/tasks/impact";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
-import { readLeaderActivityContext } from "@/lib/tasks/task-context";
-import { buildTaskPressureShareText, getTaskPressurePrompt, getTaskReviewUi } from "@/lib/tasks/task-review-ui";
+import { buildTaskShareText } from "@/lib/tasks/accountability";
 
 export interface TaskCardTask {
   activeClaimCount: number;
@@ -120,14 +119,6 @@ function getCardColor(task: TaskCardTask): BrutalCardBgColor {
   return "background";
 }
 
-function truncate(text: string, maxLength: number) {
-  if (text.length <= maxLength) {
-    return text;
-  }
-
-  return `${text.slice(0, maxLength - 1).trimEnd()}...`;
-}
-
 function formatDueDate(value: Date) {
   return value.toLocaleDateString("en-US", {
     day: "numeric",
@@ -137,7 +128,6 @@ function formatDueDate(value: Date) {
 }
 
 function HarmInflictedSection({ task }: { task: TaskCardTask }) {
-  const activity = readLeaderActivityContext(task.contextJson);
   const econ = task.impact?.selectedFrame?.expectedEconomicValueUsdBase;
   const dalys = task.impact?.selectedFrame?.expectedDalysAvertedBase;
 
@@ -146,25 +136,17 @@ function HarmInflictedSection({ task }: { task: TaskCardTask }) {
       <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-red">
         Harm Inflicted
       </p>
-      {activity.taxpayerCostUsd != null ? (
-        <p>{`${formatCompactCurrency(activity.taxpayerCostUsd)} taxpayer cost`}</p>
-      ) : econ != null ? (
+      {econ != null ? (
         <p>{`${formatCompactCurrency(Math.abs(econ))} economic damage`}</p>
       ) : null}
       {dalys != null ? (
         <p>{`${formatCompactCount(Math.abs(dalys))} DALYs caused`}</p>
-      ) : null}
-      {activity.wishoniaComment ? (
-        <p className="text-xs italic leading-5">
-          {truncate(activity.wishoniaComment, 160)}
-        </p>
       ) : null}
     </div>
   );
 }
 
 function UnmeasuredSpendingSection({ task }: { task: TaskCardTask }) {
-  const activity = readLeaderActivityContext(task.contextJson);
   const cost = task.impact?.selectedFrame?.estimatedCashCostUsdBase;
 
   return (
@@ -174,15 +156,8 @@ function UnmeasuredSpendingSection({ task }: { task: TaskCardTask }) {
       </p>
       {cost != null ? (
         <p>{`Cost: ${formatCompactCurrency(cost)}`}</p>
-      ) : activity.taxpayerCostUsd != null ? (
-        <p>{`Cost: ${formatCompactCurrency(activity.taxpayerCostUsd)}`}</p>
       ) : null}
       <p>Measured value: ???</p>
-      {activity.claimedBenefit ? (
-        <p className="text-xs italic leading-5">
-          {`Claimed: "${truncate(activity.claimedBenefit, 100)}"`}
-        </p>
-      ) : null}
     </div>
   );
 }
@@ -196,8 +171,6 @@ export function TaskCard({
   signedIn: boolean;
   task: TaskCardTask;
 }) {
-  const activityContext = readLeaderActivityContext(task.contextJson);
-  const reviewUi = getTaskReviewUi(task);
   const delayStats = getTaskDelayStats(task);
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
@@ -212,8 +185,14 @@ export function TaskCard({
   const signInHref = getSignInPath(ROUTES.tasks);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const shareText = buildTaskPressureShareText(task, delayStats);
-  const pressurePrompt = getTaskPressurePrompt(task, delayStats);
+  const shareText = buildTaskShareText({
+    currentDelayDays: delayStats.currentDelayDays,
+    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
+    currentHumanLivesLost: delayStats.currentHumanLivesLost,
+    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    targetLabel,
+    taskTitle: task.title,
+  });
   const fallbackInitials = targetLabel
     .split(/\s+/)
     .slice(0, 2)
@@ -239,9 +218,6 @@ export function TaskCard({
               {task.dueAt.getTime() < Date.now() ? "overdue" : `due ${formatDueDate(task.dueAt)}`}
             </ArcadeTag>
           ) : null}
-          {activityContext.activityType ? (
-            <ArcadeTag>{activityContext.activityType}</ArcadeTag>
-          ) : null}
           {task.estimatedEffortHours != null ? (
             <ArcadeTag>{`${task.estimatedEffortHours}h`}</ArcadeTag>
           ) : null}
@@ -264,7 +240,7 @@ export function TaskCard({
               </Avatar>
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
-                  {reviewUi.assigneeLabel}
+                  Assignee
                 </p>
                 <p className="truncate text-sm font-black uppercase">
                   {task.assigneePerson ? (
@@ -294,11 +270,6 @@ export function TaskCard({
               {task.title}
             </h3>
           </Link>
-          {pressurePrompt ? (
-            <p className="text-xs font-black uppercase leading-5 text-brutal-red">
-              {pressurePrompt}
-            </p>
-          ) : null}
           <p className="text-sm font-bold leading-6">
             {getTaskDescriptionSummary(task.description, 220)}
           </p>
@@ -307,7 +278,7 @@ export function TaskCard({
         <div className="space-y-2 text-sm font-bold">
           {task.assigneePerson ? (
             <p>
-              {reviewUi.assignedBylinePrefix}{" "}
+              Assigned to{" "}
               <span className="underline underline-offset-4">
                 {task.assigneePerson.displayName}
               </span>
@@ -316,7 +287,7 @@ export function TaskCard({
           ) : null}
           {!task.assigneePerson && task.assigneeOrganization ? (
             <p>
-              {reviewUi.assignedBylinePrefix}{" "}
+              Assigned to{" "}
               <span className="underline underline-offset-4">
                 {task.assigneeOrganization.name}
               </span>
@@ -377,7 +348,7 @@ export function TaskCard({
               className="text-sm font-black uppercase underline underline-offset-4"
               href={getPersonHref(task.assigneePerson)}
             >
-              {reviewUi.recordLinkLabel}
+              Full Record
             </Link>
           ) : null}
           {task.sourceUrl ? (

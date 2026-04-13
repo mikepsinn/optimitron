@@ -35,13 +35,23 @@ export default async function TasksPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
-        <section className="space-y-2">
-          <h1 className="text-3xl font-bold">Tasks</h1>
-          <p className="text-sm font-bold text-muted-foreground">
-            Blocking tasks ranked by expected value. Start with the people who can unblock the biggest gains fastest.
+        <section className="space-y-6 text-center">
+          <h1 className="text-4xl font-black uppercase leading-tight sm:text-5xl md:text-6xl">
+            Your Employees&apos; To-Do List
+          </h1>
+          <p className="mx-auto max-w-3xl text-base font-bold sm:text-lg">
+            You pay world governments $44 trillion per year. Their job description is four words:
+          </p>
+          <BrutalCard bgColor="yellow" shadowSize={8} className="mx-auto max-w-xl p-6">
+            <p className="text-2xl font-black uppercase sm:text-3xl">
+              &ldquo;Promote the general welfare&rdquo;
+            </p>
+          </BrutalCard>
+          <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
+            Here is their to-do list. Here is how late they are.
           </p>
           {!userId ? (
-            <div className="flex items-center gap-3 border-2 border-primary bg-muted/30 px-4 py-3">
+            <div className="mx-auto flex max-w-xl items-center gap-3 border-2 border-primary bg-muted/30 px-4 py-3 text-left">
               <p className="flex-1 text-sm font-bold">
                 Sign in for your personalized task feed.
               </p>

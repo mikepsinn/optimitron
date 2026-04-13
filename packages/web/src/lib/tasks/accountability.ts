@@ -217,12 +217,33 @@ export function buildTaskShareText(input: {
   taskTitle: string;
   targetLabel: string;
 }) {
-  const delayLabel = input.currentDelayDays > 0 ? `${formatDelayDuration(input.currentDelayDays)} overdue` : "still unresolved";
-  const lives = formatCompactCount(input.currentHumanLivesLost);
-  const suffering = formatCompactCount(input.currentSufferingHoursLost);
-  const money = formatCompactCurrency(input.currentEconomicValueUsdLost);
-
-  return `${input.targetLabel} is ${delayLabel} on "${input.taskTitle}". Estimated delay cost so far: ${lives} lives, ${suffering} suffering hours, ${money}.`;
+  const delayLabel =
+    input.currentDelayDays > 0
+      ? `${formatDelayDuration(input.currentDelayDays)} overdue`
+      : "still unresolved";
+  const parts: string[] = [
+    `${input.targetLabel} is ${delayLabel} on "${input.taskTitle}".`,
+  ];
+  const costParts: string[] = [];
+  if (input.currentHumanLivesLost != null && input.currentHumanLivesLost > 0) {
+    costParts.push(`${formatCompactCount(input.currentHumanLivesLost)} lives`);
+  }
+  if (
+    input.currentSufferingHoursLost != null &&
+    input.currentSufferingHoursLost > 0
+  ) {
+    costParts.push(`${formatCompactCount(input.currentSufferingHoursLost)} suffering hours`);
+  }
+  if (
+    input.currentEconomicValueUsdLost != null &&
+    input.currentEconomicValueUsdLost > 0
+  ) {
+    costParts.push(formatCompactCurrency(input.currentEconomicValueUsdLost));
+  }
+  if (costParts.length > 0) {
+    parts.push(`Estimated delay cost so far: ${costParts.join(", ")}.`);
+  }
+  return parts.join(" ");
 }
 
 export function getMetricSummary(
