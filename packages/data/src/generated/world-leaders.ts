@@ -1401,10 +1401,10 @@ export const WORLD_LEADERS: WorldLeaderRow[] = [
   {
     "countryCode": "TR",
     "countryName": "Turkey",
-    "leaderImageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Erdal%20%C4%B0n%C3%B6n%C3%BC%20%281941%29%20%28cropped%29.jpg",
-    "leaderName": "Erdal İnönü",
-    "roleTitle": "Head of Government",
-    "wikidataId": "Q1348747"
+    "leaderImageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Recep%20Tayyip%20Erdo%C4%9Fan%20in%202024.png",
+    "leaderName": "Recep Tayyip Erdoğan",
+    "roleTitle": "President",
+    "wikidataId": "Q83818"
   },
   {
     "countryCode": "TT",

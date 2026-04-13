@@ -151,14 +151,27 @@ export function TaskTableHeader({
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
   if (variant === "signer") {
-    // Dense signer leaderboard: photo · name+role · budget · deaths · wasted · remind · details
+    // Dense signer leaderboard: photo · name+role · 💰 budget · 💀 deaths · 🔥 wasted · remind · details
+    function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
+      const isActive = sortKey === key;
+      const arrow = isActive ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
+      return (
+        <span
+          className={`${className} ${onSort ? "cursor-pointer select-none hover:text-foreground" : ""}`}
+          onClick={onSort ? () => onSort(key) : undefined}
+        >
+          {emoji} {SORT_LABELS[key]}
+          {arrow}
+        </span>
+      );
+    }
     return (
       <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 md:flex">
         <span className="h-14 w-14 shrink-0" />
         {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
-        {headerCell("assigneeBudget", `w-24 shrink-0 text-right ${hdr}`)}
-        {headerCell("deathsLockedIn", `w-24 shrink-0 text-right ${hdr}`)}
-        {headerCell("cost", `w-24 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("assigneeBudget", "💰", `w-24 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("deathsLockedIn", "💀", `w-24 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("cost", "🔥", `w-24 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           Remind
         </span>
@@ -302,15 +315,15 @@ export function TaskRow({
             </div>
           ) : null}
         </div>
-        {/* Desktop — 3 separate stat columns */}
+        {/* Desktop — 3 separate stat columns with inline emojis */}
         <div className="hidden w-24 shrink-0 text-right text-sm font-black md:block">
-          {budgetText}
+          💰 {budgetText}
         </div>
         <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
-          {deathsText}
+          💀 {deathsText}
         </div>
         <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
-          {wastedText}
+          🔥 {wastedText}
         </div>
         {task.isPublic ? (
           <TaskRowShare shareText={shareText} taskId={task.id} />

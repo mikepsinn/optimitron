@@ -165,6 +165,7 @@ export default async function TasksPage() {
                     defaultSortKey="assigneeBudget"
                     defaultSortDir="desc"
                     variant="signer"
+                    initialLimit={10}
                   />
                 </div>
               ) : null}

@@ -44,15 +44,19 @@ export function SortableTaskList({
   defaultSortKey = "deathsLockedIn",
   defaultSortDir = "desc",
   variant = "default",
+  initialLimit,
 }: {
   tasks: TaskCardTask[];
   defaultSortKey?: TaskSortKey;
   defaultSortDir?: "asc" | "desc";
   variant?: TaskListVariant;
+  /** Cap visible rows until the user clicks "Show all". Disabled if absent. */
+  initialLimit?: number;
 }) {
   const [sortKey, setSortKey] = useState<TaskSortKey>(defaultSortKey);
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
   const [filter, setFilter] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const sorted = useMemo(() => {
     const filtered = tasks.filter((t) => matchesFilter(t, filter));
@@ -130,7 +134,10 @@ export function SortableTaskList({
       />
       <div className="divide-y divide-foreground/10">
         {sorted.length > 0 ? (
-          sorted.map((task) => (
+          (initialLimit != null && !expanded && !filter
+            ? sorted.slice(0, initialLimit)
+            : sorted
+          ).map((task) => (
             <TaskRow key={task.id} task={task} variant={variant} />
           ))
         ) : (
@@ -139,6 +146,17 @@ export function SortableTaskList({
           </div>
         )}
       </div>
+      {initialLimit != null && !filter && sorted.length > initialLimit ? (
+        <button
+          type="button"
+          className="block w-full border-t-2 border-foreground bg-brutal-yellow px-4 py-3 text-center text-sm font-black uppercase tracking-wide text-brutal-yellow-foreground transition-colors hover:bg-brutal-pink hover:text-brutal-pink-foreground"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {expanded
+            ? `↑ Show top ${initialLimit}`
+            : `↓ Show all ${sorted.length} employees`}
+        </button>
+      ) : null}
     </div>
   );
 }
