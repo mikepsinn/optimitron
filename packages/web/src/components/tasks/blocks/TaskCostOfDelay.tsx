@@ -4,6 +4,7 @@ import {
   formatCompactCurrency,
 } from "@/lib/tasks/accountability";
 import type { TaskContext } from "@/lib/tasks/task-context";
+import { renderTemplate } from "./render-template";
 
 interface TaskCostOfDelayProps {
   context: TaskContext;
@@ -17,13 +18,20 @@ interface TaskCostOfDelayProps {
     deaths?: number | null;
     usd?: number | null;
   };
+  tokens?: Record<string, string | number | null | undefined>;
 }
 
 export function TaskCostOfDelay({
   context,
   delayStats,
   ratePerSecond,
+  tokens,
 }: TaskCostOfDelayProps) {
+  const costNote = context.costOfDelayNote
+    ? tokens
+      ? renderTemplate(context.costOfDelayNote, tokens)
+      : context.costOfDelayNote
+    : null;
   const cards: Array<{ emoji: string; label: string; value: string }> = [];
 
   if (
@@ -65,10 +73,8 @@ export function TaskCostOfDelay({
         <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
           Cost of Delay
         </p>
-        {context.costOfDelayNote ? (
-          <p className="text-sm font-bold text-muted-foreground">
-            {context.costOfDelayNote}
-          </p>
+        {costNote ? (
+          <p className="text-sm font-bold text-muted-foreground">{costNote}</p>
         ) : null}
         <div className="grid gap-4 md:grid-cols-3">
           {cards.map((card) => (

@@ -13,18 +13,16 @@ interface DeathCounterProps {
 }
 
 const formatter = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });
 
 /**
- * Live continuous counter of preventable future deaths "locked in" by the
- * delay on a task. Reads the wall clock and recomputes every animation frame.
+ * Live continuous counter of preventable deaths from the delay on a task.
+ * Reads the wall clock and recomputes every animation frame.
  *
- * The counter is *counterfactual*: each tick represents a future death that
- * would not have happened if the task had been completed on time. Nobody is
- * dying in real time because of this delay — but the delay has already happened
- * and the future deaths it produces are accumulating at this rate.
+ * The counter is *counterfactual*: each tick represents a death that
+ * would not have happened if the task had been completed on time.
  */
 export function DeathCounter({
   yearsPerSecond,
@@ -53,7 +51,7 @@ export function DeathCounter({
   return (
     <span
       className={className}
-      title="Future preventable deaths locked in by delay"
+      title="Preventable deaths from this delay"
       suppressHydrationWarning
     >
       {count == null ? "…" : formatter.format(count)}

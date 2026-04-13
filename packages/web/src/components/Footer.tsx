@@ -20,8 +20,7 @@ export default function Footer() {
               ⚡ Optimitron
             </Link>
             <p className="text-sm mt-3 leading-relaxed font-bold">
-              Planetary debugging software. Because your species keeps ignoring
-              its own data.
+              The Earth Optimization Machine.
             </p>
           </div>
 
@@ -84,18 +83,9 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t-2 border-primary text-center text-sm font-bold">
           <p>
-            None of this is financial advice. Obviously. Please direct all
-            complaints to{" "}
-            <a
-              href="https://mikesinn.com"
-              className="font-bold hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Mike P. Sinn
-            </a>
-            , who insists on trying to fix your planet despite overwhelming
-            evidence that it doesn&apos;t want to be fixed.{" "}
+            © 4237 Wishonia. All rights reserved in this and 6,412 adjacent
+            timelines. Unauthorized reproduction of the general welfare is
+            encouraged and, frankly, overdue.{" "}
             <NavItemLink
               item={githubLink}
               variant="custom"
@@ -104,7 +94,7 @@ export default function Footer() {
             >
               Source code
             </NavItemLink>{" "}
-            available for inspection, not that any of you will read it.
+            open for inspection by any sufficiently curious primate.
           </p>
         </div>
       </div>

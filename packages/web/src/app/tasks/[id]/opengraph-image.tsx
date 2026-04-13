@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
 import {
@@ -8,6 +10,33 @@ import {
 } from "@/lib/tasks/accountability";
 import { readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskDetailData } from "@/lib/tasks.server";
+
+/**
+ * Resolve a Person.image URL into a base64 data URI Satori can render.
+ * - Local paths like "/images/leaders/us.jpg" → read from public/ at build time
+ * - Remote https URLs → return as-is (Satori follows redirects on https)
+ * - Wikimedia Special:FilePath URLs → return null (Satori can't follow them)
+ * - Anything that fails → null → falls back to initials
+ */
+async function resolveImageForOg(src: string | null | undefined): Promise<string | null> {
+  if (!src) return null;
+  if (src.startsWith("/")) {
+    try {
+      const buffer = await readFile(join(process.cwd(), "public", src));
+      const mime = src.endsWith(".png")
+        ? "image/png"
+        : src.endsWith(".webp")
+          ? "image/webp"
+          : "image/jpeg";
+      return `data:${mime};base64,${buffer.toString("base64")}`;
+    } catch {
+      return null;
+    }
+  }
+  if (src.includes("Special:FilePath")) return null;
+  if (src.startsWith("https://")) return src;
+  return null;
+}
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -31,6 +60,12 @@ export default async function TaskOpengraphImage({
   const context = readTaskContext(task.contextJson);
   const targetLabel =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
+  // Resolve local paths to base64 data URIs so Satori doesn't have to fetch
+  // anything over HTTP during render. Remote Special:FilePath URLs drop to
+  // the initials fallback — see resolveImageForOg above.
+  const rawImageSrc =
+    task.assigneePerson?.image ?? task.assigneeOrganization?.logo ?? null;
+  const imageSrc = await resolveImageForOg(rawImageSrc);
   const fallbackInitials = targetLabel
     .split(/\s+/)
     .slice(0, 2)
@@ -122,11 +157,11 @@ export default async function TaskOpengraphImage({
               width: "260px",
             }}
           >
-            {task.assigneePerson?.image || task.assigneeOrganization?.logo ? (
+            {imageSrc ? (
               <img
                 alt={targetLabel}
                 height={260}
-                src={task.assigneePerson?.image ?? task.assigneeOrganization?.logo ?? ""}
+                src={imageSrc}
                 style={{
                   height: "260px",
                   objectFit: "cover",
@@ -214,9 +249,9 @@ export default async function TaskOpengraphImage({
 
           <div
             style={{
-              display: "grid",
+              display: "flex",
+              flexWrap: "wrap",
               gap: "14px",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
             }}
           >
             {statCards.map((stat) => (
@@ -229,6 +264,7 @@ export default async function TaskOpengraphImage({
                   flexDirection: "column",
                   gap: "6px",
                   padding: "16px",
+                  width: "calc(50% - 7px)",
                 }}
               >
                 <div

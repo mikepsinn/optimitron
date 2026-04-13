@@ -443,6 +443,237 @@ function summarizeTask(task: SummarizableTask) {
 }
 
 // ---------------------------------------------------------------------------
+// Shared `contextJson` schema exposed on createTask + updateTask
+// ---------------------------------------------------------------------------
+// Mirrors `TaskContextJsonSchema` in packages/web/src/lib/tasks/task-context.ts
+// — the single source of truth on the render side. Kept hand-written here so
+// MCP clients (Claude Code, Claude Desktop) see the structured slots instead
+// of "Arbitrary structured metadata" and can populate the dossier/remind
+// template when creating tasks. If you add a slot to the Zod schema, mirror
+// it here. Round-trips are safe-parsed via `readTaskContext()` on the render
+// side, so any extra properties are dropped silently.
+
+const TASK_CONTEXT_JSON_SCHEMA = {
+  type: "object" as const,
+  description:
+    "Rich task dossier read by the /tasks/[id] detail page. Every slot is optional; blocks no-op when absent. Mirror of TaskContextJsonSchema in task-context.ts.",
+  properties: {
+    assigneeProfile: {
+      type: "object" as const,
+      description:
+        "Named-person assignee profile — drives the TaskAssigneeCard (photo already comes from Person.image).",
+      properties: {
+        role: { type: "string", description: "Office title, e.g. 'President'" },
+        employerLabel: {
+          type: "string",
+          description: "Organization the assignee works for, e.g. 'Government of United States'",
+        },
+        employerCount: {
+          type: "number",
+          description: "Headcount of the assignee's constituency (citizens, employees, etc.)",
+        },
+        employerCountLabel: { type: "string", description: "Unit label for employerCount, e.g. 'citizens'" },
+        salaryUsdPerYear: { type: "number", description: "Annual salary in USD" },
+        budgetUsdPerYear: {
+          type: "number",
+          description: "Annual budget the assignee controls in USD (e.g. military spending for a head of gov)",
+        },
+        jobQuote: {
+          type: "object" as const,
+          description: "Job description quote attributed to a source document (constitution, charter, etc.)",
+          properties: {
+            text: { type: "string" },
+            source: { type: "string" },
+          },
+          required: ["text", "source"],
+        },
+        contactChannels: {
+          type: "array" as const,
+          description: "Direct-contact links the visitor can use to reach the assignee",
+          items: {
+            type: "object" as const,
+            properties: {
+              kind: {
+                type: "string",
+                enum: ["twitter", "bluesky", "email", "form", "phone"],
+              },
+              label: { type: "string" },
+              href: { type: "string" },
+            },
+            required: ["kind", "label", "href"],
+          },
+        },
+      },
+    },
+    difficulty: {
+      type: "object" as const,
+      description:
+        "Task-level difficulty callout — drives the TaskDifficultyStrip block (TASK / WHAT IT MEANS / DIFFICULTY / TIME / SKILLS).",
+      properties: {
+        whatItMeans: { type: "string", description: "One-line plain-language restatement of the task" },
+        label: { type: "string", description: "Difficulty label, e.g. 'Sign a piece of paper'" },
+        timeRequiredSeconds: { type: "number", description: "Estimated time to complete in seconds" },
+        skillsRequired: { type: "string", description: "Skills needed, e.g. 'Holding a pen'" },
+      },
+    },
+    costOfDelayNote: {
+      type: "string",
+      description:
+        "Optional human-readable note above the cost-of-delay counters. Supports {daysOverdue}/{deathsLocked}/{moneyDestroyed} tokens.",
+    },
+    unlocks: {
+      type: "array" as const,
+      description: "Downstream tasks or inline outcomes unlocked when this task completes.",
+      items: {
+        type: "object" as const,
+        properties: {
+          kind: { type: "string", enum: ["child-task", "inline"] },
+          childTaskId: { type: "string", description: "Task id if kind=child-task" },
+          icon: { type: "string", description: "Emoji prefix, e.g. '🔓'" },
+          title: { type: "string" },
+          summary: { type: "string" },
+          beforeAfter: {
+            type: "array" as const,
+            description: "Before/after comparison rows (now → unlocked)",
+            items: {
+              type: "object" as const,
+              properties: {
+                label: { type: "string" },
+                before: { type: "string" },
+                after: { type: "string" },
+              },
+              required: ["label", "before", "after"],
+            },
+          },
+          roiRatio: { type: "number", description: "ROI as an integer ratio, e.g. 45 for 45:1" },
+          fullAnalysisUrl: { type: "string", description: "Link to the full methodology write-up" },
+        },
+        required: ["kind", "title"],
+      },
+    },
+    performanceReview: {
+      type: "object" as const,
+      description:
+        "Killing-vs-curing or similar comparison block rendered as horizontal bars + a ratio + a performance rating.",
+      properties: {
+        comparisonBars: {
+          type: "array" as const,
+          items: {
+            type: "object" as const,
+            properties: {
+              label: { type: "string" },
+              valueUsd: { type: "number" },
+              color: { type: "string", enum: ["red", "green", "cyan", "pink", "yellow"] },
+            },
+            required: ["label", "valueUsd", "color"],
+          },
+        },
+        ratio: {
+          type: "object" as const,
+          description: "Ratio callout like '1094 : 1 (killing to curing)'",
+          properties: {
+            left: { type: "number" },
+            right: { type: "number" },
+            label: { type: "string" },
+          },
+          required: ["left", "right", "label"],
+        },
+        perCitizen: {
+          type: "array" as const,
+          description: "Per-capita breakdown rows",
+          items: {
+            type: "object" as const,
+            properties: {
+              label: { type: "string" },
+              valueUsd: { type: "number" },
+            },
+            required: ["label", "valueUsd"],
+          },
+        },
+        narrative: { type: "string", description: "Short narrative paragraph in Wishonia voice" },
+        rating: { type: "string", description: "Letter grade, e.g. 'F'" },
+        firedFromWendys: {
+          type: "boolean",
+          description: "Bit of humor — 'Would be fired from Wendy's: Yes/No'",
+        },
+        scorecardUrl: { type: "string", description: "Link to the assignee's full scorecard" },
+      },
+    },
+    reminder: {
+      type: "object" as const,
+      description:
+        "Editable polite reminder the visitor can post to X/Bluesky. Tokens: {name} {handle} {daysOverdue} {deathsLocked} {moneyDestroyed} {sufferingHours} {salaryUsd} {budgetUsd} {taskTitle} {taskUrl}.",
+      properties: {
+        intro: { type: "string", description: "One-sentence intro above the textarea" },
+        messageTemplate: {
+          type: "string",
+          description: "The editable template. Use \\n for line breaks.",
+        },
+      },
+      required: ["messageTemplate"],
+    },
+    contextComparisons: {
+      type: "array" as const,
+      description:
+        "'Things that take longer than 30 seconds' style comparison lists. Item values support the same template tokens as the reminder.",
+      items: {
+        type: "object" as const,
+        properties: {
+          heading: { type: "string" },
+          items: {
+            type: "array" as const,
+            items: {
+              type: "object" as const,
+              properties: {
+                label: { type: "string" },
+                value: { type: "string" },
+                highlight: {
+                  type: "boolean",
+                  description: "Flags the 'you are here' row (renders in brutal-red with '← you are' suffix)",
+                },
+              },
+              required: ["label", "value"],
+            },
+          },
+        },
+        required: ["heading", "items"],
+      },
+    },
+    blockedBy: {
+      type: "object" as const,
+      description: "Renders the TaskBlockerCard on blocked tasks that point at an upstream blocker.",
+      properties: {
+        taskId: { type: "string" },
+        summary: { type: "string" },
+        callToActionHref: { type: "string" },
+      },
+      required: ["taskId"],
+    },
+    acceptanceCriteria: {
+      type: "array" as const,
+      description: "Checkbox list of acceptance criteria",
+      items: { type: "string" },
+    },
+    currentActivities: {
+      type: "array" as const,
+      description: "'Currently doing instead' block — what the assignee is doing in place of this task",
+      items: {
+        type: "object" as const,
+        properties: {
+          id: { type: "string" },
+          description: { type: "string" },
+          impactSummary: { type: "string" },
+          methodology: { type: "string" },
+          sourceUrl: { type: "string" },
+          updated: { type: "string" },
+        },
+        required: ["description"],
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Tool definitions (shared between both transports)
 // ---------------------------------------------------------------------------
 
@@ -562,7 +793,7 @@ const TASK_TOOL_DEFINITIONS = [
         contactLabel: { type: "string", description: "Label for the contact channel" },
         impactStatement: { type: "string", description: "Why this matters" },
         isPublic: { type: "boolean", description: "Visible in public views (default true)" },
-        contextJson: { type: "object", description: "Arbitrary structured metadata" },
+        contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
       },
       required: ["title", "description"],
@@ -641,7 +872,11 @@ const TASK_TOOL_DEFINITIONS = [
         sourceUrl: { type: "string", description: "URL to the source/evidence" },
         completedAt: { type: "string", description: "Completion date (ISO 8601), use empty string to clear" },
         verifiedAt: { type: "string", description: "Verification date (ISO 8601), use empty string to clear" },
-        contextJson: { type: "object", description: "Structured metadata (merged with existing contextJson)" },
+        contextJson: {
+          ...TASK_CONTEXT_JSON_SCHEMA,
+          description:
+            "Rich task dossier slots — merged with existing contextJson. Mirror of TaskContextJsonSchema. See createTask for the full slot list.",
+        },
         sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
       },
       required: ["taskId"],

@@ -907,7 +907,7 @@ export async function getTasksPageData(
     prisma.task.findMany({
       where: getTaskVisibilityWhere(),
       orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-      take: 120,
+      take: 500,
       select: taskListSelect,
     }),
     userId

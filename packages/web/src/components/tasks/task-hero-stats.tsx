@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 import { DeathCounter } from "./death-counter";
+import { MoneyCounter } from "./money-counter";
 
 interface TaskHeroStatsProps {
   /** Healthy life-years lost per day of delay (from impact frame). */
   perDayDalys: number | null | undefined;
-  /** Net cash cost. Sentinel ≤ -1e17 renders as "−∞". */
+  /** USD lost per day of delay (from impact frame). */
+  perDayUsd?: number | null | undefined;
+  /** Net cash cost. Sentinel ≤ -1e17 renders as "Pays for itself". */
   costUsd: number | null | undefined;
   /** Estimated effort hours. */
   effortHours: number | null | undefined;
@@ -17,7 +20,7 @@ const YEARS_PER_AVERTED_DEATH = 40;
 
 function formatCost(value: number | null | undefined): string {
   if (value == null) return "—";
-  if (value <= NEGATIVE_INFINITY_COST_THRESHOLD) return "−∞";
+  if (value <= NEGATIVE_INFINITY_COST_THRESHOLD) return "Pays for itself";
   const abs = Math.abs(value);
   const sign = value < 0 ? "−" : "";
   if (abs >= 1e12) return `${sign}$${(abs / 1e12).toFixed(2)}T`;
@@ -62,6 +65,7 @@ const BG_CLASS: Record<HeroCell["bg"], string> = {
  */
 export function TaskHeroStats({
   perDayDalys,
+  perDayUsd,
   costUsd,
   effortHours,
   dueAt,
@@ -71,11 +75,13 @@ export function TaskHeroStats({
   // Death counter — only when there's a delay rate AND a due date in the past
   const yearsPerSecond =
     perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
+  const usdPerSecond =
+    perDayUsd != null && perDayUsd > 0 ? perDayUsd / 86400 : null;
   const dueMs = dueAt?.getTime() ?? null;
   const isOverdue = dueMs != null && dueMs < Date.now();
   if (yearsPerSecond != null && dueMs != null && isOverdue) {
     cells.push({
-      label: "Future deaths locked in by delay",
+      label: "💀 Deaths from delay",
       bg: "red",
       value: (
         <DeathCounter
@@ -84,7 +90,17 @@ export function TaskHeroStats({
           yearsPerDeath={YEARS_PER_AVERTED_DEATH}
         />
       ),
-      caption: "Counterfactual. Each tick is a future preventable death.",
+      caption: "Preventable deaths while this task sits open.",
+    });
+  }
+
+  // Money counter — matching ticker for taxpayer cost of delay
+  if (usdPerSecond != null && dueMs != null && isOverdue) {
+    cells.push({
+      label: "🔥 Money burned by delay",
+      bg: "red",
+      value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
+      caption: "Foregone economic value every second this sits open.",
     });
   }
 
@@ -92,17 +108,17 @@ export function TaskHeroStats({
   if (costUsd != null) {
     const isNegative = costUsd < 0;
     cells.push({
-      label: isNegative ? "Net cost (after externalities)" : "Cost",
+      label: isNegative ? "💰 Net cost" : "💰 Cost",
       bg: isNegative ? "green" : "pink",
       value: formatCost(costUsd),
-      caption: isNegative ? "Net positive — pays for itself" : undefined,
+      caption: isNegative ? "After externalities. Pays for itself." : undefined,
     });
   }
 
   // Time — only when set
   if (effortHours != null && effortHours > 0) {
     cells.push({
-      label: "Time to complete",
+      label: "⏱️ Time to complete",
       bg: "yellow",
       value: formatDuration(effortHours),
     });

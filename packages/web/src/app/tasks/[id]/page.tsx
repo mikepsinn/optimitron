@@ -183,9 +183,21 @@ export default async function TaskDetailPage({
   const delayEconPerDay =
     task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? null;
   const ratePerSecond = {
-    deaths: delayDalysPerDay != null ? delayDalysPerDay / 86400 : null,
+    deaths: delayDalysPerDay != null ? delayDalysPerDay / 86400 / 40 : null,
     usd: delayEconPerDay != null ? delayEconPerDay / 86400 : null,
   };
+
+  // Compute total deaths from delay as DALYs-per-day × days / 40 years-per-death.
+  // Falls back to delayStats.currentHumanLivesLost if the seeder populated the
+  // explicit lives metric (it generally doesn't for signer tasks).
+  const computedDeathsFromDelay =
+    delayDalysPerDay != null && delayStats.currentDelayDays > 0
+      ? (delayDalysPerDay * delayStats.currentDelayDays) / 40
+      : null;
+  const deathsFromDelay =
+    delayStats.currentHumanLivesLost != null && delayStats.currentHumanLivesLost > 0
+      ? delayStats.currentHumanLivesLost
+      : computedDeathsFromDelay;
 
   // Reminder template tokens resolved server-side.
   const personHandle = task.assigneePerson?.handle ?? null;
@@ -193,7 +205,7 @@ export default async function TaskDetailPage({
     handle: personHandle ?? targetLabel,
     name: targetLabel,
     daysOverdue: delayStats.currentDelayDays.toLocaleString(),
-    deathsLocked: formatCompactCount(delayStats.currentHumanLivesLost ?? 0),
+    deathsLocked: formatCompactCount(deathsFromDelay ?? 0),
     moneyDestroyed: formatCompactCurrency(delayStats.currentEconomicValueUsdLost ?? 0),
     sufferingHours: formatCompactCount(delayStats.currentSufferingHoursLost ?? 0),
     salaryUsd:
@@ -256,6 +268,7 @@ export default async function TaskDetailPage({
           </h1>
           <TaskHeroStats
             perDayDalys={task.impact?.selectedFrame?.delayDalysLostPerDayBase}
+            perDayUsd={task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase}
             costUsd={task.impact?.selectedFrame?.estimatedCashCostUsdBase}
             effortHours={task.estimatedEffortHours}
             dueAt={task.dueAt}
@@ -290,6 +303,7 @@ export default async function TaskDetailPage({
           context={context}
           delayStats={delayStats}
           ratePerSecond={ratePerSecond}
+          tokens={reminderTokens}
         />
         <TaskUnlocks context={context} />
         <TaskPerformanceReview context={context} />
