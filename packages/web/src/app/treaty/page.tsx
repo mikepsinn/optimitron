@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { shareableSnippets } from "@optimitron/data/parameters";
-import { TreatySignButton } from "./TreatySignButton";
+import { TreatySignatureBox } from "./TreatySignatureBox";
 import { LegislationMarkdown } from "@/components/legislation/LegislationMarkdown";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
-import { Button } from "@/components/retroui/Button";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
-import { treatyLink, getSignInPath, ROUTES } from "@/lib/routes";
+import { treatyLink } from "@/lib/routes";
 import { prisma } from "@/lib/prisma";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getTreatyParentTaskHref } from "@/lib/tasks/task-keys";
@@ -23,9 +22,6 @@ export default async function TreatyPage({ searchParams }: TreatyPageProps) {
   const session = await getServerSession(authOptions);
   const params = await searchParams;
   const referralCode = typeof params.ref === "string" ? params.ref : null;
-  const signInHref = getSignInPath(ROUTES.treaty, {
-    referralCode,
-  });
 
   let alreadySigned = false;
   if (session?.user?.id) {
@@ -80,21 +76,10 @@ export default async function TreatyPage({ searchParams }: TreatyPageProps) {
             </p>
           </div>
 
-          {!session ? (
-            <div className="flex flex-col items-center gap-3">
-              <p className="text-sm font-bold">
-                Sign in to add your signature.
-              </p>
-              <Button asChild className="font-bold uppercase">
-                <Link href={signInHref}>Sign In</Link>
-              </Button>
-            </div>
-          ) : (
-            <TreatySignButton
-              alreadySigned={alreadySigned}
-              referralCode={referralCode}
-            />
-          )}
+          <TreatySignatureBox
+            alreadySigned={alreadySigned}
+            referralCode={referralCode}
+          />
 
           <div className="text-center">
             <Link className="text-sm font-bold underline underline-offset-4" href={getTreatyParentTaskHref()}>

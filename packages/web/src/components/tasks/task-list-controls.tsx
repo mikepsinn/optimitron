@@ -44,19 +44,19 @@ export function SortableTaskList({
   defaultSortKey = "deathsLockedIn",
   defaultSortDir = "desc",
   variant = "default",
-  initialLimit,
+  pageSize = 10,
 }: {
   tasks: TaskCardTask[];
   defaultSortKey?: TaskSortKey;
   defaultSortDir?: "asc" | "desc";
   variant?: TaskListVariant;
-  /** Cap visible rows until the user clicks "Show all". Disabled if absent. */
-  initialLimit?: number;
+  /** Paginate results N rows per page. Defaults to 10. */
+  pageSize?: number;
 }) {
   const [sortKey, setSortKey] = useState<TaskSortKey>(defaultSortKey);
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
   const [filter, setFilter] = useState("");
-  const [expanded, setExpanded] = useState(false);
+  const [page, setPage] = useState(0);
 
   const sorted = useMemo(() => {
     const filtered = tasks.filter((t) => matchesFilter(t, filter));
@@ -134,8 +134,8 @@ export function SortableTaskList({
       />
       <div className="divide-y divide-foreground/10">
         {sorted.length > 0 ? (
-          (initialLimit != null && !expanded && !filter
-            ? sorted.slice(0, initialLimit)
+          (!filter
+            ? sorted.slice(page * pageSize, (page + 1) * pageSize)
             : sorted
           ).map((task) => (
             <TaskRow key={task.id} task={task} variant={variant} />
@@ -146,17 +146,61 @@ export function SortableTaskList({
           </div>
         )}
       </div>
-      {initialLimit != null && !filter && sorted.length > initialLimit ? (
+      {!filter && sorted.length > pageSize ? (
+        <PaginationControls
+          page={page}
+          totalPages={Math.ceil(sorted.length / pageSize)}
+          pageSize={pageSize}
+          totalRows={sorted.length}
+          onPage={setPage}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function PaginationControls({
+  page,
+  totalPages,
+  pageSize,
+  totalRows,
+  onPage,
+}: {
+  page: number;
+  totalPages: number;
+  pageSize: number;
+  totalRows: number;
+  onPage: (p: number) => void;
+}) {
+  const first = page * pageSize + 1;
+  const last = Math.min((page + 1) * pageSize, totalRows);
+  return (
+    <div className="flex items-center justify-between gap-3 border-t-2 border-foreground bg-brutal-yellow px-4 py-3 text-brutal-yellow-foreground">
+      <div className="text-xs font-black uppercase tracking-wide sm:text-sm">
+        {first.toLocaleString()}–{last.toLocaleString()} of{" "}
+        {totalRows.toLocaleString()}
+      </div>
+      <div className="flex items-center gap-2">
         <button
           type="button"
-          className="block w-full border-t-2 border-foreground bg-brutal-yellow px-4 py-3 text-center text-sm font-black uppercase tracking-wide text-brutal-yellow-foreground transition-colors hover:bg-brutal-pink hover:text-brutal-pink-foreground"
-          onClick={() => setExpanded((e) => !e)}
+          disabled={page === 0}
+          onClick={() => onPage(Math.max(0, page - 1))}
+          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-transform hover:translate-y-[-1px] disabled:opacity-40 disabled:hover:translate-y-0"
         >
-          {expanded
-            ? `↑ Show top ${initialLimit}`
-            : `↓ Show all ${sorted.length} employees`}
+          ← Prev
         </button>
-      ) : null}
+        <span className="text-xs font-black uppercase sm:text-sm">
+          Page {page + 1} / {totalPages}
+        </span>
+        <button
+          type="button"
+          disabled={page >= totalPages - 1}
+          onClick={() => onPage(Math.min(totalPages - 1, page + 1))}
+          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-transform hover:translate-y-[-1px] disabled:opacity-40 disabled:hover:translate-y-0"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }

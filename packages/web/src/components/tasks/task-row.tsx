@@ -8,11 +8,17 @@ import {
   formatDelayDuration,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
-import { getSignerDelayAttribution } from "@/lib/tasks/delay-attribution";
+import {
+  DAILY_DISEASE_COST_USD,
+  DAILY_DISEASE_DEATHS,
+  GLOBAL_MILITARY_USD,
+  getSignerDelayAttribution,
+} from "@/lib/tasks/delay-attribution";
 import { getPersonHref } from "@/lib/person-href";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
+import { LiveCounter } from "./live-counter";
 
 export type TaskSortKey =
   | "title"
@@ -152,6 +158,7 @@ export function TaskTableHeader({
 
   if (variant === "signer") {
     // Dense signer leaderboard: photo · name+role · 💰 budget · 💀 deaths · 🔥 wasted · remind · details
+    // Desktop-only header (>= lg). Mobile uses the packed caption inside each row.
     function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
       const isActive = sortKey === key;
       const arrow = isActive ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
@@ -166,16 +173,16 @@ export function TaskTableHeader({
       );
     }
     return (
-      <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 md:flex">
+      <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
         <span className="h-14 w-14 shrink-0" />
         {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
-        {signerHeaderCell("assigneeBudget", "💰", `w-24 shrink-0 text-right ${hdr}`)}
-        {signerHeaderCell("deathsLockedIn", "💀", `w-24 shrink-0 text-right ${hdr}`)}
-        {signerHeaderCell("cost", "🔥", `w-24 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("assigneeBudget", "💰", `w-32 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("cost", "🔥", `w-44 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           Remind
         </span>
-        <span className="w-14 shrink-0" />
+        <span className="w-7 shrink-0" />
       </div>
     );
   }
@@ -183,16 +190,16 @@ export function TaskTableHeader({
   return (
     <div className="flex items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2">
       <span className="h-8 w-8 shrink-0" />
-      {headerCell("assignee", `hidden w-36 shrink-0 sm:block ${hdr}`)}
+      {headerCell("assignee", `hidden w-44 shrink-0 sm:block ${hdr}`)}
       {headerCell("title", `min-w-0 flex-1 ${hdr}`)}
       {headerCell("status", `hidden shrink-0 sm:block ${hdr}`)}
-      {headerCell("deathsLockedIn", `hidden w-36 shrink-0 text-right lg:block ${hdr}`)}
-      {headerCell("cost", `hidden w-24 shrink-0 text-right lg:block ${hdr}`)}
+      {headerCell("deathsLockedIn", `hidden w-40 shrink-0 text-right lg:block ${hdr}`)}
+      {headerCell("cost", `hidden w-44 shrink-0 text-right lg:block ${hdr}`)}
       {headerCell("time", `hidden w-16 shrink-0 text-right xl:block ${hdr}`)}
       <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
         Remind
       </span>
-      <span className="w-12 shrink-0" />
+      <span className="w-7 shrink-0" />
     </div>
   );
 }
@@ -231,6 +238,20 @@ export function TaskRow({
 
   const perDayDalys = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
   const moneyWasted = delayStats.currentEconomicValueUsdLost;
+  // Per-second delay rates for live counters. Deaths derived from
+  // delayDalysLostPerDayBase / 40 years-per-death; money from
+  // delayEconomicValueUsdLostPerDayBase. Signer tasks will override these
+  // downstream with share-of-global-military attribution.
+  const delayEconPerDay =
+    task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? null;
+  const defaultDeathsPerSecond =
+    perDayDalys != null && perDayDalys > 0
+      ? perDayDalys / 86400 / YEARS_PER_AVERTED_DEATH
+      : null;
+  const defaultUsdPerSecond =
+    delayEconPerDay != null && delayEconPerDay > 0
+      ? delayEconPerDay / 86400
+      : null;
   const time = task.estimatedEffortHours;
 
   // Continuous death counter inputs: convert per-day healthy life-years lost
@@ -268,19 +289,47 @@ export function TaskRow({
       assigneeBudget,
       delayStats.currentDelayDays,
     );
-    const deathsText =
+    // Per-second growth rates for the live counters — attribution share
+    // × global daily disease numbers ÷ 86400 seconds.
+    const share =
+      assigneeBudget != null ? assigneeBudget / GLOBAL_MILITARY_USD : 0;
+    const deathsPerSecond = (DAILY_DISEASE_DEATHS * share) / 86400;
+    const usdPerSecond = (DAILY_DISEASE_COST_USD * share) / 86400;
+    const dueMs = task.dueAt?.getTime() ?? null;
+    const canTick =
+      dueMs != null && dueMs < Date.now() && share > 0 && attribution != null;
+    // Compact packed caption for mobile (desktop uses full numbers below).
+    const deathsTextCompact =
       attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
-    const wastedText =
+    const wastedTextCompact =
       attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
     const budgetText =
       assigneeBudget != null ? formatCompactCurrency(assigneeBudget) : "—";
 
     return (
       <div
-        className={`flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
+        className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
       >
+        {/*
+          Overlay link — invisible, fills the whole row so clicking any empty
+          space navigates to the task detail. Interactive children are lifted
+          above this with `relative z-10` so they keep their own click targets.
+        */}
+        <Link
+          href={`/tasks/${task.id}`}
+          className="absolute inset-0 z-0"
+          aria-label={`Open ${targetLabel}'s task`}
+          tabIndex={-1}
+        >
+          <span className="sr-only">{targetLabel}</span>
+        </Link>
+
         {assigneeHref ? (
-          <Link href={assigneeHref} className="shrink-0" title={targetLabel}>
+          <Link
+            href={assigneeHref}
+            className="relative z-10 shrink-0"
+            title={targetLabel}
+          >
             <Avatar className="h-12 w-12 shrink-0 border-2 border-foreground bg-muted sm:h-14 sm:w-14">
               <Avatar.Image
                 alt={targetLabel}
@@ -292,49 +341,66 @@ export function TaskRow({
             </Avatar>
           </Link>
         ) : null}
-        <div className="min-w-0 flex-1">
-          <Link
-            href={`/tasks/${task.id}`}
-            className="block truncate text-sm font-black underline-offset-4 hover:underline sm:text-base"
-          >
+        <div className="relative z-[1] min-w-0 flex-1">
+          <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
             {targetLabel}
-          </Link>
+          </div>
           {roleLabel ? (
             <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
               {roleLabel}
             </div>
           ) : null}
-          {/* Mobile — packed caption with the 3 stats */}
+          {/* Mobile — packed caption with compact numbers */}
           {attribution != null ? (
-            <div className="mt-1 truncate text-[11px] font-bold text-muted-foreground md:hidden">
-              {budgetText} military · 💀 {deathsText} · 🔥 {wastedText}
+            <div className="mt-1 truncate text-[11px] font-bold text-muted-foreground lg:hidden">
+              {budgetText} military · 💀 {deathsTextCompact} · 🔥 {wastedTextCompact}
             </div>
           ) : assigneeBudget != null ? (
-            <div className="mt-1 text-[11px] font-bold text-muted-foreground md:hidden">
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
               {budgetText} military
             </div>
           ) : null}
         </div>
-        {/* Desktop — 3 separate stat columns with inline emojis */}
-        <div className="hidden w-24 shrink-0 text-right text-sm font-black md:block">
-          💰 {budgetText}
+        {/* Desktop — 3 separate stat cells, full numbers, live-ticking counters */}
+        <div className="relative z-[1] hidden w-32 shrink-0 break-all text-right text-sm font-black leading-tight lg:block">
+          💰 {assigneeBudget != null ? `$${assigneeBudget.toLocaleString("en-US")}` : "—"}
         </div>
-        <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
-          💀 {deathsText}
+        <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
+          💀{" "}
+          {canTick && dueMs != null ? (
+            <LiveCounter
+              ratePerSecond={deathsPerSecond}
+              startMs={dueMs}
+              mode="integer"
+            />
+          ) : (
+            "—"
+          )}
         </div>
-        <div className="hidden w-24 shrink-0 text-right text-sm font-black text-brutal-red md:block">
-          🔥 {wastedText}
+        <div className="relative z-[1] hidden w-44 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
+          🔥{" "}
+          {canTick && dueMs != null ? (
+            <LiveCounter
+              ratePerSecond={usdPerSecond}
+              startMs={dueMs}
+              mode="currency"
+            />
+          ) : (
+            "—"
+          )}
         </div>
         {task.isPublic ? (
-          <TaskRowShare shareText={shareText} taskId={task.id} />
+          <div className="relative z-10">
+            <TaskRowShare shareText={shareText} taskId={task.id} />
+          </div>
         ) : null}
         <Link
           href={`/tasks/${task.id}`}
-          className="shrink-0 text-xs font-bold uppercase text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          title="Details"
+          className="relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
+          title="Open task details"
+          aria-label="Open task details"
         >
-          <span className="hidden md:inline">Details</span>
-          <FaArrowRight className="h-4 w-4 md:hidden" />
+          <FaArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     );
@@ -342,36 +408,51 @@ export function TaskRow({
 
   return (
     <div
-      className={`flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
+      className={`relative flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
     >
+      {/* Overlay link — fills the row so clicking empty space opens the task. */}
+      <Link
+        href={`/tasks/${task.id}`}
+        className="absolute inset-0 z-0"
+        aria-label={`Open ${task.title}`}
+        tabIndex={-1}
+      >
+        <span className="sr-only">{task.title}</span>
+      </Link>
       {assigneeHref ? (
-        <Link href={assigneeHref} className="shrink-0" title={targetLabel}>
+        <Link
+          href={assigneeHref}
+          className="relative z-10 shrink-0"
+          title={targetLabel}
+        >
           {avatarEl}
         </Link>
       ) : (
-        avatarEl
+        <span className="relative z-[1] shrink-0">{avatarEl}</span>
       )}
 
       {assigneeHref ? (
         <Link
           href={assigneeHref}
-          className="hidden w-36 shrink-0 truncate text-xs font-bold uppercase underline-offset-4 hover:underline sm:block"
+          className="relative z-10 hidden w-44 shrink-0 min-w-0 flex-col text-xs font-bold uppercase underline-offset-4 hover:underline sm:flex"
         >
-          {targetLabel}
+          <span className="truncate">{targetLabel}</span>
+          {task.assigneePerson?.currentAffiliation ? (
+            <span className="truncate text-[10px] font-bold normal-case text-muted-foreground">
+              {task.assigneePerson.currentAffiliation}
+            </span>
+          ) : null}
         </Link>
       ) : (
-        <span className="hidden w-36 shrink-0 truncate text-xs font-bold uppercase sm:block">
-          {targetLabel}
+        <span className="relative z-[1] hidden w-44 shrink-0 min-w-0 flex-col text-xs font-bold uppercase sm:flex">
+          <span className="truncate">{targetLabel}</span>
         </span>
       )}
 
-      <div className="min-w-0 flex-1">
-        <Link
-          href={`/tasks/${task.id}`}
-          className="block truncate text-sm font-bold underline-offset-4 hover:underline"
-        >
+      <div className="relative z-[1] min-w-0 flex-1">
+        <div className="block truncate text-sm font-bold underline-offset-4">
           {task.title}
-        </Link>
+        </div>
         {pressurePrompt ? (
           <p className="mt-1 truncate text-[11px] font-black uppercase text-brutal-red">
             {pressurePrompt}
@@ -412,7 +493,7 @@ export function TaskRow({
       </div>
 
       {/* Desktop status */}
-      <div className="hidden shrink-0 sm:block lg:hidden">
+      <div className="relative z-[1] hidden shrink-0 sm:block lg:hidden">
         {isOverdue ? (
           <StatusBadge variant="overdue">
             {delayStats.currentDelayDays > 365
@@ -426,63 +507,52 @@ export function TaskRow({
         ) : null}
       </div>
 
-      {/* Live death counter — desktop */}
-      <div className="hidden w-36 shrink-0 text-right text-xs font-bold lg:block">
-        {showDeathCounter ? (
-          calculationsUrl ? (
-            <a
-              href={calculationsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brutal-red underline underline-offset-4 hover:text-foreground"
-            >
-              <DeathCounter
-                yearsPerSecond={yearsPerSecond}
-                startMs={deathClockStartMs}
-                yearsPerDeath={YEARS_PER_AVERTED_DEATH}
-              />
-            </a>
-          ) : (
-            <span className="text-brutal-red">
-              <DeathCounter
-                yearsPerSecond={yearsPerSecond}
-                startMs={deathClockStartMs}
-                yearsPerDeath={YEARS_PER_AVERTED_DEATH}
-              />
-            </span>
-          )
+      {/* Live death counter — desktop. Full comma-separated integers. */}
+      <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
+        {defaultDeathsPerSecond != null && deathClockStartMs != null && isOverdue ? (
+          <>
+            💀{" "}
+            <LiveCounter
+              ratePerSecond={defaultDeathsPerSecond}
+              startMs={deathClockStartMs}
+              mode="integer"
+            />
+          </>
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
       </div>
 
-      {/* Taxpayer money wasted by delay — desktop (budget on signer rows) */}
-      {isSignerTask ? (
-        <ImpactCell
-          value={
-            assigneeBudget != null
-              ? formatCompactCurrency(assigneeBudget)
-              : "—"
-          }
-          href={null}
-          className="hidden w-24 lg:block"
-        />
-      ) : (
-        <ImpactCell
-          value={formatMoneyWasted(moneyWasted)}
-          href={calculationsUrl}
-          className="hidden w-24 lg:block"
-        />
-      )}
+      {/* Taxpayer $ wasted by delay — desktop. Full dollar counter. */}
+      <div className="relative z-[1] hidden w-44 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
+        {isSignerTask && assigneeBudget != null ? (
+          <>💰 ${assigneeBudget.toLocaleString("en-US")}</>
+        ) : defaultUsdPerSecond != null &&
+          deathClockStartMs != null &&
+          isOverdue ? (
+          <>
+            🔥{" "}
+            <LiveCounter
+              ratePerSecond={defaultUsdPerSecond}
+              startMs={deathClockStartMs}
+              mode="currency"
+            />
+          </>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </div>
 
       {/* Time required — xl desktop */}
-      <ImpactCell
-        value={formatDuration(time)}
-        href={null}
-        className="hidden w-16 xl:block"
-      />
+      <div className="relative z-[1] hidden xl:block">
+        <ImpactCell
+          value={formatDuration(time)}
+          href={null}
+          className="w-16"
+        />
+      </div>
 
-      <div className="hidden shrink-0 md:block">
+      <div className="relative z-10 hidden shrink-0 md:block">
         {task.isPublic ? (
           <TaskRowShare shareText={shareText} taskId={task.id} />
         ) : null}
@@ -490,9 +560,11 @@ export function TaskRow({
 
       <Link
         href={`/tasks/${task.id}`}
-        className="w-12 shrink-0 text-right text-xs font-bold uppercase underline underline-offset-4"
+        className="relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
+        title="Open task details"
+        aria-label="Open task details"
       >
-        Details
+        <FaArrowRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   );
