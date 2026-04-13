@@ -1,87 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import { ChevronDown, Play, Pause, Image, ImageOff } from "lucide-react";
-import { shareableSnippets } from "@optimitron/data/parameters";
 import {
   WishoniaCharacter,
   preloadTier0,
 } from "@optimitron/wishonia-widget";
-import { DeclarationSignatureBox } from "@/components/declaration/DeclarationSignatureBox";
 
-// Background images — cycle through war/atrocity photographs
-const DECLARATION_IMAGES = [
-  "0_rixHj5ph0bilU4VA.webp",
-  "hiroshima-aftermath.jpg",
-  "3782620400000578-0-image-a-16_1471952820321.jpg",
-  "65c0fef9ef3488e746cfe61f6e9a99e3.jpg",
-  "nagasaki-mushroom.jpg",
-  "abdulfalluja2_000.jpg",
-  "d15361ba023fa61fc3affcbae9a144deb3-17-mosul-civilian-casualties.rsocial.w1200.webp",
-  "DmWguX9U0AAT1Tz.jpg",
-  "nuclear-war.jpg",
-  "download.jpeg",
-  "gaza-scaled.jpg",
-  "The_Terror_of_War_Viet_girl_edit.jpg",
-  "image546863x.jpg",
-  "iraq-1158612213-612x612.jpg",
-  "iraq-1530125968-612x612.jpg",
-  "nuclear-war-burns.jpg",
-  "iraq-1530126129-612x612.jpg",
-  "iraq-171480348-612x612.jpg",
-  "iraq-1731665846-612x612.jpg",
-  "OmranAylan.jpg",
-  "iraq-1736938930-612x612.jpg",
-  "iraq-495413681-612x612.jpg",
-  "iraq-615309246-612x612.jpg",
-  "vietnam.jpg",
-  "iraq-635233421-612x612.jpg",
-  "iraq-643124034-612x612.jpg",
-  "iraq-657651138-612x612.jpg",
-  "iraq-871166954-612x612.jpg",
-  "iraq-91878540-2048x2048.jpg",
-  "iraq-928670302-612x612.jpg",
-  "iraq-929098884-612x612.jpg",
-].map((f) => `/images/declaration/${f}`);
-
-// Preload Wishonia sprites
 const SPRITE_PATH = "/sprites/wishonia/";
 const SPRITE_FORMAT = "png" as const;
 if (typeof window !== "undefined") {
   void preloadTier0(SPRITE_PATH, SPRITE_FORMAT);
 }
 
-// ---------------------------------------------------------------------------
-// Slide data (mirrors generate-declaration-narration.ts exactly)
-// ---------------------------------------------------------------------------
-
-function splitIntoSlides(markdown: string): string[] {
+export function splitIntoSlides(markdown: string): string[] {
   return markdown
     .split(/\n\n+/)
     .map((s) => s.trim())
     .filter(Boolean);
 }
 
-const WHY_SLIDES = splitIntoSlides(
-  shareableSnippets.whyOptimizationIsNecessary.markdown,
-);
-const DECLARATION_SLIDES = splitIntoSlides(
-  shareableSnippets.declarationOfOptimization.markdown,
-);
-// Filter out the divider — it's not needed in a fade-based stepper
-const ALL_SLIDES = [...WHY_SLIDES, ...DECLARATION_SLIDES];
-
-const INTRO_TEXT =
-  "Please quickly skim and sign the Declaration of Optimization.";
-
-// Total slides: intro + content + signature
-const TOTAL_SLIDES = 1 + ALL_SLIDES.length + 1;
-const SIGNATURE_INDEX = TOTAL_SLIDES - 1;
-
-/** Strip markdown to match what the generation script hashed */
 function stripMarkdownForHash(md: string): string {
   return md
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
@@ -91,7 +33,6 @@ function stripMarkdownForHash(md: string): string {
     .trim();
 }
 
-/** SHA-256 first 16 hex chars — matches generation script */
 async function hashText(text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest("SHA-256", data);
@@ -101,38 +42,30 @@ async function hashText(text: string): Promise<string> {
     .slice(0, 16);
 }
 
-// ---------------------------------------------------------------------------
-// Audio helpers
-// ---------------------------------------------------------------------------
-
-interface DeclarationManifestEntry {
+interface ManifestEntry {
   file: string;
 }
-type DeclarationManifest = Record<string, DeclarationManifestEntry>;
+type Manifest = Record<string, ManifestEntry>;
 
-let manifestCache: DeclarationManifest | null | undefined;
+const manifestCache = new Map<string, Manifest | null>();
 
-async function getDeclarationManifest(): Promise<DeclarationManifest | null> {
-  if (manifestCache !== undefined) return manifestCache;
+async function getManifest(path: string | undefined): Promise<Manifest | null> {
+  if (!path) return null;
+  if (manifestCache.has(path)) return manifestCache.get(path)!;
   try {
-    const resp = await fetch("/audio/declaration/manifest.json", {
-      cache: "no-store",
-    });
-    manifestCache = resp.ok
-      ? ((await resp.json()) as DeclarationManifest)
-      : null;
+    const resp = await fetch(path, { cache: "no-store" });
+    const manifest = resp.ok ? ((await resp.json()) as Manifest) : null;
+    manifestCache.set(path, manifest);
+    return manifest;
   } catch {
-    manifestCache = null;
+    manifestCache.set(path, null);
+    return null;
   }
-  return manifestCache;
 }
 
 let sharedAudioCtx: AudioContext | null = null;
-
 function getAudioContext(): AudioContext {
-  if (!sharedAudioCtx) {
-    sharedAudioCtx = new AudioContext();
-  }
+  if (!sharedAudioCtx) sharedAudioCtx = new AudioContext();
   if (sharedAudioCtx.state === "suspended") {
     sharedAudioCtx.resume().catch(() => {});
   }
@@ -141,9 +74,7 @@ function getAudioContext(): AudioContext {
 
 function wireAnalyser(audio: HTMLAudioElement): AnalyserNode {
   const ctx = getAudioContext();
-  if (ctx.state === "suspended") {
-    ctx.resume().catch(() => {});
-  }
+  if (ctx.state === "suspended") ctx.resume().catch(() => {});
   const source = ctx.createMediaElementSource(audio);
   const analyser = ctx.createAnalyser();
   analyser.fftSize = 256;
@@ -170,7 +101,11 @@ interface AudioResult {
 
 const audioCache = new Map<string, AudioResult>();
 
-async function getSlideAudio(text: string): Promise<AudioResult | null> {
+async function getSlideAudio(
+  text: string,
+  audioBasePath: string | undefined,
+  manifestPath: string | undefined,
+): Promise<AudioResult | null> {
   const plainText = stripMarkdownForHash(text);
   const hash = await hashText(plainText);
 
@@ -180,11 +115,10 @@ async function getSlideAudio(text: string): Promise<AudioResult | null> {
     return cached;
   }
 
-  // Try pre-generated MP3 first (looked up by content hash)
-  const manifest = await getDeclarationManifest();
-  if (manifest?.[hash]) {
+  const manifest = await getManifest(manifestPath);
+  if (manifest?.[hash] && audioBasePath) {
     const entry = manifest[hash];
-    const audio = await loadAudio(`/audio/declaration/${entry.file}`);
+    const audio = await loadAudio(`${audioBasePath}/${entry.file}`);
     if (audio) {
       const analyser = wireAnalyser(audio);
       const result = { audio, analyser };
@@ -193,7 +127,6 @@ async function getSlideAudio(text: string): Promise<AudioResult | null> {
     }
   }
 
-  // Fallback: real-time Gemini TTS
   try {
     const resp = await fetch("/api/demo/tts", {
       method: "POST",
@@ -217,32 +150,28 @@ async function getSlideAudio(text: string): Promise<AudioResult | null> {
   return null;
 }
 
-// ---------------------------------------------------------------------------
-// Markdown renderer for slides
-// ---------------------------------------------------------------------------
-
 const markdownComponents = {
-  h1: ({ children }: { children?: React.ReactNode }) => (
+  h1: ({ children }: { children?: ReactNode }) => (
     <h1 className="text-center text-4xl font-black uppercase tracking-tight text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
       {children}
     </h1>
   ),
-  h2: ({ children }: { children?: React.ReactNode }) => (
+  h2: ({ children }: { children?: ReactNode }) => (
     <h2 className="text-center text-3xl font-black uppercase tracking-tight text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl">
       {children}
     </h2>
   ),
-  h3: ({ children }: { children?: React.ReactNode }) => (
+  h3: ({ children }: { children?: ReactNode }) => (
     <h3 className="text-center text-2xl font-black uppercase tracking-tight text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl md:text-4xl">
       {children}
     </h3>
   ),
-  p: ({ children }: { children?: React.ReactNode }) => (
+  p: ({ children }: { children?: ReactNode }) => (
     <p className="text-center text-xl leading-relaxed text-white drop-cap [font-family:var(--v0-font-libre-baskerville)] [overflow-wrap:break-word] sm:text-2xl">
       {children}
     </p>
   ),
-  a: ({ href, children }: { href?: string; children?: React.ReactNode }) => {
+  a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
     if (target.startsWith("http")) {
       return (
@@ -262,41 +191,64 @@ const markdownComponents = {
       </Link>
     );
   },
-  blockquote: ({ children }: { children?: React.ReactNode }) => (
+  blockquote: ({ children }: { children?: ReactNode }) => (
     <blockquote className="border-l-4 border-brutal-pink bg-white/10 px-4 py-3 text-sm font-bold text-white">
       {children}
     </blockquote>
   ),
-  ul: ({ children }: { children?: React.ReactNode }) => (
+  ul: ({ children }: { children?: ReactNode }) => (
     <ul className="list-disc space-y-2 pl-6 text-left text-base font-bold text-white/80">
       {children}
     </ul>
   ),
-  ol: ({ children }: { children?: React.ReactNode }) => (
+  ol: ({ children }: { children?: ReactNode }) => (
     <ol className="list-decimal space-y-2 pl-6 text-left text-base font-bold text-white/80">
       {children}
     </ol>
   ),
-  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+  li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
   hr: () => <hr className="border-t-4 border-white/30" />,
 };
 
-// ---------------------------------------------------------------------------
-// Main stepper — fade in place, no scrolling
-// ---------------------------------------------------------------------------
+export interface ReferendumStepperProps {
+  /** First slide — plain text intro. */
+  introText: string;
+  /** Markdown slides, one per fade step. */
+  slides: string[];
+  /** React node rendered on the final "signature" slide. */
+  signatureSlot: ReactNode;
+  /** Optional background photo URLs cycled on each slide. */
+  backgroundImages?: string[];
+  /**
+   * Optional URL of a JSON manifest mapping content-hash → { file }. When
+   * present, `audioBasePath` is used to resolve each file. Without these, the
+   * stepper falls back to live Gemini TTS.
+   */
+  audioManifestPath?: string;
+  /** Base path for pre-generated audio files referenced by the manifest. */
+  audioBasePath?: string;
+}
 
-export function DeclarationStepper() {
+export function ReferendumStepper({
+  introText,
+  slides,
+  signatureSlot,
+  backgroundImages,
+  audioManifestPath,
+  audioBasePath,
+}: ReferendumStepperProps) {
+  const totalSlides = 1 + slides.length + 1;
+  const signatureIndex = totalSlides - 1;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(true);
-
-  // Background images (off by default)
   const [showImages, setShowImages] = useState(false);
-
-  // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const playingIndexRef = useRef<number>(-1);
+
+  const bgImages = useMemo(() => backgroundImages ?? [], [backgroundImages]);
 
   const stopAudio = useCallback(() => {
     const audio = currentAudioRef.current;
@@ -311,48 +263,42 @@ export function DeclarationStepper() {
     setAnalyserNode(null);
   }, []);
 
-  /** Navigate to a slide with fade transition */
   const goToSlide = useCallback(
     (index: number) => {
-      if (index < 0 || index >= TOTAL_SLIDES || index === currentIndex) return;
-      // Fade out
+      if (index < 0 || index >= totalSlides || index === currentIndex) return;
       setVisible(false);
-      // After fade out, swap content and fade in
       setTimeout(() => {
         setCurrentIndex(index);
         setVisible(true);
       }, 600);
     },
-    [currentIndex],
+    [currentIndex, totalSlides],
   );
 
   const goNext = useCallback(() => {
-    if (currentIndex < TOTAL_SLIDES - 1) {
-      goToSlide(currentIndex + 1);
-    }
-  }, [currentIndex, goToSlide]);
+    if (currentIndex < totalSlides - 1) goToSlide(currentIndex + 1);
+  }, [currentIndex, goToSlide, totalSlides]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > 0) {
-      goToSlide(currentIndex - 1);
-    }
+    if (currentIndex > 0) goToSlide(currentIndex - 1);
   }, [currentIndex, goToSlide]);
 
-  /** Get the text for a slide index */
-  const getSlideText = useCallback((slideIndex: number): string | null => {
-    if (slideIndex === 0) return INTRO_TEXT;
-    const contentIndex = slideIndex - 1;
-    if (contentIndex < ALL_SLIDES.length) return ALL_SLIDES[contentIndex]!;
-    return null; // signature slide
-  }, []);
+  const getSlideText = useCallback(
+    (slideIndex: number): string | null => {
+      if (slideIndex === 0) return introText;
+      const contentIndex = slideIndex - 1;
+      if (contentIndex < slides.length) return slides[contentIndex]!;
+      return null;
+    },
+    [introText, slides],
+  );
 
-  /** Preload audio for a slide */
   const preloadSlideAudio = useCallback(
     (slideIndex: number) => {
       const text = getSlideText(slideIndex);
-      if (text) void getSlideAudio(text);
+      if (text) void getSlideAudio(text, audioBasePath, audioManifestPath);
     },
-    [getSlideText],
+    [getSlideText, audioBasePath, audioManifestPath],
   );
 
   const playRequestId = useRef(0);
@@ -360,34 +306,25 @@ export function DeclarationStepper() {
   const playSlide = useCallback(
     async (slideIndex: number) => {
       stopAudio();
-
-      // Each call gets a unique ID — stale async results are ignored
       const requestId = ++playRequestId.current;
-
       const text = getSlideText(slideIndex);
       if (!text) return;
 
-      // Preload next
       preloadSlideAudio(slideIndex + 1);
 
-      const result = await getSlideAudio(text);
-      // Stale request — a newer playSlide call happened while we were loading
+      const result = await getSlideAudio(text, audioBasePath, audioManifestPath);
       if (requestId !== playRequestId.current) return;
 
       if (!result) {
-        // TTS unavailable — auto-advance after reading time
         setIsPlaying(true);
         playingIndexRef.current = slideIndex;
         const wordCount = text.split(/\s+/).length;
         const readTime = Math.max(3000, wordCount * 250);
         setTimeout(() => {
           if (playingIndexRef.current !== slideIndex) return;
-          if (slideIndex < TOTAL_SLIDES - 1) {
+          if (slideIndex < totalSlides - 1) {
             goToSlide(slideIndex + 1);
-            setTimeout(
-              () => void playSlide(slideIndex + 1),
-              700,
-            );
+            setTimeout(() => void playSlide(slideIndex + 1), 700);
           } else {
             stopAudio();
           }
@@ -402,9 +339,8 @@ export function DeclarationStepper() {
 
       result.audio.onended = () => {
         if (playingIndexRef.current !== slideIndex) return;
-        if (slideIndex < TOTAL_SLIDES - 1) {
+        if (slideIndex < totalSlides - 1) {
           goToSlide(slideIndex + 1);
-          // Start next audio after fade transition
           setTimeout(() => void playSlide(slideIndex + 1), 700);
         } else {
           stopAudio();
@@ -417,7 +353,15 @@ export function DeclarationStepper() {
         stopAudio();
       }
     },
-    [stopAudio, goToSlide, getSlideText, preloadSlideAudio],
+    [
+      stopAudio,
+      goToSlide,
+      getSlideText,
+      preloadSlideAudio,
+      audioBasePath,
+      audioManifestPath,
+      totalSlides,
+    ],
   );
 
   const togglePlayback = useCallback(() => {
@@ -435,13 +379,10 @@ export function DeclarationStepper() {
     }
   }, [isPlaying, currentIndex, playSlide]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      // Don't hijack keys when user is typing in an input/textarea
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
-
       if (e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
         goNext();
@@ -454,18 +395,14 @@ export function DeclarationStepper() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [goNext, goPrev]);
 
-  // Scroll/wheel to advance slides (debounced so one gesture = one slide)
   const scrollCooldown = useRef(false);
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (scrollCooldown.current) return;
       scrollCooldown.current = true;
-      if (e.deltaY > 0) {
-        goNext();
-      } else if (e.deltaY < 0) {
-        goPrev();
-      }
+      if (e.deltaY > 0) goNext();
+      else if (e.deltaY < 0) goPrev();
       setTimeout(() => {
         scrollCooldown.current = false;
       }, 800);
@@ -474,7 +411,6 @@ export function DeclarationStepper() {
     return () => window.removeEventListener("wheel", handleWheel);
   }, [goNext, goPrev]);
 
-  // Touch swipe to advance slides
   const touchStartY = useRef(0);
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
@@ -483,12 +419,9 @@ export function DeclarationStepper() {
     const handleTouchEnd = (e: TouchEvent) => {
       const endY = e.changedTouches[0]?.clientY ?? 0;
       const diff = touchStartY.current - endY;
-      if (Math.abs(diff) < 50) return; // too small
-      if (diff > 0) {
-        goNext();
-      } else {
-        goPrev();
-      }
+      if (Math.abs(diff) < 50) return;
+      if (diff > 0) goNext();
+      else goPrev();
     };
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
@@ -498,30 +431,28 @@ export function DeclarationStepper() {
     };
   }, [goNext, goPrev]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => stopAudio();
   }, [stopAudio]);
 
-  // Background image
-  const bgImageIndex = currentIndex % DECLARATION_IMAGES.length;
+  const bgImageIndex = bgImages.length > 0 ? currentIndex % bgImages.length : 0;
+  const hasBgImages = bgImages.length > 0;
 
-  // Render current slide content
   const renderSlideContent = () => {
     if (currentIndex === 0) {
       return (
         <p className="text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
-          {INTRO_TEXT}
+          {introText}
         </p>
       );
     }
 
-    if (currentIndex === SIGNATURE_INDEX) {
-      return <DeclarationSignatureBox />;
+    if (currentIndex === signatureIndex) {
+      return signatureSlot;
     }
 
     const contentIndex = currentIndex - 1;
-    const slide = ALL_SLIDES[contentIndex];
+    const slide = slides[contentIndex];
     if (!slide) return null;
 
     return (
@@ -536,13 +467,12 @@ export function DeclarationStepper() {
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-black">
-      {/* Background image (when enabled) */}
-      {showImages && (
+      {showImages && hasBgImages && (
         <>
           <div className="absolute inset-0">
             <img
               key={bgImageIndex}
-              src={DECLARATION_IMAGES[bgImageIndex]}
+              src={bgImages[bgImageIndex]}
               alt=""
               className="h-full w-full object-cover"
               style={{ animation: "ken-burns 12s ease-in-out forwards" }}
@@ -553,17 +483,15 @@ export function DeclarationStepper() {
         </>
       )}
 
-      {/* Skip to sign — top right, hidden on signature slide */}
-      {currentIndex !== SIGNATURE_INDEX && (
+      {currentIndex !== signatureIndex && (
         <button
-          onClick={() => goToSlide(SIGNATURE_INDEX)}
+          onClick={() => goToSlide(signatureIndex)}
           className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
         >
           Skip to sign
         </button>
       )}
 
-      {/* Centered slide content — fades in place */}
       <div className="relative flex flex-1 items-center justify-center px-6 sm:px-8">
         <div
           className="w-full max-w-2xl"
@@ -576,7 +504,6 @@ export function DeclarationStepper() {
         </div>
       </div>
 
-      {/* Wishonia character — bottom right, clickable to play/pause */}
       <button
         onClick={togglePlayback}
         className="absolute bottom-0 right-0 z-20 cursor-pointer"
@@ -607,21 +534,23 @@ export function DeclarationStepper() {
         </div>
       </button>
 
-      {/* Image toggle — bottom left */}
-      <button
-        onClick={() => setShowImages((v) => !v)}
-        className="absolute bottom-4 left-4 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-white/40 transition-colors hover:bg-white/20 hover:text-white/70"
-        aria-label={showImages ? "Hide background images" : "Show background images"}
-      >
-        {showImages ? (
-          <ImageOff className="h-3 w-3" />
-        ) : (
-          <Image className="h-3 w-3" />
-        )}
-      </button>
+      {hasBgImages && (
+        <button
+          onClick={() => setShowImages((v) => !v)}
+          className="absolute bottom-4 left-4 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-white/40 transition-colors hover:bg-white/20 hover:text-white/70"
+          aria-label={
+            showImages ? "Hide background images" : "Show background images"
+          }
+        >
+          {showImages ? (
+            <ImageOff className="h-3 w-3" />
+          ) : (
+            <Image className="h-3 w-3" />
+          )}
+        </button>
+      )}
 
-      {/* Down arrow to advance */}
-      {currentIndex < TOTAL_SLIDES - 1 && (
+      {currentIndex < totalSlides - 1 && (
         <button
           onClick={goNext}
           className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer text-white/60 transition-opacity hover:text-white"

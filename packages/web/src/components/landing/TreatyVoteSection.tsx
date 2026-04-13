@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
 import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { syncPendingTreatyVote } from "@/lib/treaty-vote-sync";
+import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 import confetti from "canvas-confetti";
@@ -147,7 +147,7 @@ export default function TreatyVoteSection() {
   useEffect(() => {
     if (status === "authenticated" && session && !hasSyncedRef.current) {
       hasSyncedRef.current = true;
-      void syncPendingTreatyVote(session);
+      void syncPendingReferendumVotes(session);
     }
   }, [status, session]);
 
@@ -192,7 +192,7 @@ export default function TreatyVoteSection() {
     setShowSlider(false);
 
     if (status === "authenticated" && session) {
-      void syncPendingTreatyVote(session);
+      void syncPendingReferendumVotes(session);
     }
   };
 
@@ -234,7 +234,7 @@ export default function TreatyVoteSection() {
     }, 600);
 
     if (status === "authenticated" && session) {
-      await syncPendingTreatyVote(session);
+      await syncPendingReferendumVotes(session);
       const referralIdentifier = getUsernameOrReferralCode(session.user);
       if (referralIdentifier) {
         storage.setVoteStatusCache({

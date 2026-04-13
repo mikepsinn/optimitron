@@ -6,29 +6,42 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
-import { BrutalCard } from "@/components/ui/brutal-card";
-import { storage } from "@/lib/storage";
-import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { buildUserReferralUrl } from "@/lib/url";
 
-interface TreatySignatureBoxProps {
-  alreadySigned: boolean;
+export interface ReferendumSignatureBoxProps {
+  referendumSlug: string;
+  title: string;
+  authPromptText: string;
+  authCallbackUrl?: string;
   referralCode?: string | null;
+  storePendingVote: (name: string) => void;
+  clearPendingVote: () => void;
+  shareText: string;
+  emailSubject: string;
+  signedTitle?: string;
+  signedBody?: string;
 }
 
-export function TreatySignatureBox({
-  alreadySigned,
+export function ReferendumSignatureBox({
+  referendumSlug,
+  title,
+  authPromptText,
+  authCallbackUrl = "/dashboard",
   referralCode = null,
-}: TreatySignatureBoxProps) {
+  storePendingVote,
+  clearPendingVote,
+  shareText,
+  emailSubject,
+  signedTitle = "Referendum Signed",
+  signedBody = "Share your link. Every signature moves the needle.",
+}: ReferendumSignatureBoxProps) {
   const { data: session, status } = useSession();
   const [signatureName, setSignatureName] = useState("");
   const [signing, setSigning] = useState(false);
-  const [signed, setSigned] = useState(alreadySigned);
+  const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const referralUrl = buildUserReferralUrl(session?.user);
-  const shareText =
-    "I just signed the 1% Treaty to redirect 1% of military spending to curing disease. Sign it too:";
 
   async function handleSubmit() {
     const name = signatureName.trim();
@@ -36,17 +49,12 @@ export function TreatySignatureBox({
     setSigning(true);
     setError(null);
 
-    storage.setPendingTreatyVote({
-      answer: "YES",
-      referredBy: referralCode,
-      timestamp: new Date().toISOString(),
-      organizationId: null,
-    });
+    storePendingVote(name);
 
     if (status === "authenticated") {
       try {
         const response = await fetch(
-          `/api/referendums/${TREATY_REFERENDUM_SLUG}/vote`,
+          `/api/referendums/${referendumSlug}/vote`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -62,7 +70,7 @@ export function TreatySignatureBox({
             | null;
           throw new Error(body?.error ?? "Failed to record signature.");
         }
-        storage.removePendingTreatyVote();
+        clearPendingVote();
       } catch (signError) {
         setError(
           signError instanceof Error
@@ -80,25 +88,20 @@ export function TreatySignatureBox({
 
   if (signed && status === "authenticated") {
     return (
-      <div className="flex flex-col items-center gap-6">
-        <BrutalCard bgColor="green" padding="lg" shadowSize={8}>
-          <div className="space-y-2 text-center">
-            <p className="text-2xl font-black uppercase">Treaty Signed</p>
-            <p className="text-sm font-bold">
-              Your signature is recorded. Share your link to bring in more
-              signatures and pressure leaders to follow.
-            </p>
-          </div>
-        </BrutalCard>
-
+      <div className="mx-auto flex max-w-md flex-col items-center gap-6">
+        <p className="text-center text-2xl font-black uppercase text-white [font-family:var(--v0-font-libre-baskerville)]">
+          {signedTitle}
+        </p>
+        <p className="text-center text-base font-bold text-white/70 [font-family:var(--v0-font-libre-baskerville)]">
+          {signedBody}
+        </p>
         <ShareLinkButtons
           label="Share Your Signature"
           shareText={shareText}
           url={referralUrl}
-          emailSubject="I signed the 1% Treaty"
+          emailSubject={emailSubject}
         />
-
-        <p className="break-all text-xs font-bold text-muted-foreground">
+        <p className="break-all text-xs font-bold text-white/40">
           Personal referral link: {referralUrl}
         </p>
       </div>
@@ -108,25 +111,32 @@ export function TreatySignatureBox({
   if (signed) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <p className="mb-4 text-xl font-black uppercase">
+        <p className="mb-4 text-xl font-black uppercase text-white [font-family:var(--v0-font-libre-baskerville)]">
           Your signature has been recorded.
         </p>
-        <p className="mb-6 text-sm font-bold text-muted-foreground">
-          Verify your identity to become an official signatory of the 1% Treaty.
+        <p className="mb-6 text-sm font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)]">
+          {authPromptText}
         </p>
-        <AuthForm callbackUrl="/treaty" referralCode={referralCode} compact />
+        <AuthForm
+          callbackUrl={authCallbackUrl}
+          referralCode={referralCode}
+          compact
+        />
       </div>
     );
   }
 
   return (
     <div className="mx-auto w-full max-w-md">
+      <p className="mb-6 text-center text-xl font-bold text-white [font-family:var(--v0-font-libre-baskerville)]">
+        {title}
+      </p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <Input
           value={signatureName}
           onChange={(e) => setSignatureName(e.target.value)}
           placeholder="Your name"
-          className="flex-1 border-2 border-primary px-4 py-3 text-lg font-bold"
+          className="flex-1 border-2 border-white/30 bg-white/10 px-4 py-3 text-lg font-bold text-white placeholder:text-white/30"
           autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && signatureName.trim()) {
@@ -137,7 +147,7 @@ export function TreatySignatureBox({
         <Button
           onClick={() => void handleSubmit()}
           disabled={!signatureName.trim() || signing}
-          className="border-4 border-primary bg-brutal-green px-8 py-3 text-lg font-black uppercase text-brutal-green-foreground disabled:opacity-40"
+          className="border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30"
         >
           {signing ? "..." : "Sign"}
         </Button>

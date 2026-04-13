@@ -1,15 +1,11 @@
 /**
- * Offline narration generator for the Declaration of Optimization page.
+ * Offline narration generator for referendum stepper pages.
  *
  * Usage:
- *   npx tsx scripts/generate-declaration-narration.ts
+ *   npx tsx scripts/generate-declaration-narration.ts [referendum]
  *
- * - Reads paragraphs from shareableSnippets (same source as the page)
- * - Hashes each paragraph (SHA-256, first 16 hex chars)
- * - Only regenerates when text changes
- * - Generates WAV via Gemini TTS, converts to MP3 via ffmpeg
- * - Saves to public/audio/declaration/{slideId}.mp3
- * - Writes manifest.json for client-side lookup
+ * Where [referendum] is a key in REFERENDUMS (default: "declaration").
+ * Supported: "declaration", "treaty".
  */
 import { config } from "dotenv";
 import { resolve } from "path";
@@ -52,25 +48,62 @@ function splitIntoSlides(markdown: string): string[] {
     .filter(Boolean);
 }
 
-const WHY_SLIDES = splitIntoSlides(
-  shareableSnippets.whyOptimizationIsNecessary.markdown,
-);
-const DECLARATION_SLIDES = splitIntoSlides(
-  shareableSnippets.declarationOfOptimization.markdown,
-);
-
 interface SlideEntry {
   id: string;
   text: string;
 }
 
-const INTRO_TEXT =
-  "Please quickly skim and sign the Declaration of Optimization.";
+interface ReferendumNarrationConfig {
+  outputDir: string;
+  introText: string;
+  sources: { prefix: string; markdown: string }[];
+}
+
+const REFERENDUMS: Record<string, ReferendumNarrationConfig> = {
+  declaration: {
+    outputDir: "declaration",
+    introText:
+      "Please quickly skim and sign the Declaration of Optimization.",
+    sources: [
+      {
+        prefix: "why",
+        markdown: shareableSnippets.whyOptimizationIsNecessary.markdown,
+      },
+      {
+        prefix: "decl",
+        markdown: shareableSnippets.declarationOfOptimization.markdown,
+      },
+    ],
+  },
+  treaty: {
+    outputDir: "treaty",
+    introText: "Please read the 1% Treaty. If you agree, sign it at the end.",
+    sources: [
+      {
+        prefix: "treaty",
+        markdown: shareableSnippets.onePercentTreatyText.markdown,
+      },
+    ],
+  },
+};
+
+const REFERENDUM_KEY = process.argv[2] ?? "declaration";
+const REFERENDUM = REFERENDUMS[REFERENDUM_KEY];
+if (!REFERENDUM) {
+  console.error(
+    `ERROR: Unknown referendum "${REFERENDUM_KEY}". Known: ${Object.keys(REFERENDUMS).join(", ")}`,
+  );
+  process.exit(1);
+}
 
 const slides: SlideEntry[] = [
-  { id: "intro", text: INTRO_TEXT },
-  ...WHY_SLIDES.map((text, i) => ({ id: `why-${i}`, text })),
-  ...DECLARATION_SLIDES.map((text, i) => ({ id: `decl-${i}`, text })),
+  { id: "intro", text: REFERENDUM.introText },
+  ...REFERENDUM.sources.flatMap((source) =>
+    splitIntoSlides(source.markdown).map((text, i) => ({
+      id: `${source.prefix}-${i}`,
+      text,
+    })),
+  ),
 ];
 
 /** Strip markdown links and formatting to plain text for TTS */
@@ -232,7 +265,13 @@ interface ManifestEntry {
 /** Keyed by text hash (sha256 first 16 hex chars) */
 type Manifest = Record<string, ManifestEntry>;
 
-const OUTPUT_DIR = join(__dirname, "..", "public", "audio", "declaration");
+const OUTPUT_DIR = join(
+  __dirname,
+  "..",
+  "public",
+  "audio",
+  REFERENDUM.outputDir,
+);
 const MANIFEST_PATH = join(OUTPUT_DIR, "manifest.json");
 const TEMP_WAV = join(OUTPUT_DIR, "_temp.wav");
 
@@ -287,7 +326,7 @@ async function main() {
   let errors = 0;
 
   console.log(
-    `\n🎙️  Declaration Narration Generator — ${slides.length} slides\n`,
+    `\n🎙️  Referendum Narration Generator — ${REFERENDUM_KEY} — ${slides.length} slides\n`,
   );
 
   // Pre-scan — keyed by text hash. Same text = same file, regardless of slide id.
@@ -373,7 +412,7 @@ async function main() {
 
   if (generated > 0) {
     console.log(
-      `💡 ${generated} audio file(s) updated. Commit public/audio/declaration/ to persist.\n`,
+      `💡 ${generated} audio file(s) updated. Commit public/audio/${REFERENDUM.outputDir}/ to persist.\n`,
     );
   }
 }
