@@ -276,12 +276,16 @@ export function ReferendumStepper({
   );
 
   const goNext = useCallback(() => {
-    if (currentIndex < totalSlides - 1) goToSlide(currentIndex + 1);
-  }, [currentIndex, goToSlide, totalSlides]);
+    if (currentIndex >= totalSlides - 1) return;
+    stopAudio();
+    goToSlide(currentIndex + 1);
+  }, [currentIndex, goToSlide, stopAudio, totalSlides]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > 0) goToSlide(currentIndex - 1);
-  }, [currentIndex, goToSlide]);
+    if (currentIndex <= 0) return;
+    stopAudio();
+    goToSlide(currentIndex - 1);
+  }, [currentIndex, goToSlide, stopAudio]);
 
   const getSlideText = useCallback(
     (slideIndex: number): string | null => {
@@ -485,7 +489,10 @@ export function ReferendumStepper({
 
       {currentIndex !== signatureIndex && (
         <button
-          onClick={() => goToSlide(signatureIndex)}
+          onClick={() => {
+            stopAudio();
+            goToSlide(signatureIndex);
+          }}
           className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
         >
           Skip to sign
