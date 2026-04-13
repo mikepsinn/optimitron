@@ -1267,7 +1267,12 @@ async function seedTreatyTasks() {
         role: headOfGovTitle,
         employerLabel: `Government of ${leader.countryName}`,
         employerCountLabel: "citizens",
-        ...(militaryBudget != null ? { budgetUsdPerYear: militaryBudget } : {}),
+        ...(militaryBudget != null
+          ? {
+              budgetUsdPerYear: militaryBudget,
+              budgetLabel: "Military spending",
+            }
+          : {}),
         jobQuote: {
           text: "promote the general welfare",
           source: `${leader.countryName} — job description, every citizen, every day`,

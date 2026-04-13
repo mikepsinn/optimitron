@@ -84,7 +84,7 @@ export function TaskAssigneeCard({
                 {profile.budgetUsdPerYear != null ? (
                   <div>
                     <dt className="text-xs font-black uppercase text-muted-foreground">
-                      Budget
+                      {profile.budgetLabel ?? "Budget"}
                     </dt>
                     <dd>{formatCompactCurrency(profile.budgetUsdPerYear)}/yr</dd>
                   </div>

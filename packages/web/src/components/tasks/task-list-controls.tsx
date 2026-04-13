@@ -5,13 +5,15 @@ import {
   TaskRow,
   TaskTableHeader,
   getTaskSortValue,
+  type TaskListVariant,
   type TaskSortKey,
 } from "./task-row";
 import type { TaskCardTask } from "./task-card";
 
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
-  { key: "deathsLockedIn", label: "Deaths Locked In" },
-  { key: "cost", label: "Cost" },
+  { key: "assigneeBudget", label: "Budget Controlled" },
+  { key: "deathsLockedIn", label: "Deaths From Delay" },
+  { key: "cost", label: "Tax $ Wasted By Delay" },
   { key: "time", label: "Time" },
   { key: "title", label: "Task Name" },
   { key: "assignee", label: "Assignee" },
@@ -21,7 +23,6 @@ const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
 const ASC_SORT_KEYS: ReadonlySet<TaskSortKey> = new Set([
   "title",
   "assignee",
-  "cost",
   "time",
 ]);
 
@@ -42,10 +43,12 @@ export function SortableTaskList({
   tasks,
   defaultSortKey = "deathsLockedIn",
   defaultSortDir = "desc",
+  variant = "default",
 }: {
   tasks: TaskCardTask[];
   defaultSortKey?: TaskSortKey;
   defaultSortDir?: "asc" | "desc";
+  variant?: TaskListVariant;
 }) {
   const [sortKey, setSortKey] = useState<TaskSortKey>(defaultSortKey);
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
@@ -119,10 +122,17 @@ export function SortableTaskList({
         </div>
       </div>
 
-      <TaskTableHeader sortKey={sortKey} sortDir={sortDir} onSort={handleHeaderSort} />
+      <TaskTableHeader
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSort={handleHeaderSort}
+        variant={variant}
+      />
       <div className="divide-y divide-foreground/10">
         {sorted.length > 0 ? (
-          sorted.map((task) => <TaskRow key={task.id} task={task} />)
+          sorted.map((task) => (
+            <TaskRow key={task.id} task={task} variant={variant} />
+          ))
         ) : (
           <div className="px-4 py-6 text-center text-xs font-bold text-muted-foreground">
             No tasks match &quot;{filter}&quot;.

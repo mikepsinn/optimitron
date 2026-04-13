@@ -269,7 +269,6 @@ export default async function TaskDetailPage({
           <TaskHeroStats
             perDayDalys={task.impact?.selectedFrame?.delayDalysLostPerDayBase}
             perDayUsd={task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase}
-            costUsd={task.impact?.selectedFrame?.estimatedCashCostUsdBase}
             effortHours={task.estimatedEffortHours}
             dueAt={task.dueAt}
           />
@@ -279,7 +278,7 @@ export default async function TaskDetailPage({
           {task.isPublic ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold uppercase text-muted-foreground">
-                Share:
+                Send reminder:
               </span>
               <TaskShareButtons
                 taskId={task.id}

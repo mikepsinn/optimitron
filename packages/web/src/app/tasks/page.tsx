@@ -1,13 +1,18 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
-import { Button } from "@/components/retroui/Button";
+import type { TaskCardTask } from "@/components/tasks/task-card";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
+import {
+  formatCompactCount,
+  formatCompactCurrency,
+  formatDelayDuration,
+  getTaskDelayStats,
+} from "@/lib/tasks/accountability";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
+import { tasksLink } from "@/lib/routes";
 import { getTasksPageData } from "@/lib/tasks.server";
-import { earthOptimizationPrizeWinCondition } from "@optimitron/data/parameters";
 
 export const metadata = getRouteMetadata(tasksLink);
 
@@ -20,9 +25,75 @@ function Section({
 }) {
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-bold uppercase tracking-wide">{title}</h2>
+      <h2 className="text-2xl font-black tracking-tight sm:text-3xl">{title}</h2>
       {children}
     </section>
+  );
+}
+
+/**
+ * One program child of the root task — e.g. Ratify the 1% Treaty. Renders as
+ * a BrutalCard with the task title, a 1-line description, and headline stats
+ * (deaths from delay, taxpayer money wasted). The card is a link to the
+ * task's detail page. Descendants (e.g. signer children) can be rendered
+ * underneath by the caller with an indent.
+ */
+function ProgramCard({ task }: { task: TaskCardTask }) {
+  const delayStats = getTaskDelayStats(task);
+  const delayDalysPerDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase ?? null;
+  const deathsFromDelay =
+    delayDalysPerDay != null && delayStats.currentDelayDays > 0
+      ? (delayDalysPerDay * delayStats.currentDelayDays) / 40
+      : null;
+  const moneyWasted = delayStats.currentEconomicValueUsdLost;
+  const overdueLabel =
+    delayStats.isOverdue && delayStats.currentDelayDays > 0
+      ? formatDelayDuration(delayStats.currentDelayDays)
+      : null;
+
+  return (
+    <Link href={`/tasks/${task.id}`} className="block">
+      <BrutalCard
+        bgColor="background"
+        padding="lg"
+        className="transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
+      >
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h3 className="text-2xl font-black uppercase leading-tight sm:text-3xl">
+              {task.title}
+            </h3>
+            {overdueLabel ? (
+              <span className="border-2 border-foreground bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
+                {overdueLabel} overdue
+              </span>
+            ) : null}
+          </div>
+          {deathsFromDelay != null || moneyWasted != null ? (
+            <div className="flex flex-wrap gap-4 text-sm font-bold">
+              {deathsFromDelay != null && deathsFromDelay > 0 ? (
+                <span>
+                  💀{" "}
+                  <span className="font-black">
+                    {formatCompactCount(deathsFromDelay)}
+                  </span>{" "}
+                  deaths from delay
+                </span>
+              ) : null}
+              {moneyWasted != null && moneyWasted > 0 ? (
+                <span>
+                  🔥{" "}
+                  <span className="font-black">
+                    {formatCompactCurrency(moneyWasted)}
+                  </span>{" "}
+                  tax $ wasted by delay
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </BrutalCard>
+    </Link>
   );
 }
 
@@ -30,112 +101,111 @@ export default async function TasksPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
   const data = await getTasksPageData(userId);
-  const signInHref = getSignInPath(ROUTES.tasks);
+
+  const prizeRoot = data.topLevelTasks.find(
+    (t) => t.id === "win-earth-optimization-prize",
+  );
+  const otherRoots = data.topLevelTasks.filter(
+    (t) => t.id !== "win-earth-optimization-prize",
+  );
+  const signerTasks = data.allTasks.filter((task) =>
+    task.taskKey?.startsWith("program:one-percent-treaty:signer:"),
+  );
+  const programChildren = (prizeRoot?.childTasks ?? []) as unknown as TaskCardTask[];
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
-        <section className="space-y-6 text-center">
-          <h1 className="text-4xl font-black uppercase leading-tight sm:text-5xl md:text-6xl">
-            Your Employees&apos; To-Do List
-          </h1>
-          <p className="mx-auto max-w-3xl text-base font-bold sm:text-lg">
-            You pay world governments $44 trillion per year. Their job description is four words:
-          </p>
-          <BrutalCard bgColor="yellow" shadowSize={8} className="mx-auto max-w-xl p-6">
-            <p className="text-2xl font-black uppercase sm:text-3xl">
-              &ldquo;Promote the general welfare&rdquo;
-            </p>
-          </BrutalCard>
-          <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
-            Here is their to-do list. Here is how late they are.
-          </p>
-          {!userId ? (
-            <div className="mx-auto flex max-w-xl items-center gap-3 border-2 border-primary bg-muted/30 px-4 py-3 text-left">
-              <p className="flex-1 text-sm font-bold">
-                Sign in for your personalized task feed.
-              </p>
-              <Button asChild size="sm" className="font-bold uppercase">
-                <Link href={signInHref}>Sign In</Link>
-              </Button>
-            </div>
-          ) : null}
-        </section>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
+        {/*
+          Root task hero — literally the "Promote the General Welfare" root
+          task. The 3 programs below are its direct children. Each program
+          card may have its own grandchildren (e.g. treaty → 193 signers)
+          rendered indented immediately beneath.
+        */}
+        {prizeRoot ? (
+          <Link
+            href={`/tasks/${prizeRoot.id}`}
+            className="block"
+            aria-label="Open the Promote the General Welfare root task"
+          >
+            <BrutalCard
+              bgColor="yellow"
+              shadowSize={8}
+              className="p-8 text-center transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            >
+              <div className="space-y-4">
+                <p className="text-xs font-black uppercase tracking-[0.2em]">
+                  ⚡ Your Employees&apos; To-Do List
+                </p>
+                <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
+                  Promote the General Welfare
+                </h1>
+                <p className="mx-auto max-w-3xl text-base font-bold sm:text-lg">
+                  The literal job description of every government on Earth. You pay
+                  them $44 trillion a year to do it. They&apos;re behind. Below is the
+                  list — under each employee is a polite reminder you can send.
+                </p>
+              </div>
+            </BrutalCard>
+          </Link>
+        ) : null}
 
-        {(() => {
-          const prizeRoot = data.topLevelTasks.find(
-            (t) => t.id === "win-earth-optimization-prize",
-          );
-          const otherRoots = data.topLevelTasks.filter(
-            (t) => t.id !== "win-earth-optimization-prize",
-          );
-          const { hale, medianIncome, deadlineYear } =
-            earthOptimizationPrizeWinCondition;
+        {/*
+          Tree view: each program child renders as a card. If the program is
+          the 1% Treaty, the 193 signer grandchildren render directly beneath
+          it with a left-indent so the parent-child relationship is visible.
+        */}
+        {programChildren.map((program) => {
+          const isTreaty = program.id === "1-pct-treaty";
+          const programSignerCount = isTreaty ? signerTasks.length : 0;
           return (
-            <>
-              {prizeRoot ? (
-                <section className="space-y-4">
-                  <Link href={`/tasks/${prizeRoot.id}`} className="block">
-                    <BrutalCard bgColor="yellow" shadowSize={8} className="p-6">
-                      <div className="flex flex-col gap-3">
-                        <span className="text-xs font-black uppercase">
-                          The Goal
-                        </span>
-                        <h2 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
-                          {prizeRoot.title}
-                        </h2>
-                        <p className="text-sm font-bold">
-                          By {deadlineYear}: hit{" "}
-                          <span className="font-black">
-                            {hale.target.toFixed(1)} healthy life-years
-                          </span>{" "}
-                          (now {hale.baseline.toFixed(1)}) and median income of{" "}
-                          <span className="font-black">
-                            ${Math.round(medianIncome.target).toLocaleString()}
-                          </span>{" "}
-                          (now ${Math.round(medianIncome.baseline).toLocaleString()}).
-                          Every task below is a bet on moving these two numbers.
-                        </p>
-                      </div>
-                    </BrutalCard>
-                  </Link>
-                  {prizeRoot.childTasks && prizeRoot.childTasks.length > 0 ? (
-                    <Section title="Highest-Value Blocking Programs">
-                      <SortableTaskList tasks={prizeRoot.childTasks} />
-                    </Section>
-                  ) : null}
-                </section>
+            <div key={program.id} className="space-y-4">
+              <ProgramCard task={program} />
+              {isTreaty && programSignerCount > 0 ? (
+                <div className="ml-6 space-y-3 border-l-4 border-foreground/20 pl-6 sm:ml-10">
+                  <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                    ↳ {programSignerCount} of your employees have this on their to-do list
+                  </h2>
+                  <SortableTaskList
+                    tasks={signerTasks}
+                    defaultSortKey="assigneeBudget"
+                    defaultSortDir="desc"
+                    variant="signer"
+                  />
+                </div>
               ) : null}
-
-              {otherRoots.length > 0 ? (
-                <Section title="Other Blocking Programs">
-                  <SortableTaskList tasks={otherRoots} />
-                </Section>
-              ) : null}
-            </>
+            </div>
           );
-        })()}
+        })}
 
+        {/* Other top-level tasks not under the prize root (rare) */}
+        {otherRoots.length > 0 ? (
+          <Section title="Other blocking programs">
+            <SortableTaskList tasks={otherRoots as unknown as TaskCardTask[]} />
+          </Section>
+        ) : null}
+
+        {/* Authenticated-only personal sections */}
         {userId && data.ownedPrivateTasks.length > 0 ? (
-          <Section title="My Private Tasks">
+          <Section title="My private tasks">
             <SortableTaskList tasks={data.ownedPrivateTasks} />
           </Section>
         ) : null}
 
         {userId && data.forYou.length > 0 ? (
-          <Section title="For You">
+          <Section title="For you">
             <SortableTaskList tasks={data.forYou.slice(0, 12)} />
           </Section>
         ) : null}
 
         {data.assignedToYou.length > 0 ? (
-          <Section title="Assigned To You">
+          <Section title="Assigned to you">
             <SortableTaskList tasks={data.assignedToYou} />
           </Section>
         ) : null}
 
         {userId && data.myClaims.length > 0 ? (
-          <Section title="My Claims">
+          <Section title="My claims">
             <SortableTaskList
               tasks={data.myClaims.map((claim) => ({
                 ...claim.task,
@@ -145,12 +215,6 @@ export default async function TasksPage() {
                 viewerHasClaim: true,
               }))}
             />
-          </Section>
-        ) : null}
-
-        {data.allTasks.length > 0 ? (
-          <Section title="All Tasks">
-            <SortableTaskList tasks={data.allTasks.slice(0, 50)} />
           </Section>
         ) : null}
       </div>

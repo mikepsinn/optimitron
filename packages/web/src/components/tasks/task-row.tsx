@@ -17,20 +17,30 @@ export type TaskSortKey =
   | "status"
   | "deathsLockedIn"
   | "cost"
-  | "time";
+  | "time"
+  | "assigneeBudget";
 
-/** Below this threshold, cost is treated as −∞ for display purposes. */
-const NEGATIVE_INFINITY_COST_THRESHOLD = -1e17;
 /** Healthy life-years lost per averted death (child-skewed global average). */
 const YEARS_PER_AVERTED_DEATH = 40;
 
-/** Format raw cost. Renders "−∞" for sentinel values. */
-function formatCost(value: number | null | undefined): string {
-  if (value == null) return "—";
-  if (value <= NEGATIVE_INFINITY_COST_THRESHOLD) return "−∞";
-  if (value < 0) return `−${formatCompactCurrency(Math.abs(value))}`;
-  if (value === 0) return "$0";
+/** Format the taxpayer money wasted by delay as a display string. */
+function formatMoneyWasted(value: number | null | undefined): string {
+  if (value == null || value <= 0) return "—";
   return formatCompactCurrency(value);
+}
+
+/** Pull the assignee's military budget from contextJson, if present. */
+function getMilitaryBudgetUsd(task: TaskCardTask): number | null {
+  const context = task.contextJson;
+  if (!context || typeof context !== "object") return null;
+  const profile = (context as { assigneeProfile?: { budgetUsdPerYear?: number } })
+    .assigneeProfile;
+  return typeof profile?.budgetUsdPerYear === "number" ? profile.budgetUsdPerYear : null;
+}
+
+/** True when a task is assigned to the "Humanity" org — i.e. "you". */
+function isAssignedToYou(task: TaskCardTask): boolean {
+  return task.assigneeOrganization?.slug === "humanity";
 }
 
 /** Format an estimated effort duration. Sub-minute → seconds, sub-hour → minutes, else hours. */
@@ -103,19 +113,24 @@ const SORT_LABELS: Record<TaskSortKey, string> = {
   title: "Task",
   assignee: "Assignee",
   status: "Status",
-  deathsLockedIn: "Deaths Locked In",
-  cost: "Cost",
+  deathsLockedIn: "Deaths From Delay",
+  cost: "Tax $ Wasted By Delay",
   time: "Time",
+  assigneeBudget: "Budget Controlled",
 };
+
+export type TaskListVariant = "default" | "signer";
 
 export function TaskTableHeader({
   sortKey,
   sortDir,
   onSort,
+  variant = "default",
 }: {
   sortKey?: TaskSortKey;
   sortDir?: "asc" | "desc";
   onSort?: (key: TaskSortKey) => void;
+  variant?: TaskListVariant;
 }) {
   function headerCell(key: TaskSortKey, className: string) {
     const isActive = sortKey === key;
@@ -132,6 +147,21 @@ export function TaskTableHeader({
 
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
+  if (variant === "signer") {
+    // Dense signer leaderboard: photo · leader name · budget · remind · details
+    return (
+      <div className="flex items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2">
+        <span className="h-8 w-8 shrink-0" />
+        {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
+        {headerCell("assigneeBudget", `hidden w-32 shrink-0 text-right sm:block ${hdr}`)}
+        <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          Remind
+        </span>
+        <span className="w-12 shrink-0" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2">
       <span className="h-8 w-8 shrink-0" />
@@ -142,7 +172,7 @@ export function TaskTableHeader({
       {headerCell("cost", `hidden w-24 shrink-0 text-right lg:block ${hdr}`)}
       {headerCell("time", `hidden w-16 shrink-0 text-right xl:block ${hdr}`)}
       <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
-        Share
+        Remind
       </span>
       <span className="w-12 shrink-0" />
     </div>
@@ -151,12 +181,18 @@ export function TaskTableHeader({
 
 export function TaskRow({
   task,
+  variant = "default",
 }: {
   task: TaskCardTask;
+  variant?: TaskListVariant;
 }) {
   const delayStats = getTaskDelayStats(task);
-  const targetLabel =
-    task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
+  const assignedToYou = isAssignedToYou(task);
+  const targetLabel = assignedToYou
+    ? "You"
+    : task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
+  const assigneeBudget = getMilitaryBudgetUsd(task);
+  const isSignerTask = task.assigneePerson != null && assigneeBudget != null;
   const fallbackInitials = targetLabel
     .split(/\s+/)
     .slice(0, 2)
@@ -176,7 +212,7 @@ export function TaskRow({
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
 
   const perDayDalys = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
-  const cost = task.impact?.selectedFrame?.estimatedCashCostUsdBase ?? null;
+  const moneyWasted = delayStats.currentEconomicValueUsdLost;
   const time = task.estimatedEffortHours;
 
   // Continuous death counter inputs: convert per-day healthy life-years lost
@@ -203,6 +239,43 @@ export function TaskRow({
       </Avatar.Fallback>
     </Avatar>
   );
+
+  // Dense signer leaderboard row — 4 cells: photo · name · budget · remind · details
+  if (variant === "signer") {
+    return (
+      <div
+        className={`flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
+      >
+        {assigneeHref ? (
+          <Link href={assigneeHref} className="shrink-0" title={targetLabel}>
+            {avatarEl}
+          </Link>
+        ) : (
+          avatarEl
+        )}
+        <Link
+          href={`/tasks/${task.id}`}
+          className="min-w-0 flex-1 truncate text-sm font-bold underline-offset-4 hover:underline"
+        >
+          {targetLabel}
+        </Link>
+        <div className="hidden w-32 shrink-0 text-right text-sm font-black sm:block">
+          {assigneeBudget != null ? formatCompactCurrency(assigneeBudget) : "—"}
+        </div>
+        <div className="hidden shrink-0 md:block">
+          {task.isPublic ? (
+            <TaskRowShare shareText={shareText} taskId={task.id} />
+          ) : null}
+        </div>
+        <Link
+          href={`/tasks/${task.id}`}
+          className="w-12 shrink-0 text-right text-xs font-bold uppercase underline underline-offset-4"
+        >
+          Details
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -261,11 +334,13 @@ export function TaskRow({
                 startMs={deathClockStartMs}
                 yearsPerDeath={YEARS_PER_AVERTED_DEATH}
               />
-              <span className="ml-1">deaths locked in</span>
+              <span className="ml-1">deaths from delay</span>
             </StatusBadge>
           ) : null}
-          {cost != null ? (
-            <StatusBadge>cost {formatCost(cost)}</StatusBadge>
+          {moneyWasted != null && moneyWasted > 0 ? (
+            <StatusBadge variant="overdue">
+              {formatMoneyWasted(moneyWasted)} wasted
+            </StatusBadge>
           ) : null}
           {time != null && time > 0 ? (
             <StatusBadge>{formatDuration(time)}</StatusBadge>
@@ -318,12 +393,24 @@ export function TaskRow({
         )}
       </div>
 
-      {/* Cost — desktop */}
-      <ImpactCell
-        value={formatCost(cost)}
-        href={calculationsUrl}
-        className="hidden w-24 lg:block"
-      />
+      {/* Taxpayer money wasted by delay — desktop (budget on signer rows) */}
+      {isSignerTask ? (
+        <ImpactCell
+          value={
+            assigneeBudget != null
+              ? formatCompactCurrency(assigneeBudget)
+              : "—"
+          }
+          href={null}
+          className="hidden w-24 lg:block"
+        />
+      ) : (
+        <ImpactCell
+          value={formatMoneyWasted(moneyWasted)}
+          href={calculationsUrl}
+          className="hidden w-24 lg:block"
+        />
+      )}
 
       {/* Time required — xl desktop */}
       <ImpactCell
@@ -351,16 +438,19 @@ export function TaskRow({
 export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string | number {
   switch (key) {
     case "deathsLockedIn": {
-      // Higher deaths locked in = bigger problem; sort desc by default
+      // Higher deaths from delay = bigger problem; sort desc by default
       const perDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
       return perDay != null ? perDay : 0;
     }
     case "cost":
-      // Lower cost = better; ascending puts the −∞ treaty first
-      return task.impact?.selectedFrame?.estimatedCashCostUsdBase ?? Infinity;
+      // Higher taxpayer $ wasted per day of delay = more urgent; sort desc by default
+      return task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? 0;
     case "time":
       // Lower time required = easier; ascending puts fastest first
       return task.estimatedEffortHours ?? Infinity;
+    case "assigneeBudget":
+      // Higher military budget = more shameable; sort desc by default
+      return getMilitaryBudgetUsd(task) ?? 0;
     case "assignee":
       return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? "";
     case "status":

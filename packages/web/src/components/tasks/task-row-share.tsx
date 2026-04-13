@@ -38,7 +38,7 @@ export function TaskRowShare({
     <div ref={ref} className="relative">
       <button
         type="button"
-        title="Share"
+        title="Send reminder"
         className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
         onClick={() => setOpen((v) => !v)}
       >

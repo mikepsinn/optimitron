@@ -478,6 +478,10 @@ const TASK_CONTEXT_JSON_SCHEMA = {
           type: "number",
           description: "Annual budget the assignee controls in USD (e.g. military spending for a head of gov)",
         },
+        budgetLabel: {
+          type: "string",
+          description: "What kind of budget this is, e.g. 'Military spending', 'Agency operating budget', 'District appropriations'. Displayed next to budgetUsdPerYear on the detail page.",
+        },
         jobQuote: {
           type: "object" as const,
           description: "Job description quote attributed to a source document (constitution, charter, etc.)",

@@ -22,6 +22,12 @@ const AssigneeProfileSchema = z.object({
   employerCountLabel: z.string().optional(),
   salaryUsdPerYear: z.number().optional(),
   budgetUsdPerYear: z.number().optional(),
+  /**
+   * Human label for the budget. The number at `budgetUsdPerYear` is domain-agnostic
+   * — this label specifies what kind of budget it is ("Military spending",
+   * "Agency operating budget", "District appropriations"). Defaults to "Budget".
+   */
+  budgetLabel: z.string().optional(),
   jobQuote: z
     .object({ text: z.string(), source: z.string() })
     .optional(),

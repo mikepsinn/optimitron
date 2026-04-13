@@ -46,7 +46,7 @@ export function TaskShareButtons({
   return (
     <ShareLinkButtons
       emailSubject={taskTitle}
-      label={variant === "icon" ? undefined : "Share This Task"}
+      label={variant === "icon" ? undefined : "Send reminder"}
       onShare={() => { void trackShare(); }}
       shareText={shareText}
       url={taskUrl}

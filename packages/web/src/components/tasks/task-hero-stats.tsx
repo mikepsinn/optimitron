@@ -7,28 +7,13 @@ interface TaskHeroStatsProps {
   perDayDalys: number | null | undefined;
   /** USD lost per day of delay (from impact frame). */
   perDayUsd?: number | null | undefined;
-  /** Net cash cost. Sentinel ≤ -1e17 renders as "Pays for itself". */
-  costUsd: number | null | undefined;
   /** Estimated effort hours. */
   effortHours: number | null | undefined;
   /** Due date — used as the death-counter clock origin. */
   dueAt: Date | null | undefined;
 }
 
-const NEGATIVE_INFINITY_COST_THRESHOLD = -1e17;
 const YEARS_PER_AVERTED_DEATH = 40;
-
-function formatCost(value: number | null | undefined): string {
-  if (value == null) return "—";
-  if (value <= NEGATIVE_INFINITY_COST_THRESHOLD) return "Pays for itself";
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "−" : "";
-  if (abs >= 1e12) return `${sign}$${(abs / 1e12).toFixed(2)}T`;
-  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`;
-  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(2)}M`;
-  if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(1)}K`;
-  return `${sign}$${abs.toFixed(0)}`;
-}
 
 function formatDuration(hours: number | null | undefined): string {
   if (hours == null || hours <= 0) return "—";
@@ -56,17 +41,15 @@ const BG_CLASS: Record<HeroCell["bg"], string> = {
 
 /**
  * Stat strip that crowns any task detail page. Cells are rendered
- * conditionally based on what data the task actually has — there is no
- * treaty-specific logic here. Colors reflect the *meaning* of each value:
- * red for ongoing harm (death counter), green for net-negative cost
- * (you earn money), pink for normal cost, yellow for time required.
- *
- * If a task has no impact data at all, the strip renders nothing.
+ * conditionally based on what data the task actually has. Every task is
+ * either a reallocation or a positive-ROI investment in the Earth Optimization
+ * Machine frame — there is no "cost" cell because there is no cost. The
+ * interesting numbers are all delay costs: deaths caused by the delay,
+ * taxpayer money wasted by the delay, and the time it would take to ship it.
  */
 export function TaskHeroStats({
   perDayDalys,
   perDayUsd,
-  costUsd,
   effortHours,
   dueAt,
 }: TaskHeroStatsProps) {
@@ -94,24 +77,13 @@ export function TaskHeroStats({
     });
   }
 
-  // Money counter — matching ticker for taxpayer cost of delay
+  // Money counter — taxpayer dollars wasted while the task waits
   if (usdPerSecond != null && dueMs != null && isOverdue) {
     cells.push({
-      label: "🔥 Money burned by delay",
+      label: "🔥 Tax $ wasted by delay",
       bg: "red",
       value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
       caption: "Foregone economic value every second this sits open.",
-    });
-  }
-
-  // Cost — green if net-negative (you earn), pink if positive (you pay)
-  if (costUsd != null) {
-    const isNegative = costUsd < 0;
-    cells.push({
-      label: isNegative ? "💰 Net cost" : "💰 Cost",
-      bg: isNegative ? "green" : "pink",
-      value: formatCost(costUsd),
-      caption: isNegative ? "After externalities. Pays for itself." : undefined,
     });
   }
 
