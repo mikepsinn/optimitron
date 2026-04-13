@@ -7,6 +7,11 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import {
+  SIPRI_MILITARY_SPENDING_2024_SOURCE_URL,
+  SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR,
+  SIPRI_WORLD_MILITARY_SPENDING_USD_2024,
+} from "@optimitron/data/parameters";
+import {
   buildTreatyAcceptanceCriteria,
   buildTreatyImpactStatement,
   buildTreatySignerContactTemplate,
@@ -23,9 +28,6 @@ import {
   TREATY_SIGNER_TASK_TITLE,
 } from "./task-keys";
 export const TREATY_DUE_AT = new Date("2024-12-31T00:00:00.000Z");
-export const SIPRI_WORLD_MILITARY_SPENDING_USD_2024 = 2_718_000_000_000;
-export const SIPRI_MILITARY_SPENDING_2024_SOURCE_URL =
-  "https://www.sipri.org/sites/default/files/2025-04/2504_fs_milex_2024.pdf";
 
 const SCALEABLE_FRAME_KEYS = [
   "delayDalysLostPerDayBase",
@@ -126,7 +128,7 @@ function buildTreatySignerSourceArtifacts(
         countryIso3: slot.countryIso3,
         countryName: slot.countryName,
         militaryBudgetUsd: slot.militaryBudgetUsd,
-        snapshotYear: 2024,
+        snapshotYear: SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR,
         worldMilitarySpendingUsd: SIPRI_WORLD_MILITARY_SPENDING_USD_2024,
       },
       sourceKey: `external:sipri:military-expenditure-2024:${slot.countryCode.toLowerCase()}`,

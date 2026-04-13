@@ -1,5 +1,5 @@
 /**
- * Curated leader activities for the accountability ledger.
+ * Leader activity dataset for the public employee review ledger.
  *
  * Each activity becomes a VERIFIED task assigned to the leader's Person record
  * with impact metrics reflecting the actual cost/harm/benefit.
@@ -12,7 +12,7 @@
 
 export type ActivityImpactTier = "harm" | "measured-benefit" | "unmeasured";
 
-export interface LeaderActivityDraft {
+export interface LeaderActivityRecord {
   /** ISO-2 country code matching TreatySignerSlot.countryCode */
   countryCode: string;
   /** URL-safe slug, unique within country (produces taskKey: accountability:{cc}:{slug}) */
@@ -50,17 +50,13 @@ export interface LeaderActivityDraft {
   additionalSourceUrls: string[];
 }
 
-export const ACCOUNTABILITY_TASK_KEY_PREFIX = "accountability";
-
-export function getActivityTaskKey(countryCode: string, activitySlug: string) {
-  return `${ACCOUNTABILITY_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${activitySlug}`;
-}
+export type LeaderActivityDraft = LeaderActivityRecord;
 
 // ---------------------------------------------------------------------------
 // Activity Data
 // ---------------------------------------------------------------------------
 
-export const LEADER_ACTIVITIES: LeaderActivityDraft[] = [
+export const LEADER_ACTIVITIES: LeaderActivityRecord[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // UNITED STATES (US)
   // ═══════════════════════════════════════════════════════════════════════════

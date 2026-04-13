@@ -36,9 +36,13 @@ export interface GovernmentProfile extends GovernmentWithLeader {
   metrics: GovernmentMetrics | null;
 }
 
-type CuratedGovernmentRecord = GovernmentRecord;
+export interface GovernmentIdentityInput {
+  code?: string | null;
+  countryName?: string | null;
+  iso3?: string | null;
+}
 
-const CURATED_GOVERNMENTS: CuratedGovernmentRecord[] = [
+const GOVERNMENT_REGISTRY_ROWS: GovernmentRecord[] = [
   {
     code: "US",
     countryName: "United States",
@@ -345,8 +349,74 @@ const CURATED_GOVERNMENTS: CuratedGovernmentRecord[] = [
   },
 ];
 
+const AGGREGATE_GOVERNMENT_ISO3 = new Set([
+  "AFE",
+  "AFW",
+  "ARB",
+  "CEB",
+  "CSS",
+  "EAP",
+  "EAR",
+  "EAS",
+  "ECA",
+  "ECS",
+  "EMU",
+  "EUU",
+  "FCS",
+  "HPC",
+  "IBD",
+  "IBT",
+  "IDA",
+  "IDB",
+  "IDX",
+  "LAC",
+  "LCN",
+  "LDC",
+  "LMY",
+  "LTE",
+  "MAE",
+  "MEA",
+  "MIC",
+  "MNA",
+  "NAC",
+  "OED",
+  "OSS",
+  "PRE",
+  "PSS",
+  "PST",
+  "SAS",
+  "SSA",
+  "SSF",
+  "SST",
+  "TEA",
+  "TEC",
+  "TLA",
+  "TMN",
+  "TSA",
+  "TSS",
+  "WLD",
+]);
+
+const NON_SOVEREIGN_GOVERNMENT_ISO3 = new Set([
+  "ABW",
+  "AIA",
+  "BMU",
+  "CUW",
+  "CYM",
+  "FRO",
+  "GRL",
+  "HKG",
+  "MAC",
+  "MSR",
+  "PRI",
+  "SXM",
+  "TCA",
+  "UVK",
+  "VIR",
+]);
+
 const metricsByCode = new Map(GOVERNMENTS.map((government) => [government.code, government] as const));
-const curatedByCode = new Map(CURATED_GOVERNMENTS.map((government) => [government.code, government] as const));
+const registryRowsByCode = new Map(GOVERNMENT_REGISTRY_ROWS.map((government) => [government.code, government] as const));
 
 function normalizeCountryName(value: string) {
   return value
@@ -371,18 +441,18 @@ function buildDefaultOfficeLabel(headOfGovernmentTitle: string | null, countryNa
 }
 
 function buildGovernmentRecord(code: string): GovernmentRecord {
-  const curated = curatedByCode.get(code) ?? null;
+  const registryRow = registryRowsByCode.get(code) ?? null;
   const metrics = metricsByCode.get(code) ?? null;
   const leader = getLeader(code) ?? null;
-  const iso3 = curated?.iso3 ?? getGovernmentIso3(code);
+  const iso3 = registryRow?.iso3 ?? getGovernmentIso3(code);
   const countryName =
-    curated?.countryName ??
+    registryRow?.countryName ??
     metrics?.name ??
-    leader?.countryName ??
     getGovernmentDisplayName(code) ??
+    leader?.countryName ??
     code;
   const headOfGovernmentTitle =
-    curated?.office.headOfGovernmentTitle ??
+    registryRow?.office.headOfGovernmentTitle ??
     leader?.roleTitle ??
     "Head of Government";
 
@@ -390,18 +460,19 @@ function buildGovernmentRecord(code: string): GovernmentRecord {
     code,
     countryName,
     governmentName:
-      curated?.governmentName ??
+      registryRow?.governmentName ??
       (metrics ? buildDefaultGovernmentName(metrics.name) : buildDefaultGovernmentName(countryName)),
-    governmentWebsite: curated?.governmentWebsite ?? null,
+    governmentWebsite: registryRow?.governmentWebsite ?? null,
     iso3,
     office: {
-      contactEmail: curated?.office.contactEmail ?? null,
-      contactLabel: curated?.office.contactLabel ?? null,
-      contactUrl: curated?.office.contactUrl ?? null,
+      contactEmail: registryRow?.office.contactEmail ?? null,
+      contactLabel: registryRow?.office.contactLabel ?? null,
+      contactUrl: registryRow?.office.contactUrl ?? null,
       headOfGovernmentLabel:
-        curated?.office.headOfGovernmentLabel ?? buildDefaultOfficeLabel(headOfGovernmentTitle, countryName),
+        registryRow?.office.headOfGovernmentLabel ??
+        buildDefaultOfficeLabel(headOfGovernmentTitle, countryName),
       headOfGovernmentTitle,
-      officialSourceUrl: curated?.office.officialSourceUrl ?? null,
+      officialSourceUrl: registryRow?.office.officialSourceUrl ?? null,
     },
   };
 }
@@ -409,7 +480,7 @@ function buildGovernmentRecord(code: string): GovernmentRecord {
 const governmentRegistry = new Map<string, GovernmentRecord>();
 
 for (const code of new Set([
-  ...CURATED_GOVERNMENTS.map((government) => government.code),
+  ...GOVERNMENT_REGISTRY_ROWS.map((government) => government.code),
   ...GOVERNMENTS.map((government) => government.code),
   ...Object.keys(GOVERNMENT_ISO2_TO_ISO3),
 ])) {
@@ -428,6 +499,41 @@ const governmentRegistryList = [...governmentRegistry.values()].sort((left, righ
 
 export function listGovernments() {
   return governmentRegistryList;
+}
+
+function resolveGovernmentIdentity(input: GovernmentIdentityInput | string) {
+  if (typeof input === "string") {
+    const normalized = input.trim().toUpperCase();
+    if (!normalized) {
+      return {
+        code: null,
+        countryName: null,
+        iso3: null,
+      };
+    }
+
+    if (normalized.length === 2) {
+      return {
+        code: normalized,
+        countryName: null,
+        iso3: getGovernmentIso3(normalized),
+      };
+    }
+
+    return {
+      code: getGovernmentCodeForIso3(normalized),
+      countryName: null,
+      iso3: normalized,
+    };
+  }
+
+  const code = input.code?.trim().toUpperCase() ?? null;
+  const iso3 = input.iso3?.trim().toUpperCase() ?? (code ? getGovernmentIso3(code) : null);
+  return {
+    code,
+    countryName: input.countryName?.trim() ?? null,
+    iso3,
+  };
 }
 
 export function getGovernment(codeOrIso3: string) {
@@ -450,6 +556,48 @@ export function getGovernmentByIso3(iso3: string) {
   }
 
   return governmentRegistryByIso3.get(normalized) ?? null;
+}
+
+export function isSovereignGovernment(input: GovernmentIdentityInput | string) {
+  const identity = resolveGovernmentIdentity(input);
+
+  if (identity.iso3 && AGGREGATE_GOVERNMENT_ISO3.has(identity.iso3)) {
+    return false;
+  }
+
+  if (identity.iso3 && NON_SOVEREIGN_GOVERNMENT_ISO3.has(identity.iso3)) {
+    return false;
+  }
+
+  if (identity.countryName && identity.iso3 && identity.countryName.toUpperCase() === identity.iso3) {
+    return false;
+  }
+
+  return true;
+}
+
+export function getCanonicalGovernmentDisplayName(input: GovernmentIdentityInput | string) {
+  const identity = resolveGovernmentIdentity(input);
+  const government =
+    (identity.code ? getGovernment(identity.code) : null) ??
+    (identity.iso3 ? getGovernmentByIso3(identity.iso3) : null);
+
+  if (government?.countryName.trim()) {
+    return government.countryName;
+  }
+
+  if (identity.code) {
+    const displayName = getGovernmentDisplayName(identity.code);
+    if (displayName) {
+      return displayName;
+    }
+  }
+
+  if (identity.countryName?.trim()) {
+    return identity.countryName.trim();
+  }
+
+  return null;
 }
 
 export function getGovernmentWithLeader(codeOrIso3: string): GovernmentWithLeader | null {
@@ -484,6 +632,10 @@ export function listGovernmentProfiles() {
   return governmentRegistryList
     .map((government) => getGovernmentProfile(government.code))
     .filter((government): government is GovernmentProfile => government !== null);
+}
+
+export function listSovereignGovernments() {
+  return governmentRegistryList.filter((government) => isSovereignGovernment(government));
 }
 
 export function getGovernmentOfficeMetadata(codeOrIso3: string) {

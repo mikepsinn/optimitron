@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
+import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import {
   resolveTaskContactAction,
   type TaskContactDelayStats,
@@ -25,7 +27,12 @@ export function TaskContactActions({
   taskId,
 }: TaskContactActionsProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
-  const taskUrl = useMemo(() => buildTaskUrl(taskId, getBaseUrl()), [taskId]);
+  const { data: session } = useSession();
+  const referralId = getUsernameOrReferralCode(session?.user);
+  const taskUrl = useMemo(
+    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
+    [taskId, referralId],
+  );
   const action = useMemo(
     () => resolveTaskContactAction({ delayStats, task, taskUrl }),
     [delayStats, task, taskUrl],

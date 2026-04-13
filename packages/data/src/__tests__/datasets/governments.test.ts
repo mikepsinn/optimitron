@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { GOVERNMENTS } from "../../datasets/government-report-cards";
 import {
+  getCanonicalGovernmentDisplayName,
   getGovernment,
   getGovernmentByIso3,
   getGovernmentProfile,
+  isSovereignGovernment,
   listGovernments,
+  listSovereignGovernments,
 } from "../../datasets/governments";
 
 describe("governments dataset", () => {
@@ -39,7 +42,7 @@ describe("governments dataset", () => {
     expect(unitedKingdom?.leader?.leaderName).toBe("Keir Starmer");
   });
 
-  it("resolves curated office metadata by iso3", () => {
+  it("resolves canonical office metadata by iso3", () => {
     const unitedStates = getGovernmentByIso3("USA");
     const canada = getGovernmentByIso3("CAN");
 
@@ -51,12 +54,29 @@ describe("governments dataset", () => {
     const denmark = getGovernment("DK");
     const israel = getGovernment("IL");
     const syria = getGovernmentByIso3("SYR");
+    const vaticanName = getCanonicalGovernmentDisplayName({
+      iso3: "VAT",
+      countryName: "VAT",
+    });
 
     expect(denmark?.iso3).toBe("DNK");
     expect(denmark?.countryName).toBe("Denmark");
     expect(israel?.countryName).toBe("Israel");
     expect(syria?.code).toBe("SY");
     expect(syria?.countryName).toBe("Syria");
+    expect(vaticanName).toBe("Holy See (Vatican City)");
+  });
+
+  it("classifies sovereign governments without treaty-specific web logic", () => {
+    const sovereignCodes = new Set(listSovereignGovernments().map((government) => government.code));
+
+    expect(isSovereignGovernment({ iso3: "USA", countryName: "United States" })).toBe(true);
+    expect(isSovereignGovernment({ iso3: "VAT", countryName: "Holy See (Vatican City)" })).toBe(true);
+    expect(isSovereignGovernment({ iso3: "CUW", countryName: "Curacao" })).toBe(false);
+    expect(isSovereignGovernment({ iso3: "FRO", countryName: "Faroe Islands" })).toBe(false);
+    expect(isSovereignGovernment({ iso3: "WLD", countryName: "World" })).toBe(false);
+    expect(sovereignCodes.has("US")).toBe(true);
+    expect(sovereignCodes.has("CW")).toBe(false);
   });
 
   it("keeps the canonical government registry generic rather than treaty-branded", () => {

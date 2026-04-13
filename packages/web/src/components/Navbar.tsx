@@ -88,6 +88,13 @@ export default function Navbar() {
       }),
     }))
     .filter((section) => section.items.length > 0);
+  const primarySections = filteredSections.filter((section) => section.primary);
+  const collapsedSections = filteredSections.filter((section) => !section.primary);
+  // When filtering, expand every matching section. Otherwise keep collapsed
+  // sections closed so the hamburger menu leads with the core funnel.
+  const accordionDefaultValue = normalizedNavQuery
+    ? collapsedSections.map((section) => section.id)
+    : [];
 
   return (
     <nav className="sticky top-0 z-50 border-b-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
@@ -168,13 +175,53 @@ export default function Navbar() {
                   </button>
                 </form>
 
+                {primarySections.length > 0 ? (
+                  <div className="mb-3 flex flex-col border-b-2 border-brutal-yellow-foreground/20 pb-3">
+                    {primarySections.flatMap((section) =>
+                      section.items.map((item) => {
+                        const active = isNavItemActive(pathname, item);
+                        const linkClass = `flex items-center gap-3 px-3 py-3 min-h-[48px] text-base font-black uppercase transition-colors rounded-md ${
+                          active
+                            ? "bg-background/40 text-brutal-yellow-foreground"
+                            : "hover:bg-background/30"
+                        }`;
+
+                        if (item.external) {
+                          return (
+                            <SheetClose asChild key={item.href}>
+                              <a
+                                href={item.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={linkClass}
+                              >
+                                {item.emoji && <span className="text-base">{item.emoji}</span>}
+                                {item.label}
+                              </a>
+                            </SheetClose>
+                          );
+                        }
+
+                        return (
+                          <SheetClose asChild key={item.href}>
+                            <Link href={item.href} className={linkClass}>
+                              {item.emoji && <span className="text-base">{item.emoji}</span>}
+                              {item.label}
+                            </Link>
+                          </SheetClose>
+                        );
+                      }),
+                    )}
+                  </div>
+                ) : null}
+
                 <Accordion
-                  key={filteredSections.map((section) => section.id).join("|")}
+                  key={`${normalizedNavQuery}|${collapsedSections.map((section) => section.id).join("|")}`}
                   type="multiple"
-                  defaultValue={filteredSections.map((section) => section.id)}
+                  defaultValue={accordionDefaultValue}
                   className="w-full"
                 >
-                  {filteredSections.map((section) => (
+                  {collapsedSections.map((section) => (
                     <Accordion.Item key={section.id} value={section.id} className="!border-0 !bg-transparent !shadow-none !rounded-none">
                       <Accordion.Header className="text-xs font-black uppercase tracking-widest py-3 text-brutal-yellow-foreground/60 hover:no-underline">
                         {section.label}

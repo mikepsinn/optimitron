@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { FaShareNodes } from "react-icons/fa6";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
+import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { buildTaskUrl, getBaseUrl } from "@/lib/url";
 
 export function TaskRowShare({
@@ -14,7 +16,12 @@ export function TaskRowShare({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const taskUrl = useMemo(() => buildTaskUrl(taskId, getBaseUrl()), [taskId]);
+  const { data: session } = useSession();
+  const referralId = getUsernameOrReferralCode(session?.user);
+  const taskUrl = useMemo(
+    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
+    [taskId, referralId],
+  );
 
   useEffect(() => {
     if (!open) return;

@@ -1,0 +1,4 @@
+export const SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR = 2024;
+export const SIPRI_WORLD_MILITARY_SPENDING_USD_2024 = 2_718_000_000_000;
+export const SIPRI_MILITARY_SPENDING_2024_SOURCE_URL =
+  "https://www.sipri.org/sites/default/files/2025-04/2504_fs_milex_2024.pdf";

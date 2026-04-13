@@ -572,7 +572,8 @@ export default async function TaskDetailPage({
           </BrutalCard>
         ) : null}
 
-        {contextSections.currentActivities.length > 0 ? (
+        {contextSections.currentActivities.length > 0 &&
+        !task.taskKey?.startsWith("program:one-percent-treaty:signer:") ? (
           <BrutalCard bgColor="yellow" padding="lg">
             <div className="space-y-4">
               <p className="text-sm font-black uppercase text-brutal-pink">

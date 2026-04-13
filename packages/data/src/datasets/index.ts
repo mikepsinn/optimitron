@@ -1,5 +1,5 @@
 /**
- * Curated datasets for Optimitron
+ * Datasets for Optimitron
  *
  * Static, evidence-based datasets compiled from public sources.
  */
@@ -38,6 +38,7 @@ export * from './monetary-policy-panel';
 export * from './government-report-cards';
 export * from './government-code-map';
 export * from './governments';
+export * from './leader-activities';
 export * from './government-death-ledger';
 export * from './government-spending-ratios';
 export * from './agency-performance';

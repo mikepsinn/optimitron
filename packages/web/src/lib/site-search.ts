@@ -73,7 +73,7 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
     title: "Optimitron",
     description:
       "Landing page for the Earth Optimization Game, the 1% Treaty, the prize mechanics, and the core argument for fixing public systems with evidence.",
-    section: "Start Here",
+    section: "Primary",
     keywords: ["landing", "home", "earth optimization game", "planetary debugging"],
   },
   {

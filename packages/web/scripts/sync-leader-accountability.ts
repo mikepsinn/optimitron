@@ -15,7 +15,7 @@
 import "./load-env";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
-import { getCountryPanelLatest } from "@optimitron/data";
+import { getCountryPanelLatest, LEADER_ACTIVITIES } from "@optimitron/data";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
@@ -26,9 +26,8 @@ import {
 } from "../src/lib/tasks/government-task-assignee";
 import { upsertImportedTaskBundle } from "../src/lib/tasks/import-task-bundle.server";
 import {
-  LEADER_ACTIVITIES,
   getActivityTaskKey,
-} from "../src/lib/tasks/leader-activities";
+} from "../src/lib/tasks/leader-activity-keys";
 import {
   buildActivityTaskBundle,
 } from "../src/lib/tasks/leader-accountability-network";

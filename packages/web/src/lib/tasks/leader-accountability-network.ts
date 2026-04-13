@@ -17,6 +17,7 @@ import {
   TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db";
+import type { LeaderActivityRecord } from "@optimitron/data";
 import type {
   ImportedImpactFrameDraft,
   ImportedImpactMetricDraft,
@@ -24,17 +25,14 @@ import type {
   ImportedTaskBundle,
 } from "./opg-obg-adapters";
 import type { TreatySignerSlot } from "./treaty-signer-network";
-import {
-  getActivityTaskKey,
-  type LeaderActivityDraft,
-} from "./leader-activities";
+import { getActivityTaskKey } from "./leader-activity-keys";
 
 // ---------------------------------------------------------------------------
 // Source artifacts
 // ---------------------------------------------------------------------------
 
 function buildActivitySourceArtifacts(
-  activity: LeaderActivityDraft,
+  activity: LeaderActivityRecord,
 ): ImportedSourceArtifactDraft[] {
   const taskKey = getActivityTaskKey(activity.countryCode, activity.activitySlug);
   const artifacts: ImportedSourceArtifactDraft[] = [
@@ -85,7 +83,7 @@ function buildActivitySourceArtifacts(
 // Impact frame + metrics
 // ---------------------------------------------------------------------------
 
-function buildActivityImpactMetrics(activity: LeaderActivityDraft): ImportedImpactMetricDraft[] {
+function buildActivityImpactMetrics(activity: LeaderActivityRecord): ImportedImpactMetricDraft[] {
   const metrics: ImportedImpactMetricDraft[] = [];
 
   if (activity.taxpayerCostUsd != null) {
@@ -152,7 +150,7 @@ function buildActivityImpactMetrics(activity: LeaderActivityDraft): ImportedImpa
   return metrics;
 }
 
-function buildActivityImpactFrame(activity: LeaderActivityDraft): ImportedImpactFrameDraft {
+function buildActivityImpactFrame(activity: LeaderActivityRecord): ImportedImpactFrameDraft {
   // Determine economic value based on tier
   let expectedEconomicValueUsdBase: number | null = null;
   let expectedDalysAvertedBase: number | null = null;
@@ -218,7 +216,7 @@ function buildActivityImpactFrame(activity: LeaderActivityDraft): ImportedImpact
 
 export function buildActivityTaskBundle(
   slot: TreatySignerSlot,
-  activity: LeaderActivityDraft,
+  activity: LeaderActivityRecord,
 ): ImportedTaskBundle {
   const taskKey = getActivityTaskKey(activity.countryCode, activity.activitySlug);
   const completedAt = new Date(activity.completedAt);

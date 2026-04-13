@@ -9,11 +9,11 @@ import {
   TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db";
+import { SIPRI_WORLD_MILITARY_SPENDING_USD_2024 } from "@optimitron/data/parameters";
 import { describe, expect, it } from "vitest";
 import type { PolicyModelRunImportDraft } from "./policy-model-run-to-imported-task-bundle";
 import {
   buildTreatySignerImportDraft,
-  SIPRI_WORLD_MILITARY_SPENDING_USD_2024,
   TREATY_DUE_AT,
   type TreatySignerSlot,
 } from "./treaty-signer-network";

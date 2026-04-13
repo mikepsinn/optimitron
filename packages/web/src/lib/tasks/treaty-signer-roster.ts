@@ -1,5 +1,10 @@
 import type { CountryPanelRow } from "@optimitron/data";
-import { getGovernmentProfile } from "@optimitron/data";
+import {
+  getCanonicalGovernmentDisplayName,
+  getGovernmentCodeForCountryIso3,
+  getGovernmentProfile,
+  isSovereignGovernment,
+} from "@optimitron/data";
 import type { TreatySignerSlot } from "./treaty-signer-network";
 
 type TreatySignerRosterRow = Pick<
@@ -11,92 +16,6 @@ type TreatySignerRosterRow = Pick<
   | "militarySpendingPerCapitaPpp"
   | "population"
 >;
-
-export const COUNTRY_PANEL_AGGREGATE_ISO3 = new Set([
-  "AFE",
-  "AFW",
-  "ARB",
-  "CEB",
-  "CSS",
-  "EAP",
-  "EAR",
-  "EAS",
-  "ECA",
-  "ECS",
-  "EMU",
-  "EUU",
-  "FCS",
-  "HPC",
-  "IBD",
-  "IBT",
-  "IDA",
-  "IDB",
-  "IDX",
-  "LAC",
-  "LCN",
-  "LDC",
-  "LMY",
-  "LTE",
-  "MAE",
-  "MEA",
-  "MIC",
-  "MNA",
-  "NAC",
-  "OED",
-  "OSS",
-  "PRE",
-  "PSS",
-  "PST",
-  "SAS",
-  "SSA",
-  "SSF",
-  "SST",
-  "TEA",
-  "TEC",
-  "TLA",
-  "TMN",
-  "TSA",
-  "TSS",
-  "WLD",
-]);
-
-export const NON_SOVEREIGN_TREATY_SIGNER_ISO3 = new Set([
-  "ABW",
-  "AIA",
-  "BMU",
-  "CUW",
-  "CYM",
-  "FRO",
-  "GRL",
-  "HKG",
-  "MAC",
-  "MSR",
-  "PRI",
-  "SXM",
-  "TCA",
-  "UVK",
-  "VIR",
-]);
-
-const COUNTRY_DISPLAY_NAME_OVERRIDES: Record<string, string> = {
-  BHS: "Bahamas",
-  CZE: "Czechia",
-  EGY: "Egypt",
-  FSM: "Micronesia",
-  GMB: "Gambia",
-  IRN: "Iran",
-  KGZ: "Kyrgyzstan",
-  KOR: "South Korea",
-  LAO: "Laos",
-  RUS: "Russia",
-  SVK: "Slovakia",
-  SYR: "Syria",
-  TUR: "Türkiye",
-  USA: "United States",
-  VAT: "Holy See (Vatican City)",
-  VEN: "Venezuela",
-  YEM: "Yemen",
-};
 
 const EXTRA_SOVEREIGN_SIGNER_ROWS: TreatySignerRosterRow[] = [
   {
@@ -110,22 +29,19 @@ const EXTRA_SOVEREIGN_SIGNER_ROWS: TreatySignerRosterRow[] = [
 ];
 
 function displayCountryName(row: TreatySignerRosterRow) {
-  return COUNTRY_DISPLAY_NAME_OVERRIDES[row.jurisdictionIso3] ?? row.jurisdictionName.trim();
+  return (
+    getCanonicalGovernmentDisplayName({
+      countryName: row.jurisdictionName,
+      iso3: row.jurisdictionIso3,
+    }) ?? row.jurisdictionName.trim()
+  );
 }
 
 export function isSovereignTreatySignerRow(row: TreatySignerRosterRow) {
-  if (
-    COUNTRY_PANEL_AGGREGATE_ISO3.has(row.jurisdictionIso3) ||
-    NON_SOVEREIGN_TREATY_SIGNER_ISO3.has(row.jurisdictionIso3)
-  ) {
-    return false;
-  }
-
-  if (row.jurisdictionName.trim() === row.jurisdictionIso3) {
-    return false;
-  }
-
-  return true;
+  return isSovereignGovernment({
+    countryName: row.jurisdictionName,
+    iso3: row.jurisdictionIso3,
+  });
 }
 
 export function estimateTreatySignerMilitaryBudgetUsd(row: TreatySignerRosterRow) {
@@ -177,7 +93,8 @@ function buildTreatySignerSlot(row: TreatySignerRosterRow): TreatySignerSlot {
     contactEmail: governmentProfile?.office.contactEmail ?? null,
     contactLabel: governmentProfile?.office.contactLabel ?? null,
     contactUrl: governmentProfile?.office.contactUrl ?? null,
-    countryCode: governmentProfile?.code ?? countryIso3,
+    countryCode:
+      governmentProfile?.code ?? getGovernmentCodeForCountryIso3(countryIso3) ?? countryIso3,
     countryIso3,
     countryName,
     decisionMakerLabel,

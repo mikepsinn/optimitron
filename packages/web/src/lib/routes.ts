@@ -573,48 +573,38 @@ export interface NavSection {
   id: string;
   label: string;
   items: NavItem[];
+  /** Primary sections render flat above the collapsed accordion — always visible. */
+  primary?: boolean;
 }
 
 export const navSections: NavSection[] = [
   {
-    id: "start-here",
-    label: "Start Here",
-    items: [aboutLink, videoLink, demoLink, declarationLink],
+    id: "primary",
+    label: "Primary",
+    primary: true,
+    items: [prizeLink, tasksLink, dashboardLink],
   },
   {
-    id: "take-action",
-    label: "Take Action",
-    items: [
-      treatyLink,
-      prizeLink,
-      fundLink,
-      tasksLink,
-      wishocracyLink,
-      alignmentLink,
-      referendumLink,
-      contributeLink,
-    ],
-  },
-  {
-    id: "track-results",
-    label: "Track Results",
+    id: "track",
+    label: "Track",
     items: [
       scoreboardLink,
       governmentsLink,
       politicianLeaderboardLink,
-      opgLink,
-      obgLink,
       efficiencyLink,
       dividendLink,
       governmentSizeLink,
       legislationLink,
       transparencyLink,
+      opgLink,
+      obgLink,
     ],
   },
   {
     id: "systems",
-    label: "Explore Systems",
+    label: "Systems",
     items: [
+      iabLink,
       dtreasuryLink,
       federalReserveLink,
       dirsLink,
@@ -623,19 +613,31 @@ export const navSections: NavSection[] = [
       departmentOfWarLink,
       dihLink,
       dfdaLink,
-      iabLink,
       toolsLink,
+      fundLink,
+      wishocracyLink,
+      alignmentLink,
+      referendumLink,
+      contributeLink,
     ],
   },
   {
-    id: "account",
-    label: "Your Account",
-    items: [dashboardLink, profileLink, transmitLink, censusLink, checkInLink, settingsLink],
-  },
-  {
-    id: "futures",
-    label: "Future Scenarios",
-    items: [wishoniaWorldLink, moroniaLink],
+    id: "learn",
+    label: "Learn",
+    items: [
+      aboutLink,
+      videoLink,
+      demoLink,
+      declarationLink,
+      treatyLink,
+      wishoniaWorldLink,
+      moroniaLink,
+      profileLink,
+      transmitLink,
+      censusLink,
+      checkInLink,
+      settingsLink,
+    ],
   },
 ];
 

@@ -2,10 +2,7 @@ import { NavItemLink } from "@/components/navigation/NavItemLink";
 import {
   fmtParam,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
-  WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-  GLOBAL_DISEASE_DEATHS_DAILY,
   PRIZE_POOL_HORIZON_MULTIPLE,
   PRIZE_POOL_ANNUAL_RETURN,
   TREATY_HALE_GAIN_YEAR_15,
@@ -16,9 +13,7 @@ import {
 } from "@optimitron/data/parameters";
 import {
   contractsSourceLink,
-  earthOptimizationPrizeDetailsLink,
   prizeLink,
-  ROUTES,
 } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/metadata";
 import { VoterPrizeTreasuryDeposit } from "@/components/prize/VoterPrizeTreasuryDeposit";
@@ -53,39 +48,18 @@ const haleGain = fmtParam(TREATY_HALE_GAIN_YEAR_15);
 
 const levels = [
   {
-    level: "LEVEL 1",
+    level: "STEP 1",
     title: "DEPOSIT",
-    description: "Put your papers in the machine. The machine gives you PRIZE shares. Projected growth: " + poolReturn + " annually (based on VC-sector diversification of the Prize fund).",
+    description: `Deposit USDC. You get PRIZE shares. Projected growth: ${poolReturn} annually if the thresholds miss.`,
     color: "bg-brutal-pink",
     textColor: "text-brutal-pink-foreground",
   },
   {
-    level: "LEVEL 2",
+    level: "STEP 2",
     title: "RECRUIT",
     description: `Share your referral link. ${REFERRAL.earnOne} ${REFERRAL.noDeposit}`,
     color: "bg-brutal-yellow",
     textColor: "text-brutal-yellow-foreground",
-  },
-  {
-    level: "LEVEL 3",
-    title: "ALLOCATE",
-    description: "Pick between two things. Then two more. Before you know it, you've designed a coherent budget. Congress can't do this in two years. You'll do it in two minutes.",
-    color: "bg-brutal-cyan",
-    textColor: "text-brutal-cyan-foreground",
-  },
-  {
-    level: "LEVEL 4",
-    title: "VOTE",
-    description: "Vote yes or no on giving 1% fewer papers to the people who build murder machines. World ID confirms you're a real human. (We have to check. Long story.)",
-    color: "bg-brutal-yellow",
-    textColor: "text-brutal-yellow-foreground",
-  },
-  {
-    level: "BOSS LEVEL",
-    title: "WAIT 15 YEARS",
-    description: `Sit there. For fifteen years. If humans are measurably less dead and less poor, ${POINT} holders split the pool. If not, depositors would receive ~${poolMultiple} back (projected). The only boss fight is patience.`,
-    color: "bg-foreground",
-    textColor: "text-background",
   },
 ];
 
@@ -137,19 +111,9 @@ export default async function PrizePage() {
         <p className="text-lg font-bold text-muted-foreground max-w-2xl mx-auto mb-6">
           A dominant assurance game with a projected {poolMultiple} return if thresholds are missed.
         </p>
-        <p className="text-base font-bold text-foreground max-w-2xl mx-auto mb-4">
-          We are currently seeking a foundation to host the Earth Optimization
-          Prize Fund. All figures below are projections based on VC-sector
-          diversification — not promises.
+        <p className="text-base font-bold text-foreground max-w-2xl mx-auto">
+          All figures are projections based on VC-sector diversification — not promises.
         </p>
-        <NavItemLink
-          item={earthOptimizationPrizeDetailsLink}
-          variant="custom"
-          external
-          className="inline-flex items-center text-sm font-black text-brutal-pink uppercase hover:text-foreground transition-colors"
-        >
-          Read Full Prize Details &rarr;
-        </NavItemLink>
       </section>
 
       {/* GAME OVER CARDS — The Two Outcomes */}
@@ -169,6 +133,54 @@ export default async function PrizePage() {
         />
       </section>
 
+      {/* THE TWO NUMBERS */}
+      <section className="mb-16">
+        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
+          Win Conditions
+        </h2>
+        <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl text-center mx-auto">
+          Two numbers. If both rise by 2040, the pool splits to {POINT} holders. If not, depositors claim principal + projected growth.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-mono text-lg font-black mb-2 uppercase">
+              Median Healthy Life Years
+            </h3>
+            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
+              <span>Now: {fmtParam(GLOBAL_HALE_CURRENT)}</span>
+              <span>Target: {fmtParam(TREATY_PROJECTED_HALE_YEAR_15)}</span>
+            </div>
+            <div className="h-4 bg-brutal-cyan-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+              <div
+                className="h-full bg-brutal-cyan-foreground"
+                style={{ width: `${(GLOBAL_HALE_CURRENT.value / TREATY_PROJECTED_HALE_YEAR_15.value * 100).toFixed(0)}%` }}
+              />
+            </div>
+            <p className="font-mono text-xs font-black mt-1 text-center">
+              +{fmtParam(TREATY_HALE_GAIN_YEAR_15)} by 2040
+            </p>
+          </div>
+          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-mono text-lg font-black mb-2 uppercase">
+              Median Real After-Tax Income
+            </h3>
+            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
+              <span>Now: {fmtParam(GLOBAL_AVG_INCOME_2025)}</span>
+              <span>Target: {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)}</span>
+            </div>
+            <div className="h-4 bg-brutal-yellow-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
+              <div
+                className="h-full bg-brutal-yellow-foreground"
+                style={{ width: `${(GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value * 100).toFixed(0)}%` }}
+              />
+            </div>
+            <p className="font-mono text-xs font-black mt-1 text-center">
+              {fmtParam(GLOBAL_AVG_INCOME_2025)} → {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)} by 2040
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* INSERT COIN — Deposit Section */}
       <section id="invest" className="mb-16">
         <div className="border-4 border-primary bg-brutal-pink text-brutal-pink-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -181,46 +193,6 @@ export default async function PrizePage() {
             wins. This is the first arcade game in history where the house loses on purpose.
           </p>
           <VoterPrizeTreasuryDeposit />
-        </div>
-        <div className="border-4 border-primary border-t-0 bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="text-sm text-foreground font-bold leading-relaxed">
-            On my planet, arcade games don&apos;t take your money. Yours do.
-            This one doesn&apos;t. It&apos;s all on-chain — no admin keys, no
-            committees, no fine print.
-          </p>
-          <NavItemLink
-            item={contractsSourceLink}
-            variant="custom"
-            external
-            className="inline-flex items-center mt-3 text-xs font-black text-brutal-pink uppercase hover:text-foreground transition-colors"
-          >
-            View the smart contracts on GitHub &rarr;
-          </NavItemLink>
-        </div>
-      </section>
-
-      {/* TRUST BADGES */}
-      <section className="mb-16">
-        <div className="flex flex-wrap justify-center gap-3">
-          {[
-            { label: "Zero Team Allocation", detail: "100% to pool" },
-            { label: "No Pre-Sale", detail: "Same price for everyone" },
-            { label: "Fully On-Chain", detail: "Every tx auditable" },
-            { label: "No Admin Keys", detail: "Contract controls distribution" },
-            { label: "You Win Either Way", detail: `Lose: ~${poolMultiple} · Win: ${incomeGain}+` },
-          ].map((badge) => (
-            <div
-              key={badge.label}
-              className="border-4 border-primary bg-background px-4 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <div className="font-pixel text-xs font-black uppercase text-foreground">
-                {badge.label}
-              </div>
-              <div className="text-[10px] font-bold text-muted-foreground">
-                {badge.detail}
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -254,70 +226,6 @@ export default async function PrizePage() {
               </div>
             </div>
           ))}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <GameCTA href="/scoreboard" variant="cyan" size="sm">High Scores</GameCTA>
-          <GameCTA href={ROUTES.wishocracy} variant="yellow" size="sm">Level 3</GameCTA>
-          <GameCTA href={ROUTES.referendum} variant="primary" size="sm">Level 4</GameCTA>
-        </div>
-      </section>
-
-      {/* THE TWO NUMBERS */}
-      <section className="mb-16">
-        <h2 className="font-pixel text-xl font-black uppercase tracking-tight text-foreground mb-6 text-center">
-          Win Conditions
-        </h2>
-        <p className="text-sm font-bold text-muted-foreground mb-6 max-w-3xl text-center mx-auto">
-          Your species tracks 4,000 economic indicators and understands none of them.
-          Two numbers actually matter. The rest is decorative anxiety.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-4 border-primary bg-brutal-cyan text-brutal-cyan-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black mb-2 uppercase">
-              Median Healthy Life Years
-            </h3>
-            <p className="text-sm leading-relaxed font-bold mb-4">
-              Not &ldquo;are you alive&rdquo; but &ldquo;are you alive and can you
-              open a jar without crying.&rdquo; Median, not mean — one billionaire
-              living to 120 doesn&apos;t mean your healthcare works.
-            </p>
-            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
-              <span>Now: {fmtParam(GLOBAL_HALE_CURRENT)}</span>
-              <span>Target: {fmtParam(TREATY_PROJECTED_HALE_YEAR_15)}</span>
-            </div>
-            <div className="h-4 bg-brutal-cyan-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
-              <div
-                className="h-full bg-brutal-cyan-foreground"
-                style={{ width: `${(GLOBAL_HALE_CURRENT.value / TREATY_PROJECTED_HALE_YEAR_15.value * 100).toFixed(0)}%` }}
-              />
-            </div>
-            <p className="font-mono text-xs font-black mt-1 text-center">
-              +{fmtParam(TREATY_HALE_GAIN_YEAR_15)} by 2040
-            </p>
-          </div>
-          <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-mono text-lg font-black mb-2 uppercase">
-              Median Real After-Tax Income
-            </h3>
-            <p className="text-sm leading-relaxed font-bold mb-4">
-              What can a normal person actually buy after the government&apos;s had
-              its go at their paycheque? Not GDP — that counts arms dealing and
-              divorce lawyers. This counts &ldquo;can you feed your kids.&rdquo;
-            </p>
-            <div className="flex items-center justify-between font-mono text-xs font-black uppercase mb-1">
-              <span>Now: {fmtParam(GLOBAL_AVG_INCOME_2025)}</span>
-              <span>Target: {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)}</span>
-            </div>
-            <div className="h-4 bg-brutal-yellow-foreground/20 border-2 border-primary rounded-sm overflow-hidden">
-              <div
-                className="h-full bg-brutal-yellow-foreground"
-                style={{ width: `${(GLOBAL_AVG_INCOME_2025.value / TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value * 100).toFixed(0)}%` }}
-              />
-            </div>
-            <p className="font-mono text-xs font-black mt-1 text-center">
-              {fmtParam(GLOBAL_AVG_INCOME_2025)} → {fmtParam(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15)} by 2040
-            </p>
-          </div>
         </div>
       </section>
 
@@ -437,10 +345,8 @@ export default async function PrizePage() {
             The break-even probability is 0.0067%. You don&apos;t need to be
             altruistic. You just need to be numerate.
           </p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <div className="flex justify-center">
             <GameCTA href="#invest" variant="secondary">Insert Coin</GameCTA>
-            <GameCTA href="/scoreboard" variant="outline">High Scores</GameCTA>
-            <GameCTA href="https://prize.warondisease.org" variant="outline" external>Read the Manual</GameCTA>
           </div>
         </div>
       </section>

@@ -56,8 +56,10 @@ export function buildCivicVoteUrl(
 export function buildTaskUrl(
   taskId: string,
   baseUrl: string = getBaseUrl(),
+  referralId?: string | null,
 ): string {
-  return `${baseUrl}${ROUTES.tasks}/${taskId}`;
+  const base = `${baseUrl}${ROUTES.tasks}/${taskId}`;
+  return referralId ? `${base}?ref=${referralId}` : base;
 }
 
 /** Build a referendum referral link: /agencies/dcongress/referendums/slug?ref=identifier */

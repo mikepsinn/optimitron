@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+import { useSession } from "next-auth/react";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
+import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { buildTaskUrl, getBaseUrl } from "@/lib/url";
 
 interface TaskShareButtonsProps {
@@ -17,7 +19,12 @@ export function TaskShareButtons({
   taskTitle,
   variant,
 }: TaskShareButtonsProps) {
-  const taskUrl = useMemo(() => buildTaskUrl(taskId, getBaseUrl()), [taskId]);
+  const { data: session } = useSession();
+  const referralId = getUsernameOrReferralCode(session?.user);
+  const taskUrl = useMemo(
+    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
+    [taskId, referralId],
+  );
 
   async function trackShare() {
     try {
