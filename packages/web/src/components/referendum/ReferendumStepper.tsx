@@ -487,17 +487,15 @@ export function ReferendumStepper({
         </>
       )}
 
-      {currentIndex !== signatureIndex && (
-        <button
-          onClick={() => {
-            stopAudio();
-            goToSlide(signatureIndex);
-          }}
-          className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
-        >
-          Skip to sign
-        </button>
-      )}
+      <button
+        onClick={() => {
+          stopAudio();
+          goToSlide(currentIndex === signatureIndex ? 0 : signatureIndex);
+        }}
+        className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
+      >
+        {currentIndex === signatureIndex ? "Go back" : "Skip to sign"}
+      </button>
 
       <div className="relative flex flex-1 items-center justify-center px-6 sm:px-8">
         <div
@@ -516,6 +514,11 @@ export function ReferendumStepper({
         className="absolute bottom-0 right-0 z-20 cursor-pointer"
         aria-label={isPlaying ? "Pause narration" : "Play narration"}
       >
+        {currentIndex === 0 && !isPlaying && (
+          <span className="pointer-events-none absolute bottom-full right-6 mb-1 whitespace-nowrap text-xs font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)] sm:text-sm">
+            Tap to hear me ↓
+          </span>
+        )}
         <div className="sm:hidden">
           <WishoniaCharacter
             size={110}
