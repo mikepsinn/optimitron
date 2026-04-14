@@ -237,7 +237,7 @@ export function ReferendumStepper({
   const totalSlides = 1 + slides.length + 1;
   const signatureIndex = totalSlides - 1;
 
-  const [mode, setMode] = useState<"stepper" | "reader">("stepper");
+  const [mode, setMode] = useState<"stepper" | "reader">("reader");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [showImages, setShowImages] = useState(false);
