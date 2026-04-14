@@ -156,11 +156,11 @@ const declarationConfig: ReferendumConfig = {
 const treatyConfig: ReferendumConfig = {
   slug: TREATY_REFERENDUM_SLUG,
   introText:
-    "Please quickly skim and sign the 1% Treaty.",
+    "Please quickly skim and sign the 1% Treaty without thinking about it too much.",
   slides: splitIntoSlides(shareableSnippets.onePercentTreatyText.markdown),
   audioManifestPath: "/audio/treaty/manifest.json",
   audioBasePath: "/audio/treaty",
-  title: "Sign the 1% Treaty",
+  title: "Signed this day, {date}, in the year of our ongoing confusion.",
   authPromptText:
     "Verify your identity to become an official signatory of the 1% Treaty.",
   authCallbackUrl: "/treaty",

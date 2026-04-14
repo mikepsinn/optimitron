@@ -173,20 +173,17 @@ const markdownComponents = {
   ),
   a: ({ href, children }: { href?: string; children?: ReactNode }) => {
     const target = href ?? "#";
+    const linkClass =
+      "font-black text-white/70 underline decoration-white/30 decoration-1 underline-offset-4 transition-colors hover:text-white hover:decoration-white/60";
     if (target.startsWith("http")) {
       return (
-        <a
-          href={target}
-          target="_blank"
-          rel="noreferrer"
-          className="font-black text-white/70"
-        >
+        <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
           {children}
         </a>
       );
     }
     return (
-      <Link href={target} className="font-black text-white/70">
+      <Link href={target} className={linkClass}>
         {children}
       </Link>
     );
@@ -240,6 +237,7 @@ export function ReferendumStepper({
   const totalSlides = 1 + slides.length + 1;
   const signatureIndex = totalSlides - 1;
 
+  const [mode, setMode] = useState<"stepper" | "reader">("stepper");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [showImages, setShowImages] = useState(false);
@@ -378,12 +376,20 @@ export function ReferendumStepper({
       playingIndexRef.current = -1;
       setIsPlaying(false);
       setAnalyserNode(null);
-    } else {
-      void playSlide(currentIndex);
+      return;
     }
-  }, [isPlaying, currentIndex, playSlide]);
+    if (mode === "reader") {
+      setMode("stepper");
+      setCurrentIndex(0);
+      setVisible(true);
+      void playSlide(0);
+      return;
+    }
+    void playSlide(currentIndex);
+  }, [isPlaying, mode, currentIndex, playSlide]);
 
   useEffect(() => {
+    if (mode === "reader") return;
     const handleKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -397,10 +403,11 @@ export function ReferendumStepper({
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [goNext, goPrev]);
+  }, [goNext, goPrev, mode]);
 
   const scrollCooldown = useRef(false);
   useEffect(() => {
+    if (mode === "reader") return;
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (scrollCooldown.current) return;
@@ -413,10 +420,11 @@ export function ReferendumStepper({
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleWheel);
-  }, [goNext, goPrev]);
+  }, [goNext, goPrev, mode]);
 
   const touchStartY = useRef(0);
   useEffect(() => {
+    if (mode === "reader") return;
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0]?.clientY ?? 0;
     };
@@ -433,7 +441,7 @@ export function ReferendumStepper({
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [goNext, goPrev]);
+  }, [goNext, goPrev, mode]);
 
   useEffect(() => {
     return () => stopAudio();
@@ -471,6 +479,17 @@ export function ReferendumStepper({
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-black">
+      {mode === "stepper" && (
+        <div className="sr-only" aria-hidden="false">
+          <p>{introText}</p>
+          {slides.map((slide, i) => (
+            <ReactMarkdown key={i} remarkPlugins={[remarkGfm]}>
+              {slide}
+            </ReactMarkdown>
+          ))}
+        </div>
+      )}
+
       {showImages && hasBgImages && (
         <>
           <div className="absolute inset-0">
@@ -490,24 +509,56 @@ export function ReferendumStepper({
       <button
         onClick={() => {
           stopAudio();
-          goToSlide(currentIndex === signatureIndex ? 0 : signatureIndex);
+          setMode((m) => (m === "stepper" ? "reader" : "stepper"));
         }}
-        className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
+        className="absolute left-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
       >
-        {currentIndex === signatureIndex ? "Go back" : "Skip to sign"}
+        {mode === "stepper" ? "Read as document" : "Slideshow"}
       </button>
 
-      <div className="relative flex flex-1 items-center justify-center px-6 sm:px-8">
-        <div
-          className="w-full max-w-2xl"
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: "opacity 0.6s ease-in-out",
+      {mode === "stepper" && (
+        <button
+          onClick={() => {
+            stopAudio();
+            goToSlide(currentIndex === signatureIndex ? 0 : signatureIndex);
           }}
+          className="absolute right-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
         >
-          {renderSlideContent()}
+          {currentIndex === signatureIndex ? "Go back" : "Skip to sign"}
+        </button>
+      )}
+
+      {mode === "stepper" ? (
+        <div className="relative flex flex-1 items-center justify-center px-6 sm:px-8">
+          <div
+            className="w-full max-w-2xl"
+            style={{
+              opacity: visible ? 1 : 0,
+              transition: "opacity 0.6s ease-in-out",
+            }}
+          >
+            {renderSlideContent()}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="relative flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="mx-auto w-full max-w-2xl space-y-10 px-6 pb-40 pt-20 sm:px-8">
+            <p className="text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+              {introText}
+            </p>
+            {slides.map((slide, i) => (
+              <ReactMarkdown
+                key={i}
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+              >
+                {slide}
+              </ReactMarkdown>
+            ))}
+            <div className="pt-10">{signatureSlot}</div>
+          </div>
+        </div>
+      )}
 
       <button
         onClick={togglePlayback}
@@ -560,7 +611,7 @@ export function ReferendumStepper({
         </button>
       )}
 
-      {currentIndex < totalSlides - 1 && (
+      {mode === "stepper" && currentIndex < totalSlides - 1 && (
         <button
           onClick={goNext}
           className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer text-white/60 transition-opacity hover:text-white"

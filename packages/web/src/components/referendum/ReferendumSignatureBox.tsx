@@ -126,10 +126,17 @@ export function ReferendumSignatureBox({
     );
   }
 
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const resolvedTitle = title.replace("{date}", today);
+
   return (
     <div className="mx-auto w-full max-w-md">
       <p className="mb-6 text-center text-xl font-bold text-white [font-family:var(--v0-font-libre-baskerville)]">
-        {title}
+        {resolvedTitle}
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <Input
