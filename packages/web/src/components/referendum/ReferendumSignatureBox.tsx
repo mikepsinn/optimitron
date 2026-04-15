@@ -7,6 +7,7 @@ import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { buildUserReferralUrl } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 export interface ReferendumSignatureBoxProps {
   referendumSlug: string;
@@ -20,6 +21,7 @@ export interface ReferendumSignatureBoxProps {
   emailSubject: string;
   signedTitle?: string;
   signedBody?: string;
+  variant?: "stepper" | "reader";
 }
 
 export function ReferendumSignatureBox({
@@ -34,6 +36,7 @@ export function ReferendumSignatureBox({
   emailSubject,
   signedTitle = "Referendum Signed",
   signedBody = "Share your link. Every signature moves the needle.",
+  variant = "stepper",
 }: ReferendumSignatureBoxProps) {
   const { data: session, status } = useSession();
   const [signatureName, setSignatureName] = useState("");
@@ -42,6 +45,31 @@ export function ReferendumSignatureBox({
   const [error, setError] = useState<string | null>(null);
 
   const referralUrl = buildUserReferralUrl(session?.user);
+  const isReader = variant === "reader";
+  const shellClass = isReader
+    ? "rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 px-6 py-6 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
+    : "";
+  const titleClass = isReader
+    ? "text-[#23180d]"
+    : "text-white";
+  const bodyClass = isReader
+    ? "text-[#5f4830]"
+    : "text-white/70";
+  const referralLinkClass = isReader
+    ? "text-[#6b5337]"
+    : "text-white/40";
+  const inputClass = isReader
+    ? "flex-1 border-2 border-[#8e6b48]/35 bg-[#fffaf0] px-4 py-3 text-lg font-bold text-[#23180d] placeholder:text-[#8e6b48]/55"
+    : "flex-1 border-2 border-white/30 bg-white/10 px-4 py-3 text-lg font-bold text-white placeholder:text-white/30";
+  const buttonClass = isReader
+    ? "border-2 border-[#8e6b48]/35 bg-[#23180d] px-8 py-3 text-lg font-black uppercase text-[#f7f1e4] hover:bg-[#3a2a19] disabled:opacity-30"
+    : "border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30";
+  const shareLabelClass = isReader
+    ? "text-[#6b5337]"
+    : "text-brutal-pink";
+  const errorClass = isReader
+    ? "text-[#b42318]"
+    : "text-brutal-red";
 
   async function handleSubmit() {
     const name = signatureName.trim();
@@ -88,11 +116,11 @@ export function ReferendumSignatureBox({
 
   if (signed && status === "authenticated") {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-6">
-        <p className="text-center text-2xl font-black uppercase text-white [font-family:var(--v0-font-libre-baskerville)]">
+      <div className={cn("mx-auto flex max-w-md flex-col items-center gap-6", shellClass)}>
+        <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
           {signedTitle}
         </p>
-        <p className="text-center text-base font-bold text-white/70 [font-family:var(--v0-font-libre-baskerville)]">
+        <p className={cn("text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]", bodyClass)}>
           {signedBody}
         </p>
         <ShareLinkButtons
@@ -100,8 +128,9 @@ export function ReferendumSignatureBox({
           shareText={shareText}
           url={referralUrl}
           emailSubject={emailSubject}
+          labelClassName={shareLabelClass}
         />
-        <p className="break-all text-xs font-bold text-white/40">
+        <p className={cn("break-all text-xs font-bold", referralLinkClass)}>
           Personal referral link: {referralUrl}
         </p>
       </div>
@@ -110,17 +139,17 @@ export function ReferendumSignatureBox({
 
   if (signed) {
     return (
-      <div className="mx-auto max-w-md text-center">
-        <p className="mb-4 text-xl font-black uppercase text-white [font-family:var(--v0-font-libre-baskerville)]">
-          Your signature has been recorded.
-        </p>
-        <p className="mb-6 text-sm font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)]">
-          {authPromptText}
-        </p>
+      <div className="mx-auto max-w-md">
         <AuthForm
           callbackUrl={authCallbackUrl}
           referralCode={referralCode}
           compact
+          variant={isReader ? "document" : "default"}
+          title="Finish Signing"
+          subtitle={authPromptText}
+          googleButtonLabel="Finish with Google"
+          emailButtonLabel="Email Me a Link to Finish Signing"
+          emailPendingButtonLabel="Sending Finish-Signing Link..."
         />
       </div>
     );
@@ -134,8 +163,8 @@ export function ReferendumSignatureBox({
   const resolvedTitle = title.replace("{date}", today);
 
   return (
-    <div className="mx-auto w-full max-w-md">
-      <p className="mb-6 text-center text-xl font-bold text-white [font-family:var(--v0-font-libre-baskerville)]">
+    <div className={cn("mx-auto w-full max-w-md", shellClass)}>
+      <p className={cn("mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
         {resolvedTitle}
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -143,7 +172,7 @@ export function ReferendumSignatureBox({
           value={signatureName}
           onChange={(e) => setSignatureName(e.target.value)}
           placeholder="Your name"
-          className="flex-1 border-2 border-white/30 bg-white/10 px-4 py-3 text-lg font-bold text-white placeholder:text-white/30"
+          className={inputClass}
           autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && signatureName.trim()) {
@@ -154,13 +183,13 @@ export function ReferendumSignatureBox({
         <Button
           onClick={() => void handleSubmit()}
           disabled={!signatureName.trim() || signing}
-          className="border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30"
+          className={buttonClass}
         >
           {signing ? "..." : "Sign"}
         </Button>
       </div>
       {error ? (
-        <p className="mt-3 text-center text-xs font-bold uppercase text-brutal-red">
+        <p className={cn("mt-3 text-center text-xs font-bold uppercase", errorClass)}>
           {error}
         </p>
       ) : null}

@@ -24,7 +24,7 @@ export function ReferendumStepperPage({
       backgroundImages={config.backgroundImages}
       audioManifestPath={config.audioManifestPath}
       audioBasePath={config.audioBasePath}
-      signatureSlot={
+      signatureSlot={(variant) => (
         <ReferendumSignatureBox
           referendumSlug={config.slug}
           title={config.title}
@@ -39,8 +39,9 @@ export function ReferendumStepperPage({
           emailSubject={config.emailSubject}
           signedTitle={config.signedTitle}
           signedBody={config.signedBody}
+          variant={variant}
         />
-      }
+      )}
     />
   );
 }

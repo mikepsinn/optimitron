@@ -63,6 +63,10 @@ Additional rules in Optimize Earth mode:
 - Follow existing patterns — read surrounding code before writing new code
 - In `optimize earth` mode, follow `docs/OPTIMIZE_EARTH_PROTOCOL.md`
 
+### Local Dev Safety
+
+- If a local dev server is already running, do not disrupt it for routine verification; if a clean build, restart, or separate run is genuinely needed, that is fine, but escalate from narrow checks to heavier ones only when necessary.
+
 ## Documentation
 
 Detailed docs live in `docs/`. Read the relevant ones before working:

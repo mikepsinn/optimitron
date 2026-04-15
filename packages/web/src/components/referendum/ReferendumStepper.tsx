@@ -150,7 +150,7 @@ async function getSlideAudio(
   return null;
 }
 
-const markdownComponents = {
+const stepperMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
     <h1 className="text-center text-4xl font-black uppercase tracking-tight text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
       {children}
@@ -207,13 +207,70 @@ const markdownComponents = {
   hr: () => <hr className="border-t-4 border-white/30" />,
 };
 
+const readerMarkdownComponents = {
+  h1: ({ children }: { children?: ReactNode }) => (
+    <h1 className="text-center text-4xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }: { children?: ReactNode }) => (
+    <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }: { children?: ReactNode }) => (
+    <h3 className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+      {children}
+    </h3>
+  ),
+  p: ({ children }: { children?: ReactNode }) => (
+    <p className="text-left text-lg leading-9 text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.35rem]">
+      {children}
+    </p>
+  ),
+  a: ({ href, children }: { href?: string; children?: ReactNode }) => {
+    const target = href ?? "#";
+    const linkClass =
+      "font-black text-[#5e2e1f] underline decoration-[#8e6b48]/60 decoration-2 underline-offset-4 transition-colors hover:text-[#2f2417] hover:decoration-[#2f2417]";
+    if (target.startsWith("http")) {
+      return (
+        <a href={target} target="_blank" rel="noreferrer" className={linkClass}>
+          {children}
+        </a>
+      );
+    }
+    return (
+      <Link href={target} className={linkClass}>
+        {children}
+      </Link>
+    );
+  },
+  blockquote: ({ children }: { children?: ReactNode }) => (
+    <blockquote className="border-l-4 border-[#8e6b48] bg-[#efe4cf]/70 px-5 py-4 text-left text-base font-bold text-[#3a2a19] shadow-[6px_6px_0_rgba(58,42,25,0.08)]">
+      {children}
+    </blockquote>
+  ),
+  ul: ({ children }: { children?: ReactNode }) => (
+    <ul className="list-disc space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }: { children?: ReactNode }) => (
+    <ol className="list-decimal space-y-3 pl-6 text-left text-base font-bold text-[#3a2a19] sm:text-lg">
+      {children}
+    </ol>
+  ),
+  li: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
+  hr: () => <hr className="border-t-2 border-[#8e6b48]/40" />,
+};
+
 export interface ReferendumStepperProps {
   /** First slide — plain text intro. */
   introText: string;
   /** Markdown slides, one per fade step. */
   slides: string[];
-  /** React node rendered on the final "signature" slide. */
-  signatureSlot: ReactNode;
+  /** Rendered on the final "signature" slide and in reader mode. */
+  signatureSlot: (variant: "stepper" | "reader") => ReactNode;
   /** Optional background photo URLs cycled on each slide. */
   backgroundImages?: string[];
   /**
@@ -447,20 +504,59 @@ export function ReferendumStepper({
     return () => stopAudio();
   }, [stopAudio]);
 
+  useEffect(() => {
+    if (mode === "reader") {
+      stopAudio();
+    }
+  }, [mode, stopAudio]);
+
+  useEffect(() => {
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverflow = documentElement.style.overflow;
+
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
+
+  const isStepperMode = mode === "stepper";
   const bgImageIndex = bgImages.length > 0 ? currentIndex % bgImages.length : 0;
   const hasBgImages = bgImages.length > 0;
+  const toggleClass =
+    "absolute left-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70";
+  const narratorClass = isStepperMode
+    ? "absolute bottom-0 right-0 z-20 cursor-pointer"
+    : "fixed bottom-5 right-5 z-30 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-[#3a2a19]/20 bg-[#f7f1e4]/90 text-[#3a2a19] shadow-[6px_6px_0_rgba(35,24,13,0.15)] backdrop-blur-sm transition-colors hover:bg-[#fff9ef]";
+  const imageToggleClass = isStepperMode
+    ? "absolute bottom-4 left-4 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-white/40 transition-colors hover:bg-white/20 hover:text-white/70"
+    : "fixed bottom-4 left-4 z-30 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#3a2a19]/20 bg-[#f7f1e4]/85 text-[#3a2a19]/70 shadow-[4px_4px_0_rgba(35,24,13,0.12)] backdrop-blur-sm transition-colors hover:bg-[#fff9ef] hover:text-[#3a2a19]";
+  const documentComponents = isStepperMode
+    ? stepperMarkdownComponents
+    : readerMarkdownComponents;
+  const signatureContent = signatureSlot(isStepperMode ? "stepper" : "reader");
 
   const renderSlideContent = () => {
     if (currentIndex === 0) {
       return (
-        <p className="text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+        <p
+          className={
+            isStepperMode
+              ? "text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl"
+              : "text-center text-2xl leading-relaxed text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl"
+          }
+        >
           {introText}
         </p>
       );
     }
 
     if (currentIndex === signatureIndex) {
-      return signatureSlot;
+      return signatureContent;
     }
 
     const contentIndex = currentIndex - 1;
@@ -470,7 +566,7 @@ export function ReferendumStepper({
     return (
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        components={markdownComponents}
+        components={documentComponents}
       >
         {slide}
       </ReactMarkdown>
@@ -478,7 +574,30 @@ export function ReferendumStepper({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-black">
+    <div
+      className={
+        isStepperMode
+          ? "fixed inset-0 z-[100] flex flex-col overflow-hidden bg-black"
+          : "fixed inset-0 z-[100] overflow-y-auto overflow-x-hidden bg-[#ece2d0]"
+      }
+    >
+      {!isStepperMode && (
+        <>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,245,0.94)_0%,rgba(245,237,222,0.94)_38%,rgba(231,219,197,0.96)_100%)]" />
+          <div
+            className="absolute inset-0 opacity-60"
+            style={{
+              backgroundImage: [
+                "radial-gradient(circle at 18% 12%, rgba(255,255,255,0.95) 0, rgba(255,255,255,0) 28%)",
+                "radial-gradient(circle at 82% 18%, rgba(255,255,255,0.7) 0, rgba(255,255,255,0) 24%)",
+                "radial-gradient(circle at 70% 72%, rgba(255,255,255,0.42) 0, rgba(255,255,255,0) 26%)",
+                "linear-gradient(115deg, rgba(142,107,72,0.08) 0%, rgba(142,107,72,0) 22%, rgba(142,107,72,0.09) 44%, rgba(142,107,72,0) 66%, rgba(142,107,72,0.08) 100%)",
+              ].join(", "),
+            }}
+          />
+        </>
+      )}
+
       {mode === "stepper" && (
         <div className="sr-only" aria-hidden="false">
           <p>{introText}</p>
@@ -506,15 +625,17 @@ export function ReferendumStepper({
         </>
       )}
 
-      <button
-        onClick={() => {
-          stopAudio();
-          setMode((m) => (m === "stepper" ? "reader" : "stepper"));
-        }}
-        className="absolute left-4 top-4 z-30 cursor-pointer text-xs font-bold text-white/30 transition-colors hover:text-white/70"
-      >
-        {mode === "stepper" ? "Read as document" : "Slideshow"}
-      </button>
+      {mode === "stepper" && (
+        <button
+          onClick={() => {
+            stopAudio();
+            setMode("reader");
+          }}
+          className={toggleClass}
+        >
+          Read as document
+        </button>
+      )}
 
       {mode === "stepper" && (
         <button
@@ -541,64 +662,77 @@ export function ReferendumStepper({
           </div>
         </div>
       ) : (
-        <div className="relative flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="mx-auto w-full max-w-2xl space-y-10 px-6 pb-40 pt-20 sm:px-8">
-            <p className="text-center text-2xl leading-relaxed text-white [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
-              {introText}
-            </p>
-            {slides.map((slide, i) => (
-              <ReactMarkdown
-                key={i}
-                remarkPlugins={[remarkGfm]}
-                components={markdownComponents}
-              >
-                {slide}
-              </ReactMarkdown>
-            ))}
-            <div className="pt-10">{signatureSlot}</div>
+        <div className="relative min-h-full px-6 pb-40 pt-24 sm:px-8">
+          <div className="mx-auto w-full max-w-4xl">
+            <div className="mx-auto mb-10 h-px w-24 bg-[#8e6b48]/40" />
+            <div className="mx-auto w-full max-w-2xl space-y-10">
+              <p className="text-center text-2xl leading-relaxed text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-3xl">
+                {introText}
+              </p>
+              {slides.map((slide, i) => (
+                <ReactMarkdown
+                  key={i}
+                  remarkPlugins={[remarkGfm]}
+                  components={documentComponents}
+                >
+                  {slide}
+                </ReactMarkdown>
+              ))}
+              <div className="border-t border-[#8e6b48]/30 pt-12">
+                {signatureContent}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       <button
         onClick={togglePlayback}
-        className="absolute bottom-0 right-0 z-20 cursor-pointer"
+        className={narratorClass}
         aria-label={isPlaying ? "Pause narration" : "Play narration"}
       >
-        {currentIndex === 0 && !isPlaying && (
-          <span className="pointer-events-none absolute bottom-full right-6 mb-1 whitespace-nowrap text-xs font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)] sm:text-sm">
-            Tap to hear me ↓
-          </span>
+        {isStepperMode ? (
+          <>
+            {currentIndex === 0 && !isPlaying && (
+              <span className="pointer-events-none absolute bottom-full right-6 mb-1 whitespace-nowrap text-xs font-bold text-white/60 [font-family:var(--v0-font-libre-baskerville)] sm:text-sm">
+                Tap to hear me ↓
+              </span>
+            )}
+            <div className="sm:hidden">
+              <WishoniaCharacter
+                size={110}
+                spritePath={SPRITE_PATH}
+                spriteFormat={SPRITE_FORMAT}
+                analyserNode={analyserNode}
+              />
+            </div>
+            <div className="hidden sm:block">
+              <WishoniaCharacter
+                size={140}
+                spritePath={SPRITE_PATH}
+                spriteFormat={SPRITE_FORMAT}
+                analyserNode={analyserNode}
+              />
+            </div>
+            <div className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/30 bg-black/50">
+              {isPlaying ? (
+                <Pause className="h-3 w-3 text-white" />
+              ) : (
+                <Play className="ml-0.5 h-3 w-3 text-white" />
+              )}
+            </div>
+          </>
+        ) : isPlaying ? (
+          <Pause className="h-5 w-5" />
+        ) : (
+          <Play className="ml-0.5 h-5 w-5" />
         )}
-        <div className="sm:hidden">
-          <WishoniaCharacter
-            size={110}
-            spritePath={SPRITE_PATH}
-            spriteFormat={SPRITE_FORMAT}
-            analyserNode={analyserNode}
-          />
-        </div>
-        <div className="hidden sm:block">
-          <WishoniaCharacter
-            size={140}
-            spritePath={SPRITE_PATH}
-            spriteFormat={SPRITE_FORMAT}
-            analyserNode={analyserNode}
-          />
-        </div>
-        <div className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/30 bg-black/50">
-          {isPlaying ? (
-            <Pause className="h-3 w-3 text-white" />
-          ) : (
-            <Play className="ml-0.5 h-3 w-3 text-white" />
-          )}
-        </div>
       </button>
 
       {hasBgImages && (
         <button
           onClick={() => setShowImages((v) => !v)}
-          className="absolute bottom-4 left-4 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-white/40 transition-colors hover:bg-white/20 hover:text-white/70"
+          className={imageToggleClass}
           aria-label={
             showImages ? "Hide background images" : "Show background images"
           }

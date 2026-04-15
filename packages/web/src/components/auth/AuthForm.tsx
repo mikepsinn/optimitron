@@ -3,6 +3,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
+import { FcGoogle } from "react-icons/fc";
 import { AlertCard } from "@/components/ui/alert-card";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
@@ -10,6 +11,7 @@ import { Label } from "@/components/retroui/Label";
 import { createLogger } from "@/lib/logger";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
+import { cn } from "@/lib/utils";
 
 const logger = createLogger("auth-form");
 
@@ -23,6 +25,12 @@ interface AuthFormProps {
   referralCode?: string | null;
   initialError?: string | null;
   compact?: boolean;
+  variant?: "default" | "document";
+  title?: string;
+  subtitle?: string;
+  googleButtonLabel?: string;
+  emailButtonLabel?: string;
+  emailPendingButtonLabel?: string;
   /** Message shown below the success alert after a magic link is sent */
   emailSuccessFooter?: string;
   /** Pre-resolved provider flags from the server — skips the client-side fetch when provided */
@@ -34,6 +42,12 @@ export function AuthForm({
   referralCode,
   initialError = null,
   compact = false,
+  variant = "default",
+  title = "Sign In",
+  subtitle,
+  googleButtonLabel = "Continue with Google",
+  emailButtonLabel = "Email Me a Sign-In Link",
+  emailPendingButtonLabel = "Sending Sign-In Link...",
   emailSuccessFooter,
   providers,
 }: AuthFormProps) {
@@ -43,10 +57,39 @@ export function AuthForm({
   const [pendingAction, setPendingAction] = useState<"google" | "magic" | "demo" | null>(null);
 
   const isLoading = pendingAction !== null;
+  const isDocument = variant === "document";
   const fieldClassName = compact ? "h-11 text-base" : "h-12 text-base";
   const buttonClassName = compact ? "h-11 text-sm" : "h-12 text-base";
   const magicLinkEnabled = providers?.email ?? true;
   const googleEnabled = providers?.google ?? true;
+  const containerClassName = isDocument
+    ? "w-full rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 p-5 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
+    : "w-full rounded-xl border-4 border-primary bg-background p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
+  const titleClassName = isDocument
+    ? "text-2xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)]"
+    : "text-xl font-black uppercase";
+  const subtitleClassName = isDocument
+    ? "mt-2 text-sm font-bold text-[#6b5337] [font-family:var(--v0-font-libre-baskerville)]"
+    : "mt-2 text-sm font-bold text-muted-foreground";
+  const dividerClassName = isDocument
+    ? "flex items-center gap-3 text-xs font-bold uppercase text-[#8e6b48]"
+    : "flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground";
+  const dividerLineClassName = isDocument ? "h-px flex-1 bg-[#8e6b48]/30" : "h-px flex-1 bg-border";
+  const referralClassName = isDocument
+    ? "mb-4 text-center text-xs font-bold uppercase text-[#8e6b48]"
+    : "mb-4 text-center text-xs font-bold uppercase text-muted-foreground";
+  const labelClassName = isDocument
+    ? "font-bold uppercase text-[#3a2a19]"
+    : "font-bold uppercase";
+  const inputClassName = isDocument
+    ? `${fieldClassName} border-[#8e6b48]/35 bg-[#fffaf0] text-[#23180d] placeholder:text-[#8e6b48]/55`
+    : fieldClassName;
+  const googleClassName = isDocument
+    ? `w-full justify-center gap-3 border-[#d6d2cb] bg-[#fffaf0] font-black uppercase text-[#1f1f1f] shadow-[4px_4px_0px_0px_rgba(58,42,25,0.18)] hover:bg-[#f7f4ee] hover:text-[#1f1f1f] ${buttonClassName}`
+    : `w-full justify-center gap-3 border-[#d6d2cb] bg-white font-black uppercase text-[#1f1f1f] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.9)] hover:bg-[#f7f4ee] hover:text-[#1f1f1f] ${buttonClassName}`;
+  const emailButtonClassName = isDocument
+    ? `w-full border-[#8e6b48]/35 bg-[#23180d] font-black uppercase text-[#f7f1e4] shadow-[4px_4px_0px_0px_rgba(58,42,25,0.18)] hover:bg-[#3a2a19] hover:text-[#fff9ef] ${buttonClassName}`
+    : `w-full font-black uppercase ${buttonClassName}`;
 
   useEffect(() => {
     if (!initialError) {
@@ -89,7 +132,7 @@ export function AuthForm({
         throw new Error("Unable to send a magic link right now.");
       }
 
-      setInfoMessage("Check your email for a secure sign-in link.");
+      setInfoMessage("Check your email for a sign-in link.");
     } catch (caughtError) {
       logger.error("Magic-link request failed", caughtError);
       setError(
@@ -145,9 +188,12 @@ export function AuthForm({
   }
 
   return (
-    <div className="w-full rounded-xl border-4 border-primary bg-background p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <div className={containerClassName}>
       <div className="mb-5 text-center">
-        <h2 className="text-xl font-black uppercase">Sign In</h2>
+        <h2 className={titleClassName}>{title}</h2>
+        {subtitle ? (
+          <p className={subtitleClassName}>{subtitle}</p>
+        ) : null}
       </div>
 
       {error ? <AlertCard type="error" message={error} className="mb-4" /> : null}
@@ -163,7 +209,7 @@ export function AuthForm({
       ) : null}
 
       {referralCode ? (
-        <p className="mb-4 text-center text-xs font-bold uppercase text-muted-foreground">
+        <p className={referralClassName}>
           Referral detected: {referralCode}
         </p>
       ) : null}
@@ -182,10 +228,10 @@ export function AuthForm({
               {pendingAction === "demo" ? "Signing in..." : "Try Demo — No Account Needed"}
             </Button>
 
-            <div className="flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground">
-              <span className="h-px flex-1 bg-border" />
+            <div className={dividerClassName}>
+              <span className={dividerLineClassName} />
               <span>or create an account</span>
-              <span className="h-px flex-1 bg-border" />
+              <span className={dividerLineClassName} />
             </div>
           </>
         )}
@@ -193,21 +239,23 @@ export function AuthForm({
         {googleEnabled ? (
           <Button
             type="button"
+            variant="outline"
             disabled={isLoading}
-            className={`w-full font-black uppercase ${buttonClassName}`}
+            className={googleClassName}
             onClick={() => {
               void handleGoogleSignIn();
             }}
           >
-            {pendingAction === "google" ? "Redirecting..." : "Continue with Google"}
+            <FcGoogle className="h-5 w-5 shrink-0" aria-hidden="true" />
+            {pendingAction === "google" ? "Redirecting..." : googleButtonLabel}
           </Button>
         ) : null}
 
         {googleEnabled && magicLinkEnabled ? (
-          <div className="flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
+          <div className={dividerClassName}>
+            <span className={dividerLineClassName} />
             <span>or use email</span>
-            <span className="h-px flex-1 bg-border" />
+            <span className={dividerLineClassName} />
           </div>
         ) : null}
 
@@ -219,7 +267,7 @@ export function AuthForm({
             }}
           >
             <div className="space-y-2">
-              <Label className="font-bold uppercase" htmlFor="auth-email">
+              <Label className={labelClassName} htmlFor="auth-email">
                 Email
               </Label>
               <Input
@@ -230,7 +278,7 @@ export function AuthForm({
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
-                className={fieldClassName}
+                className={inputClassName}
                 disabled={isLoading}
                 required
               />
@@ -238,9 +286,11 @@ export function AuthForm({
             <Button
               type="submit"
               disabled={isLoading}
-              className={`w-full font-black uppercase ${buttonClassName}`}
+              className={emailButtonClassName}
             >
-              {pendingAction === "magic" ? "Sending Link..." : "Email Me Proof of Existence"}
+              {pendingAction === "magic"
+                ? emailPendingButtonLabel
+                : emailButtonLabel}
             </Button>
           </form>
         ) : null}
