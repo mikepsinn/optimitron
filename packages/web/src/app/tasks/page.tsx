@@ -4,19 +4,14 @@ import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
+import { ProgramCard, ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
 import { tasksLink } from "@/lib/routes";
 import { getSiteFromHost } from "@/lib/site";
-import {
-  formatCompactCount,
-  formatCompactCurrency,
-  formatDelayDuration,
-  getTaskDelayStats,
-} from "@/lib/tasks/accountability";
-import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
 import { getTasksPageData } from "@/lib/tasks.server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,65 +38,6 @@ function Section({
       <h2 className="text-2xl font-black tracking-tight sm:text-3xl">{title}</h2>
       {children}
     </section>
-  );
-}
-
-/**
- * One program child of the root task — e.g. Ratify the 1% Treaty. Renders as
- * a BrutalCard with the task title, a 1-line description, and headline stats
- * (deaths from delay, taxpayer money wasted). The card is a link to the
- * task's detail page. Descendants (e.g. signer children) can be rendered
- * underneath by the caller with an indent.
- */
-function ProgramCard({ task }: { task: TaskCardTask }) {
-  const delayStats = getTaskDelayStats(task);
-  const overdueLabel =
-    delayStats.isOverdue && delayStats.currentDelayDays > 0
-      ? formatDelayDuration(delayStats.currentDelayDays)
-      : null;
-  // Full treaty-level cost of delay (150K deaths/day × days + $40.8B/day × days).
-  // This is the aggregate blocking cost for every parent task on the to-do list.
-  const costOfDelay = getTreatyLevelCostOfDelay(delayStats.currentDelayDays);
-
-  return (
-    <Link href={`/tasks/${task.id}`} className="block">
-      <BrutalCard
-        bgColor="background"
-        padding="lg"
-        className="transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
-      >
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h3 className="text-2xl font-black uppercase leading-tight sm:text-3xl">
-              {task.title}
-            </h3>
-            {overdueLabel ? (
-              <span className="border-2 border-foreground bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
-                {overdueLabel} overdue
-              </span>
-            ) : null}
-          </div>
-          {costOfDelay ? (
-            <div className="flex flex-wrap gap-4 text-sm font-bold">
-              <span>
-                💀{" "}
-                <span className="font-black">
-                  {formatCompactCount(costOfDelay.deathsFromDelay)}
-                </span>{" "}
-                deaths from delay
-              </span>
-              <span>
-                🔥{" "}
-                <span className="font-black">
-                  {formatCompactCurrency(costOfDelay.wastedUsd)}
-                </span>{" "}
-                wasted by delay
-              </span>
-            </div>
-          ) : null}
-        </div>
-      </BrutalCard>
-    </Link>
   );
 }
 
@@ -141,19 +77,7 @@ export default async function TasksPage() {
               shadowSize={8}
               className="p-8 text-center transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
             >
-              <div className="space-y-4">
-                <p className="text-xs font-black uppercase tracking-[0.2em]">
-                  ⚡ Your Employees&apos; To-Do List
-                </p>
-                <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
-                  Promote the General Welfare
-                </h1>
-                <p className="mx-auto max-w-3xl text-base font-bold sm:text-lg">
-                  The literal job description of every government on Earth. You pay
-                  them $44 trillion a year to do it. They&apos;re behind. Below is the
-                  list — under each employee is a polite reminder you can send.
-                </p>
-              </div>
+              <TasksRootIntro />
             </BrutalCard>
           </Link>
         ) : null}
@@ -165,24 +89,23 @@ export default async function TasksPage() {
         */}
         {programChildren.map((program) => {
           const isTreaty = program.id === "1-pct-treaty";
-          const programSignerCount = isTreaty ? signerTasks.length : 0;
+          const programSignerTasks = isTreaty ? signerTasks : [];
+          const programSignerCount = programSignerTasks.length;
           return (
-            <div key={program.id} className="space-y-4">
-              <ProgramCard task={program} />
-              {isTreaty && programSignerCount > 0 ? (
-                <div className="ml-2 space-y-3 border-l-4 border-foreground/20 pl-3 sm:ml-6 sm:pl-5">
-                  <h2 className="text-lg font-black tracking-tight sm:text-2xl">
-                    ↳ {programSignerCount} of your employees have this on their to-do list
-                  </h2>
-                  <SortableTaskList
-                    tasks={signerTasks}
-                    defaultSortKey="assigneeBudget"
-                    defaultSortDir="desc"
-                    variant="signer"
-                    pageSize={10}
-                  />
-                </div>
-              ) : null}
+            <div key={program.id}>
+              {isTreaty ? (
+                <ProgramTaskSection
+                  task={program}
+                  subtasks={programSignerTasks}
+                  subtasksTitle={
+                    programSignerCount > 0
+                      ? `↳ ${programSignerCount} of your employees have this on their to-do list`
+                      : undefined
+                  }
+                />
+              ) : (
+                <ProgramCard task={program} />
+              )}
             </div>
           );
         })}

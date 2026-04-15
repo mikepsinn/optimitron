@@ -125,7 +125,7 @@ const SORT_LABELS: Record<TaskSortKey, string> = {
   deathsLockedIn: "Deaths From Delay",
   cost: "Wasted By Delay",
   time: "Time",
-  assigneeBudget: "Budget Controlled",
+  assigneeBudget: "Military Budget",
 };
 
 export type TaskListVariant = "default" | "signer";
@@ -157,7 +157,7 @@ export function TaskTableHeader({
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
   if (variant === "signer") {
-    // Dense signer leaderboard: photo · name+role · 💰 budget · 💀 deaths · 🔥 wasted · remind · details
+    // Dense signer leaderboard: photo · name+role · 💀 deaths · 🔥 wasted · remind · details
     // Desktop-only header (>= lg). Mobile uses the packed caption inside each row.
     function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
       const isActive = sortKey === key;
@@ -176,7 +176,6 @@ export function TaskTableHeader({
       <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
         <span className="h-14 w-14 shrink-0" />
         {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
-        {signerHeaderCell("assigneeBudget", "💰", `w-32 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("cost", "🔥", `w-44 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -279,9 +278,9 @@ export function TaskRow({
     </Avatar>
   );
 
-  // Dense signer leaderboard row — photo, name + role subtitle, 3 stats
-  // (budget, deaths from delay, wasted by delay — per-signer attributed via
-  // share of global military spending), and a send-reminder button.
+  // Dense signer leaderboard row — photo, name + role subtitle, 2 live stats
+  // (deaths from delay, wasted by delay — per-signer attributed via share of
+  // global military spending), and a send-reminder button.
   if (variant === "signer") {
     const roleLabel =
       task.assigneePerson?.currentAffiliation ?? task.roleTitle ?? null;
@@ -303,9 +302,6 @@ export function TaskRow({
       attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
     const wastedTextCompact =
       attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
-    const budgetText =
-      assigneeBudget != null ? formatCompactCurrency(assigneeBudget) : "—";
-
     return (
       <div
         className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
@@ -350,21 +346,37 @@ export function TaskRow({
               {roleLabel}
             </div>
           ) : null}
-          {/* Mobile — packed caption with compact numbers */}
+          {/* Mobile — stacked delay stats so they do not get cut off */}
           {attribution != null ? (
-            <div className="mt-1 truncate text-[11px] font-bold text-muted-foreground lg:hidden">
-              {budgetText} military · 💀 {deathsTextCompact} · 🔥 {wastedTextCompact}
-            </div>
-          ) : assigneeBudget != null ? (
-            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
-              {budgetText} military
+            <div className="mt-1 space-y-0.5 text-[11px] font-bold text-muted-foreground lg:hidden">
+              <div>
+                💀{" "}
+                {canTick && dueMs != null ? (
+                  <LiveCounter
+                    ratePerSecond={deathsPerSecond}
+                    startMs={dueMs}
+                    mode="integer"
+                  />
+                ) : (
+                  deathsTextCompact
+                )}
+              </div>
+              <div>
+                🔥{" "}
+                {canTick && dueMs != null ? (
+                  <LiveCounter
+                    ratePerSecond={usdPerSecond}
+                    startMs={dueMs}
+                    mode="currency"
+                  />
+                ) : (
+                  wastedTextCompact
+                )}
+              </div>
             </div>
           ) : null}
         </div>
-        {/* Desktop — 3 separate stat cells, full numbers, live-ticking counters */}
-        <div className="relative z-[1] hidden w-32 shrink-0 break-all text-right text-sm font-black leading-tight lg:block">
-          💰 {assigneeBudget != null ? `$${assigneeBudget.toLocaleString("en-US")}` : "—"}
-        </div>
+        {/* Desktop — 2 separate stat cells, full numbers, live-ticking counters */}
         <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
           💀{" "}
           {canTick && dueMs != null ? (

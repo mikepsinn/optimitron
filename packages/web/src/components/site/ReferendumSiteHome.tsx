@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
-import { SortableTaskList } from "@/components/tasks/task-list-controls";
+import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
  
 const treatyMarkdownComponents = {
@@ -23,7 +24,7 @@ const treatyMarkdownComponents = {
     </h3>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="text-left text-lg leading-9 text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.35rem]">
+    <p className="mb-12 text-left text-lg leading-9 text-[#2f2417] drop-cap-deep [font-family:var(--v0-font-libre-baskerville)] last:mb-0 sm:mb-14 sm:text-[1.35rem]">
       {children}
     </p>
   ),
@@ -68,7 +69,14 @@ interface Props {
 }
 
 export function ReferendumSiteHome({ data }: Props) {
-  const { content, fullTasksHref, lateEmployeeTasks, site, treatyMarkdown } = data;
+  const {
+    content,
+    fullTasksHref,
+    lateEmployeeProgramTask,
+    lateEmployeeTasks,
+    site,
+    treatyMarkdown,
+  } = data;
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       <header className="mb-14 text-center">
@@ -102,18 +110,20 @@ export function ReferendumSiteHome({ data }: Props) {
       </section>
 
       <section id="late-employees" className="border-t-2 border-foreground pt-12">
-        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-          {content.home.lateEmployeesEyebrow}
-        </p>
-        <p className="mt-3 text-3xl font-black text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl">
-          {content.home.lateEmployeesTitle}
-        </p>
-        <p className="mt-3 max-w-3xl text-sm font-bold leading-6 text-muted-foreground sm:text-base">
-          {content.home.lateEmployeesBody}
-        </p>
-        <div className="mt-8">
-          <SortableTaskList tasks={lateEmployeeTasks} />
+        <div className="mb-10 text-center">
+          <TasksRootIntro />
         </div>
+        {lateEmployeeProgramTask ? (
+          <ProgramTaskSection
+            task={lateEmployeeProgramTask}
+            subtasks={lateEmployeeTasks}
+            subtasksTitle={
+              lateEmployeeTasks.length > 0
+                ? `↳ ${lateEmployeeTasks.length} of your employees have this on their to-do list`
+                : undefined
+            }
+          />
+        ) : null}
         <div className="mt-6 text-center">
           <Link
             href={fullTasksHref}

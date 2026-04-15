@@ -186,7 +186,7 @@ const stepperMarkdownComponents = {
     </h3>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="text-center text-xl leading-relaxed text-white drop-cap [font-family:var(--v0-font-libre-baskerville)] [overflow-wrap:break-word] sm:text-2xl">
+    <p className="mb-8 text-center text-xl leading-relaxed text-white drop-cap [font-family:var(--v0-font-libre-baskerville)] [overflow-wrap:break-word] last:mb-0 sm:mb-10 sm:text-2xl">
       {children}
     </p>
   ),
@@ -243,7 +243,7 @@ const readerMarkdownComponents = {
     </h3>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="text-left text-lg leading-9 text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.35rem]">
+    <p className="mb-8 text-left text-lg leading-9 text-[#2f2417] drop-cap [font-family:var(--v0-font-libre-baskerville)] last:mb-0 sm:mb-10 sm:text-[1.35rem]">
       {children}
     </p>
   ),

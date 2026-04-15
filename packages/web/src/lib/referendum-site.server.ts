@@ -29,6 +29,7 @@ export interface ReferendumSiteContext {
 }
 
 export interface ReferendumSiteHomeData extends ReferendumSiteContext {
+  lateEmployeeProgramTask: TaskCardTask | null;
   lateEmployeeTasks: TaskCardTask[];
   fullTasksHref: string;
   individualCount: number;
@@ -122,6 +123,10 @@ export async function getReferendumSiteHomeData(
 
   return {
     ...context,
+    lateEmployeeProgramTask:
+      site.key === "onePercentTreaty"
+        ? ((treatyParentTask?.task ?? null) as TaskCardTask | null)
+        : null,
     lateEmployeeTasks:
       site.key === "onePercentTreaty"
         ? ((treatyParentTask?.task.childTasks ?? []) as unknown as TaskCardTask[])
