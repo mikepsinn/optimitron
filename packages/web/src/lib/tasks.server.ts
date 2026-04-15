@@ -26,7 +26,6 @@ import {
   rankTasksForUser,
   scoreTaskForAccountability,
 } from "@/lib/tasks/rank-tasks";
-import { TREATY_PARENT_TASK_KEY } from "@/lib/tasks/task-keys";
 import { grantWishes } from "@/lib/wishes.server";
 
 const ACTIVE_CLAIM_STATUSES = [
@@ -1021,37 +1020,6 @@ export async function getTasksPageData(
     topLevelTasks: decoratedTopLevel,
     viewer,
   };
-}
-
-export async function getTreatyBlockerTasks(
-  userId?: string | null,
-  limit = 12,
-  options?: {
-    frameKey?: TaskImpactFrameKey | string | null;
-  },
-) {
-  const tasks = await prisma.task.findMany({
-    where: {
-      deletedAt: null,
-      isPublic: true,
-      parentTask: {
-        deletedAt: null,
-        taskKey: TREATY_PARENT_TASK_KEY,
-      },
-    },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    select: taskListSelect,
-    take: Math.max(limit * 3, 24),
-  });
-
-  return sortTasksForAccountability(
-    tasks.map((task) =>
-      decorateTask(task, {
-        frameKey: options?.frameKey,
-        userId: userId ?? null,
-      }),
-    ),
-  ).slice(0, limit);
 }
 
 export async function getTaskDetailData(

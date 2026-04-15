@@ -4,13 +4,15 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
-import { getTasksPageData, getTreatyBlockerTasks } from "@/lib/tasks.server";
+import { getTaskDetailData, getTasksPageData } from "@/lib/tasks.server";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
+import type { TaskCardTask } from "@/components/tasks/task-card";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { ReferendumSiteDashboardClient } from "@/components/site/ReferendumSiteDashboardClient";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHost } from "@/lib/site";
+import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -53,21 +55,11 @@ export default async function DashboardPage({
   }
 
   if (site.contentKey && site.primaryReferendumSlug) {
-    const [initialData, blockerTasks] = await Promise.all([
-      getDashboardData(userId),
-      getTreatyBlockerTasks(userId, 250),
-    ]);
-    const content = getReferendumSiteContent(site.contentKey);
-    const welcome = params.welcome === "1";
+    const treatyParent = await getTaskDetailData(TREATY_PARENT_TASK_ID, userId);
+    const task = (treatyParent?.task ?? null) as TaskCardTask | null;
+    const subtasks = (treatyParent?.task.childTasks ?? []) as unknown as TaskCardTask[];
 
-    return (
-      <ReferendumSiteDashboardClient
-        initialUser={initialData.user}
-        blockerTasks={blockerTasks}
-        content={content.dashboard}
-        welcome={welcome}
-      />
-    );
+    return <ReferendumSiteDashboardClient task={task} subtasks={subtasks} />;
   }
 
   const [initialData, leaderboard, taskData] = await Promise.all([

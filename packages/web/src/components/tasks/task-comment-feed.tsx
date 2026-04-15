@@ -551,11 +551,6 @@ export function TaskCommentFeed({
             }
           />
         ))}
-        {threaded.topLevel.length === 0 ? (
-          <p className="py-6 text-center text-sm font-bold text-muted-foreground">
-            No comments yet. Be the first to post.
-          </p>
-        ) : null}
       </div>
     </section>
   );
