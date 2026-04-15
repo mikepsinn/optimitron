@@ -1,5 +1,5 @@
 import { Prisma } from "@optimitron/db";
-import { findOrCreateOrganization } from "@/lib/organization.server";
+import { upsertTrustedOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import type {
   ImportedImpactEstimateDraft,
@@ -403,10 +403,10 @@ export async function upsertImportedTaskBundle(
             where: { id: options.assigneeOrganizationId.trim() },
           })
         : bundle.task.assigneeOrganizationName
-          ? await findOrCreateOrganization(
-              {
-                name: bundle.task.assigneeOrganizationName,
-                sourceRef: bundle.task.assigneeOrganizationSourceRef,
+          ? await upsertTrustedOrganization(
+               {
+                 name: bundle.task.assigneeOrganizationName,
+                 sourceRef: bundle.task.assigneeOrganizationSourceRef,
                 type: bundle.task.assigneeOrganizationType,
               },
               tx,

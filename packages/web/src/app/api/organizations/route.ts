@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import { createOrganizationWithOwner } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/slugify";
-import { OrgStatus } from "@optimitron/db";
+import { OrgStatus, OrgType } from "@optimitron/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,8 +40,14 @@ export async function GET(request: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { userId, userEmail } = await requireAuth();
-    const { name, type, website, description, jurisdictionId } =
-      await req.json();
+    const body = (await req.json()) as {
+      name?: string;
+      type?: string;
+      website?: string;
+      description?: string;
+      jurisdictionId?: string;
+    };
+    const name = body.name?.trim();
 
     if (!name) {
       return NextResponse.json(
@@ -50,33 +56,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate slug
-    let slug = slugify(name);
+    const type =
+      body.type && body.type in OrgType
+        ? (body.type as OrgType)
+        : OrgType.NONPROFIT;
 
-    // Ensure uniqueness
-    const existing = await prisma.organization.findUnique({
-      where: { slug },
-    });
-    if (existing) {
-      const count = await prisma.organization.count({
-        where: { slug: { startsWith: slug } },
-      });
-      slug = `${slug}-${count + 1}`;
-    }
-
-    const organization = await prisma.organization.create({
-      data: {
+    const organization = await createOrganizationWithOwner(
+      {
         name,
-        slug,
-        type: type || "NONPROFIT",
-        website: website || null,
-        description: description || null,
-        contactEmail: userEmail,
-        status: OrgStatus.APPROVED,
-        creatorId: userId,
-        jurisdictionId: jurisdictionId || null,
+        type,
+        website: body.website ?? null,
+        description: body.description ?? null,
+        contactEmail: userEmail ?? null,
+        jurisdictionId: body.jurisdictionId ?? null,
       },
-    });
+      userId,
+    );
 
     return NextResponse.json(
       { success: true, organization },

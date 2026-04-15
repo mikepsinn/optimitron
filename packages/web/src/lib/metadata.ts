@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { NavItem } from "./routes";
+import type { SiteConfig } from "./site";
 
 const SITE_NAME = "Optimitron";
 
@@ -21,6 +22,31 @@ export function getRouteMetadata(
     openGraph: {
       title,
       description,
+    },
+    ...overrides,
+  };
+}
+
+interface SiteMetadataInput {
+  description: string;
+  title: string;
+}
+
+export function getSiteMetadata(
+  site: SiteConfig,
+  page: SiteMetadataInput,
+  overrides?: Partial<Metadata>,
+): Metadata {
+  return {
+    title: page.title,
+    description: page.description,
+    metadataBase: new URL(site.canonicalOrigin),
+    openGraph: {
+      title: page.title,
+      description: page.description,
+      siteName: site.name,
+      images: [site.ogImage],
+      type: "website",
     },
     ...overrides,
   };

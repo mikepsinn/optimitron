@@ -1,4 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { ReferendumSiteHome } from "@/components/site/ReferendumSiteHome";
+import { getSiteMetadata } from "@/lib/metadata";
+import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
+import { getSiteFromHost } from "@/lib/site";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { HowToWinSection } from "@/components/landing/HowToWinSection";
 import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
@@ -29,17 +35,44 @@ import { ArmorySection } from "@/components/landing/ArmorySection";
 import { TAGLINES } from "@/lib/messaging";
 import { FinalCTASection } from "@/components/landing/FinalCTASection";
 
-export const metadata: Metadata = {
-  title: "Optimitron — The Earth Optimization Game",
-  description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,
-  openGraph: {
-    title: "Optimitron — The Earth Optimization Game",
-    description: TAGLINES.gameObjective,
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const hdrs = await headers();
+  const site = getSiteFromHost(hdrs.get("host"));
 
-export default function Home() {
+  if (site.primaryReferendumSlug) {
+    const content = getReferendumSiteContent(site.contentKey);
+    return getSiteMetadata(site, content.metadata.home);
+  }
+
+  return {
+    title: "Optimitron — The Earth Optimization Game",
+    description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,
+    openGraph: {
+      title: "Optimitron — The Earth Optimization Game",
+      description: TAGLINES.gameObjective,
+      type: "website",
+    },
+  };
+}
+
+export default async function Home() {
+  const hdrs = await headers();
+  const site = getSiteFromHost(hdrs.get("host"));
+  if (site.primaryReferendumSlug) {
+    const data = await getReferendumSiteHomeData(site);
+    if (!data) {
+      return (
+        <section className="mx-auto max-w-2xl px-4 py-24 text-center">
+          <h1 className="text-3xl font-black uppercase">{site.name}</h1>
+          <p className="mt-4 font-bold text-muted-foreground">
+            Referendum not found.
+          </p>
+        </section>
+      );
+    }
+
+    return <ReferendumSiteHome data={data} />;
+  }
   return (
     <div>
       {/* ── 1. Hero — Game name + objective ── */}

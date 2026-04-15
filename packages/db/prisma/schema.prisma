@@ -250,6 +250,13 @@ enum OrgStatus {
   REJECTED
 }
 
+/// Approval status of an organization's official position on a referendum
+enum OrganizationReferendumPositionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 /// Social/identity platform for linked accounts
 enum SocialPlatform {
   TWITTER
@@ -660,44 +667,46 @@ model User {
   deletedAt DateTime?
 
   // -- Relations --
-  person                    Person?                         @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
+  person                    Person?                          @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
   accounts                  Account[]
   personhoodVerifications   PersonhoodVerification[]
-  referrals                 Referral[]                      @relation("UserReferrals")
-  referralClicks            ReferralClick[]                 @relation("UserReferralClicks")
+  referrals                 Referral[]                       @relation("UserReferrals")
+  referralClicks            ReferralClick[]                  @relation("UserReferralClicks")
   sessions                  Session[]
-  referral                  Referral?                       @relation("UserReferral")
-  wishocraticAllocations    WishocraticAllocation[]         @relation("UserWishocraticAllocations")
-  wishocraticItemInclusions WishocraticItemInclusion[]      @relation("UserWishocraticItemInclusions")
-  citizenBillVotes          CitizenBillVote[]               @relation("UserCitizenBillVotes")
-  webPushSubscriptions      WebPushSubscription[]           @relation("UserWebPushSubscriptions")
-  userPreference            UserPreference?                 @relation("UserPreference")
-  notificationPreferences   NotificationPreference[]        @relation("UserNotificationPreferences")
-  notifications             Notification[]                  @relation("UserNotifications")
-  encryptedAllocations      WishocraticEncryptedAllocation? @relation("UserEncryptedAllocations")
-  createdReferendums        Referendum[]                    @relation("UserCreatedReferendums")
-  referendumVotes           ReferendumVote[]                @relation("UserReferendumVotes")
-  referendumReferrals       ReferendumVote[]                @relation("UserReferendumReferrals")
-  voteTokenMints            VoteTokenMint[]                 @relation("UserVoteTokenMints")
-  activities                Activity[]                      @relation("UserActivities")
-  createdOrganizations      Organization[]                  @relation("OrgCreator")
-  organizationMemberships   OrganizationMember[]            @relation("UserOrgMemberships")
-  badges                    Badge[]                         @relation("UserBadges")
-  wishPoints                WishPoint[]                     @relation("UserWishPoints")
-  socialAccounts            SocialAccount[]                 @relation("UserSocialAccounts")
-  emailLogs                 EmailLog[]                      @relation("UserEmailLogs")
-  surveyResponses           SurveyResponse[]                @relation("UserSurveyResponses")
-  taskClaims                TaskClaim[]                     @relation("UserTaskClaims")
-  ownedTasks                Task[]                          @relation("TaskOwner")
-  verifiedTasks             Task[]                          @relation("TaskVerifiedByUser")
-  verifiedTaskClaims        TaskClaim[]                     @relation("TaskClaimVerifiedByUser")
-  verifiedTaskMilestones    TaskMilestone[]                 @relation("TaskMilestoneVerifiedByUser")
-  taskComments              TaskComment[]                   @relation("TaskCommentAuthor")
-  moderatedTaskComments     TaskComment[]                   @relation("TaskCommentModerator")
-  taskCommentVotes          TaskCommentVote[]               @relation("TaskCommentVoter")
-  agentComputeDeposits      AgentComputeDeposit[]           @relation("UserAgentComputeDeposits")
-  oauthAuthCodes            OAuthAuthCode[]                 @relation("UserOAuthAuthCodes")
-  oauthGrants               OAuthGrant[]                    @relation("UserOAuthGrants")
+  referral                  Referral?                        @relation("UserReferral")
+  wishocraticAllocations    WishocraticAllocation[]          @relation("UserWishocraticAllocations")
+  wishocraticItemInclusions WishocraticItemInclusion[]       @relation("UserWishocraticItemInclusions")
+  citizenBillVotes          CitizenBillVote[]                @relation("UserCitizenBillVotes")
+  webPushSubscriptions      WebPushSubscription[]            @relation("UserWebPushSubscriptions")
+  userPreference            UserPreference?                  @relation("UserPreference")
+  notificationPreferences   NotificationPreference[]         @relation("UserNotificationPreferences")
+  notifications             Notification[]                   @relation("UserNotifications")
+  encryptedAllocations      WishocraticEncryptedAllocation?  @relation("UserEncryptedAllocations")
+  createdReferendums        Referendum[]                     @relation("UserCreatedReferendums")
+  referendumVotes           ReferendumVote[]                 @relation("UserReferendumVotes")
+  referendumReferrals       ReferendumVote[]                 @relation("UserReferendumReferrals")
+  voteTokenMints            VoteTokenMint[]                  @relation("UserVoteTokenMints")
+  activities                Activity[]                       @relation("UserActivities")
+  createdOrganizations      Organization[]                   @relation("OrgCreator")
+  organizationMemberships   OrganizationMember[]             @relation("UserOrgMemberships")
+  submittedOrgPositions     OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
+  approvedOrgPositions      OrganizationReferendumPosition[] @relation("OrgPositionApprover")
+  badges                    Badge[]                          @relation("UserBadges")
+  wishPoints                WishPoint[]                      @relation("UserWishPoints")
+  socialAccounts            SocialAccount[]                  @relation("UserSocialAccounts")
+  emailLogs                 EmailLog[]                       @relation("UserEmailLogs")
+  surveyResponses           SurveyResponse[]                 @relation("UserSurveyResponses")
+  taskClaims                TaskClaim[]                      @relation("UserTaskClaims")
+  ownedTasks                Task[]                           @relation("TaskOwner")
+  verifiedTasks             Task[]                           @relation("TaskVerifiedByUser")
+  verifiedTaskClaims        TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
+  verifiedTaskMilestones    TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
+  taskComments              TaskComment[]                    @relation("TaskCommentAuthor")
+  moderatedTaskComments     TaskComment[]                    @relation("TaskCommentModerator")
+  taskCommentVotes          TaskCommentVote[]                @relation("TaskCommentVoter")
+  agentComputeDeposits      AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
+  oauthAuthCodes            OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
+  oauthGrants               OAuthGrant[]                     @relation("UserOAuthGrants")
 
   @@index([email])
   @@index([username])
@@ -2757,11 +2766,12 @@ model Referendum {
   deletedAt DateTime?
 
   // -- Relations --
-  createdBy      User?            @relation("UserCreatedReferendums", fields: [createdByUserId], references: [id])
-  jurisdiction   Jurisdiction?    @relation(fields: [jurisdictionId], references: [id])
-  votes          ReferendumVote[]
-  voteTokenMints VoteTokenMint[]
-  surveys        Survey[]
+  createdBy             User?                            @relation("UserCreatedReferendums", fields: [createdByUserId], references: [id])
+  jurisdiction          Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
+  votes                 ReferendumVote[]
+  voteTokenMints        VoteTokenMint[]
+  surveys               Survey[]
+  organizationPositions OrganizationReferendumPosition[]
 
   @@index([slug])
   @@index([status])
@@ -3123,10 +3133,11 @@ model Organization {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction  Jurisdiction?        @relation(fields: [jurisdictionId], references: [id])
-  creator       User?                @relation("OrgCreator", fields: [creatorId], references: [id])
-  members       OrganizationMember[]
-  assignedTasks Task[]               @relation("TaskAssigneeOrganization")
+  jurisdiction        Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
+  creator             User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
+  members             OrganizationMember[]
+  assignedTasks       Task[]                           @relation("TaskAssigneeOrganization")
+  referendumPositions OrganizationReferendumPosition[]
 
   @@index([slug])
   @@index([type])
@@ -3160,6 +3171,58 @@ model OrganizationMember {
   @@unique([organizationId, userId])
   @@index([userId])
   @@index([organizationId])
+}
+
+/// Official organizational position on a referendum. Distinct from
+/// ReferendumVote (which is per-user) and from Organization.status
+/// (which is org-level existence/approval).
+model OrganizationReferendumPosition {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The organization taking the position
+  organizationId String
+
+  /// The referendum the position is on
+  referendumId String
+
+  /// YES / NO / ABSTAIN
+  position VotePosition
+
+  /// Optional public statement from the organization
+  statement String?
+
+  /// User who submitted this position on behalf of the organization
+  submittedByUserId String?
+
+  /// Admin who approved or rejected this position
+  approvedByUserId String?
+
+  /// Per-referendum approval status (independent of Organization.status)
+  status OrganizationReferendumPositionStatus @default(PENDING)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  referendum   Referendum   @relation(fields: [referendumId], references: [id], onDelete: Cascade)
+  submittedBy  User?        @relation("OrgPositionSubmitter", fields: [submittedByUserId], references: [id])
+  approvedBy   User?        @relation("OrgPositionApprover", fields: [approvedByUserId], references: [id])
+
+  @@unique([organizationId, referendumId])
+  @@index([organizationId])
+  @@index([referendumId])
+  @@index([status])
+  @@index([submittedByUserId])
+  @@index([approvedByUserId])
+  @@index([deletedAt])
 }
 
 // ============================================================================

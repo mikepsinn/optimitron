@@ -127,3 +127,144 @@ export async function findOrCreateOrganization(
     },
   });
 }
+
+/**
+ * Trusted/internal upsert path used by task imports and other non-public
+ * ingestion flows. This path may create APPROVED org records because the
+ * caller is responsible for provenance.
+ */
+export async function upsertTrustedOrganization(
+  input: OrganizationDraftInput,
+  db: DbClient = prisma,
+) {
+  return findOrCreateOrganization(input, db);
+}
+
+interface CreateOrganizationInput {
+  name: string;
+  type?: OrgType | null;
+  website?: string | null;
+  description?: string | null;
+  logo?: string | null;
+  contactEmail?: string | null;
+  jurisdictionId?: string | null;
+}
+
+/**
+ * Public-facing creation path: creates an Organization with status PENDING
+ * and immediately inserts an owner OrganizationMember row in the same
+ * transaction. Callers must pass an authenticated user id.
+ */
+export async function createOrganizationWithOwner(
+  input: CreateOrganizationInput,
+  creatorUserId: string,
+) {
+  const name = input.name.trim();
+  if (!name) {
+    throw new Error("Organization name is required");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const nextSlug = await getAvailableSlug(tx, slugify(name));
+
+    const organization = await tx.organization.create({
+      data: {
+        name,
+        slug: nextSlug,
+        type: input.type ?? OrgType.OTHER,
+        status: OrgStatus.PENDING,
+        creatorId: creatorUserId,
+        website: input.website ?? null,
+        description: input.description ?? null,
+        logo: input.logo ?? null,
+        contactEmail: input.contactEmail ?? null,
+        jurisdictionId: input.jurisdictionId ?? null,
+      },
+    });
+
+    await tx.organizationMember.create({
+      data: {
+        organizationId: organization.id,
+        userId: creatorUserId,
+        role: "owner",
+      },
+    });
+
+    return organization;
+  });
+}
+
+const MANAGE_ROLES = new Set(["owner", "admin"]);
+
+/**
+ * Returns true if the user can manage the given organization. Lazily backfills
+ * an "owner" membership row when the user is the org's creator but has no
+ * membership row yet — this keeps legacy orgs first-class without requiring a
+ * data migration.
+ */
+export async function canManageOrganization(
+  userId: string,
+  organizationId: string,
+): Promise<boolean> {
+  const membership = await prisma.organizationMember.findUnique({
+    where: {
+      organizationId_userId: { organizationId, userId },
+    },
+    select: { role: true },
+  });
+
+  if (membership && MANAGE_ROLES.has(membership.role)) {
+    return true;
+  }
+
+  if (membership) {
+    return false;
+  }
+
+  // No membership row — check creator fallback and backfill if applicable.
+  const org = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { creatorId: true },
+  });
+
+  if (!org || org.creatorId !== userId) {
+    return false;
+  }
+
+  await prisma.organizationMember.upsert({
+    where: {
+      organizationId_userId: { organizationId, userId },
+    },
+    update: {},
+    create: {
+      organizationId,
+      userId,
+      role: "owner",
+    },
+  });
+
+  return true;
+}
+
+export async function getManageableOrganizationsForUser(userId: string) {
+  const memberships = await prisma.organizationMember.findMany({
+    where: {
+      userId,
+      role: { in: Array.from(MANAGE_ROLES) },
+      organization: { deletedAt: null },
+    },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          status: true,
+        },
+      },
+    },
+    orderBy: { joinedAt: "asc" },
+  });
+
+  return memberships.map((membership) => membership.organization);
+}

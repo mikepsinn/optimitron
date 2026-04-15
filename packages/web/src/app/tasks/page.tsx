@@ -1,9 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
+import { getReferendumSiteContent } from "@/content/referendum-sites";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
+import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
+import { tasksLink } from "@/lib/routes";
+import { getSiteFromHost } from "@/lib/site";
 import {
   formatCompactCount,
   formatCompactCurrency,
@@ -11,11 +17,19 @@ import {
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
 import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
-import { getRouteMetadata } from "@/lib/metadata";
-import { tasksLink } from "@/lib/routes";
 import { getTasksPageData } from "@/lib/tasks.server";
 
-export const metadata = getRouteMetadata(tasksLink);
+export async function generateMetadata(): Promise<Metadata> {
+  const hdrs = await headers();
+  const site = getSiteFromHost(hdrs.get("host"));
+
+  if (site.primaryReferendumSlug) {
+    const content = getReferendumSiteContent(site.contentKey);
+    return getSiteMetadata(site, content.metadata.tasks);
+  }
+
+  return getRouteMetadata(tasksLink);
+}
 
 function Section({
   children,

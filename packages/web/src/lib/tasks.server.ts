@@ -8,7 +8,7 @@ import {
   TaskStatus,
   type Prisma,
 } from "@optimitron/db";
-import { findOrCreateOrganization } from "@/lib/organization.server";
+import { upsertTrustedOrganization } from "@/lib/organization.server";
 import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { getSearchTerms, scoreSearchRecord } from "@/lib/site-search";
@@ -1782,7 +1782,7 @@ export async function reassignTask(
           where: { id: input.organizationId.trim() },
         })
       : input.organizationName?.trim()
-        ? await findOrCreateOrganization({
+        ? await upsertTrustedOrganization({
             name: input.organizationName.trim(),
             type: input.organizationType ?? undefined,
           })

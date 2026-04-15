@@ -6,6 +6,7 @@ import { Button } from "@/components/retroui/Button"
 import { Input } from "@/components/retroui/Input"
 import { Label } from "@/components/retroui/Label"
 import { Textarea } from "@/components/retroui/Textarea"
+import { getOrganizationManagementHref } from "@/lib/organization-links"
 import { ArrowRight, Loader2, CheckCircle } from "lucide-react"
 
 interface OrganizationResult {
@@ -79,15 +80,18 @@ export function OrganizationForm({ onSuccess, onCancel, compact = false, initial
                 <div className="p-4 bg-brutal-yellow border-4 border-primary">
                     <div className="flex items-center gap-2 mb-2">
                         <CheckCircle className="h-5 w-5 text-foreground" />
-                        <span className="font-black uppercase text-foreground">ORGANIZATION CREATED</span>
+                        <span className="font-black uppercase text-foreground">Submitted — Pending Review</span>
                     </div>
                     <p className="font-bold text-foreground text-lg">{createdOrg.name}</p>
+                    <p className="mt-2 font-bold text-foreground text-sm">
+                        Your organization has been recorded. An admin will verify it before it appears publicly. You can still manage it while it&apos;s pending.
+                    </p>
                 </div>
 
                 {!compact && (
                     <div className="flex justify-center">
                         <Button
-                            onClick={() => router.push(`/dashboard/organizations/${createdOrg.slug}`)}
+                            onClick={() => router.push(getOrganizationManagementHref(createdOrg.id))}
                             className="bg-foreground text-background border-4 border-primary hover:bg-brutal-pink hover:text-foreground font-black uppercase"
                         >
                             Manage Organization
