@@ -127,6 +127,35 @@ export function getConfiguredSiteOrigin(options?: {
   return OPTIMITRON_CANONICAL_ORIGIN;
 }
 
+function isLocalHost(host: string) {
+  const hostname = host.split(":")[0]?.toLowerCase() ?? "";
+  return (
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname.endsWith(".local") ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname === "0.0.0.0"
+  );
+}
+
+export function getRequestSiteOrigin(input?: {
+  forwardedHost?: string | null;
+  forwardedProto?: string | null;
+  host?: string | null;
+}) {
+  const forwardedHost = input?.forwardedHost?.split(",")[0]?.trim();
+  const host = forwardedHost || input?.host?.trim() || "";
+  if (!host) {
+    return getConfiguredSiteOrigin({ allowLocalFallback: true });
+  }
+
+  const forwardedProto = input?.forwardedProto?.split(",")[0]?.trim().toLowerCase();
+  const protocol = forwardedProto || (isLocalHost(host) ? "http" : "https");
+
+  return `${protocol}://${host.replace(/\/+$/, "")}`;
+}
+
 export function absoluteCanonicalSiteUrl(path: string) {
   return `${OPTIMITRON_CANONICAL_ORIGIN}${normalizePath(path)}`;
 }

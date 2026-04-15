@@ -19,6 +19,7 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls"
 import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
 import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
+import { useRequestSiteOrigin } from "@/lib/request-site-origin"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function DashboardClient({
@@ -30,7 +31,8 @@ export function DashboardClient({
   leaderboard: LeaderboardEntry[]
   topTasks: TaskCardTask[]
 }) {
-  const referralLink = buildUserReferralUrl(initialData.user)
+  const baseUrl = useRequestSiteOrigin()
+  const referralLink = buildUserReferralUrl(initialData.user, baseUrl)
 
   return (
     <div className="min-h-screen bg-background pb-20">

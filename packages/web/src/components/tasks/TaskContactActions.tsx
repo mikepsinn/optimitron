@@ -4,14 +4,16 @@ import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
   resolveTaskContactAction,
   type TaskContactDelayStats,
   type TaskContactLike,
 } from "@/lib/tasks/contact";
-import { buildTaskUrl, getBaseUrl } from "@/lib/url";
+import { buildTaskUrl } from "@/lib/url";
 
 interface TaskContactActionsProps {
+  baseUrl?: string;
   compact?: boolean;
   contactActionCount?: number;
   delayStats: TaskContactDelayStats;
@@ -20,6 +22,7 @@ interface TaskContactActionsProps {
 }
 
 export function TaskContactActions({
+  baseUrl,
   compact = false,
   contactActionCount,
   delayStats,
@@ -28,10 +31,11 @@ export function TaskContactActions({
 }: TaskContactActionsProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const { data: session } = useSession();
+  const requestOrigin = useRequestSiteOrigin();
   const referralId = getUsernameOrReferralCode(session?.user);
   const taskUrl = useMemo(
-    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
-    [taskId, referralId],
+    () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
+    [baseUrl, requestOrigin, taskId, referralId],
   );
   const action = useMemo(
     () => resolveTaskContactAction({ delayStats, task, taskUrl }),

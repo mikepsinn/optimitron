@@ -5,22 +5,26 @@ import { useSession } from "next-auth/react";
 import { FaShareNodes } from "react-icons/fa6";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
-import { buildTaskUrl, getBaseUrl } from "@/lib/url";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import { buildTaskUrl } from "@/lib/url";
 
 export function TaskRowShare({
+  baseUrl,
   shareText,
   taskId,
 }: {
+  baseUrl?: string;
   shareText: string;
   taskId: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
+  const requestOrigin = useRequestSiteOrigin();
   const referralId = getUsernameOrReferralCode(session?.user);
   const taskUrl = useMemo(
-    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
-    [taskId, referralId],
+    () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
+    [baseUrl, requestOrigin, taskId, referralId],
   );
 
   useEffect(() => {

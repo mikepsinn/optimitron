@@ -4,9 +4,11 @@ import { useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
-import { buildTaskUrl, getBaseUrl } from "@/lib/url";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import { buildTaskUrl } from "@/lib/url";
 
 interface TaskShareButtonsProps {
+  baseUrl?: string;
   taskId: string;
   shareText: string;
   taskTitle: string;
@@ -14,16 +16,18 @@ interface TaskShareButtonsProps {
 }
 
 export function TaskShareButtons({
+  baseUrl,
   taskId,
   shareText,
   taskTitle,
   variant,
 }: TaskShareButtonsProps) {
   const { data: session } = useSession();
+  const requestOrigin = useRequestSiteOrigin();
   const referralId = getUsernameOrReferralCode(session?.user);
   const taskUrl = useMemo(
-    () => buildTaskUrl(taskId, getBaseUrl(), referralId),
-    [taskId, referralId],
+    () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
+    [baseUrl, requestOrigin, taskId, referralId],
   );
 
   async function trackShare() {

@@ -5,7 +5,8 @@ import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { SiteChrome } from "@/components/site/SiteChrome";
-import { getConfiguredSiteOrigin } from "@/lib/site";
+import { RequestSiteOriginProvider } from "@/lib/request-site-origin";
+import { getConfiguredSiteOrigin, getRequestSiteOrigin } from "@/lib/site";
 import { DEFAULT_THEME } from "@/lib/theme";
 import { wagmiConfig } from "@/lib/wagmi-config";
 
@@ -101,14 +102,22 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookie = (await headers()).get("cookie");
+  const headerStore = await headers();
+  const cookie = headerStore.get("cookie");
+  const requestOrigin = getRequestSiteOrigin({
+    host: headerStore.get("host"),
+    forwardedHost: headerStore.get("x-forwarded-host"),
+    forwardedProto: headerStore.get("x-forwarded-proto"),
+  });
   const initialState = cookieToInitialState(wagmiConfig, cookie);
 
   return (
     <html lang="en" className={`${DEFAULT_THEME} palette-vga`}>
       <body className={`font-sans antialiased ${fontVariables}`} suppressHydrationWarning>
         <Providers initialState={initialState}>
-          <SiteChrome>{children}</SiteChrome>
+          <RequestSiteOriginProvider value={requestOrigin}>
+            <SiteChrome>{children}</SiteChrome>
+          </RequestSiteOriginProvider>
         </Providers>
       </body>
     </html>

@@ -6,6 +6,7 @@ import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import type { ReferendumSiteDashboardContent } from "@/content/referendum-sites/types";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildUserReferralUrl } from "@/lib/url";
 import {
   formatCompactCount,
@@ -51,7 +52,8 @@ export function ReferendumSiteDashboardClient({
   initialUser: ReferendumDashboardUser;
   welcome: boolean;
 }) {
-  const referralLink = buildUserReferralUrl(initialUser);
+  const baseUrl = useRequestSiteOrigin();
+  const referralLink = buildUserReferralUrl(initialUser, baseUrl);
   const openTasks = blockerTasks.filter(
     (task) => task.status !== VERIFIED_TASK_STATUS,
   );

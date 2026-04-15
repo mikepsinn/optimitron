@@ -11,7 +11,8 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 const nextConfig = {
   transpilePackages: ['@optimitron/data'],
   serverExternalPackages: ['@storacha/client', 'multiformats', 'pinata'],
-  allowedDevOrigins: ['http://1percenttreaty.local:3001'],
+  // Next.js matches dev origins against the request hostname, not a full URL.
+  allowedDevOrigins: ['1percenttreaty.local'],
   output: isStaticExport ? 'export' : undefined,
   basePath: isStaticExport ? '/optimitron' : '',
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
