@@ -7,11 +7,20 @@ import {
   REFERRAL_EMAIL_SEQUENCE_LENGTH,
 } from "@/lib/referral-email-sequence";
 import { sendResendEmail, isResendConfigured } from "@/lib/resend";
+import { listTasks } from "@/lib/tasks.server";
+import {
+  countOverdueSigners,
+  getOverdueSignerHighlights,
+  type OverdueSignerHighlight,
+} from "@/lib/tasks/overdue-signers.server";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
 import { EmailLogStatus, Prisma } from "@optimitron/db";
 
+type DecoratedTaskList = Awaited<ReturnType<typeof listTasks>>;
+
 interface ReferralSequenceUser {
+  countryCode?: string | null;
   createdAt: Date;
   email: string;
   id: string;
@@ -29,7 +38,21 @@ interface ReferralSequenceUser {
     handle: string | null;
     displayName: string | null;
     image: string | null;
+    countryCode?: string | null;
   } | null;
+}
+
+async function loadDecoratedTreatyTasks(): Promise<DecoratedTaskList> {
+  try {
+    return await listTasks({ limit: 500, visibility: "public" });
+  } catch (error) {
+    console.error("[REFERRAL EMAIL] Failed to load task highlights", error);
+    return [] as unknown as DecoratedTaskList;
+  }
+}
+
+function resolveUserCountryCode(user: ReferralSequenceUser): string | null {
+  return user.countryCode ?? user.person?.countryCode ?? null;
 }
 
 interface ReferralSequenceMessage {
@@ -60,16 +83,48 @@ async function sendReferralSequenceStep(
   });
 }
 
+function buildHighlightsForUser(
+  user: ReferralSequenceUser,
+  decoratedTasks: DecoratedTaskList,
+  now: Date,
+): OverdueSignerHighlight[] {
+  try {
+    return getOverdueSignerHighlights({
+      decoratedTasks,
+      userCountryCode: resolveUserCountryCode(user),
+      now,
+      limit: 3,
+    });
+  } catch (error) {
+    console.error("[REFERRAL EMAIL] Failed to compute signer highlights", user.id, error);
+    return [];
+  }
+}
+
+function computeOverdueSignerCount(decoratedTasks: DecoratedTaskList, now: Date): number {
+  try {
+    return countOverdueSigners(decoratedTasks, now);
+  } catch (error) {
+    console.error("[REFERRAL EMAIL] Failed to count overdue signers", error);
+    return 0;
+  }
+}
+
 function buildReferralSequenceMessage(
   user: ReferralSequenceUser,
   referralCount: number,
   step: number,
+  decoratedTasks: DecoratedTaskList,
+  now: Date,
 ) {
   return buildReferralSequenceEmail({
-    step,
-    referralCount,
+    highlights: buildHighlightsForUser(user, decoratedTasks, now),
     name: getUserDisplayName(user),
+    overdueSignerCount: computeOverdueSignerCount(decoratedTasks, now),
+    referralCode: user.referralCode,
+    referralCount,
     shareUrl: buildUserReferralUrl(user),
+    step,
   });
 }
 
@@ -188,7 +243,8 @@ export async function sendWelcomeReferralEmailForUser(
     return { status: "disabled" as const };
   }
 
-  const message = buildReferralSequenceMessage(user, 0, 0);
+  const decoratedTasks = await loadDecoratedTreatyTasks();
+  const message = buildReferralSequenceMessage(user, 0, 0, decoratedTasks, now);
   const claim = await claimReferralSequenceEmail(user, 0, message.subject, now);
   if (claim.duplicate) {
     return { status: "duplicate" as const };
@@ -241,6 +297,7 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     orderBy: [{ createdAt: "asc" }],
     take: batchSize * 4,
     select: {
+      countryCode: true,
       createdAt: true,
       email: true,
       id: true,
@@ -256,12 +313,14 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
           handle: true,
           displayName: true,
           image: true,
+          countryCode: true,
         },
       },
     },
   });
 
   const referralCounts = await getReferralCountsByUserIds(candidates.map((user) => user.id));
+  const decoratedTasks = candidates.length > 0 ? await loadDecoratedTreatyTasks() : ([] as unknown as DecoratedTaskList);
   let completed = 0;
   let failures = 0;
   let sent = 0;
@@ -294,7 +353,7 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     }
 
     try {
-      const message = buildReferralSequenceMessage(user, referralCount, action.step);
+      const message = buildReferralSequenceMessage(user, referralCount, action.step, decoratedTasks, now);
       const claim = await claimReferralSequenceEmail(user, action.step, message.subject, now);
       if (claim.duplicate || !claim.emailLogId) {
         continue;

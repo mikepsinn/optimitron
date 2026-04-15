@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { PRESIDENT_MANAGEMENT_HEADLINE } from "@/content/mission-statement";
+import type { OverdueSignerHighlight } from "@/lib/tasks/overdue-signers.server";
 import {
   buildReferralSequenceEmail,
   getReferralSequenceAction,
@@ -6,7 +8,64 @@ import {
   STEP_0_CRON_GRACE_MS,
 } from "../referral-email-sequence";
 
-describe("referral email sequence", () => {
+const FIXTURE_HIGHLIGHTS: OverdueSignerHighlight[] = [
+  {
+    taskId: "1-pct-treaty-signer-us",
+    taskHref: "/tasks/1-pct-treaty-signer-us",
+    leaderFirstName: "Joe",
+    leaderFullName: "Joe Testington",
+    leaderImageUrl: "https://example.invalid/us.jpg",
+    roleTitle: "President",
+    countryLabel: "United States",
+    overdueLabel: "3 years overdue",
+    deathsFromDelayLabel: "12.4K",
+    wastedUsdLabel: "$3.4B",
+  },
+  {
+    taskId: "1-pct-treaty-signer-gb",
+    taskHref: "/tasks/1-pct-treaty-signer-gb",
+    leaderFirstName: "Rishi",
+    leaderFullName: "Rishi Example",
+    leaderImageUrl: null,
+    roleTitle: "Prime Minister",
+    countryLabel: "United Kingdom",
+    overdueLabel: "2 years overdue",
+    deathsFromDelayLabel: "8.1K",
+    wastedUsdLabel: "$2.1B",
+  },
+  {
+    taskId: "1-pct-treaty-signer-cn",
+    taskHref: "/tasks/1-pct-treaty-signer-cn",
+    leaderFirstName: "Xi",
+    leaderFullName: "Xi Placeholder",
+    leaderImageUrl: "https://example.invalid/cn.jpg",
+    roleTitle: "General Secretary",
+    countryLabel: "People's Republic of China",
+    overdueLabel: "4 years overdue",
+    deathsFromDelayLabel: "15.2K",
+    wastedUsdLabel: "$4.0B",
+  },
+];
+
+function buildEmail(overrides: {
+  step: number;
+  referralCount: number;
+  highlights?: readonly OverdueSignerHighlight[];
+  overdueSignerCount?: number;
+  name?: string;
+}) {
+  return buildReferralSequenceEmail({
+    step: overrides.step,
+    referralCount: overrides.referralCount,
+    highlights: overrides.highlights ?? FIXTURE_HIGHLIGHTS,
+    name: overrides.name ?? "Alex",
+    overdueSignerCount: overrides.overdueSignerCount ?? 193,
+    referralCode: "REFCODE1",
+    shareUrl: "https://example.com/?ref=REFCODE1",
+  });
+}
+
+describe("referral email sequence scheduling", () => {
   it("sends step 0 after grace period", () => {
     const created = new Date("2026-03-10T00:00:00.000Z");
     const now = new Date(created.getTime() + STEP_0_CRON_GRACE_MS + 1);
@@ -80,103 +139,6 @@ describe("referral email sequence", () => {
     expect(action).toEqual({ type: "complete", reason: "goal_met" });
   });
 
-  it("builds game progress copy when friends have joined", () => {
-    const email = buildReferralSequenceEmail({
-      step: 1,
-      referralCount: 2,
-      name: "Jane Doe",
-      shareUrl: "https://example.com/wishocracy/jane",
-    });
-
-    expect(email.subject).toContain("2");
-    expect(email.subject).toContain("friends joined");
-    expect(email.text).toContain("https://example.com/wishocracy/jane");
-    expect(email.html).toContain("Copy-and-send message");
-    expect(email.html).toContain("TELL TWO FRIENDS");
-  });
-
-  it("welcome email leads with game framing, not financial value", () => {
-    const email = buildReferralSequenceEmail({
-      step: 0,
-      referralCount: 0,
-      name: "Alex",
-      shareUrl: "https://example.com/?ref=alex",
-    });
-
-    expect(email.subject).toBe("You did a thing. Now do one more thing");
-    expect(email.text).toContain("Earth Optimization Game");
-    expect(email.text).toContain("tell two friends");
-    expect(email.html).toContain("TELL TWO FRIENDS");
-  });
-
-  it("step 2 email uses mission framing for zero referrals", () => {
-    const email = buildReferralSequenceEmail({
-      step: 2,
-      referralCount: 0,
-      name: "Bo",
-      shareUrl: "https://example.com/?ref=bo",
-    });
-
-    expect(email.subject).toContain("604x");
-    expect(email.text).toContain("people have died from treatable diseases");
-  });
-
-  it("signs off as Wishonia", () => {
-    const email = buildReferralSequenceEmail({
-      step: 0,
-      referralCount: 0,
-      name: "Test",
-      shareUrl: "https://example.com/?ref=test",
-    });
-
-    expect(email.text).toContain("Wishonia");
-    expect(email.html).toContain("Wishonia");
-  });
-
-  it("no subject line contains dollar amounts", () => {
-    const steps = [
-      { step: 0, referralCount: 0 },
-      { step: 1, referralCount: 0 },
-      { step: 1, referralCount: 2 },
-      { step: 2, referralCount: 0 },
-      { step: 2, referralCount: 2 },
-    ];
-
-    for (const { step, referralCount } of steps) {
-      const email = buildReferralSequenceEmail({
-        step,
-        referralCount,
-        name: "Test",
-        shareUrl: "https://example.com/?ref=test",
-      });
-      expect(email.subject).not.toMatch(
-        /\$\d/,
-      );
-    }
-  });
-
-  it("share message does not mention point name", () => {
-    const email = buildReferralSequenceEmail({
-      step: 0,
-      referralCount: 0,
-      name: "Test",
-      shareUrl: "https://example.com/?ref=test",
-    });
-
-    const shareMessageLine = email.text
-      .split("\n")
-      .find((line) => line.startsWith("Suggested message:"));
-    const shareMessage = email.text
-      .split("\n")
-      .slice(
-        email.text.split("\n").indexOf(shareMessageLine!) + 1,
-        email.text.split("\n").indexOf(shareMessageLine!) + 2,
-      )
-      .join("");
-
-    expect(shareMessage).not.toContain("VOTE Point");
-  });
-
   it("completes sequence when all steps are exhausted", () => {
     const action = getReferralSequenceAction({
       createdAt: new Date("2026-03-10T00:00:00.000Z"),
@@ -187,5 +149,123 @@ describe("referral email sequence", () => {
     });
 
     expect(action).toBeNull();
+  });
+});
+
+describe("buildReferralSequenceEmail content — President Management System framing", () => {
+  it("step 0 subject names the overdue count and asks the user to pick one", () => {
+    const email = buildEmail({ step: 0, referralCount: 0, overdueSignerCount: 193 });
+    expect(email.subject).toBe(
+      "You now supervise 193 overdue world leaders. Pick one to remind.",
+    );
+  });
+
+  it("step 1 zero-action subject cites 24h deaths and the overdue count", () => {
+    const email = buildEmail({ step: 1, referralCount: 0, overdueSignerCount: 193 });
+    expect(email.subject).toContain("24h status");
+    expect(email.subject).toContain("more dead");
+    expect(email.subject).toContain("193");
+  });
+
+  it("step 1 with referrals cites peer count and remaining count", () => {
+    const email = buildEmail({ step: 1, referralCount: 2, overdueSignerCount: 193 });
+    expect(email.subject).toContain("2 peers");
+    expect(email.subject).toContain("193");
+  });
+
+  it("step 2 zero-action subject quotes the WEEKLY $37T/52 spend, not the annual total", () => {
+    const email = buildEmail({ step: 2, referralCount: 0, overdueSignerCount: 193 });
+    // $37T / 52 ≈ $712B — we only assert the B/billion-scale, not the exact string.
+    expect(email.subject).toMatch(/\$\d+(\.\d+)?B/);
+    expect(email.subject).not.toContain("$37T");
+    expect(email.subject).toContain("this week");
+    expect(email.subject).toContain("reminded nobody");
+  });
+
+  it("step 2 with referrals uses final-status-report framing", () => {
+    const email = buildEmail({ step: 2, referralCount: 4, overdueSignerCount: 193 });
+    expect(email.subject).toContain("Final status report");
+    expect(email.subject).toContain("4 peers");
+  });
+
+  it("renders the brand strip with President Management System and the day label", () => {
+    const email0 = buildEmail({ step: 0, referralCount: 0 });
+    const email1 = buildEmail({ step: 1, referralCount: 0 });
+    const email2 = buildEmail({ step: 2, referralCount: 0 });
+    expect(email0.html).toContain(PRESIDENT_MANAGEMENT_HEADLINE);
+    expect(email0.html).toContain("DAY 1");
+    expect(email1.html).toContain("DAY 2");
+    expect(email2.html).toContain("DAY 5");
+  });
+
+  it("renders one REMIND card per highlight with ref-attributed hrefs", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).toContain("REMIND JOE →");
+    expect(email.html).toContain("REMIND RISHI →");
+    expect(email.html).toContain("REMIND XI →");
+    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-us?ref=REFCODE1"');
+    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-gb?ref=REFCODE1"');
+    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-cn?ref=REFCODE1"');
+  });
+
+  it("displays the overdue clock and cost-of-delay per card", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).toContain("3 YEARS OVERDUE");
+    expect(email.html).toContain("12.4K");
+    expect(email.html).toContain("$3.4B");
+  });
+
+  it("computes the step-2 spend headline dynamically, not hardcoded", () => {
+    const email = buildEmail({ step: 2, referralCount: 0, overdueSignerCount: 100 });
+    // Four days at $37T/year ≈ $405B. Assert it's a billion-scale value.
+    expect(email.html).toMatch(/drew \$\d+(\.\d+)?B/);
+  });
+
+  it("computes the step-1 deaths headline dynamically", () => {
+    const email = buildEmail({ step: 1, referralCount: 0, overdueSignerCount: 193 });
+    // One day at ~150K deaths/day → ~150K on the headline.
+    expect(email.html).toMatch(/\d+(\.\d+)?K more humans died/);
+  });
+
+  it("renders a fallback card when no highlights are provided", () => {
+    const email = buildEmail({ step: 0, referralCount: 0, highlights: [], overdueSignerCount: 193 });
+    expect(email.html).toContain("193 WORLD LEADERS OVERDUE");
+    expect(email.html).toContain('href="/tasks/1-pct-treaty"');
+    expect(email.text).toContain("193 world leaders overdue");
+    expect(email.text).not.toContain("undefined");
+  });
+
+  it("labels the secondary CTA with the dynamic overdue count", () => {
+    const email = buildEmail({ step: 0, referralCount: 0, overdueSignerCount: 187 });
+    expect(email.html).toContain("VIEW ALL 187 OVERDUE EMPLOYEES →");
+    expect(email.html).toContain('href="/tasks/1-pct-treaty"');
+  });
+
+  it("is signed by Wishonia, PMO and cites the $37T mission in the footer", () => {
+    const email = buildEmail({ step: 1, referralCount: 0 });
+    expect(email.html).toContain("Wishonia, PMO");
+    expect(email.html).toContain("$37T/year");
+    expect(email.text).toContain("Wishonia, PMO");
+  });
+
+  it("does not mention referral-game artifacts", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).not.toContain("TELL TWO FRIENDS");
+    expect(email.html).not.toContain("Earth Optimization Game");
+    expect(email.html).not.toContain("Copy-and-send message");
+    expect(email.text).not.toContain("Earth Optimization Game");
+    expect(email.text).not.toContain("tell two friends");
+  });
+
+  it("does not include a Hello greeting or multi-paragraph intro", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).not.toMatch(/Hello\s+Alex/);
+    expect(email.text).not.toMatch(/^Hello\s/m);
+  });
+
+  it("preserves the referral link as a forward-tracking footer", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).toContain("https://example.com/?ref=REFCODE1");
+    expect(email.text).toContain("https://example.com/?ref=REFCODE1");
   });
 });

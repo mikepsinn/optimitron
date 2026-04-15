@@ -1,16 +1,14 @@
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
+import { PRESIDENT_MANAGEMENT_HEADLINE } from "@/content/mission-statement";
 import {
-  PRIZE_POOL_ANNUAL_RETURN,
-  GLOBAL_DISEASE_DEATHS_DAILY,
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-  CURRENT_TRIAL_SLOTS_AVAILABLE,
-  VOTER_LIVES_SAVED,
-  fmtParam,
-  fmtRaw,
-} from "@optimitron/data/parameters";
-import { POINTS } from "@/lib/messaging";
+  formatCompactCount,
+  formatCompactCurrency,
+} from "@/lib/tasks/accountability";
+import { getTreatyParentTaskHref } from "@/lib/tasks/task-keys";
+import type { OverdueSignerHighlight } from "@/lib/tasks/overdue-signers.server";
 
 const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
 const REFERRAL_TARGET = 3;
 const FOLLOW_UP_DELAYS_MS = [0, 24 * HOUR_MS, 96 * HOUR_MS] as const;
 
@@ -18,12 +16,13 @@ const FOLLOW_UP_DELAYS_MS = [0, 24 * HOUR_MS, 96 * HOUR_MS] as const;
  *  welcome-email handler (signup / auth event) time to advance the step. */
 export const STEP_0_CRON_GRACE_MS = 10 * 60 * 1000;
 
-const annualReturn = fmtParam(PRIZE_POOL_ANNUAL_RETURN);
-const dailyDeaths = fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value);
-const spendingRatio = fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO);
-const tippingPoint = fmtRaw(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value);
-const currentTrialSlots = fmtRaw(CURRENT_TRIAL_SLOTS_AVAILABLE.value);
-const livesSavedPerVoter = fmtRaw(VOTER_LIVES_SAVED.value);
+// $37 trillion/year — canonical total global government spending figure from
+// the dashboard mission statement. Not in the parameters module; keep in sync
+// with @/content/mission-statement if that number ever changes.
+const ANNUAL_GLOBAL_GOVERNMENT_SPEND_USD = 37_000_000_000_000;
+const DAILY_GOVERNMENT_SPEND_USD = ANNUAL_GLOBAL_GOVERNMENT_SPEND_USD / 365;
+const WEEKLY_GOVERNMENT_SPEND_USD = ANNUAL_GLOBAL_GOVERNMENT_SPEND_USD / 52;
+const DAILY_DISEASE_DEATHS = GLOBAL_DISEASE_DEATHS_DAILY.value;
 
 export const REFERRAL_EMAIL_SEQUENCE_LENGTH = FOLLOW_UP_DELAYS_MS.length;
 
@@ -35,8 +34,11 @@ interface ReferralEmailState {
   referralEmailSequenceStep: number;
 }
 
-interface ReferralEmailContentInput {
+export interface ReferralEmailContentInput {
+  highlights: readonly OverdueSignerHighlight[];
   name?: string | null;
+  overdueSignerCount: number;
+  referralCode: string;
   referralCount: number;
   shareUrl: string;
   step: number;
@@ -57,62 +59,213 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
-function getFirstName(name?: string | null) {
-  const trimmed = name?.trim();
-  return trimmed ? trimmed.split(/\s+/)[0] : "there";
+function escapeAttr(value: string) {
+  return escapeHtml(value);
 }
 
-function getSharePrompt(referralCount: number) {
-  if (referralCount > 0) {
-    const remaining = Math.max(REFERRAL_TARGET - referralCount, 1);
-    return `You've told ${referralCount} ${referralCount === 1 ? "friend" : "friends"} so far. ${remaining} more to hit the first milestone. Each one strengthens the signal that your species would prefer living to exploding.`;
-  }
-
-  return `You haven't told anyone yet. The game: tell two friends. They tell two. That's how ${tippingPoint} happens. Your species invented chain letters. This is that, but it saves lives instead of cursing your family.`;
+function getStepDayLabel(step: number) {
+  if (step === 0) return "DAY 1";
+  if (step === 1) return "DAY 2";
+  return "DAY 5";
 }
 
-function getSubject(step: number, referralCount: number) {
+function getStepElapsedDays(step: number) {
+  if (step <= 0) return 0;
+  const delayMs = FOLLOW_UP_DELAYS_MS[step] ?? 0;
+  return Math.round(delayMs / DAY_MS);
+}
+
+function getElapsedDeaths(step: number) {
+  const days = getStepElapsedDays(step);
+  return days > 0 ? DAILY_DISEASE_DEATHS * days : 0;
+}
+
+function getElapsedGovernmentSpendUsd(step: number) {
+  const days = getStepElapsedDays(step);
+  return days > 0 ? DAILY_GOVERNMENT_SPEND_USD * days : 0;
+}
+
+function formatCount(value: number) {
+  return formatCompactCount(value, { maximumFractionDigits: value >= 1000 ? 1 : 0 });
+}
+
+function getSubject(step: number, referralCount: number, overdueSignerCount: number) {
   if (step === 0) {
-    return "You did a thing. Now do one more thing";
+    return `You now supervise ${overdueSignerCount} overdue world leaders. Pick one to remind.`;
   }
 
   if (step === 1 && referralCount === 0) {
-    return `${dailyDeaths} people died today. You texted nobody`;
+    return `24h status: ${formatCount(getElapsedDeaths(1))} more dead. ${overdueSignerCount} employees still overdue.`;
   }
 
   if (step === 1) {
-    return `${referralCount} of your friends joined. That's almost impressive`;
+    return `${referralCount} peers are supervising. ${overdueSignerCount} employees still overdue.`;
   }
 
   if (referralCount === 0) {
-    return `Your species spends ${spendingRatio} more on weapons than finding new treatments. Anyway`;
+    return `Performance review: they spent ${formatCompactCurrency(WEEKLY_GOVERNMENT_SPEND_USD)} this week. You reminded nobody.`;
   }
 
-  return `${referralCount} players in your crew. The tipping point can smell you coming`;
+  return `Final status report. ${referralCount} peers, ${overdueSignerCount} employees still overdue.`;
 }
 
-function getMainCopy(step: number, referralCount: number) {
+function getHeadline(step: number, referralCount: number, overdueSignerCount: number) {
   if (step === 0) {
-    return `You just joined the Earth Optimization Game. I invented it because your species has been trying to stop dying for 10,000 years without a scoreboard, which is like playing football without knowing which direction the goal is. You just pointed at the goal.\n\nHere's how the game works: ${dailyDeaths} of you permanently stop every day from diseases you could be treating faster. Your governments spend ${spendingRatio} more on weapons than on testing which medicines work. The 1% Treaty redirects 1% of the murder budget to clinical trials. We need ${tippingPoint} players to hit the tipping point.\n\nYour move: tell two friends. Not "recruit referrals." Not "leverage your network." Tell two actual humans you know. Preferably ones who prefer being alive.`;
+    return `${overdueSignerCount} of your employees are overdue on "Sign the 1% Treaty." Pick one to remind.`;
   }
 
   if (step === 1 && referralCount === 0) {
-    return `Since you voted yesterday, roughly ${dailyDeaths} more people did the thing where they stop being alive permanently. I believe you call it "dying." You seemed quite against it yesterday.\n\nThe 1% Treaty would massively expand clinical trial capacity, up from ${currentTrialSlots} slots per year. The only thing between here and there is ${tippingPoint} votes. You are one. You need two more. Two friends. Ideally ones with thumbs and a phone.\n\nOn my planet, when someone discovers a solution to mass death, they tell people about it. On yours, they apparently vote once and then go back to watching small humans fall over on TikTok.`;
+    return `24 hours later. ${formatCount(getElapsedDeaths(1))} more humans died. Your ${overdueSignerCount} employees haven't moved.`;
   }
 
   if (step === 1) {
-    return `Your friends joined. This is how it works \u2014 you tell two, they tell two, and eventually your species stops spending more on murder machines than on not dying. I realise this sounds obvious but you've had 10,000 years and haven't tried it yet.\n\nEach player who joins means one more vote toward the tipping point, and roughly ${livesSavedPerVoter} fewer preventable deaths. Two more friends. That's all. I promise it's less awkward than whatever you did at that party last weekend.`;
+    return `${referralCount} peers joined the PMO. The task queue has not moved.`;
   }
 
   if (referralCount === 0) {
-    return `Last message. I don't enjoy nagging. On my planet, nagging was eliminated in year 7 when everyone simply did the obvious thing.\n\nSince you voted, roughly ${fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value * 3)} people have died from treatable diseases. One text message to one friend takes 30 seconds. You spent longer than that choosing which photo filter makes your lunch look less sad.\n\nThe game only works if people play it. I'm told this is also true of your "democracy" but with worse graphics.`;
+    return `Four-day performance review. Your employees drew ${formatCompactCurrency(getElapsedGovernmentSpendUsd(2))} for tasks you did not assign.`;
   }
 
-  return `You've brought ${referralCount} people into the game. On my planet we'd give you a small trophy. On yours I believe the equivalent is "a sense of personal satisfaction" which is less tangible but cheaper to ship.\n\nOne last round: two more people who'd prefer not dying of preventable diseases. I'm told that's most of you.`;
+  return `Final automated briefing. ${referralCount} peers supervising. ${overdueSignerCount} still overdue.`;
 }
 
-function buildShareMessage(shareUrl: string) {
-  return `${dailyDeaths} people die daily from treatable diseases. Governments spend ${spendingRatio} more on weapons than finding new treatments. Vote for the 1% Treaty in 30 seconds: ${shareUrl}`;
+function buildRemindHref(taskHref: string, referralCode: string) {
+  const separator = taskHref.includes("?") ? "&" : "?";
+  return `${taskHref}${separator}ref=${encodeURIComponent(referralCode)}`;
+}
+
+function buildHighlightCardHtml(
+  highlight: OverdueSignerHighlight,
+  referralCode: string,
+) {
+  const remindHref = escapeAttr(buildRemindHref(highlight.taskHref, referralCode));
+  const leaderName = escapeHtml(highlight.leaderFullName);
+  const firstNameUpper = escapeHtml(highlight.leaderFirstName.toUpperCase());
+  const overdueLabel = escapeHtml(highlight.overdueLabel.toUpperCase());
+  const metaParts: string[] = [];
+  if (highlight.roleTitle) metaParts.push(escapeHtml(highlight.roleTitle));
+  if (highlight.countryLabel) metaParts.push(escapeHtml(highlight.countryLabel));
+  const metaLine =
+    metaParts.length > 0
+      ? `<p style="margin:0;font-size:13px;font-weight:700;color:#4b5563;line-height:1.4;">${metaParts.join(" · ")}</p>`
+      : "";
+
+  const avatarCell = highlight.leaderImageUrl
+    ? `<td style="width:64px;vertical-align:middle;padding:0 16px 0 0;">
+        <img
+          src="${escapeAttr(highlight.leaderImageUrl)}"
+          alt="${leaderName}"
+          width="64"
+          height="64"
+          style="display:block;width:64px;height:64px;border:3px solid #111827;border-radius:50%;object-fit:cover;"
+        />
+      </td>`
+    : "";
+
+  const deathsCell =
+    highlight.deathsFromDelayLabel != null
+      ? `<td style="width:50%;padding:0 4px 0 0;vertical-align:top;">
+          <div style="border:3px solid #111827;background:#FF3333;color:#ffffff;padding:10px;text-align:center;">
+            <p style="margin:0 0 2px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">💀 Deaths</p>
+            <p style="margin:0;font-size:20px;font-weight:900;line-height:1;">${escapeHtml(highlight.deathsFromDelayLabel)}</p>
+          </div>
+        </td>`
+      : `<td style="width:50%;padding:0 4px 0 0;"></td>`;
+
+  const wastedCell =
+    highlight.wastedUsdLabel != null
+      ? `<td style="width:50%;padding:0 0 0 4px;vertical-align:top;">
+          <div style="border:3px solid #111827;background:#FF3333;color:#ffffff;padding:10px;text-align:center;">
+            <p style="margin:0 0 2px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">💸 Wasted</p>
+            <p style="margin:0;font-size:20px;font-weight:900;line-height:1;">${escapeHtml(highlight.wastedUsdLabel)}</p>
+          </div>
+        </td>`
+      : `<td style="width:50%;padding:0 0 0 4px;"></td>`;
+
+  return `
+    <div style="margin:0 0 16px;border:3px solid #111827;background:#ffffff;padding:14px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          ${avatarCell}
+          <td style="vertical-align:middle;">
+            <p style="margin:0 0 2px;font-size:17px;font-weight:900;line-height:1.2;color:#111827;">${leaderName}</p>
+            ${metaLine}
+          </td>
+        </tr>
+      </table>
+      <div style="margin:10px 0 10px;display:inline-block;background:#FF3333;color:#ffffff;padding:5px 10px;border:3px solid #111827;font-size:11px;font-weight:900;letter-spacing:.05em;">
+        🔴 ${overdueLabel}
+      </div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:12px;">
+        <tr>
+          ${deathsCell}
+          ${wastedCell}
+        </tr>
+      </table>
+      <a
+        href="${remindHref}"
+        style="display:block;background:#FF6B9D;color:#ffffff;padding:14px 20px;text-decoration:none;font-weight:900;border:3px solid #111827;font-size:17px;text-align:center;letter-spacing:.05em;"
+      >
+        REMIND ${firstNameUpper} →
+      </a>
+    </div>
+  `;
+}
+
+function buildFallbackCardHtml(overdueSignerCount: number) {
+  const href = escapeAttr(getTreatyParentTaskHref());
+  const label = overdueSignerCount > 0 ? `${overdueSignerCount} WORLD LEADERS OVERDUE` : "WORLD LEADERS OVERDUE";
+  return `
+    <div style="margin:0 0 16px;border:3px solid #111827;background:#ffffff;padding:20px;text-align:center;">
+      <p style="margin:0 0 16px;font-size:22px;font-weight:900;line-height:1.1;color:#111827;">${escapeHtml(label)}</p>
+      <a
+        href="${href}"
+        style="display:inline-block;background:#FF6B9D;color:#ffffff;padding:14px 24px;text-decoration:none;font-weight:900;border:3px solid #111827;font-size:17px;letter-spacing:.05em;"
+      >
+        OPEN THE TASK QUEUE →
+      </a>
+    </div>
+  `;
+}
+
+function buildHighlightsHtml(
+  highlights: readonly OverdueSignerHighlight[],
+  referralCode: string,
+  overdueSignerCount: number,
+) {
+  if (highlights.length === 0) {
+    return buildFallbackCardHtml(overdueSignerCount);
+  }
+  return highlights.map((h) => buildHighlightCardHtml(h, referralCode)).join("");
+}
+
+function buildHighlightsText(
+  highlights: readonly OverdueSignerHighlight[],
+  overdueSignerCount: number,
+) {
+  if (highlights.length === 0) {
+    const label = overdueSignerCount > 0 ? `${overdueSignerCount} world leaders overdue` : "World leaders overdue";
+    return [
+      label,
+      `Open the task queue: ${getTreatyParentTaskHref()}`,
+    ].join("\n");
+  }
+
+  return highlights
+    .map((h) => {
+      const meta = [h.roleTitle, h.countryLabel].filter(Boolean).join(" · ");
+      const stats = [
+        h.deathsFromDelayLabel ? `${h.deathsFromDelayLabel} deaths` : null,
+        h.wastedUsdLabel ? `${h.wastedUsdLabel} wasted` : null,
+      ]
+        .filter(Boolean)
+        .join(", ");
+      return [
+        `• ${h.leaderFullName}${meta ? ` (${meta})` : ""} — ${h.overdueLabel.toUpperCase()}${stats ? `. ${stats}.` : "."}`,
+        `  Remind: ${h.taskHref}`,
+      ].join("\n");
+    })
+    .join("\n");
 }
 
 export function getReferralSequenceAction(
@@ -153,78 +306,74 @@ export function getReferralSequenceAction(
 }
 
 export function buildReferralSequenceEmail({
-  name,
+  highlights,
+  overdueSignerCount,
+  referralCode,
   referralCount,
   shareUrl,
   step,
 }: ReferralEmailContentInput) {
-  const firstName = getFirstName(name);
-  const subject = getSubject(step, referralCount);
-  const mainCopy = getMainCopy(step, referralCount);
-  const sharePrompt = getSharePrompt(referralCount);
-  const shareMessage = buildShareMessage(shareUrl);
-  const escapedShareUrl = escapeHtml(shareUrl);
-  const escapedShareMessage = escapeHtml(shareMessage);
+  const subject = getSubject(step, referralCount, overdueSignerCount);
+  const headline = getHeadline(step, referralCount, overdueSignerCount);
+  const stepLabel = getStepDayLabel(step);
+  const treatyHref = getTreatyParentTaskHref();
+  const viewAllLabel = `VIEW ALL ${overdueSignerCount} OVERDUE EMPLOYEES →`;
+
+  const highlightsHtml = buildHighlightsHtml(highlights, referralCode, overdueSignerCount);
+  const highlightsText = buildHighlightsText(highlights, overdueSignerCount);
+
+  const textLines = [
+    `PRESIDENT MANAGEMENT SYSTEM · STATUS REPORT · ${stepLabel}`,
+    "",
+    headline,
+    "",
+    highlightsText,
+    "",
+    `View all ${overdueSignerCount} overdue employees: ${treatyHref}`,
+    "",
+    "You pay these heads of government $37T/year to promote general welfare. Your job is to remind them.",
+    "— Wishonia, PMO",
+    "",
+    `Forward this? Your link: ${shareUrl}`,
+  ];
+
+  const html = `
+    <div style="background:#f4f4f5;padding:32px 16px;font-family:Arial,sans-serif;color:#111827;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:3px solid #111827;">
+        <div style="background:#FF6B9D;border-bottom:3px solid #111827;padding:14px 20px;">
+          <p style="margin:0;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#111827;">
+            ${escapeHtml(PRESIDENT_MANAGEMENT_HEADLINE)} · Status Report · ${escapeHtml(stepLabel)}
+          </p>
+        </div>
+        <div style="padding:22px 20px 4px;">
+          <p style="margin:0 0 20px;font-size:19px;font-weight:900;line-height:1.25;color:#111827;">
+            ${escapeHtml(headline)}
+          </p>
+          ${highlightsHtml}
+          <p style="margin:4px 0 18px;text-align:center;">
+            <a
+              href="${escapeAttr(treatyHref)}"
+              style="display:inline-block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#111827;text-decoration:underline;"
+            >
+              ${escapeHtml(viewAllLabel)}
+            </a>
+          </p>
+        </div>
+        <div style="padding:14px 20px 16px;border-top:3px solid #111827;background:#FFE66D;">
+          <p style="margin:0;font-size:12px;font-weight:700;line-height:1.5;color:#111827;">
+            You pay these heads of government $37T/year to promote general welfare. Your job is to remind them. — <em>Wishonia, PMO</em>
+          </p>
+          <p style="margin:6px 0 0;font-size:10px;line-height:1.5;color:#111827;">
+            Forward this? Your link tracks it: <a href="${escapeAttr(shareUrl)}" style="color:#111827;text-decoration:underline;">${escapeHtml(shareUrl)}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
 
   return {
     subject,
-    text: [
-      `Hello ${firstName},`,
-      "",
-      mainCopy,
-      "",
-      sharePrompt,
-      "",
-      `Your link: ${shareUrl}`,
-      "",
-      "Suggested message:",
-      shareMessage,
-      "",
-      "Three ways to tell two people:",
-      "1. Text one friend who'd prefer being alive.",
-      "2. Drop it in one group chat \u2014 it takes 30 seconds to vote.",
-      `3. Post on social: "${dailyDeaths} people die daily from treatable diseases. Governments spend ${spendingRatio} more on weapons than finding new treatments. 30 seconds to vote for the 1% Treaty."`,
-      "",
-      `The boring part your species seems to care about: Players who invite verified voters earn ${POINTS} — their share of the prize pool if humanity hits its targets. If the plan fails, depositors in the prize fund still earn ${annualReturn} annually. Either way, you told your friends about something that matters.`,
-      "",
-      "\u2014 Wishonia",
-    ].join("\n"),
-    html: `
-      <div style="background:#f4f4f5;padding:32px 16px;font-family:Arial,sans-serif;color:#111827;">
-        <div style="max-width:620px;margin:0 auto;background:#ffffff;border:3px solid #111827;padding:32px;">
-          <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#FF6B9D;">
-            The Earth Optimization Game
-          </p>
-          <h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;">
-            Hello ${escapeHtml(firstName)},
-          </h1>
-          <p style="margin:0 0 16px;font-size:16px;line-height:1.6;white-space:pre-line;">${escapeHtml(mainCopy)}</p>
-          <p style="margin:0 0 20px;font-size:16px;line-height:1.6;font-weight:700;">${escapeHtml(sharePrompt)}</p>
-          <a
-            href="${escapedShareUrl}"
-            style="display:inline-block;background:#FF6B9D;color:#ffffff;padding:14px 24px;text-decoration:none;font-weight:700;border:3px solid #111827;font-size:16px;"
-          >
-            TELL TWO FRIENDS
-          </a>
-          <div style="margin-top:24px;padding:16px;border:3px solid #111827;background:#FFE66D;">
-            <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#111827;">
-              Copy-and-send message
-            </p>
-            <p style="margin:0;font-size:15px;line-height:1.6;">${escapedShareMessage}</p>
-          </div>
-          <ul style="margin:24px 0 0;padding-left:20px;font-size:15px;line-height:1.7;">
-            <li>Text one friend who&rsquo;d prefer being alive.</li>
-            <li>Drop it in one group chat &mdash; it takes 30 seconds to vote.</li>
-            <li>Post on social: &quot;${dailyDeaths} people die daily from treatable diseases. Governments spend ${spendingRatio} more on weapons than finding new treatments. 30 seconds to vote for the 1% Treaty.&quot;</li>
-          </ul>
-          <div style="margin-top:24px;padding:16px;border:3px solid #111827;background:#111827;color:#ffffff;">
-            <p style="margin:0;font-size:13px;line-height:1.6;text-align:center;">
-              <strong>THE BORING PART YOUR SPECIES SEEMS TO CARE ABOUT:</strong> Players who invite verified voters earn ${POINTS} &mdash; their share of the prize pool if humanity hits its targets. If the plan fails, depositors in the prize fund still earn ${annualReturn} annually. Either way, you told your friends about something that matters, which on your planet apparently requires financial incentives. Fascinating.
-            </p>
-          </div>
-          <p style="margin:24px 0 0;font-size:14px;color:#666;text-align:right;font-style:italic;">&mdash; Wishonia</p>
-        </div>
-      </div>
-    `,
+    text: textLines.join("\n"),
+    html,
   };
 }
