@@ -5,8 +5,8 @@ import { useSession } from "next-auth/react";
 import { FaEnvelope, FaXTwitter } from "react-icons/fa6";
 import { SiBluesky } from "react-icons/si";
 import { Button } from "@/components/retroui/Button";
+import { Dialog } from "@/components/retroui/Dialog";
 import { Drawer } from "@/components/retroui/Drawer";
-import { Popover } from "@/components/retroui/Popover";
 import { Textarea } from "@/components/retroui/Textarea";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
@@ -339,8 +339,8 @@ export function TaskRowShare({
   return (
     <div className="relative">
       <div className="hidden md:block">
-        <Popover open={desktopOpen} onOpenChange={setDesktopOpen}>
-          <Popover.Trigger asChild>
+        <Dialog open={desktopOpen} onOpenChange={setDesktopOpen}>
+          <Dialog.Trigger asChild>
             <button
               aria-label={`Remind ${targetLabel}`}
               className={triggerClassName}
@@ -348,11 +348,9 @@ export function TaskRowShare({
             >
               Remind
             </button>
-          </Popover.Trigger>
-          <Popover.Content
-            align="end"
+          </Dialog.Trigger>
+          <Dialog.Content
             className="w-[24rem] max-w-[calc(100vw-2rem)] border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-            sideOffset={8}
           >
             <ReminderComposer
               badges={badges}
@@ -371,8 +369,8 @@ export function TaskRowShare({
               onReddit={() => openChannel("reddit")}
               onX={() => openChannel("x")}
             />
-          </Popover.Content>
-        </Popover>
+          </Dialog.Content>
+        </Dialog>
       </div>
 
       <div className="md:hidden">
