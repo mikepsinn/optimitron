@@ -6,6 +6,7 @@ import {
 } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
+  getTaskDetailData: vi.fn(),
   referendumFindUnique: vi.fn(),
   referendumVoteCount: vi.fn(),
   organizationPositionCount: vi.fn(),
@@ -27,6 +28,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/tasks.server", () => ({
+  getTaskDetailData: mocks.getTaskDetailData,
+}));
+
 import {
   buildApprovedOrganizationPositionWhere,
   getReferendumSiteHomeData,
@@ -36,10 +41,12 @@ import { getSiteConfig } from "@/lib/site";
 
 describe("referendum-site.server", () => {
   beforeEach(() => {
+    mocks.getTaskDetailData.mockReset();
     mocks.referendumFindUnique.mockReset();
     mocks.referendumVoteCount.mockReset();
     mocks.organizationPositionCount.mockReset();
     mocks.organizationPositionFindMany.mockReset();
+    mocks.getTaskDetailData.mockResolvedValue(null);
   });
 
   it("requires both approved orgs and approved YES positions in supporter queries", () => {
