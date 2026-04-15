@@ -11,6 +11,7 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 const nextConfig = {
   transpilePackages: ['@optimitron/data'],
   serverExternalPackages: ['@storacha/client', 'multiformats', 'pinata'],
+  allowedDevOrigins: ['http://1percenttreaty.local:3001'],
   output: isStaticExport ? 'export' : undefined,
   basePath: isStaticExport ? '/optimitron' : '',
   outputFileTracingRoot: path.resolve(__dirname, "../.."),

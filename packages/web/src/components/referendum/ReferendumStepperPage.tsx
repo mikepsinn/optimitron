@@ -8,11 +8,15 @@ import { getReferendumConfig } from "@/config/referendums";
 interface ReferendumStepperPageProps {
   slug: string;
   referralCode?: string | null;
+  authCallbackUrl?: string;
+  postSignRedirectUrl?: string;
 }
 
 export function ReferendumStepperPage({
   slug,
   referralCode = null,
+  authCallbackUrl,
+  postSignRedirectUrl,
 }: ReferendumStepperPageProps) {
   const config = getReferendumConfig(slug);
   if (!config) return notFound();
@@ -29,7 +33,8 @@ export function ReferendumStepperPage({
           referendumSlug={config.slug}
           title={config.title}
           authPromptText={config.authPromptText}
-          authCallbackUrl={config.authCallbackUrl}
+          authCallbackUrl={authCallbackUrl ?? config.authCallbackUrl}
+          postSignRedirectUrl={postSignRedirectUrl}
           referralCode={referralCode}
           storePendingVote={(name) =>
             config.storePendingVote(name, referralCode)

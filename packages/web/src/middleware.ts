@@ -28,8 +28,11 @@ const MICROSITE_OPERATIONAL_PREFIXES = [
   "/_coalition-404",
 ];
 
+const PUBLIC_FILE_PATH_REGEX = /\.[^/]+$/;
+
 function isMicrositeAllowed(pathname: string): boolean {
   if (pathname === "/") return true;
+  if (PUBLIC_FILE_PATH_REGEX.test(pathname)) return true;
   const matches = (prefix: string) =>
     pathname === prefix || pathname.startsWith(`${prefix}/`);
   return (
@@ -52,6 +55,9 @@ export default withAuth(
   },
   {
     secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+      signIn: ROUTES.signIn,
+    },
     callbacks: {
       authorized: ({ req, token }) => {
         const authPaths = [

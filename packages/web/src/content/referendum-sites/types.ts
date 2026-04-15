@@ -3,6 +3,7 @@ export type ReferendumSiteContentKey = "onePercentTreaty";
 export type ReferendumSitePageKey =
   | "home"
   | "treaty"
+  | "dashboard"
   | "tasks"
   | "endorse"
   | "supporters"
@@ -21,16 +22,20 @@ export interface ReferendumSiteNavItem {
 }
 
 export interface ReferendumSiteHomeContent {
-  closingBody: string;
-  closingCtaLabel: string;
-  closingLead: string;
   eyebrow: string;
+  heroTitle: string;
   intro: string;
-  organizationCountLabel: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
+  treatyEyebrow: string;
+  signTitle: string;
+  signBody: string;
+  signBoxTitle: string;
+  lateEmployeesEyebrow: string;
+  lateEmployeesTitle: string;
+  lateEmployeesBody: string;
+  lateEmployeesCtaLabel: string;
   titleLines: string[];
-  individualCountLabel: string;
 }
 
 export interface ReferendumSiteSupportersContent {
@@ -90,7 +95,26 @@ export interface ReferendumSiteFooterContent {
   builtByLabel: string;
 }
 
+export interface ReferendumSiteDashboardContent {
+  fullDashboardLabel: string;
+  shareBody: string;
+  shareCtaLabel: string;
+  shareEmailSubject: string;
+  shareText: string;
+  shareTitle: string;
+  statsDeathsLabel: string;
+  statsLeadersLabel: string;
+  statsMoneyLabel: string;
+  tasksBody: string;
+  tasksTitle: string;
+  urgencyBody: string;
+  urgencyTitle: string;
+  welcomeBody: string;
+  welcomeTitle: string;
+}
+
 export interface ReferendumSiteContent {
+  dashboard: ReferendumSiteDashboardContent;
   endorse: ReferendumSiteEndorseContent;
   footer: ReferendumSiteFooterContent;
   home: ReferendumSiteHomeContent;

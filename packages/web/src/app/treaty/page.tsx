@@ -25,13 +25,19 @@ interface TreatyPageProps {
 
 export default async function TreatyPage({ searchParams }: TreatyPageProps) {
   const params = await searchParams;
+  const hdrs = await headers();
+  const site = getSiteFromHost(hdrs.get("host"));
   const referralCode = typeof params.ref === "string" ? params.ref : null;
+  const treatyDashboardUrl =
+    site.key === "onePercentTreaty" ? "/dashboard?welcome=1" : undefined;
 
   return (
     <div className="min-h-screen bg-background">
       <ReferendumStepperPage
         slug={TREATY_REFERENDUM_SLUG}
         referralCode={referralCode}
+        authCallbackUrl={treatyDashboardUrl}
+        postSignRedirectUrl={treatyDashboardUrl}
       />
     </div>
   );

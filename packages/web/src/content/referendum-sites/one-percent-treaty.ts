@@ -13,6 +13,11 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       description:
         "Read the full 1% Treaty and record your position on redirecting 1% of military spending to curing disease.",
     },
+    dashboard: {
+      title: "Dashboard — 1% Treaty",
+      description:
+        "Your completed signature, referral link, and the overdue leader tasks still costing lives and money.",
+    },
     tasks: {
       title: "Tasks — 1% Treaty",
       description:
@@ -54,20 +59,47 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   ],
   home: {
     eyebrow: "1% Treaty",
+    heroTitle:
+      "Please quickly skim and sign the 1% treaty to end war and disease",
     titleLines: [
       "Redirect 1% of military spending",
       "to curing disease.",
     ],
-    intro: "That is the whole treaty. One percent. Not ten. Not fifty. One.",
-    individualCountLabel: "Individual signatures",
-    organizationCountLabel: "Endorsing organizations",
+    intro: "",
     primaryCtaLabel: "Read and sign the treaty",
     secondaryCtaLabel: "Endorse as an organization",
-    closingLead:
-      "On Earth, the ratio of military to medical research spending is six hundred and four to one.",
-    closingBody:
-      "On my planet, we round that down to zero. It takes about four minutes.",
-    closingCtaLabel: "See the full case →",
+    treatyEyebrow: "Treaty text",
+    signTitle: "Sign the treaty now",
+    signBody:
+      "Read the treaty text below, sign it, then go remind your late employees to finish their overdue treaty tasks.",
+    signBoxTitle: "Sign the 1% Treaty",
+    lateEmployeesEyebrow: "Late employees",
+    lateEmployeesTitle: "Your late employees still have overdue treaty tasks.",
+    lateEmployeesBody:
+      "These are the incomplete subtasks under Ratify the 1% Treaty. They are the employees you hired to promote the general welfare. They are late.",
+    lateEmployeesCtaLabel: "Open the full late-employee list",
+  },
+  dashboard: {
+    welcomeTitle: "Thank you for helping end war and disease.",
+    welcomeBody:
+      "Your signature creates one more excuse to ask the remaining leaders why they are still late.",
+    shareTitle: "Share your signature",
+    shareBody:
+      "Use your personal link first. Then use the overdue task list below to remind specific leaders that delay is killing people and burning money.",
+    shareText:
+      "I signed the 1% Treaty to redirect 1% of military spending to curing disease. Sign it, then pressure the leaders who still have not signed:",
+    shareEmailSubject: "I signed the 1% Treaty",
+    shareCtaLabel: "Open the full accountability list",
+    urgencyTitle: "Unsigned leaders are still costing lives and money.",
+    urgencyBody:
+      "Each overdue task below shows the damage from delay and includes the share and contact actions you need to apply pressure.",
+    statsLeadersLabel: "Leaders still unsigned",
+    statsDeathsLabel: "Deaths from delay",
+    statsMoneyLabel: "Economic value lost",
+    tasksTitle: "Outstanding leader tasks",
+    tasksBody:
+      "Sort by deaths or wasted money. Then share the overdue tasks until they stop pretending not to notice.",
+    fullDashboardLabel: "Open the full Optimitron dashboard",
   },
   supporters: {
     eyebrow: "Official endorsers",

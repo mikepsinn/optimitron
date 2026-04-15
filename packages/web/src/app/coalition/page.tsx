@@ -40,18 +40,6 @@ export default async function CoalitionPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
-      <header className="mb-12 text-center">
-        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          {data.content.supporters.eyebrow}
-        </p>
-        <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
-          {data.content.supporters.title}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base font-bold text-muted-foreground">
-          {data.content.supporters.description}
-        </p>
-      </header>
-
       {data.supporters.length === 0 ? (
         <div className="mx-auto max-w-xl border-2 border-foreground bg-background p-8 text-center">
           <p className="text-lg font-bold text-foreground">

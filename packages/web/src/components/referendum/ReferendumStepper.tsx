@@ -35,11 +35,30 @@ function stripMarkdownForHash(md: string): string {
 
 async function hashText(text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
-    .slice(0, 16);
+  const subtle = globalThis.crypto?.subtle;
+
+  if (subtle) {
+    const buf = await subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+      .slice(0, 16);
+  }
+
+  // Fallback for non-secure local dev hosts where Web Crypto is unavailable.
+  let hashA = 0x811c9dc5;
+  let hashB = 0x9e3779b9;
+
+  for (const byte of data) {
+    hashA ^= byte;
+    hashA = Math.imul(hashA, 0x01000193);
+    hashB ^= byte;
+    hashB = Math.imul(hashB, 0x85ebca6b);
+  }
+
+  const partA = (hashA >>> 0).toString(16).padStart(8, "0");
+  const partB = (hashB >>> 0).toString(16).padStart(8, "0");
+  return `${partA}${partB}`;
 }
 
 interface ManifestEntry {

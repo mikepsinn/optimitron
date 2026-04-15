@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
@@ -14,6 +15,7 @@ export interface ReferendumSignatureBoxProps {
   title: string;
   authPromptText: string;
   authCallbackUrl?: string;
+  postSignRedirectUrl?: string;
   referralCode?: string | null;
   storePendingVote: (name: string) => void;
   clearPendingVote: () => void;
@@ -22,6 +24,7 @@ export interface ReferendumSignatureBoxProps {
   signedTitle?: string;
   signedBody?: string;
   variant?: "stepper" | "reader";
+  showReaderShell?: boolean;
 }
 
 export function ReferendumSignatureBox({
@@ -29,6 +32,7 @@ export function ReferendumSignatureBox({
   title,
   authPromptText,
   authCallbackUrl = "/dashboard",
+  postSignRedirectUrl,
   referralCode = null,
   storePendingVote,
   clearPendingVote,
@@ -37,7 +41,9 @@ export function ReferendumSignatureBox({
   signedTitle = "Referendum Signed",
   signedBody = "Share your link. Every signature moves the needle.",
   variant = "stepper",
+  showReaderShell = true,
 }: ReferendumSignatureBoxProps) {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [signatureName, setSignatureName] = useState("");
   const [signing, setSigning] = useState(false);
@@ -46,7 +52,7 @@ export function ReferendumSignatureBox({
 
   const referralUrl = buildUserReferralUrl(session?.user);
   const isReader = variant === "reader";
-  const shellClass = isReader
+  const shellClass = isReader && showReaderShell
     ? "rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 px-6 py-6 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
     : "";
   const titleClass = isReader
@@ -59,7 +65,7 @@ export function ReferendumSignatureBox({
     ? "text-[#6b5337]"
     : "text-white/40";
   const inputClass = isReader
-    ? "flex-1 border-2 border-[#8e6b48]/35 bg-[#fffaf0] px-4 py-3 text-lg font-bold text-[#23180d] placeholder:text-[#8e6b48]/55"
+    ? "flex-1 border-2 border-[#8e6b48]/35 bg-white px-4 py-3 text-lg font-bold text-[#23180d] placeholder:text-[#8e6b48]/55"
     : "flex-1 border-2 border-white/30 bg-white/10 px-4 py-3 text-lg font-bold text-white placeholder:text-white/30";
   const buttonClass = isReader
     ? "border-2 border-[#8e6b48]/35 bg-[#23180d] px-8 py-3 text-lg font-black uppercase text-[#f7f1e4] hover:bg-[#3a2a19] disabled:opacity-30"
@@ -70,6 +76,18 @@ export function ReferendumSignatureBox({
   const errorClass = isReader
     ? "text-[#b42318]"
     : "text-brutal-red";
+  const shouldRedirectAfterSign =
+    status === "authenticated" && signed && Boolean(postSignRedirectUrl);
+
+  useEffect(() => {
+    if (!shouldRedirectAfterSign || !postSignRedirectUrl) return;
+
+    const timeoutId = window.setTimeout(() => {
+      router.replace(postSignRedirectUrl);
+    }, 1200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [postSignRedirectUrl, router, shouldRedirectAfterSign]);
 
   async function handleSubmit() {
     const name = signatureName.trim();
@@ -115,6 +133,19 @@ export function ReferendumSignatureBox({
   }
 
   if (signed && status === "authenticated") {
+    if (postSignRedirectUrl) {
+      return (
+        <div className={cn("mx-auto flex max-w-md flex-col items-center gap-4", shellClass)}>
+          <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
+            {signedTitle}
+          </p>
+          <p className={cn("text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]", bodyClass)}>
+            Taking you to the action dashboard...
+          </p>
+        </div>
+      );
+    }
+
     return (
       <div className={cn("mx-auto flex max-w-md flex-col items-center gap-6", shellClass)}>
         <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>

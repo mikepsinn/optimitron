@@ -21,7 +21,7 @@ export async function SiteChrome({
   if (site.primaryReferendumSlug) {
     return (
       <>
-        <ReferendumSiteNavbar config={site} content={content} />
+        <ReferendumSiteNavbar config={site} />
         <main className="min-h-screen">{children}</main>
         <ReferendumSiteFooter config={site} content={content} />
         {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}

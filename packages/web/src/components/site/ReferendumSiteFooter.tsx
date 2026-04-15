@@ -11,17 +11,18 @@ export function ReferendumSiteFooter({
 }) {
   return (
     <footer className="border-t-2 border-foreground bg-background py-8">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 text-center text-xs font-bold text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
-        <p className="uppercase tracking-wide">
-          {config.name} — {new Date().getFullYear()}
-        </p>
-        <div className="flex items-center gap-4">
-          <Link href="/legal" className="hover:underline">
-            Legal
-          </Link>
-          <Link href="/why" className="hover:underline">
-            Why
-          </Link>
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4 text-center text-xs font-bold text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          {content.navItems.map((item) => (
+            <Link key={item.href} href={item.href} className="hover:underline">
+              {item.label}
+            </Link>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <p className="uppercase tracking-wide">
+            {config.name} — {new Date().getFullYear()}
+          </p>
           <a
             href="https://optimitron.com"
             className="hover:underline"

@@ -4,10 +4,17 @@ import {
   type Prisma,
   VotePosition,
 } from "@optimitron/db";
+import { shareableSnippets } from "@optimitron/data/parameters";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import type { ReferendumSiteContent } from "@/content/referendum-sites";
+import type { TaskCardTask } from "@/components/tasks/task-card";
 import { prisma } from "@/lib/prisma";
 import type { SiteConfig } from "@/lib/site";
+import { getTaskDetailData } from "@/lib/tasks.server";
+import {
+  getTreatyParentTaskHref,
+  TREATY_PARENT_TASK_ID,
+} from "@/lib/tasks/task-keys";
 
 interface ReferendumSiteRecord {
   description: string | null;
@@ -22,8 +29,11 @@ export interface ReferendumSiteContext {
 }
 
 export interface ReferendumSiteHomeData extends ReferendumSiteContext {
+  lateEmployeeTasks: TaskCardTask[];
+  fullTasksHref: string;
   individualCount: number;
   organizationCount: number;
+  treatyMarkdown: string;
 }
 
 export type ReferendumSiteSupporterRecord =
@@ -105,10 +115,25 @@ export async function getReferendumSiteHomeData(
     }),
   ]);
 
+  const treatyParentTask =
+    site.key === "onePercentTreaty"
+      ? await getTaskDetailData(TREATY_PARENT_TASK_ID, null)
+      : null;
+
   return {
     ...context,
+    lateEmployeeTasks:
+      site.key === "onePercentTreaty"
+        ? ((treatyParentTask?.task.childTasks ?? []) as unknown as TaskCardTask[])
+        : [],
+    fullTasksHref:
+      site.key === "onePercentTreaty" ? getTreatyParentTaskHref() : "/tasks",
     individualCount,
     organizationCount,
+    treatyMarkdown:
+      site.key === "onePercentTreaty"
+        ? shareableSnippets.onePercentTreatyText.markdown
+        : "",
   };
 }
 
