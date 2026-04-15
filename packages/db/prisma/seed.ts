@@ -1222,12 +1222,7 @@ async function seedTreatyTasks() {
     // just mean the relevant block no-ops on the task page.
     const govProfile = getGovernmentProfile(countryCode);
     const militaryBudget = govProfile?.metrics?.militarySpendingAnnual.value ?? null;
-    const clinicalTrialBudget = govProfile?.metrics?.clinicalTrialSpending?.value ?? null;
     const annualRedirectUsd = militaryBudget != null ? militaryBudget * 0.01 : null;
-    const killCureRatio =
-      militaryBudget != null && clinicalTrialBudget != null && clinicalTrialBudget > 0
-        ? Math.round(militaryBudget / clinicalTrialBudget)
-        : null;
     const contactUrl = govProfile?.office?.contactUrl ?? null;
     const contactLabel = govProfile?.office?.contactLabel ?? null;
     const headOfGovTitle =
@@ -1245,12 +1240,12 @@ async function seedTreatyTasks() {
     const contactChannels: Array<{ kind: "twitter" | "bluesky" | "form"; label: string; href: string }> = [
       {
         kind: "twitter",
-        label: `Find on X`,
+        label: `Remind on X directly`,
         href: googleSearch(`${leader.leaderName} official X Twitter account`),
       },
       {
         kind: "bluesky",
-        label: `Find on Bluesky`,
+        label: `Remind on Bluesky directly`,
         href: googleSearch(`${leader.leaderName} Bluesky account site:bsky.app`),
       },
     ];
@@ -1288,46 +1283,14 @@ async function seedTreatyTasks() {
         timeRequiredSeconds: 30,
         skillsRequired: "Holding a pen",
       },
-      costOfDelayNote:
-        "This task has been on the to-do list for {daysOverdue} days. Disease keeps its schedule.",
-      ...(militaryBudget != null && clinicalTrialBudget != null && clinicalTrialBudget > 0
-        ? {
-            performanceReview: {
-              comparisonBars: [
-                { label: "Killing", valueUsd: militaryBudget, color: "red" as const },
-                { label: "Curing", valueUsd: clinicalTrialBudget, color: "green" as const },
-              ],
-              ...(killCureRatio != null
-                ? {
-                    ratio: {
-                      left: killCureRatio,
-                      right: 1,
-                      label: "killing to curing",
-                    },
-                  }
-                : {}),
-              narrative:
-                "No cost-benefit analysis was performed before choosing this ratio. None has ever been performed. By anyone. In the history of this government.",
-              rating: "F",
-              firedFromWendys: true,
-              scorecardUrl: `/governments/${countryCode.toLowerCase()}`,
-            },
-          }
-        : {}),
       reminder: {
-        intro: `This is a polite reminder you can send your employee. They may have forgotten. Edit the text if you like, then post it on X or Bluesky. They read those.`,
+        intro: `30 seconds. Remind them.`,
         messageTemplate: [
-          `Hi ${leader.leaderName}. Friendly reminder that "Ratify the 1% Treaty" has been on your to-do list for {daysOverdue} days.`,
+          `${leader.leaderName} is {daysOverdue} days overdue on "Sign the 1% Treaty".`,
           ``,
-          `Task difficulty: hold pen, sign paper.`,
-          `Estimated time: 30 seconds.`,
-          ``,
-          `Current cost of the delay: {deathsLocked} preventable deaths and {moneyDestroyed} in foregone clinical trials.`,
-          ``,
-          `Your job description, word for word: "promote the general welfare."`,
-          ``,
-          `Thank you for your service.`,
-          `— A citizen of the country that pays your salary`,
+          `Task: hold pen, sign paper. 30 seconds.`,
+          `Cost of the delay so far: {deathsLocked} preventable deaths, {moneyDestroyed} in foregone clinical trials.`,
+          `Job description: "promote the general welfare."`,
           ``,
           `{taskUrl}`,
         ].join("\n"),
@@ -1366,7 +1329,7 @@ async function seedTreatyTasks() {
         assigneeAffiliationSnapshot: `Government of ${leader.countryName}`,
         roleTitle: leader.roleTitle,
         title: "Sign the 1% Treaty",
-        description: `**${leader.leaderName}** is the ${leader.roleTitle} of ${leader.countryName}. One of their jobs is to sign the 1% Treaty on behalf of their government — redirecting 1% of ${leader.countryName}'s military spending into pragmatic clinical trials. It has been on their to-do list for a while. Below is a polite reminder you can send.`,
+        description: `**${leader.leaderName}** — ${leader.roleTitle} of ${leader.countryName}. One job: redirect 1% of ${leader.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
         category: "GOVERNANCE",
         difficulty: "EXPERT",
         status: "ACTIVE",

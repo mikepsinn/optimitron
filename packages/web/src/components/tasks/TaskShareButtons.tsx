@@ -55,6 +55,7 @@ export function TaskShareButtons({
       shareText={shareText}
       url={taskUrl}
       variant={variant}
+      verb="remind"
     />
   );
 }

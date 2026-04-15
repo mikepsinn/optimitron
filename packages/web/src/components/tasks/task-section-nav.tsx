@@ -42,7 +42,7 @@ export function TaskSectionNav({ links }: TaskSectionNavProps) {
   }, [links]);
 
   return (
-    <nav className="sticky top-[68px] z-20 -mx-4 border-b-4 border-primary bg-background px-4 py-2 shadow-[0_4px_0_0_rgba(0,0,0,1)]">
+    <nav className="sticky top-[58px] z-20 -mx-4 border-b-4 border-primary bg-background px-4 py-2 shadow-[0_4px_0_0_rgba(0,0,0,1)]">
       <ul className="flex flex-wrap items-center gap-2 text-xs font-black uppercase">
         {links.map((link) => {
           const isActive = activeId === link.id;

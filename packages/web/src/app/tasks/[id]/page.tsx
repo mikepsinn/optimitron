@@ -7,7 +7,6 @@ import {
 } from "@optimitron/db";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { TaskAssignee } from "@/components/tasks/task-assignee";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
@@ -24,12 +23,11 @@ import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { TaskAssigneeCard } from "@/components/tasks/blocks/TaskAssigneeCard";
 import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
 import { TaskContextList } from "@/components/tasks/blocks/TaskContextList";
-import { TaskCostOfDelay } from "@/components/tasks/blocks/TaskCostOfDelay";
 import { TaskCurrentActivities } from "@/components/tasks/blocks/TaskCurrentActivities";
-import { TaskDifficultyStrip } from "@/components/tasks/blocks/TaskDifficultyStrip";
+import { TaskHowToSignCard } from "@/components/tasks/blocks/TaskHowToSignCard";
 import { TaskOverdueClock } from "@/components/tasks/blocks/TaskOverdueClock";
-import { TaskPerformanceReview } from "@/components/tasks/blocks/TaskPerformanceReview";
 import { TaskRemindEmployee } from "@/components/tasks/blocks/TaskRemindEmployee";
+import { TaskTreatyImpactCard } from "@/components/tasks/blocks/TaskTreatyImpactCard";
 import { TaskUnlocks } from "@/components/tasks/blocks/TaskUnlocks";
 import { TaskWhileYouRead } from "@/components/tasks/blocks/TaskWhileYouRead";
 import { Button } from "@/components/retroui/Button";
@@ -42,6 +40,12 @@ import {
   formatCompactCurrency,
   getTaskDelayStats,
 } from "@/lib/tasks/accountability";
+import {
+  DAILY_DISEASE_COST_USD,
+  DAILY_DISEASE_DEATHS,
+  GLOBAL_MILITARY_USD,
+  getSignerDelayAttribution,
+} from "@/lib/tasks/delay-attribution";
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { readTaskContext } from "@/lib/tasks/task-context";
@@ -179,26 +183,38 @@ export default async function TaskDetailPage({
       ? task.currentImpactEstimateSet.sourceArtifacts
       : task.sourceArtifacts;
 
-  // Per-second rate hints for live counters — computed once from delay stats.
-  const delayDalysPerDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase ?? null;
-  const delayEconPerDay =
-    task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? null;
+  // Canonical per-second rate for live counters — uses the hero's formula so
+  // every counter on the page ticks in lockstep with WHO/GBD daily rates
+  // scaled by the country's share of global military spending.
+  const attributionShare =
+    context.assigneeProfile?.budgetUsdPerYear != null
+      ? context.assigneeProfile.budgetUsdPerYear / GLOBAL_MILITARY_USD
+      : 1;
   const ratePerSecond = {
-    deaths: delayDalysPerDay != null ? delayDalysPerDay / 86400 / 40 : null,
-    usd: delayEconPerDay != null ? delayEconPerDay / 86400 : null,
+    deaths: (DAILY_DISEASE_DEATHS * attributionShare) / 86400,
+    usd: (DAILY_DISEASE_COST_USD * attributionShare) / 86400,
   };
 
-  // Compute total deaths from delay as DALYs-per-day × days / 40 years-per-death.
-  // Falls back to delayStats.currentHumanLivesLost if the seeder populated the
-  // explicit lives metric (it generally doesn't for signer tasks).
-  const computedDeathsFromDelay =
-    delayDalysPerDay != null && delayStats.currentDelayDays > 0
-      ? (delayDalysPerDay * delayStats.currentDelayDays) / 40
+  // Server-side snapshot of the same numbers for the reminder textarea tokens,
+  // so the {deathsLocked}/{moneyDestroyed} values in the shared message always
+  // match what the visitor just read in the hero.
+  const heroAttribution =
+    context.assigneeProfile?.budgetUsdPerYear != null
+      ? getSignerDelayAttribution(
+          context.assigneeProfile.budgetUsdPerYear,
+          delayStats.currentDelayDays,
+        )
       : null;
-  const deathsFromDelay =
-    delayStats.currentHumanLivesLost != null && delayStats.currentHumanLivesLost > 0
-      ? delayStats.currentHumanLivesLost
-      : computedDeathsFromDelay;
+  const snapshotDeaths =
+    heroAttribution?.deathsFromDelay ??
+    (delayStats.currentDelayDays > 0
+      ? DAILY_DISEASE_DEATHS * delayStats.currentDelayDays
+      : 0);
+  const snapshotWastedUsd =
+    heroAttribution?.wastedUsd ??
+    (delayStats.currentDelayDays > 0
+      ? DAILY_DISEASE_COST_USD * delayStats.currentDelayDays
+      : 0);
 
   // Reminder template tokens resolved server-side.
   const personHandle = task.assigneePerson?.handle ?? null;
@@ -206,8 +222,8 @@ export default async function TaskDetailPage({
     handle: personHandle ?? targetLabel,
     name: targetLabel,
     daysOverdue: delayStats.currentDelayDays.toLocaleString(),
-    deathsLocked: formatCompactCount(deathsFromDelay ?? 0),
-    moneyDestroyed: formatCompactCurrency(delayStats.currentEconomicValueUsdLost ?? 0),
+    deathsLocked: formatCompactCount(snapshotDeaths),
+    moneyDestroyed: formatCompactCurrency(snapshotWastedUsd),
     sufferingHours: formatCompactCount(delayStats.currentSufferingHoursLost ?? 0),
     salaryUsd:
       context.assigneeProfile?.salaryUsdPerYear != null
@@ -220,6 +236,9 @@ export default async function TaskDetailPage({
     taskTitle: task.title,
     taskUrl: `/tasks/${task.id}`,
   };
+
+  const isTreatySigner = task.taskKey?.startsWith("program:one-percent-treaty:signer:") ?? false;
+  const leaderName = task.assigneePerson?.displayName ?? targetLabel;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -270,15 +289,12 @@ export default async function TaskDetailPage({
           <TaskHeroStats
             effortHours={task.estimatedEffortHours}
             dueAt={task.dueAt}
-            attributionShare={
-              context.assigneeProfile?.budgetUsdPerYear != null
-                ? context.assigneeProfile.budgetUsdPerYear / 2_720_000_000_000
-                : 1
-            }
+            attributionShare={attributionShare}
           />
           <div className="max-w-5xl">
             <TaskDescription markdown={task.description} />
           </div>
+          {isTreatySigner ? <TaskHowToSignCard leaderName={leaderName} /> : null}
           {task.isPublic ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold uppercase text-muted-foreground">
@@ -300,19 +316,13 @@ export default async function TaskDetailPage({
           assigneeOrganization={task.assigneeOrganization}
           context={context}
         />
-        <TaskDifficultyStrip taskTitle={task.title} context={context} />
         <TaskOverdueClock dueAt={task.dueAt} />
-        <TaskCostOfDelay
-          context={context}
-          delayStats={delayStats}
-          ratePerSecond={ratePerSecond}
-          tokens={reminderTokens}
-        />
         <TaskUnlocks context={context} />
-        <TaskPerformanceReview context={context} />
+        {isTreatySigner ? <TaskTreatyImpactCard /> : null}
         <TaskRemindEmployee
           reminder={context.reminder}
           assigneeProfile={context.assigneeProfile}
+          taskId={task.id}
           tokens={reminderTokens}
         />
         <TaskContextList context={context} tokens={reminderTokens} />
@@ -322,16 +332,10 @@ export default async function TaskDetailPage({
           usdPerSecond={ratePerSecond.usd}
         />
 
-        {/* Claim / action card — existing generic flow */}
+        {/* Claim / action card — action controls only; assignee info lives in TaskAssigneeCard above */}
         <BrutalCard bgColor="background" padding="lg">
           <div className="space-y-6">
-            <TaskAssignee
-              person={task.assigneePerson}
-              organization={task.assigneeOrganization}
-              roleTitle={task.roleTitle}
-              affiliationSnapshot={task.assigneeAffiliationSnapshot}
-            />
-            <div className="flex flex-wrap items-center gap-3 border-t-2 border-foreground/20 pt-4">
+            <div className="flex flex-wrap items-center gap-3">
               {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
                 <TaskClaimButton
                   canClaim={canClaim}

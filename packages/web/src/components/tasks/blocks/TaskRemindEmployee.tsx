@@ -2,9 +2,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { Textarea } from "@/components/retroui/Textarea";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { getUsernameOrReferralCode } from "@/lib/referral.client";
+import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import { buildTaskUrl } from "@/lib/url";
 import { renderTemplate } from "./render-template";
 import type {
   TaskContextAssigneeProfile,
@@ -15,17 +19,26 @@ interface TaskRemindEmployeeProps {
   reminder: TaskContextReminder | undefined;
   assigneeProfile: TaskContextAssigneeProfile | undefined;
   tokens: Record<string, string | number | null | undefined>;
+  taskId: string;
 }
 
 export function TaskRemindEmployee({
   reminder,
   assigneeProfile,
   tokens,
+  taskId,
 }: TaskRemindEmployeeProps) {
-  const initialMessage = useMemo(
-    () => (reminder ? renderTemplate(reminder.messageTemplate, tokens) : ""),
-    [reminder, tokens],
-  );
+  const { data: session } = useSession();
+  const requestOrigin = useRequestSiteOrigin();
+  const referralId = getUsernameOrReferralCode(session?.user);
+  const initialMessage = useMemo(() => {
+    if (!reminder) return "";
+    const absoluteTaskUrl = buildTaskUrl(taskId, requestOrigin, referralId);
+    return renderTemplate(reminder.messageTemplate, {
+      ...tokens,
+      taskUrl: absoluteTaskUrl,
+    });
+  }, [reminder, tokens, taskId, requestOrigin, referralId]);
   const [message, setMessage] = useState(initialMessage);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
@@ -70,7 +83,7 @@ export function TaskRemindEmployee({
               target="_blank"
               rel="noopener noreferrer"
             >
-              𝕏 Post
+              Remind on X
             </a>
           </Button>
           <Button asChild className="font-black uppercase" size="sm" variant="outline">
@@ -79,7 +92,7 @@ export function TaskRemindEmployee({
               target="_blank"
               rel="noopener noreferrer"
             >
-              Bluesky
+              Remind on Bluesky
             </a>
           </Button>
           <Button asChild className="font-black uppercase" size="sm" variant="outline">
@@ -88,7 +101,7 @@ export function TaskRemindEmployee({
               target="_blank"
               rel="noopener noreferrer"
             >
-              LinkedIn
+              Remind on LinkedIn
             </a>
           </Button>
           <Button
@@ -102,7 +115,7 @@ export function TaskRemindEmployee({
               ? "Copied"
               : copyState === "error"
                 ? "Copy Failed"
-                : "Copy"}
+                : "Copy reminder"}
           </Button>
         </div>
 
@@ -110,7 +123,7 @@ export function TaskRemindEmployee({
         assigneeProfile.contactChannels.length > 0 ? (
           <div className="space-y-2">
             <p className="text-xs font-black uppercase text-muted-foreground">
-              Contact Directly
+              Remind directly
             </p>
             <div className="flex flex-wrap gap-2">
               {assigneeProfile.contactChannels.map((channel) => (

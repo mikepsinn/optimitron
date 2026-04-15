@@ -29,6 +29,12 @@ interface ShareLinkButtonsProps {
   labelClassName?: string;
   /** "text" shows word labels (default), "icon" shows platform icons only */
   variant?: "text" | "icon";
+  /**
+   * Verb used in tooltip + button copy. Default "share" for generic pages.
+   * Task pages pass "remind" because the visitor's job is to remind an
+   * assignee of an overdue task.
+   */
+  verb?: "share" | "remind";
 }
 
 function encode(value: string) {
@@ -49,10 +55,13 @@ export function ShareLinkButtons({
   label,
   labelClassName,
   variant = "text",
+  verb = "share",
 }: ShareLinkButtonsProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const shortShare = `${shareText} ${url}`.trim();
   const subject = emailSubject ?? shareText.slice(0, 120);
+  const verbTitle = verb === "remind" ? "Remind on" : "Share on";
+  const copyLabel = verb === "remind" ? "Copy reminder link" : "Copy link";
 
   const shareLinks: { href: string; label: string; icon: ComponentType<{ className?: string }> }[] = [
     {
@@ -96,7 +105,7 @@ export function ShareLinkButtons({
             href={link.href}
             rel="noreferrer"
             target="_blank"
-            title={`Share on ${link.label}`}
+            title={`${verbTitle} ${link.label}`}
             className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
             onClick={() => onShare?.()}
           >
@@ -105,7 +114,7 @@ export function ShareLinkButtons({
         ))}
         <button
           type="button"
-          title={copyState === "copied" ? "Copied!" : "Copy link"}
+          title={copyState === "copied" ? "Copied!" : copyLabel}
           className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
           onClick={() => {
             onShare?.();
@@ -177,7 +186,7 @@ export function ShareLinkButtons({
               });
           }}
         >
-          {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy Failed" : "Copy Link"}
+          {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy Failed" : copyLabel}
         </Button>
       </div>
     </div>
