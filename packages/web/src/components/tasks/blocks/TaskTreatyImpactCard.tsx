@@ -20,8 +20,9 @@ export function TaskTreatyImpactCard() {
           />
         </p>
         <p className="text-sm font-bold leading-relaxed">
-          6,650 untreated diseases in the queue. At current pace (15 new treatments/yr):
-          443 years until every disease has a first treatment. At 12.3× capacity: 36 years.
+          Redirect 1% of US military spending ($8.86B/yr of $886B) into pragmatic
+          clinical trials at $929/patient. Funds 23.4M patient-years vs. 1.9M today.
+          Compresses the 443-year queue of 6,650 untreated diseases down to 36 years.
           Preventable deaths averted across the compressed timeline:{" "}
           <ParameterValue
             param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}

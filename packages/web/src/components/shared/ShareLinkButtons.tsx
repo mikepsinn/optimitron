@@ -105,7 +105,13 @@ export function ShareLinkButtons({
             href={link.href}
             rel="noreferrer"
             target="_blank"
-            title={`${verbTitle} ${link.label}`}
+            title={
+              link.label === "Email"
+                ? verb === "remind"
+                  ? "Remind via email"
+                  : "Share via email"
+                : `${verbTitle} ${link.label}`
+            }
             className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
             onClick={() => onShare?.()}
           >

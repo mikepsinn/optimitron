@@ -79,10 +79,6 @@ export function TaskHeroStats({
           yearsPerDeath={40}
         />
       ),
-      caption:
-        attributionShare < 1
-          ? "Your share of the preventable deaths, proportional to military spending."
-          : "Preventable deaths while this task sits open.",
     });
   }
 
@@ -93,10 +89,6 @@ export function TaskHeroStats({
       label: "🔥 Wasted by delay",
       bg: "red",
       value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
-      caption:
-        attributionShare < 1
-          ? "Your share of the wasted disease dollars, proportional to military spending."
-          : "Direct medical + productivity cost while this task sits open.",
     });
   }
 

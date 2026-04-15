@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { getPersonHref } from "@/lib/person-href";
-import { formatCompactCount, formatCompactCurrency } from "@/lib/tasks/accountability";
+import { formatCompactCurrency } from "@/lib/tasks/accountability";
 import type { TaskContext } from "@/lib/tasks/task-context";
 
 interface TaskAssigneeCardProps {
@@ -32,100 +31,58 @@ export function TaskAssigneeCard({
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 
+  const avatar = (
+    <Avatar className="h-10 w-10 shrink-0 border-2 border-foreground">
+      {assigneePerson?.image ? (
+        <Avatar.Image src={assigneePerson.image} alt={displayName} />
+      ) : null}
+      <Avatar.Fallback className="text-sm font-black uppercase">
+        {initials || "?"}
+      </Avatar.Fallback>
+    </Avatar>
+  );
+
   return (
-    <BrutalCard bgColor="background" padding="lg">
-      <div className="space-y-4">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-brutal-pink">
-          Task Assignment
-        </p>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-          {personHref ? (
-            <Link href={personHref} className="shrink-0" aria-label={`Open ${displayName}`}>
-              <Avatar className="h-32 w-32 shrink-0 border-4 border-foreground">
-                {assigneePerson?.image ? (
-                  <Avatar.Image src={assigneePerson.image} alt={displayName} />
-                ) : null}
-                <Avatar.Fallback className="text-3xl font-black uppercase">
-                  {initials || "?"}
-                </Avatar.Fallback>
-              </Avatar>
-            </Link>
-          ) : (
-            <Avatar className="h-32 w-32 shrink-0 border-4 border-foreground">
-              {assigneePerson?.image ? (
-                <Avatar.Image src={assigneePerson.image} alt={displayName} />
-              ) : null}
-              <Avatar.Fallback className="text-3xl font-black uppercase">
-                {initials || "?"}
-              </Avatar.Fallback>
-            </Avatar>
-          )}
-          <div className="flex-1 space-y-3">
-            <div>
-              <h2 className="text-3xl font-black uppercase leading-tight">
-                {personHref ? (
-                  <Link className="underline underline-offset-4" href={personHref}>
-                    {displayName}
-                  </Link>
-                ) : (
-                  displayName
-                )}
-              </h2>
-              {profile?.role ? (
-                <p className="text-sm font-bold uppercase text-muted-foreground">
-                  {profile.role}
-                </p>
-              ) : null}
-              {profile?.employerLabel ? (
-                <p className="text-sm font-bold uppercase text-muted-foreground">
-                  {profile.employerLabel}
-                </p>
-              ) : null}
-            </div>
-            {(profile?.employerCount != null ||
-              profile?.salaryUsdPerYear != null ||
-              profile?.budgetUsdPerYear != null) ? (
-              <dl className="grid grid-cols-1 gap-2 text-sm font-bold sm:grid-cols-2">
-                {profile.employerCount != null ? (
-                  <div>
-                    <dt className="text-xs font-black uppercase text-muted-foreground">
-                      Employer
-                    </dt>
-                    <dd>
-                      {formatCompactCount(profile.employerCount)}
-                      {profile.employerCountLabel ? ` ${profile.employerCountLabel}` : ""}
-                    </dd>
-                  </div>
-                ) : null}
-                {profile.salaryUsdPerYear != null ? (
-                  <div>
-                    <dt className="text-xs font-black uppercase text-muted-foreground">
-                      Salary
-                    </dt>
-                    <dd>{formatCompactCurrency(profile.salaryUsdPerYear)}/yr</dd>
-                  </div>
-                ) : null}
-                {profile.budgetUsdPerYear != null ? (
-                  <div>
-                    <dt className="text-xs font-black uppercase text-muted-foreground">
-                      {profile.budgetLabel ?? "Budget"}
-                    </dt>
-                    <dd>{formatCompactCurrency(profile.budgetUsdPerYear)}/yr</dd>
-                  </div>
-                ) : null}
-              </dl>
-            ) : null}
-            {profile?.jobQuote ? (
-              <blockquote className="border-l-4 border-foreground pl-3 text-sm font-bold italic">
-                &ldquo;{profile.jobQuote.text}&rdquo;
-                <footer className="mt-1 text-xs font-black uppercase not-italic text-muted-foreground">
-                  — {profile.jobQuote.source}
-                </footer>
-              </blockquote>
-            ) : null}
-          </div>
+    <div className="flex flex-wrap items-center gap-3 border-2 border-foreground bg-background px-3 py-2 text-sm font-bold">
+      <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+        Assignee
+      </span>
+      {personHref ? (
+        <Link
+          href={personHref}
+          className="flex items-center gap-2 hover:underline"
+          aria-label={`Open ${displayName}`}
+        >
+          {avatar}
+          <span className="font-black uppercase">{displayName}</span>
+        </Link>
+      ) : (
+        <div className="flex items-center gap-2">
+          {avatar}
+          <span className="font-black uppercase">{displayName}</span>
         </div>
-      </div>
-    </BrutalCard>
+      )}
+      {profile?.role ? (
+        <>
+          <span className="text-muted-foreground">·</span>
+          <span>{profile.role}</span>
+        </>
+      ) : null}
+      {profile?.employerLabel ? (
+        <>
+          <span className="text-muted-foreground">·</span>
+          <span className="text-muted-foreground">{profile.employerLabel}</span>
+        </>
+      ) : null}
+      {profile?.budgetUsdPerYear != null ? (
+        <>
+          <span className="text-muted-foreground">·</span>
+          <span>
+            {profile.budgetLabel ?? "Budget"}:{" "}
+            {formatCompactCurrency(profile.budgetUsdPerYear)}/yr
+          </span>
+        </>
+      ) : null}
+    </div>
   );
 }

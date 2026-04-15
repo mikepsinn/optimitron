@@ -9,9 +9,7 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
-import { TaskDescription } from "@/components/tasks/task-description";
 import { TaskHeroStats } from "@/components/tasks/task-hero-stats";
-import { TaskMetadataTags } from "@/components/tasks/task-metadata-tags";
 import { TaskSectionNav } from "@/components/tasks/task-section-nav";
 import { getUserDisplayLabel } from "@/lib/user-display";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
@@ -20,19 +18,17 @@ import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
-import { TaskAssigneeCard } from "@/components/tasks/blocks/TaskAssigneeCard";
 import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
 import { TaskContextList } from "@/components/tasks/blocks/TaskContextList";
 import { TaskCurrentActivities } from "@/components/tasks/blocks/TaskCurrentActivities";
 import { TaskHowToSignCard } from "@/components/tasks/blocks/TaskHowToSignCard";
-import { TaskOverdueClock } from "@/components/tasks/blocks/TaskOverdueClock";
 import { TaskRemindEmployee } from "@/components/tasks/blocks/TaskRemindEmployee";
 import { TaskTreatyImpactCard } from "@/components/tasks/blocks/TaskTreatyImpactCard";
 import { TaskUnlocks } from "@/components/tasks/blocks/TaskUnlocks";
-import { TaskWhileYouRead } from "@/components/tasks/blocks/TaskWhileYouRead";
-import { Button } from "@/components/retroui/Button";
+import { Avatar } from "@/components/retroui/Avatar";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { getPersonHref } from "@/lib/person-href";
 import { authOptions } from "@/lib/auth";
 import {
   buildTaskShareText,
@@ -57,17 +53,6 @@ import {
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
-function getClaimPolicyLabel(policy: TaskClaimPolicy) {
-  switch (policy) {
-    case TaskClaimPolicy.ASSIGNED_ONLY:
-      return "assigned";
-    case TaskClaimPolicy.OPEN_SINGLE:
-      return "single-active";
-    case TaskClaimPolicy.OPEN_MANY:
-      return "open-many";
-  }
-}
-
 function formatDueDate(value: Date) {
   return value.toLocaleDateString("en-US", {
     day: "numeric",
@@ -78,6 +63,85 @@ function formatDueDate(value: Date) {
 
 function getMilestoneStatusLabel(status: string) {
   return status.replaceAll("_", " ").toLowerCase();
+}
+
+function formatOverdueDays(days: number): string {
+  if (days >= 365) {
+    const years = days / 365;
+    return `${years.toFixed(1)} years overdue`;
+  }
+  return `${days.toLocaleString()} days overdue`;
+}
+
+interface TaskMetaSubtitleProps {
+  assigneePerson:
+    | {
+        displayName: string;
+        handle?: string | null;
+        id: string;
+        image?: string | null;
+      }
+    | null;
+  assigneeOrganization: { name: string } | null;
+  dueAt?: Date | null;
+  currentDelayDays: number;
+  isOverdue: boolean;
+}
+
+function TaskMetaSubtitle({
+  assigneePerson,
+  assigneeOrganization,
+  dueAt,
+  currentDelayDays,
+  isOverdue,
+}: TaskMetaSubtitleProps) {
+  const displayName = assigneePerson?.displayName ?? assigneeOrganization?.name;
+  const personHref = assigneePerson ? getPersonHref(assigneePerson) : null;
+  const initials = displayName
+    ?.split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  const assigneeNode = displayName ? (
+    <span className="inline-flex items-center gap-2">
+      <Avatar className="h-6 w-6 border border-foreground">
+        {assigneePerson?.image ? (
+          <Avatar.Image src={assigneePerson.image} alt={displayName} />
+        ) : null}
+        <Avatar.Fallback className="text-[10px] font-black uppercase">
+          {initials || "?"}
+        </Avatar.Fallback>
+      </Avatar>
+      {personHref ? (
+        <Link href={personHref} className="font-black uppercase hover:underline">
+          {displayName}
+        </Link>
+      ) : (
+        <span className="font-black uppercase">{displayName}</span>
+      )}
+    </span>
+  ) : null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-muted-foreground">
+      {assigneeNode}
+      {dueAt ? (
+        <>
+          {assigneeNode ? <span>·</span> : null}
+          <span>Due {formatDueDate(dueAt)}</span>
+        </>
+      ) : null}
+      {isOverdue && currentDelayDays > 0 ? (
+        <>
+          <span>·</span>
+          <span className="font-black uppercase text-brutal-red">
+            {formatOverdueDays(currentDelayDays)}
+          </span>
+        </>
+      ) : null}
+    </div>
+  );
 }
 
 export async function generateMetadata({
@@ -157,8 +221,6 @@ export default async function TaskDetailPage({
     skillTags: task.skillTags,
     status: task.status,
   });
-  const assignedToViewer =
-    viewer?.personId != null && task.assigneePerson?.id === viewer.personId;
   const signInHref = getSignInPath(`${ROUTES.tasks}/${task.id}`);
   const reviewableClaims = task.claims.filter(
     (claim) => claim.status === TaskClaimStatus.COMPLETED,
@@ -277,24 +339,16 @@ export default async function TaskDetailPage({
         />
 
         <section id="overview" className="scroll-mt-32 space-y-4">
-          <TaskMetadataTags
-            category={task.category}
-            status={task.status}
-            delayStats={delayStats}
-            dueAt={task.dueAt}
-          />
           <h1 className="text-4xl font-black uppercase leading-tight sm:text-5xl">
             {task.title}
           </h1>
-          <TaskHeroStats
-            effortHours={task.estimatedEffortHours}
+          <TaskMetaSubtitle
+            assigneePerson={task.assigneePerson}
+            assigneeOrganization={task.assigneeOrganization}
             dueAt={task.dueAt}
-            attributionShare={attributionShare}
+            currentDelayDays={delayStats.currentDelayDays}
+            isOverdue={delayStats.isOverdue}
           />
-          <div className="max-w-5xl">
-            <TaskDescription markdown={task.description} />
-          </div>
-          {isTreatySigner ? <TaskHowToSignCard leaderName={leaderName} /> : null}
           {task.isPublic ? (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold uppercase text-muted-foreground">
@@ -308,15 +362,15 @@ export default async function TaskDetailPage({
               />
             </div>
           ) : null}
+          <TaskHeroStats
+            effortHours={task.estimatedEffortHours}
+            dueAt={task.dueAt}
+            attributionShare={attributionShare}
+          />
+          {isTreatySigner ? <TaskHowToSignCard leaderName={leaderName} /> : null}
         </section>
 
         <TaskBlockerCard context={context} />
-        <TaskAssigneeCard
-          assigneePerson={task.assigneePerson}
-          assigneeOrganization={task.assigneeOrganization}
-          context={context}
-        />
-        <TaskOverdueClock dueAt={task.dueAt} />
         <TaskUnlocks context={context} />
         {isTreatySigner ? <TaskTreatyImpactCard /> : null}
         <TaskRemindEmployee
@@ -327,47 +381,32 @@ export default async function TaskDetailPage({
         />
         <TaskContextList context={context} tokens={reminderTokens} />
         <TaskCurrentActivities context={context} />
-        <TaskWhileYouRead
-          deathsPerSecond={ratePerSecond.deaths}
-          usdPerSecond={ratePerSecond.usd}
-        />
 
-        {/* Claim / action card — action controls only; assignee info lives in TaskAssigneeCard above */}
-        <BrutalCard bgColor="background" padding="lg">
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-3">
-              {task.status !== TaskStatus.VERIFIED && canShowClaimButton ? (
-                <TaskClaimButton
-                  canClaim={canClaim}
-                  signedIn={Boolean(userId)}
-                  signInHref={signInHref}
-                  taskId={task.id}
-                  viewerHasClaim={task.viewerHasClaim}
-                />
-              ) : task.status !== TaskStatus.VERIFIED && hasOtherPersonAssignee ? (
-                <p className="text-sm font-bold">
-                  Assigned to {task.assigneePerson?.displayName}. If that&apos;s
-                  you, sign in with your verified account to mark this complete.
-                </p>
-              ) : null}
-              {!userId ? (
-                <Button asChild className="font-black uppercase" variant="outline">
-                  <Link href={signInHref}>Sign In</Link>
-                </Button>
-              ) : null}
-              {viewerClaim ? (
-                <span className="text-xs font-black uppercase text-brutal-pink">
-                  Your claim: {viewerClaim.status.toLowerCase()}
-                </span>
-              ) : null}
-            </div>
-            {viewerClaim &&
-            (viewerClaim.status === TaskClaimStatus.CLAIMED ||
-              viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
-              <TaskCompleteForm taskId={task.id} />
+        {/* Action row — only rendered when the viewer actually has something to do.
+            Non-assignee visitors see nothing: the nav already has a Sign In link. */}
+        {task.status !== TaskStatus.VERIFIED &&
+        canShowClaimButton &&
+        (canClaim || task.viewerHasClaim) ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <TaskClaimButton
+              canClaim={canClaim}
+              signedIn={Boolean(userId)}
+              signInHref={signInHref}
+              taskId={task.id}
+              viewerHasClaim={task.viewerHasClaim}
+            />
+            {viewerClaim ? (
+              <span className="text-xs font-black uppercase text-brutal-pink">
+                Your claim: {viewerClaim.status.toLowerCase()}
+              </span>
             ) : null}
           </div>
-        </BrutalCard>
+        ) : null}
+        {viewerClaim &&
+        (viewerClaim.status === TaskClaimStatus.CLAIMED ||
+          viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
+          <TaskCompleteForm taskId={task.id} />
+        ) : null}
 
         {task.milestones.length > 0 ? (
           <BrutalCard bgColor="cyan" padding="lg">
