@@ -379,9 +379,12 @@ export function TaskRow({
           ) : null}
         </div>
         <div className="relative z-[1] hidden min-w-0 flex-[1.2] lg:block">
-          <div className="whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground">
+          <Link
+            href={`/tasks/${task.id}`}
+            className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
+          >
             {task.title}
-          </div>
+          </Link>
         </div>
         {/* Desktop — live stats plus estimated time */}
         <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
@@ -472,9 +475,12 @@ export function TaskRow({
       )}
 
       <div className="relative z-[1] min-w-0 flex-1">
-        <div className="block truncate text-sm font-bold underline-offset-4">
+        <Link
+          href={`/tasks/${task.id}`}
+          className="block truncate text-sm font-bold underline-offset-4 hover:underline"
+        >
           {task.title}
-        </div>
+        </Link>
         {pressurePrompt ? (
           <p className="mt-1 truncate text-[11px] font-black uppercase text-brutal-red">
             {pressurePrompt}

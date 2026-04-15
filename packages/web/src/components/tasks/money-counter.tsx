@@ -11,10 +11,6 @@ interface MoneyCounterProps {
 }
 
 function formatCompact(usd: number): string {
-  if (usd >= 1e12) return `$${(usd / 1e12).toFixed(2)}T`;
-  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(2)}B`;
-  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(1)}M`;
-  if (usd >= 1e3) return `$${Math.round(usd / 1e3).toLocaleString()}K`;
   return `$${Math.round(usd).toLocaleString()}`;
 }
 

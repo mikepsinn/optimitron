@@ -104,13 +104,12 @@ export function TaskHeroStats({
 
   if (cells.length === 0) return null;
 
-  // First (priority) cell takes 2x width; remaining cells split evenly.
   const gridCols =
     cells.length === 1
       ? "md:grid-cols-1"
       : cells.length === 2
-        ? "md:grid-cols-[2fr_1fr]"
-        : "md:grid-cols-[2fr_1fr_1fr]";
+        ? "md:grid-cols-2"
+        : "md:grid-cols-3";
 
   return (
     <div className={`grid gap-0 border-4 border-primary ${gridCols}`}>
@@ -127,7 +126,7 @@ export function TaskHeroStats({
             <p className="text-xs font-black uppercase tracking-[0.18em]">
               {cell.label}
             </p>
-            <p className="mt-2 break-all text-5xl font-black tabular-nums leading-none sm:text-6xl">
+            <p className="mt-2 break-all text-3xl font-black tabular-nums leading-none sm:text-4xl">
               {cell.value}
             </p>
             {cell.caption ? (
