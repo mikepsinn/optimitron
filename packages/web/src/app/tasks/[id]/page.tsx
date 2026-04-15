@@ -334,8 +334,7 @@ export default async function TaskDetailPage({
               : []),
             {
               id: "discussion",
-              label: "Discussion",
-              count: commentFeed.comments.filter((c) => !c.deletedAt).length,
+              label: "Status Updates",
             },
           ]}
         />

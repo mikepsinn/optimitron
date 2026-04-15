@@ -26,10 +26,13 @@ export type TaskSortKey =
   | "deathsLockedIn"
   | "cost"
   | "time"
-  | "assigneeBudget";
+  | "assigneeBudget"
+  | "impactLives"
+  | "impactMoney"
+  | "verifiedAt";
 
 /** Healthy life-years lost per averted death (child-skewed global average). */
-const YEARS_PER_AVERTED_DEATH = 40;
+export const YEARS_PER_AVERTED_DEATH = 40;
 
 /** Format the taxpayer money wasted by delay as a display string. */
 function formatMoneyWasted(value: number | null | undefined): string {
@@ -131,11 +134,25 @@ function getLeftBorderColor(task: TaskCardTask): string {
   const econ = task.impact?.selectedFrame?.expectedEconomicValueUsdBase;
   const dalys = task.impact?.selectedFrame?.expectedDalysAvertedBase;
   const hasNegative = (econ != null && econ < 0) || (dalys != null && dalys < 0);
+  const hasPositive = (econ != null && econ > 0) || (dalys != null && dalys > 0);
 
   if (task.status === "VERIFIED" && hasNegative) return "border-l-brutal-red";
+  if (task.status === "VERIFIED" && hasPositive) return "border-l-brutal-green";
   if (task.claimPolicy === "ASSIGNED_ONLY") return "border-l-brutal-yellow";
   if (task.viewerHasClaim) return "border-l-brutal-cyan";
   return "border-l-muted";
+}
+
+function formatCompletedDate(value: Date | null | undefined): string {
+  if (!value) return "—";
+  return value.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
+
+function impactSignClass(value: number | null | undefined): string {
+  if (value == null) return "text-muted-foreground";
+  if (value < 0) return "text-brutal-red";
+  if (value > 0) return "text-brutal-green";
+  return "text-muted-foreground";
 }
 
 const SORT_LABELS: Record<TaskSortKey, string> = {
@@ -146,9 +163,12 @@ const SORT_LABELS: Record<TaskSortKey, string> = {
   cost: "Wasted By Delay",
   time: "Time",
   assigneeBudget: "Military Budget",
+  impactLives: "Lives Saved",
+  impactMoney: "$ Saved",
+  verifiedAt: "Completed",
 };
 
-export type TaskListVariant = "default" | "signer";
+export type TaskListVariant = "default" | "signer" | "completed";
 
 export function TaskTableHeader({
   sortKey,
@@ -204,6 +224,33 @@ export function TaskTableHeader({
           Remind
         </span>
         <span className="w-7 shrink-0" />
+      </div>
+    );
+  }
+
+  if (variant === "completed") {
+    // Completed leaderboard: photo · assignee · task · 💀 lives saved · 💸 $ saved · completed date
+    function completedHeaderCell(key: TaskSortKey, emoji: string, className: string) {
+      const isActive = sortKey === key;
+      const arrow = isActive ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
+      return (
+        <span
+          className={`${className} ${onSort ? "cursor-pointer select-none hover:text-foreground" : ""}`}
+          onClick={onSort ? () => onSort(key) : undefined}
+        >
+          {emoji} {SORT_LABELS[key]}
+          {arrow}
+        </span>
+      );
+    }
+    return (
+      <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
+        <span className="h-14 w-14 shrink-0" />
+        {headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
+        {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
+        {completedHeaderCell("impactLives", "💀", `w-40 shrink-0 text-right ${hdr}`)}
+        {completedHeaderCell("impactMoney", "💸", `w-44 shrink-0 text-right ${hdr}`)}
+        {headerCell("verifiedAt", `w-24 shrink-0 text-right ${hdr}`)}
       </div>
     );
   }
@@ -471,6 +518,97 @@ export function TaskRow({
     );
   }
 
+  // Completed leaderboard row — photo, name + role, task title, signed
+  // lives/money impact (green = helped, red = harmed), completion date.
+  // No Remind button — the task is done.
+  if (variant === "completed") {
+    const roleLabel =
+      task.assigneePerson?.currentAffiliation ?? task.roleTitle ?? null;
+    const econ = task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? null;
+    const dalys = task.impact?.selectedFrame?.expectedDalysAvertedBase ?? null;
+    const livesSaved = dalys != null ? dalys / YEARS_PER_AVERTED_DEATH : null;
+    const livesClass = impactSignClass(livesSaved);
+    const moneyClass = impactSignClass(econ);
+    const livesText = livesSaved != null ? formatCompactCount(livesSaved) : "—";
+    const moneyText = econ != null ? formatCompactCurrency(econ) : "—";
+    const completedText = formatCompletedDate(task.verifiedAt);
+    return (
+      <div
+        className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
+      >
+        <Link
+          href={`/tasks/${task.id}`}
+          className="absolute inset-0 z-0"
+          aria-label={`Open ${targetLabel}'s task`}
+          tabIndex={-1}
+        >
+          <span className="sr-only">{targetLabel}</span>
+        </Link>
+
+        {assigneeHref ? (
+          <Link
+            href={assigneeHref}
+            className="relative z-10 shrink-0"
+            title={targetLabel}
+          >
+            <Avatar className="h-12 w-12 shrink-0 border-2 border-foreground bg-muted sm:h-14 sm:w-14">
+              <Avatar.Image
+                alt={targetLabel}
+                src={task.assigneePerson?.image ?? undefined}
+              />
+              <Avatar.Fallback className="bg-brutal-pink text-xs font-black text-background">
+                {fallbackInitials || "?"}
+              </Avatar.Fallback>
+            </Avatar>
+          </Link>
+        ) : null}
+        <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
+          <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
+            {targetLabel}
+          </div>
+          {roleLabel ? (
+            <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
+              {roleLabel}
+            </div>
+          ) : null}
+          {/* Mobile — stacked impact stats */}
+          <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
+            <div className={`${livesClass} font-black`}>
+              💀 {livesText} lives
+            </div>
+            <div className={`${moneyClass} font-black`}>
+              💸 {moneyText}
+            </div>
+            {completedText !== "—" ? (
+              <div>completed {completedText}</div>
+            ) : null}
+          </div>
+        </div>
+        <div className="relative z-[1] hidden min-w-0 flex-[1.2] lg:block">
+          <Link
+            href={`/tasks/${task.id}`}
+            className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
+          >
+            {task.title}
+          </Link>
+        </div>
+        <div
+          className={`relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight lg:block ${livesClass}`}
+        >
+          💀 {livesText}
+        </div>
+        <div
+          className={`relative z-[1] hidden w-44 shrink-0 break-all text-right text-sm font-black leading-tight lg:block ${moneyClass}`}
+        >
+          💸 {moneyText}
+        </div>
+        <div className="relative z-[1] hidden w-24 shrink-0 text-right text-xs font-bold text-muted-foreground lg:block">
+          {completedText}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`relative flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
@@ -659,6 +797,12 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
     case "assigneeBudget":
       // Higher military budget = more shameable; sort desc by default
       return getMilitaryBudgetUsd(task) ?? 0;
+    case "impactLives":
+      return task.impact?.selectedFrame?.expectedDalysAvertedBase ?? 0;
+    case "impactMoney":
+      return task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? 0;
+    case "verifiedAt":
+      return task.verifiedAt?.getTime() ?? 0;
     case "assignee":
       return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? "";
     case "status":

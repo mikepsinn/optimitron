@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
+import { YEARS_PER_AVERTED_DEATH } from "@/components/tasks/task-row";
 import { Avatar } from "@/components/retroui/Avatar";
 import { isPublicOfficialPerson } from "@/lib/public-officials";
 import {
@@ -64,19 +65,26 @@ export default async function PersonDetailPage({
   const fallbackInitials = getFallbackInitials(person.displayName);
   const openSummary = aggregateTaskDelayStats(openTasks);
 
-  const harmfulVerified = verifiedTasks.filter((task) => {
-    const econ = (task as TaskCardTask).impact?.selectedFrame?.expectedEconomicValueUsdBase;
-    const dalys = (task as TaskCardTask).impact?.selectedFrame?.expectedDalysAvertedBase;
-    return (econ != null && econ < 0) || (dalys != null && dalys < 0);
-  });
-  const beneficialVerified = verifiedTasks.filter((task) => {
-    const econ = (task as TaskCardTask).impact?.selectedFrame?.expectedEconomicValueUsdBase;
-    return econ != null && econ > 0;
-  });
-
   const openTasksTyped = openTasks as unknown as TaskCardTask[];
-  const harmfulTyped = harmfulVerified as unknown as TaskCardTask[];
-  const beneficialTyped = beneficialVerified as unknown as TaskCardTask[];
+  const verifiedTyped = verifiedTasks as unknown as TaskCardTask[];
+
+  const netEconomicImpact = verifiedTyped.reduce((sum, task) => {
+    const v = task.impact?.selectedFrame?.expectedEconomicValueUsdBase;
+    return v != null ? sum + v : sum;
+  }, 0);
+  const netLivesSaved = verifiedTyped.reduce((sum, task) => {
+    const d = task.impact?.selectedFrame?.expectedDalysAvertedBase;
+    return d != null ? sum + d / YEARS_PER_AVERTED_DEATH : sum;
+  }, 0);
+
+  const signedValueClass = (value: number) =>
+    value < 0
+      ? "text-brutal-red"
+      : value > 0
+        ? "text-brutal-green"
+        : "";
+
+  const hasAnyTasks = openTasks.length > 0 || verifiedTyped.length > 0;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -121,9 +129,9 @@ export default async function PersonDetailPage({
           ) : null}
         </header>
 
-        {/* Stats — only show what matters */}
-        {openTasks.length > 0 ? (
-          <div className="grid gap-3 border-2 border-primary bg-background p-4 sm:grid-cols-3">
+        {/* Stats — overdue clock + net completed impact */}
+        {hasAnyTasks ? (
+          <div className="grid gap-3 border-2 border-primary bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Overdue Tasks
@@ -146,27 +154,41 @@ export default async function PersonDetailPage({
                 {formatCompactCurrency(openSummary.currentEconomicValueUsdLost)}
               </p>
             </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Net Lives Saved
+              </p>
+              <p className={`mt-1 text-2xl font-bold ${signedValueClass(netLivesSaved)}`}>
+                {formatCompactCount(netLivesSaved)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Net $ Saved
+              </p>
+              <p className={`mt-1 text-2xl font-bold ${signedValueClass(netEconomicImpact)}`}>
+                {formatCompactCurrency(netEconomicImpact)}
+              </p>
+            </div>
           </div>
         ) : null}
 
         {openTasksTyped.length > 0 ? (
           <section className="space-y-3">
             <h2 className="text-lg font-bold uppercase tracking-wide">Overdue Tasks</h2>
-            <SortableTaskList tasks={openTasksTyped} />
+            <SortableTaskList tasks={openTasksTyped} variant="signer" />
           </section>
         ) : null}
 
-        {harmfulTyped.length > 0 ? (
+        {verifiedTyped.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Harmful Activities Completed</h2>
-            <SortableTaskList tasks={harmfulTyped} />
-          </section>
-        ) : null}
-
-        {beneficialTyped.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold uppercase tracking-wide">Verified Beneficial Tasks</h2>
-            <SortableTaskList tasks={beneficialTyped} />
+            <h2 className="text-lg font-bold uppercase tracking-wide">Completed Tasks</h2>
+            <SortableTaskList
+              tasks={verifiedTyped}
+              variant="completed"
+              defaultSortKey="verifiedAt"
+              defaultSortDir="desc"
+            />
           </section>
         ) : null}
       </div>

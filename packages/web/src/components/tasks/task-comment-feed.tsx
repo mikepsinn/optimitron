@@ -441,17 +441,10 @@ export function TaskCommentFeed({
     }
   }
 
-  const totalCount = comments.filter((c) => !c.deletedAt).length;
-
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold uppercase tracking-wide">
-          Activity · {totalCount}{" "}
-          <span className="text-muted-foreground">
-            {totalCount === 1 ? "comment" : "comments"}
-          </span>
-        </h2>
+        <h2 className="text-lg font-bold uppercase tracking-wide">Status Update</h2>
         <div className="flex gap-1 text-xs font-bold uppercase">
           <button
             type="button"
