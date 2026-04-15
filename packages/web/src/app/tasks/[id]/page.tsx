@@ -30,6 +30,7 @@ import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { getPersonHref } from "@/lib/person-href";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import {
   buildTaskShareText,
   formatCompactCount,
@@ -197,13 +198,19 @@ export default async function TaskDetailPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const [data, commentFeed, activityTimeline, wishoniaUserId, ancestors] = await Promise.all([
-    getTaskDetailData(id, userId),
-    getTaskCommentFeed({ taskId: id, sort: "new", limit: 100, currentUserId: userId }),
-    getTaskActivityTimeline(id, 50),
-    getWishoniaUserId().catch(() => null),
-    getTaskAncestors(id),
-  ]);
+  const [data, commentFeed, activityTimeline, wishoniaUserId, ancestors, viewerIsAdmin] =
+    await Promise.all([
+      getTaskDetailData(id, userId),
+      getTaskCommentFeed({ taskId: id, sort: "new", limit: 100, currentUserId: userId }),
+      getTaskActivityTimeline(id, 50),
+      getWishoniaUserId().catch(() => null),
+      getTaskAncestors(id),
+      userId
+        ? prisma.user
+            .findUnique({ where: { id: userId }, select: { isAdmin: true } })
+            .then((u) => u?.isAdmin ?? false)
+        : Promise.resolve(false),
+    ]);
 
   if (!data) {
     notFound();
@@ -581,6 +588,7 @@ export default async function TaskDetailPage({
             createdAt: a.createdAt instanceof Date ? a.createdAt.toISOString() : a.createdAt,
           }))}
           currentUserId={userId}
+          currentUserIsAdmin={viewerIsAdmin}
           wishoniaUserId={wishoniaUserId}
           signInHref={signInHref}
         />

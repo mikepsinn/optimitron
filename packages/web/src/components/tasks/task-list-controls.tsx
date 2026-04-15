@@ -47,6 +47,7 @@ export function SortableTaskList({
   defaultSortDir = "desc",
   variant = "default",
   pageSize = 10,
+  hideAssignee = false,
 }: {
   tasks: TaskCardTask[];
   defaultSortKey?: TaskSortKey;
@@ -54,6 +55,8 @@ export function SortableTaskList({
   variant?: TaskListVariant;
   /** Paginate results N rows per page. Defaults to 10. */
   pageSize?: number;
+  /** Hide the assignee column — useful on person profiles where every row shares the same assignee. */
+  hideAssignee?: boolean;
 }) {
   const [sortKey, setSortKey] = useState<TaskSortKey>(defaultSortKey);
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
@@ -133,6 +136,7 @@ export function SortableTaskList({
         sortDir={sortDir}
         onSort={handleHeaderSort}
         variant={variant}
+        hideAssignee={hideAssignee}
       />
       <div className="divide-y divide-foreground/10">
         {sorted.length > 0 ? (
@@ -140,7 +144,7 @@ export function SortableTaskList({
             ? sorted.slice(page * pageSize, (page + 1) * pageSize)
             : sorted
           ).map((task) => (
-            <TaskRow key={task.id} task={task} variant={variant} />
+            <TaskRow key={task.id} task={task} variant={variant} hideAssignee={hideAssignee} />
           ))
         ) : (
           <div className="px-4 py-6 text-center text-xs font-bold text-muted-foreground">

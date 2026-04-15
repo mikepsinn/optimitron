@@ -175,11 +175,13 @@ export function TaskTableHeader({
   sortDir,
   onSort,
   variant = "default",
+  hideAssignee = false,
 }: {
   sortKey?: TaskSortKey;
   sortDir?: "asc" | "desc";
   onSort?: (key: TaskSortKey) => void;
   variant?: TaskListVariant;
+  hideAssignee?: boolean;
 }) {
   function headerCell(key: TaskSortKey, className: string) {
     const isActive = sortKey === key;
@@ -214,8 +216,8 @@ export function TaskTableHeader({
     }
     return (
       <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
-        <span className="h-14 w-14 shrink-0" />
-        {headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
+        {hideAssignee ? null : <span className="h-14 w-14 shrink-0" />}
+        {hideAssignee ? null : headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
         {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
         {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("cost", "💸", `w-44 shrink-0 text-right ${hdr}`)}
@@ -245,8 +247,8 @@ export function TaskTableHeader({
     }
     return (
       <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
-        <span className="h-14 w-14 shrink-0" />
-        {headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
+        {hideAssignee ? null : <span className="h-14 w-14 shrink-0" />}
+        {hideAssignee ? null : headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
         {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
         {completedHeaderCell("impactLives", "💀", `w-40 shrink-0 text-right ${hdr}`)}
         {completedHeaderCell("impactMoney", "💸", `w-44 shrink-0 text-right ${hdr}`)}
@@ -275,9 +277,11 @@ export function TaskTableHeader({
 export function TaskRow({
   task,
   variant = "default",
+  hideAssignee = false,
 }: {
   task: TaskCardTask;
   variant?: TaskListVariant;
+  hideAssignee?: boolean;
 }) {
   const delayStats = getTaskDelayStats(task);
   const assignedToYou = isAssignedToYou(task);
@@ -407,7 +411,7 @@ export function TaskRow({
           <span className="sr-only">{targetLabel}</span>
         </Link>
 
-        {assigneeHref ? (
+        {!hideAssignee && assigneeHref ? (
           <Link
             href={assigneeHref}
             className="relative z-10 shrink-0"
@@ -424,21 +428,62 @@ export function TaskRow({
             </Avatar>
           </Link>
         ) : null}
-        <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
-          <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
-            {targetLabel}
-          </div>
-          {roleLabel ? (
-            <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
-              {roleLabel}
+        {!hideAssignee ? (
+          <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
+            <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
+              {targetLabel}
             </div>
-          ) : null}
-          {/* Mobile — stacked delay stats so they do not get cut off */}
-          {attribution != null ? (
-            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
-              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-brutal-red">
-                Wasted by delay
+            {roleLabel ? (
+              <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
+                {roleLabel}
               </div>
+            ) : null}
+            {/* Mobile — stacked delay stats so they do not get cut off */}
+            {attribution != null ? (
+              <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
+                <div className="text-[10px] font-black uppercase tracking-[0.12em] text-brutal-red">
+                  Wasted by delay
+                </div>
+                <div>
+                  💀{" "}
+                  {canTick && dueMs != null ? (
+                    <LiveCounter
+                      ratePerSecond={deathsPerSecond}
+                      startMs={dueMs}
+                      mode="integer"
+                    />
+                  ) : (
+                    deathsTextCompact
+                  )}{" "}
+                  deaths
+                </div>
+                <div>
+                  💸{" "}
+                  {canTick && dueMs != null ? (
+                    <LiveCounter
+                      ratePerSecond={usdPerSecond}
+                      startMs={dueMs}
+                      mode="currency"
+                    />
+                  ) : (
+                    wastedTextCompact
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+        <div
+          className={`relative z-[1] min-w-0 ${hideAssignee ? "flex-1" : "hidden flex-[1.2] lg:block"}`}
+        >
+          <Link
+            href={`/tasks/${task.id}`}
+            className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
+          >
+            {task.title}
+          </Link>
+          {hideAssignee && attribution != null ? (
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
               <div>
                 💀{" "}
                 {canTick && dueMs != null ? (
@@ -466,14 +511,6 @@ export function TaskRow({
               </div>
             </div>
           ) : null}
-        </div>
-        <div className="relative z-[1] hidden min-w-0 flex-[1.2] lg:block">
-          <Link
-            href={`/tasks/${task.id}`}
-            className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
-          >
-            {task.title}
-          </Link>
         </div>
         {/* Desktop — live stats plus estimated time */}
         <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
@@ -545,7 +582,7 @@ export function TaskRow({
           <span className="sr-only">{targetLabel}</span>
         </Link>
 
-        {assigneeHref ? (
+        {!hideAssignee && assigneeHref ? (
           <Link
             href={assigneeHref}
             className="relative z-10 shrink-0"
@@ -562,35 +599,52 @@ export function TaskRow({
             </Avatar>
           </Link>
         ) : null}
-        <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
-          <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
-            {targetLabel}
-          </div>
-          {roleLabel ? (
-            <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
-              {roleLabel}
+        {!hideAssignee ? (
+          <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
+            <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
+              {targetLabel}
             </div>
-          ) : null}
-          {/* Mobile — stacked impact stats */}
-          <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
-            <div className={`${livesClass} font-black`}>
-              💀 {livesText} lives
-            </div>
-            <div className={`${moneyClass} font-black`}>
-              💸 {moneyText}
-            </div>
-            {completedText !== "—" ? (
-              <div>completed {completedText}</div>
+            {roleLabel ? (
+              <div className="truncate text-[11px] font-bold text-muted-foreground sm:text-xs">
+                {roleLabel}
+              </div>
             ) : null}
+            {/* Mobile — stacked impact stats */}
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
+              <div className={`${livesClass} font-black`}>
+                💀 {livesText} lives
+              </div>
+              <div className={`${moneyClass} font-black`}>
+                💸 {moneyText}
+              </div>
+              {completedText !== "—" ? (
+                <div>completed {completedText}</div>
+              ) : null}
+            </div>
           </div>
-        </div>
-        <div className="relative z-[1] hidden min-w-0 flex-[1.2] lg:block">
+        ) : null}
+        <div
+          className={`relative z-[1] min-w-0 ${hideAssignee ? "flex-1" : "hidden flex-[1.2] lg:block"}`}
+        >
           <Link
             href={`/tasks/${task.id}`}
             className="block whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground underline-offset-4 hover:underline"
           >
             {task.title}
           </Link>
+          {hideAssignee ? (
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
+              <div className={`${livesClass} font-black`}>
+                💀 {livesText} lives
+              </div>
+              <div className={`${moneyClass} font-black`}>
+                💸 {moneyText}
+              </div>
+              {completedText !== "—" ? (
+                <div>completed {completedText}</div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div
           className={`relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight lg:block ${livesClass}`}

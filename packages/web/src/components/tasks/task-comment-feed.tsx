@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, MessageSquare, Send, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, MessageSquare, Send, Trash2, X } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Button } from "@/components/retroui/Button";
+import { Dialog } from "@/components/retroui/Dialog";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { getPersonHref } from "@/lib/person-href";
 import {
@@ -69,6 +70,7 @@ interface TaskCommentFeedProps {
   initialComments: TaskCommentRow[];
   initialActivities: TaskActivityRow[];
   currentUserId: string | null;
+  currentUserIsAdmin: boolean;
   wishoniaUserId: string | null;
   signInHref: string;
 }
@@ -92,6 +94,7 @@ export function TaskCommentFeed({
   initialComments,
   initialActivities,
   currentUserId,
+  currentUserIsAdmin,
   wishoniaUserId,
   signInHref,
 }: TaskCommentFeedProps) {
@@ -105,6 +108,10 @@ export function TaskCommentFeed({
   const [submitting, setSubmitting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
   const [wishoniaNotice, setWishoniaNotice] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    path: string;
+  } | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -426,20 +433,44 @@ export function TaskCommentFeed({
     }
   }
 
-  async function onDelete(commentId: string) {
-    if (!confirm("Delete this comment?")) return;
+  function onDelete(commentId: string) {
+    const c = commentsById.get(commentId);
+    if (!c) return;
+    setDeleteTarget({ id: commentId, path: c.path });
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    setDeleteTarget(null);
     try {
-      const res = await fetch(`/api/tasks/comments/${commentId}`, { method: "DELETE" });
+      const res = await fetch(`/api/tasks/comments/${target.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      setComments((prev) =>
-        prev.map((c) =>
-          c.id === commentId ? { ...c, deletedAt: new Date().toISOString() } : c,
-        ),
-      );
+      if (currentUserIsAdmin) {
+        setComments((prev) =>
+          prev.filter(
+            (c) => c.id !== target.id && !c.path.startsWith(`${target.path}/`),
+          ),
+        );
+      } else {
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === target.id ? { ...c, deletedAt: new Date().toISOString() } : c,
+          ),
+        );
+      }
     } catch (err) {
       console.error("[TaskCommentFeed] Delete failed:", err);
     }
   }
+
+  const deleteTargetDescendantCount = useMemo(() => {
+    if (!deleteTarget?.path) return 0;
+    const prefix = `${deleteTarget.path}/`;
+    return comments.filter(
+      (c) => c.id !== deleteTarget.id && c.path.startsWith(prefix),
+    ).length;
+  }, [deleteTarget, comments]);
 
   return (
     <section className="space-y-4">
@@ -532,19 +563,64 @@ export function TaskCommentFeed({
             replies={threaded.repliesByParent.get(comment.id) ?? []}
             wishoniaUserId={wishoniaUserId}
             currentUserId={currentUserId}
+            currentUserIsAdmin={currentUserIsAdmin}
             replyingTo={replyingTo}
             replyDraft={replyDraft}
             setReplyingTo={setReplyingTo}
             setReplyDraft={setReplyDraft}
             submitting={submitting}
             onVote={(id, value) => void castVote(id, value)}
-            onDelete={(id) => void onDelete(id)}
+            onDelete={onDelete}
             onSubmitReply={(parentId, message) =>
               void submitComment(message, parentId, null)
             }
           />
         ))}
       </div>
+
+      <Dialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <Dialog.Content size="sm">
+          <Dialog.Header asChild>
+            <div className="flex min-h-12 items-center justify-between border-b-2 bg-primary px-4">
+              <h2 className="text-base font-black uppercase text-primary-foreground">
+                {currentUserIsAdmin ? "Delete permanently?" : "Delete comment?"}
+              </h2>
+              <Dialog.Close asChild>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  className="cursor-pointer text-primary-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </Dialog.Close>
+            </div>
+          </Dialog.Header>
+          <Dialog.Description className="px-4 py-4 text-sm font-bold">
+            {currentUserIsAdmin
+              ? deleteTargetDescendantCount > 0
+                ? `Removes this comment and ${deleteTargetDescendantCount} ${deleteTargetDescendantCount === 1 ? "reply" : "replies"} beneath it. Gone forever. No placeholder.`
+                : "Removes this comment permanently. Gone forever. No placeholder."
+              : "Marks this comment as [deleted]. Replies remain visible."}
+          </Dialog.Description>
+          <Dialog.Footer>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-brutal-red text-brutal-red-foreground hover:bg-brutal-red/80"
+              onClick={() => void confirmDelete()}
+            >
+              {currentUserIsAdmin ? "Delete forever" : "Delete"}
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </section>
   );
 }
@@ -554,6 +630,7 @@ function CommentNode({
   replies,
   wishoniaUserId,
   currentUserId,
+  currentUserIsAdmin,
   replyingTo,
   replyDraft,
   setReplyingTo,
@@ -568,6 +645,7 @@ function CommentNode({
   replies: TaskCommentRow[];
   wishoniaUserId: string | null;
   currentUserId: string | null;
+  currentUserIsAdmin: boolean;
   replyingTo: string | null;
   replyDraft: string;
   setReplyingTo: (id: string | null) => void;
@@ -582,6 +660,7 @@ function CommentNode({
   const isWishonia = comment.authorUserId === wishoniaUserId;
   const isOwn = comment.authorUserId === currentUserId;
   const canReply = currentUserId != null && !isDeleted;
+  const canDelete = currentUserIsAdmin || (isOwn && !isDeleted);
   const handle =
     getUserDisplayHandle(comment.authorUser) ??
     getUserDisplayName(comment.authorUser);
@@ -631,13 +710,13 @@ function CommentNode({
           {comment.editedAt ? (
             <span className="text-xs font-bold text-muted-foreground">· edited</span>
           ) : null}
-          {isOwn && !isDeleted ? (
+          {canDelete ? (
             <button
               type="button"
               className="ml-auto text-xs text-muted-foreground hover:text-foreground"
               onClick={() => onDelete(comment.id)}
               aria-label="Delete comment"
-              title="Delete"
+              title={currentUserIsAdmin ? "Delete permanently" : "Delete"}
             >
               <Trash2 className="h-3 w-3" />
             </button>
@@ -794,6 +873,7 @@ function CommentNode({
               replies={[]}
               wishoniaUserId={wishoniaUserId}
               currentUserId={currentUserId}
+              currentUserIsAdmin={currentUserIsAdmin}
               replyingTo={replyingTo}
               replyDraft={replyDraft}
               setReplyingTo={setReplyingTo}

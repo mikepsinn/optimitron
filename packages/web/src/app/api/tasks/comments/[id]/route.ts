@@ -1,6 +1,7 @@
 /**
- * DELETE /api/tasks/comments/[id] — soft-delete a comment.
- * Authors can delete their own; curators can delete any.
+ * DELETE /api/tasks/comments/[id] — delete a comment.
+ * Authors soft-delete their own (renders as [deleted]).
+ * Admins hard-delete the comment plus every reply beneath it.
  */
 
 import { NextResponse } from "next/server";

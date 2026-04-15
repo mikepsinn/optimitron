@@ -113,14 +113,10 @@ export default async function PersonDetailPage({
                   {person.currentAffiliation}
                 </p>
               ) : null}
-              {person.sourceUrl ? (
-                <Link
-                  className="inline-block text-xs font-bold underline underline-offset-4"
-                  href={person.sourceUrl}
-                  target="_blank"
-                >
-                  Source
-                </Link>
+              {isPublicOfficialPerson(person) ? (
+                <p className="text-xs font-bold text-muted-foreground">
+                  Job: Promote General Welfare (i.e. maximize median health and wealth)
+                </p>
               ) : null}
             </div>
           </div>
@@ -131,7 +127,9 @@ export default async function PersonDetailPage({
 
         {/* Stats — overdue clock + net completed impact */}
         {hasAnyTasks ? (
-          <div className="grid gap-3 border-2 border-primary bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
+          <section className="space-y-2">
+            <h2 className="text-lg font-bold uppercase tracking-wide">Employee Performance</h2>
+            <div className="grid gap-3 border-2 border-primary bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Overdue Tasks
@@ -170,13 +168,14 @@ export default async function PersonDetailPage({
                 {formatCompactCurrency(netEconomicImpact)}
               </p>
             </div>
-          </div>
+            </div>
+          </section>
         ) : null}
 
         {openTasksTyped.length > 0 ? (
           <section className="space-y-3">
             <h2 className="text-lg font-bold uppercase tracking-wide">Overdue Tasks</h2>
-            <SortableTaskList tasks={openTasksTyped} variant="signer" />
+            <SortableTaskList tasks={openTasksTyped} variant="signer" hideAssignee />
           </section>
         ) : null}
 
@@ -188,6 +187,7 @@ export default async function PersonDetailPage({
               variant="completed"
               defaultSortKey="verifiedAt"
               defaultSortDir="desc"
+              hideAssignee
             />
           </section>
         ) : null}

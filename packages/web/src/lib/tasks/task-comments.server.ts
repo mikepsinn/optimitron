@@ -246,39 +246,53 @@ export async function voteComment(input: {
   });
 }
 
-/** Soft-delete a comment. */
+/**
+ * Delete a comment. Authors soft-delete (sets deletedAt so the row renders as
+ * [deleted] and threads stay intact). Moderators hard-delete the row plus every
+ * descendant in the thread via the materialized-path prefix.
+ */
 export async function deleteComment(input: {
   commentId: string;
   userId: string;
   asModerator?: boolean;
-  moderationReason?: string | null;
 }): Promise<void> {
   const comment = await prisma.taskComment.findUnique({
     where: { id: input.commentId },
-    select: { authorUserId: true, deletedAt: true },
+    select: { authorUserId: true, deletedAt: true, path: true, parentCommentId: true },
   });
   if (!comment) throw new Error("Comment not found");
-  if (comment.deletedAt) return; // already deleted
 
   const isAuthor = comment.authorUserId === input.userId;
   if (!isAuthor && !input.asModerator) {
     throw new Error("Not authorized to delete this comment");
   }
 
+  if (input.asModerator) {
+    // Hard delete: drop the target row and every descendant. Vote rows cascade
+    // via the schema, so no manual cleanup needed.
+    const prefix = comment.path || `/${input.commentId}`;
+    await prisma.$transaction(async (tx) => {
+      await tx.taskComment.deleteMany({
+        where: { path: { startsWith: prefix } },
+      });
+      if (comment.parentCommentId) {
+        await tx.taskComment.update({
+          where: { id: comment.parentCommentId },
+          data: { replyCount: { decrement: 1 }, version: { increment: 1 } },
+        });
+      }
+    });
+    return;
+  }
+
+  // Author soft-delete path.
+  if (comment.deletedAt) return; // already soft-deleted
   const now = new Date();
   await prisma.taskComment.update({
     where: { id: input.commentId },
     data: {
       deletedAt: now,
       version: { increment: 1 },
-      ...(input.asModerator
-        ? {
-            moderatedByUserId: input.userId,
-            moderatedAt: now,
-            moderationReason: input.moderationReason ?? null,
-            hiddenByCurator: true,
-          }
-        : {}),
     },
   });
 }
