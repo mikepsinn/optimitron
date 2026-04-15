@@ -49,7 +49,7 @@ export function TaskCostOfDelay({
     delayStats.currentEconomicValueUsdLost > 0
   ) {
     cards.push({
-      emoji: "🔥",
+      emoji: "💸",
       label: "Money Destroyed",
       value: formatCompactCurrency(delayStats.currentEconomicValueUsdLost),
     });
@@ -98,7 +98,7 @@ export function TaskCostOfDelay({
               : null}
             {ratePerSecond.deaths != null && ratePerSecond.usd != null ? "  " : ""}
             {ratePerSecond.usd != null
-              ? `🔥 ${formatCompactCurrency(ratePerSecond.usd)}/sec`
+              ? `💸 ${formatCompactCurrency(ratePerSecond.usd)}/sec`
               : null}
           </div>
         ) : null}

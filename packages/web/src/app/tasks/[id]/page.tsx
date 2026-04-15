@@ -68,9 +68,11 @@ function getMilestoneStatusLabel(status: string) {
 function formatOverdueDays(days: number): string {
   if (days >= 365) {
     const years = days / 365;
-    return `${years.toFixed(1)} years overdue`;
+    const rounded = Number(years.toFixed(1));
+    return `${years.toFixed(1)} ${rounded === 1 ? "year" : "years"} overdue`;
   }
-  return `${days.toLocaleString()} days overdue`;
+  const rounded = Math.round(days);
+  return `${rounded.toLocaleString()} ${rounded === 1 ? "day" : "days"} overdue`;
 }
 
 interface TaskMetaSubtitleProps {

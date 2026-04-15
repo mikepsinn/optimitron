@@ -783,10 +783,10 @@ export async function seedDatabase(options: SeedDatabaseOptions = {}) {
 // Treaty Tasks — parent task + per-country signer subtasks with impact data
 // ---------------------------------------------------------------------------
 
-// Due date is backdated so the overdue clock reads a real "this has been on
-// your employees' to-do list for ~5 years" number. The 1% Treaty was first
-// publicly proposed years ago; pick a defensible historical anchor.
-const TREATY_DUE_AT = new Date("2020-01-01T00:00:00.000Z");
+// Due date is an absolute historical anchor — yesterday relative to when the
+// dashboard was last reviewed — so the overdue clock keeps ticking up from a
+// fixed point instead of resetting to "1 day" on every seed.
+const TREATY_DUE_AT = new Date("2026-04-14T00:00:00.000Z");
 const TREATY_CAMPAIGN_COST_USD = 1_000_000_000; // $1B lobbying campaign
 
 // Peace-dividend NPV using a growing perpetuity with the standard UK Treasury

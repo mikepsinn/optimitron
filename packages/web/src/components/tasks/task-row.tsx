@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FaArrowRight } from "react-icons/fa6";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
   buildTaskShareText,
@@ -157,7 +156,7 @@ export function TaskTableHeader({
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
   if (variant === "signer") {
-    // Dense signer leaderboard: photo · assignee · task · 💀 deaths · 🔥 wasted · time · remind · details
+    // Dense signer leaderboard: photo · assignee · task · 💀 deaths · 💸 wasted · time · remind · details
     // Desktop-only header (>= lg). Mobile uses the packed caption inside each row.
     function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
       const isActive = sortKey === key;
@@ -178,7 +177,7 @@ export function TaskTableHeader({
         {headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
         {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
         {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
-        {signerHeaderCell("cost", "🔥", `w-44 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("cost", "💸", `w-44 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("time", "⏱", `w-20 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           Remind
@@ -350,7 +349,10 @@ export function TaskRow({
           ) : null}
           {/* Mobile — stacked delay stats so they do not get cut off */}
           {attribution != null ? (
-            <div className="mt-1 space-y-0.5 text-[11px] font-bold text-muted-foreground lg:hidden">
+            <div className="mt-1 text-[11px] font-bold text-muted-foreground lg:hidden">
+              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-brutal-red">
+                Wasted by delay
+              </div>
               <div>
                 💀{" "}
                 {canTick && dueMs != null ? (
@@ -361,10 +363,11 @@ export function TaskRow({
                   />
                 ) : (
                   deathsTextCompact
-                )}
+                )}{" "}
+                deaths
               </div>
               <div>
-                🔥{" "}
+                💸{" "}
                 {canTick && dueMs != null ? (
                   <LiveCounter
                     ratePerSecond={usdPerSecond}
@@ -400,7 +403,7 @@ export function TaskRow({
           )}
         </div>
         <div className="relative z-[1] hidden w-44 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
-          🔥{" "}
+          💸{" "}
           {canTick && dueMs != null ? (
             <LiveCounter
               ratePerSecond={usdPerSecond}
@@ -419,14 +422,6 @@ export function TaskRow({
             <TaskRowShare shareText={shareText} taskId={task.id} />
           </div>
         ) : null}
-        <Link
-          href={`/tasks/${task.id}`}
-          className="relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
-          title="Open task details"
-          aria-label="Open task details"
-        >
-          <FaArrowRight className="h-3.5 w-3.5" />
-        </Link>
       </div>
     );
   }
@@ -559,7 +554,7 @@ export function TaskRow({
           deathClockStartMs != null &&
           isOverdue ? (
           <>
-            🔥{" "}
+            💸{" "}
             <LiveCounter
               ratePerSecond={defaultUsdPerSecond}
               startMs={deathClockStartMs}
@@ -585,15 +580,6 @@ export function TaskRow({
           <TaskRowShare shareText={shareText} taskId={task.id} />
         ) : null}
       </div>
-
-      <Link
-        href={`/tasks/${task.id}`}
-        className="relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
-        title="Open task details"
-        aria-label="Open task details"
-      >
-        <FaArrowRight className="h-3.5 w-3.5" />
-      </Link>
     </div>
   );
 }

@@ -203,10 +203,14 @@ export function formatDelayDuration(days: number) {
 
   if (days >= 365) {
     const years = days / 365.25;
-    return `${formatCompactCount(years, { maximumFractionDigits: years >= 10 ? 0 : 1 })} years`;
+    const yearsRounded = Number(
+      years.toFixed(years >= 10 ? 0 : 1),
+    );
+    return `${formatCompactCount(years, { maximumFractionDigits: years >= 10 ? 0 : 1 })} ${yearsRounded === 1 ? "year" : "years"}`;
   }
 
-  return `${formatCompactCount(days, { maximumFractionDigits: 0 })} days`;
+  const rounded = Math.round(days);
+  return `${formatCompactCount(days, { maximumFractionDigits: 0 })} ${rounded === 1 ? "day" : "days"}`;
 }
 
 export function buildTaskShareText(input: {

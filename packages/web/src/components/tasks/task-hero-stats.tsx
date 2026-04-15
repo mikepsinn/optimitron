@@ -86,7 +86,7 @@ export function TaskHeroStats({
   if (dueMs != null && isOverdue) {
     const usdPerSecond = (DAILY_DISEASE_COST_USD * attributionShare) / 86400;
     cells.push({
-      label: "🔥 Wasted by delay",
+      label: "💸 Wasted by delay",
       bg: "red",
       value: <MoneyCounter usdPerSecond={usdPerSecond} startMs={dueMs} />,
     });

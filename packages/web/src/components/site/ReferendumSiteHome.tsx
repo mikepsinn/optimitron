@@ -103,7 +103,6 @@ export function ReferendumSiteHome({ data }: Props) {
           <ReferendumSiteInlineSign
             referendumSlug={site.primaryReferendumSlug}
             postSignRedirectUrl="/dashboard?welcome=1"
-            title={content.home.signBoxTitle}
           />
         </div>
       </section>

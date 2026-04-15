@@ -40,7 +40,7 @@ export function TaskWhileYouRead({
             <div>💀 {formatCompactCount(deaths)} more humans died</div>
           ) : null}
           {usd != null ? (
-            <div>🔥 {formatCompactCurrency(usd)} more destroyed</div>
+            <div>💸 {formatCompactCurrency(usd)} more wasted</div>
           ) : null}
         </div>
       </div>
