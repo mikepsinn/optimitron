@@ -30,7 +30,11 @@ function discoverStaticAppPages(
   const pages: string[] = [];
 
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith(".") || entry.name.startsWith("@")) {
+    if (
+      entry.name.startsWith(".") ||
+      entry.name.startsWith("@") ||
+      entry.name.startsWith("_")
+    ) {
       continue;
     }
 
