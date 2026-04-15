@@ -61,6 +61,27 @@ function formatDuration(hours: number | null | undefined): string {
   return `${Math.round(hours / 24)}d`;
 }
 
+function buildReminderBadges(input: {
+  currentEconomicValueUsdLost: number | null | undefined;
+  currentHumanLivesLost: number | null | undefined;
+  estimatedEffortHours: number | null | undefined;
+}) {
+  const badges: string[] = [];
+  const duration = formatDuration(input.estimatedEffortHours);
+
+  if (duration !== "—") {
+    badges.push(`${duration} action`);
+  }
+  if (input.currentHumanLivesLost != null && input.currentHumanLivesLost > 0) {
+    badges.push(`${formatCompactCount(input.currentHumanLivesLost)} deaths`);
+  }
+  if (input.currentEconomicValueUsdLost != null && input.currentEconomicValueUsdLost > 0) {
+    badges.push(`${formatCompactCurrency(input.currentEconomicValueUsdLost)} lost`);
+  }
+
+  return badges.slice(0, 3);
+}
+
 function formatDueDate(value: Date) {
   return value.toLocaleDateString("en-US", {
     day: "numeric",
@@ -232,6 +253,11 @@ export function TaskRow({
     targetLabel,
     taskTitle: task.title,
   });
+  const defaultReminderBadges = buildReminderBadges({
+    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
+    currentHumanLivesLost: delayStats.currentHumanLivesLost,
+    estimatedEffortHours: task.estimatedEffortHours,
+  });
   const pressurePrompt: string | null = null;
 
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
@@ -303,6 +329,19 @@ export function TaskRow({
       attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
     const wastedTextCompact =
       attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
+    const signerShareText = buildTaskShareText({
+      currentDelayDays: delayStats.currentDelayDays,
+      currentEconomicValueUsdLost: attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
+      currentHumanLivesLost: attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
+      currentSufferingHoursLost: null,
+      targetLabel,
+      taskTitle: task.title,
+    });
+    const signerReminderBadges = buildReminderBadges({
+      currentEconomicValueUsdLost: attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
+      currentHumanLivesLost: attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
+      estimatedEffortHours: task.estimatedEffortHours,
+    });
     return (
       <div
         className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
@@ -418,8 +457,14 @@ export function TaskRow({
           {formatDuration(time)}
         </div>
         {task.isPublic ? (
-          <div className="relative shrink-0">
-            <TaskRowShare shareText={shareText} taskId={task.id} />
+          <div className="relative z-[1] shrink-0">
+            <TaskRowShare
+              badges={signerReminderBadges}
+              shareText={signerShareText}
+              targetLabel={targetLabel}
+              taskId={task.id}
+              taskTitle={task.title}
+            />
           </div>
         ) : null}
       </div>
@@ -575,9 +620,15 @@ export function TaskRow({
         />
       </div>
 
-      <div className="relative hidden shrink-0 md:block">
+      <div className="relative z-[1] hidden shrink-0 md:block">
         {task.isPublic ? (
-          <TaskRowShare shareText={shareText} taskId={task.id} />
+          <TaskRowShare
+            badges={defaultReminderBadges}
+            shareText={shareText}
+            targetLabel={targetLabel}
+            taskId={task.id}
+            taskTitle={task.title}
+          />
         ) : null}
       </div>
     </div>

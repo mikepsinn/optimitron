@@ -44,7 +44,7 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   name: "1% Treaty",
   shortName: "1% Treaty",
   description: "Redirect 1% of military spending to curing disease.",
-  ogImage: "/og/one-percent-treaty.png",
+  ogImage: "/api/og/one-percent-treaty",
   analyticsId: process.env.NEXT_PUBLIC_GA_ONE_PERCENT_TREATY_ID,
   contentKey: "onePercentTreaty",
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
