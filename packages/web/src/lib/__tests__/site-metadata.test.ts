@@ -19,7 +19,7 @@ describe("getSiteMetadata", () => {
       title: "Treaty — 1% Treaty",
       description: content.metadata.treaty.description,
       siteName: "1% Treaty",
-      images: ["/og/one-percent-treaty.png"],
+      images: ["/api/og/one-percent-treaty"],
     });
   });
 });
