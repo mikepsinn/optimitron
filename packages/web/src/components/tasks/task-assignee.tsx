@@ -44,6 +44,7 @@ export function TaskAssignee({
   const imageSrc = person?.image ?? organization?.logo ?? undefined;
   const initials = getFallbackInitials(displayLabel);
   const affiliation = affiliationSnapshot ?? organization?.name ?? person?.currentAffiliation;
+  const personHref = person ? getPersonHref(person) : null;
 
   const avatarSize = size === "sm" ? "h-8 w-8 border-2" : "h-20 w-20 border-4";
   const nameSize = size === "sm" ? "text-sm" : "text-2xl";
@@ -51,17 +52,28 @@ export function TaskAssignee({
 
   return (
     <div className="flex items-center gap-4">
-      <Avatar className={`${avatarSize} border-foreground bg-muted shrink-0`}>
-        <Avatar.Image alt={displayLabel} src={imageSrc} />
-        <Avatar.Fallback className="bg-brutal-pink font-black text-background">
-          {initials || "?"}
-        </Avatar.Fallback>
-      </Avatar>
+      {personHref ? (
+        <Link href={personHref} className="shrink-0" aria-label={`Open ${displayLabel}`}>
+          <Avatar className={`${avatarSize} border-foreground bg-muted shrink-0`}>
+            <Avatar.Image alt={displayLabel} src={imageSrc} />
+            <Avatar.Fallback className="bg-brutal-pink font-black text-background">
+              {initials || "?"}
+            </Avatar.Fallback>
+          </Avatar>
+        </Link>
+      ) : (
+        <Avatar className={`${avatarSize} border-foreground bg-muted shrink-0`}>
+          <Avatar.Image alt={displayLabel} src={imageSrc} />
+          <Avatar.Fallback className="bg-brutal-pink font-black text-background">
+            {initials || "?"}
+          </Avatar.Fallback>
+        </Avatar>
+      )}
       <div className="min-w-0 space-y-0.5">
         <p className="text-xs font-bold uppercase text-brutal-pink">{eyebrowLabel}</p>
         <p className={`${nameSize} font-black`}>
-          {person ? (
-            <Link className="underline underline-offset-4" href={getPersonHref(person)}>
+          {personHref ? (
+            <Link className="underline underline-offset-4" href={personHref}>
               {displayLabel}
             </Link>
           ) : (

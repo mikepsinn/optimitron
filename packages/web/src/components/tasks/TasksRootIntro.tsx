@@ -2,7 +2,7 @@ export function TasksRootIntro() {
   return (
     <div className="space-y-4">
       <p className="text-xs font-black uppercase tracking-[0.2em]">
-        ⚡ Your Employees&apos; To-Do List
+        ⚡ President Management System
       </p>
       <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
         Promote the General Welfare

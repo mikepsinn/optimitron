@@ -50,6 +50,7 @@ import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
+import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 function getClaimPolicyLabel(policy: TaskClaimPolicy) {
@@ -513,6 +514,11 @@ export default async function TaskDetailPage({
             </h2>
             <SortableTaskList
               tasks={task.childTasks as unknown as TaskCardTask[]}
+              defaultSortKey={
+                task.id === TREATY_PARENT_TASK_ID ? "assigneeBudget" : "deathsLockedIn"
+              }
+              defaultSortDir="desc"
+              variant={task.id === TREATY_PARENT_TASK_ID ? "signer" : "default"}
             />
           </section>
         ) : null}

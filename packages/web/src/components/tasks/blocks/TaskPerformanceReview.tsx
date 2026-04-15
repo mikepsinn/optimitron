@@ -80,16 +80,8 @@ export function TaskPerformanceReview({ context }: TaskPerformanceReviewProps) {
           <p className="text-sm font-bold">{review.narrative}</p>
         ) : null}
 
-        {review.rating || review.firedFromWendys != null ? (
+        {review.firedFromWendys != null ? (
           <div className="flex flex-wrap gap-4 text-sm font-bold">
-            {review.rating ? (
-              <p>
-                Performance rating:{" "}
-                <span className="text-xl font-black uppercase text-brutal-red">
-                  {review.rating}
-                </span>
-              </p>
-            ) : null}
             {review.firedFromWendys != null ? (
               <p>
                 Would be fired from Wendy&apos;s:{" "}

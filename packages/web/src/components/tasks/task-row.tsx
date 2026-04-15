@@ -157,7 +157,7 @@ export function TaskTableHeader({
   const hdr = "text-xs font-bold uppercase tracking-wide text-muted-foreground";
 
   if (variant === "signer") {
-    // Dense signer leaderboard: photo · name+role · 💀 deaths · 🔥 wasted · remind · details
+    // Dense signer leaderboard: photo · assignee · task · 💀 deaths · 🔥 wasted · time · remind · details
     // Desktop-only header (>= lg). Mobile uses the packed caption inside each row.
     function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
       const isActive = sortKey === key;
@@ -175,9 +175,11 @@ export function TaskTableHeader({
     return (
       <div className="hidden items-center gap-3 border-b-2 border-foreground bg-muted/30 px-4 py-2 lg:flex">
         <span className="h-14 w-14 shrink-0" />
-        {headerCell("assignee", `min-w-0 flex-1 ${hdr}`)}
+        {headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
+        {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
         {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("cost", "🔥", `w-44 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell("time", "⏱", `w-20 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           Remind
         </span>
@@ -337,7 +339,7 @@ export function TaskRow({
             </Avatar>
           </Link>
         ) : null}
-        <div className="relative z-[1] min-w-0 flex-1">
+        <div className="relative z-[1] min-w-0 flex-1 sm:w-56 sm:shrink-0 sm:flex-none">
           <div className="truncate text-sm font-black underline-offset-4 sm:text-base">
             {targetLabel}
           </div>
@@ -376,7 +378,12 @@ export function TaskRow({
             </div>
           ) : null}
         </div>
-        {/* Desktop — 2 separate stat cells, full numbers, live-ticking counters */}
+        <div className="relative z-[1] hidden min-w-0 flex-[1.2] lg:block">
+          <div className="whitespace-normal break-words text-balance text-sm font-black uppercase leading-tight text-foreground">
+            {task.title}
+          </div>
+        </div>
+        {/* Desktop — live stats plus estimated time */}
         <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
           💀{" "}
           {canTick && dueMs != null ? (
@@ -401,8 +408,11 @@ export function TaskRow({
             "—"
           )}
         </div>
+        <div className="relative z-[1] hidden w-20 shrink-0 text-right text-sm font-black leading-tight lg:block">
+          {formatDuration(time)}
+        </div>
         {task.isPublic ? (
-          <div className="relative z-10">
+          <div className="relative shrink-0">
             <TaskRowShare shareText={shareText} taskId={task.id} />
           </div>
         ) : null}
@@ -564,7 +574,7 @@ export function TaskRow({
         />
       </div>
 
-      <div className="relative z-10 hidden shrink-0 md:block">
+      <div className="relative hidden shrink-0 md:block">
         {task.isPublic ? (
           <TaskRowShare shareText={shareText} taskId={task.id} />
         ) : null}

@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { getPersonHref } from "@/lib/person-href";
 import { formatCompactCount, formatCompactCurrency } from "@/lib/tasks/accountability";
 import type { TaskContext } from "@/lib/tasks/task-context";
 
 interface TaskAssigneeCardProps {
   assigneePerson: {
     displayName: string;
+    handle?: string | null;
+    id: string;
     image?: string | null;
   } | null;
   assigneeOrganization: { name: string } | null;
@@ -20,6 +24,7 @@ export function TaskAssigneeCard({
   const profile = context.assigneeProfile;
   const displayName = assigneePerson?.displayName ?? assigneeOrganization?.name;
   if (!displayName) return null;
+  const personHref = assigneePerson ? getPersonHref(assigneePerson) : null;
 
   const initials = displayName
     .split(/\s+/)
@@ -34,18 +39,37 @@ export function TaskAssigneeCard({
           Task Assignment
         </p>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-          <Avatar className="h-32 w-32 shrink-0 border-4 border-foreground">
-            {assigneePerson?.image ? (
-              <Avatar.Image src={assigneePerson.image} alt={displayName} />
-            ) : null}
-            <Avatar.Fallback className="text-3xl font-black uppercase">
-              {initials || "?"}
-            </Avatar.Fallback>
-          </Avatar>
+          {personHref ? (
+            <Link href={personHref} className="shrink-0" aria-label={`Open ${displayName}`}>
+              <Avatar className="h-32 w-32 shrink-0 border-4 border-foreground">
+                {assigneePerson?.image ? (
+                  <Avatar.Image src={assigneePerson.image} alt={displayName} />
+                ) : null}
+                <Avatar.Fallback className="text-3xl font-black uppercase">
+                  {initials || "?"}
+                </Avatar.Fallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <Avatar className="h-32 w-32 shrink-0 border-4 border-foreground">
+              {assigneePerson?.image ? (
+                <Avatar.Image src={assigneePerson.image} alt={displayName} />
+              ) : null}
+              <Avatar.Fallback className="text-3xl font-black uppercase">
+                {initials || "?"}
+              </Avatar.Fallback>
+            </Avatar>
+          )}
           <div className="flex-1 space-y-3">
             <div>
               <h2 className="text-3xl font-black uppercase leading-tight">
-                {displayName}
+                {personHref ? (
+                  <Link className="underline underline-offset-4" href={personHref}>
+                    {displayName}
+                  </Link>
+                ) : (
+                  displayName
+                )}
               </h2>
               {profile?.role ? (
                 <p className="text-sm font-bold uppercase text-muted-foreground">

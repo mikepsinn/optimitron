@@ -29,7 +29,7 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
     <Link href={`/tasks/${task.id}`} className="block">
       <BrutalCard
         bgColor="background"
-        padding="lg"
+        padding="md"
         className="transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
       >
         <div className="space-y-3">
@@ -98,7 +98,7 @@ export function ProgramTaskSection({
     <div className="space-y-4">
       <ProgramCard task={task} />
       {subtasks.length > 0 ? (
-        <div className="ml-2 space-y-3 border-l-4 border-foreground/20 pl-3 sm:ml-6 sm:pl-5">
+        <div className="ml-1 space-y-3 sm:ml-3">
           {subtasksTitle ? (
             <h2 className="text-lg font-black tracking-tight sm:text-2xl">
               {subtasksTitle}

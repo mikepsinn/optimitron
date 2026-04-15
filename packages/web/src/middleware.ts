@@ -8,6 +8,8 @@ import { isOnePercentTreatyHost } from "@/lib/site";
 const MICROSITE_PUBLIC_PREFIXES = [
   "/treaty",
   "/tasks",
+  "/people",
+  "/governments",
   "/declaration",
   "/endorse",
   "/coalition",

@@ -35,7 +35,7 @@ export function TaskRowShare({
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={open ? "relative z-[120]" : "relative"}>
       <button
         type="button"
         title="Send reminder"
@@ -45,7 +45,7 @@ export function TaskRowShare({
         <FaShareNodes className="h-3.5 w-3.5" />
       </button>
       {open ? (
-        <div className="absolute right-0 top-full z-50 mt-1 border-2 border-foreground bg-background p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="absolute right-0 top-full z-[130] mt-1 border-2 border-foreground bg-background p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <ShareLinkButtons
             shareText={shareText}
             url={taskUrl}

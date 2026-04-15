@@ -71,7 +71,6 @@ interface Props {
 export function ReferendumSiteHome({ data }: Props) {
   const {
     content,
-    fullTasksHref,
     lateEmployeeProgramTask,
     lateEmployeeTasks,
     site,
@@ -119,19 +118,11 @@ export function ReferendumSiteHome({ data }: Props) {
             subtasks={lateEmployeeTasks}
             subtasksTitle={
               lateEmployeeTasks.length > 0
-                ? `↳ ${lateEmployeeTasks.length} of your employees have this on their to-do list`
+                ? `↳ ${lateEmployeeTasks.length} employees have overdue tasks`
                 : undefined
             }
           />
         ) : null}
-        <div className="mt-6 text-center">
-          <Link
-            href={fullTasksHref}
-            className="inline-block text-sm font-black uppercase underline"
-          >
-            {content.home.lateEmployeesCtaLabel}
-          </Link>
-        </div>
       </section>
     </div>
   );

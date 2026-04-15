@@ -21,7 +21,7 @@ export function ReferendumSiteNavbar({
           href="/#late-employees"
           className="text-sm font-black uppercase tracking-wide text-foreground hover:underline"
         >
-          Tasks
+          Overdue Tasks
         </Link>
       </nav>
     </header>
