@@ -6,6 +6,7 @@ import {
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
+import type { GovernmentLeaderRecord } from "@optimitron/data";
 import {
   SIPRI_MILITARY_SPENDING_2024_SOURCE_URL,
   SIPRI_WORLD_MILITARY_SPENDING_SNAPSHOT_YEAR,
@@ -61,24 +62,11 @@ const SCALEABLE_METRIC_KEYS = new Set([
   "treaty_qalys_gained_annual_global",
 ]);
 
-export interface TreatySignerSlot {
-  contactEmail: string | null;
-  contactLabel: string | null;
-  contactUrl: string | null;
-  countryCode: string;
-  countryIso3: string;
-  countryName: string;
-  decisionMakerLabel: string;
-  governmentName: string;
-  governmentWebsite: string | null;
-  leaderImageUrl?: string | null;
-  leaderName?: string | null;
-  leaderSourceRef?: string | null;
-  militaryBudgetUsd: number;
-  officialSourceUrl: string | null;
-  roleTitle: string;
-  sortOrder: number;
-}
+/**
+ * @deprecated Treaty-specific alias. New code should import
+ * `GovernmentLeaderRecord` directly from `@optimitron/data`.
+ */
+export type TreatySignerSlot = GovernmentLeaderRecord;
 
 function round(value: number, digits = 4) {
   const scale = 10 ** digits;
@@ -329,8 +317,19 @@ export function buildTreatySignerImportDraft(input: {
   cloned.bundle.task.status = TaskStatus.ACTIVE;
   cloned.bundle.task.taskKey = taskKey;
   cloned.bundle.task.title = TREATY_SIGNER_TASK_TITLE;
+  const existingContext =
+    (cloned.bundle.task.contextJson as { assigneeProfile?: Record<string, unknown> } | null) ?? {};
+  const existingAssigneeProfile =
+    (existingContext.assigneeProfile as Record<string, unknown> | undefined) ?? {};
+
   cloned.bundle.task.contextJson = {
     ...cloned.bundle.task.contextJson,
+    assigneeProfile: {
+      ...existingAssigneeProfile,
+      budgetUsdPerYear: slot.militaryBudgetUsd,
+      budgetLabel: "Military spending",
+      governmentBudgetUsdPerYear: slot.governmentBudgetUsd,
+    },
     acceptanceCriteria: buildTreatyAcceptanceCriteria({
       actorLabel: slot.leaderName ?? slot.decisionMakerLabel,
       governmentName: slot.governmentName,
@@ -339,6 +338,7 @@ export function buildTreatySignerImportDraft(input: {
       annualRedirectAmountUsd: redirectAmountUsd,
       countryCode: slot.countryCode,
       countryIso3: slot.countryIso3,
+      governmentBudgetUsd: slot.governmentBudgetUsd,
       militaryBudgetSharePct: round(factor * 100, 2),
       militaryBudgetUsd: slot.militaryBudgetUsd,
       snapshotYear: 2024,

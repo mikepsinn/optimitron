@@ -11,3 +11,17 @@ export function getFlagEmoji(countryCode: string): string {
 
   return String.fromCodePoint(first + offset, second + offset);
 }
+
+const REGION_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
+
+/** Convert ISO 3166-1 alpha-2 to English country name. Falls back to the code. */
+export function getCountryName(countryCode: string | null | undefined): string {
+  if (!countryCode) return "";
+  const code = countryCode.trim().toUpperCase();
+  if (code.length !== 2) return code;
+  try {
+    return REGION_NAMES.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}

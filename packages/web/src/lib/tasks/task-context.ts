@@ -28,6 +28,14 @@ const AssigneeProfileSchema = z.object({
    * "Agency operating budget", "District appropriations"). Defaults to "Budget".
    */
   budgetLabel: z.string().optional(),
+  /**
+   * Total government expenditure the assignee's administration controls in USD/yr.
+   * IMF Fiscal Monitor general-government total expenditure (all levels). Captures
+   * transfers, subsidies, and debt-service — the real size of the check citizens
+   * are writing, including the "debt tax" and money-printed spending. Used by
+   * share templates to compute year-to-date tax citizens have paid to this person.
+   */
+  governmentBudgetUsdPerYear: z.number().optional(),
   jobQuote: z
     .object({ text: z.string(), source: z.string() })
     .optional(),

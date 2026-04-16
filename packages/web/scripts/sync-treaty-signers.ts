@@ -1,7 +1,7 @@
 import "./load-env";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
-import { getCountryPanelLatest } from "@optimitron/data";
+import { listGovernmentLeaders, type GovernmentLeaderRecord } from "@optimitron/data";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
@@ -27,9 +27,7 @@ import {
 import {
   buildTreatySignerImportDraft,
   TREATY_DUE_AT,
-  type TreatySignerSlot,
 } from "../src/lib/tasks/treaty-signer-network";
-import { buildFullTreatySignerSlots } from "../src/lib/tasks/treaty-signer-roster";
 import { getTreatySignerTaskId, getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
 import {
   ensureTreatyParentTask,
@@ -85,9 +83,8 @@ export function parseArgs(argv: string[]): SyncTreatySignerCliOptions {
 
 export function getTreatySignerSlots(options: {
   countryCodes?: string[] | null;
-} = {}): TreatySignerSlot[] {
-  const countryPanel = getCountryPanelLatest();
-  const selectedRoster = buildFullTreatySignerSlots(countryPanel);
+} = {}): GovernmentLeaderRecord[] {
+  const selectedRoster = listGovernmentLeaders();
 
   if (options.countryCodes == null) {
     return selectedRoster;

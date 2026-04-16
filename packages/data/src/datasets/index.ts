@@ -38,6 +38,7 @@ export * from './monetary-policy-panel';
 export * from './government-report-cards';
 export * from './government-code-map';
 export * from './governments';
+export * from './government-leaders';
 export * from './leader-activities';
 export * from './government-death-ledger';
 export * from './government-spending-ratios';

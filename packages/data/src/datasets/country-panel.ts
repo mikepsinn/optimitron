@@ -127,6 +127,96 @@ export function getCountryPanelLatest(): CountryPanelRow[] {
   );
 }
 
+/**
+ * Get one row per country where every field is filled in from the most
+ * recent year in which it was non-null. Handles the common case where IMF
+ * forecast rows (2025–2026) only ship `totalGovSpendingPctGdp` and would
+ * otherwise wipe out all the other fields on the "latest" row.
+ *
+ * Performance: O(rows). Walks the full panel once, tracking the max-year
+ * non-null per field per country. `jurisdictionIso3` / `jurisdictionName` /
+ * `year` are taken from the most recent row that had any observed field.
+ */
+export function getCountryPanelLatestResolved(): CountryPanelRow[] {
+  // Keys we want coalesced — every CountryPanelRow field except the
+  // identifier/timestamp trio.
+  const FIELDS = [
+    "afterTaxMedianIncomePerCapitaPpp",
+    "afterTaxMedianIncomeSource",
+    "afterTaxMedianIncomeIsAfterTax",
+    "medianIncomePerCapitaPpp",
+    "gdpPerCapitaPpp",
+    "haleYears",
+    "lifeExpectancyYears",
+    "infantMortalityPer1000",
+    "totalGovSpendingPctGdp",
+    "healthSpendingPctGdp",
+    "educationSpendingPctGdp",
+    "militarySpendingPctGdp",
+    "rdSpendingPctGdp",
+    "totalGovSpendingPerCapitaPpp",
+    "healthSpendingPerCapitaPpp",
+    "educationSpendingPerCapitaPpp",
+    "militarySpendingPerCapitaPpp",
+    "rdSpendingPerCapitaPpp",
+    "giniIndex",
+    "povertyRate",
+    "population",
+  ] as const satisfies ReadonlyArray<keyof CountryPanelRow>;
+
+  interface Accumulator {
+    row: CountryPanelRow;
+    fieldYears: Partial<Record<(typeof FIELDS)[number], number>>;
+  }
+
+  const byIso3 = new Map<string, Accumulator>();
+
+  for (const row of COUNTRY_PANEL) {
+    let acc = byIso3.get(row.jurisdictionIso3);
+    if (!acc) {
+      acc = {
+        fieldYears: {},
+        row: {
+          ...row,
+          // Reset every coalesced field; we'll refill from this same row below.
+          ...Object.fromEntries(FIELDS.map((key) => [key, null])) as Partial<CountryPanelRow>,
+        } as CountryPanelRow,
+      };
+      byIso3.set(row.jurisdictionIso3, acc);
+    }
+
+    // Name/year metadata: track the latest row we've seen for this country.
+    if (row.year >= acc.row.year) {
+      acc.row.year = row.year;
+      acc.row.jurisdictionName = row.jurisdictionName;
+    }
+
+    for (const field of FIELDS) {
+      const value = row[field];
+      // `afterTaxMedianIncomeIsAfterTax` is a boolean — always considered
+      // defined, so take the most recent observation unconditionally.
+      if (field === "afterTaxMedianIncomeIsAfterTax") {
+        const prior = acc.fieldYears[field] ?? -Infinity;
+        if (row.year >= prior) {
+          (acc.row[field] as boolean) = value as boolean;
+          acc.fieldYears[field] = row.year;
+        }
+        continue;
+      }
+      if (value == null) continue;
+      const prior = acc.fieldYears[field] ?? -Infinity;
+      if (row.year >= prior) {
+        (acc.row[field] as typeof value) = value;
+        acc.fieldYears[field] = row.year;
+      }
+    }
+  }
+
+  return [...byIso3.values()]
+    .map((acc) => acc.row)
+    .sort((a, b) => a.jurisdictionIso3.localeCompare(b.jurisdictionIso3));
+}
+
 /** Get rows for a specific year */
 export function getCountryPanelByYear(year: number): CountryPanelRow[] {
   return COUNTRY_PANEL.filter((r) => r.year === year);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/retroui/Avatar";
 import {
   buildTaskShareText,
+  buildTaskShareTokens,
   formatCompactCount,
   formatCompactCurrency,
   formatDelayDuration,
@@ -40,13 +41,44 @@ function formatMoneyWasted(value: number | null | undefined): string {
   return formatCompactCurrency(value);
 }
 
-/** Pull the assignee's military budget from contextJson, if present. */
-function getMilitaryBudgetUsd(task: TaskCardTask): number | null {
+interface ContextAssigneeProfileShape {
+  budgetUsdPerYear?: number;
+  governmentBudgetUsdPerYear?: number;
+  contactChannels?: Array<{ kind?: string; href?: string; label?: string }>;
+}
+
+function readAssigneeProfile(task: TaskCardTask): ContextAssigneeProfileShape | null {
   const context = task.contextJson;
   if (!context || typeof context !== "object") return null;
-  const profile = (context as { assigneeProfile?: { budgetUsdPerYear?: number } })
-    .assigneeProfile;
+  const profile = (context as { assigneeProfile?: ContextAssigneeProfileShape }).assigneeProfile;
+  return profile ?? null;
+}
+
+/** Pull the assignee's military budget from contextJson, if present. */
+function getMilitaryBudgetUsd(task: TaskCardTask): number | null {
+  const profile = readAssigneeProfile(task);
   return typeof profile?.budgetUsdPerYear === "number" ? profile.budgetUsdPerYear : null;
+}
+
+/** Pull the assignee's total government budget from contextJson, if present. */
+function getGovernmentBudgetUsd(task: TaskCardTask): number | null {
+  const profile = readAssigneeProfile(task);
+  return typeof profile?.governmentBudgetUsdPerYear === "number"
+    ? profile.governmentBudgetUsdPerYear
+    : null;
+}
+
+/** Extract a twitter/X handle from contactChannels, stripping the leading @. */
+function getLeaderHandle(task: TaskCardTask): string | null {
+  const profile = readAssigneeProfile(task);
+  const channels = profile?.contactChannels;
+  if (!Array.isArray(channels)) return task.assigneePerson?.handle ?? null;
+  const twitter = channels.find((channel) => channel?.kind === "twitter");
+  if (!twitter?.href) return task.assigneePerson?.handle ?? null;
+  // Extract handle from URL like https://twitter.com/username or @username.
+  const match = twitter.href.match(/(?:twitter\.com|x\.com)\/([^/?#]+)/i);
+  if (match && match[1]) return match[1].replace(/^@/, "");
+  return task.assigneePerson?.handle ?? null;
 }
 
 /** True when a task is assigned to the "Humanity" org — i.e. "you". */
@@ -304,6 +336,20 @@ export function TaskRow({
     targetLabel,
     taskTitle: task.title,
   });
+  const governmentBudgetUsd = getGovernmentBudgetUsd(task);
+  const leaderHandle = getLeaderHandle(task);
+  const shareTokens = buildTaskShareTokens({
+    countryCode: task.assigneePerson?.countryCode ?? null,
+    currentDelayDays: delayStats.currentDelayDays,
+    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
+    currentHumanLivesLost: delayStats.currentHumanLivesLost,
+    currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+    governmentBudgetUsdPerYear: governmentBudgetUsd,
+    leaderHandle,
+    militaryBudgetUsdPerYear: assigneeBudget,
+    targetLabel,
+    taskTitle: task.title,
+  });
   const defaultReminderBadges = buildReminderBadges({
     currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
     currentHumanLivesLost: delayStats.currentHumanLivesLost,
@@ -385,6 +431,20 @@ export function TaskRow({
       currentEconomicValueUsdLost: attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
       currentHumanLivesLost: attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
       currentSufferingHoursLost: null,
+      targetLabel,
+      taskTitle: task.title,
+    });
+    const signerShareTokens = buildTaskShareTokens({
+      countryCode: task.assigneePerson?.countryCode ?? null,
+      currentDelayDays: delayStats.currentDelayDays,
+      currentEconomicValueUsdLost:
+        attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
+      currentHumanLivesLost:
+        attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
+      currentSufferingHoursLost: null,
+      governmentBudgetUsdPerYear: governmentBudgetUsd,
+      leaderHandle,
+      militaryBudgetUsdPerYear: assigneeBudget,
       targetLabel,
       taskTitle: task.title,
     });
@@ -545,6 +605,7 @@ export function TaskRow({
             <TaskRowShare
               badges={signerReminderBadges}
               shareText={signerShareText}
+              shareTokens={signerShareTokens}
               targetLabel={targetLabel}
               taskId={task.id}
               taskTitle={task.title}
@@ -817,6 +878,7 @@ export function TaskRow({
           <TaskRowShare
             badges={defaultReminderBadges}
             shareText={shareText}
+            shareTokens={shareTokens}
             targetLabel={targetLabel}
             taskId={task.id}
             taskTitle={task.title}

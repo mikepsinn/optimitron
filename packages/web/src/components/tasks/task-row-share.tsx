@@ -8,8 +8,14 @@ import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { Drawer } from "@/components/retroui/Drawer";
 import { Textarea } from "@/components/retroui/Textarea";
+import { renderTemplate } from "@/components/tasks/blocks/render-template";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import {
+  getUsableShareTemplates,
+  SHARE_TEMPLATES,
+  type ShareTemplate,
+} from "@/lib/tasks/share-templates";
 import { buildTaskUrl } from "@/lib/url";
 
 type ReminderChannel =
@@ -25,7 +31,16 @@ type ReminderChannel =
 interface TaskRowShareProps {
   badges?: string[];
   baseUrl?: string;
+  /**
+   * One-liner fallback — used when no template tokens are supplied, and as
+   * the reddit share title regardless of template selection.
+   */
   shareText: string;
+  /**
+   * Flat token bag for the share-text templates. When omitted, the dialog
+   * falls back to `shareText` with no picker.
+   */
+  shareTokens?: Record<string, string>;
   targetLabel: string;
   taskId: string;
   taskTitle: string;
@@ -62,6 +77,7 @@ function buildChannelHref(
 }
 
 function ReminderComposer({
+  availableTemplates,
   badges,
   linkCopyState,
   message,
@@ -74,10 +90,13 @@ function ReminderComposer({
   onLinkedIn,
   onMessageChange,
   onReddit,
+  onTemplateChange,
   onX,
+  selectedTemplateId,
   targetLabel,
   taskTitle,
 }: {
+  availableTemplates: ShareTemplate[];
   badges: string[];
   linkCopyState: "copied" | "error" | "idle";
   message: string;
@@ -90,7 +109,9 @@ function ReminderComposer({
   onLinkedIn: () => void;
   onMessageChange: (value: string) => void;
   onReddit: () => void;
+  onTemplateChange: (templateId: string) => void;
   onX: () => void;
+  selectedTemplateId: string | null;
   targetLabel: string;
   taskTitle: string;
 }) {
@@ -123,6 +144,34 @@ function ReminderComposer({
               {badge}
             </span>
           ))}
+        </div>
+      ) : null}
+
+      {availableTemplates.length > 1 ? (
+        <div className="space-y-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+            Pick a voice
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {availableTemplates.map((template) => {
+              const isSelected = template.id === selectedTemplateId;
+              return (
+                <button
+                  key={template.id}
+                  type="button"
+                  onClick={() => onTemplateChange(template.id)}
+                  aria-pressed={isSelected}
+                  className={`border-2 border-foreground px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] transition-colors ${
+                    isSelected
+                      ? "bg-brutal-pink text-brutal-pink-foreground"
+                      : "bg-background hover:bg-muted"
+                  }`}
+                >
+                  {template.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       ) : null}
 
@@ -241,6 +290,7 @@ export function TaskRowShare({
   badges = [],
   baseUrl,
   shareText,
+  shareTokens,
   targetLabel,
   taskId,
   taskTitle,
@@ -257,10 +307,56 @@ export function TaskRowShare({
     () => buildTaskUrl(taskId, baseUrl ?? requestOrigin, referralId),
     [baseUrl, requestOrigin, taskId, referralId],
   );
-  const initialMessage = useMemo(
-    () => `${shareText}\n\n${taskUrl}`.trim(),
-    [shareText, taskUrl],
+
+  // Merge viewer-supplied citizen_name into the tokens client-side so the
+  // server doesn't need to know who is logged in to pre-render the share.
+  const enrichedTokens = useMemo(() => {
+    if (!shareTokens) return null;
+    const citizenName = session?.user?.name?.trim();
+    return {
+      ...shareTokens,
+      citizen_name:
+        citizenName && citizenName.length > 0
+          ? citizenName
+          : shareTokens.citizen_name || "A citizen",
+    };
+  }, [shareTokens, session?.user?.name]);
+
+  const availableTemplates = useMemo(() => {
+    if (!enrichedTokens) return [];
+    const usable = getUsableShareTemplates(enrichedTokens);
+    return usable.length > 0 ? usable : SHARE_TEMPLATES;
+  }, [enrichedTokens]);
+
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    () => availableTemplates[0]?.id ?? null,
   );
+
+  // If the list of usable templates changes (e.g. session loads a citizen
+  // name, enabling templates that were filtered out), snap the selection to
+  // a valid entry.
+  useEffect(() => {
+    if (availableTemplates.length === 0) {
+      setSelectedTemplateId(null);
+      return;
+    }
+    if (
+      selectedTemplateId == null ||
+      !availableTemplates.some((template) => template.id === selectedTemplateId)
+    ) {
+      setSelectedTemplateId(availableTemplates[0]?.id ?? null);
+    }
+  }, [availableTemplates, selectedTemplateId]);
+
+  const initialMessage = useMemo(() => {
+    if (enrichedTokens && selectedTemplateId) {
+      const template = availableTemplates.find((entry) => entry.id === selectedTemplateId);
+      if (template) {
+        return `${renderTemplate(template.body, enrichedTokens)}\n\n${taskUrl}`.trim();
+      }
+    }
+    return `${shareText}\n\n${taskUrl}`.trim();
+  }, [enrichedTokens, selectedTemplateId, availableTemplates, shareText, taskUrl]);
 
   useEffect(() => {
     setMessage(initialMessage);
@@ -350,13 +446,15 @@ export function TaskRowShare({
             </button>
           </Dialog.Trigger>
           <Dialog.Content
-            className="w-[24rem] max-w-[calc(100vw-2rem)] border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="max-h-[calc(100vh-4rem)] w-[26rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             <ReminderComposer
+              availableTemplates={availableTemplates}
               badges={badges}
               linkCopyState={linkCopyState}
               message={message}
               messageCopyState={messageCopyState}
+              selectedTemplateId={selectedTemplateId}
               targetLabel={targetLabel}
               taskTitle={taskTitle}
               onBluesky={() => openChannel("bluesky")}
@@ -367,6 +465,7 @@ export function TaskRowShare({
               onLinkedIn={() => openChannel("linkedin")}
               onMessageChange={setMessage}
               onReddit={() => openChannel("reddit")}
+              onTemplateChange={setSelectedTemplateId}
               onX={() => openChannel("x")}
             />
           </Dialog.Content>
@@ -384,12 +483,14 @@ export function TaskRowShare({
               Remind
             </button>
           </Drawer.Trigger>
-          <Drawer.Content className="border-t-4 border-foreground bg-background">
+          <Drawer.Content className="max-h-[90vh] overflow-y-auto border-t-4 border-foreground bg-background">
             <ReminderComposer
+              availableTemplates={availableTemplates}
               badges={badges}
               linkCopyState={linkCopyState}
               message={message}
               messageCopyState={messageCopyState}
+              selectedTemplateId={selectedTemplateId}
               targetLabel={targetLabel}
               taskTitle={taskTitle}
               onBluesky={() => openChannel("bluesky")}
@@ -400,6 +501,7 @@ export function TaskRowShare({
               onLinkedIn={() => openChannel("linkedin")}
               onMessageChange={setMessage}
               onReddit={() => openChannel("reddit")}
+              onTemplateChange={setSelectedTemplateId}
               onX={() => openChannel("x")}
             />
           </Drawer.Content>

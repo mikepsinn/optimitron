@@ -40,6 +40,7 @@ import {
   US_WISHOCRATIC_JURISDICTION,
   getUSWishocraticCatalogRecords,
   getGovernmentProfile,
+  listGovernmentLeaders,
 } from "@optimitron/data";
 import {
   DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV,
@@ -1187,6 +1188,14 @@ async function seedTreatyTasks() {
   const leaderCount = WORLD_LEADERS.length;
   let created = 0;
 
+  // Pre-resolved government leader records from @optimitron/data: one entry
+  // per sovereign head of government with both military and total-gov budgets
+  // already computed from the coalesced country panel + curated overrides.
+  // Guaranteed complete (throws if any leader is missing coverage).
+  const leaderRecordsByAlpha2 = new Map(
+    listGovernmentLeaders().map((record) => [record.countryCode.toUpperCase(), record] as const),
+  );
+
   for (const leader of WORLD_LEADERS) {
     const sourceRef = `wikidata:${leader.wikidataId}`;
     const countryCode = leader.countryCode.toUpperCase();
@@ -1228,6 +1237,9 @@ async function seedTreatyTasks() {
     const headOfGovTitle =
       govProfile?.office?.headOfGovernmentTitle ?? leader.roleTitle ?? "Head of Government";
 
+    const leaderRecord = leaderRecordsByAlpha2.get(countryCode);
+    const governmentBudgetUsd = leaderRecord?.governmentBudgetUsd ?? null;
+
     const formatUsdCompact = (n: number): string => {
       if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
       if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
@@ -1267,6 +1279,9 @@ async function seedTreatyTasks() {
               budgetUsdPerYear: militaryBudget,
               budgetLabel: "Military spending",
             }
+          : {}),
+        ...(governmentBudgetUsd != null
+          ? { governmentBudgetUsdPerYear: governmentBudgetUsd }
           : {}),
         jobQuote: {
           text: "promote the general welfare",

@@ -1,5 +1,12 @@
 import { TaskStatus } from "@optimitron/db/enums";
+import {
+  DAILY_DISEASE_COST_USD,
+  DAILY_DISEASE_DEATHS,
+  GLOBAL_MILITARY_USD,
+  getSignerDelayAttribution,
+} from "./delay-attribution";
 import { getMetricBaseValue, type TaskImpactFrameSummary, type TaskImpactMetricSummary } from "./impact";
+import { getCountryName } from "@/lib/geo";
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 const HOURS_PER_YEAR = 365.25 * 24;
@@ -211,6 +218,115 @@ export function formatDelayDuration(days: number) {
 
   const rounded = Math.round(days);
   return `${formatCompactCount(days, { maximumFractionDigits: 0 })} ${rounded === 1 ? "day" : "days"}`;
+}
+
+export interface TaskShareTokenInput {
+  /** Display name of the assignee — leader or org. */
+  targetLabel: string;
+  taskTitle: string;
+  currentDelayDays: number;
+  currentEconomicValueUsdLost: number | null;
+  currentHumanLivesLost: number | null;
+  currentSufferingHoursLost?: number | null;
+  /**
+   * Assignee's country, ISO 3166-1 alpha-2. Used to look up the full country
+   * name for the template. Leave null for non-signer tasks.
+   */
+  countryCode?: string | null;
+  /**
+   * Annual military budget in USD. Drives the per-signer attribution share
+   * (country's military / global military). Null for non-signer tasks → no
+   * attribution, tokens fall back to the treaty-wide numbers.
+   */
+  militaryBudgetUsdPerYear?: number | null;
+  /**
+   * Total general-government expenditure in USD/yr. Source of truth for
+   * `government_spending_ytd`. Includes transfers, subsidies, debt service —
+   * the full size of what the administration is burning through, not just
+   * tax revenue. Null → token renders empty and the templates requiring it
+   * are filtered out of the picker.
+   */
+  governmentBudgetUsdPerYear?: number | null;
+  /** X/Twitter handle (without the `@`), or the Optimitron handle as fallback. */
+  leaderHandle?: string | null;
+  /** Viewer-facing name ("Your employer,\n{citizen_name}"). Defaults to "A citizen". */
+  citizenName?: string | null;
+  /** Now, overridable for tests. Defaults to `new Date()`. */
+  now?: Date;
+}
+
+/** Zero-based index among the six templates → 1st/2nd reminder suffix. */
+function yearToDateFraction(now: Date): number {
+  const yearStart = Date.UTC(now.getUTCFullYear(), 0, 1);
+  const msInYear = Date.UTC(now.getUTCFullYear() + 1, 0, 1) - yearStart;
+  const elapsed = now.getTime() - yearStart;
+  return Math.max(0, Math.min(1, elapsed / msInYear));
+}
+
+/**
+ * Build the flat token bag consumed by share-text templates. Missing inputs
+ * produce empty strings — templates silently render `""` and the picker
+ * filters out variants whose required tokens aren't all set.
+ */
+export function buildTaskShareTokens(
+  input: TaskShareTokenInput,
+): Record<string, string> {
+  const now = input.now ?? new Date();
+  const delayDays = Math.max(0, input.currentDelayDays);
+
+  const share =
+    input.militaryBudgetUsdPerYear != null && input.militaryBudgetUsdPerYear > 0
+      ? input.militaryBudgetUsdPerYear / GLOBAL_MILITARY_USD
+      : null;
+
+  const attribution =
+    input.militaryBudgetUsdPerYear != null
+      ? getSignerDelayAttribution(input.militaryBudgetUsdPerYear, delayDays)
+      : null;
+
+  const deathsFromDelay =
+    attribution?.deathsFromDelay ??
+    (input.currentHumanLivesLost != null && input.currentHumanLivesLost > 0
+      ? input.currentHumanLivesLost
+      : null);
+
+  const moneyWasted =
+    attribution?.wastedUsd ??
+    (input.currentEconomicValueUsdLost != null && input.currentEconomicValueUsdLost > 0
+      ? input.currentEconomicValueUsdLost
+      : null);
+
+  const deathsPerDay =
+    share != null ? DAILY_DISEASE_DEATHS * share : DAILY_DISEASE_DEATHS;
+  const usdPerDay =
+    share != null ? DAILY_DISEASE_COST_USD * share : DAILY_DISEASE_COST_USD;
+
+  const governmentSpendingYtd =
+    input.governmentBudgetUsdPerYear != null && input.governmentBudgetUsdPerYear > 0
+      ? input.governmentBudgetUsdPerYear * yearToDateFraction(now)
+      : null;
+
+  const country = getCountryName(input.countryCode);
+
+  const leaderHandle = (input.leaderHandle ?? "").replace(/^@/, "").trim();
+
+  return {
+    leader_name: input.targetLabel,
+    country,
+    leader_handle: leaderHandle,
+    citizen_name: input.citizenName?.trim() || "A citizen",
+    task_title: input.taskTitle,
+    days_overdue: delayDays > 0 ? delayDays.toLocaleString("en-US") : "",
+    deaths_from_delay:
+      deathsFromDelay != null ? formatCompactCount(deathsFromDelay) : "",
+    money_wasted: moneyWasted != null ? formatCompactCurrency(moneyWasted) : "",
+    deaths_per_day: formatCompactCount(deathsPerDay),
+    money_wasted_per_day: formatCompactCurrency(usdPerDay),
+    government_spending_ytd:
+      governmentSpendingYtd != null
+        ? formatCompactCurrency(governmentSpendingYtd)
+        : "",
+  };
 }
 
 export function buildTaskShareText(input: {

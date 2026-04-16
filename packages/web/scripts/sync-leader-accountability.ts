@@ -15,7 +15,7 @@
 import "./load-env";
 import { pathToFileURL } from "url";
 import "../../data/src/generated/country-panel";
-import { getCountryPanelLatest, LEADER_ACTIVITIES } from "@optimitron/data";
+import { LEADER_ACTIVITIES } from "@optimitron/data";
 import { findOrCreateOrganization } from "../src/lib/organization.server";
 import { findOrCreatePerson } from "../src/lib/person.server";
 import { prisma } from "../src/lib/prisma";
@@ -31,7 +31,7 @@ import {
 import {
   buildActivityTaskBundle,
 } from "../src/lib/tasks/leader-accountability-network";
-import { buildFullTreatySignerSlots } from "../src/lib/tasks/treaty-signer-roster";
+import { listGovernmentLeaders } from "@optimitron/data";
 import { getTreatySignerTaskKey } from "../src/lib/tasks/task-keys";
 
 const SYNC_CONCURRENCY = 8;
@@ -87,7 +87,7 @@ async function syncLeaderAccountability(options: SyncOptions) {
     activitiesByCountry.get(cc)!.push(activity);
   }
 
-  const fullRoster = buildFullTreatySignerSlots(getCountryPanelLatest());
+  const fullRoster = listGovernmentLeaders();
   const selectedSlots = fullRoster.filter((slot) => {
     const countryCode = slot.countryCode.toUpperCase();
     if (!activitiesByCountry.has(countryCode)) {

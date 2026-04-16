@@ -1,10 +1,13 @@
 import { TaskImpactFrameKey, TaskStatus } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
+import { renderTemplate } from "@/components/tasks/blocks/render-template";
 import {
   aggregateTaskDelayStats,
   buildTaskShareText,
+  buildTaskShareTokens,
   getTaskDelayStats,
 } from "./accountability";
+import { SHARE_TEMPLATES, getUsableShareTemplates } from "./share-templates";
 
 describe("task accountability helpers", () => {
   it("derives overdue cost from frame-level delay metrics and treaty-specific metrics", () => {
@@ -207,5 +210,102 @@ describe("task accountability helpers", () => {
     expect(text).toContain("12 days overdue");
     expect(text).toContain("lives");
     expect(text).toContain("1% Treaty");
+  });
+});
+
+describe("buildTaskShareTokens", () => {
+  const SIGNER_INPUT = {
+    countryCode: "US",
+    currentDelayDays: 500,
+    currentEconomicValueUsdLost: 10_000_000,
+    currentHumanLivesLost: 5_000,
+    governmentBudgetUsdPerYear: 7_000_000_000_000,
+    leaderHandle: "@realPres",
+    militaryBudgetUsdPerYear: 900_000_000_000,
+    now: new Date("2026-07-02T00:00:00.000Z"),
+    targetLabel: "The President",
+    taskTitle: "Sign the 1% Treaty",
+  } as const;
+
+  it("resolves every template token for a fully-populated signer", () => {
+    const tokens = buildTaskShareTokens(SIGNER_INPUT);
+
+    expect(tokens.leader_name).toBe("The President");
+    expect(tokens.country).toBe("United States");
+    expect(tokens.leader_handle).toBe("realPres");
+    expect(tokens.citizen_name).toBe("A citizen");
+    expect(tokens.days_overdue).toBe("500");
+    expect(tokens.deaths_from_delay).not.toBe("");
+    expect(tokens.money_wasted).not.toBe("");
+    expect(tokens.deaths_per_day).not.toBe("");
+    expect(tokens.money_wasted_per_day).not.toBe("");
+    // Mid-year (day 182 of 365 → ~49.9%) of $7T ≈ $3.49T.
+    expect(tokens.government_spending_ytd).toMatch(/\$3\.[0-9]+T/);
+  });
+
+  it("leaves optional tokens empty for a non-signer task", () => {
+    const tokens = buildTaskShareTokens({
+      currentDelayDays: 3,
+      currentEconomicValueUsdLost: null,
+      currentHumanLivesLost: null,
+      targetLabel: "Humanity",
+      taskTitle: "Sign up for the prize",
+    });
+
+    expect(tokens.country).toBe("");
+    expect(tokens.government_spending_ytd).toBe("");
+    expect(tokens.leader_handle).toBe("");
+    expect(tokens.days_overdue).toBe("3");
+    // Treaty-wide per-day rates are always available (no attribution share).
+    expect(tokens.deaths_per_day).not.toBe("");
+    expect(tokens.money_wasted_per_day).not.toBe("");
+  });
+
+  it("uses the supplied citizen_name when provided", () => {
+    const tokens = buildTaskShareTokens({
+      ...SIGNER_INPUT,
+      citizenName: "Alice",
+    });
+
+    expect(tokens.citizen_name).toBe("Alice");
+  });
+});
+
+describe("share-text templates", () => {
+  const tokens = buildTaskShareTokens({
+    countryCode: "US",
+    currentDelayDays: 500,
+    currentEconomicValueUsdLost: 10_000_000,
+    currentHumanLivesLost: 5_000,
+    governmentBudgetUsdPerYear: 7_000_000_000_000,
+    leaderHandle: "realPres",
+    militaryBudgetUsdPerYear: 900_000_000_000,
+    now: new Date("2026-07-02T00:00:00.000Z"),
+    targetLabel: "The President",
+    taskTitle: "Sign the 1% Treaty",
+  });
+
+  for (const template of SHARE_TEMPLATES) {
+    it(`renders template "${template.id}" with no leftover placeholders`, () => {
+      const rendered = renderTemplate(template.body, tokens);
+      expect(rendered).not.toMatch(/\{\w+\}/);
+      expect(rendered.length).toBeGreaterThan(0);
+    });
+  }
+
+  it("filters templates requiring tax data when it is missing", () => {
+    const nonSignerTokens = buildTaskShareTokens({
+      currentDelayDays: 3,
+      currentEconomicValueUsdLost: null,
+      currentHumanLivesLost: null,
+      targetLabel: "Humanity",
+      taskTitle: "Sign up for the prize",
+    });
+
+    const usable = getUsableShareTemplates(nonSignerTokens);
+    // Every remaining template must not require government_spending_ytd.
+    for (const template of usable) {
+      expect(template.requiredTokens).not.toContain("government_spending_ytd");
+    }
   });
 });
