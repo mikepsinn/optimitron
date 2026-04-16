@@ -1,6 +1,28 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+/** Copy text to clipboard with fallback for non-secure contexts. */
+function copyToClipboard(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  // Fallback: hidden textarea + execCommand for http:// or custom domains
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    return Promise.resolve();
+  } catch {
+    return Promise.reject(new Error("Copy failed"));
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
 import { useSession } from "next-auth/react";
 import {
   FaEnvelope,
@@ -188,27 +210,26 @@ function ReminderComposer({
 
       {/* Primary CTA */}
       <Button
-        className="w-full justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground"
+        className="w-full cursor-pointer justify-center border-4 border-foreground bg-brutal-pink font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none"
         size="sm"
         type="button"
         onClick={onCopy}
       >
         {messageCopyState === "copied"
-          ? "Message Copied"
+          ? "Message Copied ✓"
           : messageCopyState === "error"
             ? "Copy Failed"
             : "Copy Message"}
       </Button>
 
-      {/* All channels in one icon row */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      {/* Share channels */}
+      <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
         {CHANNEL_ICONS.map(({ channel, icon, label }) => (
           <button
             key={channel}
             type="button"
-            title={channel === "copy-link" && linkCopyState === "copied" ? "Link Copied" : label}
             aria-label={label}
-            className="inline-flex h-8 w-8 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors hover:bg-muted"
+            className="group flex cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-foreground bg-background px-1 py-2 text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none"
             onClick={() => {
               if (channel === "copy-link") {
                 setLinkCopyState("copied");
@@ -218,10 +239,13 @@ function ReminderComposer({
             }}
           >
             {channel === "copy-link" && linkCopyState === "copied" ? (
-              <span className="text-[10px] font-black">✓</span>
+              <span className="text-xs font-black">✓</span>
             ) : (
               icon
             )}
+            <span className="text-[8px] font-black uppercase leading-none">
+              {channel === "copy-link" && linkCopyState === "copied" ? "Done" : label}
+            </span>
           </button>
         ))}
       </div>
@@ -321,8 +345,7 @@ export function TaskRowShare({
 
   function handleChannel(channel: Exclude<ReminderChannel, "copy-message">) {
     if (channel === "copy-link") {
-      void navigator.clipboard
-        .writeText(taskUrl)
+      void copyToClipboard(taskUrl)
         .then(() => {
           void trackReminder("copy-link");
         })
@@ -347,8 +370,7 @@ export function TaskRowShare({
   }
 
   function handleCopyMessage() {
-    void navigator.clipboard
-      .writeText(message)
+    void copyToClipboard(message)
       .then(() => {
         void trackReminder("copy-message");
         setMessageCopyState("copied");
