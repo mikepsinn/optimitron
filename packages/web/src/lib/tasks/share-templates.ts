@@ -28,6 +28,7 @@ export type ShareTokenKey =
   | "government_spending_ytd"
   | "leader_handle"
   | "leader_name"
+  | "mil_budget_pct"
   | "mil_synonym"
   | "mil_to_trials_ratio"
   | "money_wasted"
@@ -136,7 +137,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     body: [
       `{leader_name} — status update request from your employers.`,
       "",
-      "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other 99.9% goes to {mil_synonym}.",
+      "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym}.",
       "",
       `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. Since it became available, {deaths_from_delay} people have died of treatable diseases and {money_wasted} in welfare has been lost.`,
       "",

@@ -345,6 +345,10 @@ export function buildTaskShareTokens(
       milToTrialsRatio != null
         ? `${Math.round(milToTrialsRatio).toLocaleString("en-US")}`
         : "",
+    mil_budget_pct:
+      milToTrialsRatio != null
+        ? `${(100 * milToTrialsRatio / (1 + milToTrialsRatio)).toFixed(1)}%`
+        : "",
     trials_budget_pct:
       milToTrialsRatio != null
         ? `${(100 / (1 + milToTrialsRatio)).toFixed(1)}%`
