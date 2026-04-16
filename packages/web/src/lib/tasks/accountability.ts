@@ -6,6 +6,11 @@ import {
   getSignerDelayAttribution,
 } from "./delay-attribution";
 import { getMetricBaseValue, type TaskImpactFrameSummary, type TaskImpactMetricSummary } from "./impact";
+import {
+  getGovernmentMetrics,
+  getMilitaryToGovernmentClinicalTrialRatio,
+} from "@optimitron/data";
+import { MILITARY_SPENDING_SYNONYMS } from "@/lib/messaging";
 import { getCountryName } from "@/lib/geo";
 import type { ShareTokenKey } from "@/lib/tasks/share-templates";
 
@@ -311,15 +316,39 @@ export function buildTaskShareTokens(
 
   const leaderHandle = (input.leaderHandle ?? "").replace(/^@/, "").trim();
 
+  // Per-country military-to-clinical-trials spending ratio (e.g. ~1,093:1 for US)
+  const govMetrics = input.countryCode
+    ? getGovernmentMetrics(input.countryCode)
+    : undefined;
+  const milToTrialsRatio = govMetrics
+    ? getMilitaryToGovernmentClinicalTrialRatio(govMetrics)
+    : null;
+
+  // Random synonym for "military spending" — varies per render so
+  // shares from the same task don't all look identical on social feeds.
+  const milSynonym =
+    MILITARY_SPENDING_SYNONYMS[
+      Math.floor(Math.random() * MILITARY_SPENDING_SYNONYMS.length)
+    ] ?? "military spending";
+
   return {
     leader_name: input.targetLabel,
     country,
     leader_handle: leaderHandle,
     citizen_name: input.citizenName?.trim() || "A citizen",
+    mil_synonym: milSynonym,
     task_title: input.taskTitle,
     days_overdue: delayDays > 0 ? delayDays.toLocaleString("en-US") : "",
     deaths_from_delay:
       deathsFromDelay != null ? formatCompactCount(deathsFromDelay) : "",
+    mil_to_trials_ratio:
+      milToTrialsRatio != null
+        ? `${Math.round(milToTrialsRatio).toLocaleString("en-US")}`
+        : "",
+    trials_budget_pct:
+      milToTrialsRatio != null
+        ? `${(100 / (1 + milToTrialsRatio)).toFixed(1)}%`
+        : "",
     money_wasted: moneyWasted != null ? formatCompactCurrency(moneyWasted) : "",
     deaths_per_day: formatCompactCount(deathsPerDay),
     money_wasted_per_day: formatCompactCurrency(usdPerDay),
