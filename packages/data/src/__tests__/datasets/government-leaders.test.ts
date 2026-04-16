@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   estimateCountryGovernmentBudgetUsd,
   estimateCountryMilitaryBudgetUsd,
+  getGovernmentLeader,
   listGovernmentLeaders,
 } from "../../datasets/government-leaders";
 import { getCountryPanelLatestResolved } from "../../datasets/country-panel";
@@ -93,5 +94,19 @@ describe("estimateCountryMilitaryBudgetUsd", () => {
     // US military spending ~$850B.
     expect(estimate).toBeGreaterThan(300_000_000_000);
     expect(estimate).toBeLessThan(2_000_000_000_000);
+  });
+});
+
+describe("getGovernmentLeader", () => {
+  it("returns the US leader with budget data by country code", () => {
+    const us = getGovernmentLeader("US");
+    expect(us).toBeDefined();
+    expect(us!.militaryBudgetUsd).toBeGreaterThan(300_000_000_000);
+    expect(us!.governmentBudgetUsd).toBeGreaterThan(5_000_000_000_000);
+    expect(us!.countryCode).toBe("US");
+  });
+
+  it("returns undefined for unknown country codes", () => {
+    expect(getGovernmentLeader("ZZ")).toBeUndefined();
   });
 });

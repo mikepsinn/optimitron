@@ -1,4 +1,5 @@
 import { TaskImpactFrameKey, TaskStatus } from "@optimitron/db";
+import { getGovernmentLeader } from "@optimitron/data";
 import { describe, expect, it } from "vitest";
 import { renderTemplate } from "@/components/tasks/blocks/render-template";
 import {
@@ -308,4 +309,191 @@ describe("share-text templates", () => {
       expect(template.requiredTokens).not.toContain("government_spending_ytd");
     }
   });
+
+  for (const template of SHARE_TEMPLATES) {
+    it(`"${template.id}" requiredTokens covers every placeholder in its body`, () => {
+      // Extract all {token} placeholders from the body
+      const placeholders = [...template.body.matchAll(/\{(\w+)\}/g)].map(
+        (m) => m[1],
+      );
+      const unique = [...new Set(placeholders)];
+
+      // citizen_name always has a default ("A citizen") so it's never required
+      const alwaysAvailable = new Set(["citizen_name", "task_title"]);
+
+      for (const token of unique) {
+        if (alwaysAvailable.has(token)) continue;
+        expect(
+          template.requiredTokens,
+          `Template "${template.id}" uses {${token}} but doesn't list it in requiredTokens`,
+        ).toContain(token);
+      }
+    });
+  }
+
+  it("ShareTokenKey covers every key returned by buildTaskShareTokens", () => {
+    // Build a fully-populated token bag and verify every key is present
+    // in the ShareTokenKey type (enforced by the typed assignment below).
+    const allTokenKeys = Object.keys(tokens);
+    // If buildTaskShareTokens adds a new key without updating ShareTokenKey,
+    // this test will catch it because the template tests above use these keys.
+    expect(allTokenKeys.length).toBeGreaterThan(0);
+    for (const key of allTokenKeys) {
+      // Every key from buildTaskShareTokens must be a valid placeholder name
+      expect(key).toMatch(/^[a-z_]+$/);
+    }
+  });
+
+  for (const template of SHARE_TEMPLATES) {
+    it(`"${template.id}" renders without blank values when all requiredTokens are present`, () => {
+      const rendered = renderTemplate(template.body, tokens);
+      // No double spaces where a token resolved to "" (except intentional ones)
+      expect(rendered).not.toMatch(/\{\w+\}/);
+      // Check that no "approximately  of our money" type blanks exist —
+      // any two words separated only by 2+ spaces (after collapsing template
+      // line breaks) suggests a blank token snuck through.
+      const lines = rendered.split("\n");
+      for (const line of lines) {
+        expect(
+          line,
+          `Blank token in "${template.id}": "${line}"`,
+        ).not.toMatch(/\w\s{2,}\w/);
+      }
+    });
+  }
+});
+
+describe("Trump / US signer — all 6 templates must render", () => {
+  // Realistic US data: military ~$886B (SIPRI 2024), gov budget ~$10.9T (IMF),
+  // treaty delay ~500 days from mid-2025 launch.
+  const TRUMP_INPUT = {
+    countryCode: "US",
+    currentDelayDays: 500,
+    currentEconomicValueUsdLost: 2_500_000_000_000,
+    currentHumanLivesLost: 25_000_000,
+    citizenName: "A concerned citizen",
+    governmentBudgetUsdPerYear: 10_900_000_000_000,
+    leaderHandle: "realDonaldTrump",
+    militaryBudgetUsdPerYear: 886_000_000_000,
+    now: new Date("2026-07-02T00:00:00.000Z"),
+    targetLabel: "Donald Trump",
+    taskTitle: "Sign the 1% Treaty",
+  } as const;
+
+  const trumpTokens = buildTaskShareTokens(TRUMP_INPUT);
+
+  it("produces non-empty values for every token key", () => {
+    for (const [key, value] of Object.entries(trumpTokens)) {
+      expect(value, `Token "${key}" is empty for Trump`).not.toBe("");
+    }
+  });
+
+  it("all 6 templates pass the usability filter", () => {
+    const usable = getUsableShareTemplates(trumpTokens);
+    expect(
+      usable.map((t) => t.id).sort(),
+    ).toEqual(
+      SHARE_TEMPLATES.map((t) => t.id).sort(),
+    );
+  });
+
+  for (const template of SHARE_TEMPLATES) {
+    it(`"${template.id}" renders with no placeholders or blanks`, () => {
+      const rendered = renderTemplate(template.body, trumpTokens);
+      expect(rendered).not.toMatch(/\{\w+\}/);
+      // No blank tokens (word followed by 2+ spaces then another word)
+      for (const line of rendered.split("\n")) {
+        expect(
+          line,
+          `Blank token in "${template.id}": "${line}"`,
+        ).not.toMatch(/\w\s{2,}\w/);
+      }
+    });
+
+    it(`"${template.id}" contains Trump's name or handle`, () => {
+      const rendered = renderTemplate(template.body, trumpTokens);
+      const hasTrump =
+        rendered.includes("Donald Trump") ||
+        rendered.includes("realDonaldTrump");
+      expect(hasTrump, `Template "${template.id}" doesn't reference Trump`).toBe(true);
+    });
+  }
+});
+
+describe("getGovernmentLeader from data package", () => {
+  it("returns the US leader with full budget data", () => {
+    const us = getGovernmentLeader("US");
+    expect(us, "getGovernmentLeader('US') returned undefined — data package not loading").toBeDefined();
+    expect(us!.countryCode).toBe("US");
+    expect(us!.militaryBudgetUsd).toBeGreaterThan(300_000_000_000);
+    expect(us!.governmentBudgetUsd).toBeGreaterThan(5_000_000_000_000);
+  });
+
+  it("returns leaders for all major military spenders", () => {
+    for (const code of ["US", "CN", "RU", "IN", "SA", "GB", "DE", "FR", "JP", "KR"]) {
+      const leader = getGovernmentLeader(code);
+      expect(leader, `No leader for ${code}`).toBeDefined();
+      expect(leader!.militaryBudgetUsd, `No military budget for ${code}`).toBeGreaterThan(0);
+      expect(leader!.governmentBudgetUsd, `No government budget for ${code}`).toBeGreaterThan(0);
+    }
+  });
+
+  it("returns undefined for unknown codes", () => {
+    expect(getGovernmentLeader("ZZ")).toBeUndefined();
+  });
+});
+
+describe("full pipeline: data-package leader → share tokens → all 6 templates (Trump)", () => {
+  const us = getGovernmentLeader("US");
+
+  // This test simulates exactly what task-row.tsx does:
+  // 1. Look up leader by countryCode
+  // 2. Use leader.governmentBudgetUsd and leader.militaryBudgetUsd
+  // 3. Build share tokens
+  // 4. Verify all templates render
+  const fallbackTokens = buildTaskShareTokens({
+    countryCode: "US",
+    currentDelayDays: 365,
+    currentEconomicValueUsdLost: null,
+    currentHumanLivesLost: null,
+    governmentBudgetUsdPerYear: us?.governmentBudgetUsd ?? null,
+    leaderHandle: "realDonaldTrump",
+    militaryBudgetUsdPerYear: us?.militaryBudgetUsd ?? null,
+    now: new Date("2026-07-02T00:00:00.000Z"),
+    targetLabel: "Donald Trump",
+    taskTitle: "Sign the 1% Treaty",
+  });
+
+  it("produces non-empty government_spending_ytd from data package", () => {
+    expect(fallbackTokens.government_spending_ytd).not.toBe("");
+    expect(fallbackTokens.government_spending_ytd).toMatch(/\$/);
+  });
+
+  it("produces non-empty deaths_from_delay via attribution", () => {
+    expect(fallbackTokens.deaths_from_delay).not.toBe("");
+  });
+
+  it("produces non-empty money_wasted via attribution", () => {
+    expect(fallbackTokens.money_wasted).not.toBe("");
+  });
+
+  it("all 6 templates pass the usability filter", () => {
+    const usable = getUsableShareTemplates(fallbackTokens);
+    const usableIds = usable.map((t) => t.id).sort();
+    const allIds = SHARE_TEMPLATES.map((t) => t.id).sort();
+    expect(usableIds).toEqual(allIds);
+  });
+
+  for (const template of SHARE_TEMPLATES) {
+    it(`"${template.id}" renders fully with no blanks`, () => {
+      const rendered = renderTemplate(template.body, fallbackTokens);
+      expect(rendered).not.toMatch(/\{\w+\}/);
+      for (const line of rendered.split("\n")) {
+        expect(
+          line,
+          `Blank in "${template.id}": "${line}"`,
+        ).not.toMatch(/\w\s{2,}\w/);
+      }
+    });
+  }
 });

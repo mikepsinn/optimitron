@@ -1,8 +1,14 @@
 import Link from "next/link";
 import {
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  DIH_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   TREATY_HALE_GAIN_YEAR_15,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
@@ -74,6 +80,50 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             />{" "}
             military budget to fund clinical trials for diseases like cancer,
             Alzheimer&apos;s, and aging itself.
+          </p>
+          <p className="mt-3">
+            Right now{" "}
+            <ParameterValue
+              param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+              display="integer"
+              className="font-black text-brutal-pink"
+            />{" "}
+            diseases have no treatment. At{" "}
+            <ParameterValue
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+              display="integer"
+              className="font-black"
+            />{" "}
+            years to explore them all, most humans alive today will never see a
+            cure. 1% of the military budget buys a{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+              className="font-black text-brutal-pink"
+            />{" "}
+            trial capacity increase&thinsp;&mdash;&thinsp;
+            <ParameterValue
+              param={DIH_PATIENTS_FUNDABLE_ANNUALLY}
+              className="font-black"
+            />{" "}
+            patients/year in pragmatic trials at{" "}
+            <ParameterValue
+              param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+              display="withUnit"
+              className="font-black"
+            />{" "}
+            instead of $41,000. That compresses{" "}
+            <ParameterValue
+              param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+              display="integer"
+              className="font-black"
+            />{" "}
+            years into{" "}
+            <ParameterValue
+              param={DFDA_QUEUE_CLEARANCE_YEARS}
+              display="integer"
+              className="font-black text-brutal-pink"
+            />
+            .
           </p>
           <p className="mt-3">
             If they do their job, by 2040 every human alive gets{" "}

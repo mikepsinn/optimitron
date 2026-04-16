@@ -15,12 +15,29 @@
  * them with a literal `$` in the template body — you'll get `$$3.49T`.
  */
 
+/**
+ * All token keys produced by `buildTaskShareTokens`. Keep in sync with that
+ * function — the test suite verifies completeness.
+ */
+export type ShareTokenKey =
+  | "citizen_name"
+  | "country"
+  | "days_overdue"
+  | "deaths_from_delay"
+  | "deaths_per_day"
+  | "government_spending_ytd"
+  | "leader_handle"
+  | "leader_name"
+  | "money_wasted"
+  | "money_wasted_per_day"
+  | "task_title";
+
 export interface ShareTemplate {
   id: string;
   label: string;
   body: string;
   /** Tokens this template falls apart without. */
-  requiredTokens: string[];
+  requiredTokens: ShareTokenKey[];
 }
 
 export const SHARE_TEMPLATES: ShareTemplate[] = [

@@ -19,6 +19,7 @@ import {
   getAssigneeMilitaryBudgetUsd,
   getAssigneeTwitterHandle,
 } from "@/lib/tasks/task-context";
+import { getGovernmentLeader } from "@optimitron/data";
 import { getPersonHref } from "@/lib/person-href";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
@@ -68,27 +69,6 @@ function formatDuration(hours: number | null | undefined): string {
   if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
   if (hours < 24) return `${hours.toFixed(hours < 10 ? 1 : 0)}h`;
   return `${Math.round(hours / 24)}d`;
-}
-
-function buildReminderBadges(input: {
-  currentEconomicValueUsdLost: number | null | undefined;
-  currentHumanLivesLost: number | null | undefined;
-  estimatedEffortHours: number | null | undefined;
-}) {
-  const badges: string[] = [];
-  const duration = formatDuration(input.estimatedEffortHours);
-
-  if (duration !== "—") {
-    badges.push(`${duration} action`);
-  }
-  if (input.currentHumanLivesLost != null && input.currentHumanLivesLost > 0) {
-    badges.push(`${formatCompactCount(input.currentHumanLivesLost)} deaths`);
-  }
-  if (input.currentEconomicValueUsdLost != null && input.currentEconomicValueUsdLost > 0) {
-    badges.push(`${formatCompactCurrency(input.currentEconomicValueUsdLost)} lost`);
-  }
-
-  return badges.slice(0, 3);
 }
 
 function formatDueDate(value: Date) {
@@ -294,7 +274,14 @@ export function TaskRow({
   const targetLabel = assignedToYou
     ? "You"
     : task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const assigneeBudget = getAssigneeMilitaryBudgetUsd(task.contextJson);
+  // Budget data: prefer data package (always current) over contextJson (stale snapshot).
+  const countryCode = task.assigneePerson?.countryCode ?? null;
+  const leaderRecord = countryCode ? getGovernmentLeader(countryCode) : undefined;
+  const assigneeBudget =
+    leaderRecord?.militaryBudgetUsd ?? getAssigneeMilitaryBudgetUsd(task.contextJson);
+  const governmentBudgetUsd =
+    leaderRecord?.governmentBudgetUsd ?? getAssigneeGovernmentBudgetUsd(task.contextJson);
+
   const isSignerTask = task.assigneePerson != null && assigneeBudget != null;
   const fallbackInitials = targetLabel
     .split(/\s+/)
@@ -310,10 +297,10 @@ export function TaskRow({
     targetLabel,
     taskTitle: task.title,
   });
-  const governmentBudgetUsd = getAssigneeGovernmentBudgetUsd(task.contextJson);
   const leaderHandle = getLeaderHandle(task);
+
   const shareTokens = buildTaskShareTokens({
-    countryCode: task.assigneePerson?.countryCode ?? null,
+    countryCode,
     currentDelayDays: delayStats.currentDelayDays,
     currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
     currentHumanLivesLost: delayStats.currentHumanLivesLost,
@@ -324,11 +311,7 @@ export function TaskRow({
     targetLabel,
     taskTitle: task.title,
   });
-  const defaultReminderBadges = buildReminderBadges({
-    currentEconomicValueUsdLost: delayStats.currentEconomicValueUsdLost,
-    currentHumanLivesLost: delayStats.currentHumanLivesLost,
-    estimatedEffortHours: task.estimatedEffortHours,
-  });
+
   const pressurePrompt: string | null = null;
 
   const isOverdue = task.dueAt != null && task.dueAt.getTime() < Date.now();
@@ -409,7 +392,7 @@ export function TaskRow({
       taskTitle: task.title,
     });
     const signerShareTokens = buildTaskShareTokens({
-      countryCode: task.assigneePerson?.countryCode ?? null,
+      countryCode,
       currentDelayDays: delayStats.currentDelayDays,
       currentEconomicValueUsdLost:
         attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
@@ -421,11 +404,6 @@ export function TaskRow({
       militaryBudgetUsdPerYear: assigneeBudget,
       targetLabel,
       taskTitle: task.title,
-    });
-    const signerReminderBadges = buildReminderBadges({
-      currentEconomicValueUsdLost: attribution?.wastedUsd ?? delayStats.currentEconomicValueUsdLost,
-      currentHumanLivesLost: attribution?.deathsFromDelay ?? delayStats.currentHumanLivesLost,
-      estimatedEffortHours: task.estimatedEffortHours,
     });
     return (
       <div
@@ -577,7 +555,6 @@ export function TaskRow({
         {task.isPublic ? (
           <div className="relative z-[1] shrink-0">
             <TaskRowShare
-              badges={signerReminderBadges}
               shareText={signerShareText}
               shareTokens={signerShareTokens}
               targetLabel={targetLabel}
@@ -850,7 +827,6 @@ export function TaskRow({
       <div className="relative z-[1] hidden shrink-0 md:block">
         {task.isPublic ? (
           <TaskRowShare
-            badges={defaultReminderBadges}
             shareText={shareText}
             shareTokens={shareTokens}
             targetLabel={targetLabel}

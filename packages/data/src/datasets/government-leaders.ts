@@ -294,3 +294,24 @@ export function listGovernmentLeaders(): GovernmentLeaderRecord[] {
 
   return records;
 }
+
+// ---------------------------------------------------------------------------
+// Memoized per-country lookup
+// ---------------------------------------------------------------------------
+
+let leadersByCountry: Map<string, GovernmentLeaderRecord> | null = null;
+
+/**
+ * Lookup a single leader by ISO 3166-1 alpha-2 country code. The full roster
+ * is built once on first call, then O(1) lookups thereafter (~190 entries).
+ */
+export function getGovernmentLeader(
+  countryCode: string,
+): GovernmentLeaderRecord | undefined {
+  if (!leadersByCountry) {
+    leadersByCountry = new Map(
+      listGovernmentLeaders().map((record) => [record.countryCode, record]),
+    );
+  }
+  return leadersByCountry.get(countryCode);
+}

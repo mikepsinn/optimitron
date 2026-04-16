@@ -7,6 +7,7 @@ import {
 } from "./delay-attribution";
 import { getMetricBaseValue, type TaskImpactFrameSummary, type TaskImpactMetricSummary } from "./impact";
 import { getCountryName } from "@/lib/geo";
+import type { ShareTokenKey } from "@/lib/tasks/share-templates";
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 const HOURS_PER_YEAR = 365.25 * 24;
@@ -270,7 +271,7 @@ function yearToDateFraction(now: Date): number {
  */
 export function buildTaskShareTokens(
   input: TaskShareTokenInput,
-): Record<string, string> {
+): Record<ShareTokenKey, string> {
   const now = input.now ?? new Date();
   const delayDays = Math.max(0, input.currentDelayDays);
 
