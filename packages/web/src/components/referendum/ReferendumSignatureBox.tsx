@@ -204,7 +204,6 @@ export function ReferendumSignatureBox({
           onChange={(e) => setSignatureName(e.target.value)}
           placeholder="Your name"
           className={inputClass}
-          autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && signatureName.trim()) {
               void handleSubmit();
