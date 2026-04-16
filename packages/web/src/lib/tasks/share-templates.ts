@@ -131,6 +131,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "government_spending_ytd",
       "deaths_from_delay",
       "money_wasted",
+      "mil_budget_pct",
       "mil_to_trials_ratio",
       "trials_budget_pct",
     ],
