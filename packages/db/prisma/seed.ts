@@ -39,7 +39,6 @@ import { pathToFileURL } from "node:url";
 import {
   US_WISHOCRATIC_JURISDICTION,
   getUSWishocraticCatalogRecords,
-  getGovernmentProfile,
   listGovernmentLeaders,
 } from "@optimitron/data";
 import {
@@ -1185,115 +1184,101 @@ async function seedTreatyTasks() {
   console.log(`  ✓ Task: "${bedNetsTask.title}" (${bedNetsTask.id})`);
 
   // --- Signer child tasks for the treaty ---
-  const leaderCount = WORLD_LEADERS.length;
+  // Single source of truth: GovernmentLeaderRecord bundles country identity,
+  // canonical office/contact metadata, leader personal data, and both
+  // military + total-gov budgets (resolved from the coalesced country panel
+  // + curated overrides; guaranteed non-null).
+  const leaderRecords = listGovernmentLeaders().filter(
+    (record) => record.leaderSourceRef != null && record.leaderName != null,
+  );
+  const skippedLeaderCount = listGovernmentLeaders().length - leaderRecords.length;
+  if (skippedLeaderCount > 0) {
+    console.log(
+      `  ! skipping ${skippedLeaderCount} leader record(s) missing leaderSourceRef/leaderName`,
+    );
+  }
+  const leaderCount = leaderRecords.length;
+  const formatUsdCompact = (n: number): string => {
+    if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
+    if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+    if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+    return `$${Math.round(n).toLocaleString()}`;
+  };
+  const googleSearch = (query: string) =>
+    `https://www.google.com/search?q=${encodeURIComponent(query)}`;
   let created = 0;
 
-  // Pre-resolved government leader records from @optimitron/data: one entry
-  // per sovereign head of government with both military and total-gov budgets
-  // already computed from the coalesced country panel + curated overrides.
-  // Guaranteed complete (throws if any leader is missing coverage).
-  const leaderRecordsByAlpha2 = new Map(
-    listGovernmentLeaders().map((record) => [record.countryCode.toUpperCase(), record] as const),
-  );
-
-  for (const leader of WORLD_LEADERS) {
-    const sourceRef = `wikidata:${leader.wikidataId}`;
-    const countryCode = leader.countryCode.toUpperCase();
+  for (const record of leaderRecords) {
+    // leaderSourceRef/leaderName are non-null by the filter above.
+    const sourceRef = record.leaderSourceRef!;
+    const leaderName = record.leaderName!;
+    const countryCode = record.countryCode.toUpperCase();
     const share = 1 / leaderCount;
     // Slugified handle from displayName, with country code suffix to guarantee
     // uniqueness across the 193 leaders. Lower-case, hyphen-separated, ASCII.
-    const handle = `${slugify(leader.leaderName)}-${countryCode.toLowerCase()}`;
+    const handle = `${slugify(leaderName)}-${countryCode.toLowerCase()}`;
     const leaderImage =
-      leaderPhotoManifest[countryCode.toLowerCase()] ?? leader.leaderImageUrl;
+      leaderPhotoManifest[countryCode.toLowerCase()] ?? record.leaderImageUrl;
 
     const person = await prisma.person.upsert({
       where: { sourceRef },
       update: {
         handle,
-        displayName: leader.leaderName,
+        displayName: leaderName,
         image: leaderImage,
         countryCode,
-        currentAffiliation: `Government of ${leader.countryName}`,
+        currentAffiliation: `Government of ${record.countryName}`,
         isPublicFigure: true,
       },
       create: {
         handle,
-        displayName: leader.leaderName,
+        displayName: leaderName,
         image: leaderImage,
         countryCode,
-        currentAffiliation: `Government of ${leader.countryName}`,
+        currentAffiliation: `Government of ${record.countryName}`,
         isPublicFigure: true,
         sourceRef,
       },
     });
 
-    // Pull country-level data for rich contextJson slots. Missing values
-    // just mean the relevant block no-ops on the task page.
-    const govProfile = getGovernmentProfile(countryCode);
-    const militaryBudget = govProfile?.metrics?.militarySpendingAnnual.value ?? null;
-    const annualRedirectUsd = militaryBudget != null ? militaryBudget * 0.01 : null;
-    const contactUrl = govProfile?.office?.contactUrl ?? null;
-    const contactLabel = govProfile?.office?.contactLabel ?? null;
-    const headOfGovTitle =
-      govProfile?.office?.headOfGovernmentTitle ?? leader.roleTitle ?? "Head of Government";
+    const annualRedirectUsd = record.militaryBudgetUsd * 0.01;
 
-    const leaderRecord = leaderRecordsByAlpha2.get(countryCode);
-    const governmentBudgetUsd = leaderRecord?.governmentBudgetUsd ?? null;
-
-    const formatUsdCompact = (n: number): string => {
-      if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
-      if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
-      if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
-      return `$${Math.round(n).toLocaleString()}`;
-    };
-
-    const googleSearch = (query: string) =>
-      `https://www.google.com/search?q=${encodeURIComponent(query)}`;
     const contactChannels: Array<{ kind: "twitter" | "bluesky" | "form"; label: string; href: string }> = [
       {
         kind: "twitter",
         label: `Remind on X directly`,
-        href: googleSearch(`${leader.leaderName} official X Twitter account`),
+        href: googleSearch(`${leaderName} official X Twitter account`),
       },
       {
         kind: "bluesky",
         label: `Remind on Bluesky directly`,
-        href: googleSearch(`${leader.leaderName} Bluesky account site:bsky.app`),
+        href: googleSearch(`${leaderName} Bluesky account site:bsky.app`),
       },
     ];
-    if (contactUrl) {
+    if (record.contactUrl) {
       contactChannels.push({
         kind: "form",
-        label: contactLabel ?? "Official contact form",
-        href: contactUrl,
+        label: record.contactLabel ?? "Official contact form",
+        href: record.contactUrl,
       });
     }
 
     const signerContextJson: Prisma.InputJsonValue = {
       assigneeProfile: {
-        role: headOfGovTitle,
-        employerLabel: `Government of ${leader.countryName}`,
+        role: record.roleTitle,
+        employerLabel: `Government of ${record.countryName}`,
         employerCountLabel: "citizens",
-        ...(militaryBudget != null
-          ? {
-              budgetUsdPerYear: militaryBudget,
-              budgetLabel: "Military spending",
-            }
-          : {}),
-        ...(governmentBudgetUsd != null
-          ? { governmentBudgetUsdPerYear: governmentBudgetUsd }
-          : {}),
+        budgetUsdPerYear: record.militaryBudgetUsd,
+        budgetLabel: "Military spending",
+        governmentBudgetUsdPerYear: record.governmentBudgetUsd,
         jobQuote: {
           text: "promote the general welfare",
-          source: `${leader.countryName} — job description, every citizen, every day`,
+          source: `${record.countryName} — job description, every citizen, every day`,
         },
         contactChannels,
       },
       difficulty: {
-        whatItMeans:
-          annualRedirectUsd != null
-            ? `Redirect 1% of ${leader.countryName}'s military spending (${formatUsdCompact(annualRedirectUsd)}/yr) from weapons to pragmatic clinical trials.`
-            : `Redirect 1% of ${leader.countryName}'s military spending from weapons to pragmatic clinical trials.`,
+        whatItMeans: `Redirect 1% of ${record.countryName}'s military spending (${formatUsdCompact(annualRedirectUsd)}/yr) from weapons to pragmatic clinical trials.`,
         label: "Sign a piece of paper",
         timeRequiredSeconds: 30,
         skillsRequired: "Holding a pen",
@@ -1301,7 +1286,7 @@ async function seedTreatyTasks() {
       reminder: {
         intro: `30 seconds. Remind them.`,
         messageTemplate: [
-          `${leader.leaderName} is {daysOverdue} days overdue on "Sign the 1% Treaty".`,
+          `${leaderName} is {daysOverdue} days overdue on "Sign the 1% Treaty".`,
           ``,
           `Task: hold pen, sign paper. 30 seconds.`,
           `Cost of the delay so far: {deathsLocked} preventable deaths, {moneyDestroyed} in foregone clinical trials.`,
@@ -1318,7 +1303,7 @@ async function seedTreatyTasks() {
             { label: "Developing the COVID vaccine", value: "314 days" },
             { label: "The Manhattan Project", value: "1,347 days" },
             {
-              label: `${leader.leaderName} not signing this`,
+              label: `${leaderName} not signing this`,
               value: "{daysOverdue} days",
               highlight: true,
             },
@@ -1341,10 +1326,10 @@ async function seedTreatyTasks() {
         taskKey: `program:one-percent-treaty:signer:${countryCode.toLowerCase()}`,
         parentTaskId: treatyTask.id,
         assigneePersonId: person.id,
-        assigneeAffiliationSnapshot: `Government of ${leader.countryName}`,
-        roleTitle: leader.roleTitle,
+        assigneeAffiliationSnapshot: `Government of ${record.countryName}`,
+        roleTitle: record.roleTitle,
         title: "Sign the 1% Treaty",
-        description: `**${leader.leaderName}** — ${leader.roleTitle} of ${leader.countryName}. One job: redirect 1% of ${leader.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
+        description: `**${leaderName}** — ${record.roleTitle} of ${record.countryName}. One job: redirect 1% of ${record.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
         category: "GOVERNANCE",
         difficulty: "EXPERT",
         status: "ACTIVE",

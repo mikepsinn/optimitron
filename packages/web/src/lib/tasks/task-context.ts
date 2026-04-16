@@ -161,6 +161,58 @@ export function readTaskContext(contextJson: unknown): TaskContext {
 }
 
 // ---------------------------------------------------------------------------
+// Assignee-profile accessors — single access path for the share-text tokens,
+// TaskRow columns, TaskAssigneeCard, and OG images. Always funnel through
+// readTaskContext() so every caller gets Zod-validated data.
+// ---------------------------------------------------------------------------
+
+/**
+ * Military budget (or whatever `budgetUsdPerYear` means for this assignee
+ * per the `budgetLabel` — typically "Military spending" for signer tasks).
+ */
+export function getAssigneeMilitaryBudgetUsd(
+  contextJson: unknown,
+): number | null {
+  const profile = readTaskContext(contextJson).assigneeProfile;
+  return typeof profile?.budgetUsdPerYear === "number" ? profile.budgetUsdPerYear : null;
+}
+
+/**
+ * Total general-government expenditure in USD/yr for this assignee's
+ * administration — IMF Fiscal Monitor, all levels, includes transfers +
+ * debt service. Null for non-signer tasks.
+ */
+export function getAssigneeGovernmentBudgetUsd(
+  contextJson: unknown,
+): number | null {
+  const profile = readTaskContext(contextJson).assigneeProfile;
+  return typeof profile?.governmentBudgetUsdPerYear === "number"
+    ? profile.governmentBudgetUsdPerYear
+    : null;
+}
+
+/**
+ * Extract a Twitter/X handle from `assigneeProfile.contactChannels`, if one
+ * is present. Handles Google-search fallback URLs by returning null — only
+ * returns a real handle when the href is a proper twitter.com/x.com URL.
+ * Strips a leading `@`. Caller supplies its own fallback (typically the
+ * Optimitron platform handle from the Person record).
+ */
+export function getAssigneeTwitterHandle(contextJson: unknown): string | null {
+  const profile = readTaskContext(contextJson).assigneeProfile;
+  const channels = profile?.contactChannels;
+  if (!channels?.length) return null;
+  const twitter = channels.find((channel) => channel.kind === "twitter");
+  if (!twitter?.href) return null;
+  const match = twitter.href.match(/(?:twitter\.com|x\.com)\/([^/?#]+)/i);
+  if (!match || !match[1]) return null;
+  const raw = match[1].replace(/^@/, "");
+  // Filter out search-URL path segments that aren't real handles.
+  if (raw === "search" || raw === "intent" || raw === "i") return null;
+  return raw;
+}
+
+// ---------------------------------------------------------------------------
 // Legacy reader kept for back-compat with existing call sites until they
 // migrate to readTaskContext(). Returns generic-safe data only.
 // ---------------------------------------------------------------------------

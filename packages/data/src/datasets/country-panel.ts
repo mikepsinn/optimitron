@@ -113,20 +113,6 @@ export function getCountryPanelByCountry(
   return COUNTRY_PANEL.filter((r) => r.jurisdictionIso3 === iso3);
 }
 
-/** Get the most recent row per country */
-export function getCountryPanelLatest(): CountryPanelRow[] {
-  const latest = new Map<string, CountryPanelRow>();
-  for (const row of COUNTRY_PANEL) {
-    const existing = latest.get(row.jurisdictionIso3);
-    if (!existing || row.year > existing.year) {
-      latest.set(row.jurisdictionIso3, row);
-    }
-  }
-  return [...latest.values()].sort((a, b) =>
-    a.jurisdictionIso3.localeCompare(b.jurisdictionIso3),
-  );
-}
-
 /**
  * Get one row per country where every field is filled in from the most
  * recent year in which it was non-null. Handles the common case where IMF

@@ -14,6 +14,11 @@ import {
   GLOBAL_MILITARY_USD,
   getSignerDelayAttribution,
 } from "@/lib/tasks/delay-attribution";
+import {
+  getAssigneeGovernmentBudgetUsd,
+  getAssigneeMilitaryBudgetUsd,
+  getAssigneeTwitterHandle,
+} from "@/lib/tasks/task-context";
 import { getPersonHref } from "@/lib/person-href";
 import type { TaskCardTask } from "./task-card";
 import { TaskRowShare } from "./task-row-share";
@@ -41,44 +46,13 @@ function formatMoneyWasted(value: number | null | undefined): string {
   return formatCompactCurrency(value);
 }
 
-interface ContextAssigneeProfileShape {
-  budgetUsdPerYear?: number;
-  governmentBudgetUsdPerYear?: number;
-  contactChannels?: Array<{ kind?: string; href?: string; label?: string }>;
-}
-
-function readAssigneeProfile(task: TaskCardTask): ContextAssigneeProfileShape | null {
-  const context = task.contextJson;
-  if (!context || typeof context !== "object") return null;
-  const profile = (context as { assigneeProfile?: ContextAssigneeProfileShape }).assigneeProfile;
-  return profile ?? null;
-}
-
-/** Pull the assignee's military budget from contextJson, if present. */
-function getMilitaryBudgetUsd(task: TaskCardTask): number | null {
-  const profile = readAssigneeProfile(task);
-  return typeof profile?.budgetUsdPerYear === "number" ? profile.budgetUsdPerYear : null;
-}
-
-/** Pull the assignee's total government budget from contextJson, if present. */
-function getGovernmentBudgetUsd(task: TaskCardTask): number | null {
-  const profile = readAssigneeProfile(task);
-  return typeof profile?.governmentBudgetUsdPerYear === "number"
-    ? profile.governmentBudgetUsdPerYear
-    : null;
-}
-
-/** Extract a twitter/X handle from contactChannels, stripping the leading @. */
+/** Extract the best Twitter/X handle for a task assignee, or the platform handle. */
 function getLeaderHandle(task: TaskCardTask): string | null {
-  const profile = readAssigneeProfile(task);
-  const channels = profile?.contactChannels;
-  if (!Array.isArray(channels)) return task.assigneePerson?.handle ?? null;
-  const twitter = channels.find((channel) => channel?.kind === "twitter");
-  if (!twitter?.href) return task.assigneePerson?.handle ?? null;
-  // Extract handle from URL like https://twitter.com/username or @username.
-  const match = twitter.href.match(/(?:twitter\.com|x\.com)\/([^/?#]+)/i);
-  if (match && match[1]) return match[1].replace(/^@/, "");
-  return task.assigneePerson?.handle ?? null;
+  return (
+    getAssigneeTwitterHandle(task.contextJson) ??
+    task.assigneePerson?.handle ??
+    null
+  );
 }
 
 /** True when a task is assigned to the "Humanity" org — i.e. "you". */
@@ -320,7 +294,7 @@ export function TaskRow({
   const targetLabel = assignedToYou
     ? "You"
     : task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
-  const assigneeBudget = getMilitaryBudgetUsd(task);
+  const assigneeBudget = getAssigneeMilitaryBudgetUsd(task.contextJson);
   const isSignerTask = task.assigneePerson != null && assigneeBudget != null;
   const fallbackInitials = targetLabel
     .split(/\s+/)
@@ -336,7 +310,7 @@ export function TaskRow({
     targetLabel,
     taskTitle: task.title,
   });
-  const governmentBudgetUsd = getGovernmentBudgetUsd(task);
+  const governmentBudgetUsd = getAssigneeGovernmentBudgetUsd(task.contextJson);
   const leaderHandle = getLeaderHandle(task);
   const shareTokens = buildTaskShareTokens({
     countryCode: task.assigneePerson?.countryCode ?? null,
@@ -894,7 +868,7 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
     case "deathsLockedIn": {
       // Deaths from delay for signer tasks are proportional to share of
       // global military spending → sort by budget to preserve order.
-      const budget = getMilitaryBudgetUsd(task);
+      const budget = getAssigneeMilitaryBudgetUsd(task.contextJson);
       if (budget != null) return budget;
       const perDay = task.impact?.selectedFrame?.delayDalysLostPerDayBase;
       return perDay != null ? perDay : 0;
@@ -903,7 +877,7 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
       // "Wasted by delay" is proportional to share of global military spending
       // for signer tasks → sorting by assigneeBudget preserves the order.
       // Non-signer tasks fall through to per-day delay econ value.
-      const budget = getMilitaryBudgetUsd(task);
+      const budget = getAssigneeMilitaryBudgetUsd(task.contextJson);
       if (budget != null) return budget;
       return task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? 0;
     }
@@ -912,7 +886,7 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
       return task.estimatedEffortHours ?? Infinity;
     case "assigneeBudget":
       // Higher military budget = more shameable; sort desc by default
-      return getMilitaryBudgetUsd(task) ?? 0;
+      return getAssigneeMilitaryBudgetUsd(task.contextJson) ?? 0;
     case "impactLives":
       return task.impact?.selectedFrame?.expectedDalysAvertedBase ?? 0;
     case "impactMoney":
