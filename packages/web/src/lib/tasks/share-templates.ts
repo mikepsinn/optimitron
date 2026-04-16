@@ -103,10 +103,18 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     body: `.@{leader_handle} You spend 40x more on killing people than saving them. There's a treaty that fixes this. It takes 30 seconds to sign. {deaths_from_delay} people have died waiting. {government_spending_ytd} spent "promoting the general welfare" so far this year. 1percenttreaty.org`,
   },
   {
-    id: "text-message",
-    label: "Text Message",
+    id: "lumbergh",
+    label: "Office Memo",
     requiredTokens: ["leader_name", "government_spending_ytd", "deaths_from_delay"],
-    body: `hey {leader_name} quick one. it costs your government $2.9 million to kill one person in a war. it costs $16,100 to save one through medical research. you spend {government_spending_ytd}/yr on "the general welfare" and 40x more on the killing side than the saving side. there's a 30-second fix at 1percenttreaty.org. {deaths_from_delay} people have died since it went up. the task is literally typing your name in a box.`,
+    body: [
+      `Yeah, hi {leader_name}. So if you could go ahead and sign the 1% Treaty, that'd be great.`,
+      ``,
+      `It's at 1percenttreaty.org. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
+      ``,
+      `Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died of treatable diseases since this became available, and your administration has spent {government_spending_ytd} this year while spending 40x more on killing people than saving them.`,
+      ``,
+      `So yeah. If you could just sign that. That'd be great.`,
+    ].join("\n"),
   },
   {
     id: "linkedin",
