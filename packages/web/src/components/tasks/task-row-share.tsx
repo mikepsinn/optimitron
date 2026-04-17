@@ -24,6 +24,7 @@ function copyToClipboard(text: string): Promise<void> {
   }
 }
 import { useSession } from "next-auth/react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   FaEnvelope,
   FaFacebookF,
@@ -450,6 +451,9 @@ export function TaskRowShare({
             </button>
           </Drawer.Trigger>
           <Drawer.Content className="max-h-[90vh] overflow-y-auto border-t-4 border-foreground bg-background">
+            <VisuallyHidden>
+              <Drawer.Title>{`Send reminder — ${taskTitle}`}</Drawer.Title>
+            </VisuallyHidden>
             <ReminderComposer {...composerProps} />
           </Drawer.Content>
         </Drawer>
