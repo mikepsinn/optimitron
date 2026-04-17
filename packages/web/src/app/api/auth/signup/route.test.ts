@@ -89,6 +89,7 @@ describe("signup auth route", () => {
           password: "long-enough-password",
           name: "Test User",
           referralCode: "REF123",
+          shareAttemptId: "sa_123",
           newsletterSubscribed: true,
         }),
       }) as never,
@@ -105,7 +106,11 @@ describe("signup auth route", () => {
         newsletterSubscribed: true,
       },
     });
-    expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith("user_1", "REF123");
+    expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith(
+      "user_1",
+      "REF123",
+      "sa_123",
+    );
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
     expect(mocks.sendWelcomeReferralEmailForUser).toHaveBeenCalledWith(
       expect.objectContaining({

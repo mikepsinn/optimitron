@@ -1,21 +1,38 @@
+import { createHash } from "node:crypto";
+import { EmailLogStatus, Prisma, ShareSource } from "@optimitron/db";
+import { nanoid } from "nanoid";
 import { serverEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { getReferralCountsByUserIds } from "@/lib/referral.server";
 import {
+  buildEmailShareButton,
   buildReferralSequenceEmail,
+  EMAIL_SHARE_CHANNELS,
   getReferralSequenceAction,
-  REFERRAL_EMAIL_SEQUENCE_LENGTH,
+  pickSubjectVariant,
+  REFERRAL_EMAIL_SEQUENCE_MAX_STEP,
+  type EmailShareButton,
 } from "@/lib/referral-email-sequence";
 import { sendResendEmail, isResendConfigured } from "@/lib/resend";
+import { embedShareAttemptId } from "@/lib/share-channels";
 import { listTasks } from "@/lib/tasks.server";
+import {
+  buildTaskShareTokens,
+  getTaskDelayStats,
+} from "@/lib/tasks/accountability";
 import {
   countOverdueSigners,
   getOverdueSignerHighlights,
   type OverdueSignerHighlight,
 } from "@/lib/tasks/overdue-signers.server";
+import { renderTemplate } from "@/lib/tasks/render-template";
+import {
+  getUsableShareTemplates,
+  type ShareTemplate,
+} from "@/lib/tasks/share-templates";
+import { resolveUserPresidentHighlight } from "@/lib/tasks/user-president.server";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
-import { EmailLogStatus, Prisma } from "@optimitron/db";
 
 type DecoratedTaskList = Awaited<ReturnType<typeof listTasks>>;
 
@@ -110,22 +127,182 @@ function computeOverdueSignerCount(decoratedTasks: DecoratedTaskList, now: Date)
   }
 }
 
-function buildReferralSequenceMessage(
+interface BuiltReferralMessage {
+  html: string;
+  presidentRenderedMessage: string | null;
+  subject: string;
+  subjectTemplate: string;
+  subjectVariantId: string;
+  bodyTemplateId: string | null;
+  bodyTemplateBody: string | null;
+  renderedMessage: string | null;
+  sendContext: Prisma.InputJsonValue;
+  shareAttempts: Array<{
+    id: string;
+    channel: string;
+    outboundMessage: string;
+    renderedHash: string | null;
+  }>;
+  text: string;
+}
+
+/**
+ * Build the email AND pre-generate the 7 share-attempt IDs that will be
+ * embedded in the outbound message URL per share button. Returns both the
+ * email content and the ShareAttempt metadata for batch insertion.
+ */
+async function buildReferralSequenceMessage(
   user: ReferralSequenceUser,
   referralCount: number,
   step: number,
   decoratedTasks: DecoratedTaskList,
   now: Date,
-) {
-  return buildReferralSequenceEmail({
-    highlights: buildHighlightsForUser(user, decoratedTasks, now),
-    name: getUserDisplayName(user),
-    overdueSignerCount: computeOverdueSignerCount(decoratedTasks, now),
+): Promise<BuiltReferralMessage> {
+  const countryCode = resolveUserCountryCode(user);
+  const overdueSignerCount = computeOverdueSignerCount(decoratedTasks, now);
+  const highlights = buildHighlightsForUser(user, decoratedTasks, now);
+  const presidentHighlight = resolveUserPresidentHighlight({
+    countryCode,
+    decoratedTasks,
+    now,
+  });
+
+  const referralUrl = buildUserReferralUrl(user);
+  const citizenName = getUserDisplayName(user);
+
+  let template: ShareTemplate | null = null;
+  let renderedBase: string | null = null;
+  let tokens: Record<string, string> | null = null;
+
+  if (presidentHighlight) {
+    const presidentTask = decoratedTasks.find((t) => t.id === presidentHighlight.taskId);
+    const delayStats = presidentTask ? getTaskDelayStats(presidentTask, now) : null;
+    tokens = buildTaskShareTokens({
+      targetLabel: presidentHighlight.leaderFullName,
+      taskTitle: "Sign the 1% Treaty",
+      currentDelayDays: delayStats?.currentDelayDays ?? 0,
+      currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
+      currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
+      countryCode,
+      citizenName,
+      treatyUrl: referralUrl,
+      now,
+    });
+
+    const usable = getUsableShareTemplates(tokens);
+    if (usable.length > 0) {
+      template = usable[Math.floor(Math.random() * usable.length)];
+      renderedBase = `${renderTemplate(template.body, tokens)}\n\n${referralUrl}`.trim();
+    }
+  }
+
+  // Pre-generate share-attempt IDs (one per button) and compute each button's
+  // outbound message with its own sa= embedded.
+  const shareAttempts: BuiltReferralMessage["shareAttempts"] = [];
+  const shareButtons: EmailShareButton[] = [];
+
+  const canPersonalize = presidentHighlight != null && template != null && renderedBase != null;
+  let presidentRenderedMessage: string | null = null;
+
+  if (canPersonalize && presidentHighlight && renderedBase) {
+    const taskTitle = `Remind ${presidentHighlight.leaderFullName}`;
+    const shareText = tokens?.task_title
+      ? `${tokens.task_title}`
+      : `Please sign the 1% Treaty, ${presidentHighlight.leaderFullName}.`;
+
+    const copyMessageId = nanoid();
+    presidentRenderedMessage = embedShareAttemptId(renderedBase, referralUrl, copyMessageId);
+    shareAttempts.push({
+      id: copyMessageId,
+      channel: "copy-message",
+      outboundMessage: presidentRenderedMessage,
+      renderedHash: sha256Hex(presidentRenderedMessage),
+    });
+
+    for (const entry of EMAIL_SHARE_CHANNELS) {
+      const saId = nanoid();
+      const attributedReferralUrl = embedShareAttemptId(referralUrl, referralUrl, saId);
+      const outboundMessage = embedShareAttemptId(renderedBase, referralUrl, saId);
+      const renderedHash = sha256Hex(outboundMessage);
+      shareButtons.push(
+        buildEmailShareButton(
+          entry.channel,
+          entry.label,
+          outboundMessage,
+          attributedReferralUrl,
+          taskTitle,
+          shareText,
+        ),
+      );
+      shareAttempts.push({
+        id: saId,
+        channel: entry.channel,
+        outboundMessage,
+        renderedHash,
+      });
+    }
+  }
+
+  const hasPersonalized =
+    canPersonalize &&
+    presidentRenderedMessage != null &&
+    shareButtons.length > 0;
+
+  const presidentFullName = presidentHighlight?.leaderFullName ?? null;
+  const presidentFirstName = presidentHighlight?.leaderFirstName ?? null;
+
+  // Uniform-random subject selection from the appropriate pool.
+  const subjectPick = pickSubjectVariant({
+    deathsSinceLastEmail: 0, // filled at a later iteration if we track it
+    overdueSignerCount,
+    presidentFirstName,
+    presidentFullName,
+    referralCount,
+    step,
+    wastedUsdSinceLastEmail: 0,
+  });
+
+  const email = buildReferralSequenceEmail({
+    highlights,
+    name: citizenName,
+    overdueSignerCount,
+    presidentHighlight: hasPersonalized ? presidentHighlight : null,
+    presidentRenderedMessage,
     referralCode: user.referralCode,
     referralCount,
-    shareUrl: buildUserReferralUrl(user),
+    shareButtons: hasPersonalized ? shareButtons : undefined,
+    shareUrl: referralUrl,
     step,
+    subject: subjectPick.subject,
   });
+
+  const sendContext: Prisma.InputJsonValue = {
+    step,
+    countryCode,
+    referralCount,
+    overdueSignerCount,
+    daysSinceSignup: Math.round((now.getTime() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000)),
+    presidentSlug: presidentHighlight?.taskId ?? null,
+    presidentFullName,
+  };
+
+  return {
+    html: email.html,
+    presidentRenderedMessage,
+    text: email.text,
+    subject: email.subject,
+    subjectTemplate: subjectPick.subjectTemplate,
+    subjectVariantId: subjectPick.variantId,
+    bodyTemplateId: template?.id ?? null,
+    bodyTemplateBody: template?.body ?? null,
+    renderedMessage: presidentRenderedMessage ?? renderedBase,
+    sendContext,
+    shareAttempts,
+  };
+}
+
+function sha256Hex(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function getReferralSequenceTemplateId(step: number) {
@@ -134,10 +311,10 @@ function getReferralSequenceTemplateId(step: number) {
 
 function getNextReferralSequenceStep(user: ReferralSequenceUser, step: number) {
   if (step === 0 && !user.newsletterSubscribed) {
-    return REFERRAL_EMAIL_SEQUENCE_LENGTH;
+    return REFERRAL_EMAIL_SEQUENCE_MAX_STEP;
   }
 
-  return Math.min(step + 1, REFERRAL_EMAIL_SEQUENCE_LENGTH);
+  return Math.min(step + 1, REFERRAL_EMAIL_SEQUENCE_MAX_STEP);
 }
 
 function isUniqueConstraintError(error: unknown) {
@@ -162,11 +339,22 @@ async function markReferralEmailStatus(
   });
 }
 
+interface ClaimExtras {
+  bodyTemplateBody: string | null;
+  bodyTemplateId: string | null;
+  renderedMessage: string | null;
+  sendContext: Prisma.InputJsonValue;
+  shareAttempts: BuiltReferralMessage["shareAttempts"];
+  subjectTemplate: string;
+  subjectVariantId: string;
+}
+
 async function claimReferralSequenceEmail(
   user: ReferralSequenceUser,
   step: number,
   subject: string,
   now: Date,
+  extras: ClaimExtras,
 ): Promise<ReferralEmailClaim> {
   const templateId = getReferralSequenceTemplateId(step);
   const nextStep = getNextReferralSequenceStep(user, step);
@@ -185,16 +373,45 @@ async function claimReferralSequenceEmail(
         return null;
       }
 
-      return tx.emailLog.create({
+      const created = await tx.emailLog.create({
         data: {
           userId: user.id,
           toAddress: user.email,
           subject,
           templateId,
+          subjectVariantId: extras.subjectVariantId,
+          subjectTemplate: extras.subjectTemplate,
+          bodyTemplateId: extras.bodyTemplateId,
+          sendContext: extras.sendContext,
           status: EmailLogStatus.QUEUED,
           sentAt: now,
         },
       });
+
+      // Pre-create the ShareAttempt rows whose IDs are already embedded in the
+      // outgoing email's share-button URLs. createMany is one round-trip.
+      if (extras.shareAttempts.length > 0) {
+        await tx.shareAttempt.createMany({
+          data: extras.shareAttempts.map((sa) => ({
+            id: sa.id,
+            userId: user.id,
+            source: ShareSource.EMAIL,
+            surface: "referral_email",
+            channel: sa.channel,
+            emailLogId: created.id,
+            templateId: extras.bodyTemplateId,
+            templateHash: extras.bodyTemplateBody ? sha256Hex(extras.bodyTemplateBody) : null,
+            templateBody: extras.bodyTemplateBody,
+            renderedMessage: sa.outboundMessage,
+            renderedHash: sa.renderedHash,
+            wasEdited: false,
+            context: extras.sendContext,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
+      return created;
     });
 
     return {
@@ -244,8 +461,16 @@ export async function sendWelcomeReferralEmailForUser(
   }
 
   const decoratedTasks = await loadDecoratedTreatyTasks();
-  const message = buildReferralSequenceMessage(user, 0, 0, decoratedTasks, now);
-  const claim = await claimReferralSequenceEmail(user, 0, message.subject, now);
+  const message = await buildReferralSequenceMessage(user, 0, 0, decoratedTasks, now);
+  const claim = await claimReferralSequenceEmail(user, 0, message.subject, now, {
+    bodyTemplateBody: message.bodyTemplateBody,
+    bodyTemplateId: message.bodyTemplateId,
+    renderedMessage: message.renderedMessage,
+    sendContext: message.sendContext,
+    shareAttempts: message.shareAttempts,
+    subjectTemplate: message.subjectTemplate,
+    subjectVariantId: message.subjectVariantId,
+  });
   if (claim.duplicate) {
     return { status: "duplicate" as const };
   }
@@ -291,7 +516,7 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     where: {
       deletedAt: null,
       referralEmailSequenceStep: {
-        lt: REFERRAL_EMAIL_SEQUENCE_LENGTH,
+        lt: REFERRAL_EMAIL_SEQUENCE_MAX_STEP,
       },
     },
     orderBy: [{ createdAt: "asc" }],
@@ -346,15 +571,23 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     if (action.type === "complete") {
       await prisma.user.update({
         where: { id: user.id },
-        data: { referralEmailSequenceStep: REFERRAL_EMAIL_SEQUENCE_LENGTH },
+        data: { referralEmailSequenceStep: REFERRAL_EMAIL_SEQUENCE_MAX_STEP },
       });
       completed += 1;
       continue;
     }
 
     try {
-      const message = buildReferralSequenceMessage(user, referralCount, action.step, decoratedTasks, now);
-      const claim = await claimReferralSequenceEmail(user, action.step, message.subject, now);
+      const message = await buildReferralSequenceMessage(user, referralCount, action.step, decoratedTasks, now);
+      const claim = await claimReferralSequenceEmail(user, action.step, message.subject, now, {
+        bodyTemplateBody: message.bodyTemplateBody,
+        bodyTemplateId: message.bodyTemplateId,
+        renderedMessage: message.renderedMessage,
+        sendContext: message.sendContext,
+        shareAttempts: message.shareAttempts,
+        subjectTemplate: message.subjectTemplate,
+        subjectVariantId: message.subjectVariantId,
+      });
       if (claim.duplicate || !claim.emailLogId) {
         continue;
       }

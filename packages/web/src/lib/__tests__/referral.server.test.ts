@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
   findUnique: vi.fn(),
   groupBy: vi.fn(),
+  shareAttemptFindFirst: vi.fn(),
   grantWishes: vi.fn(),
   checkBadgesAfterWish: vi.fn(),
 }));
@@ -18,6 +19,9 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.create,
       findUnique: mocks.findUnique,
       groupBy: mocks.groupBy,
+    },
+    shareAttempt: {
+      findFirst: mocks.shareAttemptFindFirst,
     },
   },
 }));
@@ -44,6 +48,8 @@ describe("referral server helpers", () => {
     mocks.create.mockReset();
     mocks.findUnique.mockReset();
     mocks.groupBy.mockReset();
+    mocks.shareAttemptFindFirst.mockReset();
+    mocks.shareAttemptFindFirst.mockResolvedValue(null);
     mocks.grantWishes.mockReset();
     mocks.grantWishes.mockResolvedValue(null);
     mocks.checkBadgesAfterWish.mockReset();
@@ -109,14 +115,23 @@ describe("referral server helpers", () => {
   it("records referral attribution when the user has no vote yet", async () => {
     mocks.findFirst.mockResolvedValue({ id: "user_referrer" });
     mocks.findUnique.mockResolvedValue(null);
+    mocks.shareAttemptFindFirst.mockResolvedValue({ id: "sa_123" });
 
-    await expect(recordReferralAttributionForUser("user_new", "REF123")).resolves.toBe(true);
+    await expect(recordReferralAttributionForUser("user_new", "REF123", "sa_123")).resolves.toBe(true);
     expect(mocks.create).toHaveBeenCalledWith({
       data: {
         userId: "user_new",
         answer: "YES",
         referredByUserId: "user_referrer",
+        originatingShareAttemptId: "sa_123",
       },
+    });
+    expect(mocks.shareAttemptFindFirst).toHaveBeenCalledWith({
+      where: {
+        id: "sa_123",
+        userId: "user_referrer",
+      },
+      select: { id: true },
     });
     expect(mocks.grantWishes).toHaveBeenCalledWith({
       userId: "user_referrer",
@@ -130,7 +145,7 @@ describe("referral server helpers", () => {
     mocks.findFirst.mockResolvedValue({ id: "user_referrer" });
     mocks.findUnique.mockResolvedValue({ id: "vote_1" });
 
-    await expect(recordReferralAttributionForUser("user_new", "REF123")).resolves.toBe(false);
+    await expect(recordReferralAttributionForUser("user_new", "REF123", "sa_123")).resolves.toBe(false);
     expect(mocks.create).not.toHaveBeenCalled();
   });
 

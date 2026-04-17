@@ -4,7 +4,7 @@ import {
   formatCompactCurrency,
 } from "@/lib/tasks/accountability";
 import type { TaskContext } from "@/lib/tasks/task-context";
-import { renderTemplate } from "./render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 
 interface TaskCostOfDelayProps {
   context: TaskContext;

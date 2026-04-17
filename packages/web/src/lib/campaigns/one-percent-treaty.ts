@@ -21,10 +21,10 @@ interface TreatyCopyInput {
 
 export function buildTreatySignerContactTemplate() {
   return [
-    "Tell your employee to take 30 seconds to finish {{taskTitle}}.",
-    "This blocking task is already {{delayLabel}}.",
-    "Estimated delay cost so far: {{humanLives}} lives, {{sufferingHours}} suffering hours, and {{economicLoss}}.",
-    "Public task page: {{taskUrl}}",
+    "Your employee has not finished {{taskTitle}}. It is a thirty-second task. One signature. A wrist movement.",
+    "It has been sitting on a desk for {{delayLabel}}. A desk. Not a war. A desk.",
+    "Delay body count so far: {{humanLives}} humans have permanently stopped, {{sufferingHours}} hours of suffering accumulated, {{economicLoss}} evaporated. While the paperwork waited.",
+    "The pen is here: {{taskUrl}}",
   ].join(" ");
 }
 
@@ -33,28 +33,30 @@ export function buildTreatyAcceptanceCriteria(input: {
   governmentName: string;
 }) {
   return [
-    `A treaty instrument, executive order, or equivalent commitment is prepared for ${input.actorLabel}.`,
-    `${input.actorLabel} publicly signs or commits to the 1% Treaty.`,
-    `${input.governmentName} publicly names the implementation authority for the 1% redirect.`,
-    "A first implementation step is announced within 90 days of signature.",
+    `${input.actorLabel} is handed an instrument — treaty, executive order, whatever your species uses to turn a promise into paperwork.`,
+    `${input.actorLabel} signs it. In public. Where other humans can see it and remember it happened.`,
+    `${input.governmentName} names the specific human responsible for moving the 1%. A human with a name, not a committee with a logo.`,
+    "First implementation step announced within 90 days. No studies about studies. No task forces about task forces.",
   ];
 }
 
 export function buildTreatyTaskDescription(input: TreatyCopyInput) {
+  const sharePct = round(input.militaryBudgetShareRatio * 100);
   return [
-    `Tell your employee ${input.actorLabel} to take 30 seconds to sign the 1% Treaty.`,
-    `If completed, ${input.governmentName} redirects about ${formatCompactUsd(input.annualRedirectAmountUsd)} per year into pragmatic clinical trials and disease-eradication work.`,
-    `This office controls about ${round(input.militaryBudgetShareRatio * 100)}% of global military spending in the 2024 SIPRI snapshot.`,
+    `Your employee ${input.actorLabel} has a pen and thirty seconds.`,
+    `If they use them on the 1% Treaty, ${input.governmentName} redirects about ${formatCompactUsd(input.annualRedirectAmountUsd)} a year from weapons designed to make humans stop being alive into trials that find out which medicines keep humans alive.`,
+    `This office controls roughly ${sharePct}% of global military spending in the 2024 SIPRI snapshot. Statistically relevant, then.`,
+    "Your species currently spends 604 times more on weapons than on testing which medicines work. The ask is 1%. If that sounds rude, consider the current ratio.",
   ].join(" ");
 }
 
 export function buildTreatyImpactStatement(input: Pick<TreatyCopyInput, "annualRedirectAmountUsd">) {
   return [
-    `${formatCompactUsd(input.annualRedirectAmountUsd)} per year redirected if completed.`,
-    "Thirty seconds for the signer. Large global downside from delay.",
+    `${formatCompactUsd(input.annualRedirectAmountUsd)} per year moves from the murder budget to the medicine budget the moment ink touches paper.`,
+    "Thirty seconds of wrist movement for the signer. Approximately 104 humans permanently stop every minute the wrist does not move.",
   ].join(" ");
 }
 
 export function buildTreatyBlockerCallout() {
-  return "Tell your employee to take 30 seconds to sign. Every extra day keeps the money in weapons while disease kills people.";
+  return "Your employee needs a pen and thirty seconds. Every day they do not combine these two items, the small pieces of paper with presidents on them continue flowing toward weapons, and approximately 150,000 humans permanently stop. This is not a difficult task. It is a desk and a pen.";
 }

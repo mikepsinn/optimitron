@@ -9,7 +9,7 @@ import { BrutalCard } from "@/components/ui/brutal-card";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import { buildTaskUrl } from "@/lib/url";
-import { renderTemplate } from "./render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 import type {
   TaskContextAssigneeProfile,
   TaskContextReminder,

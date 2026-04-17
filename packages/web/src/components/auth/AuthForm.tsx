@@ -23,6 +23,7 @@ interface ProviderFlags {
 interface AuthFormProps {
   callbackUrl?: string;
   referralCode?: string | null;
+  shareAttemptId?: string | null;
   initialError?: string | null;
   compact?: boolean;
   variant?: "default" | "document";
@@ -40,6 +41,7 @@ interface AuthFormProps {
 export function AuthForm({
   callbackUrl = DEFAULT_POST_LOGIN_ROUTE,
   referralCode,
+  shareAttemptId,
   initialError = null,
   compact = false,
   variant = "default",
@@ -100,11 +102,22 @@ export function AuthForm({
   }, [initialError]);
 
   function persistAuthContext() {
-    if (referralCode) {
-      storage.setSignupReferral(referralCode);
-    } else {
-      storage.clearSignupReferral();
+    if (referralCode !== undefined) {
+      if (referralCode) {
+        storage.setSignupReferral(referralCode);
+      } else {
+        storage.clearSignupReferral();
+      }
     }
+
+    if (shareAttemptId !== undefined) {
+      if (shareAttemptId) {
+        storage.setSignupShareAttempt(shareAttemptId);
+      } else {
+        storage.clearSignupShareAttempt();
+      }
+    }
+
     storage.clearSignupName();
     storage.clearSignupSubscribe();
   }

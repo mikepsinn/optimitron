@@ -62,6 +62,18 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     }
   }, []);
 
+  useEffect(() => {
+    const referralCode = searchParams?.get("ref");
+    const shareAttemptId = searchParams?.get("sa");
+
+    if (referralCode) {
+      storage.setSignupReferral(referralCode);
+    }
+    if (shareAttemptId) {
+      storage.setSignupShareAttempt(shareAttemptId);
+    }
+  }, [searchParams]);
+
   // Intersection Observer to trigger animation when slider comes into view
   useEffect(() => {
     if (!sliderSectionRef.current || userHasDragged) return;
@@ -465,6 +477,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 <AuthForm
                   callbackUrl="/dashboard"
                   referralCode={searchParams?.get("ref")}
+                  shareAttemptId={searchParams?.get("sa")}
                   compact={true}
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />

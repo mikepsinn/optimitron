@@ -20,10 +20,11 @@ export function AuthPostSigninSync() {
     }
 
     const referralCode = storage.getSignupReferral();
+    const shareAttemptId = storage.getSignupShareAttempt();
     const name = storage.getSignupName();
     const newsletterSubscribed = storage.getSignupSubscribe();
 
-    if (!referralCode && !name && newsletterSubscribed === null) {
+    if (!referralCode && !shareAttemptId && !name && newsletterSubscribed === null) {
       setCompletedUserId(userId);
       return;
     }
@@ -37,6 +38,7 @@ export function AuthPostSigninSync() {
       },
       body: JSON.stringify({
         referralCode,
+        shareAttemptId,
         name,
         newsletterSubscribed,
       }),

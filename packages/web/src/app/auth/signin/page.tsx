@@ -25,6 +25,7 @@ export default async function SignInPage({
     (typeof params.callbackUrl === "string" ? params.callbackUrl : undefined) ??
     DEFAULT_POST_LOGIN_ROUTE;
   const referralCode = typeof params.ref === "string" ? params.ref : null;
+  const shareAttemptId = typeof params.sa === "string" ? params.sa : null;
   const initialError = getAuthErrorMessage(
     typeof params.error === "string" ? params.error : null,
   );
@@ -36,6 +37,7 @@ export default async function SignInPage({
         <AuthForm
           callbackUrl={callbackUrl}
           referralCode={referralCode}
+          shareAttemptId={shareAttemptId}
           initialError={initialError}
           providers={providers}
         />

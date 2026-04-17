@@ -1,7 +1,7 @@
 import { TaskImpactFrameKey, TaskStatus } from "@optimitron/db";
 import { getGovernmentLeader } from "@optimitron/data";
 import { describe, expect, it } from "vitest";
-import { renderTemplate } from "@/components/tasks/blocks/render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 import {
   aggregateTaskDelayStats,
   buildTaskShareText,

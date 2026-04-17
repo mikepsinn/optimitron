@@ -153,39 +153,23 @@ describe("referral email sequence scheduling", () => {
 });
 
 describe("buildReferralSequenceEmail content — President Management System framing", () => {
-  it("step 0 subject names the overdue count and asks the user to pick one", () => {
+  it("uses a caller-provided subject override verbatim", () => {
+    const email = buildReferralSequenceEmail({
+      step: 0,
+      referralCount: 0,
+      highlights: FIXTURE_HIGHLIGHTS,
+      overdueSignerCount: 193,
+      referralCode: "REFCODE1",
+      shareUrl: "https://example.com/?ref=REFCODE1",
+      subject: "[ACTION REQUIRED] Remind Emmanuel Macron (30 sec)",
+    });
+    expect(email.subject).toBe("[ACTION REQUIRED] Remind Emmanuel Macron (30 sec)");
+  });
+
+  it("falls back to a generic subject when no override is passed", () => {
     const email = buildEmail({ step: 0, referralCount: 0, overdueSignerCount: 193 });
-    expect(email.subject).toBe(
-      "You now supervise 193 overdue world leaders. Pick one to remind.",
-    );
-  });
-
-  it("step 1 zero-action subject cites 24h deaths and the overdue count", () => {
-    const email = buildEmail({ step: 1, referralCount: 0, overdueSignerCount: 193 });
-    expect(email.subject).toContain("24h status");
-    expect(email.subject).toContain("more dead");
+    expect(email.subject.length).toBeGreaterThan(0);
     expect(email.subject).toContain("193");
-  });
-
-  it("step 1 with referrals cites peer count and remaining count", () => {
-    const email = buildEmail({ step: 1, referralCount: 2, overdueSignerCount: 193 });
-    expect(email.subject).toContain("2 peers");
-    expect(email.subject).toContain("193");
-  });
-
-  it("step 2 zero-action subject quotes the WEEKLY $37T/52 spend, not the annual total", () => {
-    const email = buildEmail({ step: 2, referralCount: 0, overdueSignerCount: 193 });
-    // $37T / 52 ≈ $712B — we only assert the B/billion-scale, not the exact string.
-    expect(email.subject).toMatch(/\$\d+(\.\d+)?B/);
-    expect(email.subject).not.toContain("$37T");
-    expect(email.subject).toContain("this week");
-    expect(email.subject).toContain("reminded nobody");
-  });
-
-  it("step 2 with referrals uses final-status-report framing", () => {
-    const email = buildEmail({ step: 2, referralCount: 4, overdueSignerCount: 193 });
-    expect(email.subject).toContain("Final status report");
-    expect(email.subject).toContain("4 peers");
   });
 
   it("renders the brand strip with President Management System and the day label", () => {

@@ -203,6 +203,13 @@ enum ActivityType {
   JOINED_ORGANIZATION
 }
 
+/// Channel from which a share was produced. Both channels use the same template catalog
+/// and the same `?sa=<id>` URL propagation for attribution.
+enum ShareSource {
+  EMAIL
+  IN_APP
+}
+
 /// Type of in-app notification
 enum NotificationType {
   REFERRAL_SIGNUP
@@ -695,6 +702,7 @@ model User {
   wishPoints                WishPoint[]                      @relation("UserWishPoints")
   socialAccounts            SocialAccount[]                  @relation("UserSocialAccounts")
   emailLogs                 EmailLog[]                       @relation("UserEmailLogs")
+  shareAttempts             ShareAttempt[]                   @relation("UserShareAttempts")
   surveyResponses           SurveyResponse[]                 @relation("UserSurveyResponses")
   taskClaims                TaskClaim[]                      @relation("UserTaskClaims")
   ownedTasks                Task[]                           @relation("TaskOwner")
@@ -2179,6 +2187,10 @@ model Referral {
   /// The user whose referral link led to this signup
   referredByUserId String?
 
+  /// ShareAttempt that originated the shared link this user clicked to sign up.
+  /// Loose reference (no FK) — tolerates orphan sa= values from failed background POSTs.
+  originatingShareAttemptId String?
+
   /// When this record was created
   createdAt DateTime @default(now())
 
@@ -2194,6 +2206,7 @@ model Referral {
 
   @@index([userId])
   @@index([referredByUserId])
+  @@index([originatingShareAttemptId])
   @@index([createdAt])
   @@index([deletedAt])
 }
@@ -2209,6 +2222,10 @@ model ReferralClick {
 
   /// The user who owns this referral code (resolved at click time, nullable if code is invalid)
   referrerUserId String?
+
+  /// ShareAttempt that generated the URL this recipient clicked (from ?sa= query param).
+  /// Loose reference (no FK) — tolerates orphan sa= values.
+  shareAttemptId String?
 
   /// HTTP Referer header — e.g. "https://x.com/PMCanada/status/123..."
   refererUrl String?
@@ -2230,6 +2247,7 @@ model ReferralClick {
 
   @@index([code])
   @@index([referrerUserId])
+  @@index([shareAttemptId])
   @@index([createdAt])
   @@index([deletedAt])
 }
@@ -3360,6 +3378,7 @@ model Task {
   incomingEdges            TaskEdge[]              @relation("TaskIncomingEdges")
   agentRunCosts            AgentRunCost[]          @relation("TaskAgentRunCosts")
   agentLeases              AgentTaskLease[]        @relation("TaskAgentLeases")
+  shareAttempts            ShareAttempt[]          @relation("TaskShareAttempts")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -4358,11 +4377,27 @@ model EmailLog {
   /// Email address it was sent to
   toAddress String
 
-  /// Email subject line
+  /// Email subject line (as-sent, rendered)
   subject String
 
   /// Template or category identifier (e.g. "referral_sequence_0", "referendum_milestone")
   templateId String?
+
+  /// Human-readable ID of the subject variant picked by the selector
+  subjectVariantId String?
+
+  /// Raw subject template string (grouping key that survives ID renames).
+  /// The rendered subject is already stored in `subject`.
+  subjectTemplate String?
+
+  /// Human-readable ID of the body template picked by the selector.
+  /// The raw body template string + rendered message live on related ShareAttempt rows
+  /// (one per share channel), so no need to duplicate here.
+  bodyTemplateId String?
+
+  /// JSON snapshot of the send context at render time:
+  /// { step, countryCode, referralCount, presidentSlug, daysSinceSignup, ... }
+  sendContext Json?
 
   /// Delivery status
   status EmailLogStatus @default(SENT)
@@ -4386,13 +4421,85 @@ model EmailLog {
   createdAt DateTime @default(now())
 
   // -- Relations --
-  user User @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+  shareAttempts ShareAttempt[] @relation("EmailLogShareAttempts")
 
   @@unique([userId, templateId])
   @@index([userId])
   @@index([templateId])
+  @@index([subjectVariantId])
+  @@index([bodyTemplateId])
   @@index([status])
   @@index([sentAt])
+}
+
+/// A single outbound share message (email-button press or in-app share). The
+/// canonical unit for cross-channel attribution. Embedded in `/r/{code}?sa={id}`
+/// on the referral URL inside the rendered message, so recipient clicks can
+/// be tied back to the template that generated the share.
+model ShareAttempt {
+  /// Pre-generated cuid2 (client- or server-generated BEFORE insert so the id
+  /// can be embedded in the outbound URL).
+  id String @id
+
+  /// The sharer
+  userId String
+
+  /// Channel surface: EMAIL (pre-created when an email is built) or IN_APP.
+  source ShareSource
+
+  /// Component/surface that produced the share, e.g.
+  /// "referral_email", "task_row_share", "post_vote_reminders".
+  surface String?
+
+  /// Share platform: "x", "bluesky", "linkedin", "facebook", "reddit", "email", "copy-link", etc.
+  channel String?
+
+  /// Task this share is about, if applicable
+  taskId String?
+
+  /// Email that produced this share (non-null when source=EMAIL)
+  emailLogId String?
+
+  /// Human label of the share template used (e.g. "lumbergh").
+  templateId String?
+
+  /// sha256(templateBody) — primary grouping key for analytics (survives renames).
+  templateHash String?
+
+  /// Raw template string with {tokens} — for replay / inspection.
+  templateBody String?
+
+  /// Exact final message content the user saw / sent (per-sender; forensics).
+  renderedMessage String?
+
+  /// sha256(renderedMessage) — lets us group by exact-sent content.
+  renderedHash String?
+
+  /// True if the user edited the textarea before sharing (in-app only signals this).
+  wasEdited Boolean @default(false)
+
+  /// Send-time context snapshot for cohort analysis later.
+  context Json?
+
+  /// Set by /r/[code] the first time a recipient clicks through with this sa=.
+  /// Distinguishes "potential" (pre-created) shares from "activated" ones.
+  firstReferralClickAt DateTime?
+
+  /// When this row was created
+  createdAt DateTime @default(now())
+
+  // -- Relations --
+  user     User      @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  emailLog EmailLog? @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
+  task     Task?     @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([templateHash])
+  @@index([emailLogId])
+  @@index([firstReferralClickAt])
+  @@index([source])
+  @@index([channel])
 }
 
 // ────────────────────────────────────────────────────────────

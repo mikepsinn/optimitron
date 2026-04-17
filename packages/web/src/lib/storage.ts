@@ -3,6 +3,7 @@ import type { WishocraticAllocationInput } from "@/lib/wishocracy-allocation";
 const STORAGE_KEYS = {
   signupName: "signup_name",
   signupReferral: "signup_referral",
+  signupShareAttempt: "signup_share_attempt",
   signupSubscribe: "signup_subscribe",
   pendingWishocracy: "pendingWishocracy",
   pendingTreatyVote: "pending_treaty_vote",
@@ -134,6 +135,11 @@ export const storage = {
   setSignupReferral: (code: string) => setStringItem(STORAGE_KEYS.signupReferral, code),
   clearSignupReferral: () => removeStorageItem(STORAGE_KEYS.signupReferral),
 
+  getSignupShareAttempt: () => getStringItem(STORAGE_KEYS.signupShareAttempt),
+  setSignupShareAttempt: (shareAttemptId: string) =>
+    setStringItem(STORAGE_KEYS.signupShareAttempt, shareAttemptId),
+  clearSignupShareAttempt: () => removeStorageItem(STORAGE_KEYS.signupShareAttempt),
+
   getSignupSubscribe: () => getBooleanItem(STORAGE_KEYS.signupSubscribe),
   setSignupSubscribe: (subscribe: boolean) => setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
   clearSignupSubscribe: () => removeStorageItem(STORAGE_KEYS.signupSubscribe),
@@ -141,6 +147,7 @@ export const storage = {
   clearSignupData: () => {
     removeStorageItem(STORAGE_KEYS.signupName);
     removeStorageItem(STORAGE_KEYS.signupReferral);
+    removeStorageItem(STORAGE_KEYS.signupShareAttempt);
     removeStorageItem(STORAGE_KEYS.signupSubscribe);
   },
 

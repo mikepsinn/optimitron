@@ -1,15 +1,29 @@
 "use client";
 
+import { nanoid } from "nanoid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Card } from "@/components/retroui/Card";
 import { getGovernmentLeader } from "@optimitron/data";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
 import { getUsableShareTemplates } from "@/lib/tasks/share-templates";
-import { renderTemplate } from "@/components/tasks/blocks/render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 import { ReminderComposer } from "@/components/tasks/task-row-share";
 import { getCountryFromLocale } from "@/lib/detect-country";
+import {
+  buildChannelHref,
+  embedShareAttemptId,
+  type ShareableChannel,
+} from "@/lib/share-channels";
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+
+async function sha256Hex(input: string): Promise<string> {
+  const bytes = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 /** The treaty was due on this date; delay days accrue from here. */
 const TREATY_DUE_AT = new Date("2026-04-14T00:00:00.000Z");
@@ -64,6 +78,44 @@ export function PostVoteReminders() {
     return { templates: usable, tokenBag: tokens, leaderName: targetLabel };
   }, [countryCode, session?.user?.name, referralUrl]);
 
+  const logShareAttempt = useCallback(
+    async (input: {
+      id: string;
+      channel: string;
+      renderedMessage: string;
+      wasEdited: boolean;
+      templateBody: string | null;
+      templateId: string | null;
+    }) => {
+      try {
+        const [templateHash, renderedHash] = await Promise.all([
+          input.templateBody ? sha256Hex(input.templateBody) : Promise.resolve(null),
+          sha256Hex(input.renderedMessage),
+        ]);
+        await fetch("/api/share-attempts", {
+          body: JSON.stringify({
+            id: input.id,
+            source: "IN_APP",
+            surface: "post_vote_reminders",
+            channel: input.channel,
+            templateId: input.templateId,
+            templateHash,
+            templateBody: input.templateBody,
+            renderedMessage: input.renderedMessage,
+            renderedHash,
+            wasEdited: input.wasEdited,
+            context: { countryCode, leaderName },
+          }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        });
+      } catch {
+        // best-effort
+      }
+    },
+    [countryCode, leaderName],
+  );
+
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     () => templates[0]?.id ?? null,
   );
@@ -97,7 +149,23 @@ export function PostVoteReminders() {
   }, [initialMessage]);
 
   const handleCopyMessage = useCallback(() => {
-    void copyToClipboard(message)
+    const shareAttemptId = nanoid();
+    const wasEdited = message !== initialMessage;
+    const outboundMessage = embedShareAttemptId(message, referralUrl, shareAttemptId);
+    const selectedTemplate = selectedTemplateId
+      ? templates.find((t) => t.id === selectedTemplateId) ?? null
+      : null;
+
+    void logShareAttempt({
+      id: shareAttemptId,
+      channel: "copy-message",
+      renderedMessage: outboundMessage,
+      wasEdited,
+      templateBody: selectedTemplate?.body ?? null,
+      templateId: selectedTemplate?.id ?? null,
+    });
+
+    void copyToClipboard(outboundMessage)
       .then(() => {
         setMessageCopyState("copied");
         window.setTimeout(() => setMessageCopyState("idle"), 1500);
@@ -106,37 +174,58 @@ export function PostVoteReminders() {
         setMessageCopyState("error");
         window.setTimeout(() => setMessageCopyState("idle"), 2000);
       });
-  }, [message]);
+  }, [message, initialMessage, referralUrl, selectedTemplateId, templates, logShareAttempt]);
 
   const handleChannel = useCallback(
     (channel: string) => {
       if (channel === "copy-link") {
-        void copyToClipboard(referralUrl);
+        const shareAttemptId = nanoid();
+        const attributedReferralUrl = embedShareAttemptId(referralUrl, referralUrl, shareAttemptId);
+
+        void logShareAttempt({
+          id: shareAttemptId,
+          channel: "copy-link",
+          renderedMessage: attributedReferralUrl,
+          wasEdited: false,
+          templateBody: null,
+          templateId: null,
+        });
+
+        void copyToClipboard(attributedReferralUrl);
         return;
       }
-      const encodedMessage = encodeURIComponent(message);
-      const encodedUrl = encodeURIComponent(referralUrl);
-      let href: string;
-      if (channel === "x") {
-        href = `https://twitter.com/intent/tweet?text=${encodedMessage}`;
-      } else if (channel === "bluesky") {
-        href = `https://bsky.app/intent/compose?text=${encodedMessage}`;
-      } else if (channel === "linkedin") {
-        href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-      } else if (channel === "facebook") {
-        href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-      } else if (channel === "reddit") {
-        href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent("Sign the 1% Treaty")}`;
-      } else {
-        // email
-        const subject = encodeURIComponent("Sign the 1% Treaty");
-        href = `mailto:?subject=${subject}&body=${encodedMessage}`;
+
+      const shareAttemptId = nanoid();
+      const wasEdited = message !== initialMessage;
+      const attributedReferralUrl = embedShareAttemptId(referralUrl, referralUrl, shareAttemptId);
+      const outboundMessage = embedShareAttemptId(message, referralUrl, shareAttemptId);
+      const selectedTemplate = selectedTemplateId
+        ? templates.find((t) => t.id === selectedTemplateId) ?? null
+        : null;
+
+      void logShareAttempt({
+        id: shareAttemptId,
+        channel,
+        renderedMessage: outboundMessage,
+        wasEdited,
+        templateBody: selectedTemplate?.body ?? null,
+        templateId: selectedTemplate?.id ?? null,
+      });
+
+      const href = buildChannelHref(channel as ShareableChannel, {
+        message: outboundMessage,
+        shareText: "Sign the 1% Treaty",
+        shareUrl: attributedReferralUrl,
+        taskUrl: referralUrl,
+        taskTitle: "Sign the 1% Treaty",
+      });
+      if (channel === "email") {
         window.location.href = href;
         return;
       }
       window.open(href, "_blank", "noopener,noreferrer");
     },
-    [message, referralUrl],
+    [message, referralUrl, initialMessage, selectedTemplateId, templates, logShareAttempt],
   );
 
   if (templates.length === 0) return null;

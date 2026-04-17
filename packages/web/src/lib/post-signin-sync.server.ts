@@ -7,6 +7,7 @@ interface PostSigninSyncInput {
   name?: string | null;
   newsletterSubscribed?: boolean;
   referralCode?: string | null;
+  shareAttemptId?: string | null;
 }
 
 export async function applyPostSigninSync({
@@ -14,6 +15,7 @@ export async function applyPostSigninSync({
   name,
   newsletterSubscribed,
   referralCode,
+  shareAttemptId,
 }: PostSigninSyncInput) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -50,7 +52,11 @@ export async function applyPostSigninSync({
 
   await ensurePersonForUser(userId);
 
-  const referralRecorded = await recordReferralAttributionForUser(userId, referralCode);
+  const referralRecorded = await recordReferralAttributionForUser(
+    userId,
+    referralCode,
+    shareAttemptId,
+  );
 
   return {
     referralRecorded,

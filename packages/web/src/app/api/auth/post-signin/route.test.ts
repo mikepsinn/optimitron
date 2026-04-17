@@ -49,6 +49,7 @@ describe("post-signin auth route", () => {
           name: "Jane Doe",
           newsletterSubscribed: false,
           referralCode: "REF123",
+          shareAttemptId: "sa_123",
         }),
       }),
     );
@@ -59,6 +60,7 @@ describe("post-signin auth route", () => {
       name: "Jane Doe",
       newsletterSubscribed: false,
       referralCode: "REF123",
+      shareAttemptId: "sa_123",
     });
     await expect(response.json()).resolves.toEqual({
       success: true,

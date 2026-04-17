@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     const password = String(body.password || "");
     const name = String(body.name || "").trim() || null;
     const referralCode = String(body.referralCode || "").trim() || null;
+    const shareAttemptId = String(body.shareAttemptId || "").trim() || null;
     const newsletterSubscribed =
       typeof body.newsletterSubscribed === "boolean" ? body.newsletterSubscribed : true;
 
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
 
     await ensurePersonForUser(user.id);
 
-    await recordReferralAttributionForUser(user.id, referralCode);
+    await recordReferralAttributionForUser(user.id, referralCode, shareAttemptId);
 
     try {
       await sendWelcomeReferralEmailForUser(user);

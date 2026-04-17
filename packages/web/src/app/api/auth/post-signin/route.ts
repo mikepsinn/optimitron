@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       newsletterSubscribed:
         typeof body.newsletterSubscribed === "boolean" ? body.newsletterSubscribed : undefined,
       referralCode: typeof body.referralCode === "string" ? body.referralCode : null,
+      shareAttemptId: typeof body.shareAttemptId === "string" ? body.shareAttemptId : null,
     });
 
     return NextResponse.json({ success: true, ...result });

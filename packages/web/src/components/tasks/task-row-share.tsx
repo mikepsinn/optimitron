@@ -1,5 +1,6 @@
 "use client";
 
+import { nanoid } from "nanoid";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** Copy text to clipboard with fallback for non-secure contexts. */
@@ -23,6 +24,15 @@ function copyToClipboard(text: string): Promise<void> {
     document.body.removeChild(textarea);
   }
 }
+
+/** SHA-256 hex digest via Web Crypto. Used as a content-stable grouping key. */
+async function sha256Hex(input: string): Promise<string> {
+  const bytes = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 import { useSession } from "next-auth/react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
@@ -38,24 +48,20 @@ import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { Drawer } from "@/components/retroui/Drawer";
 import { Select } from "@/components/retroui/Select";
-import { renderTemplate } from "@/components/tasks/blocks/render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import {
+  buildChannelHref,
+  embedShareAttemptId,
+  type ReminderChannel,
+  type ShareableChannel,
+} from "@/lib/share-channels";
 import {
   getUsableShareTemplates,
   type ShareTemplate,
 } from "@/lib/tasks/share-templates";
 import { buildTaskUrl, buildUserReferralUrl } from "@/lib/url";
-
-type ReminderChannel =
-  | "bluesky"
-  | "copy-link"
-  | "copy-message"
-  | "email"
-  | "facebook"
-  | "linkedin"
-  | "reddit"
-  | "x";
 
 interface TaskRowShareProps {
   baseUrl?: string;
@@ -92,37 +98,6 @@ const CHANNEL_ICONS: {
   { channel: "reddit", icon: <FaRedditAlien className="h-3.5 w-3.5" />, label: "Reddit" },
   { channel: "copy-link", icon: <FaLink className="h-3.5 w-3.5" />, label: "Copy Link" },
 ];
-
-function buildChannelHref(
-  channel: Exclude<ReminderChannel, "copy-link" | "copy-message">,
-  input: {
-    message: string;
-    shareText: string;
-    taskUrl: string;
-    taskTitle: string;
-  },
-) {
-  const encodedMessage = encodeURIComponent(input.message);
-  const encodedUrl = encodeURIComponent(input.taskUrl);
-  if (channel === "x") {
-    return `https://twitter.com/intent/tweet?text=${encodedMessage}`;
-  }
-  if (channel === "bluesky") {
-    return `https://bsky.app/intent/compose?text=${encodedMessage}`;
-  }
-  if (channel === "linkedin") {
-    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-  }
-  if (channel === "facebook") {
-    return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-  }
-  if (channel === "reddit") {
-    return `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent(input.shareText)}`;
-  }
-
-  const subject = encodeURIComponent(`Please complete: ${input.taskTitle}`);
-  return `mailto:?subject=${subject}&body=${encodedMessage}`;
-}
 
 export function ReminderComposer({
   availableTemplates,
@@ -340,40 +315,94 @@ export function TaskRowShare({
     setMobileOpen(false);
   }
 
-  async function trackReminder(channel: ReminderChannel) {
+  async function logShareAttempt(input: {
+    id: string;
+    channel: ReminderChannel;
+    renderedMessage: string;
+    wasEdited: boolean;
+    templateBody: string | null;
+    templateId: string | null;
+  }) {
     try {
-      await fetch("/api/share/track", {
+      const [templateHash, renderedHash] = await Promise.all([
+        input.templateBody ? sha256Hex(input.templateBody) : Promise.resolve(null),
+        sha256Hex(input.renderedMessage),
+      ]);
+      await fetch("/api/share-attempts", {
         body: JSON.stringify({
-          templateLabel: `task-row-reminder-${channel}`,
+          id: input.id,
+          source: "IN_APP",
+          surface: "task_row_share",
+          channel: input.channel,
+          taskId,
+          templateId: input.templateId,
+          templateHash,
+          templateBody: input.templateBody,
+          renderedMessage: input.renderedMessage,
+          renderedHash,
+          wasEdited: input.wasEdited,
+          context: { taskTitle, targetLabel },
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         method: "POST",
       });
     } catch {
-      // Reminder tracking is best-effort only.
+      // Share attempt logging is best-effort; orphan ?sa= is tolerated downstream.
     }
   }
 
-  function handleChannel(channel: Exclude<ReminderChannel, "copy-message">) {
+  function handleChannel(channel: ShareableChannel | "copy-link") {
     if (channel === "copy-link") {
-      void copyToClipboard(taskUrl)
-        .then(() => {
-          void trackReminder("copy-link");
-        })
-        .catch(() => {
-          // best-effort
-        });
+      const shareAttemptId = nanoid();
+      const attributedReferralUrl = embedShareAttemptId(
+        treatyReferralUrl,
+        treatyReferralUrl,
+        shareAttemptId,
+      );
+
+      void logShareAttempt({
+        id: shareAttemptId,
+        channel: "copy-link",
+        renderedMessage: attributedReferralUrl,
+        wasEdited: false,
+        templateBody: null,
+        templateId: null,
+      });
+
+      closeSurfaces();
+      void copyToClipboard(attributedReferralUrl).catch(() => {});
       return;
     }
+
+    const shareAttemptId = nanoid();
+    const wasEdited = message !== initialMessage;
+    const attributedReferralUrl = embedShareAttemptId(
+      treatyReferralUrl,
+      treatyReferralUrl,
+      shareAttemptId,
+    );
+    const outboundMessage = embedShareAttemptId(message, treatyReferralUrl, shareAttemptId);
+    const selectedTemplate = selectedTemplateId
+      ? availableTemplates.find((t) => t.id === selectedTemplateId) ?? null
+      : null;
+
+    // Fire-and-forget. Orphan sa= IDs are tolerated by /r/[code].
+    void logShareAttempt({
+      id: shareAttemptId,
+      channel,
+      renderedMessage: outboundMessage,
+      wasEdited,
+      templateBody: selectedTemplate?.body ?? null,
+      templateId: selectedTemplate?.id ?? null,
+    });
+
     const href = buildChannelHref(channel, {
-      message,
+      message: outboundMessage,
       shareText,
+      shareUrl: attributedReferralUrl,
       taskTitle,
       taskUrl,
     });
-    void trackReminder(channel);
     closeSurfaces();
     if (channel === "email") {
       window.location.href = href;
@@ -383,9 +412,24 @@ export function TaskRowShare({
   }
 
   function handleCopyMessage() {
-    void copyToClipboard(message)
+    const shareAttemptId = nanoid();
+    const wasEdited = message !== initialMessage;
+    const outboundMessage = embedShareAttemptId(message, treatyReferralUrl, shareAttemptId);
+    const selectedTemplate = selectedTemplateId
+      ? availableTemplates.find((t) => t.id === selectedTemplateId) ?? null
+      : null;
+
+    void logShareAttempt({
+      id: shareAttemptId,
+      channel: "copy-message",
+      renderedMessage: outboundMessage,
+      wasEdited,
+      templateBody: selectedTemplate?.body ?? null,
+      templateId: selectedTemplate?.id ?? null,
+    });
+
+    void copyToClipboard(outboundMessage)
       .then(() => {
-        void trackReminder("copy-message");
         setMessageCopyState("copied");
         window.setTimeout(() => setMessageCopyState("idle"), 1500);
       })

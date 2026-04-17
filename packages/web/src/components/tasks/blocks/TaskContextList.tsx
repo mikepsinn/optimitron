@@ -1,6 +1,6 @@
 import { BrutalCard } from "@/components/ui/brutal-card";
 import type { TaskContext } from "@/lib/tasks/task-context";
-import { renderTemplate } from "./render-template";
+import { renderTemplate } from "@/lib/tasks/render-template";
 
 interface TaskContextListProps {
   context: TaskContext;

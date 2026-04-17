@@ -59,6 +59,7 @@ export function getReferralCount(userId: string) {
 export async function recordReferralAttributionForUser(
   userId: string,
   identifier: string | null | undefined,
+  shareAttemptId?: string | null,
 ) {
   const referrer = await findUserByUsernameOrReferralCode(identifier);
   if (!referrer || referrer.id === userId) {
@@ -73,11 +74,27 @@ export async function recordReferralAttributionForUser(
     return false;
   }
 
+  // Attribute only the explicit sa= value carried through the signup flow.
+  // Never guess from "most recent click" — that misattributes concurrent signups.
+  const resolvedShareAttemptId = shareAttemptId
+    ? await prisma.shareAttempt
+        .findFirst({
+          where: {
+            id: shareAttemptId,
+            userId: referrer.id,
+          },
+          select: { id: true },
+        })
+        .then((row) => row?.id ?? null)
+        .catch(() => null)
+    : null;
+
   await prisma.referral.create({
     data: {
       userId,
       answer: ReferralAnswer.YES,
       referredByUserId: referrer.id,
+      originatingShareAttemptId: resolvedShareAttemptId,
     },
   });
 

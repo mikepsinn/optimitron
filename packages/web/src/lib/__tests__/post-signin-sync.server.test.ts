@@ -47,6 +47,7 @@ describe("post-signin sync", () => {
         name: "Jane Doe",
         newsletterSubscribed: false,
         referralCode: "REF123",
+        shareAttemptId: "sa_123",
       }),
     ).resolves.toEqual({
       referralRecorded: true,
@@ -60,7 +61,11 @@ describe("post-signin sync", () => {
         newsletterSubscribed: false,
       },
     });
-    expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith("user_1", "REF123");
+    expect(mocks.recordReferralAttributionForUser).toHaveBeenCalledWith(
+      "user_1",
+      "REF123",
+      "sa_123",
+    );
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
   });
 
