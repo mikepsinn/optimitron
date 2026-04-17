@@ -185,6 +185,14 @@ export const authOptions: NextAuthOptions = {
         user?.id ??
         (trigger === "update" && typeof token.id === "string" ? token.id : undefined);
 
+      // Ensure token.id is set whenever we know the user id, even if the
+      // identity enrichment below fails. Without this, a DB blip or race
+      // during sign-in issues a token with no `id`, and every subsequent
+      // request bounces authenticated users off gated pages.
+      if (user?.id) {
+        token.id = user.id;
+      }
+
       if (identityUserId) {
         const identity = await getSessionIdentity(identityUserId);
         authLog("jwt identity lookup", { identityUserId, found: !!identity });
