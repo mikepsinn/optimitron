@@ -17,10 +17,24 @@ export function SocialShareButtons({ url, text }: SocialShareButtonsProps) {
   const emailBody = encodeURIComponent(`${shareText}\n\n${url}`);
 
   function copyLink() {
-    navigator.clipboard.writeText(url).then(() => {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    } else {
+      // Fallback for non-secure contexts (HTTP)
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }
   }
 
   return (

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
+import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
@@ -95,16 +95,8 @@ export function ReferendumSiteHome({ data }: Props) {
         </div>
       </section>
 
-      <section
-        id="sign"
-        className="mb-16"
-      >
-        <div className="mx-auto max-w-xl">
-          <ReferendumSiteInlineSign
-            referendumSlug={site.primaryReferendumSlug}
-            postSignRedirectUrl="/dashboard?welcome=1"
-          />
-        </div>
+      <section id="sign" className="mb-16">
+        <TreatyVoteFlow />
       </section>
 
       <section id="late-employees" className="border-t-2 border-foreground pt-12">
