@@ -34,6 +34,7 @@ export type ShareTokenKey =
   | "money_wasted"
   | "money_wasted_per_day"
   | "task_title"
+  | "treaty_url"
   | "trials_budget_pct";
 
 export interface ShareTemplate {
@@ -64,9 +65,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `Stated purpose: "Promote the general welfare"`,
       `Welfare promoted: None detected`,
       ``,
-      `There is a treaty at 1percenttreaty.org. It moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. It takes 30 seconds to sign.`,
+      `There is a treaty at {treaty_url}. It moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. It takes 30 seconds to sign.`,
       ``,
-      "Since it went up, {deaths_from_delay} people have died of treatable diseases. {money_wasted} in welfare has been lost. {country} spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. That's {trials_budget_pct} of the combined budget going to finding out which medicines work.",
+      "Since it went up, {deaths_from_delay} people have died waiting for cures. {money_wasted} in welfare has been lost. {country} spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. That's {trials_budget_pct} of the combined budget going to finding out which medicines work.",
       ``,
       `The task is typing your name in a box.`,
       ``,
@@ -92,7 +93,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `Budget burned since ticket opened: {money_wasted}`,
       ``,
       `Task: Sign the 1% Treaty`,
-      `Steps: 1) Go to 1percenttreaty.org 2) Type name 3) Click submit`,
+      `Steps: 1) Go to {treaty_url} 2) Type name 3) Click submit`,
       `ETA: 30 seconds`,
       ``,
       `Impact if resolved: Disease eradication compressed from 443 years to 36. 21.7 additional healthy years per human. $3.48M additional lifetime income per person.`,
@@ -106,7 +107,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     id: "short",
     label: "Short (X)",
     requiredTokens: ["leader_handle", "government_spending_ytd", "deaths_from_delay", "mil_to_trials_ratio"],
-    body: ".@{leader_handle} For every $1 you spend on clinical trials, ${mil_to_trials_ratio} goes to {mil_synonym}. There's a treaty that fixes this. Takes 30 seconds to sign. {deaths_from_delay} people have died waiting. 1percenttreaty.org",
+    body: ".@{leader_handle} For every $1 you spend on clinical trials, ${mil_to_trials_ratio} goes to {mil_synonym}. There's a treaty that fixes this. Takes 30 seconds to sign. {deaths_from_delay} people have died waiting. {treaty_url}",
   },
   {
     id: "lumbergh",
@@ -115,11 +116,11 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     body: [
       `Yeah, hi {leader_name}. So if you could go ahead and sign the 1% Treaty, that'd be great.`,
       ``,
-      `It's at 1percenttreaty.org. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
+      `It's at {treaty_url}. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
       ``,
-      "Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died of treatable diseases since this became available. Also your administration spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. So. Yeah.",
+      "Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died waiting for cures since we assigned this to you. You know. Because of the delayed disease eradication. Also your administration spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on finding out which medicines work. So. Yeah.",
       ``,
-      `So yeah. If you could just sign that. That'd be great.`,
+      "So if you could just sign that. And maybe stop spending ${mil_to_trials_ratio} on blowing stuff up for every $1 on clinical trials. That'd be great.",
     ].join("\n"),
   },
   {
@@ -140,9 +141,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "",
       "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym}.",
       "",
-      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. Since it became available, {deaths_from_delay} people have died of treatable diseases and {money_wasted} in welfare has been lost.`,
+      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. Since it became available, {deaths_from_delay} people have died waiting for cures and {money_wasted} in welfare has been lost.`,
       "",
-      `The signing process takes 30 seconds: 1percenttreaty.org`,
+      `The signing process takes 30 seconds: {treaty_url}`,
       "",
       `The upside-to-downside ratio of this action is 58 million to 1. On most planets, that number ends the conversation.`,
     ].join("\n"),
@@ -172,7 +173,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `Current {mil_synonym}-to-clinical-trials ratio: {mil_to_trials_ratio}:1`,
       ``,
       `Outstanding item: Sign the 1% Treaty`,
-      `URL: 1percenttreaty.org`,
+      `URL: {treaty_url}`,
       `Time required: 30 seconds`,
       ``,
       `Late fees (accruing daily):`,

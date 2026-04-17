@@ -44,7 +44,7 @@ import {
   getUsableShareTemplates,
   type ShareTemplate,
 } from "@/lib/tasks/share-templates";
-import { buildTaskUrl } from "@/lib/url";
+import { buildTaskUrl, buildUserReferralUrl } from "@/lib/url";
 
 type ReminderChannel =
   | "bluesky"
@@ -118,7 +118,7 @@ function buildChannelHref(
   return `mailto:?subject=${subject}&body=${encodedMessage}`;
 }
 
-function ReminderComposer({
+export function ReminderComposer({
   availableTemplates,
   message,
   messageCopyState,
@@ -161,7 +161,7 @@ function ReminderComposer({
       {/* Header — compact */}
       <div className="space-y-0.5">
         <h3 className="text-base font-black uppercase leading-tight">
-          Remind {targetLabel}
+          Send Overdue Task Reminder
         </h3>
         <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
           {taskTitle}
@@ -216,10 +216,10 @@ function ReminderComposer({
         onClick={onCopy}
       >
         {messageCopyState === "copied"
-          ? "Message Copied ✓"
+          ? "Reminder Copied ✓"
           : messageCopyState === "error"
             ? "Copy Failed"
-            : "Copy Message"}
+            : "Copy Reminder Message"}
       </Button>
 
       {/* Share channels */}
@@ -273,6 +273,11 @@ export function TaskRowShare({
     [baseUrl, requestOrigin, taskId, referralId],
   );
 
+  const treatyReferralUrl = useMemo(
+    () => session?.user ? buildUserReferralUrl(session.user, requestOrigin) : requestOrigin,
+    [session?.user, requestOrigin],
+  );
+
   const enrichedTokens = useMemo(() => {
     if (!shareTokens) return null;
     const citizenName = session?.user?.name?.trim();
@@ -282,8 +287,9 @@ export function TaskRowShare({
         citizenName && citizenName.length > 0
           ? citizenName
           : shareTokens.citizen_name || "A citizen",
+      treaty_url: treatyReferralUrl,
     };
-  }, [shareTokens, session?.user?.name]);
+  }, [shareTokens, session?.user?.name, treatyReferralUrl]);
 
   const availableTemplates = useMemo(() => {
     if (!enrichedTokens) return [];
@@ -414,6 +420,9 @@ export function TaskRowShare({
           <Dialog.Content
             className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
+            <Dialog.Close className="absolute right-3 top-3 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-2 border-foreground bg-background text-xs font-black text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              ✕
+            </Dialog.Close>
             <ReminderComposer {...composerProps} />
           </Dialog.Content>
         </Dialog>

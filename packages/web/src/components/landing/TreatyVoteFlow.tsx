@@ -9,11 +9,10 @@ import { Square, CheckSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
-import { ReferralLinkCard } from "@/components/dashboard/ReferralLinkCard";
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
-import { buildUserReferralUrl, getBaseUrl } from "@/lib/url";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
@@ -244,11 +243,6 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     }
   };
 
-  const baseUrl = getBaseUrl();
-  const shareUrl = session?.user
-    ? buildUserReferralUrl(session.user, baseUrl)
-    : baseUrl;
-
   return (
     <div className={className}>
       {/* Slider Card — Shows First */}
@@ -445,7 +439,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
           >
             {status === "authenticated" ? (
               <>
-                <ReferralLinkCard referralLink={shareUrl} />
+                <PostVoteReminders />
                 <div className="mt-6 text-center">
                   <Link
                     href={ROUTES.dashboard}

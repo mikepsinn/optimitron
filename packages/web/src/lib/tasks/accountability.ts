@@ -259,6 +259,8 @@ export interface TaskShareTokenInput {
   citizenName?: string | null;
   /** Now, overridable for tests. Defaults to `new Date()`. */
   now?: Date;
+  /** Full treaty URL with referral param. Defaults to "1percenttreaty.org". */
+  treatyUrl?: string;
 }
 
 /** Zero-based index among the six templates → 1st/2nd reminder suffix. */
@@ -338,6 +340,7 @@ export function buildTaskShareTokens(
     citizen_name: input.citizenName?.trim() || "A citizen",
     mil_synonym: milSynonym,
     task_title: input.taskTitle,
+    treaty_url: input.treatyUrl || "1percenttreaty.org",
     days_overdue: delayDays > 0 ? delayDays.toLocaleString("en-US") : "",
     deaths_from_delay:
       deathsFromDelay != null ? formatCompactCount(deathsFromDelay) : "",

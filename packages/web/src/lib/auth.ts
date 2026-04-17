@@ -48,6 +48,7 @@ async function getSessionIdentity(userId: string) {
         },
         orderBy: [{ lastVerifiedAt: "desc" }],
       },
+      countryCode: true,
       referralCode: true,
       referralEmailSequenceLastSentAt: true,
       referralEmailSequenceStep: true,
@@ -200,6 +201,7 @@ export const authOptions: NextAuthOptions = {
           token.personhoodVerified = identity.isVerified;
           token.personhoodVerifiedAt = identity.personhoodVerifiedAt;
           token.picture = identity.person?.image ?? identity.image;
+          token.countryCode = identity.countryCode;
           token.referralCode = identity.referralCode;
           // Person.handle is canonical; User.username is the legacy mirror.
           token.username = identity.person?.handle ?? identity.username;
@@ -220,6 +222,7 @@ export const authOptions: NextAuthOptions = {
         session.user.personhoodVerifiedAt =
           (token.personhoodVerifiedAt as string | null | undefined) ?? null;
         session.user.personId = (token.personId as string | null | undefined) ?? null;
+        session.user.countryCode = (token.countryCode as string | null | undefined) ?? null;
         session.user.referralCode = token.referralCode as string | undefined;
         session.user.username = (token.username as string | null | undefined) ?? null;
         session.user.verifiedProviders = Array.isArray(token.verifiedProviders)
