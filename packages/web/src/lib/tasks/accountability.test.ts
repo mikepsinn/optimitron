@@ -324,6 +324,13 @@ describe("share-text templates", () => {
         "mil_synonym",
         "task_title",
         "treaty_url",
+        // Constant-derived tokens sourced from @optimitron/data/parameters
+        "daily_disease_deaths",
+        "eradication_years_status_quo",
+        "eradication_years_treaty",
+        "lifetime_income_gain",
+        "treaty_hale_gain",
+        "trial_capacity_multiplier",
       ]);
 
       for (const token of unique) {

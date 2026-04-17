@@ -27,19 +27,25 @@
 export type ShareTokenKey =
   | "citizen_name"
   | "country"
+  | "daily_disease_deaths"
   | "days_overdue"
   | "deaths_from_delay"
   | "deaths_per_day"
+  | "eradication_years_status_quo"
+  | "eradication_years_treaty"
   | "government_spending_ytd"
   | "leader_handle"
   | "leader_name"
+  | "lifetime_income_gain"
   | "mil_budget_pct"
   | "mil_synonym"
   | "mil_to_trials_ratio"
   | "money_wasted"
   | "money_wasted_per_day"
   | "task_title"
+  | "treaty_hale_gain"
   | "treaty_url"
+  | "trial_capacity_multiplier"
   | "trials_budget_pct";
 
 export interface ShareTemplate {
@@ -68,7 +74,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `The task: sign at {treaty_url}. Type your name, click submit. 30 seconds.`,
       ``,
-      `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for 12.3× clinical trial capacity — compressing disease eradication from 443 years to 36. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120.`,
+      `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for {trial_capacity_multiplier}× clinical trial capacity — compressing disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120.`,
       ``,
       `While it sits unsigned: {deaths_per_day} die per day waiting for treatments. {money_wasted_per_day} per day — each day late pushes the eradication finish line one day later. {deaths_from_delay} dead since this task was assigned.`,
       ``,
@@ -135,7 +141,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `Steps: 1) Go to {treaty_url} 2) Type name 3) Click submit`,
       `ETA: 30 seconds`,
       ``,
-      `Impact if resolved: Disease eradication compressed from 443 years to 36. 21.7 additional healthy years per human. $3.48M additional lifetime income per person.`,
+      `Impact if resolved: Disease eradication compressed from {eradication_years_status_quo} years to {eradication_years_treaty}. {treaty_hale_gain} additional healthy years per human. {lifetime_income_gain} additional lifetime income per person.`,
       ``,
       `Impact if unresolved: {deaths_from_delay} dead so far. Number goes up daily.`,
       ``,
@@ -158,7 +164,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     id: "deal-maker",
     label: "The Deal-Maker",
     requiredTokens: ["leader_name"],
-    body: "Look, {leader_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get 12× the clinical trials, disease clock drops from 443 years to 36. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
+    body: "Look, {leader_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get {trial_capacity_multiplier}× the clinical trials, disease clock drops from {eradication_years_status_quo} years to {eradication_years_treaty}. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
   },
   {
     id: "many-people-are-saying",
@@ -176,13 +182,13 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     id: "3am-truth",
     label: "3 AM Truth",
     requiredTokens: ["leader_name", "government_spending_ytd"],
-    body: "Can't sleep. Thinking about how {leader_name} has spent {government_spending_ytd} this year and STILL can't find 30 seconds to sign a treaty that saves 150,000 lives a day. Very low energy leadership. Very sad! {treaty_url}",
+    body: "Can't sleep. Thinking about how {leader_name} has spent {government_spending_ytd} this year and STILL can't find 30 seconds to sign a treaty that saves {daily_disease_deaths} lives a day. Very low energy leadership. Very sad! {treaty_url}",
   },
   {
     id: "tremendous-treaty",
     label: "The Tremendous Treaty",
     requiredTokens: ["leader_name", "deaths_per_day"],
-    body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. 443-year disease timeline? Down to 36. TREMENDOUS. {leader_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
+    body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. {eradication_years_status_quo}-year disease timeline? Down to {eradication_years_treaty}. TREMENDOUS. {leader_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
   },
   {
     id: "lumbergh",
@@ -217,7 +223,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym}.",
       "",
-      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36.  The task is literally typing your name in a box at {treaty_url}. It takes 30 seconds.`,
+      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. The task is literally typing your name in a box at {treaty_url}. It takes 30 seconds.`,
       ``,
       `Grateful for the {deaths_from_delay} people who died from curable diseases since this task was assigned to help move this conversation forward. Their stories continue to inspire.`,
       ``,

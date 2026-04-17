@@ -10,6 +10,14 @@ import {
   getGovernmentMetrics,
   getMilitaryToGovernmentClinicalTrialRatio,
 } from "@optimitron/data";
+import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  GLOBAL_DISEASE_DEATHS_DAILY,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_HALE_GAIN_YEAR_15,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+} from "@optimitron/data/parameters";
 import { MILITARY_SPENDING_SYNONYMS } from "@/lib/messaging";
 import { getCountryName } from "@/lib/geo";
 import type { ShareTokenKey } from "@/lib/tasks/share-templates";
@@ -363,6 +371,20 @@ export function buildTaskShareTokens(
       governmentSpendingYtd != null
         ? formatCompactCurrency(governmentSpendingYtd)
         : "",
+    eradication_years_status_quo: Math.round(
+      STATUS_QUO_QUEUE_CLEARANCE_YEARS.value,
+    ).toString(),
+    eradication_years_treaty: Math.round(
+      DFDA_QUEUE_CLEARANCE_YEARS.value,
+    ).toString(),
+    trial_capacity_multiplier: DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1),
+    daily_disease_deaths: new Intl.NumberFormat("en-US").format(
+      Math.round(GLOBAL_DISEASE_DEATHS_DAILY.value),
+    ),
+    lifetime_income_gain: formatCompactCurrency(
+      TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA.value,
+    ),
+    treaty_hale_gain: TREATY_HALE_GAIN_YEAR_15.value.toFixed(1),
   };
 }
 
