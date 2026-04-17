@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
@@ -73,12 +72,6 @@ export default async function TasksPage() {
             <div className="mx-auto mt-6 max-w-2xl text-left">
               <PostVoteReminders />
             </div>
-            <Link
-              href={`/tasks/${prizeRoot.id}`}
-              className="mt-6 inline-block text-sm font-black uppercase underline underline-offset-4 hover:text-brutal-pink"
-            >
-              Open full program &rarr;
-            </Link>
           </BrutalCard>
         ) : null}
 
