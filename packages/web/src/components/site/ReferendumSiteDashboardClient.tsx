@@ -2,6 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import type { TaskCardTask } from "@/components/tasks/task-card";
@@ -33,6 +34,9 @@ export function ReferendumSiteDashboardClient({
       </div>
       <div className="text-center">
         <TasksRootIntro />
+        <div className="mx-auto mt-6 max-w-2xl text-left">
+          <PostVoteReminders />
+        </div>
       </div>
       <ProgramTaskSection
         task={task}
