@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
+import { isEmailScope } from "@/lib/email/scopes";
+import type { EmailPreferencesState } from "@/types/settings";
 import type { DashboardNotificationPreference } from "@/types/dashboard";
 
 export interface SettingsData {
+  emailPreferences: EmailPreferencesState;
   notificationPreferences: DashboardNotificationPreference[];
 }
 
@@ -20,6 +23,10 @@ export async function getSettingsData(
   }
 
   return {
+    emailPreferences: {
+      newsletterSubscribed: user.newsletterSubscribed,
+      unsubscribedScopes: user.unsubscribedScopes.filter(isEmailScope),
+    },
     notificationPreferences: user.notificationPreferences.map((pref) => ({
       type: pref.type,
       channel: pref.channel,

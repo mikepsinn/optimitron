@@ -23,6 +23,9 @@ export default async function SettingsPage() {
   }
 
   return (
-    <SettingsClient notificationPreferences={data.notificationPreferences} />
+    <SettingsClient
+      emailPreferences={data.emailPreferences}
+      notificationPreferences={data.notificationPreferences}
+    />
   );
 }

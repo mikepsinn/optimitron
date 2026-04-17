@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { EmailLogStatus, Prisma, ShareSource } from "@optimitron/db";
 import { nanoid } from "nanoid";
 import { serverEnv } from "@/lib/env";
+import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { getReferralCountsByUserIds } from "@/lib/referral.server";
 import {
@@ -46,6 +47,7 @@ interface ReferralSequenceUser {
   referralCode: string;
   referralEmailSequenceLastSentAt: Date | null;
   referralEmailSequenceStep: number;
+  unsubscribedScopes?: readonly string[];
   username: string | null;
   // Optional so callers that haven't widened their query yet still typecheck.
   // The user-display helpers tolerate a missing person and fall back to the
@@ -91,12 +93,18 @@ function getReferralEmailBatchSize() {
 async function sendReferralSequenceStep(
   user: ReferralSequenceUser,
   message: ReferralSequenceMessage,
+  emailLogId: string,
+  options?: { skipSuppressionCheck?: boolean },
 ) {
   return sendResendEmail({
     to: user.email,
+    userId: user.id,
+    scope: "referral_sequence",
+    emailLogId,
     subject: message.subject,
     html: message.html,
     text: message.text,
+    skipSuppressionCheck: options?.skipSuppressionCheck,
   });
 }
 
@@ -157,6 +165,7 @@ async function buildReferralSequenceMessage(
   step: number,
   decoratedTasks: DecoratedTaskList,
   now: Date,
+  emailLogId: string,
 ): Promise<BuiltReferralMessage> {
   const countryCode = resolveUserCountryCode(user);
   const overdueSignerCount = computeOverdueSignerCount(decoratedTasks, now);
@@ -274,6 +283,11 @@ async function buildReferralSequenceMessage(
     shareUrl: referralUrl,
     step,
     subject: subjectPick.subject,
+    unsubscribeUrl: buildUnsubscribeUrl({
+      userId: user.id,
+      scope: "referral_sequence",
+      emailLogId,
+    }),
   });
 
   const sendContext: Prisma.InputJsonValue = {
@@ -329,13 +343,22 @@ async function markReferralEmailStatus(
   emailLogId: string,
   status: typeof EmailLogStatus[keyof typeof EmailLogStatus],
   errorMessage?: string | null,
+  providerMessageId?: string | null,
 ) {
   await prisma.emailLog.update({
     where: { id: emailLogId },
     data: {
       errorMessage: errorMessage ?? null,
       status,
+      ...(providerMessageId ? { providerMessageId } : {}),
     },
+  });
+}
+
+async function completeReferralSequenceForUser(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { referralEmailSequenceStep: REFERRAL_EMAIL_SEQUENCE_MAX_STEP },
   });
 }
 
@@ -355,6 +378,7 @@ async function claimReferralSequenceEmail(
   subject: string,
   now: Date,
   extras: ClaimExtras,
+  emailLogId: string,
 ): Promise<ReferralEmailClaim> {
   const templateId = getReferralSequenceTemplateId(step);
   const nextStep = getNextReferralSequenceStep(user, step);
@@ -375,6 +399,7 @@ async function claimReferralSequenceEmail(
 
       const created = await tx.emailLog.create({
         data: {
+          id: emailLogId,
           userId: user.id,
           toAddress: user.email,
           subject,
@@ -460,17 +485,41 @@ export async function sendWelcomeReferralEmailForUser(
     return { status: "disabled" as const };
   }
 
+  const welcomeAction = getReferralSequenceAction(
+    {
+      createdAt: user.createdAt,
+      newsletterSubscribed: user.newsletterSubscribed,
+      referralCount: 0,
+      referralEmailSequenceLastSentAt: user.referralEmailSequenceLastSentAt,
+      referralEmailSequenceStep: user.referralEmailSequenceStep,
+      unsubscribedScopes: user.unsubscribedScopes,
+    },
+    now,
+  );
+  if (welcomeAction?.type === "complete" && welcomeAction.reason === "opted_out") {
+    await completeReferralSequenceForUser(user.id);
+    return { status: "suppressed" as const, reason: "user_opt_out" as const };
+  }
+
   const decoratedTasks = await loadDecoratedTreatyTasks();
-  const message = await buildReferralSequenceMessage(user, 0, 0, decoratedTasks, now);
-  const claim = await claimReferralSequenceEmail(user, 0, message.subject, now, {
-    bodyTemplateBody: message.bodyTemplateBody,
-    bodyTemplateId: message.bodyTemplateId,
-    renderedMessage: message.renderedMessage,
-    sendContext: message.sendContext,
-    shareAttempts: message.shareAttempts,
-    subjectTemplate: message.subjectTemplate,
-    subjectVariantId: message.subjectVariantId,
-  });
+  const emailLogId = nanoid();
+  const message = await buildReferralSequenceMessage(user, 0, 0, decoratedTasks, now, emailLogId);
+  const claim = await claimReferralSequenceEmail(
+    user,
+    0,
+    message.subject,
+    now,
+    {
+      bodyTemplateBody: message.bodyTemplateBody,
+      bodyTemplateId: message.bodyTemplateId,
+      renderedMessage: message.renderedMessage,
+      sendContext: message.sendContext,
+      shareAttempts: message.shareAttempts,
+      subjectTemplate: message.subjectTemplate,
+      subjectVariantId: message.subjectVariantId,
+    },
+    emailLogId,
+  );
   if (claim.duplicate) {
     return { status: "duplicate" as const };
   }
@@ -480,12 +529,20 @@ export async function sendWelcomeReferralEmailForUser(
   }
 
   try {
-    const result = await sendReferralSequenceStep(user, message);
-    if (result.status !== "sent") {
+    const result = await sendReferralSequenceStep(user, message, claim.emailLogId, {
+      skipSuppressionCheck: !user.newsletterSubscribed,
+    });
+    if (result.status === "sent") {
+      await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT, null, result.id);
       return result;
     }
 
-    await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT);
+    const errorMessage =
+      result.status === "suppressed" ? "suppressed:user_opt_out" : `send_aborted:${result.status}`;
+    await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.FAILED, errorMessage);
+    if (result.status === "suppressed") {
+      await completeReferralSequenceForUser(user.id);
+    }
 
     return result;
   } catch (error) {
@@ -531,6 +588,7 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
       referralCode: true,
       referralEmailSequenceLastSentAt: true,
       referralEmailSequenceStep: true,
+      unsubscribedScopes: true,
       username: true,
       person: {
         select: {
@@ -578,24 +636,40 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     }
 
     try {
-      const message = await buildReferralSequenceMessage(user, referralCount, action.step, decoratedTasks, now);
-      const claim = await claimReferralSequenceEmail(user, action.step, message.subject, now, {
-        bodyTemplateBody: message.bodyTemplateBody,
-        bodyTemplateId: message.bodyTemplateId,
-        renderedMessage: message.renderedMessage,
-        sendContext: message.sendContext,
-        shareAttempts: message.shareAttempts,
-        subjectTemplate: message.subjectTemplate,
-        subjectVariantId: message.subjectVariantId,
-      });
+      const emailLogId = nanoid();
+      const message = await buildReferralSequenceMessage(user, referralCount, action.step, decoratedTasks, now, emailLogId);
+      const claim = await claimReferralSequenceEmail(
+        user,
+        action.step,
+        message.subject,
+        now,
+        {
+          bodyTemplateBody: message.bodyTemplateBody,
+          bodyTemplateId: message.bodyTemplateId,
+          renderedMessage: message.renderedMessage,
+          sendContext: message.sendContext,
+          shareAttempts: message.shareAttempts,
+          subjectTemplate: message.subjectTemplate,
+          subjectVariantId: message.subjectVariantId,
+        },
+        emailLogId,
+      );
       if (claim.duplicate || !claim.emailLogId) {
         continue;
       }
 
-      const result = await sendReferralSequenceStep(user, message);
+      const result = await sendReferralSequenceStep(user, message, claim.emailLogId);
       if (result.status === "sent") {
-        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT);
+        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT, null, result.id);
         sent += 1;
+      } else {
+        const errorMessage =
+          result.status === "suppressed" ? "suppressed:user_opt_out" : `send_aborted:${result.status}`;
+        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.FAILED, errorMessage);
+        if (result.status === "suppressed") {
+          await completeReferralSequenceForUser(user.id);
+          completed += 1;
+        }
       }
     } catch (error) {
       failures += 1;

@@ -5,12 +5,19 @@ import { getEmailUrls } from "@/lib/email-urls"
 interface EmailFooterProps {
   /** Short reason they're getting this email, e.g. "you opted in to weekly updates" */
   reason?: string
+  /**
+   * Per-recipient signed unsubscribe URL. When omitted, the footer shows only
+   * the Manage Preferences link and no unsubscribe affordance — callers who
+   * send transactional mail (magic-link, security) should leave this unset.
+   */
+  unsubscribeUrl?: string
 }
 
 export function EmailFooter({
   reason = "you signed up at optimitron.com",
+  unsubscribeUrl,
 }: EmailFooterProps) {
-  const { unsubscribeLink, dashboardLink } = getEmailUrls()
+  const { settingsLink } = getEmailUrls()
   return (
     <Section
       style={{
@@ -37,11 +44,15 @@ export function EmailFooter({
           margin: "0",
         }}
       >
-        <Link href={unsubscribeLink} style={{ color: "#000000", fontWeight: "bold" }}>
-          Unsubscribe
-        </Link>
-        {" \u2022 "}
-        <Link href={dashboardLink} style={{ color: "#000000", fontWeight: "bold" }}>
+        {unsubscribeUrl ? (
+          <>
+            <Link href={unsubscribeUrl} style={{ color: "#000000", fontWeight: "bold" }}>
+              Unsubscribe
+            </Link>
+            {" \u2022 "}
+          </>
+        ) : null}
+        <Link href={settingsLink} style={{ color: "#000000", fontWeight: "bold" }}>
           Manage Preferences
         </Link>
       </Text>

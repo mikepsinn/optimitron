@@ -1,6 +1,6 @@
 import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
 import { PRESIDENT_MANAGEMENT_HEADLINE } from "@/content/mission-statement";
-import { prefixEmailImage } from "@/lib/email-urls";
+import { getEmailUrls, prefixEmailImage } from "@/lib/email-urls";
 import { buildChannelHref, type ShareableChannel } from "@/lib/share-channels";
 import {
   formatCompactCount,
@@ -51,6 +51,7 @@ interface ReferralEmailState {
   referralCount: number;
   referralEmailSequenceLastSentAt?: Date | null;
   referralEmailSequenceStep: number;
+  unsubscribedScopes?: readonly string[];
 }
 
 export interface ReferralEmailContentInput {
@@ -70,6 +71,8 @@ export interface ReferralEmailContentInput {
   step: number;
   /** Pre-selected subject variant (server picks uniform-random + passes here). */
   subject?: string;
+  /** Signed unsubscribe URL rendered in the footer. */
+  unsubscribeUrl?: string;
 }
 
 type ReferralSequenceCompleteReason = "goal_met" | "opted_out";
@@ -524,6 +527,14 @@ export function getReferralSequenceAction(
     return { type: "complete", reason: "goal_met" };
   }
 
+  const unsubscribedScopes = state.unsubscribedScopes ?? [];
+  if (
+    unsubscribedScopes.includes("all") ||
+    unsubscribedScopes.includes("referral_sequence")
+  ) {
+    return { type: "complete", reason: "opted_out" };
+  }
+
   if (state.referralEmailSequenceStep > 0 && !state.newsletterSubscribed) {
     return { type: "complete", reason: "opted_out" };
   }
@@ -596,7 +607,9 @@ export function buildReferralSequenceEmail({
   shareUrl,
   step,
   subject: overrideSubject,
+  unsubscribeUrl,
 }: ReferralEmailContentInput) {
+  const { settingsLink } = getEmailUrls();
   const presidentFullName = presidentHighlight?.leaderFullName ?? null;
   const presidentFirstName = presidentHighlight?.leaderFirstName ?? null;
 
@@ -644,6 +657,11 @@ export function buildReferralSequenceEmail({
     "— Wishonia, PMO",
     "",
     `Forward this? Your link: ${shareUrl}`,
+    "",
+    `Manage email settings: ${settingsLink}`,
+    ...(unsubscribeUrl
+      ? [`Unsubscribe: ${unsubscribeUrl}`]
+      : []),
   ];
 
   const html = `
@@ -675,6 +693,8 @@ export function buildReferralSequenceEmail({
           <p style="margin:6px 0 0;font-size:10px;line-height:1.5;color:#111827;">
             Forward this? Your link tracks it: <a href="${escapeAttr(shareUrl)}" style="color:#111827;text-decoration:underline;">${escapeHtml(shareUrl)}</a>
           </p>
+          <p style="margin:6px 0 0;font-size:10px;line-height:1.5;color:#111827;"><a href="${escapeAttr(settingsLink)}" style="color:#111827;text-decoration:underline;">Manage email settings</a></p>
+          ${unsubscribeUrl ? `<p style="margin:6px 0 0;font-size:10px;line-height:1.5;color:#111827;"><a href="${escapeAttr(unsubscribeUrl)}" style="color:#111827;text-decoration:underline;">Unsubscribe from weekly reminders</a></p>` : ""}
         </div>
       </div>
     </div>

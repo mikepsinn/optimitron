@@ -201,6 +201,7 @@ enum ActivityType {
   CREATED_SURVEY
   COMPLETED_SURVEY
   JOINED_ORGANIZATION
+  UNSUBSCRIBED
 }
 
 /// Channel from which a share was produced. Both channels use the same template catalog
@@ -527,8 +528,14 @@ model User {
   /// Set once the user has completed email verification
   emailVerified DateTime?
 
-  /// Whether the user wants updates about progress
+  /// Whether the user wants updates about progress. Master kill switch:
+  /// false is equivalent to having "all" in unsubscribedScopes.
   newsletterSubscribed Boolean @default(true)
+
+  /// Scopes the user has opted out of (e.g. "referral_sequence", "onboarding").
+  /// The literal scope "all" means opt-out of every non-transactional email.
+  /// Transactional scopes (magic_link, account_security) bypass this list.
+  unsubscribedScopes String[] @default([])
 
   /// Preferred IANA time zone for reminders and daily check-ins
   timeZone String?
@@ -729,6 +736,7 @@ model User {
   @@index([referralEmailSequenceStep, referralEmailSequenceLastSentAt])
   @@index([isPublic])
   @@index([deletedAt])
+  @@index([unsubscribedScopes], type: Gin)
 }
 
 /// OAuth, email, or credentials account attached to a user
@@ -4383,6 +4391,10 @@ model EmailLog {
   /// Template or category identifier (e.g. "referral_sequence_0", "referendum_milestone")
   templateId String?
 
+  /// Resend (or other provider) message ID, returned from the send API.
+  /// Used to match incoming webhook events back to this row.
+  providerMessageId String?
+
   /// Human-readable ID of the subject variant picked by the selector
   subjectVariantId String?
 
@@ -4427,6 +4439,7 @@ model EmailLog {
   @@unique([userId, templateId])
   @@index([userId])
   @@index([templateId])
+  @@index([providerMessageId])
   @@index([subjectVariantId])
   @@index([bodyTemplateId])
   @@index([status])

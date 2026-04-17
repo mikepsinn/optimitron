@@ -42,7 +42,7 @@ export function getEmailUrls() {
   const base = getBaseUrl();
   return {
     dashboardLink: `${base}/dashboard`,
-    unsubscribeLink: `${base}/api/email/unsubscribe`,
+    settingsLink: `${base}/settings#email-preferences`,
     prizeLink: `${base}/prize`,
     wishocracyLink: `${base}/wishocracy`,
     alignmentLink: `${base}/alignment`,

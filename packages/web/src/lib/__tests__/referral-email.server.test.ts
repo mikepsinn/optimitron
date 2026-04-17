@@ -11,6 +11,7 @@ interface StoredUser {
   referralCode: string;
   referralEmailSequenceLastSentAt: Date | null;
   referralEmailSequenceStep: number;
+  unsubscribedScopes: string[];
   username: string | null;
 }
 
@@ -87,6 +88,7 @@ vi.mock("@/lib/resend", () => ({
 
 vi.mock("@/lib/url", () => ({
   buildUserReferralUrl: mocks.buildUserReferralUrl,
+  getBaseUrl: vi.fn(() => "https://example.com"),
 }));
 
 import {
@@ -102,6 +104,7 @@ function cloneUser(user: StoredUser): StoredUser {
     referralEmailSequenceLastSentAt: user.referralEmailSequenceLastSentAt
       ? new Date(user.referralEmailSequenceLastSentAt)
       : null,
+    unsubscribedScopes: [...user.unsubscribedScopes],
   };
 }
 
@@ -150,6 +153,7 @@ function createUser(overrides: Partial<StoredUser> = {}): StoredUser {
     referralCode: "REFCODE1",
     referralEmailSequenceLastSentAt: null,
     referralEmailSequenceStep: 0,
+    unsubscribedScopes: [],
     username: "test-user",
     ...overrides,
   };
@@ -509,6 +513,33 @@ describe("referral email server", () => {
       }),
     );
     expect(state.emailLogs).toHaveLength(1);
+  });
+
+  it("stops the referral sequence when the user has opted out of that scope", async () => {
+    state.users.push(
+      createUser({
+        referralEmailSequenceLastSentAt: new Date("2026-03-10T12:00:00.000Z"),
+        referralEmailSequenceStep: 1,
+        unsubscribedScopes: ["referral_sequence"],
+      }),
+    );
+
+    await expect(
+      processDueReferralSequenceEmails(new Date("2026-03-11T12:00:00.000Z")),
+    ).resolves.toEqual({
+      completed: 1,
+      disabled: false,
+      failures: 0,
+      scanned: 1,
+      sent: 0,
+    });
+
+    expect(mocks.sendResendEmail).not.toHaveBeenCalled();
+    expect(state.users[0]).toEqual(
+      expect.objectContaining({
+        referralEmailSequenceStep: REFERRAL_EMAIL_SEQUENCE_LENGTH,
+      }),
+    );
   });
 
   it("marks the log failed and keeps the user advanced after a send failure", async () => {

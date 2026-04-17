@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation"
 import { ArcadeTag } from "@/components/ui/arcade-tag"
 import { NotificationPreferencesCard } from "@/components/dashboard/NotificationPreferencesCard"
+import { EmailPreferencesCard } from "@/components/settings/EmailPreferencesCard"
 import { ThemePreferencesCard } from "@/components/settings/ThemePreferencesCard"
 import type { DashboardNotificationPreference } from "@/types/dashboard"
+import type { EmailPreferencesState } from "@/types/settings"
 
 interface SettingsClientProps {
+  emailPreferences: EmailPreferencesState
   notificationPreferences: DashboardNotificationPreference[]
 }
 
-export function SettingsClient({ notificationPreferences }: SettingsClientProps) {
+export function SettingsClient({ emailPreferences, notificationPreferences }: SettingsClientProps) {
   const router = useRouter()
 
   const refreshPage = () => {
@@ -32,6 +35,10 @@ export function SettingsClient({ notificationPreferences }: SettingsClientProps)
 
       <div className="space-y-8">
         <ThemePreferencesCard />
+        <EmailPreferencesCard
+          initialPreferences={emailPreferences}
+          onRefresh={refreshPage}
+        />
         <NotificationPreferencesCard
           preferences={notificationPreferences}
           onRefresh={refreshPage}

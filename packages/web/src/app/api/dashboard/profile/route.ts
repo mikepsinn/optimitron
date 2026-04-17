@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
+import {
+  isEmailScope,
+  isMasterScope,
+  isTransactionalScope,
+  type EmailScope,
+} from "@/lib/email/scopes";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 
@@ -82,6 +88,13 @@ export async function PATCH(req: NextRequest) {
 
       // Mirror displayName/handle to the legacy User columns so that any code
       // path still reading them keeps working until Phase 3 drops the columns.
+      const unsubscribedScopesUpdate = Array.isArray(data.unsubscribedScopes)
+        ? (data.unsubscribedScopes as unknown[]).filter(
+            (s): s is EmailScope =>
+              isEmailScope(s) && !isTransactionalScope(s) && !isMasterScope(s),
+          )
+        : undefined;
+
       await tx.user.update({
         where: { id: userId },
         data: {
@@ -92,6 +105,9 @@ export async function PATCH(req: NextRequest) {
           website: data.website,
           headline: data.headline,
           coverImage: data.coverImage,
+          ...(unsubscribedScopesUpdate !== undefined
+            ? { unsubscribedScopes: unsubscribedScopesUpdate }
+            : {}),
           ...(normalizedHandle !== undefined
             ? { username: normalizedHandle }
             : {}),
