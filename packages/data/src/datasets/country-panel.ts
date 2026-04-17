@@ -184,12 +184,12 @@ export function getCountryPanelLatestResolved(): CountryPanelRow[] {
       if (field === "afterTaxMedianIncomeIsAfterTax") {
         const prior = acc.fieldYears[field] ?? -Infinity;
         if (row.year >= prior) {
-          (acc.row[field] as boolean) = value as boolean;
+          acc.row[field] = value as boolean;
           acc.fieldYears[field] = row.year;
         }
         continue;
       }
-      if (value == null) continue;
+      if (value === null) continue;
       const prior = acc.fieldYears[field] ?? -Infinity;
       if (row.year >= prior) {
         (acc.row[field] as typeof value) = value;
