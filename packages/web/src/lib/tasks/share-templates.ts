@@ -1,9 +1,14 @@
 /**
  * Share-text templates for the task reminder dialog.
  *
- * Six voice variants of the same shameable message. All templates consume the
- * same flat token set produced by `buildTaskShareTokens`. Tokens that are
- * unresolved render as empty strings via `renderTemplate`.
+ * Seven voice variants of the same overdue-task reminder. Each template
+ * commits to a single container (memo, ticket, invoice, post, voicemail);
+ * the dissonance between the form and the subject does the comedy. Don't
+ * argue the full case inside any one variant — let the form carry it.
+ *
+ * All templates consume the same flat token set produced by
+ * `buildTaskShareTokens`. Tokens that are unresolved render as empty
+ * strings via `renderTemplate`.
  *
  * `requiredTokens` lists the tokens whose absence makes the template
  * incoherent — the picker filters those out so a non-signer task never shows
@@ -63,7 +68,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `The task: sign at {treaty_url}. Type your name, click submit. 30 seconds.`,
       ``,
-      `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for 12.3× clinical trial capacity — compressing disease eradication from 443 years to 36. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120. The trade is rational.`,
+      `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for 12.3× clinical trial capacity — compressing disease eradication from 443 years to 36. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120.`,
       ``,
       `While it sits unsigned: {deaths_per_day} die per day waiting for treatments. {money_wasted_per_day} per day — each day late pushes the eradication finish line one day later. {deaths_from_delay} dead since this task was assigned.`,
       ``,
@@ -87,12 +92,19 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `PERFORMANCE REVIEW — {leader_name}, {country}`,
       ``,
       `Budget consumed (YTD): {government_spending_ytd}`,
-      `Stated purpose: "Promote the general welfare"`,
+      `Job responsibilities: "Promote the general welfare"`,
       `Welfare promoted: None detected`,
       ``,
-      `There is a treaty at {treaty_url}. It moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. It takes 30 seconds to sign.`,
+      `Outstanding action items: 1 (Sign the 1% Treaty — {treaty_url})`,
+      `Estimated time to complete: 30 seconds`,
+      `Days overdue: {days_overdue}`,
+      `Previous reminders sent: {days_overdue}`,
+      `Employee response: N/A`,
       ``,
-      "Since it went up, {deaths_from_delay} people have died waiting for cures. {money_wasted} is the bill for pushing the eradication finish line back {days_overdue} days. {country} spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. That's {trials_budget_pct} of the combined budget going to finding out which medicines work.",
+      `Casualties accrued during review period: {deaths_from_delay}`,
+      `Cost accrued during review period: {money_wasted}`,
+      `Spending ratio (military : clinical trials): {mil_to_trials_ratio} : 1`,
+      `Share of combined budget actually testing whether medicines work: {trials_budget_pct}`,
       ``,
       `The task is typing your name in a box.`,
       ``,
@@ -111,7 +123,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "government_spending_ytd",
     ],
     body: [
-      `TICKET #{days_overdue}-001 — CRITICAL`,
+      `TICKET #{days_overdue}-001`,
+      `Severity: SEV-1`,
+      `Status: OVERDUE`,
       `Assignee: {leader_name}`,
       `Status: OVERDUE ({days_overdue} days)`,
       `Casualties since ticket opened: {deaths_from_delay}`,
@@ -135,11 +149,47 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     body: ".@{leader_handle} For every $1 you spend on clinical trials, ${mil_to_trials_ratio} goes to {mil_synonym}. There's a treaty that fixes this. Takes 30 seconds to sign. {deaths_from_delay} people have died waiting. {treaty_url}",
   },
   {
+    id: "sleepy-sign-it",
+    label: "Sleepy Sign-It",
+    requiredTokens: ["leader_name", "deaths_from_delay"],
+    body: "Sleepy {leader_name} STILL hasn't signed the 1% Treaty. 30 seconds! I could do it in 5. {deaths_from_delay} people have died waiting. Very weak leadership. Very sad. {treaty_url} — sign it!",
+  },
+  {
+    id: "deal-maker",
+    label: "The Deal-Maker",
+    requiredTokens: ["leader_name"],
+    body: "Look, {leader_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get 12× the clinical trials, disease clock drops from 443 years to 36. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
+  },
+  {
+    id: "many-people-are-saying",
+    label: "Many People Are Saying",
+    requiredTokens: ["leader_name", "deaths_from_delay"],
+    body: "Many people are saying {leader_name} can't sign the 1% Treaty because he doesn't know how to read a PDF. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead since it hit his desk. Someone help him out. {treaty_url}",
+  },
+  {
+    id: "the-ratio",
+    label: "The Ratio",
+    requiredTokens: ["country", "mil_to_trials_ratio"],
+    body: "{country} spends ${mil_to_trials_ratio} on BOMBS for every $1 on finding out which medicines work. ONE DOLLAR. Who negotiated this? Total disaster. FIRE THEM. Sign the treaty. {treaty_url}. Easy!",
+  },
+  {
+    id: "3am-truth",
+    label: "3 AM Truth",
+    requiredTokens: ["leader_name", "government_spending_ytd"],
+    body: "Can't sleep. Thinking about how {leader_name} has spent {government_spending_ytd} this year and STILL can't find 30 seconds to sign a treaty that saves 150,000 lives a day. Very low energy leadership. Very sad! {treaty_url}",
+  },
+  {
+    id: "tremendous-treaty",
+    label: "The Tremendous Treaty",
+    requiredTokens: ["leader_name", "deaths_per_day"],
+    body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. 443-year disease timeline? Down to 36. TREMENDOUS. {leader_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
+  },
+  {
     id: "lumbergh",
     label: "Office Memo",
     requiredTokens: ["leader_name", "deaths_from_delay", "mil_to_trials_ratio"],
     body: [
-      `Yeah, hi {leader_name}. So if you could go ahead and sign the 1% Treaty, that'd be great.`,
+      `Yeahhh, hi {leader_name}, if you could go ahead and sign the 1% Treaty, that'd be great.`,
       ``,
       `It's at {treaty_url}. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
       ``,
@@ -163,15 +213,17 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "trials_budget_pct",
     ],
     body: [
-      `{leader_name} — status update request from your employers.`,
-      "",
+      `Excited to flag that {leader_name} has an amazing opportunity to sign the 1% Treaty 🙏`,
+      ``,
       "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym}.",
       "",
-      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36. Since it became available, {deaths_from_delay} people have died waiting for cures and {money_wasted} has accrued — the price of postponing eradication by {days_overdue} days.`,
-      "",
-      `The signing process takes 30 seconds: {treaty_url}`,
-      "",
-      `The upside-to-downside ratio of this action is 58 million to 1. On most planets, that number ends the conversation.`,
+      `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from 443 years to 36.  The task is literally typing your name in a box at {treaty_url}. It takes 30 seconds.`,
+      ``,
+      `Grateful for the {deaths_from_delay} people who died from curable diseases since this task was assigned to help move this conversation forward. Their stories continue to inspire.`,
+      ``,
+      `Proud of the work ahead. Link for anyone who wants to drive impact: {treaty_url}`,
+      ``,
+      `#ServantLeadership #Accountability #HumanWelfare #ImpactDriven #PeopleFirst`,
     ].join("\n"),
   },
   {
@@ -204,7 +256,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `Late fees (accruing daily):`,
       `— {deaths_per_day} deaths`,
-      `— {money_wasted_per_day} lost`,
+      `— {money_wasted_per_day} in medical bills and lost output`,
       ``,
       `This is reminder #{days_overdue}.`,
     ].join("\n"),

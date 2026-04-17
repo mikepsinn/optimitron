@@ -368,7 +368,7 @@ describe("share-text templates", () => {
   }
 });
 
-describe("Trump / US signer — all 6 templates must render", () => {
+describe("Trump / US signer — all templates must render", () => {
   // Realistic US data: military ~$886B (SIPRI 2024), gov budget ~$10.9T (IMF),
   // treaty delay ~500 days from mid-2025 launch.
   const TRUMP_INPUT = {
@@ -393,7 +393,7 @@ describe("Trump / US signer — all 6 templates must render", () => {
     }
   });
 
-  it("all 6 templates pass the usability filter", () => {
+  it("all templates pass the usability filter", () => {
     const usable = getUsableShareTemplates(trumpTokens);
     expect(
       usable.map((t) => t.id).sort(),
@@ -415,12 +415,16 @@ describe("Trump / US signer — all 6 templates must render", () => {
       }
     });
 
-    it(`"${template.id}" contains Trump's name or handle`, () => {
+    it(`"${template.id}" references the target (leader or country)`, () => {
       const rendered = renderTemplate(template.body, trumpTokens);
-      const hasTrump =
+      const hasTarget =
         rendered.includes("Donald Trump") ||
-        rendered.includes("realDonaldTrump");
-      expect(hasTrump, `Template "${template.id}" doesn't reference Trump`).toBe(true);
+        rendered.includes("realDonaldTrump") ||
+        rendered.includes(trumpTokens.country);
+      expect(
+        hasTarget,
+        `Template "${template.id}" doesn't reference Trump or the country`,
+      ).toBe(true);
     });
   }
 });
@@ -448,7 +452,7 @@ describe("getGovernmentLeader from data package", () => {
   });
 });
 
-describe("full pipeline: data-package leader → share tokens → all 6 templates (Trump)", () => {
+describe("full pipeline: data-package leader → share tokens → all templates (Trump)", () => {
   const us = getGovernmentLeader("US");
 
   // This test simulates exactly what task-row.tsx does:
@@ -482,7 +486,7 @@ describe("full pipeline: data-package leader → share tokens → all 6 template
     expect(fallbackTokens.money_wasted).not.toBe("");
   });
 
-  it("all 6 templates pass the usability filter", () => {
+  it("all templates pass the usability filter", () => {
     const usable = getUsableShareTemplates(fallbackTokens);
     const usableIds = usable.map((t) => t.id).sort();
     const allIds = SHARE_TEMPLATES.map((t) => t.id).sort();
