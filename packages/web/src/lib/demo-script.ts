@@ -447,7 +447,7 @@ export const SEGMENTS = [
     slideId: "daily-death-toll",
     bgColor: "foreground",
     tags: ["hook", "problem"],
-    narration: `${deathsDaily} people die every day from treatable diseases. Your governments spend ${milToTrialRatio} dollars on weapons and military systems for every one dollar they spend on clinical trials. That is not a policy disagreement. That is a configuration error in a collective intelligence system controlling eight billion lives.`,
+    narration: `${deathsDaily} people die every day waiting for treatments. Your governments spend ${milToTrialRatio} dollars on weapons and military systems for every one dollar they spend on clinical trials. That is not a policy disagreement. That is a configuration error in a collective intelligence system controlling eight billion lives.`,
   },
   {
     id: "hook-misaligned-ai",

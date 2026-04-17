@@ -13,7 +13,7 @@ interface SocialShareButtonsProps {
   tweetText?: string
 }
 
-const defaultTweetText = `${fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value)} people die daily from treatable diseases. Governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on weapons than finding new treatments. 30 seconds to vote for the 1% Treaty:`
+const defaultTweetText = `${fmtRaw(GLOBAL_DISEASE_DEATHS_DAILY.value)} people die daily waiting for treatments. Governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on weapons than finding new treatments. 30 seconds to vote for the 1% Treaty:`
 
 const buttonBase: React.CSSProperties = {
   display: "block",
