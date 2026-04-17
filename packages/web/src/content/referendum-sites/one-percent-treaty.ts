@@ -60,7 +60,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   home: {
     eyebrow: "1% Treaty",
     heroTitle:
-      "Skim. Sign. End war and disease. In that order.",
+      "Please quickly skim and sign to end war and disease.",
     titleLines: [
       "Redirect one percent of military spending",
       "to finding out which medicines actually work.",
