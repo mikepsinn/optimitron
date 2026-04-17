@@ -81,6 +81,13 @@ interface IDialogContentProps
   extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof dialogVariants> {
   overlay?: IDialogBackgroupProps;
+  /**
+   * Required accessible name for the dialog. Rendered inside `VisuallyHidden`
+   * by default so the layout is unaffected — consumers who want a visible
+   * title should still pass it here and add their own visual heading.
+   * Radix warns when `Dialog.Title` is missing or empty.
+   */
+  title?: string;
 }
 
 const DialogContent = React.forwardRef<HTMLDivElement, IDialogContentProps>(
@@ -90,6 +97,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, IDialogContentProps>(
       size = "auto",
       className,
       overlay,
+      title,
       ...props
     } = inputProps;
 
@@ -102,7 +110,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, IDialogContentProps>(
           {...props}
         >
           <VisuallyHidden>
-            <ReactDialog.Title />
+            <ReactDialog.Title>{title ?? "Dialog"}</ReactDialog.Title>
           </VisuallyHidden>
           <div className="flex flex-col relative">{children}</div>
         </ReactDialog.Content>

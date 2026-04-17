@@ -68,6 +68,11 @@ interface TaskRowShareProps {
    * falls back to `shareText` with no picker.
    */
   shareTokens?: Record<string, string>;
+  /**
+   * `"sm"` (default) — compact "Remind" pill for list rows.
+   * `"lg"` — full-width "Send Reminder" hero button for task detail pages.
+   */
+  size?: "sm" | "lg";
   targetLabel: string;
   taskId: string;
   taskTitle: string;
@@ -257,6 +262,7 @@ export function TaskRowShare({
   baseUrl,
   shareText,
   shareTokens,
+  size = "sm",
   targetLabel,
   taskId,
   taskTitle,
@@ -389,7 +395,10 @@ export function TaskRowShare({
   }
 
   const triggerClassName =
-    "inline-flex items-center justify-center border-2 border-foreground bg-brutal-pink px-3 py-1 text-xs font-black uppercase tracking-wide text-brutal-pink-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]";
+    size === "lg"
+      ? "inline-flex w-full items-center justify-center border-4 border-foreground bg-brutal-pink px-6 py-4 text-lg font-black uppercase tracking-wide text-brutal-pink-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:text-xl"
+      : "inline-flex items-center justify-center border-2 border-foreground bg-brutal-pink px-3 py-1 text-xs font-black uppercase tracking-wide text-brutal-pink-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]";
+  const triggerLabel = size === "lg" ? "Send Reminder" : "Remind";
 
   const composerProps = {
     availableTemplates,
@@ -405,8 +414,8 @@ export function TaskRowShare({
   };
 
   return (
-    <div className="relative">
-      <div className="hidden md:block">
+    <div className={size === "lg" ? "relative w-full" : "relative"}>
+      <div className={size === "lg" ? "hidden md:block w-full" : "hidden md:block"}>
         <Dialog open={desktopOpen} onOpenChange={setDesktopOpen}>
           <Dialog.Trigger asChild>
             <button
@@ -414,11 +423,12 @@ export function TaskRowShare({
               className={triggerClassName}
               type="button"
             >
-              Remind
+              {triggerLabel}
             </button>
           </Dialog.Trigger>
           <Dialog.Content
             className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            title={`Send reminder — ${taskTitle}`}
           >
             <Dialog.Close className="absolute right-3 top-3 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-2 border-foreground bg-background text-xs font-black text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
               ✕
@@ -428,7 +438,7 @@ export function TaskRowShare({
         </Dialog>
       </div>
 
-      <div className="md:hidden">
+      <div className={size === "lg" ? "md:hidden w-full" : "md:hidden"}>
         <Drawer direction="bottom" open={mobileOpen} onOpenChange={setMobileOpen}>
           <Drawer.Trigger asChild>
             <button
@@ -436,7 +446,7 @@ export function TaskRowShare({
               className={triggerClassName}
               type="button"
             >
-              Remind
+              {triggerLabel}
             </button>
           </Drawer.Trigger>
           <Drawer.Content className="max-h-[90vh] overflow-y-auto border-t-4 border-foreground bg-background">

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { ProgramCard, ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
@@ -67,19 +68,18 @@ export default async function TasksPage() {
           rendered indented immediately beneath.
         */}
         {prizeRoot ? (
-          <Link
-            href={`/tasks/${prizeRoot.id}`}
-            className="block"
-            aria-label="Open the Promote the General Welfare root task"
-          >
-            <BrutalCard
-              bgColor="yellow"
-              shadowSize={8}
-              className="p-8 text-center transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px]"
+          <BrutalCard bgColor="yellow" shadowSize={8} className="p-8 text-center">
+            <TasksRootIntro />
+            <div className="mx-auto mt-6 max-w-2xl text-left">
+              <PostVoteReminders />
+            </div>
+            <Link
+              href={`/tasks/${prizeRoot.id}`}
+              className="mt-6 inline-block text-sm font-black uppercase underline underline-offset-4 hover:text-brutal-pink"
             >
-              <TasksRootIntro />
-            </BrutalCard>
-          </Link>
+              Open full program &rarr;
+            </Link>
+          </BrutalCard>
         ) : null}
 
         {/*

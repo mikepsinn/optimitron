@@ -16,7 +16,7 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskMilestoneEditor } from "@/components/tasks/TaskMilestoneEditor";
-import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
+import { TaskRowShare } from "@/components/tasks/task-row-share";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { TaskBlockerCard } from "@/components/tasks/blocks/TaskBlockerCard";
 import { TaskContextList } from "@/components/tasks/blocks/TaskContextList";
@@ -33,6 +33,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   buildTaskShareText,
+  buildTaskShareTokens,
   formatCompactCount,
   formatCompactCurrency,
   getTaskDelayStats,
@@ -45,7 +46,7 @@ import {
 } from "@/lib/tasks/delay-attribution";
 import { getSignInPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
-import { readTaskContext } from "@/lib/tasks/task-context";
+import { getAssigneeTwitterHandle, readTaskContext } from "@/lib/tasks/task-context";
 import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
 import {
   getTaskActivityTimeline,
@@ -358,17 +359,30 @@ export default async function TaskDetailPage({
             isOverdue={delayStats.isOverdue}
           />
           {task.isPublic ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs font-bold uppercase text-muted-foreground">
-                Send reminder:
-              </span>
-              <TaskShareButtons
-                taskId={task.id}
-                shareText={shareText}
-                taskTitle={task.title}
-                variant="icon"
-              />
-            </div>
+            <TaskRowShare
+              shareText={shareText}
+              shareTokens={buildTaskShareTokens({
+                countryCode: task.assigneePerson?.countryCode ?? null,
+                currentDelayDays: delayStats.currentDelayDays,
+                currentEconomicValueUsdLost: snapshotWastedUsd,
+                currentHumanLivesLost: snapshotDeaths,
+                currentSufferingHoursLost: delayStats.currentSufferingHoursLost,
+                governmentBudgetUsdPerYear:
+                  context.assigneeProfile?.governmentBudgetUsdPerYear ?? null,
+                leaderHandle:
+                  getAssigneeTwitterHandle(task.contextJson) ??
+                  task.assigneePerson?.handle ??
+                  null,
+                militaryBudgetUsdPerYear:
+                  context.assigneeProfile?.budgetUsdPerYear ?? null,
+                targetLabel,
+                taskTitle: task.title,
+              })}
+              size="lg"
+              targetLabel={targetLabel}
+              taskId={task.id}
+              taskTitle={task.title}
+            />
           ) : null}
           <TaskHeroStats
             effortHours={task.estimatedEffortHours}
