@@ -65,9 +65,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `The math: humanity has 120 apocalypses worth of mass murder capacity. The treaty reduces this to 118.8 in exchange for 12.3× clinical trial capacity — compressing disease eradication from 443 years to 36. You can only have one apocalypse. 118.8 is functionally indistinguishable from 120. The trade is rational.`,
       ``,
-      `While it sits unsigned: {deaths_per_day} die per day waiting for treatments. {money_wasted_per_day} per day — each day late pushes the eradication finish line one day later. {deaths_from_delay} dead since the treaty went up.`,
+      `While it sits unsigned: {deaths_per_day} die per day waiting for treatments. {money_wasted_per_day} per day — each day late pushes the eradication finish line one day later. {deaths_from_delay} dead since this task was assigned.`,
       ``,
-      `Please sign it. This is the easiest task on your desk.`,
+      `Thank you.`,
     ].join("\n"),
   },
   {
