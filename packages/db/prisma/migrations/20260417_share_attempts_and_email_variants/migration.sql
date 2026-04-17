@@ -17,11 +17,44 @@ ALTER TABLE "Referral"
 
 CREATE INDEX "Referral_originatingShareAttemptId_idx" ON "Referral"("originatingShareAttemptId");
 
--- AlterTable: ReferralClick — add loose pointer to the ShareAttempt that generated the URL
-ALTER TABLE "ReferralClick"
-  ADD COLUMN "shareAttemptId" TEXT;
+-- ReferralClick never existed in the historical migration chain on clean
+-- databases. Create the table if needed, then apply the new ShareAttempt hook.
+CREATE TABLE IF NOT EXISTS "ReferralClick" (
+  "id" TEXT NOT NULL,
+  "code" TEXT NOT NULL,
+  "referrerUserId" TEXT,
+  "shareAttemptId" TEXT,
+  "refererUrl" TEXT,
+  "userAgent" TEXT,
+  "countryCode" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "deletedAt" TIMESTAMP(3),
 
-CREATE INDEX "ReferralClick_shareAttemptId_idx" ON "ReferralClick"("shareAttemptId");
+  CONSTRAINT "ReferralClick_pkey" PRIMARY KEY ("id")
+);
+
+ALTER TABLE "ReferralClick"
+  ADD COLUMN IF NOT EXISTS "shareAttemptId" TEXT;
+
+CREATE INDEX IF NOT EXISTS "ReferralClick_code_idx"            ON "ReferralClick"("code");
+CREATE INDEX IF NOT EXISTS "ReferralClick_referrerUserId_idx"  ON "ReferralClick"("referrerUserId");
+CREATE INDEX IF NOT EXISTS "ReferralClick_shareAttemptId_idx"  ON "ReferralClick"("shareAttemptId");
+CREATE INDEX IF NOT EXISTS "ReferralClick_createdAt_idx"       ON "ReferralClick"("createdAt");
+CREATE INDEX IF NOT EXISTS "ReferralClick_deletedAt_idx"       ON "ReferralClick"("deletedAt");
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'ReferralClick_referrerUserId_fkey'
+  ) THEN
+    ALTER TABLE "ReferralClick"
+      ADD CONSTRAINT "ReferralClick_referrerUserId_fkey"
+      FOREIGN KEY ("referrerUserId") REFERENCES "User"("id")
+      ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+END $$;
 
 -- CreateTable: ShareAttempt
 CREATE TABLE "ShareAttempt" (
