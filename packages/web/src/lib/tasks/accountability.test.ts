@@ -319,7 +319,12 @@ describe("share-text templates", () => {
       const unique = [...new Set(placeholders)];
 
       // These tokens always have a non-empty default, so they're never required
-      const alwaysAvailable = new Set(["citizen_name", "mil_synonym", "task_title"]);
+      const alwaysAvailable = new Set([
+        "citizen_name",
+        "mil_synonym",
+        "task_title",
+        "treaty_url",
+      ]);
 
       for (const token of unique) {
         if (alwaysAvailable.has(token)) continue;
