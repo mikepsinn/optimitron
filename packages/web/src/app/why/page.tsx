@@ -7,7 +7,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
   const content = getReferendumSiteContent(site.contentKey);
-  return getSiteMetadata(site, content.metadata.why);
+  return getSiteMetadata(site, content.metadata.why, "/why");
 }
 
 export default async function WhyPage() {

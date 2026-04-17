@@ -7,7 +7,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
   const content = getReferendumSiteContent(site.contentKey);
-  return getSiteMetadata(site, content.metadata.legal);
+  return getSiteMetadata(site, content.metadata.legal, "/legal");
 }
 
 export default async function LegalPage() {

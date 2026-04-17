@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
+import { getSiteConfig } from "@/lib/site";
 import {
   ROUTES,
   communityLinks,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/routes";
 
 export default function Footer() {
+  const site = getSiteConfig("optimitron");
+
   return (
     <footer className="border-t-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -95,6 +98,13 @@ export default function Footer() {
               Source code
             </NavItemLink>{" "}
             open for inspection by any sufficiently curious primate.
+          </p>
+          <p className="mt-3 text-xs">
+            Published by {site.organizationName}. Contact{" "}
+            <a href={`mailto:${site.publicContactEmail}`} className="underline hover:no-underline">
+              {site.publicContactEmail}
+            </a>
+            .
           </p>
         </div>
       </div>

@@ -13,7 +13,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
   const content = getReferendumSiteContent(site.contentKey);
-  return getSiteMetadata(site, content.metadata.endorse);
+  return getSiteMetadata(site, content.metadata.endorse, "/endorse");
 }
 
 export default async function EndorsePage() {

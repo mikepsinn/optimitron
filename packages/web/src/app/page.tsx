@@ -43,12 +43,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (site.primaryReferendumSlug) {
     const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.home);
+    return getSiteMetadata(site, content.metadata.home, "/");
   }
 
   return {
     title: "Optimitron — The Earth Optimization Game",
     description: `${TAGLINES.gameObjective} ${TAGLINES.everyPlayerWins}`,
+    alternates: {
+      canonical: "/",
+    },
     openGraph: {
       title: "Optimitron — The Earth Optimization Game",
       description: TAGLINES.gameObjective,

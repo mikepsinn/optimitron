@@ -15,15 +15,21 @@ export function getRouteMetadata(
 ): Metadata {
   const title = `${item.label} | ${SITE_NAME}`;
   const description = item.description ?? "";
+  const { alternates, openGraph, ...restOverrides } = overrides ?? {};
 
   return {
     title,
     description,
+    alternates: {
+      canonical: item.href,
+      ...alternates,
+    },
     openGraph: {
       title,
       description,
+      ...openGraph,
     },
-    ...overrides,
+    ...restOverrides,
   };
 }
 
@@ -35,19 +41,35 @@ interface SiteMetadataInput {
 export function getSiteMetadata(
   site: SiteConfig,
   page: SiteMetadataInput,
+  pathnameOrOverrides?: string | Partial<Metadata>,
   overrides?: Partial<Metadata>,
 ): Metadata {
+  const pathname =
+    typeof pathnameOrOverrides === "string" ? pathnameOrOverrides : "/";
+  const metadataOverrides =
+    typeof pathnameOrOverrides === "string" ? overrides : pathnameOrOverrides;
+  const {
+    alternates,
+    openGraph,
+    ...restOverrides
+  } = metadataOverrides ?? {};
+
   return {
     title: page.title,
     description: page.description,
     metadataBase: new URL(site.canonicalOrigin),
+    alternates: {
+      canonical: pathname,
+      ...alternates,
+    },
     openGraph: {
       title: page.title,
       description: page.description,
       siteName: site.name,
       images: [site.ogImage],
       type: "website",
+      ...openGraph,
     },
-    ...overrides,
+    ...restOverrides,
   };
 }

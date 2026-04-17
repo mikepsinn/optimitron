@@ -4,9 +4,10 @@ import { DM_Sans, Space_Mono, Source_Serif_4, Press_Start_2P, VT323, Creepster, 
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { SiteStructuredData } from "@/components/site/SiteStructuredData";
 import { SiteChrome } from "@/components/site/SiteChrome";
 import { RequestSiteOriginProvider } from "@/lib/request-site-origin";
-import { getConfiguredSiteOrigin, getRequestSiteOrigin } from "@/lib/site";
+import { getRequestSiteOrigin, getSiteFromHost } from "@/lib/site";
 import { DEFAULT_THEME } from "@/lib/theme";
 import { wagmiConfig } from "@/lib/wagmi-config";
 
@@ -53,49 +54,71 @@ const libreBaskerville = Libre_Baskerville({
 });
 const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif4.variable} ${pressStart2P.variable} ${vt323.variable} ${creepster.variable} ${playfairDisplay.variable} ${libreBaskerville.variable}`;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    getConfiguredSiteOrigin({ allowLocalFallback: process.env.NODE_ENV !== "production" }),
-  ),
-  applicationName: "Optimitron",
-  title: "Optimitron — The Evidence-Based Earth Optimization Game",
-  description:
-    "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data.",
-  keywords: [
-    "Optimitron",
-    "Earth Optimization Game",
-    "planetary debugging software",
-    "budget optimization",
-    "policy analysis",
-    "politician alignment",
-    "governance",
-    "public outcomes",
-  ],
-  openGraph: {
-    siteName: "Optimitron",
-    title: "Optimitron — The Evidence-Based Earth Optimization Game",
+export async function generateMetadata(): Promise<Metadata> {
+  const headerStore = await headers();
+  const site = getSiteFromHost(headerStore.get("host"));
+
+  return {
+    metadataBase: new URL(site.canonicalOrigin),
+    applicationName: site.name,
+    creator: site.organizationName,
+    publisher: site.organizationName,
+    title:
+      site.key === "optimitron"
+        ? "Optimitron — The Evidence-Based Earth Optimization Game"
+        : site.name,
     description:
-      "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next.",
-    type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Evidence-Based Earth Optimization Game" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Optimitron — Earth Optimization Game",
-    description:
-      "Planetary debugging software for budgets, policies, politicians, and public outcomes.",
-    images: ["/twitter-image.jpg"],
-  },
-  icons: {
-    icon: [
-      { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      site.key === "optimitron"
+        ? "Earth Optimization Game for budgets, policies, politicians, and personal tradeoffs. Planetary debugging software for a species that keeps ignoring its own data."
+        : site.description,
+    keywords: [
+      site.name,
+      ...site.alternateSiteNames,
+      "Earth Optimization Game",
+      "budget optimization",
+      "policy analysis",
+      "public outcomes",
     ],
-    apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
-  },
-  manifest: "/manifest.json",
-};
+    openGraph: {
+      siteName: site.name,
+      title:
+        site.key === "optimitron"
+          ? "Optimitron — The Evidence-Based Earth Optimization Game"
+          : site.name,
+      description:
+        site.key === "optimitron"
+          ? "Planetary debugging software for budgets, policies, politicians, and public outcomes. See what works, what fails, and what to change next."
+          : site.description,
+      type: "website",
+      images: [
+        site.key === "optimitron"
+          ? { url: "/og-image.jpg", width: 1200, height: 630, alt: "Optimitron — The Evidence-Based Earth Optimization Game" }
+          : { url: site.ogImage, alt: `${site.name} social image` },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title:
+        site.key === "optimitron"
+          ? "Optimitron — Earth Optimization Game"
+          : site.name,
+      description:
+        site.key === "optimitron"
+          ? "Planetary debugging software for budgets, policies, politicians, and public outcomes."
+          : site.description,
+      images: [site.key === "optimitron" ? "/twitter-image.jpg" : site.ogImage],
+    },
+    icons: {
+      icon: [
+        { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
+        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      ],
+      apple: "/apple-touch-icon.png",
+      shortcut: "/favicon.ico",
+    },
+    manifest: "/manifest.json",
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -109,11 +132,13 @@ export default async function RootLayout({
     forwardedHost: headerStore.get("x-forwarded-host"),
     forwardedProto: headerStore.get("x-forwarded-proto"),
   });
+  const site = getSiteFromHost(headerStore.get("host"));
   const initialState = cookieToInitialState(wagmiConfig, cookie);
 
   return (
     <html lang="en" className={`${DEFAULT_THEME} palette-vga`}>
       <body className={`font-sans antialiased ${fontVariables}`} suppressHydrationWarning>
+        <SiteStructuredData site={site} />
         <Providers initialState={initialState}>
           <RequestSiteOriginProvider value={requestOrigin}>
             <SiteChrome>{children}</SiteChrome>

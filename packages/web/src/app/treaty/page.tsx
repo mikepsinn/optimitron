@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (site.primaryReferendumSlug) {
     const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.treaty);
+    return getSiteMetadata(site, content.metadata.treaty, "/treaty");
   }
 
   return getRouteMetadata(treatyLink);

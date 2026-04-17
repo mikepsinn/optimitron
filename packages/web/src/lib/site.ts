@@ -15,25 +15,46 @@ export interface SiteConfig {
   canonicalOrigin: string;
   name: string;
   shortName: string;
+  alternateSiteNames: string[];
   description: string;
   ogImage: string;
   analyticsId: string | undefined;
   contentKey: ReferendumSiteContentKey | null;
+  organizationName: string;
+  organizationUrl: string;
+  organizationLogoPath: string;
+  publicContactEmail: string;
+  publicContactUrl: string;
+  sameAs: string[];
   /** Required for referendum microsites. Absent on the master platform. */
   primaryReferendumSlug: string | null;
   /** Optional support for task/accountability surfaces on referendum microsites. */
   primaryTaskKey: string | null;
 }
 
+const ORGANIZATION_NAME = "The Institute for Accelerated Medicine";
+const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
+const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
+const PUBLIC_CONTACT_EMAIL = "m@warondisease.org";
+const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
+const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
+
 const OPTIMITRON_CONFIG: SiteConfig = {
   key: "optimitron",
   canonicalOrigin: OPTIMITRON_CANONICAL_ORIGIN,
   name: "Optimitron",
   shortName: "Optimitron",
+  alternateSiteNames: ["The Earth Optimization Game"],
   description: "Earth Optimization Machine.",
   ogImage: "/og/optimitron.png",
   analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
+  organizationName: ORGANIZATION_NAME,
+  organizationUrl: ORGANIZATION_URL,
+  organizationLogoPath: ORGANIZATION_LOGO_PATH,
+  publicContactEmail: PUBLIC_CONTACT_EMAIL,
+  publicContactUrl: PUBLIC_CONTACT_URL,
+  sameAs: ORGANIZATION_SAME_AS,
   primaryReferendumSlug: null,
   primaryTaskKey: null,
 };
@@ -43,10 +64,17 @@ const ONE_PERCENT_TREATY_CONFIG: SiteConfig = {
   canonicalOrigin: "https://1percenttreaty.org",
   name: "1% Treaty",
   shortName: "1% Treaty",
+  alternateSiteNames: ["1 Percent Treaty"],
   description: "Redirect 1% of military spending to curing disease.",
   ogImage: "/api/og/one-percent-treaty",
   analyticsId: process.env.NEXT_PUBLIC_GA_ONE_PERCENT_TREATY_ID,
   contentKey: "onePercentTreaty",
+  organizationName: ORGANIZATION_NAME,
+  organizationUrl: ORGANIZATION_URL,
+  organizationLogoPath: ORGANIZATION_LOGO_PATH,
+  publicContactEmail: PUBLIC_CONTACT_EMAIL,
+  publicContactUrl: PUBLIC_CONTACT_URL,
+  sameAs: ORGANIZATION_SAME_AS,
   primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
   primaryTaskKey: null,
 };

@@ -14,6 +14,7 @@ export async function generateMetadata() {
   return getSiteMetadata(
     site,
     content.metadata.supporters,
+    "/coalition",
     { robots: { index: true, follow: true } },
   );
 }

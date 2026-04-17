@@ -33,6 +33,13 @@ export function ReferendumSiteFooter({
           >
             {content.footer.builtByLabel}
           </a>
+          <p className="text-[11px] leading-relaxed">
+            Published by {config.organizationName}. Contact{" "}
+            <a href={`mailto:${config.publicContactEmail}`} className="underline hover:no-underline">
+              {config.publicContactEmail}
+            </a>
+            .
+          </p>
         </div>
       </div>
     </footer>

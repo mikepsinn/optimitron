@@ -8,7 +8,7 @@ export async function generateMetadata() {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
   const content = getReferendumSiteContent(site.contentKey);
-  return getSiteMetadata(site, content.metadata.impact);
+  return getSiteMetadata(site, content.metadata.impact, "/impact");
 }
 
 export default async function ImpactPage() {

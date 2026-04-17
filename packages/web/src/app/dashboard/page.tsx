@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (site.contentKey) {
     const content = getReferendumSiteContent(site.contentKey);
-    return getSiteMetadata(site, content.metadata.dashboard);
+    return getSiteMetadata(site, content.metadata.dashboard, "/dashboard");
   }
 
   return getRouteMetadata(dashboardLink);
