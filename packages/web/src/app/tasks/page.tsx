@@ -7,7 +7,6 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { ProgramCard, ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import type { TaskCardTask } from "@/components/tasks/task-card";
-import { BrutalCard } from "@/components/ui/brutal-card";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
 import { tasksLink } from "@/lib/routes";
@@ -67,12 +66,12 @@ export default async function TasksPage() {
           rendered indented immediately beneath.
         */}
         {prizeRoot ? (
-          <BrutalCard bgColor="yellow" shadowSize={8} className="p-8 text-center">
+          <div className="text-center">
             <TasksRootIntro />
             <div className="mx-auto mt-6 max-w-2xl text-left">
               <PostVoteReminders />
             </div>
-          </BrutalCard>
+          </div>
         ) : null}
 
         {/*

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.server";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTaskDetailData, getTasksPageData } from "@/lib/tasks.server";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
@@ -53,6 +54,8 @@ export default async function DashboardPage({
       : ROUTES.dashboard;
     redirect(getSignInPath(callbackUrl));
   }
+
+  void backfillUserLocationFromHeaders(userId, hdrs);
 
   if (site.contentKey && site.primaryReferendumSlug) {
     const treatyParent = await getTaskDetailData(TREATY_PARENT_TASK_ID, userId);

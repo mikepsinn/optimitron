@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/auth";
+import { readVercelGeo } from "@/lib/geo/vercel-geo";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { sendWelcomeReferralEmailForUser } from "@/lib/referral-email.server";
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
     const hashedPassword = await hashPassword(password);
     const username = await createUniqueUsername();
     const generatedReferralCode = await createUniqueReferralCode();
+    const geo = readVercelGeo(req.headers);
     const user = await prisma.user.create({
       data: {
         email,
@@ -49,6 +51,12 @@ export async function POST(req: Request) {
         username,
         referralCode: generatedReferralCode,
         newsletterSubscribed,
+        ...(geo.countryCode ? { countryCode: geo.countryCode } : {}),
+        ...(geo.regionCode ? { regionCode: geo.regionCode } : {}),
+        ...(geo.city ? { city: geo.city } : {}),
+        ...(geo.latitude != null ? { latitude: geo.latitude } : {}),
+        ...(geo.longitude != null ? { longitude: geo.longitude } : {}),
+        ...(geo.timeZone ? { timeZone: geo.timeZone } : {}),
       },
     });
 

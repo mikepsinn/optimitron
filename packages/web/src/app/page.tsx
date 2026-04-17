@@ -31,7 +31,9 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { DemoVideoSection } from "@/components/landing/DemoVideoSection";
 import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview";
 import { OptimizedGovernanceSection } from "@/components/landing/OptimizedGovernanceSection";
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { ArmorySection } from "@/components/landing/ArmorySection";
+import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import { TAGLINES } from "@/lib/messaging";
 import { FinalCTASection } from "@/components/landing/FinalCTASection";
 
@@ -86,6 +88,18 @@ export default async function Home() {
 
       {/* ── 4. Vote — The core game action ── */}
       <TreatyVoteSection />
+
+      {/* ── 4b. President Management System — reminder composer ── */}
+      <SectionContainer bgColor="yellow" padding="lg">
+        <Container size="lg">
+          <div className="text-center">
+            <TasksRootIntro />
+            <div className="mx-auto mt-8 max-w-2xl text-left">
+              <PostVoteReminders />
+            </div>
+          </div>
+        </Container>
+      </SectionContainer>
 
       {/* ── 5. Scoreboard — 2 numbers, that's the game ── */}
       <HowToWinSection />

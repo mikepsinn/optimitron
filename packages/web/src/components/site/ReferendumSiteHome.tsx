@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
+import { GameCTA } from "@/components/ui/game-cta";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
  
 const treatyMarkdownComponents = {
@@ -82,6 +84,10 @@ export function ReferendumSiteHome({ data }: Props) {
         <h1 className="mx-auto max-w-4xl text-4xl font-black uppercase tracking-tight text-foreground sm:text-6xl [font-family:var(--v0-font-libre-baskerville)]">
           {content.home.heroTitle}
         </h1>
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <GameCTA href="#sign" variant="primary" size="lg">VOTE</GameCTA>
+          <GameCTA href="#remind" variant="cyan" size="lg">SEND REMINDER</GameCTA>
+        </div>
       </header>
 
       <section className="mb-16">
@@ -102,6 +108,9 @@ export function ReferendumSiteHome({ data }: Props) {
       <section id="late-employees" className="border-t-2 border-foreground pt-12">
         <div className="mb-10 text-center">
           <TasksRootIntro />
+          <div id="remind" className="mx-auto mt-6 max-w-2xl scroll-mt-8 text-left">
+            <PostVoteReminders />
+          </div>
         </div>
         {lateEmployeeProgramTask ? (
           <ProgramTaskSection
