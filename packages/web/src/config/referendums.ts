@@ -1,7 +1,12 @@
 "use client";
 
 import type { Session } from "next-auth";
-import { shareableSnippets } from "@optimitron/data/parameters";
+import {
+  fmtRaw,
+  shareableSnippets,
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
 import { splitIntoSlides } from "@/components/referendum/ReferendumStepper";
 import { DECLARATION_SLUG } from "@/lib/declaration";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
@@ -167,9 +172,9 @@ const treatyConfig: ReferendumConfig = {
   shareText:
     "I just signed the 1% Treaty to redirect 1% of military spending to curing disease. Sign it too:",
   emailSubject: "I signed the 1% Treaty",
-  signedTitle: "Treaty Signed",
+  signedTitle: "Thank you for ending war and disease!",
   signedBody:
-    "Share your link. Every signature is one more reason your employees will pretend they always supported this.",
+    `For each person you get to sign with your link, you will be personally to blame for saving ${fmtRaw(VOTER_LIVES_SAVED.value, 2)} lives and preventing ${fmtRaw(VOTER_SUFFERING_HOURS_PREVENTED.value, 2)} hours of suffering.`,
   storePendingVote: (_name, referralCode) =>
     storage.setPendingTreatyVote({
       answer: "YES",

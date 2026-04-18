@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
-import { Input } from "@/components/retroui/Input";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
+import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +53,6 @@ export function ReferendumSignatureBox({
 }: ReferendumSignatureBoxProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [signatureName, setSignatureName] = useState("");
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,9 +72,6 @@ export function ReferendumSignatureBox({
   const referralLinkClass = isReader
     ? "text-[#6b5337]"
     : "text-white/40";
-  const inputClass = isReader
-    ? "flex-1 border-2 border-[#8e6b48]/35 bg-white px-4 py-3 text-lg font-bold text-[#23180d] placeholder:text-[#8e6b48]/55"
-    : "flex-1 border-2 border-white/30 bg-white/10 px-4 py-3 text-lg font-bold text-white placeholder:text-white/30";
   const buttonClass = isReader
     ? "border-2 border-[#8e6b48]/35 bg-[#23180d] px-8 py-3 text-lg font-black uppercase text-[#f7f1e4] hover:bg-[#3a2a19] disabled:opacity-30"
     : "border-2 border-white/30 bg-white/10 px-8 py-3 text-lg font-black uppercase text-white disabled:opacity-30";
@@ -98,12 +95,10 @@ export function ReferendumSignatureBox({
   }, [postSignRedirectUrl, router, shouldRedirectAfterSign]);
 
   async function handleSubmit() {
-    const name = signatureName.trim();
-    if (!name) return;
     setSigning(true);
     setError(null);
 
-    storePendingVote(name);
+    storePendingVote("");
 
     if (status === "authenticated") {
       try {
@@ -170,6 +165,15 @@ export function ReferendumSignatureBox({
           emailSubject={emailSubject}
           labelClassName={shareLabelClass}
         />
+        <Link
+          href={ROUTES.profile}
+          className={cn(
+            "text-center text-sm font-black uppercase underline underline-offset-4 hover:no-underline",
+            bodyClass,
+          )}
+        >
+          Add your photo and links →
+        </Link>
         <p className={cn("break-all text-xs font-bold", referralLinkClass)}>
           Personal referral link: {referralUrl}
         </p>
@@ -207,26 +211,13 @@ export function ReferendumSignatureBox({
       <p className={cn("mb-6 text-center text-xl font-bold [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
         {resolvedTitle}
       </p>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Input
-          value={signatureName}
-          onChange={(e) => setSignatureName(e.target.value)}
-          placeholder="Your name"
-          className={inputClass}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && signatureName.trim()) {
-              void handleSubmit();
-            }
-          }}
-        />
-        <Button
-          onClick={() => void handleSubmit()}
-          disabled={!signatureName.trim() || signing}
-          className={buttonClass}
-        >
-          {signing ? "..." : "Sign"}
-        </Button>
-      </div>
+      <Button
+        onClick={() => void handleSubmit()}
+        disabled={signing}
+        className={cn(buttonClass, "w-full")}
+      >
+        {signing ? "..." : "Sign"}
+      </Button>
       {showPrivacyToggle && status === "authenticated" ? (
         <div className="mt-4">
           <label className={cn(

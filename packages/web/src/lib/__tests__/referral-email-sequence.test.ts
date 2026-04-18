@@ -47,6 +47,8 @@ const FIXTURE_HIGHLIGHTS: OverdueSignerHighlight[] = [
   },
 ];
 
+const TEST_BASE_URL = "https://email-test.optimitron.com";
+
 function buildEmail(overrides: {
   step: number;
   referralCount: number;
@@ -55,6 +57,7 @@ function buildEmail(overrides: {
   name?: string;
 }) {
   return buildReferralSequenceEmail({
+    baseUrl: TEST_BASE_URL,
     step: overrides.step,
     referralCount: overrides.referralCount,
     highlights: overrides.highlights ?? FIXTURE_HIGHLIGHTS,
@@ -155,6 +158,7 @@ describe("referral email sequence scheduling", () => {
 describe("buildReferralSequenceEmail content — President Management System framing", () => {
   it("uses a caller-provided subject override verbatim", () => {
     const email = buildReferralSequenceEmail({
+      baseUrl: TEST_BASE_URL,
       step: 0,
       referralCount: 0,
       highlights: FIXTURE_HIGHLIGHTS,
@@ -182,14 +186,16 @@ describe("buildReferralSequenceEmail content — President Management System fra
     expect(email2.html).toContain("DAY 5");
   });
 
-  it("renders one REMIND card per highlight with ref-attributed hrefs", () => {
+  it("renders one REMIND card per highlight with absolute ref-attributed hrefs", () => {
     const email = buildEmail({ step: 0, referralCount: 0 });
     expect(email.html).toContain("REMIND JOE →");
     expect(email.html).toContain("REMIND RISHI →");
     expect(email.html).toContain("REMIND XI →");
-    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-us?ref=REFCODE1"');
-    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-gb?ref=REFCODE1"');
-    expect(email.html).toContain('href="/tasks/1-pct-treaty-signer-cn?ref=REFCODE1"');
+    expect(email.html).toContain(`href="${TEST_BASE_URL}/tasks/1-pct-treaty-signer-us?ref=REFCODE1"`);
+    expect(email.html).toContain(`href="${TEST_BASE_URL}/tasks/1-pct-treaty-signer-gb?ref=REFCODE1"`);
+    expect(email.html).toContain(`href="${TEST_BASE_URL}/tasks/1-pct-treaty-signer-cn?ref=REFCODE1"`);
+    // Guard against path-only regressions.
+    expect(email.html).not.toContain('href="/tasks/');
   });
 
   it("displays the overdue clock and cost-of-delay per card", () => {
@@ -214,15 +220,16 @@ describe("buildReferralSequenceEmail content — President Management System fra
   it("renders a fallback card when no highlights are provided", () => {
     const email = buildEmail({ step: 0, referralCount: 0, highlights: [], overdueSignerCount: 193 });
     expect(email.html).toContain("193 WORLD LEADERS OVERDUE");
-    expect(email.html).toContain('href="/tasks/1-pct-treaty"');
+    expect(email.html).toContain(`href="${TEST_BASE_URL}/tasks/1-pct-treaty"`);
     expect(email.text).toContain("193 world leaders overdue");
+    expect(email.text).toContain(`${TEST_BASE_URL}/tasks/1-pct-treaty`);
     expect(email.text).not.toContain("undefined");
   });
 
   it("labels the secondary CTA with the dynamic overdue count", () => {
     const email = buildEmail({ step: 0, referralCount: 0, overdueSignerCount: 187 });
     expect(email.html).toContain("VIEW ALL 187 OVERDUE EMPLOYEES →");
-    expect(email.html).toContain('href="/tasks/1-pct-treaty"');
+    expect(email.html).toContain(`href="${TEST_BASE_URL}/tasks/1-pct-treaty"`);
   });
 
   it("is signed by Wishonia, PMO and cites the $37T mission in the footer", () => {

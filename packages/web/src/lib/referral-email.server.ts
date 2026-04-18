@@ -113,10 +113,24 @@ function buildHighlightsForUser(
   decoratedTasks: DecoratedTaskList,
   now: Date,
 ): OverdueSignerHighlight[] {
+  // Recipients should never see leaders from other countries in their email —
+  // that's spam-feeling noise and reveals our list to users who can't act on
+  // those foreign tasks anyway. Scope the highlights to the user's own
+  // jurisdiction; when we don't know it, fall through to the generic
+  // "N world leaders overdue → open the task queue" card.
+  const countryCode = resolveUserCountryCode(user);
+  if (!countryCode) return [];
+
   try {
+    const countryLower = countryCode.trim().toLowerCase();
+    const scopedTasks = decoratedTasks.filter(
+      (task) => task.assigneePerson?.countryCode?.toLowerCase() === countryLower,
+    );
+    if (scopedTasks.length === 0) return [];
+
     return getOverdueSignerHighlights({
-      decoratedTasks,
-      userCountryCode: resolveUserCountryCode(user),
+      decoratedTasks: scopedTasks,
+      userCountryCode: countryCode,
       now,
       limit: 3,
     });

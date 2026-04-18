@@ -1,5 +1,4 @@
 import { OPTIMITRON_CANONICAL_ORIGIN } from "@/lib/site";
-import { getBaseUrl } from "@/lib/url";
 
 /**
  * Resolve the base URL for links inside outgoing emails.
@@ -38,8 +37,26 @@ export function prefixEmailImage(src: string | null | undefined, baseUrl: string
   return `${base}${path}`;
 }
 
+/**
+ * Absolute-ize an `<a href>` for use in email HTML or text. Same rules as
+ * `prefixEmailImage` minus the `data:` passthrough (no use case in emails).
+ * `mailto:` / `tel:` / `https?:` pass through unchanged.
+ */
+export function prefixEmailHref(href: string | null | undefined, baseUrl: string = getEmailBaseUrl()): string {
+  if (!href) return "";
+  const trimmed = href.trim();
+  if (trimmed.length === 0) return "";
+  if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  const base = baseUrl.replace(/\/+$/, "");
+  const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${base}${path}`;
+}
+
 export function getEmailUrls() {
-  const base = getBaseUrl();
+  // Use getEmailBaseUrl (not getBaseUrl) — outgoing mail must never contain
+  // a localhost link, since the recipient's client can't reach it.
+  const base = getEmailBaseUrl();
   return {
     dashboardLink: `${base}/dashboard`,
     settingsLink: `${base}/settings#email-preferences`,

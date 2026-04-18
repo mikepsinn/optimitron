@@ -152,10 +152,10 @@ function SignatoriesSection({
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 text-center">
           <h2 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
-            {totalCount.toLocaleString()} publicly signed
+            Signatories
           </h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            Humans who said this is wrong, on the record.
+            {totalCount.toLocaleString()} humans who said this is wrong, on the record.
           </p>
         </div>
 

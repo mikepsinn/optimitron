@@ -1,6 +1,11 @@
 import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
 import { PRESIDENT_MANAGEMENT_HEADLINE } from "@/content/mission-statement";
-import { getEmailUrls, prefixEmailImage } from "@/lib/email-urls";
+import {
+  getEmailBaseUrl,
+  getEmailUrls,
+  prefixEmailHref,
+  prefixEmailImage,
+} from "@/lib/email-urls";
 import { buildChannelHref, type ShareableChannel } from "@/lib/share-channels";
 import {
   formatCompactCount,
@@ -73,6 +78,8 @@ export interface ReferralEmailContentInput {
   subject?: string;
   /** Signed unsubscribe URL rendered in the footer. */
   unsubscribeUrl?: string;
+  /** Base URL used to absolutize internal links. Defaults to the email base URL. */
+  baseUrl?: string;
 }
 
 type ReferralSequenceCompleteReason = "goal_met" | "opted_out";
@@ -273,9 +280,10 @@ function getHeadline(step: number, referralCount: number, overdueSignerCount: nu
 // HTML fragments
 // ─────────────────────────────────────────────────────────────────────────────
 
-function buildRemindHref(taskHref: string, referralCode: string) {
-  const separator = taskHref.includes("?") ? "&" : "?";
-  return `${taskHref}${separator}ref=${encodeURIComponent(referralCode)}`;
+function buildRemindHref(taskHref: string, referralCode: string, baseUrl: string) {
+  const absolute = prefixEmailHref(taskHref, baseUrl);
+  const separator = absolute.includes("?") ? "&" : "?";
+  return `${absolute}${separator}ref=${encodeURIComponent(referralCode)}`;
 }
 
 function buildPresidentCardHtml(highlight: OverdueSignerHighlight) {
@@ -383,8 +391,9 @@ function buildShareButtonsHtml(buttons: readonly EmailShareButton[]) {
 function buildHighlightCardHtml(
   highlight: OverdueSignerHighlight,
   referralCode: string,
+  baseUrl: string,
 ) {
-  const remindHref = escapeAttr(buildRemindHref(highlight.taskHref, referralCode));
+  const remindHref = escapeAttr(buildRemindHref(highlight.taskHref, referralCode, baseUrl));
   const leaderName = escapeHtml(highlight.leaderFullName);
   const firstNameUpper = escapeHtml(highlight.leaderFirstName.toUpperCase());
   const overdueLabel = escapeHtml(highlight.overdueLabel.toUpperCase());
@@ -458,8 +467,8 @@ function buildHighlightCardHtml(
   `;
 }
 
-function buildFallbackCardHtml(overdueSignerCount: number) {
-  const href = escapeAttr(getTreatyParentTaskHref());
+function buildFallbackCardHtml(overdueSignerCount: number, baseUrl: string) {
+  const href = escapeAttr(prefixEmailHref(getTreatyParentTaskHref(), baseUrl));
   const label = overdueSignerCount > 0 ? `${overdueSignerCount} WORLD LEADERS OVERDUE` : "WORLD LEADERS OVERDUE";
   return `
     <div style="margin:0 0 16px;border:3px solid #111827;background:#ffffff;padding:20px;text-align:center;">
@@ -478,20 +487,22 @@ function buildHighlightsHtml(
   highlights: readonly OverdueSignerHighlight[],
   referralCode: string,
   overdueSignerCount: number,
+  baseUrl: string,
 ) {
   if (highlights.length === 0) {
-    return buildFallbackCardHtml(overdueSignerCount);
+    return buildFallbackCardHtml(overdueSignerCount, baseUrl);
   }
-  return highlights.map((h) => buildHighlightCardHtml(h, referralCode)).join("");
+  return highlights.map((h) => buildHighlightCardHtml(h, referralCode, baseUrl)).join("");
 }
 
 function buildHighlightsText(
   highlights: readonly OverdueSignerHighlight[],
   overdueSignerCount: number,
+  baseUrl: string,
 ) {
   if (highlights.length === 0) {
     const label = overdueSignerCount > 0 ? `${overdueSignerCount} world leaders overdue` : "World leaders overdue";
-    return [label, `Open the task queue: ${getTreatyParentTaskHref()}`].join("\n");
+    return [label, `Open the task queue: ${prefixEmailHref(getTreatyParentTaskHref(), baseUrl)}`].join("\n");
   }
 
   return highlights
@@ -505,7 +516,7 @@ function buildHighlightsText(
         .join(", ");
       return [
         `• ${h.leaderFullName}${meta ? ` (${meta})` : ""} — ${h.overdueLabel.toUpperCase()}${stats ? `. ${stats}.` : "."}`,
-        `  Remind: ${h.taskHref}`,
+        `  Remind: ${prefixEmailHref(h.taskHref, baseUrl)}`,
       ].join("\n");
     })
     .join("\n");
@@ -597,6 +608,7 @@ export function buildEmailShareButton(
 }
 
 export function buildReferralSequenceEmail({
+  baseUrl: explicitBaseUrl,
   highlights,
   overdueSignerCount,
   presidentHighlight,
@@ -609,6 +621,7 @@ export function buildReferralSequenceEmail({
   subject: overrideSubject,
   unsubscribeUrl,
 }: ReferralEmailContentInput) {
+  const baseUrl = explicitBaseUrl ?? getEmailBaseUrl();
   const { settingsLink } = getEmailUrls();
   const presidentFullName = presidentHighlight?.leaderFullName ?? null;
   const presidentFirstName = presidentHighlight?.leaderFirstName ?? null;
@@ -621,7 +634,7 @@ export function buildReferralSequenceEmail({
 
   const headline = getHeadline(step, referralCount, overdueSignerCount, presidentFullName);
   const stepLabel = getStepDayLabel(step);
-  const treatyHref = getTreatyParentTaskHref();
+  const treatyHref = prefixEmailHref(getTreatyParentTaskHref(), baseUrl);
   const viewAllLabel = `VIEW ALL ${overdueSignerCount} OVERDUE EMPLOYEES →`;
 
   const hasPersonalized =
@@ -632,7 +645,7 @@ export function buildReferralSequenceEmail({
 
   const bodyHtml = hasPersonalized
     ? `${buildPresidentCardHtml(presidentHighlight)}${buildReminderMessageBlockHtml(presidentRenderedMessage)}${buildShareButtonsHtml(shareButtons)}`
-    : buildHighlightsHtml(highlights, referralCode, overdueSignerCount);
+    : buildHighlightsHtml(highlights, referralCode, overdueSignerCount, baseUrl);
 
   const bodyText = hasPersonalized
     ? [
@@ -642,7 +655,7 @@ export function buildReferralSequenceEmail({
         "",
         "Share via: " + shareButtons.map((b) => b.label).join(", "),
       ].join("\n")
-    : buildHighlightsText(highlights, overdueSignerCount);
+    : buildHighlightsText(highlights, overdueSignerCount, baseUrl);
 
   const textLines = [
     `PRESIDENT MANAGEMENT SYSTEM · STATUS REPORT · ${stepLabel}`,
