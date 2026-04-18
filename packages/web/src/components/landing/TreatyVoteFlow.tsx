@@ -139,7 +139,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       }
 
       setAnimatedValue(value);
-      setMilitaryAllocation(Math.round(value));
+      setMilitaryAllocation(100 - Math.round(value));
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -333,9 +333,9 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                     type="range"
                     min="0"
                     max="100"
-                    value={militaryAllocation}
+                    value={clinicalTrialsAllocation}
                     onChange={(e) =>
-                      handleSliderChange(Number(e.target.value))
+                      handleSliderChange(100 - Number(e.target.value))
                     }
                     className="w-full h-4 bg-background border-4 border-primary rounded-none appearance-none cursor-pointer slider-brutal"
                     style={{

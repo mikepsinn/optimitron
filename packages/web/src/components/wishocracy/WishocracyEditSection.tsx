@@ -261,9 +261,9 @@ export function WishocracyEditSection({
                               type="range"
                               min="0"
                               max="100"
-                              value={comp.allocationA}
+                              value={comp.allocationB}
                               onChange={(e) =>
-                                handleAllocationChange(comp.itemAId, comp.itemBId, Number(e.target.value))
+                                handleAllocationChange(comp.itemAId, comp.itemBId, 100 - Number(e.target.value))
                               }
                               className="w-full h-3 bg-background border-4 border-primary rounded-none appearance-none cursor-pointer slider-brutal"
                               style={{
