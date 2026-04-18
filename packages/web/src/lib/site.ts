@@ -32,10 +32,10 @@ export interface SiteConfig {
   primaryTaskKey: string | null;
 }
 
-const ORGANIZATION_NAME = "The Institute for Accelerated Medicine";
+const ORGANIZATION_NAME = "The Earth Optimization Commission";
 const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
-const PUBLIC_CONTACT_EMAIL = "m@warondisease.org";
+const PUBLIC_CONTACT_EMAIL = "hello@warondisease.org";
 const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}/about`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 

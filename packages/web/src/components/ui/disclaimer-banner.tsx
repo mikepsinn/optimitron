@@ -34,10 +34,10 @@ export function DisclaimerBanner({ compact = false }: DisclaimerBannerProps) {
             investment offering, or a solicitation of funds. No returns are
             promised or guaranteed. Interested in learning more? Contact{" "}
             <a
-              href="mailto:m@warondisease.org"
+              href="mailto:hello@warondisease.org"
               className="font-black underline hover:text-foreground transition-colors"
             >
-              m@warondisease.org
+              hello@warondisease.org
             </a>.
           </p>
         </div>

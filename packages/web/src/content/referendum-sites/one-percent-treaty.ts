@@ -114,7 +114,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     eyebrow: "Organizational endorsement",
     title: "Endorse the 1% Treaty",
     description:
-      "Submit your organization's official position. An administrator verifies it, then publishes it on the supporters page. No committees. No studies about studies.",
+      "Allowing billions to suffer and die from disease so we can have capacity for 120 apocalypses instead of 118.8 is morally wrong. Historically, mass cruelties like slavery don't end until 3.5% of people have the courage to say it in public. By endorsing this treaty, you can be part of that 3.5% — instead of the 96.5% who allowed it to continue.",
     signInTitle: "Sign in to endorse",
     signInDescription:
       "Endorsements are tied to a verified account, because your species requires this before believing anything.",

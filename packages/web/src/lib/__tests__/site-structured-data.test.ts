@@ -15,9 +15,9 @@ describe("buildSiteStructuredData", () => {
     const website = graph.find((node) => node["@type"] === "WebSite");
 
     expect(organization).toMatchObject({
-      name: "The Institute for Accelerated Medicine",
+      name: "The Earth Optimization Commission",
       url: "https://optimitron.com",
-      email: "m@warondisease.org",
+      email: "hello@warondisease.org",
     });
     expect(website).toMatchObject({
       name: "1% Treaty",
