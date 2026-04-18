@@ -7,10 +7,14 @@ export function ReferendumSiteInlineSign({
   referendumSlug,
   postSignRedirectUrl,
   title,
+  showPrivacyToggle = false,
+  showReaderShell = false,
 }: {
   referendumSlug: string | null;
   postSignRedirectUrl?: string;
   title?: string;
+  showPrivacyToggle?: boolean;
+  showReaderShell?: boolean;
 }) {
   if (!referendumSlug) {
     return null;
@@ -35,7 +39,8 @@ export function ReferendumSiteInlineSign({
       signedTitle={config.signedTitle}
       signedBody={config.signedBody}
       variant="reader"
-      showReaderShell={false}
+      showReaderShell={showReaderShell}
+      showPrivacyToggle={showPrivacyToggle}
     />
   );
 }

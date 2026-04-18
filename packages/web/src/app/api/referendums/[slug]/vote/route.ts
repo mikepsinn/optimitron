@@ -17,6 +17,7 @@ export async function POST(
     const body = (await request.json()) as {
       answer: string;
       ref?: string;
+      makePublic?: boolean;
     };
 
     const answer = body.answer?.toUpperCase();
@@ -72,6 +73,22 @@ export async function POST(
         referredByUserId,
       },
     });
+
+    // Apply public-profile intent from the signature-box checkbox. Only
+    // updates User.isPublic when the caller sent an explicit boolean AND it
+    // differs from the current state (avoids redundant writes).
+    if (typeof body.makePublic === "boolean") {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { isPublic: true },
+      });
+      if (currentUser && currentUser.isPublic !== body.makePublic) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: { isPublic: body.makePublic },
+        });
+      }
+    }
 
     let activityId: string | undefined;
     try {

@@ -15,6 +15,23 @@ import {
   getTreatyParentTaskHref,
   TREATY_PARENT_TASK_ID,
 } from "@/lib/tasks/task-keys";
+import { userDisplaySelect, type UserForDisplay } from "@/lib/user-display";
+
+export const PUBLIC_SIGNERS_PAGE_SIZE = 48;
+
+export interface PublicSignerEntry {
+  id: string;
+  createdAt: Date;
+  user: UserForDisplay;
+}
+
+export interface PublicSignersPage {
+  signers: PublicSignerEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 
 interface ReferendumSiteRecord {
   description: string | null;
@@ -35,6 +52,7 @@ export interface ReferendumSiteHomeData extends ReferendumSiteContext {
   individualCount: number;
   organizationCount: number;
   treatyMarkdown: string;
+  publicSigners: PublicSignersPage;
 }
 
 export type ReferendumSiteSupporterRecord =
@@ -97,13 +115,27 @@ export async function getReferendumSiteContext(
 
 export async function getReferendumSiteHomeData(
   site: SiteConfig,
+  options: { signersPage?: number } = {},
 ): Promise<ReferendumSiteHomeData | null> {
   const context = await getReferendumSiteContext(site);
   if (!context) {
     return null;
   }
 
-  const [individualCount, organizationCount] = await Promise.all([
+  const publicSignersWhere: Prisma.ReferendumVoteWhereInput = {
+    referendumId: context.referendum.id,
+    deletedAt: null,
+    answer: VotePosition.YES,
+    user: { isPublic: true },
+  };
+
+  const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));
+
+  const [
+    individualCount,
+    organizationCount,
+    publicSignersTotal,
+  ] = await Promise.all([
     prisma.referendumVote.count({
       where: {
         referendumId: context.referendum.id,
@@ -114,7 +146,29 @@ export async function getReferendumSiteHomeData(
     prisma.organizationReferendumPosition.count({
       where: buildApprovedOrganizationPositionWhere(context.referendum.id),
     }),
+    prisma.referendumVote.count({ where: publicSignersWhere }),
   ]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(publicSignersTotal / PUBLIC_SIGNERS_PAGE_SIZE),
+  );
+  const page = Math.min(requestedPage, totalPages);
+  const skip = (page - 1) * PUBLIC_SIGNERS_PAGE_SIZE;
+
+  const signerRows = publicSignersTotal
+    ? await prisma.referendumVote.findMany({
+        where: publicSignersWhere,
+        select: {
+          id: true,
+          createdAt: true,
+          user: { select: userDisplaySelect },
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: PUBLIC_SIGNERS_PAGE_SIZE,
+      })
+    : [];
 
   const treatyParentTask =
     site.key === "onePercentTreaty"
@@ -139,6 +193,13 @@ export async function getReferendumSiteHomeData(
       site.key === "onePercentTreaty"
         ? shareableSnippets.onePercentTreatyText.markdown
         : "",
+    publicSigners: {
+      signers: signerRows as PublicSignerEntry[],
+      totalCount: publicSignersTotal,
+      page,
+      pageSize: PUBLIC_SIGNERS_PAGE_SIZE,
+      totalPages,
+    },
   };
 }
 

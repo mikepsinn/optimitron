@@ -25,6 +25,12 @@ export interface ReferendumSignatureBoxProps {
   signedBody?: string;
   variant?: "stepper" | "reader";
   showReaderShell?: boolean;
+  /**
+   * Render the pre-checked "display publicly" toggle. Only shown for
+   * authenticated users — unauthenticated flow keeps the existing behavior
+   * so we don't lose the user's privacy choice through the auth redirect.
+   */
+  showPrivacyToggle?: boolean;
 }
 
 export function ReferendumSignatureBox({
@@ -42,6 +48,7 @@ export function ReferendumSignatureBox({
   signedBody = "Share your link. Every signature moves the needle.",
   variant = "stepper",
   showReaderShell = true,
+  showPrivacyToggle = false,
 }: ReferendumSignatureBoxProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -49,6 +56,7 @@ export function ReferendumSignatureBox({
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [makePublic, setMakePublic] = useState(true);
 
   const referralUrl = buildUserReferralUrl(session?.user);
   const isReader = variant === "reader";
@@ -107,6 +115,7 @@ export function ReferendumSignatureBox({
             body: JSON.stringify({
               answer: "YES",
               ref: referralCode ?? undefined,
+              ...(showPrivacyToggle ? { makePublic } : {}),
             }),
           },
         );
@@ -218,6 +227,30 @@ export function ReferendumSignatureBox({
           {signing ? "..." : "Sign"}
         </Button>
       </div>
+      {showPrivacyToggle && status === "authenticated" ? (
+        <div className="mt-4">
+          <label className={cn(
+            "flex cursor-pointer items-start gap-2 text-sm font-bold",
+            bodyClass,
+          )}>
+            <input
+              type="checkbox"
+              checked={makePublic}
+              onChange={(e) => setMakePublic(e.target.checked)}
+              className="mt-1 h-4 w-4 cursor-pointer accent-brutal-pink"
+            />
+            <span>
+              Display my name publicly on the supporters list and leaderboards{" "}
+              <span className="opacity-70">(recommended)</span>.
+            </span>
+          </label>
+          {!makePublic ? (
+            <p className="mt-2 border-2 border-brutal-red bg-brutal-red px-3 py-2 text-xs font-black uppercase text-brutal-red-foreground">
+              Also hides your name from the referral leaderboard. You can reverse this in profile settings.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       {error ? (
         <p className={cn("mt-3 text-center text-xs font-bold uppercase", errorClass)}>
           {error}

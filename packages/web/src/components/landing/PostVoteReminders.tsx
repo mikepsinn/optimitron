@@ -13,6 +13,7 @@ import {
 import { renderTemplate } from "@/lib/tasks/render-template";
 import { ReminderComposer } from "@/components/tasks/task-row-share";
 import { getCountryFromLocale } from "@/lib/detect-country";
+import { copyTextToClipboard } from "@/lib/clipboard";
 import {
   buildChannelHref,
   embedShareAttemptId,
@@ -32,20 +33,6 @@ async function sha256Hex(input: string): Promise<string> {
 const TREATY_DUE_AT = new Date("2026-04-14T00:00:00.000Z");
 const DAY_MS = 1000 * 60 * 60 * 24;
 
-function copyToClipboard(text: string): Promise<void> {
-  if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text);
-  }
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  document.body.removeChild(textarea);
-  return Promise.resolve();
-}
 
 export function PostVoteReminders() {
   const { data: session } = useSession();
@@ -168,7 +155,7 @@ export function PostVoteReminders() {
       templateId: selectedTemplate?.id ?? null,
     });
 
-    void copyToClipboard(outboundMessage)
+    void copyTextToClipboard(outboundMessage)
       .then(() => {
         setMessageCopyState("copied");
         window.setTimeout(() => setMessageCopyState("idle"), 1500);
@@ -194,7 +181,7 @@ export function PostVoteReminders() {
           templateId: null,
         });
 
-        void copyToClipboard(attributedReferralUrl);
+        void copyTextToClipboard(attributedReferralUrl);
         return;
       }
 

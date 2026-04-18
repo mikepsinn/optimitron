@@ -5,7 +5,12 @@ import remarkGfm from "remark-gfm";
 import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
+import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
+import {
+  getUserDisplayHref,
+  getUserDisplayName,
+} from "@/lib/user-display";
  
 const treatyMarkdownComponents = {
   h1: ({ children }: { children?: ReactNode }) => (
@@ -73,6 +78,7 @@ export function ReferendumSiteHome({ data }: Props) {
     content,
     lateEmployeeProgramTask,
     lateEmployeeTasks,
+    publicSigners,
     site,
     treatyMarkdown,
   } = data;
@@ -118,6 +124,87 @@ export function ReferendumSiteHome({ data }: Props) {
           </ReactMarkdown>
         </div>
       </section>
+
+      <section id="sign-below-treaty" className="mt-12">
+        <ReferendumSiteInlineSign
+          referendumSlug={site.primaryReferendumSlug ?? null}
+          showPrivacyToggle
+        />
+      </section>
+
+      <SignatoriesSection publicSigners={publicSigners} />
     </div>
+  );
+}
+
+function SignatoriesSection({
+  publicSigners,
+}: {
+  publicSigners: ReferendumSiteHomeData["publicSigners"];
+}) {
+  const { signers, totalCount, page, totalPages } = publicSigners;
+  if (totalCount === 0) {
+    return null;
+  }
+
+  return (
+    <section id="signatories" className="mt-16 border-t-2 border-foreground pt-12">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
+            {totalCount.toLocaleString()} publicly signed
+          </h2>
+          <p className="mt-2 text-sm font-bold text-muted-foreground">
+            Humans who said this is wrong, on the record.
+          </p>
+        </div>
+
+        <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold">
+          {signers.map((entry) => {
+            const name = getUserDisplayName(entry.user);
+            const href = getUserDisplayHref(entry.user);
+            return (
+              <li key={entry.id}>
+                {href ? (
+                  <Link href={href} className="hover:underline">
+                    {name}
+                  </Link>
+                ) : (
+                  <span>{name}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        {totalPages > 1 ? (
+          <div className="mt-8 flex items-center justify-center gap-3 text-sm font-black uppercase">
+            {page > 1 ? (
+              <Link
+                href={`/?signersPage=${page - 1}#signatories`}
+                className="hover:underline"
+              >
+                ← Prev
+              </Link>
+            ) : (
+              <span className="opacity-30">← Prev</span>
+            )}
+            <span className="text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            {page < totalPages ? (
+              <Link
+                href={`/?signersPage=${page + 1}#signatories`}
+                className="hover:underline"
+              >
+                Next →
+              </Link>
+            ) : (
+              <span className="opacity-30">Next →</span>
+            )}
+          </div>
+        ) : null}
+      </div>
+    </section>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa6";
 import { SiBluesky } from "react-icons/si";
 import { Button } from "@/components/retroui/Button";
+import { copyTextToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 
 interface ShareLinkButtonsProps {
@@ -124,8 +125,7 @@ export function ShareLinkButtons({
           className="inline-flex h-7 w-7 items-center justify-center border-2 border-foreground bg-background text-foreground transition-transform hover:translate-y-[-1px] hover:bg-muted"
           onClick={() => {
             onShare?.();
-            void navigator.clipboard
-              .writeText(url)
+            void copyTextToClipboard(url)
               .then(() => {
                 setCopyState("copied");
                 window.setTimeout(() => setCopyState("idle"), 1500);
@@ -180,8 +180,7 @@ export function ShareLinkButtons({
           variant="outline"
           onClick={() => {
             onShare?.();
-            void navigator.clipboard
-              .writeText(url)
+            void copyTextToClipboard(url)
               .then(() => {
                 setCopyState("copied");
                 window.setTimeout(() => setCopyState("idle"), 1500);

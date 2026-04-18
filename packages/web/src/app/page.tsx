@@ -60,11 +60,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const hdrs = await headers();
   const site = getSiteFromHost(hdrs.get("host"));
   if (site.primaryReferendumSlug) {
-    const data = await getReferendumSiteHomeData(site);
+    const resolvedParams = (await searchParams) ?? {};
+    const rawPage = resolvedParams.signersPage;
+    const signersPageParam = Array.isArray(rawPage) ? rawPage[0] : rawPage;
+    const signersPage = signersPageParam
+      ? Math.max(1, parseInt(signersPageParam, 10) || 1)
+      : 1;
+    const data = await getReferendumSiteHomeData(site, { signersPage });
     if (!data) {
       return (
         <section className="mx-auto max-w-2xl px-4 py-24 text-center">
