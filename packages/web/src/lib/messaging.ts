@@ -163,12 +163,8 @@ export const VOTE_SECTION = {
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
-  authPrompt: "Sign In to Cast Your Vote",
-  authSubtext: `Every friend you recruit earns you 1 ${POINT_NAME} Point — your share of the prize pool if humanity hits its targets.`,
-  authPrivacy: "30 seconds. No spam. Just proof you're a real human.",
   emailSuccessFooter:
     `Your vote is locked in. Now share your link to start earning ${POINT_NAME} Points.`,
-  sharePrompt: `Each friend who votes earns you 1 ${POINT_NAME} Point. Get them in.`,
 };
 
 export const VOTE_VALUE = {

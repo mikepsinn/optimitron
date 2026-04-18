@@ -19,6 +19,8 @@ import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitr
 import { trackSliderSubmitted, trackVoteSubmitted } from "@/lib/analytics";
 import { VOTE_SECTION } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
+import { ImpactExplainer } from "@/components/shared/ImpactExplainer";
+import { HOURS_PER_YEAR, IMPACT_PER_VOTE } from "@/lib/impact-ledger";
 import {
   buildTreatyWishocraticAllocation,
   getMilitaryAllocationPercentFromPendingTreatyVote,
@@ -463,15 +465,28 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               </>
             ) : (
               <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <div className="mb-4">
-                  <p className="text-center font-bold text-lg sm:text-xl mb-2">
-                    {VOTE_SECTION.authPrompt}
+                <div className="mb-6 space-y-3">
+                  <p className="text-center font-black text-xl sm:text-2xl uppercase leading-tight">
+                    Verify your identity or your vote doesn&apos;t count.
                   </p>
-                  <p className="text-center text-base font-bold text-muted-foreground">
-                    {VOTE_SECTION.authSubtext}
+                  <p className="text-center font-bold text-base sm:text-lg leading-snug">
+                    If the treaty passes, you are personally to blame for saving{" "}
+                    <span className="text-brutal-pink">
+                      ~{IMPACT_PER_VOTE.lives.toFixed(1)} lives
+                    </span>
+                    {" "}and preventing{" "}
+                    <span className="text-brutal-pink">
+                      ~{(IMPACT_PER_VOTE.sufferingHours / HOURS_PER_YEAR).toFixed(0)} years
+                    </span>
+                    {" "}of suffering.
+                    <ImpactExplainer
+                      className="ml-1 align-middle"
+                      size={14}
+                      showFullAnalysisLink={false}
+                    />
                   </p>
-                  <p className="text-center text-base text-muted-foreground">
-                    {VOTE_SECTION.authPrivacy}
+                  <p className="text-center font-bold text-sm text-muted-foreground">
+                    World ID. 30 seconds. No email spam.
                   </p>
                 </div>
                 <AuthForm

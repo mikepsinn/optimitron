@@ -4,7 +4,11 @@ import {
   type Prisma,
   VotePosition,
 } from "@optimitron/db";
-import { shareableSnippets } from "@optimitron/data/parameters";
+import {
+  shareableSnippets,
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import type { ReferendumSiteContent } from "@/content/referendum-sites";
 import type { TaskCardTask } from "@/components/tasks/task-card";
@@ -22,6 +26,10 @@ export const PUBLIC_SIGNERS_PAGE_SIZE = 48;
 export interface PublicSignerEntry {
   id: string;
   createdAt: Date;
+  rank: number;
+  referredYesCount: number;
+  livesSaved: number;
+  hoursPrevented: number;
   user: UserForDisplay;
 }
 
@@ -134,7 +142,8 @@ export async function getReferendumSiteHomeData(
   const [
     individualCount,
     organizationCount,
-    publicSignersTotal,
+    allPublicSigners,
+    referrerCounts,
   ] = await Promise.all([
     prisma.referendumVote.count({
       where: {
@@ -146,8 +155,58 @@ export async function getReferendumSiteHomeData(
     prisma.organizationReferendumPosition.count({
       where: buildApprovedOrganizationPositionWhere(context.referendum.id),
     }),
-    prisma.referendumVote.count({ where: publicSignersWhere }),
+    prisma.referendumVote.findMany({
+      where: publicSignersWhere,
+      select: {
+        id: true,
+        createdAt: true,
+        userId: true,
+        user: { select: userDisplaySelect },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.referendumVote.groupBy({
+      by: ["referredByUserId"],
+      where: {
+        ...publicSignersWhere,
+        referredByUserId: { not: null },
+      },
+      _count: { referredByUserId: true },
+    }),
   ]);
+
+  const publicSignersTotal = allPublicSigners.length;
+  const referredCountByUserId = new Map<string, number>();
+  for (const row of referrerCounts) {
+    if (row.referredByUserId) {
+      referredCountByUserId.set(
+        row.referredByUserId,
+        row._count.referredByUserId,
+      );
+    }
+  }
+
+  // Sort by referral count desc (tiebreak: earliest signup first), then
+  // assign global ranks so page 2+ carries the correct #N across pages.
+  const ranked = allPublicSigners
+    .map((row) => {
+      const referredYesCount = referredCountByUserId.get(row.userId) ?? 0;
+      const multiplier = 1 + referredYesCount;
+      return {
+        id: row.id,
+        createdAt: row.createdAt,
+        referredYesCount,
+        livesSaved: VOTER_LIVES_SAVED.value * multiplier,
+        hoursPrevented: VOTER_SUFFERING_HOURS_PREVENTED.value * multiplier,
+        user: row.user as UserForDisplay,
+      };
+    })
+    .sort((a, b) => {
+      if (b.referredYesCount !== a.referredYesCount) {
+        return b.referredYesCount - a.referredYesCount;
+      }
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    });
 
   const totalPages = Math.max(
     1,
@@ -156,19 +215,12 @@ export async function getReferendumSiteHomeData(
   const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * PUBLIC_SIGNERS_PAGE_SIZE;
 
-  const signerRows = publicSignersTotal
-    ? await prisma.referendumVote.findMany({
-        where: publicSignersWhere,
-        select: {
-          id: true,
-          createdAt: true,
-          user: { select: userDisplaySelect },
-        },
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: PUBLIC_SIGNERS_PAGE_SIZE,
-      })
-    : [];
+  const signerRows: PublicSignerEntry[] = ranked
+    .slice(skip, skip + PUBLIC_SIGNERS_PAGE_SIZE)
+    .map((entry, index) => ({
+      ...entry,
+      rank: skip + index + 1,
+    }));
 
   const treatyParentTask =
     site.key === "onePercentTreaty"
@@ -194,7 +246,7 @@ export async function getReferendumSiteHomeData(
         ? shareableSnippets.onePercentTreatyText.markdown
         : "",
     publicSigners: {
-      signers: signerRows as PublicSignerEntry[],
+      signers: signerRows,
       totalCount: publicSignersTotal,
       page,
       pageSize: PUBLIC_SIGNERS_PAGE_SIZE,

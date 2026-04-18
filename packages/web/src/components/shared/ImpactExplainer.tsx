@@ -27,9 +27,11 @@ interface ImpactExplainerProps {
   iconClassName?: string
   size?: number
   label?: string
+  /** Show the "See the full analysis" link that routes to /impact. Default true. Set false on surfaces where redirecting the user away is costly (e.g. post-vote auth card). */
+  showFullAnalysisLink?: boolean
 }
 
-export function ImpactExplainer({ className, iconClassName, size = 18, label = "Impact math explainer" }: ImpactExplainerProps) {
+export function ImpactExplainer({ className, iconClassName, size = 18, label = "Impact math explainer", showFullAnalysisLink = true }: ImpactExplainerProps) {
   return (
     <Tooltip.Provider delayDuration={50}>
       <Tooltip>
@@ -99,13 +101,15 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
             </div>
           </div>
 
-          <Link
-            href="/impact"
-            className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
-          >
-            See the full analysis
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
+          {showFullAnalysisLink && (
+            <Link
+              href="/impact"
+              className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
+            >
+              See the full analysis
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          )}
         </Tooltip.Content>
       </Tooltip>
     </Tooltip.Provider>

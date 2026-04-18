@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   referendumFindUnique: vi.fn(),
   referendumVoteCount: vi.fn(),
   referendumVoteFindMany: vi.fn(),
+  referendumVoteGroupBy: vi.fn(),
   organizationPositionCount: vi.fn(),
   organizationPositionFindMany: vi.fn(),
 }));
@@ -22,6 +23,7 @@ vi.mock("@/lib/prisma", () => ({
     referendumVote: {
       count: mocks.referendumVoteCount,
       findMany: mocks.referendumVoteFindMany,
+      groupBy: mocks.referendumVoteGroupBy,
     },
     organizationReferendumPosition: {
       count: mocks.organizationPositionCount,
@@ -47,10 +49,12 @@ describe("referendum-site.server", () => {
     mocks.referendumFindUnique.mockReset();
     mocks.referendumVoteCount.mockReset();
     mocks.referendumVoteFindMany.mockReset();
+    mocks.referendumVoteGroupBy.mockReset();
     mocks.organizationPositionCount.mockReset();
     mocks.organizationPositionFindMany.mockReset();
     mocks.getTaskDetailData.mockResolvedValue(null);
     mocks.referendumVoteFindMany.mockResolvedValue([]);
+    mocks.referendumVoteGroupBy.mockResolvedValue([]);
   });
 
   it("requires both approved orgs and approved YES positions in supporter queries", () => {
