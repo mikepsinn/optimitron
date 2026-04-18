@@ -2,11 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
-import { GameCTA } from "@/components/ui/game-cta";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
  
 const treatyMarkdownComponents = {
@@ -80,26 +78,11 @@ export function ReferendumSiteHome({ data }: Props) {
   } = data;
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
-      <header className="mb-14 text-center">
+      <header className="mb-10 text-center">
         <h1 className="mx-auto max-w-4xl text-4xl font-black uppercase tracking-tight text-foreground sm:text-6xl [font-family:var(--v0-font-libre-baskerville)]">
           {content.home.heroTitle}
         </h1>
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <GameCTA href="#sign" variant="primary" size="lg">VOTE</GameCTA>
-          <GameCTA href="#remind" variant="cyan" size="lg">SEND REMINDER</GameCTA>
-        </div>
       </header>
-
-      <section className="mb-16">
-        <div className="mx-auto max-w-3xl space-y-10">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={treatyMarkdownComponents}
-          >
-            {treatyMarkdown}
-          </ReactMarkdown>
-        </div>
-      </section>
 
       <section id="sign" className="mb-16">
         <TreatyVoteFlow />
@@ -108,9 +91,6 @@ export function ReferendumSiteHome({ data }: Props) {
       <section id="late-employees" className="border-t-2 border-foreground pt-12">
         <div className="mb-10 text-center">
           <TasksRootIntro />
-          <div id="remind" className="mx-auto mt-6 max-w-2xl scroll-mt-8 text-left">
-            <PostVoteReminders />
-          </div>
         </div>
         {lateEmployeeProgramTask ? (
           <ProgramTaskSection
@@ -123,6 +103,20 @@ export function ReferendumSiteHome({ data }: Props) {
             }
           />
         ) : null}
+      </section>
+
+      <section className="mt-16 border-t-2 border-foreground pt-12">
+        <div className="mx-auto max-w-3xl space-y-10">
+          <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+            Please quickly skim and sign to end war and disease.
+          </h2>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={treatyMarkdownComponents}
+          >
+            {treatyMarkdown}
+          </ReactMarkdown>
+        </div>
       </section>
     </div>
   );

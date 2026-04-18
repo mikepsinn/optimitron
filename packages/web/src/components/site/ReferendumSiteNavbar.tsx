@@ -29,12 +29,6 @@ export function ReferendumSiteNavbar({
         </Link>
         <div className="flex items-center gap-3">
           <Link
-            href="/#late-employees"
-            className="text-sm font-black uppercase tracking-wide text-foreground hover:underline"
-          >
-            Manage Employees
-          </Link>
-          <Link
             href={dashboardHref}
             title={status === "authenticated" ? "Dashboard" : "Sign In"}
             aria-label={status === "authenticated" ? "Open dashboard" : "Sign in"}

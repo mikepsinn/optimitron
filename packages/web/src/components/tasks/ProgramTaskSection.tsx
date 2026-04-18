@@ -2,15 +2,10 @@ import Link from "next/link";
 import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
-  DIH_PATIENTS_FUNDABLE_ANNUALLY,
-  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL,
-  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-  TREATY_HALE_GAIN_YEAR_15,
-  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { LiveCounter } from "@/components/tasks/live-counter";
@@ -53,65 +48,55 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
   return (
     <div className="border-4 border-foreground bg-background shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
       {/* Header row: title + overdue chip */}
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b-4 border-foreground bg-foreground px-4 py-3 text-background">
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 border-b-4 border-foreground bg-foreground px-4 py-3 text-background">
         <Link
           href={`/tasks/${task.id}`}
           className="text-2xl font-black uppercase leading-tight hover:underline sm:text-3xl"
         >
           {task.title}
         </Link>
-        {overdueLabel ? (
-          <span className="border-2 border-background bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
-            {overdueLabel} overdue
-          </span>
-        ) : null}
+        <div className="flex flex-col items-end gap-1">
+          {overdueLabel ? (
+            <span className="border-2 border-background bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
+              {overdueLabel} overdue
+            </span>
+          ) : null}
+          {isTreatyParent ? (
+            <span className="border-2 border-background bg-brutal-yellow px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-yellow-foreground">
+              Time Required: {totalEffortLabel ?? "1.6 Hours"} Combined
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {/* Explainer paragraph — plain English for a high schooler */}
       {isTreatyParent ? (
         <div className="border-b-2 border-foreground px-4 py-4 text-base font-bold leading-relaxed sm:text-lg">
           <p>
-            These 193 world leaders each need to spend 30 seconds signing a
-            treaty that sends{" "}
-            <span className="font-black">1%</span> of the world&apos;s{" "}
-            <ParameterValue
-              param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024}
-              className="font-black text-brutal-pink"
-            />{" "}
-            military budget to fund clinical trials for diseases like cancer,
-            Alzheimer&apos;s, and aging itself.
-          </p>
-          <p className="mt-3">
-            Right now{" "}
             <ParameterValue
               param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
               display="integer"
               className="font-black text-brutal-pink"
             />{" "}
-            diseases have no treatment. At{" "}
+            diseases have 0 FDA-approved treatments. At current clinical trial
+            capacity, it could take{" "}
             <ParameterValue
               param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
               display="integer"
               className="font-black"
             />{" "}
-            years to explore them all, most humans alive today will never see a
-            cure. 1% of the military budget buys a{" "}
+            years to cure them all.
+          </p>
+          <p className="mt-3">
+            1% of the military budget could increase trial capacity by{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
               className="font-black text-brutal-pink"
             />{" "}
-            trial capacity increase&thinsp;&mdash;&thinsp;
-            <ParameterValue
-              param={DIH_PATIENTS_FUNDABLE_ANNUALLY}
-              className="font-black"
-            />{" "}
-            patients/year in pragmatic trials at{" "}
-            <ParameterValue
-              param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
-              display="withUnit"
-              className="font-black"
-            />{" "}
-            instead of $41,000. That compresses{" "}
+            times.
+          </p>
+          <p className="mt-3 text-xl font-black sm:text-2xl">
+            That compresses{" "}
             <ParameterValue
               param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
               display="integer"
@@ -124,20 +109,6 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
               className="font-black text-brutal-pink"
             />
             .
-          </p>
-          <p className="mt-3">
-            If they do their job, by 2040 every human alive gets{" "}
-            <ParameterValue
-              param={TREATY_HALE_GAIN_YEAR_15}
-              className="font-black text-brutal-pink"
-            />{" "}
-            <span className="font-black">more healthy years of life</span> and{" "}
-            <ParameterValue
-              param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA}
-              className="font-black text-brutal-pink"
-            />{" "}
-            <span className="font-black">more lifetime income</span>. Total
-            work needed from them: {totalEffortLabel ?? "1.6 hours"} combined.
           </p>
         </div>
       ) : null}

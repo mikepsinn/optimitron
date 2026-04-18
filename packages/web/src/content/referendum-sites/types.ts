@@ -91,10 +91,6 @@ export interface ReferendumSiteNotFoundContent {
   title: string;
 }
 
-export interface ReferendumSiteFooterContent {
-  builtByLabel: string;
-}
-
 export interface ReferendumSiteDashboardContent {
   fullDashboardLabel: string;
   shareBody: string;
@@ -116,7 +112,6 @@ export interface ReferendumSiteDashboardContent {
 export interface ReferendumSiteContent {
   dashboard: ReferendumSiteDashboardContent;
   endorse: ReferendumSiteEndorseContent;
-  footer: ReferendumSiteFooterContent;
   home: ReferendumSiteHomeContent;
   impactUrl: string;
   key: ReferendumSiteContentKey;

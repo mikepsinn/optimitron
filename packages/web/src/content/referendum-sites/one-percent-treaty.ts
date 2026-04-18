@@ -59,8 +59,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
   ],
   home: {
     eyebrow: "1% Treaty",
-    heroTitle:
-      "Please quickly skim and sign to end war and disease.",
+    heroTitle: "Please Take 30 Seconds to End War and Disease",
     titleLines: [
       "Redirect one percent of military spending",
       "to finding out which medicines actually work.",
@@ -211,9 +210,6 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
     ],
   },
   impactUrl: "https://impact.acceleratedmedicine.org",
-  footer: {
-    builtByLabel: "Brought to you by Wishonia",
-  },
   notFound: {
     title: "This page is not here.",
     description: "Your species has 1.6 billion websites. This particular URL is not on the coalition site. Try one of the others.",

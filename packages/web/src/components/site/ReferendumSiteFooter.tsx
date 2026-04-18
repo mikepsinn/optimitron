@@ -22,23 +22,15 @@ export function ReferendumSiteFooter({
         <div className="flex max-w-3xl flex-col items-center gap-3 normal-case">
           <p className="leading-relaxed">
             © 4237 Wishonia. {config.name} filed in the Galactic Registry
-            of Embarrassingly Overdue Reforms, shelf 14-C. Earth took 4,237
-            years to schedule the meeting. Reproduction of the general
+            of Embarrassingly Overdue Reforms. Reproduction of the general
             welfare is encouraged and, at this point, somewhat urgent.
           </p>
-          <a
-            href="https://optimitron.com"
-            className="uppercase tracking-wide hover:underline"
-            rel="noreferrer"
-          >
-            {content.footer.builtByLabel}
-          </a>
           <p className="text-[11px] leading-relaxed">
-            Published by {config.organizationName}. Contact{" "}
+            {config.organizationName}
+            <br />
             <a href={`mailto:${config.publicContactEmail}`} className="underline hover:no-underline">
               {config.publicContactEmail}
             </a>
-            .
           </p>
         </div>
       </div>
