@@ -15,12 +15,14 @@ import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
-import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters";
+import {
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
 import { trackSliderSubmitted, trackVoteSubmitted } from "@/lib/analytics";
 import { VOTE_SECTION } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
-import { ImpactExplainer } from "@/components/shared/ImpactExplainer";
-import { HOURS_PER_YEAR, IMPACT_PER_VOTE } from "@/lib/impact-ledger";
 import {
   buildTreatyWishocraticAllocation,
   getMilitaryAllocationPercentFromPendingTreatyVote,
@@ -467,26 +469,20 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="mb-6 space-y-3">
                   <p className="text-center font-black text-xl sm:text-2xl uppercase leading-tight">
-                    Verify your identity or your vote doesn&apos;t count.
+                    Save Your Vote
                   </p>
                   <p className="text-center font-bold text-base sm:text-lg leading-snug">
-                    If the treaty passes, you are personally to blame for saving{" "}
-                    <span className="text-brutal-pink">
-                      ~{IMPACT_PER_VOTE.lives.toFixed(1)} lives
-                    </span>
-                    {" "}and preventing{" "}
-                    <span className="text-brutal-pink">
-                      ~{(IMPACT_PER_VOTE.sufferingHours / HOURS_PER_YEAR).toFixed(0)} years
-                    </span>
-                    {" "}of suffering.
-                    <ImpactExplainer
-                      className="ml-1 align-middle"
-                      size={14}
-                      showFullAnalysisLink={false}
+                    When the treaty passes, you will be personally to blame for saving{" "}
+                    <ParameterValue
+                      param={VOTER_LIVES_SAVED}
+                      className="text-brutal-pink"
                     />
-                  </p>
-                  <p className="text-center font-bold text-sm text-muted-foreground">
-                    World ID. 30 seconds. No email spam.
+                    {" "}lives and preventing{" "}
+                    <ParameterValue
+                      param={VOTER_SUFFERING_HOURS_PREVENTED}
+                      className="text-brutal-pink"
+                    />
+                    {" "}hours of suffering.
                   </p>
                 </div>
                 <AuthForm
@@ -494,6 +490,11 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                   referralCode={searchParams?.get("ref")}
                   shareAttemptId={searchParams?.get("sa")}
                   compact={true}
+                  hideContainer
+                  title={null}
+                  googleButtonLabel="Save with Google"
+                  emailButtonLabel="Email me a save link"
+                  emailPendingButtonLabel="Sending save link..."
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />
               </Card>

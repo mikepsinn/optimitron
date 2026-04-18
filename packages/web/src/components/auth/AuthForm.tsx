@@ -27,13 +27,18 @@ interface AuthFormProps {
   initialError?: string | null;
   compact?: boolean;
   variant?: "default" | "document";
-  title?: string;
+  /** Pass `null` to omit the heading entirely (e.g. when the surrounding card already titles the surface). */
+  title?: string | null;
   subtitle?: string;
   googleButtonLabel?: string;
   emailButtonLabel?: string;
   emailPendingButtonLabel?: string;
+  /** Divider label shown between the Google button and the email form. Default "or use email". */
+  emailDividerLabel?: string;
   /** Message shown below the success alert after a magic link is sent */
   emailSuccessFooter?: string;
+  /** When true, skip the bordered/shadowed outer container (use inside a Card that already provides the box). */
+  hideContainer?: boolean;
   /** Pre-resolved provider flags from the server — skips the client-side fetch when provided */
   providers?: ProviderFlags;
 }
@@ -50,7 +55,9 @@ export function AuthForm({
   googleButtonLabel = "Continue with Google",
   emailButtonLabel = "Email Me a Sign-In Link",
   emailPendingButtonLabel = "Sending Sign-In Link...",
+  emailDividerLabel = "or use email",
   emailSuccessFooter,
+  hideContainer = false,
   providers,
 }: AuthFormProps) {
   const [email, setEmail] = useState("");
@@ -64,7 +71,9 @@ export function AuthForm({
   const buttonClassName = compact ? "h-11 text-sm" : "h-12 text-base";
   const magicLinkEnabled = providers?.email ?? true;
   const googleEnabled = providers?.google ?? true;
-  const containerClassName = isDocument
+  const containerClassName = hideContainer
+    ? "w-full"
+    : isDocument
     ? "w-full rounded-[24px] border border-[#8e6b48]/25 bg-[#f7f1e4]/88 p-5 shadow-[0_12px_24px_rgba(58,42,25,0.08)]"
     : "w-full rounded-xl border-4 border-primary bg-background p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
   const titleClassName = isDocument
@@ -202,12 +211,14 @@ export function AuthForm({
 
   return (
     <div className={containerClassName}>
-      <div className="mb-5 text-center">
-        <h2 className={titleClassName}>{title}</h2>
-        {subtitle ? (
-          <p className={subtitleClassName}>{subtitle}</p>
-        ) : null}
-      </div>
+      {title || subtitle ? (
+        <div className="mb-5 text-center">
+          {title ? <h2 className={titleClassName}>{title}</h2> : null}
+          {subtitle ? (
+            <p className={subtitleClassName}>{subtitle}</p>
+          ) : null}
+        </div>
+      ) : null}
 
       {error ? <AlertCard type="error" message={error} className="mb-4" /> : null}
       {infoMessage ? (
@@ -267,7 +278,7 @@ export function AuthForm({
         {googleEnabled && magicLinkEnabled ? (
           <div className={dividerClassName}>
             <span className={dividerLineClassName} />
-            <span>or use email</span>
+            <span>{emailDividerLabel}</span>
             <span className={dividerLineClassName} />
           </div>
         ) : null}

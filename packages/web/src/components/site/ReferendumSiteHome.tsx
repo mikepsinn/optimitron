@@ -7,6 +7,11 @@ import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeade
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
 import { ReferendumSiteInlineSign } from "@/components/site/ReferendumSiteInlineSign";
+import { ParameterValue } from "@/components/shared/ParameterValue";
+import {
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
 import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
  
 const treatyMarkdownComponents = {

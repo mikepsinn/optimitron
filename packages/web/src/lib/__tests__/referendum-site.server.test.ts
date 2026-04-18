@@ -104,4 +104,79 @@ describe("referendum-site.server", () => {
       }),
     );
   });
+
+  it("surfaces the signed-in user's signer row separately with its global rank", async () => {
+    mocks.referendumFindUnique.mockResolvedValue({
+      id: "ref_3",
+      title: "1% Treaty",
+      description: "desc",
+    });
+    mocks.referendumVoteCount.mockResolvedValue(3);
+    mocks.organizationPositionCount.mockResolvedValue(0);
+    mocks.referendumVoteFindMany.mockResolvedValue([
+      {
+        id: "vote_c",
+        createdAt: new Date("2026-01-03T00:00:00.000Z"),
+        userId: "user_c",
+        user: {
+          id: "user_c",
+          name: "C",
+          username: "c",
+          image: null,
+          email: "c@example.com",
+          person: null,
+        },
+      },
+      {
+        id: "vote_b",
+        createdAt: new Date("2026-01-02T00:00:00.000Z"),
+        userId: "user_b",
+        user: {
+          id: "user_b",
+          name: "B",
+          username: "b",
+          image: null,
+          email: "b@example.com",
+          person: null,
+        },
+      },
+      {
+        id: "vote_a",
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        userId: "user_a",
+        user: {
+          id: "user_a",
+          name: "A",
+          username: "a",
+          image: null,
+          email: "a@example.com",
+          person: null,
+        },
+      },
+    ]);
+    mocks.referendumVoteGroupBy.mockResolvedValue([
+      {
+        referredByUserId: "user_b",
+        _count: { referredByUserId: 2 },
+      },
+      {
+        referredByUserId: "user_a",
+        _count: { referredByUserId: 1 },
+      },
+    ]);
+
+    const data = await getReferendumSiteHomeData(getSiteConfig("onePercentTreaty"), {
+      currentUserId: "user_c",
+    });
+
+    expect(data?.publicSigners.currentUserSigner).toMatchObject({
+      user: { id: "user_c" },
+      rank: 3,
+    });
+    expect(data?.publicSigners.signers.map((entry) => entry.user.id)).toEqual([
+      "user_b",
+      "user_a",
+      "user_c",
+    ]);
+  });
 });

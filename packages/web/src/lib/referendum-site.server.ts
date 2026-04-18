@@ -34,6 +34,7 @@ export interface PublicSignerEntry {
 }
 
 export interface PublicSignersPage {
+  currentUserSigner: PublicSignerEntry | null;
   signers: PublicSignerEntry[];
   totalCount: number;
   page: number;
@@ -123,7 +124,7 @@ export async function getReferendumSiteContext(
 
 export async function getReferendumSiteHomeData(
   site: SiteConfig,
-  options: { signersPage?: number } = {},
+  options: { signersPage?: number; currentUserId?: string | null } = {},
 ): Promise<ReferendumSiteHomeData | null> {
   const context = await getReferendumSiteContext(site);
   if (!context) {
@@ -188,7 +189,7 @@ export async function getReferendumSiteHomeData(
 
   // Sort by referral count desc (tiebreak: earliest signup first), then
   // assign global ranks so page 2+ carries the correct #N across pages.
-  const ranked = allPublicSigners
+  const ranked: PublicSignerEntry[] = allPublicSigners
     .map((row) => {
       const referredYesCount = referredCountByUserId.get(row.userId) ?? 0;
       const multiplier = 1 + referredYesCount;
@@ -198,6 +199,7 @@ export async function getReferendumSiteHomeData(
         referredYesCount,
         livesSaved: VOTER_LIVES_SAVED.value * multiplier,
         hoursPrevented: VOTER_SUFFERING_HOURS_PREVENTED.value * multiplier,
+        rank: 0,
         user: row.user as UserForDisplay,
       };
     })
@@ -206,7 +208,11 @@ export async function getReferendumSiteHomeData(
         return b.referredYesCount - a.referredYesCount;
       }
       return a.createdAt.getTime() - b.createdAt.getTime();
-    });
+    })
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }));
 
   const totalPages = Math.max(
     1,
@@ -215,12 +221,10 @@ export async function getReferendumSiteHomeData(
   const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * PUBLIC_SIGNERS_PAGE_SIZE;
 
-  const signerRows: PublicSignerEntry[] = ranked
-    .slice(skip, skip + PUBLIC_SIGNERS_PAGE_SIZE)
-    .map((entry, index) => ({
-      ...entry,
-      rank: skip + index + 1,
-    }));
+  const signerRows = ranked.slice(skip, skip + PUBLIC_SIGNERS_PAGE_SIZE);
+  const currentUserSigner = options.currentUserId
+    ? ranked.find((entry) => entry.user.id === options.currentUserId) ?? null
+    : null;
 
   const treatyParentTask =
     site.key === "onePercentTreaty"
@@ -246,6 +250,7 @@ export async function getReferendumSiteHomeData(
         ? shareableSnippets.onePercentTreatyText.markdown
         : "",
     publicSigners: {
+      currentUserSigner,
       signers: signerRows,
       totalCount: publicSignersTotal,
       page,

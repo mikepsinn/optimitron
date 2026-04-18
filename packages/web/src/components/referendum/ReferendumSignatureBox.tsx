@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -23,7 +23,7 @@ export interface ReferendumSignatureBoxProps {
   shareText: string;
   emailSubject: string;
   signedTitle?: string;
-  signedBody?: string;
+  signedBody?: ReactNode;
   variant?: "stepper" | "reader";
   showReaderShell?: boolean;
   /**

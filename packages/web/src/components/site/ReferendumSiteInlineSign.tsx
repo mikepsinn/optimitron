@@ -2,6 +2,12 @@
 
 import { getReferendumConfig } from "@/config/referendums";
 import { ReferendumSignatureBox } from "@/components/referendum/ReferendumSignatureBox";
+import { ParameterValue } from "@/components/shared/ParameterValue";
+import {
+  VOTER_LIVES_SAVED,
+  VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@optimitron/data/parameters";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 export function ReferendumSiteInlineSign({
   referendumSlug,
@@ -25,6 +31,23 @@ export function ReferendumSiteInlineSign({
     return null;
   }
 
+  const signedBody =
+    config.slug === TREATY_REFERENDUM_SLUG ? (
+      <>
+        For each person you get to sign with your link, you will be personally
+        {" "}to blame for saving{" "}
+        <ParameterValue param={VOTER_LIVES_SAVED} figures={2} />
+        {" "}lives and preventing{" "}
+        <ParameterValue
+          param={VOTER_SUFFERING_HOURS_PREVENTED}
+          figures={2}
+        />
+        {" "}hours of suffering.
+      </>
+    ) : (
+      config.signedBody
+    );
+
   return (
     <ReferendumSignatureBox
       referendumSlug={config.slug}
@@ -37,7 +60,7 @@ export function ReferendumSiteInlineSign({
       shareText={config.shareText}
       emailSubject={config.emailSubject}
       signedTitle={config.signedTitle}
-      signedBody={config.signedBody}
+      signedBody={signedBody}
       variant="reader"
       showReaderShell={showReaderShell}
       showPrivacyToggle={showPrivacyToggle}

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import { ReferendumSiteHome } from "@/components/site/ReferendumSiteHome";
+import { authOptions } from "@/lib/auth";
 import { getSiteMetadata } from "@/lib/metadata";
 import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { getSiteFromHost } from "@/lib/site";
@@ -74,7 +76,11 @@ export default async function Home({
     const signersPage = signersPageParam
       ? Math.max(1, parseInt(signersPageParam, 10) || 1)
       : 1;
-    const data = await getReferendumSiteHomeData(site, { signersPage });
+    const session = await getServerSession(authOptions);
+    const data = await getReferendumSiteHomeData(site, {
+      signersPage,
+      currentUserId: session?.user?.id ?? null,
+    });
     if (!data) {
       return (
         <section className="mx-auto max-w-2xl px-4 py-24 text-center">
