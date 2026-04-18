@@ -189,8 +189,8 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "the-ratio",
     label: "The Ratio",
-    requiredTokens: ["country", "mil_to_trials_ratio"],
-    body: "{country} spends ${mil_to_trials_ratio} on BOMBS for every $1 on finding out which medicines work. ONE DOLLAR. Who negotiated this? Total disaster. FIRE THEM. Sign the 1% Treaty — moves 1% from bombs to clinical trials. {treaty_url}. Easy!",
+    requiredTokens: ["country", "mil_to_trials_ratio", "mil_synonym"],
+    body: "{country} spends ${mil_to_trials_ratio} on BOMBS for every $1 on finding out which medicines work. ONE DOLLAR. Who negotiated this? Total disaster. FIRE THEM. Sign the 1% Treaty — moves 1% from {mil_synonym} to clinical trials. {treaty_url}. Easy!",
   },
   {
     id: "3am-truth",
@@ -223,9 +223,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       ``,
       `It's at {treaty_url}. You just type your name and click submit. Should take about 30 seconds. So if you could just go ahead and do that, that'd be terrific.`,
       ``,
-      "Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died waiting for cures since we assigned this to you. You know. Because of the delayed disease eradication. Also your administration spends ${mil_to_trials_ratio} on {mil_synonym} for every $1 on finding out which medicines work. So. Yeah.",
+      "Oh, and I'm going to need you to be aware that {deaths_from_delay} people have died waiting for cures since we assigned this to you. You know. Because of the delayed disease eradication. So. Yeah.",
       ``,
-      "So if you could just sign that. And maybe stop spending ${mil_to_trials_ratio} on blowing stuff up for every $1 on clinical trials. That'd be great.",
+      "So if you could just sign that. And maybe stop spending ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials. That'd be great.",
     ].join("\n"),
   },
   {
