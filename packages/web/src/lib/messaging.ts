@@ -112,7 +112,7 @@ export const MILITARY_SPENDING_SYNONYMS = [
   "rubble creation",
   "murder infrastructure",
   "killing strangers",
-  "civilian terrorizing",
+  //"civilian terrorizing",
   "skeleton manufacturing",
   "blowing stuff up",
   "destroying everything",

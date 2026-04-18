@@ -1,11 +1,15 @@
 import Link from "next/link";
 import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_DISEASE_DEATHS_DAILY,
   GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-  DFDA_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { LiveCounter } from "@/components/tasks/live-counter";
@@ -88,15 +92,25 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             years to cure them all.
           </p>
           <p className="mt-3">
-            1% of the military budget could increase trial capacity by{" "}
+            Humanity currently spends enough on its capacity for mass murder to achieve{" "}
+            <ParameterValue
+              param={NUCLEAR_WINTER_OVERKILL_FACTOR}
+              display="integer"
+              className="font-black text-brutal-pink"
+            />{" "}
+            apocalypses. This treaty asks it to settle for{" "}
+            <span className="font-black text-brutal-pink">
+              {(NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99).toFixed(1)}
+            </span>{" "}
+            apocalypses in exchange for{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
               className="font-black text-brutal-pink"
-            />{" "}
-            times.
+            />
+            × more clinical trial capacity to cure disease.
           </p>
           <p className="mt-3 text-xl font-black sm:text-2xl">
-            That compresses{" "}
+            This could compress that{" "}
             <ParameterValue
               param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
               display="integer"
@@ -108,7 +122,23 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
               display="integer"
               className="font-black text-brutal-pink"
             />
-            .
+            , avoiding{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
+              className="font-black text-brutal-pink"
+            />{" "}
+            deaths,{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
+              className="font-black text-brutal-pink"
+            />{" "}
+            hours of suffering, and{" "}
+            <ParameterValue
+              param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE}
+              display="withUnit"
+              className="font-black text-brutal-pink"
+            />{" "}
+            wasted by delayed disease eradication.
           </p>
         </div>
       ) : null}
