@@ -1,7 +1,7 @@
 /**
  * Share-text templates for the task reminder dialog.
  *
- * Seven voice variants of the same overdue-task reminder. Each template
+ * Seventeen voice variants of the same overdue-task reminder. Each template
  * commits to a single container (memo, ticket, invoice, post, voicemail);
  * the dissonance between the form and the subject does the comedy. Don't
  * argue the full case inside any one variant — let the form carry it.
@@ -66,6 +66,9 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "deaths_per_day",
       "money_wasted_per_day",
       "deaths_from_delay",
+      "trial_capacity_multiplier",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
     ],
     body: [
       `Hi {leader_name},`,
@@ -87,6 +90,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     requiredTokens: [
       "leader_name",
       "country",
+      "citizen_name",
       "government_spending_ytd",
       "days_overdue",
       "deaths_from_delay",
@@ -127,6 +131,10 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "deaths_from_delay",
       "money_wasted",
       "government_spending_ytd",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+      "treaty_hale_gain",
+      "lifetime_income_gain",
     ],
     body: [
       `TICKET #{days_overdue}-001`,
@@ -151,49 +159,65 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   {
     id: "short",
     label: "Short (X)",
-    requiredTokens: ["leader_handle", "government_spending_ytd", "deaths_from_delay", "mil_to_trials_ratio"],
-    body: ".@{leader_handle} For every $1 you spend on clinical trials, ${mil_to_trials_ratio} goes to {mil_synonym}. There's a treaty that fixes this. Takes 30 seconds to sign. {deaths_from_delay} people have died waiting. {treaty_url}",
+    requiredTokens: ["leader_handle", "mil_synonym", "deaths_from_delay", "mil_to_trials_ratio"],
+    body: ".@{leader_handle} For every $1 you spend on clinical trials, ${mil_to_trials_ratio} goes to {mil_synonym}. The 1% Treaty moves 1% of military spending to clinical trials. 30 seconds to sign. {deaths_from_delay} dead of curable disease waiting. {treaty_url}",
   },
   {
     id: "sleepy-sign-it",
     label: "Sleepy Sign-It",
     requiredTokens: ["leader_name", "deaths_from_delay", "trial_capacity_multiplier"],
-    body: "Sleepy {leader_name} STILL hasn't signed the 1% Treaty. 120 apocalypses of mass murder capacity down to 119 — you can only HAVE one apocalypse, folks — in exchange for {trial_capacity_multiplier}× the clinical trials. Easiest deal ever written. 30 seconds! I could do it in 5. {deaths_from_delay} dead of curable disease waiting. Very weak. Very sad. {treaty_url} — sign it!",
+    body: "Sleepy {leader_name} STILL hasn't signed the 1% Treaty. 120 apocalypses of mass murder capacity down to 118.8 — you can only HAVE one apocalypse, folks — in exchange for {trial_capacity_multiplier}× the clinical trials. Easiest deal ever written. 30 seconds! I could do it in 5. {deaths_from_delay} dead of curable disease waiting. Very weak. Very sad. {treaty_url} — sign it!",
   },
   {
     id: "deal-maker",
     label: "The Deal-Maker",
-    requiredTokens: ["leader_name"],
+    requiredTokens: [
+      "leader_name",
+      "mil_synonym",
+      "trial_capacity_multiplier",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+    ],
     body: "Look, {leader_name}. I've made a LOT of deals. This one's a layup. 1% off {mil_synonym}, you get {trial_capacity_multiplier}× the clinical trials, disease clock drops from {eradication_years_status_quo} years to {eradication_years_treaty}. Easiest deal ever written. Sign it. {treaty_url}. 30 seconds. Not hard!",
   },
   {
     id: "many-people-are-saying",
     label: "Many People Are Saying",
     requiredTokens: ["leader_name", "deaths_from_delay", "trial_capacity_multiplier"],
-    body: "Many people are saying {leader_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 119, in exchange for {trial_capacity_multiplier}× more clinical trials — because he doesn't know how to read a PDF. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since it hit his desk. Someone help him out. {treaty_url}",
+    body: "Many people are saying {leader_name} can't sign the 1% Treaty — drops mass murder capacity from 120 apocalypses to 118.8, in exchange for {trial_capacity_multiplier}× more clinical trials — because he doesn't know how to read a PDF. I don't know! Maybe true, maybe not! But {deaths_from_delay} dead of curable disease since it hit his desk. Someone help him out. {treaty_url}",
   },
   {
     id: "the-ratio",
     label: "The Ratio",
     requiredTokens: ["country", "mil_to_trials_ratio"],
-    body: "{country} spends ${mil_to_trials_ratio} on BOMBS for every $1 on finding out which medicines work. ONE DOLLAR. Who negotiated this? Total disaster. FIRE THEM. Sign the treaty. {treaty_url}. Easy!",
+    body: "{country} spends ${mil_to_trials_ratio} on BOMBS for every $1 on finding out which medicines work. ONE DOLLAR. Who negotiated this? Total disaster. FIRE THEM. Sign the 1% Treaty — moves 1% from bombs to clinical trials. {treaty_url}. Easy!",
   },
   {
     id: "3am-truth",
     label: "3 AM Truth",
-    requiredTokens: ["leader_name", "government_spending_ytd"],
+    requiredTokens: ["leader_name", "government_spending_ytd", "daily_disease_deaths"],
     body: "Can't sleep. Thinking about how {leader_name} has spent {government_spending_ytd} this year and STILL can't find 30 seconds to sign a treaty that saves {daily_disease_deaths} lives a day. Very low energy leadership. Very sad! {treaty_url}",
   },
   {
     id: "tremendous-treaty",
     label: "The Tremendous Treaty",
-    requiredTokens: ["leader_name", "deaths_per_day"],
+    requiredTokens: [
+      "leader_name",
+      "deaths_per_day",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
+    ],
     body: "I have a BEAUTIFUL treaty. Many people are saying it's the greatest treaty ever written. {eradication_years_status_quo}-year disease timeline? Down to {eradication_years_treaty}. TREMENDOUS. {leader_name} won't sign. Very unfair to the {deaths_per_day} people who permanently stop every day. {treaty_url}",
   },
   {
     id: "lumbergh",
     label: "Office Memo",
-    requiredTokens: ["leader_name", "deaths_from_delay", "mil_to_trials_ratio"],
+    requiredTokens: [
+      "leader_name",
+      "deaths_from_delay",
+      "mil_to_trials_ratio",
+      "mil_synonym",
+    ],
     body: [
       `Yeahhh, hi {leader_name}, if you could go ahead and sign the 1% Treaty, that'd be great.`,
       ``,
@@ -211,17 +235,18 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "leader_name",
       "country",
       "government_spending_ytd",
-      "days_overdue",
       "deaths_from_delay",
-      "money_wasted",
       "mil_budget_pct",
+      "mil_synonym",
       "mil_to_trials_ratio",
       "trials_budget_pct",
+      "eradication_years_status_quo",
+      "eradication_years_treaty",
     ],
     body: [
       `Excited to flag that {leader_name} has an amazing opportunity to sign the 1% Treaty 🙏`,
       ``,
-      "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym}.",
+      "{country} has spent {government_spending_ytd} this fiscal year. Of the combined military + clinical trials budget, {trials_budget_pct} goes to finding out which medicines work. The other {mil_budget_pct} goes to {mil_synonym} — that's ${mil_to_trials_ratio} on {mil_synonym} for every $1 on clinical trials.",
       "",
       `The 1% Treaty moves 1% of military spending to clinical trials. It compresses disease eradication from {eradication_years_status_quo} years to {eradication_years_treaty}. The task is literally typing your name in a box at {treaty_url}. It takes 30 seconds.`,
       ``,
@@ -243,6 +268,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       "money_wasted_per_day",
       "days_overdue",
       "mil_to_trials_ratio",
+      "mil_synonym",
     ],
     body: [
       `INVOICE #{days_overdue} — PAST DUE`,
