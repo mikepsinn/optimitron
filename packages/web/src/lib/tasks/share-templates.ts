@@ -412,8 +412,30 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
   },
 ];
 
+/**
+ * Preferred default variant when the picker opens. Lumbergh's "yeahhh, if
+ * you could go ahead and sign that" register is the one most readers
+ * actually copy-paste — corporate passive-aggression translates across
+ * political tribes in a way the Trump/LinkedIn voices don't.
+ */
+export const DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
+
 export function getShareTemplate(id: string): ShareTemplate | undefined {
   return SHARE_TEMPLATES.find((template) => template.id === id);
+}
+
+/**
+ * Choose which template to show first. Prefers DEFAULT_SHARE_TEMPLATE_ID,
+ * falls back to the first usable template if the default got filtered out
+ * (e.g. missing tokens on the current task).
+ */
+export function pickDefaultShareTemplateId(
+  templates: ShareTemplate[],
+): string | null {
+  if (templates.some((t) => t.id === DEFAULT_SHARE_TEMPLATE_ID)) {
+    return DEFAULT_SHARE_TEMPLATE_ID;
+  }
+  return templates[0]?.id ?? null;
 }
 
 /**

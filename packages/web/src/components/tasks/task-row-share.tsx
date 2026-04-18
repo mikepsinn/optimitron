@@ -59,6 +59,7 @@ import {
 } from "@/lib/share-channels";
 import {
   getUsableShareTemplates,
+  pickDefaultShareTemplateId,
   type ShareTemplate,
 } from "@/lib/tasks/share-templates";
 import { buildTaskUrl, buildUserReferralUrl } from "@/lib/url";
@@ -279,7 +280,7 @@ export function TaskRowShare({
   }, [enrichedTokens]);
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
-    () => availableTemplates[0]?.id ?? null,
+    () => pickDefaultShareTemplateId(availableTemplates),
   );
 
   useEffect(() => {
@@ -291,7 +292,7 @@ export function TaskRowShare({
       selectedTemplateId == null ||
       !availableTemplates.some((template) => template.id === selectedTemplateId)
     ) {
-      setSelectedTemplateId(availableTemplates[0]?.id ?? null);
+      setSelectedTemplateId(pickDefaultShareTemplateId(availableTemplates));
     }
   }, [availableTemplates, selectedTemplateId]);
 

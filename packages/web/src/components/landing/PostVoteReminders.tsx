@@ -6,7 +6,10 @@ import { useSession } from "next-auth/react";
 import { Card } from "@/components/retroui/Card";
 import { getGovernmentLeader } from "@optimitron/data";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
-import { getUsableShareTemplates } from "@/lib/tasks/share-templates";
+import {
+  getUsableShareTemplates,
+  pickDefaultShareTemplateId,
+} from "@/lib/tasks/share-templates";
 import { renderTemplate } from "@/lib/tasks/render-template";
 import { ReminderComposer } from "@/components/tasks/task-row-share";
 import { getCountryFromLocale } from "@/lib/detect-country";
@@ -117,7 +120,7 @@ export function PostVoteReminders() {
   );
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
-    () => templates[0]?.id ?? null,
+    () => pickDefaultShareTemplateId(templates),
   );
 
   useEffect(() => {
@@ -129,7 +132,7 @@ export function PostVoteReminders() {
       selectedTemplateId == null ||
       !templates.some((t) => t.id === selectedTemplateId)
     ) {
-      setSelectedTemplateId(templates[0]?.id ?? null);
+      setSelectedTemplateId(pickDefaultShareTemplateId(templates));
     }
   }, [templates, selectedTemplateId]);
 
