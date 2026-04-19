@@ -1,7 +1,7 @@
 "use client";
 
+import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { getReferendumConfig } from "@/config/referendums";
-import { HumanityShareBox } from "@/components/referendum/HumanityShareBox";
 import { ReferendumSignatureBox } from "@/components/referendum/ReferendumSignatureBox";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
@@ -49,7 +49,13 @@ export function ReferendumSiteInlineSign({
       config.signedBody
     );
   const signedShare =
-    config.slug === TREATY_REFERENDUM_SLUG ? <HumanityShareBox /> : undefined;
+    config.slug === TREATY_REFERENDUM_SLUG ? (
+      <PostVoteReminders
+        defaultCowardMode
+        surface="post_sign_treaty_share"
+        cardClassName="w-full overflow-hidden border-2 border-[#8e6b48]/35 bg-background p-0 text-foreground shadow-[6px_6px_0_rgba(58,42,25,0.12)]"
+      />
+    ) : undefined;
 
   return (
     <ReferendumSignatureBox

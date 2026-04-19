@@ -115,6 +115,8 @@ export function ReminderComposer({
   copyIdleLabel = "Copy Reminder Message",
   copyCopiedLabel = "Reminder Copied ✓",
   copyErrorLabel = "Copy Failed",
+  headerAccessory,
+  steps,
 }: {
   availableTemplates: ShareTemplate[];
   message: string;
@@ -130,6 +132,8 @@ export function ReminderComposer({
   copyIdleLabel?: string;
   copyCopiedLabel?: string;
   copyErrorLabel?: string;
+  headerAccessory?: React.ReactNode;
+  steps?: string[];
 }) {
   const [linkCopyState, setLinkCopyState] = useState<"copied" | "idle">("idle");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -146,43 +150,56 @@ export function ReminderComposer({
     autoResize();
   }, [message, autoResize]);
 
+  const stepOne = steps?.[0];
+  const stepThree = steps?.[1];
+
   return (
     <div className="space-y-3 p-4">
       {/* Header — compact */}
-      <div className="space-y-0.5">
-        <h3 className="text-base font-black uppercase leading-tight">
-          {heading}
-        </h3>
-        <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
-          {taskTitle}
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-0.5">
+          <h3 className="text-base font-black uppercase leading-tight">
+            {heading}
+          </h3>
+          <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+            {taskTitle}
+          </p>
+        </div>
+        {headerAccessory ? <div className="shrink-0">{headerAccessory}</div> : null}
       </div>
 
       {/* Template selector — dropdown instead of 6 buttons */}
       {availableTemplates.length > 1 ? (
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
-            Voice:
-          </span>
-          <Select
-            value={selectedTemplateId ?? undefined}
-            onValueChange={onTemplateChange}
-          >
-            <Select.Trigger className="h-8 min-w-0 flex-1 border-2 border-foreground text-[11px] font-black uppercase">
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content className="border-2 border-foreground">
-              {availableTemplates.map((template) => (
-                <Select.Item
-                  key={template.id}
-                  value={template.id}
-                  className="text-[11px] font-black uppercase"
-                >
-                  {template.label}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
+        <div className="space-y-1.5">
+          {stepOne ? (
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-foreground">
+              {stepOne}
+            </p>
+          ) : null}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+              Voice:
+            </span>
+            <Select
+              value={selectedTemplateId ?? undefined}
+              onValueChange={onTemplateChange}
+            >
+              <Select.Trigger className="h-8 min-w-0 flex-1 border-2 border-foreground text-[11px] font-black uppercase">
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Content className="border-2 border-foreground">
+                {availableTemplates.map((template) => (
+                  <Select.Item
+                    key={template.id}
+                    value={template.id}
+                    className="text-[11px] font-black uppercase"
+                  >
+                    {template.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          </div>
         </div>
       ) : null}
 
@@ -213,31 +230,38 @@ export function ReminderComposer({
       </Button>
 
       {/* Share channels */}
-      <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
-        {CHANNEL_ICONS.map(({ channel, icon, label }) => (
-          <button
-            key={channel}
-            type="button"
-            aria-label={label}
-            className="group flex cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-foreground bg-background px-1 py-2 text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none"
-            onClick={() => {
-              if (channel === "copy-link") {
-                setLinkCopyState("copied");
-                window.setTimeout(() => setLinkCopyState("idle"), 1500);
-              }
-              onChannel(channel);
-            }}
-          >
-            {channel === "copy-link" && linkCopyState === "copied" ? (
-              <span className="text-xs font-black">✓</span>
-            ) : (
-              icon
-            )}
-            <span className="text-[8px] font-black uppercase leading-none">
-              {channel === "copy-link" && linkCopyState === "copied" ? "Done" : label}
-            </span>
-          </button>
-        ))}
+      <div className="space-y-1.5">
+        {stepThree ? (
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-foreground">
+            {stepThree}
+          </p>
+        ) : null}
+        <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
+          {CHANNEL_ICONS.map(({ channel, icon, label }) => (
+            <button
+              key={channel}
+              type="button"
+              aria-label={label}
+              className="group flex cursor-pointer flex-col items-center gap-1 rounded-sm border-2 border-foreground bg-background px-1 py-2 text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none"
+              onClick={() => {
+                if (channel === "copy-link") {
+                  setLinkCopyState("copied");
+                  window.setTimeout(() => setLinkCopyState("idle"), 1500);
+                }
+                onChannel(channel);
+              }}
+            >
+              {channel === "copy-link" && linkCopyState === "copied" ? (
+                <span className="text-xs font-black">✓</span>
+              ) : (
+                icon
+              )}
+              <span className="text-[8px] font-black uppercase leading-none">
+                {channel === "copy-link" && linkCopyState === "copied" ? "Done" : label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

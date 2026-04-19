@@ -4,8 +4,14 @@ import { nanoid } from "nanoid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Card } from "@/components/retroui/Card";
+import { Switch } from "@/components/retroui/Switch";
 import { getGovernmentLeader } from "@optimitron/data";
 import { buildTaskShareTokens } from "@/lib/tasks/accountability";
+import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
+import {
+  getUsableHumanityShareTemplates,
+  pickDefaultHumanityShareTemplateId,
+} from "@/lib/tasks/humanity-share-templates";
 import {
   getUsableShareTemplates,
   pickDefaultShareTemplateId,
@@ -29,13 +35,22 @@ async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
-/** The treaty was due on this date; delay days accrue from here. */
 const TREATY_DUE_AT = new Date("2026-04-14T00:00:00.000Z");
 const DAY_MS = 1000 * 60 * 60 * 24;
 
+interface PostVoteRemindersProps {
+  cardClassName?: string;
+  defaultCowardMode?: boolean;
+  surface?: string;
+}
 
-export function PostVoteReminders() {
+export function PostVoteReminders({
+  cardClassName,
+  defaultCowardMode = false,
+  surface = "post_vote_reminders",
+}: PostVoteRemindersProps = {}) {
   const { data: session } = useSession();
+  const [cowardMode, setCowardMode] = useState(defaultCowardMode);
   const [messageCopyState, setMessageCopyState] = useState<"idle" | "copied" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -46,10 +61,13 @@ export function PostVoteReminders() {
   const referralUrl = session?.user
     ? buildUserReferralUrl(session.user, baseUrl)
     : baseUrl;
+  const delayDays = useMemo(
+    () => Math.max(0, Math.ceil((Date.now() - TREATY_DUE_AT.getTime()) / DAY_MS)),
+    [],
+  );
 
-  const { templates, tokenBag, leaderName } = useMemo(() => {
+  const { leaderTemplates, leaderTokenBag, leaderName } = useMemo(() => {
     const leader = getGovernmentLeader(countryCode);
-    const delayDays = Math.max(0, Math.ceil((Date.now() - TREATY_DUE_AT.getTime()) / DAY_MS));
     const targetLabel = leader?.leaderName ?? "Your Government";
     const tokens = buildTaskShareTokens({
       targetLabel,
@@ -64,9 +82,75 @@ export function PostVoteReminders() {
       citizenName: session?.user?.name || "A citizen",
       treatyUrl: referralUrl,
     });
-    const usable = getUsableShareTemplates(tokens);
-    return { templates: usable, tokenBag: tokens, leaderName: targetLabel };
-  }, [countryCode, session?.user?.name, referralUrl]);
+    return {
+      leaderTemplates: getUsableShareTemplates(tokens),
+      leaderTokenBag: tokens,
+      leaderName: targetLabel,
+    };
+  }, [countryCode, delayDays, referralUrl, session?.user?.name]);
+
+  const { humanityTemplates, humanityTokenBag } = useMemo(() => {
+    const delay = getTreatyLevelCostOfDelay(delayDays);
+    const tokens = buildTaskShareTokens({
+      targetLabel: "Humanity",
+      taskTitle: "Sign the 1% Treaty",
+      currentDelayDays: delayDays,
+      currentEconomicValueUsdLost: delay?.wastedUsd ?? null,
+      currentHumanLivesLost: delay?.deathsFromDelay ?? null,
+      currentSufferingHoursLost: null,
+      citizenName: session?.user?.name || "A citizen",
+      treatyUrl: referralUrl,
+    });
+    return {
+      humanityTemplates: getUsableHumanityShareTemplates(tokens),
+      humanityTokenBag: tokens,
+    };
+  }, [delayDays, referralUrl, session?.user?.name]);
+
+  const [selectedLeaderTemplateId, setSelectedLeaderTemplateId] = useState<string | null>(
+    () => pickDefaultShareTemplateId(leaderTemplates),
+  );
+  const [selectedHumanityTemplateId, setSelectedHumanityTemplateId] = useState<string | null>(
+    () => pickDefaultHumanityShareTemplateId(humanityTemplates),
+  );
+
+  useEffect(() => {
+    if (leaderTemplates.length === 0) {
+      setSelectedLeaderTemplateId(null);
+      return;
+    }
+    if (
+      selectedLeaderTemplateId == null ||
+      !leaderTemplates.some((template) => template.id === selectedLeaderTemplateId)
+    ) {
+      setSelectedLeaderTemplateId(pickDefaultShareTemplateId(leaderTemplates));
+    }
+  }, [leaderTemplates, selectedLeaderTemplateId]);
+
+  useEffect(() => {
+    if (humanityTemplates.length === 0) {
+      setSelectedHumanityTemplateId(null);
+      return;
+    }
+    if (
+      selectedHumanityTemplateId == null ||
+      !humanityTemplates.some((template) => template.id === selectedHumanityTemplateId)
+    ) {
+      setSelectedHumanityTemplateId(
+        pickDefaultHumanityShareTemplateId(humanityTemplates),
+      );
+    }
+  }, [humanityTemplates, selectedHumanityTemplateId]);
+
+  const templates = cowardMode ? humanityTemplates : leaderTemplates;
+  const tokenBag = cowardMode ? humanityTokenBag : leaderTokenBag;
+  const selectedTemplateId = cowardMode
+    ? selectedHumanityTemplateId
+    : selectedLeaderTemplateId;
+  const setSelectedTemplateId = cowardMode
+    ? setSelectedHumanityTemplateId
+    : setSelectedLeaderTemplateId;
+  const targetLabel = cowardMode ? "Humanity" : leaderName;
 
   const logShareAttempt = useCallback(
     async (input: {
@@ -86,7 +170,7 @@ export function PostVoteReminders() {
           body: JSON.stringify({
             id: input.id,
             source: "IN_APP",
-            surface: "post_vote_reminders",
+            surface,
             channel: input.channel,
             templateId: input.templateId,
             templateHash,
@@ -94,7 +178,11 @@ export function PostVoteReminders() {
             renderedMessage: input.renderedMessage,
             renderedHash,
             wasEdited: input.wasEdited,
-            context: { countryCode, leaderName },
+            context: {
+              countryCode,
+              cowardMode,
+              targetLabel,
+            },
           }),
           headers: { "Content-Type": "application/json" },
           method: "POST",
@@ -103,34 +191,18 @@ export function PostVoteReminders() {
         // best-effort
       }
     },
-    [countryCode, leaderName],
+    [countryCode, cowardMode, surface, targetLabel],
   );
-
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
-    () => pickDefaultShareTemplateId(templates),
-  );
-
-  useEffect(() => {
-    if (templates.length === 0) {
-      setSelectedTemplateId(null);
-      return;
-    }
-    if (
-      selectedTemplateId == null ||
-      !templates.some((t) => t.id === selectedTemplateId)
-    ) {
-      setSelectedTemplateId(pickDefaultShareTemplateId(templates));
-    }
-  }, [templates, selectedTemplateId]);
 
   const initialMessage = useMemo(() => {
-    if (selectedTemplateId) {
-      const template = templates.find((t) => t.id === selectedTemplateId);
-      if (template) {
-        return renderTemplate(template.body, tokenBag);
-      }
+    if (!selectedTemplateId) {
+      return "";
     }
-    return "";
+    const template = templates.find((entry) => entry.id === selectedTemplateId);
+    if (!template) {
+      return "";
+    }
+    return renderTemplate(template.body, tokenBag);
   }, [selectedTemplateId, templates, tokenBag]);
 
   useEffect(() => {
@@ -143,7 +215,7 @@ export function PostVoteReminders() {
     const wasEdited = message !== initialMessage;
     const outboundMessage = embedShareAttemptId(message, referralUrl, shareAttemptId);
     const selectedTemplate = selectedTemplateId
-      ? templates.find((t) => t.id === selectedTemplateId) ?? null
+      ? templates.find((template) => template.id === selectedTemplateId) ?? null
       : null;
 
     void logShareAttempt({
@@ -164,7 +236,14 @@ export function PostVoteReminders() {
         setMessageCopyState("error");
         window.setTimeout(() => setMessageCopyState("idle"), 2000);
       });
-  }, [message, initialMessage, referralUrl, selectedTemplateId, templates, logShareAttempt]);
+  }, [
+    initialMessage,
+    logShareAttempt,
+    message,
+    referralUrl,
+    selectedTemplateId,
+    templates,
+  ]);
 
   const handleChannel = useCallback(
     (channel: string) => {
@@ -190,7 +269,7 @@ export function PostVoteReminders() {
       const attributedReferralUrl = embedShareAttemptId(referralUrl, referralUrl, shareAttemptId);
       const outboundMessage = embedShareAttemptId(message, referralUrl, shareAttemptId);
       const selectedTemplate = selectedTemplateId
-        ? templates.find((t) => t.id === selectedTemplateId) ?? null
+        ? templates.find((template) => template.id === selectedTemplateId) ?? null
         : null;
 
       void logShareAttempt({
@@ -215,13 +294,18 @@ export function PostVoteReminders() {
       }
       window.open(href, "_blank", "noopener,noreferrer");
     },
-    [message, referralUrl, initialMessage, selectedTemplateId, templates, logShareAttempt],
+    [initialMessage, logShareAttempt, message, referralUrl, selectedTemplateId, templates],
   );
 
   if (templates.length === 0) return null;
 
   return (
-    <Card className="bg-background text-foreground border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+    <Card
+      className={
+        cardClassName ??
+        "overflow-hidden border-4 border-primary bg-background p-0 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+      }
+    >
       <ReminderComposer
         availableTemplates={templates}
         message={message}
@@ -231,8 +315,28 @@ export function PostVoteReminders() {
         onMessageChange={setMessage}
         onTemplateChange={setSelectedTemplateId}
         selectedTemplateId={selectedTemplateId}
-        targetLabel={leaderName}
+        targetLabel={targetLabel}
         taskTitle="Sign the 1% Treaty"
+        heading="Send Overdue Task Reminder"
+        copyIdleLabel="Step 2. Click to Copy"
+        copyCopiedLabel="Step 2. Copied ✓"
+        copyErrorLabel="Copy Failed"
+        headerAccessory={(
+          <label className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+              Coward Mode
+            </span>
+            <Switch
+              aria-label="Toggle coward mode"
+              checked={cowardMode}
+              onCheckedChange={setCowardMode}
+            />
+          </label>
+        )}
+        steps={[
+          "Step 1. Select the funniest message",
+          "Step 3. Select means of transmission and paste",
+        ]}
       />
     </Card>
   );
