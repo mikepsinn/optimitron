@@ -134,7 +134,9 @@ export function ReferendumSiteHome({ data }: Props) {
         />
       </section>
 
-      <SignatoriesLeaderboard publicSigners={publicSigners} />
+      {process.env.NODE_ENV !== "production" ? (
+        <SignatoriesLeaderboard publicSigners={publicSigners} />
+      ) : null}
     </div>
   );
 }
