@@ -88,6 +88,9 @@ const ONE_PERCENT_TREATY_HOSTS = new Set([
   "1percenttreaty.org",
   "www.1percenttreaty.org",
   "1percenttreaty.local",
+  "warondisease.org",
+  "www.warondisease.org",
+  "warondisease.local",
 ]);
 
 export function getSiteFromHost(host: string | null | undefined): SiteConfig {
