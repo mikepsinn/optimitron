@@ -114,6 +114,12 @@ export function ReferendumSiteHome({ data }: Props) {
       </section>
 
       <section className="mt-16 border-t-2 border-foreground pt-12">
+        <p className="mx-auto max-w-3xl text-center text-lg font-bold leading-relaxed text-[#2f2417] [font-family:var(--v0-font-libre-baskerville)] sm:text-xl md:text-2xl">
+          Given your leaders are very busy promoting the general welfare by blowing up schoolchildren and global energy infrastructure, they may not have 30 seconds to end war and disease. So you can do it for them!
+        </p>
+      </section>
+
+      <section className="mt-12">
         <div className="mx-auto max-w-3xl space-y-10">
           <h2 className="text-center text-3xl font-black uppercase tracking-[0.08em] text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
             Please quickly skim and sign to end war and disease.
