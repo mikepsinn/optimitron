@@ -1,12 +1,24 @@
+import {
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  fmtParamValueOnly,
+  fmtRaw,
+} from "@optimitron/data/parameters";
 import type { ReferendumSiteContent } from "./types";
+
+const apocalypseCount = fmtParamValueOnly(NUCLEAR_WINTER_OVERKILL_FACTOR);
+const reducedApocalypseCount = fmtRaw(
+  NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99,
+);
+const diseaseAcceleration = fmtParamValueOnly(DFDA_TRIAL_CAPACITY_MULTIPLIER);
 
 export const onePercentTreatyContent: ReferendumSiteContent = {
   key: "onePercentTreaty",
   metadata: {
     home: {
-      title: "1% Treaty — End War and Disease in Thirty Seconds",
+      title: "1% Treaty — Take 30 Seconds to End War and Disease",
       description:
-        "One percent. One signature. Your species has named harder things 'Tuesday.'",
+        `Humanity currently spends enough on mass murder capacity for ${apocalypseCount} apocalypses. This proposes we settle for ${reducedApocalypseCount} and use the savings to eradicate disease ${diseaseAcceleration} times faster.`,
     },
     treaty: {
       title: "Treaty — 1% Treaty",
