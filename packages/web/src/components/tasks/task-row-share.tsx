@@ -111,6 +111,10 @@ export function ReminderComposer({
   selectedTemplateId,
   targetLabel,
   taskTitle,
+  heading = "Send Overdue Task Reminder",
+  copyIdleLabel = "Copy Reminder Message",
+  copyCopiedLabel = "Reminder Copied ✓",
+  copyErrorLabel = "Copy Failed",
 }: {
   availableTemplates: ShareTemplate[];
   message: string;
@@ -122,6 +126,10 @@ export function ReminderComposer({
   selectedTemplateId: string | null;
   targetLabel: string;
   taskTitle: string;
+  heading?: string;
+  copyIdleLabel?: string;
+  copyCopiedLabel?: string;
+  copyErrorLabel?: string;
 }) {
   const [linkCopyState, setLinkCopyState] = useState<"copied" | "idle">("idle");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -143,7 +151,7 @@ export function ReminderComposer({
       {/* Header — compact */}
       <div className="space-y-0.5">
         <h3 className="text-base font-black uppercase leading-tight">
-          Send Overdue Task Reminder
+          {heading}
         </h3>
         <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
           {taskTitle}
@@ -198,10 +206,10 @@ export function ReminderComposer({
         onClick={onCopy}
       >
         {messageCopyState === "copied"
-          ? "Reminder Copied ✓"
+          ? copyCopiedLabel
           : messageCopyState === "error"
-            ? "Copy Failed"
-            : "Copy Reminder Message"}
+            ? copyErrorLabel
+            : copyIdleLabel}
       </Button>
 
       {/* Share channels */}

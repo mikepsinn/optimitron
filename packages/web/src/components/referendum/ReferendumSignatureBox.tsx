@@ -24,6 +24,7 @@ export interface ReferendumSignatureBoxProps {
   emailSubject: string;
   signedTitle?: string;
   signedBody?: ReactNode;
+  signedShare?: ReactNode;
   variant?: "stepper" | "reader";
   showReaderShell?: boolean;
   /**
@@ -47,6 +48,7 @@ export function ReferendumSignatureBox({
   emailSubject,
   signedTitle = "Referendum Signed",
   signedBody = "Share your link. Every signature moves the needle.",
+  signedShare,
   variant = "stepper",
   showReaderShell = true,
   showPrivacyToggle = false,
@@ -151,32 +153,45 @@ export function ReferendumSignatureBox({
     }
 
     return (
-      <div className={cn("mx-auto flex max-w-md flex-col items-center gap-6", shellClass)}>
+      <div
+        className={cn(
+          signedShare
+            ? "mx-auto flex w-full max-w-2xl flex-col gap-6"
+            : "mx-auto flex max-w-md flex-col items-center gap-6",
+          shellClass,
+        )}
+      >
         <p className={cn("text-center text-2xl font-black uppercase [font-family:var(--v0-font-libre-baskerville)]", titleClass)}>
           {signedTitle}
         </p>
         <p className={cn("text-center text-base font-bold [font-family:var(--v0-font-libre-baskerville)]", bodyClass)}>
           {signedBody}
         </p>
-        <ShareLinkButtons
-          label="Share Your Signature"
-          shareText={shareText}
-          url={referralUrl}
-          emailSubject={emailSubject}
-          labelClassName={shareLabelClass}
-        />
-        <Link
-          href={ROUTES.profile}
-          className={cn(
-            "text-center text-sm font-black uppercase underline underline-offset-4 hover:no-underline",
-            bodyClass,
-          )}
-        >
-          Add your photo and links →
-        </Link>
-        <p className={cn("break-all text-xs font-bold", referralLinkClass)}>
-          Personal referral link: {referralUrl}
-        </p>
+        {signedShare ? (
+          signedShare
+        ) : (
+          <>
+            <ShareLinkButtons
+              label="Share Your Signature"
+              shareText={shareText}
+              url={referralUrl}
+              emailSubject={emailSubject}
+              labelClassName={shareLabelClass}
+            />
+            <Link
+              href={ROUTES.profile}
+              className={cn(
+                "text-center text-sm font-black uppercase underline underline-offset-4 hover:no-underline",
+                bodyClass,
+              )}
+            >
+              Add your photo and links →
+            </Link>
+            <p className={cn("break-all text-xs font-bold", referralLinkClass)}>
+              Personal referral link: {referralUrl}
+            </p>
+          </>
+        )}
       </div>
     );
   }

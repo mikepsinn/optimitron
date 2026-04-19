@@ -1,6 +1,7 @@
 "use client";
 
 import { getReferendumConfig } from "@/config/referendums";
+import { HumanityShareBox } from "@/components/referendum/HumanityShareBox";
 import { ReferendumSignatureBox } from "@/components/referendum/ReferendumSignatureBox";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
@@ -47,6 +48,8 @@ export function ReferendumSiteInlineSign({
     ) : (
       config.signedBody
     );
+  const signedShare =
+    config.slug === TREATY_REFERENDUM_SLUG ? <HumanityShareBox /> : undefined;
 
   return (
     <ReferendumSignatureBox
@@ -61,6 +64,7 @@ export function ReferendumSiteInlineSign({
       emailSubject={config.emailSubject}
       signedTitle={config.signedTitle}
       signedBody={signedBody}
+      signedShare={signedShare}
       variant="reader"
       showReaderShell={showReaderShell}
       showPrivacyToggle={showPrivacyToggle}
