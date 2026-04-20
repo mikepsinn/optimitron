@@ -12,6 +12,7 @@ import { HowToWinSection } from "@/components/landing/HowToWinSection";
 import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
 import { LandingFAQSection } from "@/components/landing/LandingFAQSection";
 import { TLDRSection } from "@/components/landing/TLDRSection";
+import { TheSecretSection } from "@/components/landing/TheSecretSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
 import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
@@ -104,6 +105,9 @@ export default async function Home({
 
       {/* ── 3. TLDR — It's 2 buttons, tell your friends, done ── */}
       <TLDRSection />
+
+      {/* ── 3b. The Secret — viral-chain teaser; full payload post-vote ── */}
+      <TheSecretSection />
 
       {/* ── 4. Vote — The core game action ── */}
       <TreatyVoteSection />

@@ -52,4 +52,43 @@ describe("pickSubjectVariant", () => {
     // 6 variants — final index = 5, id = "action-required-30-sec".
     expect(variantId).toBe("action-required-30-sec");
   });
+
+  it("always returns the secret subject for step 0, regardless of president or RNG", () => {
+    for (const president of [null, "Emmanuel Macron"]) {
+      for (const rnd of [0, 0.25, 0.5, 0.75, 0.999]) {
+        const { subject, variantId, subjectTemplate } = pickSubjectVariant(
+          {
+            ...baseCtx,
+            step: 0,
+            presidentFullName: president,
+            presidentFirstName: president ? "Emmanuel" : null,
+          },
+          () => rnd,
+        );
+        expect(variantId).toBe("most-important-secret");
+        expect(subject).toBe("Can I tell you the most important secret in the world?");
+        expect(subjectTemplate).toBe("Can I tell you the most important secret in the world?");
+      }
+    }
+  });
+
+  it("never returns the secret subject for steps 1-15", () => {
+    for (let step = 1; step <= 15; step += 1) {
+      for (const president of [null, "Emmanuel Macron"]) {
+        for (const rnd of [0, 0.5, 0.999]) {
+          const { variantId, subject } = pickSubjectVariant(
+            {
+              ...baseCtx,
+              step,
+              presidentFullName: president,
+              presidentFirstName: president ? "Emmanuel" : null,
+            },
+            () => rnd,
+          );
+          expect(variantId).not.toBe("most-important-secret");
+          expect(subject).not.toContain("most important secret");
+        }
+      }
+    }
+  });
 });

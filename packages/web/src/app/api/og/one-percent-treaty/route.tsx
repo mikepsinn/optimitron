@@ -1,19 +1,13 @@
 import { ImageResponse } from "next/og";
 import {
-  fmtParam,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  formatParameter,
   fmtParamValueOnly,
-  TREATY_HALE_GAIN_YEAR_15,
-  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
+  getParameterValue,
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
 } from "@optimitron/data/parameters";
-import {
-  formatCompactCount,
-  formatCompactCurrency,
-  formatDelayDuration,
-  getTaskDelayStats,
-} from "@/lib/tasks/accountability";
-import { getTreatyLevelCostOfDelay } from "@/lib/tasks/delay-attribution";
-import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
-import { getTaskDetailData } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 export const revalidate = 300;
@@ -21,225 +15,309 @@ export const revalidate = 300;
 const SIZE = { width: 1200, height: 630 };
 
 const COLORS = {
-  bg: "#f7d64a",
+  white: "#ffffff",
   ink: "#111111",
-  card: "#fff7ed",
-  pink: "#ff3e9d",
-  red: "#e11d48",
-  redSoft: "#fee2e2",
-  faint: "#555555",
+  warm: "#f5ecdf",
+  warmLine: "#d2b89b",
+  pink: "#ff4fa3",
+  cyan: "#6fe7f7",
+  faint: "#5f4830",
 };
 
+const militarySpending = formatParameter(GLOBAL_MILITARY_SPENDING_ANNUAL_2024);
+const clinicalTrialsSpending = formatParameter(
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
+);
+const ratio = getParameterValue(
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  "round",
+);
+const acceleration = fmtParamValueOnly(DFDA_TRIAL_CAPACITY_MULTIPLIER);
+const trialsBarWidthPct = Math.max(
+  2.5,
+  Number(
+    (
+      (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value /
+        GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value) *
+      100
+    ).toFixed(2),
+  ),
+);
+
 export async function GET() {
-  const data = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);
-  const task = data?.task ?? null;
-  const delayStats = task ? getTaskDelayStats(task) : null;
-  const days = delayStats?.currentDelayDays ?? 0;
-  const costOfDelay = getTreatyLevelCostOfDelay(days);
-  const signerCount = task?.childTasks?.length ?? 193;
-  const overdueLabel =
-    delayStats && delayStats.isOverdue && days > 0
-      ? formatDelayDuration(days)
-      : "overdue";
-
-  const haleLabel = fmtParamValueOnly(TREATY_HALE_GAIN_YEAR_15, 3);
-  const incomeLabel = fmtParam(
-    TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
-    3,
-  );
-
   return new ImageResponse(
     (
       <div
         style={{
           alignItems: "stretch",
-          background:
-            "linear-gradient(135deg, #f7d64a 0%, #ff6b9d 55%, #111111 100%)",
+          backgroundColor: COLORS.warm,
+          color: COLORS.ink,
           display: "flex",
           height: "100%",
-          padding: "32px",
+          padding: "34px",
           width: "100%",
         }}
       >
         <div
           style={{
-            backgroundColor: COLORS.card,
-            border: `8px solid ${COLORS.ink}`,
-            boxShadow: `16px 16px 0 ${COLORS.ink}`,
-            color: COLORS.ink,
+            alignItems: "stretch",
+            backgroundColor: COLORS.white,
+            border: `4px solid ${COLORS.ink}`,
+            boxShadow: "14px 14px 0 #111111",
             display: "flex",
+            flex: 1,
             flexDirection: "column",
-            gap: "20px",
-            height: "100%",
             justifyContent: "space-between",
-            padding: "28px 36px",
-            width: "100%",
+            padding: "34px 40px 28px",
           }}
         >
-          {/* Eyebrow */}
           <div
             style={{
               alignItems: "center",
-              color: COLORS.pink,
               display: "flex",
-              fontSize: 20,
-              fontWeight: 900,
-              letterSpacing: 1.4,
-              textTransform: "uppercase",
+              justifyContent: "space-between",
             }}
           >
-            ⚡ 1% Treaty · President Management System
-          </div>
-
-          {/* Headline */}
-          <div
-            style={{
-              color: COLORS.ink,
-              display: "flex",
-              fontSize: 58,
-              fontWeight: 900,
-              letterSpacing: -1.5,
-              lineHeight: 0.98,
-            }}
-          >
-            {signerCount} world leaders are {overdueLabel} overdue on a
-            30-second task.
-          </div>
-
-          {/* Subtitle */}
-          <div
-            style={{
-              color: COLORS.faint,
-              display: "flex",
-              fontSize: 22,
-              fontWeight: 700,
-              lineHeight: 1.3,
-            }}
-          >
-            If they each spent 30 seconds signing, 1% of the world military
-            budget would fund clinical trials that give every human +
-            {haleLabel} healthy years of life and +{incomeLabel} lifetime
-            income by 2040.
-          </div>
-
-          {/* Stat cells — cost of delay */}
-          {costOfDelay ? (
-            <div
-              style={{
-                display: "flex",
-                gap: "14px",
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  alignItems: "flex-start",
-                  backgroundColor: COLORS.redSoft,
-                  border: `5px solid ${COLORS.ink}`,
-                  display: "flex",
-                  flex: 1,
-                  flexDirection: "column",
-                  gap: "4px",
-                  padding: "14px 18px",
-                }}
-              >
-                <div
-                  style={{
-                    color: COLORS.red,
-                    display: "flex",
-                    fontSize: 15,
-                    fontWeight: 900,
-                    letterSpacing: 1.1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  💀 Dead from the delay
-                </div>
-                <div
-                  style={{
-                    color: COLORS.ink,
-                    display: "flex",
-                    fontSize: 48,
-                    fontWeight: 900,
-                    lineHeight: 1.0,
-                  }}
-                >
-                  {formatCompactCount(costOfDelay.deathsFromDelay)}
-                </div>
-              </div>
-              <div
-                style={{
-                  alignItems: "flex-start",
-                  backgroundColor: COLORS.redSoft,
-                  border: `5px solid ${COLORS.ink}`,
-                  display: "flex",
-                  flex: 1,
-                  flexDirection: "column",
-                  gap: "4px",
-                  padding: "14px 18px",
-                }}
-              >
-                <div
-                  style={{
-                    color: COLORS.red,
-                    display: "flex",
-                    fontSize: 15,
-                    fontWeight: 900,
-                    letterSpacing: 1.1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  💸 Wasted on disease meanwhile
-                </div>
-                <div
-                  style={{
-                    color: COLORS.ink,
-                    display: "flex",
-                    fontSize: 48,
-                    fontWeight: 900,
-                    lineHeight: 1.0,
-                  }}
-                >
-                  {formatCompactCurrency(costOfDelay.wastedUsd)}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {/* Footer CTA */}
-          <div
-            style={{
-              alignItems: "center",
-              borderTop: `3px solid ${COLORS.ink}`,
-              color: COLORS.ink,
-              display: "flex",
-              gap: "14px",
-              paddingTop: "14px",
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                alignItems: "center",
-                backgroundColor: COLORS.pink,
-                border: `3px solid ${COLORS.ink}`,
-                color: COLORS.card,
-                display: "flex",
-                fontSize: 20,
-                fontWeight: 900,
-                letterSpacing: 0.5,
-                padding: "8px 16px",
-                textTransform: "uppercase",
-              }}
-            >
-              Remind your employees
-            </div>
             <div
               style={{
                 color: COLORS.faint,
                 display: "flex",
-                fontSize: 20,
-                fontWeight: 700,
+                fontSize: 22,
+                fontWeight: 900,
+                letterSpacing: 1.8,
+                textTransform: "uppercase",
+              }}
+            >
+              The 1% Treaty
+            </div>
+            <div
+              style={{
+                backgroundColor: COLORS.ink,
+                color: COLORS.white,
+                display: "flex",
+                fontSize: 18,
+                fontWeight: 900,
+                letterSpacing: 1.2,
+                padding: "10px 16px",
+                textTransform: "uppercase",
+              }}
+            >
+              One percent fixes this
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px",
+            }}
+          >
+            <div
+              style={{
+                color: COLORS.faint,
+                display: "flex",
+                fontSize: 24,
+                fontWeight: 900,
+                letterSpacing: 1.7,
+                textTransform: "uppercase",
+              }}
+            >
+              Governments spend
+            </div>
+            <div
+              style={{
+                alignItems: "baseline",
+                display: "flex",
+                flexWrap: "wrap",
+                fontSize: 82,
+                fontWeight: 900,
+                gap: "18px",
+                letterSpacing: -2.8,
+                lineHeight: 0.92,
+                textTransform: "uppercase",
+              }}
+            >
+              <span style={{ display: "flex" }}>{ratio}x more on</span>
+              <span style={{ color: COLORS.pink, display: "flex" }}>war</span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontSize: 30,
+                fontWeight: 900,
+                lineHeight: 1.08,
+                marginTop: "10px",
+                textTransform: "uppercase",
+              }}
+            >
+              than clinical trials to discover which treatments actually work
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "22px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <div
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: 22,
+                    fontWeight: 900,
+                    letterSpacing: 1.4,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Military
+                </div>
+                <div
+                  style={{
+                    color: COLORS.pink,
+                    display: "flex",
+                    fontSize: 30,
+                    fontWeight: 900,
+                  }}
+                >
+                  {militarySpending}
+                </div>
+              </div>
+              <div
+                style={{
+                  alignItems: "center",
+                  backgroundColor: COLORS.pink,
+                  border: `4px solid ${COLORS.ink}`,
+                  display: "flex",
+                  height: "104px",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    color: COLORS.white,
+                    display: "flex",
+                    fontSize: 31,
+                    fontWeight: 900,
+                    letterSpacing: 0.4,
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {militarySpending} for mass murder capacity
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <div
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: 22,
+                    fontWeight: 900,
+                    letterSpacing: 1.4,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Clinical trials
+                </div>
+                <div
+                  style={{
+                    color: "#0f94a8",
+                    display: "flex",
+                    fontSize: 30,
+                    fontWeight: 900,
+                  }}
+                >
+                  {clinicalTrialsSpending}
+                </div>
+              </div>
+              <div
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  gap: "18px",
+                }}
+              >
+                <div
+                  style={{
+                    alignItems: "center",
+                    backgroundColor: COLORS.cyan,
+                    border: `4px solid ${COLORS.ink}`,
+                    display: "flex",
+                    height: "72px",
+                    justifyContent: "center",
+                    minWidth: "28px",
+                    width: `${trialsBarWidthPct}%`,
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    fontSize: 28,
+                    fontWeight: 900,
+                    lineHeight: 1.05,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  <span style={{ display: "flex" }}>{clinicalTrialsSpending}</span>
+                  <span style={{ display: "flex" }}>for clinical trials</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              alignItems: "center",
+              borderTop: `2px solid ${COLORS.warmLine}`,
+              color: COLORS.faint,
+              display: "flex",
+              fontSize: 24,
+              fontWeight: 700,
+              justifyContent: "space-between",
+              paddingTop: "20px",
+            }}
+          >
+            <div style={{ display: "flex" }}>
+              Redirect 1% of military spending and eradicate disease {acceleration}x faster.
+            </div>
+            <div
+              style={{
+                color: COLORS.ink,
+                display: "flex",
+                fontWeight: 900,
+                textTransform: "uppercase",
               }}
             >
               1percenttreaty.org

@@ -48,12 +48,26 @@ export type ShareTokenKey =
   | "trial_capacity_multiplier"
   | "trials_budget_pct";
 
+export type ShareAudience = "leader" | "peer";
+
 export interface ShareTemplate {
   id: string;
   label: string;
   body: string;
   /** Tokens this template falls apart without. */
   requiredTokens: ShareTokenKey[];
+  /**
+   * Who is this message addressed to?
+   *
+   * - `leader` (default): message is aimed at the overdue head of state, signed
+   *   by the user. The existing 17 accountability-pressure templates.
+   * - `peer`: message is aimed at a friend/family member the user is recruiting
+   *   into the chain. "Can I tell you the most important secret in the world?"
+   *
+   * Omitting the field means `leader` — preserves the existing pool's
+   * behavior without touching every entry.
+   */
+  audience?: ShareAudience;
 }
 
 export const SHARE_TEMPLATES: ShareTemplate[] = [
@@ -410,6 +424,19 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
       `lmk if blocked on anything 🙏`,
     ].join("\n"),
   },
+  {
+    id: "most-important-secret",
+    label: "The Most Important Secret",
+    audience: "peer",
+    requiredTokens: ["citizen_name"],
+    body: [
+      `Can I tell you the most important secret in the world?`,
+      ``,
+      `Call me when you have 30 seconds.`,
+      ``,
+      `— {citizen_name}`,
+    ].join("\n"),
+  },
 ];
 
 /**
@@ -420,37 +447,52 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
  */
 export const DEFAULT_SHARE_TEMPLATE_ID = "lumbergh";
 
+/** Peer-audience default — there's only one peer template today. */
+export const DEFAULT_PEER_SHARE_TEMPLATE_ID = "most-important-secret";
+
 export function getShareTemplate(id: string): ShareTemplate | undefined {
   return SHARE_TEMPLATES.find((template) => template.id === id);
 }
 
+function getTemplateAudience(template: ShareTemplate): ShareAudience {
+  return template.audience ?? "leader";
+}
+
 /**
- * Choose which template to show first. Prefers DEFAULT_SHARE_TEMPLATE_ID,
+ * Choose which template to show first. Prefers the audience-specific default,
  * falls back to the first usable template if the default got filtered out
  * (e.g. missing tokens on the current task).
  */
 export function pickDefaultShareTemplateId(
   templates: ShareTemplate[],
+  audience: ShareAudience = "leader",
 ): string | null {
-  if (templates.some((t) => t.id === DEFAULT_SHARE_TEMPLATE_ID)) {
-    return DEFAULT_SHARE_TEMPLATE_ID;
+  const preferredId =
+    audience === "peer"
+      ? DEFAULT_PEER_SHARE_TEMPLATE_ID
+      : DEFAULT_SHARE_TEMPLATE_ID;
+  if (templates.some((t) => t.id === preferredId)) {
+    return preferredId;
   }
   return templates[0]?.id ?? null;
 }
 
 /**
  * Filter templates down to those whose required tokens all have non-empty
- * values in the given token bag. Keeps the picker from offering the
- * Performance Review variant on a non-signer task where half the fields
- * would render blank.
+ * values in the given token bag AND match the requested audience. Keeps the
+ * picker from offering the Performance Review variant on a non-signer task
+ * where half the fields would render blank, and keeps peer-audience messages
+ * out of leader-facing surfaces (and vice versa).
  */
 export function getUsableShareTemplates(
   tokens: Record<string, string>,
+  audience: ShareAudience = "leader",
 ): ShareTemplate[] {
-  return SHARE_TEMPLATES.filter((template) =>
-    template.requiredTokens.every((key) => {
+  return SHARE_TEMPLATES.filter((template) => {
+    if (getTemplateAudience(template) !== audience) return false;
+    return template.requiredTokens.every((key) => {
       const value = tokens[key];
       return value != null && value !== "";
-    }),
-  );
+    });
+  });
 }

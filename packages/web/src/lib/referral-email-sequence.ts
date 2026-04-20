@@ -232,14 +232,35 @@ const SUBJECT_POOL_PRESIDENT: readonly SubjectVariant[] = [
 ];
 
 /**
+ * Welcome email (step 0) gets a single dedicated subject — the "most important
+ * secret" hook. "Secret" loses potency with repetition, so it lives here
+ * exclusively and never recurs in steps 1–15.
+ */
+const SUBJECT_VARIANT_STEP_0_SECRET: SubjectVariant = {
+  id: "most-important-secret",
+  template: "Can I tell you the most important secret in the world?",
+  build: () => "Can I tell you the most important secret in the world?",
+};
+
+/**
  * Pick a subject variant uniform-at-random from the pool appropriate for
  * whether we know the user's president. Returns both the raw template
  * (stored on EmailLog) and the final rendered subject line.
+ *
+ * Step 0 (welcome) bypasses the pools and always returns the "secret"
+ * subject — this is the one-shot hook and it's never reused.
  */
 export function pickSubjectVariant(
   ctx: SubjectVariantContext,
   rand: () => number = Math.random,
 ): { subject: string; subjectTemplate: string; variantId: string } {
+  if (ctx.step === 0) {
+    return {
+      subject: SUBJECT_VARIANT_STEP_0_SECRET.build(ctx),
+      subjectTemplate: SUBJECT_VARIANT_STEP_0_SECRET.template,
+      variantId: SUBJECT_VARIANT_STEP_0_SECRET.id,
+    };
+  }
   const pool = ctx.presidentFullName ? SUBJECT_POOL_PRESIDENT : SUBJECT_POOL_GENERIC;
   const index = Math.min(Math.floor(rand() * pool.length), pool.length - 1);
   const variant = pool[index];
@@ -254,12 +275,18 @@ export function pickSubjectVariant(
 // Headlines (non-subject)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Welcome-email headline. Carries the one-shot "secret" pitch: 2 people tell 2,
+ * doubling 32 times reaches 4.29 billion in roughly a year, disease
+ * eradication shifts forward by years. No other step mentions "secret".
+ */
+const STEP_0_SECRET_HEADLINE =
+  "There is a secret. 2 people. 2 more. 32 doublings. 4.29 billion. One year to eradicate disease sooner.";
+
 function getHeadline(step: number, referralCount: number, overdueSignerCount: number, presidentFullName: string | null) {
   const leaderLabel = presidentFullName ?? "your employee";
   if (step === 0) {
-    return presidentFullName
-      ? `${leaderLabel} is overdue on "Sign the 1% Treaty." Remind them.`
-      : `${overdueSignerCount} of your employees are overdue on "Sign the 1% Treaty." Pick one to remind.`;
+    return STEP_0_SECRET_HEADLINE;
   }
   if (step === 1 && referralCount === 0) {
     return `24 hours later. ${formatCount(getElapsedDeaths(1))} more humans died. ${leaderLabel} hasn't moved.`;
@@ -362,6 +389,32 @@ function buildReminderMessageBlockHtml(renderedMessage: string) {
       <pre style="margin:0;white-space:pre-wrap;word-wrap:break-word;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;border:3px solid #111827;background:#FFE66D;color:#111827;padding:14px;font-weight:600;">${escapeHtml(renderedMessage)}</pre>
     </div>
   `;
+}
+
+/**
+ * Step-0-only supporting paragraph. Explains the 2^32 math + disease-death
+ * rate the user-facing "secret" headline alludes to. Rendered once,
+ * never reused in later steps.
+ */
+function buildSecretPitchHtml() {
+  return `
+    <div style="margin:0 0 18px;border:3px solid #111827;background:#FFE66D;padding:14px 16px;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:900;line-height:1.45;color:#111827;">
+        Tell 2 people. They tell 2. 32 doublings later, 4.29 billion humans have voted — ~75% of the world's adults.
+      </p>
+      <p style="margin:0;font-size:13px;font-weight:700;line-height:1.5;color:#111827;">
+        Disease currently kills ~1.7 people every second. Every second of delay before the chain reaches critical mass is measurable in lives. You are node 1.
+      </p>
+    </div>
+  `;
+}
+
+function buildSecretPitchText() {
+  return [
+    "Tell 2 people. They tell 2. 32 doublings later, 4.29 billion humans have voted — ~75% of the world's adults.",
+    "",
+    "Disease kills ~1.7 people every second. Every second of delay before the chain reaches critical mass is measurable in lives. You are node 1.",
+  ].join("\n");
 }
 
 function buildShareButtonsHtml(buttons: readonly EmailShareButton[]) {
@@ -643,19 +696,27 @@ export function buildReferralSequenceEmail({
     shareButtons != null &&
     shareButtons.length > 0;
 
+  const isWelcome = step === 0;
+  const secretPitchHtml = isWelcome ? buildSecretPitchHtml() : "";
+  const secretPitchText = isWelcome ? buildSecretPitchText() : "";
+
   const bodyHtml = hasPersonalized
-    ? `${buildPresidentCardHtml(presidentHighlight)}${buildReminderMessageBlockHtml(presidentRenderedMessage)}${buildShareButtonsHtml(shareButtons)}`
-    : buildHighlightsHtml(highlights, referralCode, overdueSignerCount, baseUrl);
+    ? `${secretPitchHtml}${buildPresidentCardHtml(presidentHighlight)}${buildReminderMessageBlockHtml(presidentRenderedMessage)}${buildShareButtonsHtml(shareButtons)}`
+    : `${secretPitchHtml}${buildHighlightsHtml(highlights, referralCode, overdueSignerCount, baseUrl)}`;
 
   const bodyText = hasPersonalized
     ? [
+        ...(isWelcome ? [secretPitchText, ""] : []),
         `${presidentHighlight.leaderFullName}${presidentHighlight.roleTitle ? ` (${presidentHighlight.roleTitle})` : ""} — ${presidentHighlight.overdueLabel.toUpperCase()}`,
         "",
         presidentRenderedMessage,
         "",
         "Share via: " + shareButtons.map((b) => b.label).join(", "),
       ].join("\n")
-    : buildHighlightsText(highlights, overdueSignerCount, baseUrl);
+    : [
+        ...(isWelcome ? [secretPitchText, ""] : []),
+        buildHighlightsText(highlights, overdueSignerCount, baseUrl),
+      ].join("\n");
 
   const textLines = [
     `PRESIDENT MANAGEMENT SYSTEM · STATUS REPORT · ${stepLabel}`,

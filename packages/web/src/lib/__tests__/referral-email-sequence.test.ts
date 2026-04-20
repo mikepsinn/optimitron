@@ -259,4 +259,34 @@ describe("buildReferralSequenceEmail content — President Management System fra
     expect(email.html).toContain("https://example.com/?ref=REFCODE1");
     expect(email.text).toContain("https://example.com/?ref=REFCODE1");
   });
+
+  it("step 0 includes the secret-chain pitch in html and text", () => {
+    const email = buildEmail({ step: 0, referralCount: 0 });
+    expect(email.html).toContain("4.29 billion");
+    expect(email.html).toContain("1.7 people every second");
+    expect(email.text).toContain("4.29 billion");
+    expect(email.text).toContain("1.7 people every second");
+  });
+
+  it("steps 1-15 never mention the secret-chain pitch", () => {
+    for (const step of [1, 2, 3, 7, 10, 15]) {
+      const email = buildEmail({ step, referralCount: 0 });
+      expect(
+        email.html,
+        `step ${step} html leaked the secret pitch`,
+      ).not.toContain("4.29 billion");
+      expect(
+        email.html,
+        `step ${step} html leaked the secret pitch`,
+      ).not.toContain("most important secret");
+      expect(
+        email.text,
+        `step ${step} text leaked the secret pitch`,
+      ).not.toContain("4.29 billion");
+      expect(
+        email.text,
+        `step ${step} text leaked the secret pitch`,
+      ).not.toContain("most important secret");
+    }
+  });
 });

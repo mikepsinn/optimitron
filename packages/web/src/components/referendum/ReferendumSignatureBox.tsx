@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/retroui/Button";
+import { SecretChainPitch } from "@/components/referendum/SecretChainPitch";
 import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
+import { getUserDisplayName } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
 
 export interface ReferendumSignatureBoxProps {
@@ -47,7 +49,7 @@ export function ReferendumSignatureBox({
   shareText,
   emailSubject,
   signedTitle = "Referendum Signed",
-  signedBody = "Share your link. Every signature moves the needle.",
+  signedBody = "You just did the 30-second thing. Now do the 90-second thing.",
   signedShare,
   variant = "stepper",
   showReaderShell = true,
@@ -155,9 +157,7 @@ export function ReferendumSignatureBox({
     return (
       <div
         className={cn(
-          signedShare
-            ? "mx-auto flex w-full max-w-2xl flex-col gap-6"
-            : "mx-auto flex max-w-md flex-col items-center gap-6",
+          "mx-auto flex w-full max-w-2xl flex-col gap-6",
           shellClass,
         )}
       >
@@ -171,8 +171,9 @@ export function ReferendumSignatureBox({
           signedShare
         ) : (
           <>
+            <SecretChainPitch citizenName={getUserDisplayName(session?.user)} />
             <ShareLinkButtons
-              label="Share Your Signature"
+              label="Or blast your referral link"
               shareText={shareText}
               url={referralUrl}
               emailSubject={emailSubject}

@@ -10,6 +10,15 @@ import {
 } from "./accountability";
 import { SHARE_TEMPLATES, getUsableShareTemplates } from "./share-templates";
 
+/**
+ * These suites assert properties of the leader-audience pool (targeting the
+ * overdue head of state). The peer-audience template (`most-important-secret`)
+ * is addressed to a friend, not a leader, and is covered separately.
+ */
+const LEADER_SHARE_TEMPLATES = SHARE_TEMPLATES.filter(
+  (t) => (t.audience ?? "leader") === "leader",
+);
+
 describe("task accountability helpers", () => {
   it("derives overdue cost from frame-level delay metrics and treaty-specific metrics", () => {
     const now = new Date("2026-04-10T00:00:00.000Z");
@@ -400,16 +409,16 @@ describe("Trump / US signer — all templates must render", () => {
     }
   });
 
-  it("all templates pass the usability filter", () => {
+  it("all leader templates pass the usability filter", () => {
     const usable = getUsableShareTemplates(trumpTokens);
     expect(
       usable.map((t) => t.id).sort(),
     ).toEqual(
-      SHARE_TEMPLATES.map((t) => t.id).sort(),
+      LEADER_SHARE_TEMPLATES.map((t) => t.id).sort(),
     );
   });
 
-  for (const template of SHARE_TEMPLATES) {
+  for (const template of LEADER_SHARE_TEMPLATES) {
     it(`"${template.id}" renders with no placeholders or blanks`, () => {
       const rendered = renderTemplate(template.body, trumpTokens);
       expect(rendered).not.toMatch(/\{\w+\}/);
@@ -493,14 +502,14 @@ describe("full pipeline: data-package leader → share tokens → all templates 
     expect(fallbackTokens.money_wasted).not.toBe("");
   });
 
-  it("all templates pass the usability filter", () => {
+  it("all leader templates pass the usability filter", () => {
     const usable = getUsableShareTemplates(fallbackTokens);
     const usableIds = usable.map((t) => t.id).sort();
-    const allIds = SHARE_TEMPLATES.map((t) => t.id).sort();
-    expect(usableIds).toEqual(allIds);
+    const leaderIds = LEADER_SHARE_TEMPLATES.map((t) => t.id).sort();
+    expect(usableIds).toEqual(leaderIds);
   });
 
-  for (const template of SHARE_TEMPLATES) {
+  for (const template of LEADER_SHARE_TEMPLATES) {
     it(`"${template.id}" renders fully with no blanks`, () => {
       const rendered = renderTemplate(template.body, fallbackTokens);
       expect(rendered).not.toMatch(/\{\w+\}/);
@@ -512,4 +521,61 @@ describe("full pipeline: data-package leader → share tokens → all templates 
       }
     });
   }
+});
+
+describe("peer share templates (most-important-secret)", () => {
+  const PEER_TEMPLATES = SHARE_TEMPLATES.filter(
+    (t) => (t.audience ?? "leader") === "peer",
+  );
+
+  it("exactly one peer template exists today", () => {
+    expect(PEER_TEMPLATES.map((t) => t.id)).toEqual(["most-important-secret"]);
+  });
+
+  it("leader-audience filter excludes peer templates", () => {
+    const tokens = buildTaskShareTokens({
+      countryCode: "US",
+      currentDelayDays: 500,
+      currentEconomicValueUsdLost: 2_500_000_000_000,
+      currentHumanLivesLost: 25_000_000,
+      citizenName: "A concerned citizen",
+      governmentBudgetUsdPerYear: 10_900_000_000_000,
+      leaderHandle: "realDonaldTrump",
+      militaryBudgetUsdPerYear: 886_000_000_000,
+      now: new Date("2026-07-02T00:00:00.000Z"),
+      targetLabel: "Donald Trump",
+      taskTitle: "Sign the 1% Treaty",
+    });
+    const usableLeader = getUsableShareTemplates(tokens);
+    expect(usableLeader.map((t) => t.id)).not.toContain("most-important-secret");
+  });
+
+  it("peer-audience filter only surfaces peer templates", () => {
+    const tokens = buildTaskShareTokens({
+      countryCode: "US",
+      currentDelayDays: 0,
+      currentEconomicValueUsdLost: null,
+      currentHumanLivesLost: null,
+      citizenName: "Alex",
+      governmentBudgetUsdPerYear: null,
+      militaryBudgetUsdPerYear: null,
+      targetLabel: "",
+      taskTitle: "",
+    });
+    const usablePeer = getUsableShareTemplates(tokens, "peer");
+    expect(usablePeer.map((t) => t.id)).toEqual(["most-important-secret"]);
+  });
+
+  it("peer template renders cleanly with just citizen_name and no task URL", () => {
+    const peer = SHARE_TEMPLATES.find((t) => t.id === "most-important-secret");
+    expect(peer).toBeDefined();
+    const rendered = renderTemplate(peer!.body, { citizen_name: "Alex" });
+    expect(rendered).toContain("most important secret in the world");
+    expect(rendered).toContain("Call me");
+    expect(rendered).toContain("Alex");
+    // The secret must travel via phone, not URL — no link in the body.
+    expect(rendered).not.toMatch(/https?:\/\//);
+    expect(rendered).not.toContain("1percenttreaty");
+    expect(rendered).not.toMatch(/\{\w+\}/);
+  });
 });
