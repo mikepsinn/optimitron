@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
   chatProvider: "opto-chat-provider",
   declarationSigned: "declaration_signed",
   pendingDeclarationVote: "pending_declaration_vote",
+  reasoningState: "reasoning_state",
 } as const;
 
 export type PendingWishocraticAllocation = WishocraticAllocationInput & {
@@ -185,4 +186,57 @@ export const storage = {
   setVoteStatusCache: (data: VoteStatusCache) =>
     setStorageItem(STORAGE_KEYS.voteStatusCache, data),
   clearVoteStatusCache: () => removeStorageItem(STORAGE_KEYS.voteStatusCache),
+
+  getReasoningState: () =>
+    getStorageItem<ReasoningPersistedState>(STORAGE_KEYS.reasoningState),
+  setReasoningState: (data: ReasoningPersistedState) =>
+    setStorageItem(STORAGE_KEYS.reasoningState, data),
+  clearReasoningState: () =>
+    removeStorageItem(STORAGE_KEYS.reasoningState),
+};
+
+/**
+ * Persisted shape for /reasoning flow state. Mirrors URL params where
+ * resumable; URL wins on conflict.
+ */
+export type ReasoningPersistedState = {
+  sessionId: string;
+  currentNodeId: string;
+  chainDepth: "90s" | "deep";
+  answers: Record<string, "yes" | "no">;
+  claimProbabilities: Record<string, number>;
+  conversionP: number;
+  firstSendConfirmed: boolean;
+  sendCount: number;
+  startedAt: string;
+  policyDecisionId: string;
+  variantSetId: string;
+  variantArmIds: Record<string, string>;
+  organizationId: string | null;
+  orgContextVerified: boolean;
+  orgContextToken: string | null;
+  surface: "hosted" | "embed" | "direct-share" | "system-generated-share";
+  localeKey: string;
+  hostKey: string;
+  device: string | null;
+  returningVsFirst: "returning" | "first";
+  relationshipBucket:
+    | "family-partner"
+    | "close-friend"
+    | "professional"
+    | "weak-tie"
+    | null;
+  referralSource: string | null;
+  referredByUserId: string | null;
+  shareAttemptId: string | null;
+  isControlHoldout: boolean;
+  holdoutResolutionLevel:
+    | "GLOBAL"
+    | "LOCALE"
+    | "HOST"
+    | "ORG"
+    | "BUCKET"
+    | "SEGMENT"
+    | null;
+  audienceTag: string | null;
 };

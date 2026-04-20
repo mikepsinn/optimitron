@@ -61,8 +61,10 @@ import {
   parseSeedScopes,
   type SeedScope,
 } from "./seed-scopes.ts";
+import { seedReasoningData } from "./seed-reasoning.ts";
+import { loadDatabaseUrl } from "../src/db-cli.ts";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const adapter = new PrismaPg({ connectionString: loadDatabaseUrl() });
 const prisma = new PrismaClient({ adapter });
 
 // ---------------------------------------------------------------------------
@@ -749,6 +751,7 @@ export async function seedReferenceData() {
 
 export async function seedBootstrapData() {
   await seedReferendums();
+  await seedReasoningData(prisma);
 }
 
 export async function seedDemoData() {

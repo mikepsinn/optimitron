@@ -75,6 +75,8 @@ export const ROUTES = {
   contribute: "/contribute",
   fund: "/fund",
   signIn: "/auth/signin",
+  // Autonomous persuasion optimizer
+  reasoning: "/reasoning",
 } as const;
 
 /** Where users land after signing in (unless a specific callbackUrl overrides it) */

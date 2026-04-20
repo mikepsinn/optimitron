@@ -4778,3 +4778,534 @@ model OAuthGrant {
   @@index([userId])
   @@index([refreshTokenHash])
 }
+
+// ============================================================================
+// REASONING — Autonomous persuasion optimizer
+// ============================================================================
+// Per the reasoning plan. 22 models + 7 enums. All namespaced with the
+// `Reasoning` prefix. Runtime logic in packages/web/src/lib/reasoning/.
+
+enum ReasoningVariantStatus {
+  DRAFT
+  REVIEW
+  ACTIVE
+  RETIRED
+  FROZEN
+}
+
+enum ReasoningVariantSlot {
+  HANDOFF
+  CHAIN_NODE
+  OBJECTION_NODE
+  INEVITABILITY
+  REPLICATION_CTA
+  DEEP_CHAIN_NODE
+  TOPOLOGY
+}
+
+enum ReasoningRiskTier {
+  T1
+  T2
+  T3
+}
+
+enum ReasoningBanditLevel {
+  GLOBAL
+  LOCALE
+  HOST
+  ORG
+  BUCKET
+  SEGMENT
+}
+
+enum ReasoningGeneratorKind {
+  HUMAN
+  AI
+  SYSTEM
+}
+
+enum ReasoningOutcomeKind {
+  SURVEY_STARTED
+  HANDOFF_CLICKED
+  NODE_ADVANCED
+  NODE_EXITED
+  OBJECTION_SHOWN
+  OBJECTION_RESOLVED
+  PROBABILITY_CHANGED
+  VOTE
+  FIRST_SEND_INITIATED
+  FIRST_SEND_CONFIRMED
+  DOWNSTREAM_VOTE
+  DOWNSTREAM_SEND
+  WALK_AWAY
+}
+
+enum ReasoningVariantFamily {
+  DRY_DATA
+  EMOTIONAL_APPEAL
+  CURIOSITY_MYSTERY
+  SOCIAL_PROOF
+  SELF_INTEREST_ROI
+  MORAL_DUTY
+  ABSURDIST_COMEDY
+  DIRECT_IMPERATIVE
+}
+
+model ReasoningVariantSet {
+  id              String                    @id @default(cuid())
+  name            String                    @unique
+  description     String?
+  status          ReasoningVariantStatus    @default(DRAFT)
+  parentSetId     String?
+  parent          ReasoningVariantSet?      @relation("SetParent", fields: [parentSetId], references: [id])
+  children        ReasoningVariantSet[]     @relation("SetParent")
+  organizationId  String?
+  allowedSlots    ReasoningVariantSlot[]
+  isCanonical     Boolean                   @default(false)
+  arms            ReasoningVariantArm[]
+  assignmentRules ReasoningAssignmentRule[]
+  orgFork         ReasoningOrgFork?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  createdByUserId String?
+
+  @@index([status])
+  @@index([organizationId])
+}
+
+model ReasoningVariantArm {
+  id                  String                      @id @default(cuid())
+  variantSetId        String
+  set                 ReasoningVariantSet         @relation(fields: [variantSetId], references: [id], onDelete: Cascade)
+  slot                ReasoningVariantSlot
+  slotKey             String
+  channel             String                      @default("default")
+  riskTier            ReasoningRiskTier           @default(T1)
+  content             Json
+  status              ReasoningVariantStatus      @default(DRAFT)
+  frozen              Boolean                     @default(false)
+  armKey              String
+  family              ReasoningVariantFamily
+  noveltyScore        Float?
+  localeKey           String
+  parentArmId         String?
+  parent              ReasoningVariantArm?        @relation("ArmParent", fields: [parentArmId], references: [id])
+  children            ReasoningVariantArm[]       @relation("ArmParent")
+  generatorKind       ReasoningGeneratorKind      @default(HUMAN)
+  generationRequestId String?
+  generationRequest   ReasoningGenerationRequest? @relation(fields: [generationRequestId], references: [id])
+  fraudLineageFlagged Boolean                     @default(false)
+  lastValidatedAt     DateTime?
+  validatorVersion    String?
+  validatorViolations Json?
+  shadowEvaluations   ReasoningShadowEvaluation[]
+  shadowGatePassed    Boolean?
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+
+  @@unique([variantSetId, slotKey, channel, localeKey, armKey])
+  @@index([variantSetId, slotKey, channel, localeKey, status])
+  @@index([slot, family, status])
+  @@index([localeKey, slot, status])
+  @@index([fraudLineageFlagged])
+}
+
+model ReasoningAssignmentRule {
+  id                 String              @id @default(cuid())
+  priority           Int                 @default(0)
+  hostKey            String?
+  organizationId     String?
+  relationshipBucket String?
+  audienceTag        String?
+  referralSource     String?
+  device             String?
+  chainDepth         String?
+  localeKey          String?
+  surface            String?
+  variantSetId       String
+  variantSet         ReasoningVariantSet @relation(fields: [variantSetId], references: [id], onDelete: Cascade)
+  isPin              Boolean             @default(false)
+  active             Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  createdByUserId    String?
+
+  @@index([active, priority])
+  @@index([variantSetId])
+}
+
+model ReasoningBanditPolicyState {
+  id              String               @id @default(cuid())
+  slot            ReasoningVariantSlot
+  level           ReasoningBanditLevel
+  segmentKey      String
+  armPosteriors   Json
+  exposureCount   Int                  @default(0)
+  explorationRate Float                @default(1.0)
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([slot, level, segmentKey])
+  @@index([slot, level])
+}
+
+model ReasoningVariantExposure {
+  id                     String                @id @default(cuid())
+  sessionId              String
+  userId                 String?
+  policyDecisionId       String
+  variantSetId           String
+  variantArmId           String?
+  slot                   ReasoningVariantSlot
+  isControlHoldout       Boolean               @default(false)
+  holdoutResolutionLevel ReasoningBanditLevel?
+  orgContextVerified     Boolean               @default(false)
+  surface                String                @default("hosted")
+  localeKey              String
+  hostKey                String
+  organizationId         String?
+  relationshipBucket     String?
+  referralSource         String?
+  device                 String?
+  chainDepth             String
+  returningVsFirst       String?
+  referredByUserId       String?
+  shareAttemptId         String?
+  exposedAt              DateTime              @default(now())
+
+  @@index([sessionId, exposedAt])
+  @@index([variantArmId, exposedAt])
+  @@index([referredByUserId])
+  @@index([policyDecisionId])
+  @@index([isControlHoldout, variantSetId])
+  @@index([isControlHoldout, holdoutResolutionLevel])
+  @@index([localeKey, variantSetId, exposedAt])
+  @@index([surface, variantSetId, exposedAt])
+}
+
+model ReasoningOutcomeRecord {
+  id                     String               @id @default(cuid())
+  sessionId              String
+  userId                 String?
+  variantSetId           String
+  variantArmId           String?
+  slot                   ReasoningVariantSlot
+  outcomeKind            ReasoningOutcomeKind
+  value                  Float?
+  rewardWeight           Float                @default(1.0)
+  chainValueContribution Float?
+  fraudPenalty           Float                @default(0.0)
+  qualityPenalty         Float                @default(0.0)
+  verifiedHumanWeight    Float                @default(1.0)
+  localeKey              String
+  surface                String               @default("hosted")
+  channel                String?
+  hostKey                String
+  organizationId         String?
+  audienceTag            String?
+  relationshipBucket     String?
+  referredByUserId       String?
+  policyDecisionId       String?
+  isControlHoldout       Boolean              @default(false)
+  recordedAt             DateTime             @default(now())
+
+  @@index([variantArmId, slot, outcomeKind, recordedAt])
+  @@index([referredByUserId])
+  @@index([isControlHoldout, variantSetId, recordedAt])
+  @@index([localeKey, variantSetId, outcomeKind, recordedAt])
+  @@index([organizationId, localeKey, recordedAt])
+  @@index([surface, channel, localeKey, recordedAt])
+}
+
+model ReasoningHoldoutComparison {
+  id                      String               @id @default(cuid())
+  armId                   String
+  slot                    ReasoningVariantSlot
+  segmentKey              String
+  windowStart             DateTime
+  windowEnd               DateTime
+  armChainValueMean       Float
+  armChainValueVar        Float
+  armExposures            Int
+  canonicalChainValueMean Float
+  canonicalChainValueVar  Float
+  canonicalExposures      Int
+  liftPointEstimate       Float
+  liftCiLower             Float
+  liftCiUpper             Float
+  computedAt              DateTime             @default(now())
+
+  @@index([armId, computedAt])
+  @@index([slot, segmentKey, computedAt])
+}
+
+model ReasoningFraudPattern {
+  id              String                  @id @default(cuid())
+  patternKind     String
+  pattern         Json
+  action          String
+  createdByUserId String?
+  approved        Boolean                 @default(false)
+  reason          String
+  findings        ReasoningFraudFinding[]
+  createdAt       DateTime                @default(now())
+
+  @@index([approved])
+}
+
+model ReasoningFraudFinding {
+  id          String                 @id @default(cuid())
+  exposureId  String?
+  sessionId   String?
+  userId      String?
+  patternId   String?
+  pattern     ReasoningFraudPattern? @relation(fields: [patternId], references: [id])
+  findingKind String
+  severity    Float
+  details     Json
+  detectedAt  DateTime               @default(now())
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([patternId])
+}
+
+model ReasoningOrgFork {
+  id              String                 @id @default(cuid())
+  organizationId  String                 @unique
+  variantSetId    String                 @unique
+  variantSet      ReasoningVariantSet    @relation(fields: [variantSetId], references: [id])
+  allowedSlots    ReasoningVariantSlot[]
+  createdAt       DateTime               @default(now())
+  createdByUserId String
+}
+
+model ReasoningGenerationRequest {
+  id                 String                 @id @default(cuid())
+  requestedByUserId  String
+  kind               ReasoningGeneratorKind
+  slot               ReasoningVariantSlot
+  slotKey            String
+  targetVariantSetId String
+  referenceArmIds    String[]
+  toneProfile        String?
+  aiModel            String?
+  aiPrompt           String?
+  requestedAt        DateTime               @default(now())
+  candidateArmIds    String[]
+  arms               ReasoningVariantArm[]
+}
+
+model ReasoningPromotionDecision {
+  id                      String                 @id @default(cuid())
+  armId                   String
+  fromStatus              ReasoningVariantStatus
+  toStatus                ReasoningVariantStatus
+  tier                    ReasoningRiskTier
+  actorKind               ReasoningGeneratorKind
+  actorUserId             String?
+  chainValueEvidence      Json
+  fraudEvidence           Json
+  rGuardSnapshot          Json
+  chainValueGuardSnapshot Json
+  topologyGateState       String
+  rationale               String
+  decidedAt               DateTime               @default(now())
+
+  @@index([armId, decidedAt])
+}
+
+model ReasoningBlacklistRule {
+  id              String                @id @default(cuid())
+  scope           ReasoningVariantSlot?
+  patternKind     String
+  pattern         String
+  reason          String
+  createdByUserId String
+  createdAt       DateTime              @default(now())
+  active          Boolean               @default(true)
+
+  @@index([active, scope])
+}
+
+model ReasoningTopologyVariant {
+  id                     String                 @id @default(cuid())
+  name                   String                 @unique
+  description            String
+  grammarPatch           Json
+  riskTier               ReasoningRiskTier
+  status                 ReasoningVariantStatus @default(DRAFT)
+  activationGateRequired Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+}
+
+model ReasoningRGuardSnapshot {
+  id              String   @id @default(cuid())
+  rSevenDay       Float
+  components      Json
+  triggeredRevert Boolean  @default(false)
+  snapshotAt      DateTime @default(now())
+
+  @@index([snapshotAt])
+}
+
+model ReasoningChainValueGuardSnapshot {
+  id                             String   @id @default(cuid())
+  globalChainValueMean           Float
+  canonicalHoldoutChainValueMean Float
+  deltaPct                       Float
+  triggeredRevert                Boolean  @default(false)
+  snapshotAt                     DateTime @default(now())
+
+  @@index([snapshotAt])
+}
+
+model ReasoningSystemState {
+  id                      String    @id @default("singleton")
+  topologyGateOpen        Boolean   @default(false)
+  promoterFrozen          Boolean   @default(false)
+  allocatorForceCanonical Boolean   @default(false)
+  lastFreezeReason        String?
+  lastFreezeAt            DateTime?
+  lastUnfreezeAt          DateTime?
+  lastUnfreezeByUserId    String?
+  updatedAt               DateTime  @updatedAt
+}
+
+model ReasoningShadowEvaluation {
+  id                      String               @id @default(cuid())
+  armId                   String
+  arm                     ReasoningVariantArm  @relation(fields: [armId], references: [id], onDelete: Cascade)
+  slot                    ReasoningVariantSlot
+  segmentKey              String
+  estimator               String
+  shadowChainValueMean    Float
+  shadowChainValueCiLower Float
+  shadowChainValueCiUpper Float
+  canonicalBaselineMean   Float
+  propensityOverlap       Float
+  evaluatedOnExposures    Int
+  gateDecision            String
+  rationale               String
+  computedAt              DateTime             @default(now())
+
+  @@index([armId, computedAt])
+  @@index([gateDecision])
+}
+
+model ReasoningDiversitySnapshot {
+  id                 String               @id @default(cuid())
+  slot               ReasoningVariantSlot
+  segmentKey         String
+  familyDistribution Json
+  shannonEntropy     Float
+  activeFamilyCount  Int
+  alertLevel         String
+  computedAt         DateTime             @default(now())
+
+  @@index([slot, segmentKey, computedAt])
+  @@index([alertLevel, computedAt])
+}
+
+model ReasoningLocaleConfig {
+  id               String   @id @default(cuid())
+  localeKey        String   @unique
+  displayName      String
+  enabled          Boolean  @default(false)
+  fallbackChain    String[] @default([])
+  bannedPhrases    Json     @default("[]")
+  fraudBaselines   Json     @default("{}")
+  generatorQuota   Json     @default("{}")
+  reviewerUserIds  String[] @default([])
+  audienceEstimate Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  createdByUserId  String?
+}
+
+model ReasoningDistributionPolicyState {
+  id                        String   @id @default(cuid())
+  organizationId            String?
+  localeKey                 String?
+  channel                   String?
+  surface                   String?
+  generationBudgetWeight    Float    @default(1.0)
+  explorationRateMultiplier Float    @default(1.0)
+  onboardingPriority        Float?
+  currentYield              Float?
+  currentSupply             Int?
+  marginalYieldEstimate     Float?
+  effortSpent               Json?
+  updatedAt                 DateTime @updatedAt
+
+  @@unique([organizationId, localeKey, channel, surface])
+  @@index([onboardingPriority])
+}
+
+model ReasoningDistributionSliceSnapshot {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  localeKey       String?
+  channel         String?
+  surface         String?
+  yield           Float
+  supply          Int
+  ceilingEstimate Float?
+  marginalYield   Float?
+  recordedAt      DateTime @default(now())
+
+  @@index([organizationId, localeKey, channel, surface, recordedAt])
+}
+
+model ReasoningOrganizationDomain {
+  id                   String    @id @default(cuid())
+  organizationId       String
+  host                 String    @unique
+  surfaceType          String
+  status               String
+  trustedParentDomains String[]  @default([])
+  cspAllowlist         String[]  @default([])
+  tlsVerified          Boolean   @default(false)
+  cnameVerified        Boolean   @default(false)
+  verifiedAt           DateTime?
+  createdByUserId      String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+model ReasoningDistributionTarget {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  localeKey       String?
+  channel         String?
+  surface         String?
+  enabled         Boolean  @default(false)
+  ceilingEstimate Float
+  liveStatus      String
+  notes           String?
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, localeKey, channel, surface])
+  @@index([enabled, liveStatus])
+}
+
+model ReasoningBundleVariant {
+  id                     String                 @id @default(cuid())
+  name                   String                 @unique
+  description            String
+  armBindings            Json
+  status                 ReasoningVariantStatus @default(DRAFT)
+  riskTier               ReasoningRiskTier      @default(T2)
+  exposures              Int                    @default(0)
+  chainValueSum          Float                  @default(0)
+  chainValueSumSq        Float                  @default(0)
+  activationGateRequired Boolean                @default(true)
+  createdByUserId        String?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  @@index([status, riskTier])
+}

@@ -17,6 +17,7 @@ const MICROSITE_PUBLIC_PREFIXES = [
   "/legal",
   "/impact",
   "/organizations",
+  "/reasoning",
 ];
 
 // Operational prefixes that must keep working on the microsite host.
