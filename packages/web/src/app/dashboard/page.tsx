@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { shareableSnippets } from "@optimitron/data/parameters";
 import { authOptions } from "@/lib/auth";
 import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.server";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
@@ -61,8 +62,19 @@ export default async function DashboardPage({
     const treatyParent = await getTaskDetailData(TREATY_PARENT_TASK_ID, userId);
     const task = (treatyParent?.task ?? null) as TaskCardTask | null;
     const subtasks = (treatyParent?.task.childTasks ?? []) as unknown as TaskCardTask[];
+    const treatyMarkdown =
+      site.key === "onePercentTreaty"
+        ? shareableSnippets.onePercentTreatyText.markdown
+        : "";
 
-    return <ReferendumSiteDashboardClient task={task} subtasks={subtasks} />;
+    return (
+      <ReferendumSiteDashboardClient
+        task={task}
+        subtasks={subtasks}
+        treatyMarkdown={treatyMarkdown}
+        referendumSlug={site.primaryReferendumSlug}
+      />
+    );
   }
 
   const [initialData, leaderboard, taskData] = await Promise.all([

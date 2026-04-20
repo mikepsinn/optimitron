@@ -7,15 +7,20 @@ import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
+import { TreatySection } from "@/components/site/TreatySection";
 
 interface ReferendumSiteDashboardClientProps {
   task: TaskCardTask | null;
   subtasks: TaskCardTask[];
+  treatyMarkdown: string;
+  referendumSlug: string | null;
 }
 
 export function ReferendumSiteDashboardClient({
   task,
   subtasks,
+  treatyMarkdown,
+  referendumSlug,
 }: ReferendumSiteDashboardClientProps) {
   if (!task) return null;
   return (
@@ -46,6 +51,10 @@ export function ReferendumSiteDashboardClient({
             ? `↳ ${subtasks.length} employees have overdue tasks`
             : undefined
         }
+      />
+      <TreatySection
+        treatyMarkdown={treatyMarkdown}
+        referendumSlug={referendumSlug}
       />
     </div>
   );

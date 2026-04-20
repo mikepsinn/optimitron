@@ -31,6 +31,7 @@ export async function seedReasoningData(prismaClient: PrismaClient) {
   const canonicalSetId = await seedCanonicalVariantSet();
   const personaSetIds = await seedPersonaVariantSets(canonicalSetId);
   await seedPersonaArmVariants(personaSetIds);
+  await seedSecretOfTheUniverseVariantSet(canonicalSetId);
   await seedAssignmentRules(personaSetIds);
   await seedDistributionTargets();
   await assertAssignmentRuleTargetsSeeded();
@@ -708,6 +709,348 @@ function humanize(paramName: ParameterName): string {
     .toLowerCase()
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/* ================================================================
+ * "Secret of the Universe" variant set
+ *
+ * Content derived from docs/call-script-secret-of-the-universe.md —
+ * the 22-question call script with the "Either I am crazy or..."
+ * opener. Maps the 22 questions into the 5 canonical claim slots;
+ * mid-call objection handlers go into the 4 objection slots.
+ * ================================================================ */
+
+async function seedSecretOfTheUniverseVariantSet(
+  canonicalSetId: string,
+): Promise<string> {
+  const existing = await prisma.reasoningVariantSet.findUnique({
+    where: { name: "secret-of-the-universe" },
+  });
+  const set =
+    existing ??
+    (await prisma.reasoningVariantSet.create({
+      data: {
+        name: "secret-of-the-universe",
+        description:
+          "The 22-question call script. 'Either I am crazy or...' opener, " +
+          "reductio-by-yes-answers chain, mid-call objection handlers, " +
+          "two-per-person doubling math, hang-up-and-call-next imperative.",
+        status: "ACTIVE",
+        isCanonical: false,
+        parentSetId: canonicalSetId,
+        allowedSlots: [
+          "HANDOFF",
+          "CHAIN_NODE",
+          "OBJECTION_NODE",
+          "INEVITABILITY",
+          "REPLICATION_CTA",
+          "DEEP_CHAIN_NODE",
+        ],
+      },
+    }));
+
+  await seedSecretArms(set.id);
+  return set.id;
+}
+
+async function seedSecretArms(variantSetId: string) {
+  const SECRET_ARM_KEY = "seed-secret";
+
+  // Lean 5-beat chain. Mechanism detail (FDA, NIH, trial-capacity) is
+  // pushed into the `obj:lag-warranted` objection — fires only when the
+  // listener actually disputes the acceleration claim. Default path leads
+  // with stakes → lever → pressure → recursion (with honest 40-call math).
+  const claims: Array<{
+    nodeId: string;
+    headline: string;
+    body: string;
+    coldOpenerBody?: string;
+    sourceKeys: ParameterName[];
+    family:
+      | "DRY_DATA"
+      | "EMOTIONAL_APPEAL"
+      | "CURIOSITY_MYSTERY"
+      | "SOCIAL_PROOF"
+      | "SELF_INTEREST_ROI"
+      | "MORAL_DUTY"
+      | "ABSURDIST_COMEDY"
+      | "DIRECT_IMPERATIVE";
+  }> = [
+    {
+      nodeId: "love-and-preventable-harm",
+      headline: "You don't want them to die of something fixable",
+      body:
+        "Someone you love will eventually die of a disease. Most of those diseases are solvable. That's the only premise the rest of this depends on.",
+      coldOpenerBody:
+        "Five questions. If any one is wrong, tell me which. First: someone you love will eventually die of a disease — and most of those diseases are solvable.",
+      sourceKeys: [],
+      family: "MORAL_DUTY",
+    },
+    {
+      nodeId: "bottleneck",
+      headline: "Disease is an engineering problem",
+      body:
+        `Smallpox, polio, hepatitis C — cured once enough trials ran. The diseases still killing your people aren't unsolvable. They're in a queue. We run too few trials, too slowly, and every minute of delay costs ${p("GLOBAL_DISEASE_DEATHS_PER_MINUTE")} more humans. The details of WHY we run too few are messy (regulatory, institutional, funding) — click the objection handler if you want them.`,
+      sourceKeys: [
+        "DISEASES_WITHOUT_EFFECTIVE_TREATMENT",
+        "STATUS_QUO_QUEUE_CLEARANCE_YEARS",
+        "EFFICACY_LAG_YEARS",
+        "DFDA_TRIAL_CAPACITY_MULTIPLIER",
+        "GLOBAL_DISEASE_DEATHS_PER_MINUTE",
+      ],
+      family: "DRY_DATA",
+    },
+    {
+      nodeId: "one-percent-fix",
+      headline: "One lever, many decades sooner",
+      body:
+        `Redirect ${p("TREATY_REDUCTION_PCT")} of global military spending — ${p("TREATY_ANNUAL_FUNDING")}/year — into clinical trials. Every country cuts simultaneously, so nobody is less safe. The queue of unsolved diseases clears in decades instead of centuries. That's it. The full math is one click away if you want it.`,
+      sourceKeys: [
+        "TREATY_REDUCTION_PCT",
+        "TREATY_ANNUAL_FUNDING",
+        "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT",
+        "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS",
+        "DFDA_QUEUE_CLEARANCE_YEARS",
+      ],
+      family: "DRY_DATA",
+    },
+    {
+      nodeId: "pressure-works",
+      headline: `${p("GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT")} has never failed`,
+      body:
+        `Every civilizational reform that hit ${p("GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT")} active public support succeeded. Civil rights. Women's vote. No exceptions in the last century. Governments can't hold out against 3.5% of voters — they can't even enforce parking rules at that scale. Governments already spend ${p("MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO")}x more on weapons than on trials; this asks them to buy 1% fewer.`,
+      sourceKeys: [
+        "GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT",
+        "MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO",
+      ],
+      family: "SOCIAL_PROOF",
+    },
+    {
+      nodeId: "paid-recursion",
+      headline: "Call 40. Two will continue. That's enough.",
+      body:
+        `The system math is: if each person gets 2 others to keep the chain going, 32 doublings reaches ${p("TREATY_CAMPAIGN_VOTING_BLOC_TARGET")} — enough that no government ignores. The honest behavioral math: ~5–10% of anyone you ask actually does what they said yes to. You can't predict which ones. So call ~40 (everyone you love, one per day for 6 weeks). Most will say yes and do nothing. 2–4 will actually call their own 40. Those 2–4 are enough, because they do the same thing. Your signature is worth ~${p("VOTER_LIVES_SAVED")} lives and ~${p("VOTER_SUFFERING_HOURS_PREVENTED")} hours of suffering prevented. You aren't responsible for everyone on your list — you are responsible for calling them. Volume is the only protection against "most say yes and forget."`,
+      sourceKeys: [
+        "VOTER_LIVES_SAVED",
+        "VOTER_SUFFERING_HOURS_PREVENTED",
+        "TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
+      ],
+      family: "DIRECT_IMPERATIVE",
+    },
+  ];
+
+  for (const c of claims) {
+    await upsertArm({
+      variantSetId,
+      slot: "CHAIN_NODE",
+      slotKey: `chain_node.${c.nodeId}.body`,
+      channel: DEFAULT_ARM_CHANNEL,
+      localeKey: "en",
+      armKey: SECRET_ARM_KEY,
+      family: c.family,
+      content: {
+        nodeId: c.nodeId,
+        headline: c.headline,
+        body: c.body,
+        coldOpenerBody: c.coldOpenerBody,
+        sources: c.sourceKeys.map((k) => ({ label: humanize(k), paramName: k })),
+      },
+      status: "ACTIVE",
+      riskTier: "T1",
+    });
+  }
+
+  // Objection arms — steelman + rebuttal composed from the mid-call
+  // objection handlers in the document.
+  const objections: Array<{
+    nodeId: string;
+    steelman: string;
+    rebuttal: string;
+    adversarialSourceLabel: string;
+    adversarialSourceUrl: string;
+  }> = [
+    {
+      nodeId: "obj:lag-warranted",
+      steelman:
+        `Safety regulators save lives — Vioxx, thalidomide. The ${p("EFFICACY_LAG_YEARS")}-year efficacy-lag is there for a reason. Better to delay than release a bad drug. And why not just reform the existing FDA/NIH instead of circumventing them?`,
+      rebuttal:
+        `Here's the full mechanism, since you asked: ${p("DISEASES_WITHOUT_EFFECTIVE_TREATMENT")} diseases have no effective treatment, and at ${p("NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR")} first approvals/year the queue takes ${p("STATUS_QUO_QUEUE_CLEARANCE_YEARS")} years to clear. The FDA's ${p("EFFICACY_LAG_YEARS")}-year wait after safety is proven costs ~${p("TYPE_II_ERROR_COST_RATIO")} lives-lost per 1 life-saved-from-bad-drug. NIH spends only ~${p("NIH_CLINICAL_TRIALS_SPENDING_PCT")} of its budget on actual trials. The treaty's ${p("TREATY_ANNUAL_FUNDING")}/year new funding + pragmatic trial design grows capacity by ${p("DFDA_TRIAL_CAPACITY_MULTIPLIER")}x; queue clears in ${p("DFDA_QUEUE_CLEARANCE_YEARS")} years. Reform has been tried for 50 years: more funding → more administrators; new regulations → longer timelines. The current system works perfectly for the people who built it. They surrender it when outbid, not when asked nicely. RECOVERY during COVID showed ~${p("RECOVERY_TRIAL_COST_REDUCTION_FACTOR")} cost reduction on real patients during panic-mode operation — so the multiplier is actually conservative.`,
+      adversarialSourceLabel: "FDA conservatism steelman",
+      adversarialSourceUrl:
+        "https://www.astralcodexten.com/p/adumbrations-of-aducanumab",
+    },
+    {
+      nodeId: "obj:math-suspect",
+      steelman:
+        `You might dispute the ${p("DFDA_TRIAL_CAPACITY_MULTIPLIER")}x multiplier, or think "this sounds too good to be true," or worry the warondisease.org site itself is a scam.`,
+      rebuttal:
+        `Each input is auditable at manual.warondisease.org. RECOVERY already demonstrated ~${p("RECOVERY_TRIAL_COST_REDUCTION_FACTOR")} cost reduction during COVID — disorganized, panicked, still delivered. The ${p("DFDA_TRIAL_CAPACITY_MULTIPLIER")}x figure is funding ÷ current slots; it's conservative. Scam check: nobody takes your money. You type your name and vote. The only thing collected is a count of humans who want fewer preventable deaths.`,
+      adversarialSourceLabel: "dFDA methodology review",
+      adversarialSourceUrl:
+        "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+    },
+    {
+      nodeId: "obj:pressure-fails",
+      steelman:
+        "Defense contractors will crush this. Big Pharma will block it. Politicians will never vote for it. And this 'bribery' structure sounds corrupt.",
+      rebuttal:
+        `Defense contractors keep ${p("DEFENSE_SECTOR_RETENTION_PCT")} of their budget and earn ${p("VICTORY_BOND_ANNUAL_RETURN_PCT")}/yr on top via Victory Bonds. Pharma gets paid per patient — revenue instead of gambling on drug-roulette. Politicians follow incentives: a Super PAC rewards yes-votes at ~8x what defense lobbyists currently spend/year. "Bribery" is lobbying — same K Street firms. The difference is what the money buys. This one caps the lobbying portion at 20% with a public ledger.`,
+      adversarialSourceLabel: "Chenoweth critique (transnational limits)",
+      adversarialSourceUrl:
+        "https://www.foreignaffairs.com/articles/world/2022-10-04/rise-and-fall-nonviolent-resistance",
+    },
+    {
+      nodeId: "obj:not-linear-or-cult",
+      steelman:
+        "This sounds like a pyramid scheme / chain letter. Or my friends will think I'm weird. Or nothing like this ever works — big systems don't change.",
+      rebuttal:
+        `Pyramid schemes never admit the pitcher might be crazy. The opener is literally "either I am crazy or…" — the admission is the whole point. Nobody makes money off your vote; the math rewards every voter equally. The only thing at the top of this "pyramid" is not dying of preventable diseases. Weird is a one-time social cost; silence costs ${p("GLOBAL_DISEASE_DEATHS_DAILY")} humans/day. Systems-don't-change: Communism spread across half the planet and collapsed in one human lifetime without fax machines. This plan has the internet and asks people to click a button and call their friends. The obstacle isn't the system.`,
+      adversarialSourceLabel: "MLM-psychology steelman",
+      adversarialSourceUrl: "https://en.wikipedia.org/wiki/Multi-level_marketing",
+    },
+  ];
+
+  for (const o of objections) {
+    await upsertArm({
+      variantSetId,
+      slot: "OBJECTION_NODE",
+      slotKey: `objection.${o.nodeId}.body`,
+      channel: DEFAULT_ARM_CHANNEL,
+      localeKey: "en",
+      armKey: SECRET_ARM_KEY,
+      family: "DRY_DATA",
+      content: {
+        nodeId: o.nodeId,
+        steelman: o.steelman,
+        rebuttal: o.rebuttal,
+        sources: [
+          {
+            label: o.adversarialSourceLabel,
+            url: o.adversarialSourceUrl,
+            adversarial: true,
+          },
+        ],
+        reAnswerCta: "OK — re-answer",
+        stillDisagreeCta: "I still disagree",
+      },
+      status: "ACTIVE",
+      riskTier: "T1",
+    });
+  }
+
+  // Inevitability recap — you agreed to each step. Conclusion is forced.
+  await upsertArm({
+    variantSetId,
+    slot: "INEVITABILITY",
+    slotKey: "inevitability-recap",
+    channel: DEFAULT_ARM_CHANNEL,
+    localeKey: "en",
+    armKey: SECRET_ARM_KEY,
+    family: "DIRECT_IMPERATIVE",
+    content: {
+      body:
+        "You said yes to each step. People you love die of solvable diseases. The 1% trade works. 3.5% has never failed. The system needs 2 continuers per person — you can't predict which 2, so you call everyone.\n\nWhich step would you actually take back?",
+      rejectSelectorLabel: "Which premise would you take back?",
+      proceedCtaLabel: "None — vote and send 2 right now",
+    },
+    status: "ACTIVE",
+    riskTier: "T1",
+  });
+
+  // Two-phase replication CTA.
+  //   Phase 1 (primary, visible immediately): send to 2 people before closing
+  //   the tab. Low-friction MVP that produces initial momentum.
+  //   Phase 2 (expansion, revealed after first send): daily alarm, ~40 calls,
+  //   6 weeks. The actual commitment — this is what produces real chain
+  //   growth given 5-10% conversion.
+  await upsertArm({
+    variantSetId,
+    slot: "REPLICATION_CTA",
+    slotKey: "replication.primary",
+    channel: DEFAULT_ARM_CHANNEL,
+    localeKey: "en",
+    armKey: SECRET_ARM_KEY,
+    family: "DIRECT_IMPERATIVE",
+    content: {
+      primaryCta:
+        "Vote, then send the 'Either I'm crazy or...' message to 2 people before you close this tab",
+      secondaryCta:
+        "Now set a daily alarm. One call a day. Finish everyone you love (~40 people) in 6 weeks.",
+      urgencyCopy: "Every minute of delay costs ~104 humans",
+      expansionCopy:
+        "~5–10% of calls produce a real continuer. You can't tell which. Daily alarm beats willpower — let the alarm carry the discipline, you just answer it.",
+      buckets: [
+        "family-partner",
+        "close-friend",
+        "professional",
+        "weak-tie",
+      ],
+    },
+    status: "ACTIVE",
+    riskTier: "T1",
+  });
+
+  // Handoff arms — the "Either I am crazy or..." opener. Kept under 160
+  // chars for SMS; tone calibrated per bucket but all carry the honest
+  // uncertainty that gets past the filter.
+  const handoffs: Array<{
+    bucket:
+      | "family-partner"
+      | "close-friend"
+      | "professional"
+      | "weak-tie";
+    template: string;
+    family:
+      | "MORAL_DUTY"
+      | "CURIOSITY_MYSTERY"
+      | "DRY_DATA"
+      | "SELF_INTEREST_ROI";
+  }> = [
+    {
+      bucket: "family-partner",
+      template:
+        "Either I'm crazy or I found the most important secret in the history of the universe. Please call me and tell me which: {url}",
+      family: "MORAL_DUTY",
+    },
+    {
+      bucket: "close-friend",
+      template:
+        "Either I'm crazy or this is the most important secret in the universe. Call me and tell me which: {url}",
+      family: "CURIOSITY_MYSTERY",
+    },
+    {
+      bucket: "professional",
+      template:
+        "Either I'm losing it or I found one trade that cures most diseases. 5-min sanity check: {url}",
+      family: "DRY_DATA",
+    },
+    {
+      bucket: "weak-tie",
+      template:
+        "Weird one: either I'm crazy or this is the most important thing I've read. Tell me which: {url}",
+      family: "SELF_INTEREST_ROI",
+    },
+  ];
+
+  for (const h of handoffs) {
+    await upsertArm({
+      variantSetId,
+      slot: "HANDOFF",
+      slotKey: `handoff.${h.bucket}.sms`,
+      channel: "sms",
+      localeKey: "en",
+      armKey: SECRET_ARM_KEY,
+      family: h.family,
+      content: {
+        bucket: h.bucket,
+        channel: "sms",
+        template: h.template,
+        maxLen: 160,
+      },
+      status: "ACTIVE",
+      riskTier: "T1",
+    });
+  }
 }
 
 const isMainModule =
