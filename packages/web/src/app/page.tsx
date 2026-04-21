@@ -17,7 +17,6 @@ import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveya
 import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
 import { PleaseSelectAnEarthSection } from "@/components/landing/PleaseSelectAnEarthSection";
 import { DecisionMatrixSection } from "@/components/landing/DecisionMatrixSection";
-import { OnePercentTreatySection } from "@/components/landing/OnePercentTreatySection";
 import { GovernmentReportCardPreview } from "@/components/landing/GovernmentReportCardPreview";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import {
@@ -152,9 +151,6 @@ export default async function Home({
 
       {/* ── 7. Every Policy Graded A-F — causal inference demo ── */}
       <OptimalPolicyPreview />
-
-      {/* ── 8. The Fix — 1% Treaty ── */}
-      <OnePercentTreatySection />
 
       {/* ── 9. Wishocracy — allocate your budget ── */}
       <WishocracyPreview />
