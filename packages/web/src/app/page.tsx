@@ -12,7 +12,6 @@ import { HowToWinSection } from "@/components/landing/HowToWinSection";
 import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
 import { LandingFAQSection } from "@/components/landing/LandingFAQSection";
 import { TLDRSection } from "@/components/landing/TLDRSection";
-import { TheSecretSection } from "@/components/landing/TheSecretSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { InvisibleGraveyardSection } from "@/components/landing/InvisibleGraveyardSection";
 import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
@@ -36,7 +35,11 @@ import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview"
 import { OptimizedGovernanceSection } from "@/components/landing/OptimizedGovernanceSection";
 import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { ArmorySection } from "@/components/landing/ArmorySection";
+import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
+import type { TaskCardTask } from "@/components/tasks/task-card";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
+import { getTaskDetailData } from "@/lib/tasks.server";
+import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { TAGLINES } from "@/lib/messaging";
 import { FinalCTASection } from "@/components/landing/FinalCTASection";
 
@@ -95,6 +98,13 @@ export default async function Home({
 
     return <ReferendumSiteHome data={data} />;
   }
+
+  const treatyParentTask = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);
+  const lateEmployeeProgramTask =
+    (treatyParentTask?.task ?? null) as TaskCardTask | null;
+  const lateEmployeeTasks = (treatyParentTask?.task.childTasks ??
+    []) as unknown as TaskCardTask[];
+
   return (
     <div>
       {/* ── 1. Hero — Game name + objective ── */}
@@ -105,9 +115,6 @@ export default async function Home({
 
       {/* ── 3. TLDR — It's 2 buttons, tell your friends, done ── */}
       <TLDRSection />
-
-      {/* ── 3b. The Secret — viral-chain teaser; full payload post-vote ── */}
-      <TheSecretSection />
 
       {/* ── 4. Vote — The core game action ── */}
       <TreatyVoteSection />
@@ -121,6 +128,19 @@ export default async function Home({
               <PostVoteReminders />
             </div>
           </div>
+          {lateEmployeeProgramTask ? (
+            <div className="mt-12">
+              <ProgramTaskSection
+                task={lateEmployeeProgramTask}
+                subtasks={lateEmployeeTasks}
+                subtasksTitle={
+                  lateEmployeeTasks.length > 0
+                    ? `↳ ${lateEmployeeTasks.length} employees have overdue tasks`
+                    : undefined
+                }
+              />
+            </div>
+          ) : null}
         </Container>
       </SectionContainer>
 
