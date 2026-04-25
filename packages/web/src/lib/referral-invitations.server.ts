@@ -1,8 +1,11 @@
+import { createHash } from "node:crypto";
 import { nanoid } from "nanoid";
 import {
+  Prisma,
   ReferralInvitationContactMethod,
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
+  ShareSource,
   TaskCategory,
   TaskClaimPolicy,
   TaskDifficulty,
@@ -23,6 +26,7 @@ import {
 } from "@/lib/referral-invitation-copy";
 import { sendExternalResendEmail } from "@/lib/resend";
 import { sendTreatySenderReminderEmailForInvitation } from "@/lib/treaty-sender-emails.server";
+import { embedShareAttemptId } from "@/lib/share-channels";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
@@ -144,6 +148,10 @@ function getNextSenderReminderAt(sentStep: 1 | 2, now: Date) {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+function sha256Hex(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function buildReferralInvitationTaskKey(inviteToken: string) {
@@ -344,6 +352,94 @@ export async function resolveInvitationReferrer(inviteToken: string | null | und
   });
 }
 
+export async function markReferralInvitationCopied(input: {
+  invitationId: string;
+  messageText?: string | null;
+  referrerUserId: string;
+  shareAttemptId?: string | null;
+  wasEdited?: boolean;
+  now?: Date;
+}) {
+  const now = input.now ?? new Date();
+  const invitation = await prisma.referralInvitation.findFirst({
+    where: {
+      id: input.invitationId,
+      referrerUserId: input.referrerUserId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      inviteToken: true,
+      messageFormat: true,
+      recipientName: true,
+      status: true,
+      taskId: true,
+      referrer: {
+        select: {
+          ...userDisplaySelect,
+          referralCode: true,
+        },
+      },
+    },
+  });
+
+  if (!invitation) return null;
+
+  const messageText = input.messageText?.trim() || null;
+  const shareAttemptId = input.shareAttemptId?.trim() || (messageText ? nanoid() : null);
+  const senderName = getUserDisplayName(invitation.referrer) || "A voter";
+  const inviteUrl = buildUserInviteReferralUrl(invitation.referrer, invitation.inviteToken, getBaseUrl());
+  const templateBody = buildDefaultReferralInvitationMessage({
+    messageFormat: invitation.messageFormat,
+    recipientName: invitation.recipientName,
+    senderName,
+    treatyUrl: inviteUrl,
+  });
+
+  return prisma.$transaction(async (tx) => {
+    if (messageText && shareAttemptId) {
+      await tx.shareAttempt.create({
+        data: {
+          id: shareAttemptId,
+          userId: input.referrerUserId,
+          source: ShareSource.IN_APP,
+          surface: "referral_invitation_composer",
+          channel: "copy-message",
+          taskId: invitation.taskId,
+          templateId: `referral_invitation:${invitation.messageFormat.toLowerCase()}`,
+          templateHash: sha256Hex(templateBody),
+          templateBody,
+          renderedMessage: messageText,
+          renderedHash: sha256Hex(messageText),
+          wasEdited: Boolean(input.wasEdited),
+          context: {
+            invitationId: invitation.id,
+            messageFormat: invitation.messageFormat,
+            purpose: "referral_invitation_copy",
+            recipientName: invitation.recipientName,
+          } satisfies Prisma.InputJsonObject,
+        },
+      });
+    }
+
+    await tx.referralInvitation.update({
+      where: { id: invitation.id },
+      data: {
+        copiedAt: now,
+        ...(messageText ? { messageText } : {}),
+        ...(shareAttemptId ? { shareAttemptId } : {}),
+        ...(invitation.status === ReferralInvitationStatus.PENDING
+          ? { status: ReferralInvitationStatus.COPIED }
+          : {}),
+      },
+    });
+
+    return tx.referralInvitation.findUnique({
+      where: { id: invitation.id },
+    });
+  });
+}
+
 export async function convertReferralInvitationForVote(input: {
   inviteToken?: string | null;
   voterUserId: string;
@@ -451,6 +547,7 @@ export async function sendReferralInvitationEmail(input: {
       recipientName: true,
       recipientUnsubscribeToken: true,
       recipientUnsubscribedAt: true,
+      taskId: true,
       referrer: {
         select: {
           id: true,
@@ -499,14 +596,24 @@ export async function sendReferralInvitationEmail(input: {
   }
 
   const senderName = getUserDisplayName(invitation.referrer) || "A voter";
-  const inviteUrl = buildUserInviteReferralUrl(
+  const baseInviteUrl = buildUserInviteReferralUrl(
     invitation.referrer,
     invitation.inviteToken,
     getBaseUrl(),
   );
+  const shareAttemptId = nanoid();
+  const inviteUrl = embedShareAttemptId(baseInviteUrl, baseInviteUrl, shareAttemptId);
   const unsubscribeUrl = buildReferralInvitationUnsubscribeUrl({
     invitationId: invitation.id,
     token: invitation.recipientUnsubscribeToken,
+  });
+  const templateEmail = buildReferralInvitationRecipientEmail({
+    inviteUrl: baseInviteUrl,
+    messageFormat: invitation.messageFormat,
+    recipientName: invitation.recipientName,
+    senderName,
+    step,
+    unsubscribeUrl,
   });
   const email = buildReferralInvitationRecipientEmail({
     inviteUrl,
@@ -532,18 +639,47 @@ export async function sendReferralInvitationEmail(input: {
     }
 
     const nextRecipientEmailAt = getNextRecipientEmailAt(step, now);
-    const updated = await prisma.referralInvitation.update({
-      where: { id: invitation.id },
-      data: {
-        lastRecipientEmailAt: now,
-        nextRecipientEmailAt,
-        recipientEmailErrorMessage: null,
-        recipientEmailProviderMessageId: result.id,
-        recipientEmailStep: step,
-        ...(input.messageText?.trim() ? { messageText: input.messageText.trim() } : {}),
-        ...(invitation.status === ReferralInvitationStatus.SENT ? {} : { sentAt: now }),
-        status: ReferralInvitationStatus.SENT,
-      },
+    const updated = await prisma.$transaction(async (tx) => {
+      await tx.shareAttempt.create({
+        data: {
+          id: shareAttemptId,
+          userId: invitation.referrer.id,
+          source: ShareSource.EMAIL,
+          surface: "referral_invitation_email",
+          channel: "email",
+          taskId: invitation.taskId,
+          templateId: `referral_invitation:${invitation.messageFormat.toLowerCase()}:recipient_step_${step}`,
+          templateHash: sha256Hex(templateEmail.text),
+          templateBody: templateEmail.text,
+          renderedMessage: email.text,
+          renderedHash: sha256Hex(email.text),
+          wasEdited: false,
+          context: {
+            invitationId: invitation.id,
+            messageFormat: invitation.messageFormat,
+            providerMessageId: result.id,
+            purpose: "referral_invitation_email",
+            recipientEmailStep: step,
+            recipientName: invitation.recipientName,
+            subject: email.subject,
+          } satisfies Prisma.InputJsonObject,
+        },
+      });
+
+      return tx.referralInvitation.update({
+        where: { id: invitation.id },
+        data: {
+          lastRecipientEmailAt: now,
+          nextRecipientEmailAt,
+          recipientEmailErrorMessage: null,
+          recipientEmailProviderMessageId: result.id,
+          recipientEmailStep: step,
+          shareAttemptId,
+          ...(input.messageText?.trim() ? { messageText: input.messageText.trim() } : {}),
+          ...(invitation.status === ReferralInvitationStatus.SENT ? {} : { sentAt: now }),
+          status: ReferralInvitationStatus.SENT,
+        },
+      });
     });
 
     return { status: "sent" as const, invitation: updated, providerMessageId: result.id };

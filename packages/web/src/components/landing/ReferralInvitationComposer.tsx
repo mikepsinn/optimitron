@@ -1,5 +1,6 @@
 "use client";
 
+import { nanoid } from "nanoid";
 import { Check, Clipboard, Mail, Send } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -15,6 +16,7 @@ import {
   getReferralInvitationFirstName,
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
+import { embedShareAttemptId } from "@/lib/share-channels";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
@@ -121,7 +123,12 @@ export function ReferralInvitationComposer() {
   }, [messageFormat, recipientEmail, recipientName, senderName, session?.user]);
 
   const markCopied = useCallback(
-    async (createdInvitation: ReferralInvitation, copiedMessage: string) => {
+    async (
+      createdInvitation: ReferralInvitation,
+      copiedMessage: string,
+      shareAttemptId: string,
+      wasEdited: boolean,
+    ) => {
       try {
         await fetch("/api/referral-invitations", {
           method: "PATCH",
@@ -130,6 +137,8 @@ export function ReferralInvitationComposer() {
             id: createdInvitation.id,
             action: "markCopied",
             messageText: copiedMessage,
+            shareAttemptId,
+            wasEdited,
           }),
         });
       } catch {
@@ -144,15 +153,38 @@ export function ReferralInvitationComposer() {
     if (!created) return;
 
     try {
-      await copyTextToClipboard(created.message);
-      await markCopied(created.invitation, created.message);
+      const shareAttemptId = nanoid();
+      const createdInviteUrl = buildUserInviteReferralUrl(
+        session?.user,
+        created.invitation.inviteToken,
+        getBaseUrl(),
+      );
+      const defaultMessage = buildReferralInvitationMessage({
+        inviteUrl: createdInviteUrl,
+        messageFormat,
+        recipientName: created.invitation.recipientName,
+        senderName,
+      });
+      const copiedMessage = embedShareAttemptId(
+        created.message,
+        createdInviteUrl,
+        shareAttemptId,
+      );
+      await copyTextToClipboard(copiedMessage);
+      await markCopied(
+        created.invitation,
+        copiedMessage,
+        shareAttemptId,
+        created.message !== defaultMessage,
+      );
+      setMessage(copiedMessage);
       setCopyState("copied");
       window.setTimeout(() => setCopyState("idle"), 1600);
     } catch {
       setCopyState("error");
       window.setTimeout(() => setCopyState("idle"), 2000);
     }
-  }, [createInvitation, invitation, markCopied, message]);
+  }, [createInvitation, invitation, markCopied, message, messageFormat, senderName, session?.user]);
 
   const handleEmailSend = useCallback(async () => {
     const created = invitation ? { invitation, message } : await createInvitation();

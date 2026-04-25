@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   sendExternalResendEmail: vi.fn(),
   sendTreatySenderReminderEmailForInvitation: vi.fn(),
+  shareAttemptCreate: vi.fn(),
   userFindUnique: vi.fn(),
   userUpdateMany: vi.fn(),
 }));
@@ -37,6 +38,7 @@ vi.mock("@/lib/prisma", () => ({
       update: mocks.referralUpdate,
     },
     referendum: { findFirst: mocks.referendumFindFirst },
+    shareAttempt: { create: mocks.shareAttemptCreate },
     task: {
       create: mocks.taskCreate,
       findFirst: mocks.taskFindFirst,
@@ -61,6 +63,7 @@ vi.mock("@/lib/treaty-sender-emails.server", () => ({
 import {
   convertReferralInvitationForVote,
   createReferralInvitation,
+  markReferralInvitationCopied,
   processDueReferralInvitationRecipientEmails,
   processDueReferralInvitationSenderEmails,
   sendReferralInvitationEmail,
@@ -94,8 +97,10 @@ describe("referral invitation server helpers", () => {
         person: { upsert: mocks.personUpsert },
         referralInvitation: {
           create: mocks.referralCreate,
+          findUnique: mocks.referralFindUnique,
           update: mocks.referralUpdate,
         },
+        shareAttempt: { create: mocks.shareAttemptCreate },
         task: {
           create: mocks.taskCreate,
           updateMany: mocks.taskUpdateMany,
@@ -320,6 +325,71 @@ describe("referral invitation server helpers", () => {
     expect(mocks.taskUpdateMany).not.toHaveBeenCalled();
   });
 
+  it("records copied invitation text as a ShareAttempt and keeps copied status bounded", async () => {
+    const now = new Date("2026-04-25T12:00:00.000Z");
+    mocks.referralFindFirst.mockResolvedValue({
+      id: "invite_1",
+      inviteToken: "invite_token",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientName: "Jake",
+      referrer: {
+        email: "sender@example.com",
+        id: "user_1",
+        image: null,
+        name: "Ada",
+        person: null,
+        referralCode: "ada123",
+        username: "ada",
+      },
+      status: "PENDING",
+      taskId: "task_1",
+    });
+    mocks.referralFindUnique.mockResolvedValue({
+      id: "invite_1",
+      shareAttemptId: "share_1",
+      status: "COPIED",
+    });
+
+    const invitation = await markReferralInvitationCopied({
+      invitationId: "invite_1",
+      messageText: "final copied message",
+      now,
+      referrerUserId: "user_1",
+      shareAttemptId: "share_1",
+      wasEdited: true,
+    });
+
+    expect(invitation).toEqual({
+      id: "invite_1",
+      shareAttemptId: "share_1",
+      status: "COPIED",
+    });
+    expect(mocks.shareAttemptCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        id: "share_1",
+        channel: "copy-message",
+        renderedHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        renderedMessage: "final copied message",
+        source: "IN_APP",
+        surface: "referral_invitation_composer",
+        taskId: "task_1",
+        templateHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        templateId: "referral_invitation:task_notification",
+        userId: "user_1",
+        wasEdited: true,
+      }),
+    });
+    expect(mocks.referralUpdate).toHaveBeenCalledWith({
+      where: { id: "invite_1" },
+      data: expect.objectContaining({
+        copiedAt: now,
+        messageText: "final copied message",
+        shareAttemptId: "share_1",
+        status: "COPIED",
+      }),
+    });
+  });
+
   it("persists edited message text when sending an invitation email", async () => {
     const now = new Date("2026-04-25T12:00:00.000Z");
     mocks.referralFindFirst.mockResolvedValue({
@@ -340,6 +410,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "PENDING",
+      taskId: "task_1",
     });
     mocks.referralUpdate.mockResolvedValue({
       id: "invite_1",
@@ -366,15 +437,32 @@ describe("referral invitation server helpers", () => {
     expect(mocks.sendExternalResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "[OVERDUE] Task assigned to you: End War and Disease",
+        text: expect.stringContaining("sa=token_123"),
         to: "jake@example.com",
       }),
     );
+    expect(mocks.shareAttemptCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        id: "token_123",
+        channel: "email",
+        renderedHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        renderedMessage: expect.stringContaining("sa=token_123"),
+        source: "EMAIL",
+        surface: "referral_invitation_email",
+        taskId: "task_1",
+        templateHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        templateId: "referral_invitation:task_notification:recipient_step_1",
+        userId: "user_1",
+        wasEdited: false,
+      }),
+    });
     expect(mocks.referralUpdate).toHaveBeenCalledWith({
       where: { id: "invite_1" },
       data: expect.objectContaining({
         messageText: "edited message",
         recipientEmailProviderMessageId: "resend_1",
         recipientEmailStep: 1,
+        shareAttemptId: "token_123",
         status: "SENT",
       }),
     });

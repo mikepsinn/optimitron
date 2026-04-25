@@ -130,6 +130,8 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [ ] Extend `ShareAttempt` as the canonical outbound-message ledger.
   - Add nullable `referralInvitationId`, `taskMessageVariantId`, and `purpose`.
   - Every copied message, native share, server-sent invitation email, and recipient reminder email should create or link a `ShareAttempt`.
+  - [x] First referral-invitation slice: `/send` and post-vote copied invite messages now pre-generate `sa=`, persist exact copied text/hash/edit state to `ShareAttempt`, and link the invitation to that attempt.
+  - [x] First recipient-email slice: server-sent referral invitation emails and recipient reminders now embed `sa=`, persist exact outbound email text/hash/template metadata to `ShareAttempt`, and link the invitation to the latest sent attempt.
   - Invite URLs should include `sa=` when a specific message attempt exists, in addition to `invite=` for named invitation conversion.
 - [ ] Use task data to populate reminder emails where it improves clarity.
   - Pull title, assignee, due date, contact URL, parent task, and task tree context from `Task`/`TaskEdge` instead of duplicating hardcoded treaty strings.

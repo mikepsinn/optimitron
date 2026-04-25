@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   createReferralInvitation: vi.fn(),
   findMany: vi.fn(),
   findUnique: vi.fn(),
+  markReferralInvitationCopied: vi.fn(),
   requireAuth: vi.fn(),
   sendReferralInvitationEmail: vi.fn(),
   taskUpdateMany: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/lib/referral-invitations.server", () => ({
   createReferralInvitation: mocks.createReferralInvitation,
+  markReferralInvitationCopied: mocks.markReferralInvitationCopied,
   sendReferralInvitationEmail: mocks.sendReferralInvitationEmail,
 }));
 
@@ -132,8 +134,7 @@ describe("/api/referral-invitations", () => {
 
   it("marks an owned invitation as copied", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.updateMany.mockResolvedValue({ count: 1 });
-    mocks.findUnique.mockResolvedValue({ id: "invite_1", status: "COPIED" });
+    mocks.markReferralInvitationCopied.mockResolvedValue({ id: "invite_1", status: "COPIED" });
 
     const response = await PATCH(
       makePatchRequest({
@@ -141,6 +142,7 @@ describe("/api/referral-invitations", () => {
         action: "markCopied",
         messageText: "message",
         shareAttemptId: "share_1",
+        wasEdited: true,
       }),
     );
 
@@ -148,25 +150,19 @@ describe("/api/referral-invitations", () => {
     await expect(response.json()).resolves.toEqual({
       invitation: { id: "invite_1", status: "COPIED" },
     });
-    expect(mocks.updateMany).toHaveBeenCalledWith({
-      where: {
-        id: "invite_1",
-        referrerUserId: "user_1",
-        deletedAt: null,
-        status: "PENDING",
-      },
-      data: expect.objectContaining({
-        status: "COPIED",
-        messageText: "message",
-        shareAttemptId: "share_1",
-      }),
+    expect(mocks.markReferralInvitationCopied).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      messageText: "message",
+      referrerUserId: "user_1",
+      shareAttemptId: "share_1",
+      wasEdited: true,
+      now: expect.any(Date),
     });
   });
 
   it("records copy details without downgrading an already-sent invitation", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.updateMany.mockResolvedValueOnce({ count: 0 }).mockResolvedValueOnce({ count: 1 });
-    mocks.findUnique.mockResolvedValue({ id: "invite_1", status: "SENT" });
+    mocks.markReferralInvitationCopied.mockResolvedValue({ id: "invite_1", status: "SENT" });
 
     const response = await PATCH(
       makePatchRequest({
@@ -180,15 +176,13 @@ describe("/api/referral-invitations", () => {
     await expect(response.json()).resolves.toEqual({
       invitation: { id: "invite_1", status: "SENT" },
     });
-    expect(mocks.updateMany).toHaveBeenNthCalledWith(2, {
-      where: {
-        id: "invite_1",
-        referrerUserId: "user_1",
-        deletedAt: null,
-      },
-      data: expect.not.objectContaining({
-        status: "COPIED",
-      }),
+    expect(mocks.markReferralInvitationCopied).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      messageText: "message",
+      referrerUserId: "user_1",
+      shareAttemptId: undefined,
+      wasEdited: undefined,
+      now: expect.any(Date),
     });
   });
 
@@ -371,7 +365,7 @@ describe("/api/referral-invitations", () => {
 
   it("returns 404 when updating another user's invitation", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.updateMany.mockResolvedValue({ count: 0 });
+    mocks.markReferralInvitationCopied.mockResolvedValue(null);
 
     const response = await PATCH(
       makePatchRequest({

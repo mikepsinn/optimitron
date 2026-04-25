@@ -11,6 +11,7 @@ import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import {
   createReferralInvitation,
+  markReferralInvitationCopied,
   sendReferralInvitationEmail,
 } from "@/lib/referral-invitations.server";
 
@@ -35,6 +36,7 @@ const patchInvitationSchema = z.object({
   action: z.enum(["markCopied", "decline", "cancel", "senderReminderOptIn", "sendEmail"]),
   messageText: z.string().trim().max(10_000).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
+  wasEdited: z.boolean().optional(),
 });
 
 export async function GET() {
@@ -143,43 +145,18 @@ export async function PATCH(request: Request) {
     }
 
     if (parsed.action === "markCopied") {
-      const data = {
-        copiedAt: now,
-        messageText: parsed.messageText ?? undefined,
-        shareAttemptId: parsed.shareAttemptId ?? undefined,
-      };
-
-      let result = await prisma.referralInvitation.updateMany({
-        where: {
-          id: parsed.id,
-          referrerUserId: userId,
-          deletedAt: null,
-          status: ReferralInvitationStatus.PENDING,
-        },
-        data: {
-          ...data,
-          status: ReferralInvitationStatus.COPIED,
-        },
+      const invitation = await markReferralInvitationCopied({
+        invitationId: parsed.id,
+        messageText: parsed.messageText,
+        referrerUserId: userId,
+        shareAttemptId: parsed.shareAttemptId,
+        wasEdited: parsed.wasEdited,
+        now,
       });
 
-      if (result.count === 0) {
-        result = await prisma.referralInvitation.updateMany({
-          where: {
-            id: parsed.id,
-            referrerUserId: userId,
-            deletedAt: null,
-          },
-          data,
-        });
-      }
-
-      if (result.count === 0) {
+      if (!invitation) {
         return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
       }
-
-      const invitation = await prisma.referralInvitation.findUnique({
-        where: { id: parsed.id },
-      });
 
       return NextResponse.json({ invitation });
     }

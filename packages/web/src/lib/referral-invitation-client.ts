@@ -90,6 +90,7 @@ export async function updateReferralInvitationRequest(input: {
   id: string;
   messageText?: string | null;
   shareAttemptId?: string | null;
+  wasEdited?: boolean;
 }, fetcher: typeof fetch = fetch) {
   const response = await fetcher("/api/referral-invitations", {
     body: JSON.stringify(input),

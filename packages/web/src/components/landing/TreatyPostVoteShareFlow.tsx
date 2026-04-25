@@ -1,5 +1,6 @@
 "use client";
 
+import { nanoid } from "nanoid";
 import { Check, Clipboard, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -77,6 +78,8 @@ import {
   formatFlowCompactParam,
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
+import { embedShareAttemptId } from "@/lib/share-channels";
+import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 
 type FlowScreen =
   | "opening"
@@ -363,15 +366,19 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     const created = await createInvitation();
     if (!created) return;
 
-    const text = message || buildReferralInvitationShareMessage({
+    const defaultText = buildReferralInvitationShareMessage({
       invitation: created,
       messageFormat,
       senderName,
       user: session?.user,
     });
+    const text = message || defaultText;
+    const shareAttemptId = nanoid();
+    const inviteUrl = buildUserInviteReferralUrl(session?.user, created.inviteToken, getBaseUrl());
+    const copiedText = embedShareAttemptId(text, inviteUrl, shareAttemptId);
 
     try {
-      await copyTextToClipboard(text);
+      await copyTextToClipboard(copiedText);
       trackTreatyPostVoteInvitationAction({
         action: "copy",
         messageFormat,
@@ -381,8 +388,11 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       await updateReferralInvitationRequest({
         id: created.id,
         action: "markCopied",
-        messageText: text,
+        messageText: copiedText,
+        shareAttemptId,
+        wasEdited: text !== defaultText,
       });
+      setMessage(copiedText);
       setCopyState("copied");
       setScreen("copyConfirm");
     } catch {
