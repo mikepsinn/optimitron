@@ -21,6 +21,22 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   });
 }
 
+type FetchArgs = Parameters<typeof fetch>;
+type FetchResult = ReturnType<typeof fetch>;
+type FetchMock = ReturnType<typeof vi.fn<FetchArgs, FetchResult>>;
+
+function mockFetchResponse(body: unknown, init?: ResponseInit): FetchMock {
+  return vi.fn<FetchArgs, FetchResult>(async () => jsonResponse(body, init));
+}
+
+function getFirstRequestBody(fetcher: FetchMock) {
+  const init = fetcher.mock.calls[0]?.[1];
+  if (typeof init?.body !== "string") {
+    throw new Error("Expected fetch to be called with a string request body.");
+  }
+  return JSON.parse(init.body);
+}
+
 describe("referral invitation client helpers", () => {
   it("builds invite-token share messages from the sender user", () => {
     const message = buildReferralInvitationShareMessage({
@@ -46,7 +62,7 @@ describe("referral invitation client helpers", () => {
   });
 
   it("creates invitations through the referral invitation API", async () => {
-    const fetcher = vi.fn(async () => jsonResponse({ invitation }, { status: 201 }));
+    const fetcher = mockFetchResponse({ invitation }, { status: 201 });
 
     const result = await createReferralInvitationRequest(
       {
@@ -55,7 +71,7 @@ describe("referral invitation client helpers", () => {
         recipientEmail: "jake@example.com",
         recipientName: "Jake",
       },
-      fetcher as unknown as typeof fetch,
+      fetcher,
     );
 
     expect(result).toEqual(invitation);
@@ -66,8 +82,7 @@ describe("referral invitation client helpers", () => {
         method: "POST",
       }),
     );
-    const [, init] = fetcher.mock.calls[0] as [string, RequestInit];
-    expect(JSON.parse(init.body as string)).toEqual({
+    expect(getFirstRequestBody(fetcher)).toEqual({
       contactMethod: "EMAIL",
       messageFormat: "TASK_NOTIFICATION",
       recipientEmail: "jake@example.com",
@@ -76,8 +91,9 @@ describe("referral invitation client helpers", () => {
   });
 
   it("surfaces create errors from the API payload", async () => {
-    const fetcher = vi.fn(async () =>
-      jsonResponse({ error: "Recipient email cannot be your own email." }, { status: 400 }),
+    const fetcher = mockFetchResponse(
+      { error: "Recipient email cannot be your own email." },
+      { status: 400 },
     );
 
     await expect(
@@ -88,14 +104,14 @@ describe("referral invitation client helpers", () => {
           recipientEmail: "ada@example.com",
           recipientName: "Ada",
         },
-        fetcher as unknown as typeof fetch,
+        fetcher,
       ),
     ).rejects.toThrow("Recipient email cannot be your own email.");
   });
 
   it("updates invitations through the referral invitation API", async () => {
     const payload = { invitation, status: "sent" };
-    const fetcher = vi.fn(async () => jsonResponse(payload));
+    const fetcher = mockFetchResponse(payload);
 
     const result = await updateReferralInvitationRequest(
       {
@@ -103,7 +119,7 @@ describe("referral invitation client helpers", () => {
         id: "invite_1",
         messageText: "edited message",
       },
-      fetcher as unknown as typeof fetch,
+      fetcher,
     );
 
     expect(result).toEqual(payload);
@@ -114,8 +130,7 @@ describe("referral invitation client helpers", () => {
         method: "PATCH",
       }),
     );
-    const [, init] = fetcher.mock.calls[0] as [string, RequestInit];
-    expect(JSON.parse(init.body as string)).toEqual({
+    expect(getFirstRequestBody(fetcher)).toEqual({
       action: "sendEmail",
       id: "invite_1",
       messageText: "edited message",
