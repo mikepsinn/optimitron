@@ -103,16 +103,16 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
 - [x] Keep generic referral attribution separate from named invite conversion.
 - [x] Use `/vote/<username-or-referralCode>` as the clean generic referral URL.
 - [x] Use `/vote/<username-or-referralCode>?invite=<inviteToken>` for named invitations.
-- [ ] Verify invite-token attribution through the full recipient path in a browser:
+- [x] Verify invite-token attribution through the full recipient path in a browser:
   vote link -> landing -> vote -> verification -> vote sync -> invitation converted -> task verified -> dashboard updated.
-  - Playwright coverage exists at `packages/web/e2e/invite-token-attribution.spec.ts` (4 tests):
+  - Playwright coverage exists at `packages/web/e2e/invite-token-attribution.spec.ts`:
     1. `/vote/<code>?invite=<token>` server redirect preserves both query params.
     2. Landing-page mount effect captures the token to `localStorage` (`signup_invite_token`).
     3. Token survives a demo-credentials auth roundtrip (same-origin reload).
     4. Vote POST body carries `inviteToken` end-to-end.
+    5. Demo sender creates a named invitation, a fresh recipient account votes through the token, the vote response returns `CONVERTED`, `/api/referral-invitations` shows `convertedAt`, and the sender dashboard row renders as confirmed.
   - Run: `pnpm --filter @optimitron/web exec playwright test e2e/invite-token-attribution.spec.ts --project=default`. Requires the seeded demo user (`pnpm --filter @optimitron/db exec prisma db seed`) and the web server up on `:3001`.
-  - Conversion logic itself (named invite → CONVERTED + linked task verified + recipient attached to person) is unit-covered in `referral-invitations.server.test.ts`. The Playwright spec covers the cross-cutting browser plumbing only.
-  - Outstanding: a true happy-path conversion in the browser needs a second seeded user (recipient ≠ sender) before it can run as a single Playwright test. Decide whether to add a seed user or keep this as the unit-test + plumbing-test split.
+  - Conversion logic itself (linked task verified + recipient attached to person) remains unit-covered in `referral-invitations.server.test.ts`; the browser spec now proves the real API/browser conversion and dashboard status path with a distinct per-run recipient.
 - [x] Cover forwarded/already-converted invite-token links:
   they should still let a later recipient vote and credit generic referral attribution without re-converting the named invitation task.
 - [x] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
@@ -300,10 +300,13 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Replace implementation terms like "post-vote send loop", "tracked invite link", "referral invitation task", "invite-token conversion", and "private referral-generated task" with simple language.
   - Default to "task", "Earth optimization task", "vote task", "your invite link", "confirmed", and "pending" unless the technical term is necessary.
   - The copy should be clear to a normal person before it is clever to a developer.
-- [ ] Decide where to frame the user as a project manager for Earth Optimization Services.
-  - Candidate surfaces: `/send`, post-vote share flow, dashboard task card, email task-notification format, monthly scorecard, and task detail pages.
-  - Keep the frame funny and legible: the user is helping assign and verify tasks in the Earth optimization project tree.
-  - Do not over-apply the frame to input labels, error messages, or ordinary action buttons where it makes the UI harder to understand.
+- [ ] Site-wide voice + framing audit: commit to "you are a project manager / employee of Earth Optimization Services" as the dominant user-facing metaphor.
+  - Inventory every user-facing string (landing, `/send`, dashboard cards, task detail pages, all email subjects + bodies, error messages, empty states, tooltips, button labels, modal copy) and check that it reads consistently as PMO bureaucracy applied to civilizational tasks. The user is a project manager; humanity is the workforce; Wishonia is the disappointed senior auditor.
+  - Reject the parallel "Earth Optimization Commission" framing as a user role — it dilutes the deadpan PMO joke and doesn't match the data model (recruit, assign, complete tasks). Reserve "Commission" only for Wishonia narrator asides ("the Commission has reviewed humanity's performance and noted some concerns") so it stays a one-line gag from above, not a competing user identity.
+  - Surfaces that should explicitly carry the PMO frame: post-vote share flow, `/send`, dashboard task card, email task-notification format, monthly scorecard, task detail pages, leaderboards, badges, EOP ledger.
+  - Surfaces that should NOT carry the frame: input labels, validation errors, sign-in buttons, and ordinary action buttons where the joke would hurt clarity. Default to plain language there.
+  - Tie back to existing voice rules: deadpan, data-first, short sentences, sardonic, Wishonia voice (CLAUDE.md). The PMO frame is the *vehicle* for the voice, not a replacement for it.
+  - Acceptance: a reviewer reading any 5 random user-facing strings cold can correctly identify the site's voice + role-frame within one read; no string accidentally calls the user a "commissioner", "member", or "delegate."
 
 ## Earth Optimization Points And Rewards
 
@@ -460,8 +463,8 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - verified vote -> post-vote flow;
   - copy-only invite;
   - emailed invite;
-  - recipient invite conversion;
-  - dashboard pending/confirmed update;
+  - [x] recipient invite conversion (`packages/web/e2e/invite-token-attribution.spec.ts`);
+  - [x] dashboard pending/confirmed update (`packages/web/e2e/invite-token-attribution.spec.ts`);
   - partner/demo lite mode.
 - [ ] Use focused checks before each local commit; keep full `pnpm check` green before push or after substantial cross-package/schema changes.
   - Default web loop: `pnpm --filter @optimitron/web run typecheck` plus the focused Vitest/Playwright files touched by the change.
