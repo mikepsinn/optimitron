@@ -182,7 +182,7 @@ This section tracks the analytics/measurement layer that sits on top of the gene
   - [x] First referral-invitation slice: `/send` and post-vote copied invite messages now pre-generate `sa=`, persist exact copied text/hash/edit state to `ShareAttempt`, and link the invitation to that attempt.
   - [x] First recipient-email slice: server-sent referral invitation emails and recipient reminders now embed `sa=`, persist exact outbound email text/hash/template metadata to `ShareAttempt`, and link the invitation to the latest sent attempt.
   - [x] All `ShareAttempt` writes now go through `recordShareAttempt()` in `packages/web/src/lib/share-attempts.server.ts`; future task families inherit consistent attribution and hashing.
-  - Invite URLs should include `sa=` when a specific message attempt exists, in addition to `invite=` for named invitation conversion.
+  - [x] Invite URLs include `sa=` when a specific message attempt exists, in addition to `invite=` for named invitation conversion. `embedShareAttemptId()` now handles owned invite URLs that already contain `?invite=...`, covered by `share-channels.test.ts` and `post-vote-share-flow.spec.ts`.
 - [ ] Add a testable "best current reminder" selection path.
   - Start with deterministic seeded defaults.
   - Later promote variants based on replication coefficient, with guardrails for spam reports and unsubscribe rates.
@@ -491,12 +491,12 @@ The honest reason to move share templates into a data layer is **so non-engineer
 ## Quality Gates
 
 - [ ] Add targeted Playwright coverage for:
-  - verified vote -> post-vote flow;
-  - copy-only invite;
-  - emailed invite;
+  - [x] verified vote -> post-vote flow (`packages/web/e2e/post-vote-share-flow.spec.ts`);
+  - [x] copy-only invite (`packages/web/e2e/post-vote-share-flow.spec.ts`);
+  - [x] emailed invite (`packages/web/e2e/email-invite.spec.ts`);
   - [x] recipient invite conversion (`packages/web/e2e/invite-token-attribution.spec.ts`);
   - [x] dashboard pending/confirmed update (`packages/web/e2e/invite-token-attribution.spec.ts`);
-  - partner/demo lite mode.
+  - [x] partner/demo lite mode (`packages/web/e2e/lite-mode-guard.spec.ts`).
 - [ ] Use focused checks before each local commit; keep full `pnpm check` green before push or after substantial cross-package/schema changes.
   - Default web loop: `pnpm --filter @optimitron/web run typecheck` plus the focused Vitest/Playwright files touched by the change.
   - Docs/TODO-only edits do not need the full monorepo gate.

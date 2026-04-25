@@ -1,5 +1,6 @@
-import { Resend } from "resend";
+import { randomUUID } from "node:crypto";
 import { render } from "@react-email/components";
+import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
 import { formatEmailFromHeader, parseEmailFromHeader } from "@/lib/email/from-address";
@@ -45,12 +46,24 @@ export type SendResult =
 
 let resendClient: Resend | null = null;
 
+function isMockSendEnabled() {
+  return serverEnv.RESEND_MOCK_SEND === "1" && serverEnv.NODE_ENV !== "production";
+}
+
+function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
+  return {
+    status: "sent",
+    id: `mock_resend_${randomUUID()}`,
+    unsubscribeUrl,
+  };
+}
+
 export function getEmailFromAddress() {
   return formatEmailFromHeader(serverEnv.EMAIL_FROM, "Wishonia");
 }
 
 export function isResendConfigured() {
-  return Boolean(serverEnv.RESEND_API_KEY && getEmailFromAddress());
+  return isMockSendEnabled() || Boolean(serverEnv.RESEND_API_KEY && getEmailFromAddress());
 }
 
 function getResendClient() {
@@ -102,6 +115,10 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
 
+  if (isMockSendEnabled()) {
+    return buildMockSendResult(unsubscribeUrl);
+  }
+
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: getEmailFromAddress(),
@@ -138,6 +155,10 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
 
+  if (isMockSendEnabled()) {
+    return buildMockSendResult(unsubscribeUrl);
+  }
+
   const resend = getResendClient();
   const html = await render(message.react);
   const text = await render(message.react, { plainText: true });
@@ -169,6 +190,11 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
 
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
+
+  if (isMockSendEnabled()) {
+    return buildMockSendResult(unsubscribeUrl);
+  }
+
   const resend = getResendClient();
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),

@@ -3,6 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   canSendEmailToUser: vi.fn(),
   emailSend: vi.fn(),
+  serverEnv: {
+    EMAIL_FROM: "team@optimitron.com",
+    NODE_ENV: "development",
+    RESEND_API_KEY: "resend_test_key" as string | undefined,
+    RESEND_MOCK_SEND: undefined as "1" | undefined,
+  },
 }));
 
 vi.mock("resend", () => ({
@@ -18,10 +24,7 @@ vi.mock("@react-email/components", () => ({
 }));
 
 vi.mock("@/lib/env", () => ({
-  serverEnv: {
-    EMAIL_FROM: "team@optimitron.com",
-    RESEND_API_KEY: "resend_test_key",
-  },
+  serverEnv: mocks.serverEnv,
 }));
 
 vi.mock("@/lib/email/can-send.server", () => ({
@@ -38,6 +41,9 @@ describe("sendResendEmail", () => {
   beforeEach(() => {
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
+    mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
+    mocks.serverEnv.RESEND_MOCK_SEND = undefined;
     mocks.canSendEmailToUser.mockResolvedValue(true);
     mocks.emailSend.mockResolvedValue({
       data: { id: "email_1" },
@@ -90,5 +96,26 @@ describe("sendResendEmail", () => {
 
     const payload = mocks.emailSend.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(payload.headers).toBeUndefined();
+  });
+
+  it("can mock successful sends in non-production verification runs", async () => {
+    mocks.serverEnv.RESEND_API_KEY = undefined;
+    mocks.serverEnv.RESEND_MOCK_SEND = "1";
+
+    const result = await sendResendEmail({
+      html: "<p>Hello</p>",
+      scope: "magic_link",
+      subject: "Magic link",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    });
+
+    expect(result).toMatchObject({
+      status: "sent",
+      unsubscribeUrl: null,
+    });
+    expect(result.id).toMatch(/^mock_resend_/);
+    expect(mocks.emailSend).not.toHaveBeenCalled();
   });
 });
