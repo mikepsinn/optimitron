@@ -9,6 +9,34 @@ import { Card } from "@/components/retroui/Card";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import { ParameterValue } from "@/components/shared/ParameterValue";
+import {
+  CURRENT_TRIAL_SLOTS_AVAILABLE,
+  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
+  DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS,
+  DFDA_TRIAL_SUBSIDIES_ANNUAL,
+  DIH_TREASURY_TRIAL_SUBSIDIES_PCT,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  EFFICACY_LAG_YEARS,
+  GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES,
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  HOURS_PER_YEAR,
+  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  PMC_PRAGMATIC_TRIAL_MEDIAN_COST_PER_PATIENT,
+  RARE_DISEASES_COUNT_GLOBAL,
+  SAFE_COMPOUNDS_COUNT,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
+  TREATY_ANNUAL_FUNDING,
+  TREATY_REDUCTION_PCT,
+  UNEXPLORED_RATIO,
+} from "@optimitron/data/parameters";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
   buildReferralInvitationMessage,
@@ -16,6 +44,25 @@ import {
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
 import { ROUTES } from "@/lib/routes";
+import {
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE,
+  FLOW_DOUBLING_ROUNDS_TO_TARGET,
+  FLOW_GLOBAL_WARHEAD_COUNT,
+  FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
+  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+  FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  FLOW_TOTAL_LIVES_SAVED,
+  FLOW_TOTAL_SUFFERING_HOURS,
+  FLOW_VOTER_LIVES_SAVED,
+  FLOW_VOTER_LIVES_SAVED_ROUNDED,
+  FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
+  FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+  FLOW_WASTEFUL_APOCALYPSES,
+  formatFlowCompactCurrency,
+  formatFlowCompactParam,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 
 type FlowScreen =
@@ -53,6 +100,33 @@ const primaryButtonClass =
 const dismissButtonClass =
   "h-12 justify-center border-4 border-primary bg-background px-4 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed";
 
+const majorityHumanityText = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
+const nuclearOverkillText = formatFlowWords(FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR, 3);
+const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
+const dfdaQueueYearsText = formatFlowWords(DFDA_QUEUE_CLEARANCE_YEARS, 2);
+const treatyReductionPctText = formatFlowWords(TREATY_REDUCTION_PCT, 1);
+const treatyFundingCompact = formatFlowCompactCurrency(TREATY_ANNUAL_FUNDING, 3);
+const globalMilitarySpendingCompact = formatFlowCompactCurrency(
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  3,
+);
+const dfdaPatientsFundableCompact = formatFlowCompactParam(DFDA_PATIENTS_FUNDABLE_ANNUALLY, 3);
+const currentTrialSlotsCompact = formatFlowCompactParam(CURRENT_TRIAL_SLOTS_AVAILABLE, 2);
+const trialCapacityMultiplierText = formatFlowWords(DFDA_TRIAL_CAPACITY_MULTIPLIER, 2);
+const trialCapacityMultiplierPreciseText = formatFlowWords(DFDA_TRIAL_CAPACITY_MULTIPLIER, 3);
+const totalLivesSavedText = formatFlowWords(FLOW_TOTAL_LIVES_SAVED, 3);
+const totalSufferingHoursText = formatFlowWords(FLOW_TOTAL_SUFFERING_HOURS, 3);
+const voterLivesSavedText = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2);
+const totalLivesSavedCi = DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.confidenceInterval;
+const totalSufferingHoursCi =
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS.confidenceInterval;
+const totalLivesSavedCiText = totalLivesSavedCi
+  ? `${formatFlowCompactParam({ value: totalLivesSavedCi[0] }, 2)}–${formatFlowCompactParam({ value: totalLivesSavedCi[1] }, 3)}`
+  : "";
+const totalSufferingHoursCiText = totalSufferingHoursCi
+  ? `${formatFlowCompactParam({ value: totalSufferingHoursCi[0] }, 3)}–${formatFlowCompactParam({ value: totalSufferingHoursCi[1] }, 3)}`
+  : "";
+
 function FlowParagraph({ children }: { children: ReactNode }) {
   return <p className="text-lg font-bold leading-snug sm:text-xl">{children}</p>;
 }
@@ -85,7 +159,7 @@ function TaskPreview({ senderName }: { senderName: string }) {
 │ TASK: End War and Disease             │
 │ ASSIGNED BY: ${senderName || "[Your name]"}
 │ STATUS: Overdue (by approximately     │
-│         443 years)                    │
+│         ${statusQuoQueueYearsText} years)                    │
 │ PRIORITY: Critical                    │
 │ ESTIMATED TIME: 30 seconds            │
 │                                       │
@@ -95,7 +169,7 @@ function TaskPreview({ senderName }: { senderName: string }) {
 │ NOTE: This task was originally due     │
 │ several centuries ago but kept         │
 │ getting deprioritized in favor of      │
-│ building 122 apocalypses worth of      │
+│ building ${nuclearOverkillText} apocalypses worth of      │
 │ nuclear weapons. Management            │
 │ apologizes for the delay.              │
 └──────────────────────────────────────┘`}
@@ -104,20 +178,22 @@ function TaskPreview({ senderName }: { senderName: string }) {
 }
 
 function milestoneCopy(sentCount: number) {
+  const milestoneLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
+
   if (sentCount === 5) {
-    return "Five. Five full human lifetimes of suffering, prevented. 13.5 lives. More than most humans save in a lifetime of caring about things.";
+    return `Five. Five full human lifetimes of suffering, prevented. ${milestoneLives} lives. More than most humans save in a lifetime of caring about things.`;
   }
   if (sentCount === 10) {
     return "Ten. You've now done more for humanity than most world leaders. Which, to be fair, is a low bar.";
   }
   if (sentCount === 20) {
-    return "Twenty lifetimes. 54 lives. At this point you are just showing off. Please continue.";
+    return `Twenty lifetimes. ${milestoneLives} lives. At this point you are just showing off. Please continue.`;
   }
   if (sentCount === 40) {
     return "Forty. You've either messaged everyone you love, or you've discovered you love more people than you thought. Both are good outcomes.";
   }
   if (sentCount === 100) {
-    return "One hundred lifetimes. 270 lives. A village worth of people who will not die of a curable disease. Specifically because of you.";
+    return `One hundred lifetimes. ${milestoneLives} lives. A village worth of people who will not die of a curable disease. Specifically because of you.`;
   }
   return null;
 }
@@ -153,7 +229,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     "A voter";
   const firstName = getReferralInvitationFirstName(recipientName);
   const displayName = firstName || "Jake";
-  const pendingLives = formatLives(sentCount * 2.7);
+  const pendingLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
 
   const go = useCallback((next: FlowScreen, dismissive = false) => {
     setAlt(dismissive);
@@ -383,7 +459,11 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? <FlowParagraph>{"I'm sorry but I still have to tell you this anyway."}</FlowParagraph> : null}
               <FlowParagraph>
-                Statistically, you and/or someone you love will get a horrible disease. 95% of diseases have zero FDA-approved treatments. 9,500 known-safe compounds sit on shelves, and 99.7% of their potential uses have never been tested — because the money was busy turning into missiles.
+                Statistically, you and/or someone you love will get a horrible disease.{" "}
+                <ParameterValue param={FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT} figures={2} />{" "}
+                of diseases have zero FDA-approved treatments.{" "}
+                <ParameterValue param={SAFE_COMPOUNDS_COUNT} figures={2} /> known-safe compounds sit on shelves, and{" "}
+                <ParameterValue param={UNEXPLORED_RATIO} figures={3} /> of their potential uses have never been tested — because the money was busy turning into missiles.
               </FlowParagraph>
             </div>
             <FlowButtonRow>
@@ -403,12 +483,12 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? <FlowParagraph>Fair. One more math thing though.</FlowParagraph> : null}
               <FlowParagraph>
-                100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans. Call that one apocalypse.
+                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans. Call that one apocalypse.
               </FlowParagraph>
               <FlowParagraph>
-                {"Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity."}
+                Humanity has about <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} /> nuclear weapons. That&apos;s <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypses of mass murder capacity.
               </FlowParagraph>
-              <FlowParagraph>You can only ruin Earth once. The other 121 are just wasteful.</FlowParagraph>
+              <FlowParagraph>You can only ruin Earth once. The other <ParameterValue param={FLOW_WASTEFUL_APOCALYPSES} figures={3} /> are just wasteful.</FlowParagraph>
               <FlowParagraph>The 1% Treaty asks you to trade one apocalypse for something slightly nicer.</FlowParagraph>
             </div>
             <FlowButtonRow>
@@ -429,7 +509,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               <div className="space-y-4">
                 <FlowParagraph>Fine, show your work:</FlowParagraph>
                 <FlowParagraph>
-                  $27.2B/year (1% of $2.72T military) → 23M patients tested (at $929 each, not $41K) → 12x research capacity → 443 years eradication becomes 36 → 10.7 billion avoidable deaths averted + 1.93 quadrillion hours of suffering.
+                  {treatyFundingCompact}/year ({treatyReductionPctText} of {globalMilitarySpendingCompact} military) → {formatFlowCompactParam(DFDA_PATIENTS_FUNDABLE_ANNUALLY, 2)} patients tested (at {formatFlowCompactCurrency(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, 3)} each, not {formatFlowCompactCurrency(TRADITIONAL_PHASE3_COST_PER_PATIENT, 2)}) → {trialCapacityMultiplierText}x research capacity → {statusQuoQueueYearsText} years eradication becomes {dfdaQueueYearsText} → {totalLivesSavedText} avoidable deaths averted + {totalSufferingHoursText} hours of suffering.
                 </FlowParagraph>
                 <FlowParagraph>
                   Expand any number for the derivation. Everything has a citation at manual.warondisease.org.
@@ -437,21 +517,62 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               </div>
             ) : (
               <div className="space-y-5">
-                <p className="text-xl font-black leading-tight">1% of global military spending = $27.2 billion per year.</p>
+                <p className="text-xl font-black leading-tight">
+                  <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> of global military spending ={" "}
+                  <ParameterValue param={TREATY_ANNUAL_FUNDING} figures={3} /> per year.
+                </p>
                 <DetailsBlock>
-                  <p>Global military spending 2024 = $2.72 trillion (SIPRI). 1% of that = $27.2B.</p>
+                  <p>
+                    Global military spending 2024 ={" "}
+                    <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} figures={3} /> (SIPRI).{" "}
+                    <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> of that = {treatyFundingCompact}.
+                  </p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">{"Pragmatic clinical trials cost $929/patient, not $41,000. So $27.2B funds 23 million patients per year — instead of today's 1.9 million."}</p>
+                <p className="text-xl font-black leading-tight">
+                  Pragmatic clinical trials cost{" "}
+                  <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} display="withUnit" figures={3} />, not{" "}
+                  <ParameterValue param={{ ...TRADITIONAL_PHASE3_COST_PER_PATIENT, unit: "USD" }} figures={3} />. So {treatyFundingCompact} funds{" "}
+                  <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} figures={2} /> patients per year — instead of today&apos;s{" "}
+                  <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} figures={2} />.
+                </p>
                 <DetailsBlock>
-                  <p>Traditional Phase 3 trials: median $41,000/patient (FDA data). Pragmatic trials: $929/patient (ADAPTABLE trial real-world cost). Meta-analysis of 64 pragmatic trials finds median $97/patient (Ramsberg & Platt 2018). Using conservative $929. $27.2B × 80% allocated to patient subsidies = $21.8B ÷ $929 = 23.4M patients tested per year. Current global trial participation: 1.9M patients/year (IQVIA 2022).</p>
+                  <p>
+                    Traditional Phase 3 trials: median{" "}
+                    <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} display="withUnit" figures={3} /> (FDA data). Pragmatic trials:{" "}
+                    <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} display="withUnit" figures={3} /> (ADAPTABLE trial real-world cost). Meta-analysis of 64 pragmatic trials finds median{" "}
+                    <ParameterValue param={PMC_PRAGMATIC_TRIAL_MEDIAN_COST_PER_PATIENT} display="withUnit" figures={2} /> (Ramsberg & Platt 2018). Using conservative{" "}
+                    <ParameterValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} figures={3} />. {treatyFundingCompact} ×{" "}
+                    <ParameterValue param={DIH_TREASURY_TRIAL_SUBSIDIES_PCT} figures={1} /> allocated to patient subsidies ={" "}
+                    {formatFlowCompactCurrency(DFDA_TRIAL_SUBSIDIES_ANNUAL, 3)} ÷{" "}
+                    <ParameterValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} figures={3} /> = {dfdaPatientsFundableCompact} patients tested per year. Current global trial participation: {currentTrialSlotsCompact} patients/year (IQVIA 2022).
+                  </p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">{"That's 12x more clinical trial capacity. Disease eradication compresses from 443 years to 36."}</p>
+                <p className="text-xl font-black leading-tight">
+                  That&apos;s <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="withUnit" figures={2} /> more clinical trial capacity. Disease eradication compresses from{" "}
+                  <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} display="integer" /> years to{" "}
+                  <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} display="integer" />.
+                </p>
                 <DetailsBlock>
-                  <p>{"23.4M funded patients ÷ 1.9M current = 12.3x multiplier. 6,650 diseases currently have no effective treatment (95% of ~7,000 rare diseases per Orphanet 2024). At today's rate, first-ever treatments emerge for 15 new diseases/year. 6,650 ÷ 15 = "}<strong>443 years</strong>{" to clear the queue. With 12.3x capacity: 443 ÷ 12.3 = "}<strong>36 years</strong>.</p>
+                  <p>
+                    {dfdaPatientsFundableCompact} funded patients ÷ {currentTrialSlotsCompact} current = {trialCapacityMultiplierPreciseText}x multiplier.{" "}
+                    <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} figures={3} /> diseases currently have no effective treatment (<ParameterValue param={FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT} figures={2} /> of ~<ParameterValue param={RARE_DISEASES_COUNT_GLOBAL} figures={1} /> rare diseases per Orphanet 2024). At today&apos;s rate, first-ever treatments emerge for{" "}
+                    <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} figures={2} /> new diseases/year.{" "}
+                    <ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} figures={3} /> ÷{" "}
+                    <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} figures={2} /> = <strong><ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} display="integer" /> years</strong> to clear the queue. With {trialCapacityMultiplierPreciseText}x capacity: {statusQuoQueueYearsText} ÷ {trialCapacityMultiplierPreciseText} = <strong><ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} display="integer" /> years</strong>.
+                  </p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">{"10.7 billion people don't die of a curable disease while waiting. Plus 1.93 quadrillion hours of suffering doesn't happen."}</p>
+                <p className="text-xl font-black leading-tight">
+                  <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> people don&apos;t die of a curable disease while waiting. Plus{" "}
+                  <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours of suffering doesn&apos;t happen.
+                </p>
                 <DetailsBlock>
-                  <p>{"Average treatment arrival accelerates by 212 years (204 from more trials + 8.2 from eliminating FDA's efficacy-testing lag). Over that window: global disease deaths (~55M/year) × avoidable fraction × years = 10.7 billion deaths prevented (95% CI: 7.4B–16.2B). Suffering: 1.93 quadrillion hours (95% CI: 1.36Q–2.62Q) from DALY YLD component × hours per year. Full calculation at manual.warondisease.org."}</p>
+                  <p>
+                    Average treatment arrival accelerates by{" "}
+                    <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} figures={3} /> years (<ParameterValue param={DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS} figures={3} /> from more trials +{" "}
+                    <ParameterValue param={EFFICACY_LAG_YEARS} figures={2} /> from eliminating FDA&apos;s efficacy-testing lag). Over that window: global disease deaths (~{formatFlowCompactParam(GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES, 2)}/year) × avoidable fraction × years ={" "}
+                    <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> deaths prevented (95% CI: {totalLivesSavedCiText}). Suffering:{" "}
+                    <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours (95% CI: {totalSufferingHoursCiText}) from DALY YLD component × hours per year. Full calculation at manual.warondisease.org.
+                  </p>
                 </DetailsBlock>
                 <FlowParagraph>Every number above has a citation. This math is not my opinion.</FlowParagraph>
               </div>
@@ -482,16 +603,16 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <FlowParagraph>Respect. Still, imagine:</FlowParagraph>
                   <FlowParagraph>
-                    {"You trigger a chain reaction that gets a majority of humanity — 4 billion people — to collectively agree: \"Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes.\""}
+                    You trigger a chain reaction that gets a majority of humanity — <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> people — to collectively agree: &quot;Yes, we are willing to sacrifice one apocalypse of our <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypse capacity in exchange for eradicating disease within our lifetimes.&quot;
                   </FlowParagraph>
                 </>
               ) : (
                 <>
                   <FlowParagraph>
-                    Imagine you triggered a chain reaction that got a majority of humanity — 4 billion people — to collectively agree:
+                    Imagine you triggered a chain reaction that got a majority of humanity — <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> people — to collectively agree:
                   </FlowParagraph>
                   <FlowParagraph>
-                    {"\"Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes.\""}
+                    &quot;Yes, we are willing to sacrifice one apocalypse of our <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypse capacity in exchange for eradicating disease within our lifetimes.&quot;
                   </FlowParagraph>
                 </>
               )}
@@ -516,13 +637,13 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <FlowParagraph>{"Fair. But here's why it's easier than you think:"}</FlowParagraph>
                   <FlowParagraph>Only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
-                  <FlowParagraph>2 → 4 → 8 → 16... 32 rounds reaches 4 billion. One per week = 8 months.</FlowParagraph>
+                  <FlowParagraph>2 → 4 → 8 → 16... {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. One per week = {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <FlowParagraph>For that chain reaction to reach 4 billion, only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
-                  <FlowParagraph>Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: 32 rounds reaches 4 billion. At one per day, 32 days. At one per week, 8 months.</FlowParagraph>
+                  <FlowParagraph>For that chain reaction to reach {majorityHumanityText}, only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
+                  <FlowParagraph>Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. At one per day, {FLOW_DOUBLING_ROUNDS_TO_TARGET} days. At one per week, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
                   <DetailsBlock summary="Has a chain letter ever actually worked?">
                     <p>{"In 1935, a billion people handwrote letters, bought stamps, and mailed actual money to strangers because a piece of paper promised them $1,562.50 that didn't exist. The promise was a lie. The threat was fake. Some of them probably died driving to the post office."}</p>
@@ -550,16 +671,24 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               {alt ? (
                 <>
                   <FlowParagraph>I know. Math again. Last one that matters:</FlowParagraph>
-                  <FlowParagraph>Majority of humanity (4 billion) agreeing the 1% Treaty is a good idea makes it politically unstoppable.</FlowParagraph>
-                  <p className="text-xl font-black leading-tight">One vote = 1 lifetime of suffering prevented. One vote = 2.7 lives saved.</p>
+                  <FlowParagraph>Majority of humanity ({majorityHumanityText}) agreeing the 1% Treaty is a good idea makes it politically unstoppable.</FlowParagraph>
+                  <p className="text-xl font-black leading-tight">One vote = 1 lifetime of suffering prevented. One vote = {voterLivesSavedText} lives saved.</p>
                   <FlowParagraph>Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <p className="text-xl font-black leading-tight">One vote = 1 full human lifetime of suffering prevented. (55 years of it.)</p>
-                  <p className="text-xl font-black leading-tight">One vote = 2.7 lives saved.</p>
+                  <p className="text-xl font-black leading-tight">One vote = 1 full human lifetime of suffering prevented. (<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of it.)</p>
+                  <p className="text-xl font-black leading-tight">One vote = <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.</p>
                   <DetailsBlock>
-                    <p>Getting a majority of humanity (4 billion people) to agree the treaty is a good idea makes it politically unstoppable. 10.7 billion deaths prevented ÷ 4 billion voters = <strong>2.675 lives per vote</strong>. 1.93 quadrillion hours of suffering prevented ÷ 4 billion voters = <strong>482,500 hours per vote</strong>. At 8,760 hours/year = <strong>~55 person-years</strong> = roughly one full human lifetime.</p>
+                    <p>
+                      Getting a majority of humanity ({majorityHumanityText} people) to agree the treaty is a good idea makes it politically unstoppable.{" "}
+                      <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> deaths prevented ÷ {majorityHumanityText} voters ={" "}
+                      <strong><ParameterValue param={FLOW_VOTER_LIVES_SAVED} figures={4} /> lives per vote</strong>.{" "}
+                      <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours of suffering prevented ÷ {majorityHumanityText} voters ={" "}
+                      <strong><ParameterValue param={FLOW_VOTER_SUFFERING_HOURS_PREVENTED} figures={4} /> hours per vote</strong>. At{" "}
+                      <ParameterValue param={HOURS_PER_YEAR} figures={3} /> hours/year ={" "}
+                      <strong>~<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> person-years</strong> = roughly one full human lifetime.
+                    </p>
                   </DetailsBlock>
                   <FlowParagraph>Your vote already did this. Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
                 </>
@@ -739,7 +868,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             {sentCount <= 1 ? (
               <div className="space-y-4">
-                <p className="text-xl font-black leading-tight">When {lastRecipientName || displayName} votes: +1 lifetime of suffering prevented. +2.7 lives saved.</p>
+                <p className="text-xl font-black leading-tight">When {lastRecipientName || displayName} votes: +1 lifetime of suffering prevented. +{voterLivesSavedText} lives saved.</p>
                 <FlowParagraph>Your pending totals:</FlowParagraph>
                 <FlowParagraph>Lifetimes of suffering prevented: <strong>{sentCount}</strong></FlowParagraph>
                 <FlowParagraph>Inverse Kills Score: <strong>{pendingLives} lives</strong></FlowParagraph>
@@ -800,7 +929,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <FlowParagraph>{`You clicked "go to hell" ${dismissiveCount} times and you're still reading. That is data.`}</FlowParagraph>
               ) : null}
               <FlowParagraph>{"The chain only breaks if one human says \"later.\" Is that human you?"}</FlowParagraph>
-              <FlowParagraph>{"In 32 rounds we run out of humans to ask. That's months, not decades."}</FlowParagraph>
+              <FlowParagraph>{`In ${FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds we run out of humans to ask. That's months, not decades.`}</FlowParagraph>
               <FlowParagraph>Then you get to go back to whatever you were doing before the most important thing in the universe rudely interrupted.</FlowParagraph>
             </div>
             <Button className={primaryButtonClass} onClick={() => go("feedback")}>

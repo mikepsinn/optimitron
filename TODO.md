@@ -4,14 +4,15 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 ## Highest Priority
 
-- [ ] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
+- [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
   - Use Optimitron's canonical parameter exports from `packages/data/src/parameters/parameters-calculations-citations.ts`.
   - Use `packages/web/src/components/shared/ParameterValue.tsx` for visible sourced numbers wherever the JSX shape allows it.
-  - Use `getParameterValue()` / `formatParameterValue()` from `packages/data/src/parameters/format-parameter.ts` for values that must be interpolated into strings, previews, task templates, email bodies, or other non-JSX contexts.
+  - Use `getParameterValue()`, `fmtParamValueOnly()`, `formatParameter()`, or a small shared helper from `packages/data/src/parameters/format-parameter.ts` for values that must be interpolated into strings, previews, task templates, email bodies, or other non-JSX contexts.
+  - Use `ParameterValue figures={...}` for visible JSX that needs a specific significant-figure display; do not hardcode rounded display numerals in the component body.
   - Keep copy exact, but source the displayed numbers from parameters instead of duplicating literals such as `95%`, `9,500`, `99.7%`, `100`, `12,000`, `122`, `$27.2B`, `$2.72T`, `$929`, `$41K`, `23M`, `1.9M`, `12x`, `443`, `36`, `10.7 billion`, `1.93 quadrillion`, `4 billion`, `2.7`, `55`, and `482,500`.
   - Use the "majority of humans on Earth" wording only for the 4B denominator/target; keep normal vote/per-vote terminology everywhere else.
   - Do not hand-edit generated parameter output unless the generator/source data is the intended edit path.
-- [ ] Add or port the canonical post-vote copy document into this repo.
+- [x] Add or port the canonical post-vote copy document into this repo.
   - DIH currently has the source-faithful share-flow copy; Optimitron should have its own canonical doc before more UI/email work.
   - The implementation must match the canonical doc exactly for user-facing copy. No paraphrasing.
   - Include implementation notes for which values are parameter-backed and which values are literal copy.

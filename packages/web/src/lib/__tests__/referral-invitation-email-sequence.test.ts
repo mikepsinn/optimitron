@@ -37,6 +37,9 @@ describe("referral invitation recipient email sequence", () => {
       '"I love you very much and I don\'t want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease?"',
     );
     expect(email.text).toContain("That's it. 30 seconds. One question. No account required.");
+    expect(email.text).toContain("The math is at manual.warondisease.org if you want to check it.");
+    expect(email.html).toContain('href="https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html"');
+    expect(email.html).toContain(">manual.warondisease.org</a>");
   });
 
   it("uses the documented recipient reminder delay schedule", () => {

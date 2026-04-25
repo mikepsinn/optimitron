@@ -1,7 +1,30 @@
+import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
+} from "@optimitron/data/parameters";
 import { getReferralInvitationFirstName, type ReferralInvitationMessageFormat } from "@/lib/referral-invitation-copy";
+import {
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters";
 
 export const REFERRAL_INVITATION_RECIPIENT_MAX_STEP = 4;
 export type ReferralInvitationRecipientEmailStep = 1 | 2 | 3 | 4;
+
+const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
+const dfdaQueueYearsText = formatFlowWords(DFDA_QUEUE_CLEARANCE_YEARS, 2);
+const diseaseWithoutTreatmentPctText = formatFlowWords(
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  2,
+);
+const treatyReductionPctText = formatFlowWords(TREATY_REDUCTION_PCT, 1);
+const nuclearOverkillText = formatFlowWords(FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR, 3);
+const treatyImpactManualUrl =
+  DFDA_QUEUE_CLEARANCE_YEARS.manualPageUrl ??
+  DFDA_QUEUE_CLEARANCE_YEARS.calculationsUrl ??
+  "https://manual.warondisease.org";
 
 interface ReferralInvitationRecipientEmailInput {
   inviteUrl: string;
@@ -31,7 +54,10 @@ function buttonText(label: string, url: string) {
 }
 
 function renderHtml(text: string, inviteUrl: string, label: string, unsubscribeUrl?: string | null) {
+  const manualHost = "manual.warondisease.org";
+  const manualLink = `<a href="${escapeHtml(treatyImpactManualUrl)}" style="color:#111827;font-weight:800;">${manualHost}</a>`;
   const escaped = escapeHtml(text)
+    .replaceAll(manualHost, manualLink)
     .replace(/\n/g, "<br />")
     .replace(escapeHtml(buttonText(label, inviteUrl)), "");
 
@@ -58,14 +84,14 @@ function taskEmail(input: ReferralInvitationRecipientEmailInput): Omit<ReferralI
         "",
         "TASK: End War and Disease",
         `ASSIGNED BY: ${input.senderName}`,
-        "STATUS: Overdue (by approximately 443 years)",
+        `STATUS: Overdue (by approximately ${statusQuoQueueYearsText} years)`,
         "PRIORITY: Critical",
         "ESTIMATED TIME: 30 seconds",
         "ACTION REQUIRED: Vote on the 1% Treaty",
         "",
         buttonText("COMPLETE TASK", input.inviteUrl),
         "",
-        "NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building 122 apocalypses worth of nuclear weapons. Management apologizes for the delay.",
+        `NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building ${nuclearOverkillText} apocalypses worth of nuclear weapons. Management apologizes for the delay.`,
         "",
         "— The Humanity Project Management System",
       ].join("\n"),
@@ -83,7 +109,7 @@ function taskEmail(input: ReferralInvitationRecipientEmailInput): Omit<ReferralI
         `ASSIGNED BY: ${input.senderName}`,
         "STATUS: Incomplete",
         "ESTIMATED TIME: 30 seconds",
-        "DAYS OVERDUE: 3 (plus the original 443 years)",
+        `DAYS OVERDUE: 3 (plus the original ${statusQuoQueueYearsText} years)`,
         "",
         buttonText("COMPLETE TASK", input.inviteUrl),
         "",
@@ -104,7 +130,7 @@ function taskEmail(input: ReferralInvitationRecipientEmailInput): Omit<ReferralI
         "TASK: End War and Disease",
         `ASSIGNED BY: ${input.senderName}`,
         "STATUS: Blocked (by you)",
-        "DAYS OVERDUE: 7 (plus the original 443 years)",
+        `DAYS OVERDUE: 7 (plus the original ${statusQuoQueueYearsText} years)`,
         `BLOCKER: ${recipient} has not clicked a button`,
         "",
         "This task has been escalated to your project manager (all of humanity). Continued inaction may result in you and everyone you love suffering and dying of curable diseases.",
@@ -153,7 +179,7 @@ function sincereEmail(input: ReferralInvitationRecipientEmailInput): Omit<Referr
         "",
         "That's it. 30 seconds. One question. No account required.",
         "",
-        "If you're wondering why this matters, the short version: 95% of diseases have zero treatments, and redirecting 1% of military spending to clinical trials could fix that in 36 years instead of 443. The math is at manual.warondisease.org if you want to check it.",
+        `If you're wondering why this matters, the short version: ${diseaseWithoutTreatmentPctText} of diseases have zero treatments, and redirecting ${treatyReductionPctText} of military spending to clinical trials could fix that in ${dfdaQueueYearsText} years instead of ${statusQuoQueueYearsText}. The math is at manual.warondisease.org if you want to check it.`,
         "",
         "— warondisease.org",
       ].join("\n"),
