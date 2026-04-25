@@ -28,6 +28,8 @@ const createInvitationSchema = z.object({
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
 });
 
+const SENDER_REMINDER_DELAY_DAYS = 7;
+
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
   action: z.enum(["markCopied", "decline", "cancel", "nudgeOptIn", "sendEmail"]),
@@ -181,12 +183,20 @@ export async function PATCH(request: Request) {
 
     const data =
       parsed.action === "decline"
-        ? { status: ReferralInvitationStatus.DECLINED }
+        ? {
+            nextSenderNudgeAt: null,
+            status: ReferralInvitationStatus.DECLINED,
+          }
         : parsed.action === "cancel"
-          ? { status: ReferralInvitationStatus.CANCELLED, deletedAt: now }
+          ? {
+              deletedAt: now,
+              nextSenderNudgeAt: null,
+              status: ReferralInvitationStatus.CANCELLED,
+            }
           : {
               senderNudgeOptedInAt: now,
-              nextSenderNudgeAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+              nextSenderNudgeAt:
+                new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000),
             };
 
     const result = await prisma.referralInvitation.updateMany({

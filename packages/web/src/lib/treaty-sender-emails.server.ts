@@ -6,6 +6,8 @@ import { ROUTES } from "@/lib/routes";
 import { sendResendEmail, type SendResult } from "@/lib/resend";
 import {
   buildTreatyRecipientVotedEmail,
+  buildTreatySecondSenderNudgeEmail,
+  buildTreatySendOneMoreNudgeEmail,
   buildTreatyVoteConfirmedEmail,
 } from "@/lib/treaty-sender-email-sequence";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
@@ -40,6 +42,17 @@ function formatLivesScore(invitationCount: number) {
   if (value === 0) return "0";
   return Number(value.toPrecision(3)).toLocaleString("en-US");
 }
+
+const sharedInvitationStatuses = [
+  ReferralInvitationStatus.COPIED,
+  ReferralInvitationStatus.SENT,
+  ReferralInvitationStatus.CONVERTED,
+];
+
+const pendingInvitationStatuses = [
+  ReferralInvitationStatus.COPIED,
+  ReferralInvitationStatus.SENT,
+];
 
 async function claimTreatySenderEmail(input: {
   context: Prisma.InputJsonValue;
@@ -271,6 +284,97 @@ export async function sendTreatyRecipientVotedEmailForInvitation(input: {
     now: input.now,
     subject: email.subject,
     templateId: `treaty_recipient_voted:${invitation.id}`,
+    text: email.text,
+    toAddress: invitation.referrer.email,
+    userId: invitation.referrer.id,
+  });
+}
+
+export async function sendTreatySenderReminderEmailForInvitation(input: {
+  invitationId: string;
+  reminderStep: 1 | 2;
+  now?: Date;
+}): Promise<TreatySenderEmailResult> {
+  const invitation = await prisma.referralInvitation.findUnique({
+    where: { id: input.invitationId },
+    select: {
+      id: true,
+      referrerUserId: true,
+      referrer: {
+        select: {
+          email: true,
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!invitation) return { status: "not_found" };
+  if (!invitation.referrer.email) return { status: "missing_email" };
+
+  const [sentCount, votedCount, pendingCount] = await prisma.$transaction([
+    prisma.referralInvitation.count({
+      where: {
+        deletedAt: null,
+        referrerUserId: invitation.referrerUserId,
+        status: { in: sharedInvitationStatuses },
+      },
+    }),
+    prisma.referralInvitation.count({
+      where: {
+        convertedAt: { not: null },
+        deletedAt: null,
+        referrerUserId: invitation.referrerUserId,
+      },
+    }),
+    prisma.referralInvitation.count({
+      where: {
+        convertedAt: null,
+        deletedAt: null,
+        referrerUserId: invitation.referrerUserId,
+        status: { in: pendingInvitationStatuses },
+      },
+    }),
+  ]);
+
+  const sendUrl = absoluteUrl(`${ROUTES.dashboard}#referral-invitations`);
+  const emailLogId = nanoid();
+  const unsubscribeUrl = buildUnsubscribeUrl({
+    emailLogId,
+    scope: "referral_sequence",
+    userId: invitation.referrer.id,
+  });
+  const email =
+    input.reminderStep === 1
+      ? buildTreatySendOneMoreNudgeEmail({
+          confirmedLives: formatLivesScore(votedCount),
+          pendingLives: formatLivesScore(pendingCount),
+          sendUrl,
+          sentCount,
+          unsubscribeUrl,
+          votedCount,
+        })
+      : buildTreatySecondSenderNudgeEmail({
+          pendingCount,
+          sendUrl,
+          sentCount,
+          unsubscribeUrl,
+        });
+
+  return sendClaimedTreatySenderEmail({
+    context: {
+      invitationId: invitation.id,
+      kind: "treaty_sender_reminder",
+      pendingCount,
+      reminderStep: input.reminderStep,
+      sentCount,
+      votedCount,
+    },
+    emailLogId,
+    html: email.html,
+    now: input.now,
+    subject: email.subject,
+    templateId: `treaty_sender_reminder:${invitation.id}:${input.reminderStep}`,
     text: email.text,
     toAddress: invitation.referrer.email,
     userId: invitation.referrer.id,

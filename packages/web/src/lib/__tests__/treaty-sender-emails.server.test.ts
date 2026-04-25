@@ -44,6 +44,7 @@ vi.mock("@/lib/email/unsub-url", () => ({
 
 import {
   sendTreatyRecipientVotedEmailForInvitation,
+  sendTreatySenderReminderEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser,
 } from "@/lib/treaty-sender-emails.server";
 
@@ -174,6 +175,77 @@ describe("treaty sender emails", () => {
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         text: expect.stringContaining("Pending: **2.7 lives**"),
+      }),
+    );
+  });
+
+  it("sends the first sender reminder with current invitation totals", async () => {
+    mocks.referralInvitationFindUnique.mockResolvedValue({
+      id: "invite_1",
+      referrerUserId: "referrer_1",
+      referrer: {
+        email: "sender@example.com",
+        id: "referrer_1",
+      },
+    });
+    mocks.referralInvitationCount
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(1);
+
+    const result = await sendTreatySenderReminderEmailForInvitation({
+      invitationId: "invite_1",
+      reminderStep: 1,
+      now: new Date("2026-04-25T00:00:00.000Z"),
+    });
+
+    expect(result.status).toBe("sent");
+    expect(mocks.referralInvitationCount).toHaveBeenNthCalledWith(1, {
+      where: {
+        deletedAt: null,
+        referrerUserId: "referrer_1",
+        status: { in: ["COPIED", "SENT", "CONVERTED"] },
+      },
+    });
+    expect(mocks.referralInvitationCount).toHaveBeenNthCalledWith(2, {
+      where: {
+        convertedAt: { not: null },
+        deletedAt: null,
+        referrerUserId: "referrer_1",
+      },
+    });
+    expect(mocks.referralInvitationCount).toHaveBeenNthCalledWith(3, {
+      where: {
+        convertedAt: null,
+        deletedAt: null,
+        referrerUserId: "referrer_1",
+        status: { in: ["COPIED", "SENT"] },
+      },
+    });
+    expect(mocks.emailLogCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        sendContext: expect.objectContaining({
+          invitationId: "invite_1",
+          kind: "treaty_sender_reminder",
+          reminderStep: 1,
+        }),
+        subject: "One more?",
+        templateId: "treaty_sender_reminder:invite_1:1",
+        toAddress: "sender@example.com",
+        userId: "referrer_1",
+      }),
+    });
+    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: "One more?",
+        text: expect.stringContaining("[BUTTON: Send to one more → https://warondisease.org/dashboard#referral-invitations]"),
+        to: "sender@example.com",
+        userId: "referrer_1",
+      }),
+    );
+    expect(mocks.sendResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: expect.stringContaining("Your Inverse Kills Score: **5.4 confirmed, 2.7 pending.**"),
       }),
     );
   });

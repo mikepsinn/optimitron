@@ -221,6 +221,41 @@ describe("/api/referral-invitations", () => {
     });
   });
 
+  it("records sender reminder opt-in seven days out", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-25T12:00:00.000Z"));
+    try {
+      mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+      mocks.updateMany.mockResolvedValue({ count: 1 });
+      mocks.findUnique.mockResolvedValue({
+        id: "invite_1",
+        nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
+      });
+
+      const response = await PATCH(
+        makePatchRequest({
+          id: "invite_1",
+          action: "nudgeOptIn",
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mocks.updateMany).toHaveBeenCalledWith({
+        where: {
+          id: "invite_1",
+          referrerUserId: "user_1",
+          deletedAt: null,
+        },
+        data: {
+          senderNudgeOptedInAt: new Date("2026-04-25T12:00:00.000Z"),
+          nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
+        },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("marks a cancelled invitation task stale", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.updateMany.mockResolvedValue({ count: 1 });

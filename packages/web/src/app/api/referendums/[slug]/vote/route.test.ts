@@ -334,6 +334,45 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
   });
 
+  it("still uses an already-converted invite token as referral attribution for forwarded links", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "second_voter" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.resolveInvitationReferrer.mockResolvedValue({
+      id: "invite_1",
+      referrerUserId: "referrer_1",
+      referendumId: "ref_1",
+      convertedVoteId: "original_vote",
+      status: "CONVERTED",
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_2",
+      referredByUserId: "referrer_1",
+    });
+    mocks.convertReferralInvitationForVote.mockResolvedValue({
+      id: "invite_1",
+      convertedVoteId: "original_vote",
+      status: "CONVERTED",
+    });
+
+    const res = await POST(
+      makeRequest("test-ref", { answer: "YES", inviteToken: "token_1" }),
+      makeParams("test-ref"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ referredByUserId: "referrer_1" }),
+      }),
+    );
+    expect(mocks.convertReferralInvitationForVote).toHaveBeenCalledWith({
+      inviteToken: "token_1",
+      voterUserId: "second_voter",
+      referendumId: "ref_1",
+      voteId: "vote_2",
+    });
+  });
+
   it("does NOT set referrer when invite token belongs to the voter", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);

@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   personUpsert: vi.fn(),
   referralCreate: vi.fn(),
   referralCount: vi.fn(),
+  referralFindMany: vi.fn(),
   referralFindFirst: vi.fn(),
   referralFindUnique: vi.fn(),
   referralUpdate: vi.fn(),
@@ -14,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   taskUpdateMany: vi.fn(),
   transaction: vi.fn(),
   sendExternalResendEmail: vi.fn(),
+  sendTreatySenderReminderEmailForInvitation: vi.fn(),
   userFindUnique: vi.fn(),
 }));
 
@@ -29,6 +31,7 @@ vi.mock("@/lib/prisma", () => ({
       count: mocks.referralCount,
       create: mocks.referralCreate,
       findFirst: mocks.referralFindFirst,
+      findMany: mocks.referralFindMany,
       findUnique: mocks.referralFindUnique,
       update: mocks.referralUpdate,
     },
@@ -46,9 +49,15 @@ vi.mock("@/lib/resend", () => ({
   sendExternalResendEmail: mocks.sendExternalResendEmail,
 }));
 
+vi.mock("@/lib/treaty-sender-emails.server", () => ({
+  sendTreatySenderReminderEmailForInvitation:
+    mocks.sendTreatySenderReminderEmailForInvitation,
+}));
+
 import {
   convertReferralInvitationForVote,
   createReferralInvitation,
+  processDueReferralInvitationSenderEmails,
   sendReferralInvitationEmail,
 } from "@/lib/referral-invitations.server";
 
@@ -70,6 +79,7 @@ describe("referral invitation server helpers", () => {
     mocks.referralFindUnique.mockResolvedValue(null);
     mocks.personUpsert.mockResolvedValue({ id: "person_1" });
     mocks.taskCreate.mockResolvedValue({ id: "task_1" });
+    mocks.referralFindMany.mockResolvedValue([]);
     mocks.referralCreate.mockImplementation(async ({ data }) => ({
       id: "invite_1",
       ...data,
@@ -261,6 +271,37 @@ describe("referral invitation server helpers", () => {
     });
   });
 
+  it("does not re-convert an already converted invitation", async () => {
+    mocks.referralFindFirst.mockResolvedValue({
+      id: "invite_1",
+      referrerUserId: "referrer_1",
+      referendumId: "referendum_1",
+      convertedVoteId: "original_vote",
+      recipientName: "Jake",
+      status: "CONVERTED",
+      taskId: "task_1",
+    });
+
+    const converted = await convertReferralInvitationForVote({
+      inviteToken: "token_123",
+      voterUserId: "second_voter",
+      referendumId: "referendum_1",
+      voteId: "second_vote",
+    });
+
+    expect(converted).toEqual({
+      id: "invite_1",
+      referrerUserId: "referrer_1",
+      referendumId: "referendum_1",
+      convertedVoteId: "original_vote",
+      recipientName: "Jake",
+      status: "CONVERTED",
+      taskId: "task_1",
+    });
+    expect(mocks.referralUpdate).not.toHaveBeenCalled();
+    expect(mocks.taskUpdateMany).not.toHaveBeenCalled();
+  });
+
   it("persists edited message text when sending an invitation email", async () => {
     const now = new Date("2026-04-25T12:00:00.000Z");
     mocks.referralFindFirst.mockResolvedValue({
@@ -318,6 +359,96 @@ describe("referral invitation server helpers", () => {
         recipientEmailStep: 1,
         status: "SENT",
       }),
+    });
+  });
+
+  it("processes due sender reminders and schedules the second reminder", async () => {
+    const now = new Date("2026-04-25T12:00:00.000Z");
+    mocks.referralFindMany.mockResolvedValue([
+      {
+        id: "invite_1",
+        senderNudgeStep: 0,
+      },
+    ]);
+    mocks.sendTreatySenderReminderEmailForInvitation.mockResolvedValue({
+      status: "sent",
+    });
+    mocks.referralUpdate.mockResolvedValue({ id: "invite_1" });
+
+    const result = await processDueReferralInvitationSenderEmails(now);
+
+    expect(result).toEqual({
+      failures: 0,
+      scanned: 1,
+      sent: 1,
+      skipped: 0,
+    });
+    expect(mocks.referralFindMany).toHaveBeenCalledWith({
+      where: {
+        convertedAt: null,
+        deletedAt: null,
+        nextSenderNudgeAt: { lte: now },
+        senderNudgeOptedInAt: { not: null },
+        senderNudgeStep: { lt: 2 },
+        status: {
+          in: ["COPIED", "SENT"],
+        },
+      },
+      orderBy: [{ nextSenderNudgeAt: "asc" }],
+      select: {
+        id: true,
+        senderNudgeStep: true,
+      },
+      take: 50,
+    });
+    expect(mocks.sendTreatySenderReminderEmailForInvitation).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      now,
+      reminderStep: 1,
+    });
+    expect(mocks.referralUpdate).toHaveBeenCalledWith({
+      where: { id: "invite_1" },
+      data: {
+        lastSenderNudgeAt: now,
+        nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
+        senderNudgeStep: 1,
+      },
+    });
+  });
+
+  it("clears sender reminder scheduling after the second reminder", async () => {
+    const now = new Date("2026-04-25T12:00:00.000Z");
+    mocks.referralFindMany.mockResolvedValue([
+      {
+        id: "invite_1",
+        senderNudgeStep: 1,
+      },
+    ]);
+    mocks.sendTreatySenderReminderEmailForInvitation.mockResolvedValue({
+      status: "sent",
+    });
+    mocks.referralUpdate.mockResolvedValue({ id: "invite_1" });
+
+    const result = await processDueReferralInvitationSenderEmails(now);
+
+    expect(result).toEqual({
+      failures: 0,
+      scanned: 1,
+      sent: 1,
+      skipped: 0,
+    });
+    expect(mocks.sendTreatySenderReminderEmailForInvitation).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      now,
+      reminderStep: 2,
+    });
+    expect(mocks.referralUpdate).toHaveBeenCalledWith({
+      where: { id: "invite_1" },
+      data: {
+        lastSenderNudgeAt: now,
+        nextSenderNudgeAt: null,
+        senderNudgeStep: 2,
+      },
     });
   });
 });

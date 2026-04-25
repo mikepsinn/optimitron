@@ -2,6 +2,14 @@
 
 This is the working checklist for finishing the treaty migration and post-vote referral flow in Optimitron.
 
+## Working Context
+
+- [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
+- [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
+- [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
+- [ ] Before each implementation slice, confirm the active shell `cwd` is `E:\code\optimitron` and the target package is usually `packages/web` or `packages/db`.
+- [ ] Keep the source repo and target repo names explicit in commits, notes, and final handoffs so DIH build failures are not confused with Optimitron build failures.
+
 ## Highest Priority
 
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
@@ -27,7 +35,9 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Create/link a `Person` only when the invite has an email address; keep name-only copy invites as task snapshots to avoid ambiguous global people rows.
 - [x] Mark the linked invitation task verified when the invite converts.
 - [x] Mark linked invitation tasks stale/deleted when an invite is declined or cancelled.
-- [ ] Confirm invitation-created tasks appear in the right task views for the sender without leaking private friend/family invites into public task lists.
+- [x] Confirm invitation-created tasks appear in the right task views for the sender without leaking private friend/family invites into public task lists.
+  - Referral invitation tasks are created with `isPublic: false` and `ownerUserId`.
+  - `getTasksPageData()` public task lists use `isPublic: true`; owned private tasks are fetched separately for the signed-in owner.
 - [ ] Add a task detail affordance that makes referral-invitation tasks feel intentional, not like generic task rows.
 - [ ] Decide whether recipient conversion should also attach the recipient user to the existing `Person` when email matches.
 - [ ] Add a merge/cleanup path for duplicate `Person` records created from referrals, imports, and manually assigned tasks.
@@ -41,6 +51,8 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Use `/vote/<username-or-referralCode>?invite=<inviteToken>` for named invitations.
 - [ ] Verify invite-token attribution through the full recipient path in a browser:
   vote link -> landing -> vote -> verification -> vote sync -> invitation converted -> task verified -> dashboard updated.
+- [x] Cover forwarded/already-converted invite-token links:
+  they should still let a later recipient vote and credit generic referral attribution without re-converting the named invitation task.
 - [x] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
 - [x] Add explicit regression tests for username-vs-referral-code resolution on `/vote/<identifier>`.
 - [ ] Add a "send to one more" deep link that drops verified users directly into the referral loop.
@@ -50,15 +62,22 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 - [x] Port the email sequence v2 copy into Optimitron templates, with the project-wide 4B denominator wording normalized to "a majority of humans on Earth."
   - Recipient Sequence A: Task Notification and Sincere variants.
-  - Sender Sequence B: vote confirmed, recipient voted, nudges, monthly scorecard.
+  - Sender Sequence B: vote confirmed, recipient voted, overdue task reminders, monthly scorecard.
   - Re-engagement Sequence C: verified but never shared.
+- [ ] Replace user-facing "nudge" copy with task-management framing.
+  - Prefer language like "send overdue task reminder" or "send one more overdue task reminder."
+  - Keep the joke structurally clear: humanity has been assigned the overdue root task "Optimize Earth"; that contains "End War and Disease"; that contains "Ratify the 1% Treaty"; that contains per-person subtasks to vote, get friends to vote, and make sure those friends keep the task tree moving.
+  - The task-management language should feel like a project-management system calmly describing civilization-scale overdue work, not generic SaaS notification copy.
+  - Keep internal field names such as `nextSenderNudgeAt` temporarily unless we do a deliberate schema/code rename.
+  - Update post-vote flow copy, email template copy, dashboard labels, and canonical docs together so they do not drift.
+  - Known copy surfaces: `docs/questions.md`, `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`, email sequence headings/tests, and dashboard/referral labels.
 - [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
-- [ ] Wire Sender Sequence B3/B4 sender nudges into cron from `nextSenderNudgeAt`.
+- [x] Wire Sender Sequence B3/B4 sender reminders into cron from `nextSenderNudgeAt`.
 - [ ] Wire Sender Sequence B5 monthly scorecards.
 - [ ] Wire Re-engagement Sequence C1 for verified users who never shared.
 - [ ] Preserve format consistency per invite; do not mix Task Notification and Sincere variants within a recipient sequence.
 - [ ] Enforce the recipient hard cap of four emails.
-- [ ] Enforce sender nudge caps and monthly scorecard preferences.
+- [ ] Enforce sender reminder caps and monthly scorecard preferences.
 - [ ] Suppress reminders after conversion, unsubscribe, cancellation, decline, or hard cap.
 - [ ] Use existing email preference/unsubscribe semantics instead of adding a parallel suppression system.
 - [ ] Add email preview fixtures or snapshot tests for every recipient/sender template.
@@ -77,8 +96,10 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 ## Parameters And Treaty Math
 
-- [ ] Confirm Optimitron's parameter package uses the 4B majority-of-humanity denominator for per-vote math.
-- [ ] Add parameter tests for:
+- [x] Confirm Optimitron's flow-visible treaty math uses the majority-of-humanity denominator.
+  - Canonical generated data still exposes `GLOBAL_REGISTERED_VOTERS` as the register-based proxy (~4.13B).
+  - Flow copy uses `FLOW_MAJORITY_OF_HUMANS_ON_EARTH`, rounds that to "4 billion", and frames it as "a majority of humans on Earth."
+- [x] Add parameter tests for:
   - treaty target denominator;
   - lives saved per vote;
   - suffering hours per vote;
@@ -87,17 +108,94 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - funded trial patients per year;
   - trial capacity multiplier;
   - queue clearance years.
+  - Covered by `packages/web/src/lib/__tests__/treaty-share-flow-parameters.test.ts`.
 - [ ] Add a lightweight treaty parameter export/contract test so UI docs and task/email templates cannot drift from parameter names.
 - [ ] Add helper wrappers only where display wording differs from raw parameter labels, for example "a majority of humans on Earth."
 - [ ] Avoid hardcoded treaty numerals in user-facing UI except where the exact numeral is part of fixed copy and backed by a parameter nearby.
 
 ## Donations And Crowdfunding
 
-- [ ] Decide whether donation/crowdfunding belongs in the first Optimitron treaty cutover or waits until vote/share/referral is stable.
-- [ ] Inventory DIH donation/crowdfunding features and map them to Optimitron routes, auth, email, and analytics.
-- [ ] Decide whether treaty donations use existing Optimitron treasury/prize primitives, a Stripe flow, or a separate crowdfunding campaign model.
-- [ ] Add donation/campaign schema only after the vote/share/referral data model is stable.
-- [ ] Add tests for checkout creation, webhook idempotency, pledge/donation attribution, and dashboard display before launch.
+- [ ] Default sequencing decision: keep donations/crowdfunding out of the first treaty cutover until vote/share/referral/tasks are stable.
+- [ ] Revisit that sequencing only if the campaign needs a funding CTA before the referral loop is launch-ready.
+- [ ] Inventory DIH donation/crowdfunding features and map them to Optimitron routes, auth, email, analytics, and treasury/prize primitives.
+  - Source routes/pages in DIH:
+    - `app/donate/page.tsx`
+    - `app/donate/success/page.tsx`
+    - `app/api/stripe/create-checkout/route.ts`
+    - `app/api/stripe/session/route.ts`
+    - `app/api/stripe/webhook/route.ts`
+    - `app/campaigns/page.tsx`
+    - `app/campaigns/create/page.tsx`
+    - `app/campaigns/[slug]/page.tsx`
+    - `app/campaigns/[slug]/pledge/page.tsx`
+    - `app/campaigns/[slug]/edit/page.tsx`
+    - `app/campaigns/[slug]/manage/page.tsx`
+    - `app/api/campaigns/**`
+  - Source components/helpers in DIH:
+    - `components/campaigns/campaign-card.tsx`
+    - `components/campaigns/funding-widget.tsx`
+    - `components/dashboard/CampaignsCard.tsx`
+    - `lib/stripe.ts`
+    - `lib/stripe-config.ts`
+    - `lib/stripe-payment-links.ts`
+  - Source schema/migrations in DIH:
+    - `Donation`
+    - `Campaign`
+    - `CampaignReward`
+    - `CampaignPledge`
+    - `CampaignMilestone`
+    - `CampaignTeamMember`
+    - `CampaignUpdate`
+    - `20251126035432_add_crowdfunding_campaigns`
+    - `20260423140000_add_source_url_to_donation_and_pledge`
+  - Source tests in DIH:
+    - `app/api/stripe/webhook/route.test.ts`
+    - `tests/e2e/donate.spec.ts`
+    - `tests/fixtures/stripe.ts`
+- [ ] Decide whether treaty funding should be:
+  - a simple Stripe donation flow;
+  - a DIH-style crowdfunding campaign;
+  - an Optimitron Earth Optimization Prize deposit path;
+  - an Incentive Alignment Bond / treasury path;
+  - or a temporary CTA that routes to the existing `/prize` and `/fund` surfaces.
+- [ ] Do not copy DIH campaign schema wholesale if Optimitron's prize/treasury model can represent the campaign goal with less duplicated finance logic.
+- [ ] If Stripe donations are ported, make the Optimitron design explicit:
+  - route shape (`/donate`, `/fund`, `/campaigns`, or treaty-specific route);
+  - donor auth requirements;
+  - one-time versus recurring support;
+  - source URL/referrer/referral/invite attribution;
+  - badge/activity logging;
+  - dashboard display;
+  - email receipt path;
+  - refund/failure handling.
+- [ ] If crowdfunding campaigns are ported, make the Optimitron design explicit:
+  - campaign ownership model;
+  - campaign team roles;
+  - reward tiers;
+  - pledge lifecycle;
+  - publish/edit/manage permissions;
+  - updates;
+  - public campaign discovery;
+  - dashboard cards.
+- [ ] Add donation/campaign schema only after choosing the relationship to Optimitron prize/treasury models.
+- [ ] Add tests before launch for:
+  - checkout/session creation;
+  - webhook idempotency;
+  - one-time donation completion;
+  - recurring donation/subscription completion;
+  - Payment Link fallback if retained;
+  - pledge completion;
+  - refund/failure status updates;
+  - attribution to referrer/invite/source URL;
+  - dashboard display;
+  - email receipts and suppression rules.
+- [ ] Add route compatibility notes before cutover:
+  - DIH `/donate`
+  - DIH `/donate/success`
+  - DIH `/campaigns`
+  - DIH `/campaigns/<slug>`
+  - DIH `/campaigns/<slug>/pledge`
+  - any Stripe return/cancel URLs.
 
 ## DIH Feature Migration
 

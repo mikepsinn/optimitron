@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { isAuthorizedCronRequest } from "@/lib/cron";
 import { createLogger } from "@/lib/logger";
-import { processDueReferralInvitationRecipientEmails } from "@/lib/referral-invitations.server";
+import {
+  processDueReferralInvitationRecipientEmails,
+  processDueReferralInvitationSenderEmails,
+} from "@/lib/referral-invitations.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,8 +17,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await processDueReferralInvitationRecipientEmails();
-    return NextResponse.json(result);
+    const [recipientEmails, senderEmails] = await Promise.all([
+      processDueReferralInvitationRecipientEmails(),
+      processDueReferralInvitationSenderEmails(),
+    ]);
+    return NextResponse.json({ recipientEmails, senderEmails });
   } catch (error) {
     log.error("Failed to process referral invitation sequence", error);
     return NextResponse.json(

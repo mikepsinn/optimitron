@@ -22,6 +22,7 @@ import {
   getReferralInvitationFirstName,
 } from "@/lib/referral-invitation-copy";
 import { sendExternalResendEmail } from "@/lib/resend";
+import { sendTreatySenderReminderEmailForInvitation } from "@/lib/treaty-sender-emails.server";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
@@ -29,6 +30,8 @@ const INVITE_TOKEN_SIZE = 24;
 const UNSUBSCRIBE_TOKEN_SIZE = 32;
 const CREATE_LIMIT_PER_HOUR = 50;
 const DEFAULT_BATCH_SIZE = 50;
+const SENDER_REMINDER_MAX_STEP = 2;
+const SENDER_REMINDER_DELAY_DAYS = 7;
 const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
@@ -126,6 +129,17 @@ function getNextRecipientEmailAt(sentStep: ReferralInvitationRecipientEmailStep,
 
   const days = getReferralInvitationRecipientDelayDays(nextStep);
   return new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+function getNextSenderReminderStep(currentStep: number): 1 | 2 | null {
+  const nextStep = currentStep + 1;
+  if (nextStep < 1 || nextStep > SENDER_REMINDER_MAX_STEP) return null;
+  return nextStep as 1 | 2;
+}
+
+function getNextSenderReminderAt(sentStep: 1 | 2, now: Date) {
+  if (sentStep >= SENDER_REMINDER_MAX_STEP) return null;
+  return new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000);
 }
 
 function getErrorMessage(error: unknown) {
@@ -556,6 +570,89 @@ export async function processDueReferralInvitationRecipientEmails(now: Date = ne
         sent += 1;
       } else {
         skipped += 1;
+      }
+    } catch {
+      failures += 1;
+    }
+  }
+
+  return {
+    failures,
+    scanned: candidates.length,
+    sent,
+    skipped,
+  };
+}
+
+export async function processDueReferralInvitationSenderEmails(now: Date = new Date()) {
+  const batchSize = getReferralInvitationEmailBatchSize();
+  const candidates = await prisma.referralInvitation.findMany({
+    where: {
+      convertedAt: null,
+      deletedAt: null,
+      nextSenderNudgeAt: { lte: now },
+      senderNudgeOptedInAt: { not: null },
+      senderNudgeStep: { lt: SENDER_REMINDER_MAX_STEP },
+      status: {
+        in: [
+          ReferralInvitationStatus.COPIED,
+          ReferralInvitationStatus.SENT,
+        ],
+      },
+    },
+    orderBy: [{ nextSenderNudgeAt: "asc" }],
+    select: {
+      id: true,
+      senderNudgeStep: true,
+    },
+    take: batchSize,
+  });
+
+  let failures = 0;
+  let sent = 0;
+  let skipped = 0;
+
+  for (const candidate of candidates) {
+    const reminderStep = getNextSenderReminderStep(candidate.senderNudgeStep);
+    if (!reminderStep) {
+      skipped += 1;
+      continue;
+    }
+
+    try {
+      const result = await sendTreatySenderReminderEmailForInvitation({
+        invitationId: candidate.id,
+        now,
+        reminderStep,
+      });
+
+      if (result.status === "sent") {
+        sent += 1;
+      } else {
+        skipped += 1;
+      }
+
+      if (
+        result.status === "sent" ||
+        result.status === "duplicate" ||
+        result.status === "suppressed" ||
+        result.status === "missing_email" ||
+        result.status === "not_found"
+      ) {
+        await prisma.referralInvitation.update({
+          where: { id: candidate.id },
+          data: {
+            lastSenderNudgeAt: now,
+            nextSenderNudgeAt:
+              result.status === "sent" || result.status === "duplicate"
+                ? getNextSenderReminderAt(reminderStep, now)
+                : null,
+            senderNudgeStep:
+              result.status === "sent" || result.status === "duplicate"
+                ? reminderStep
+                : SENDER_REMINDER_MAX_STEP,
+          },
+        });
       }
     } catch {
       failures += 1;
