@@ -9,6 +9,19 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
 - [ ] Before each implementation slice, confirm the active shell `cwd` is `E:\code\optimitron` and the target package is usually `packages/web` or `packages/db`.
 - [ ] Keep the source repo and target repo names explicit in commits, notes, and final handoffs so DIH build failures are not confused with Optimitron build failures.
+- [ ] If the IDE/session is currently open in `E:\code\dih-neobrutalist`, reopen `E:\code\optimitron` before editing implementation files. Use DIH only for read-only reference unless a task explicitly targets DIH.
+
+## Architecture Guardrails
+
+- [ ] Keep the long-term ownership split explicit:
+  - `Task` = the thing assigned to a person, organization, or user.
+  - `ReferralInvitation` = named invite lifecycle, invite token, recipient unsubscribe, copied/sent/converted state, reminder schedule, and converted vote linkage.
+  - `ShareAttempt` = exact outbound message attribution ledger, including rendered text/hash, channel, template/variant, invite/task links, and edit state.
+  - `EmailLog` = email delivery, provider status, webhook events, and dedupe.
+  - `TrackingReminder` = health-variable measurement reminders only; do not use it for outreach/task assignment reminders.
+- [ ] Avoid one-off treaty reminder systems. New task/outreach messaging should go through shared task-message selection, rendering, attribution, and analytics helpers.
+- [ ] Keep seeded default copy deterministic and reviewable, even after adding database-backed message variants.
+- [ ] Preserve exact rendered outbound messages for replication analysis. The text people actually send is the unit to measure.
 
 ## Highest Priority
 
@@ -107,10 +120,14 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Persist the exact text the sender copied or sent, including user edits, selected format, channel, recipient/task/invite, and created/sent timestamps.
   - Attribute downstream results to that text: opens, clicks, vote completion, recipient shares, second-generation shares, spam reports, unsubscribes, and conversion delay.
   - Report a replication coefficient by message/template/variant: average verified voters generated per completed sender action.
-- [ ] Decide whether to add first-class reminder template models before the second non-treaty task family launches.
-  - Candidate shape: `TaskReminderTemplate`, `TaskReminderVariant`, and `TaskReminderDelivery`, linked to `Task`, `Person`, `ReferralInvitation`, `ShareAttempt`, and `EmailLog`.
+- [ ] Add first-class task-message template models before the second non-treaty task family launches.
+  - Candidate shape: `TaskMessageTemplate` and `TaskMessageVariant`, linked to outbound attempts through `ShareAttempt`.
   - Templates should support seeded defaults, admin edits, task-context tokens, sender edits, and per-task/per-campaign enablement.
   - Do not force this into `TrackingReminder`; that model is for health-variable measurement reminders, not outreach/task assignment.
+- [ ] Extend `ShareAttempt` as the canonical outbound-message ledger.
+  - Add nullable `referralInvitationId`, `taskMessageVariantId`, and `purpose`.
+  - Every copied message, native share, server-sent invitation email, and recipient reminder email should create or link a `ShareAttempt`.
+  - Invite URLs should include `sa=` when a specific message attempt exists, in addition to `invite=` for named invitation conversion.
 - [ ] Use task data to populate reminder emails where it improves clarity.
   - Pull title, assignee, due date, contact URL, parent task, and task tree context from `Task`/`TaskEdge` instead of duplicating hardcoded treaty strings.
   - Keep `ReferralInvitation` for invite-token lifecycle, recipient unsubscribe, message format, sent/copied state, and conversion linkage.
@@ -206,6 +223,11 @@ This is the working checklist for finishing the treaty migration and post-vote r
     - `app/api/stripe/webhook/route.test.ts`
     - `tests/e2e/donate.spec.ts`
     - `tests/fixtures/stripe.ts`
+- [ ] Inspect DIH crowdfunding behavior before designing Optimitron schema.
+  - Public discovery/listing: `E:\code\dih-neobrutalist\app\campaigns\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\campaigns-list.tsx`.
+  - Create/edit/manage: `E:\code\dih-neobrutalist\app\campaigns\create\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\create\campaign-form.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\edit\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\manage\page.tsx`.
+  - Public campaign detail and pledge: `E:\code\dih-neobrutalist\app\campaigns\[slug]\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\pledge\page.tsx`.
+  - Campaign APIs: `E:\code\dih-neobrutalist\app\api\campaigns\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\pledge\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\publish\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\updates\route.ts`.
 - [ ] Decide whether treaty funding should be:
   - a simple Stripe donation flow;
   - a DIH-style crowdfunding campaign;
@@ -258,6 +280,28 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [ ] Decide whether dFDA content becomes an Optimitron package, a separate app, or remains on DIH long term.
 - [ ] Add compatibility redirects only when a route is intentionally moved.
 - [ ] Keep `warondisease.org` and `1percenttreaty.org` on Optimitron only after the treaty vote/share/dashboard path is launch-ready.
+
+## DIH Source Reference Paths
+
+- [ ] Survey/embed reference paths:
+  - Main survey route: `E:\code\dih-neobrutalist\app\survey\[slug]\page.tsx`.
+  - Demo survey route: `E:\code\dih-neobrutalist\app\survey\demo\page.tsx`.
+  - Landing vote section: `E:\code\dih-neobrutalist\components\landing\treaty-vote-section.tsx`.
+  - Survey hero/visualization: `E:\code\dih-neobrutalist\components\landing\survey-hero-section.tsx`, `E:\code\dih-neobrutalist\components\landing\treaty-visualization.tsx`.
+  - Survey parameter/math UI references: `E:\code\dih-neobrutalist\components\shared\ParameterValue.tsx`, `E:\code\dih-neobrutalist\components\shared\ImpactExplainer.tsx`, `E:\code\dih-neobrutalist\components\shared\impact-math.tsx`.
+- [ ] Treaty vote/share/reference paths:
+  - Canonical copy docs: `E:\code\dih-neobrutalist\docs\questions.md`, `E:\code\dih-neobrutalist\docs\stupid-questions.md`.
+  - Vote sync/referral APIs: `E:\code\dih-neobrutalist\app\api\votes\sync\route.ts`, `E:\code\dih-neobrutalist\app\api\referral-invitations\route.ts`, `E:\code\dih-neobrutalist\app\api\referral-invitations\nudge-opt-in\route.ts`.
+  - Send page/client: `E:\code\dih-neobrutalist\app\send\send-referral-invitation-client.tsx`.
+  - Referral helpers: `E:\code\dih-neobrutalist\lib\referral.server.ts`, `E:\code\dih-neobrutalist\lib\referral.client.ts`, `E:\code\dih-neobrutalist\lib\referral-invitations.ts`, `E:\code\dih-neobrutalist\lib\share-copy.ts`.
+  - Referral tests: `E:\code\dih-neobrutalist\tests\integration\referral-invitations-api.test.ts`, `E:\code\dih-neobrutalist\tests\integration\votes-sync-referral-invitation.test.ts`, `E:\code\dih-neobrutalist\tests\integration\referral-tree.test.ts`, `E:\code\dih-neobrutalist\tests\e2e\referral-flow.spec.ts`.
+- [ ] Donation/Stripe reference paths:
+  - Donation routes: `E:\code\dih-neobrutalist\app\donate\page.tsx`, `E:\code\dih-neobrutalist\app\donate\success\page.tsx`.
+  - Stripe APIs: `E:\code\dih-neobrutalist\app\api\stripe\create-checkout\route.ts`, `E:\code\dih-neobrutalist\app\api\stripe\session\route.ts`, `E:\code\dih-neobrutalist\app\api\stripe\webhook\route.ts`.
+  - Stripe helpers/tests: `E:\code\dih-neobrutalist\lib\stripe.ts`, `E:\code\dih-neobrutalist\lib\stripe-config.ts`, `E:\code\dih-neobrutalist\lib\stripe-payment-links.ts`, `E:\code\dih-neobrutalist\app\api\stripe\webhook\route.test.ts`, `E:\code\dih-neobrutalist\tests\e2e\donate.spec.ts`.
+- [ ] Crowdfunding reference paths:
+  - Components: `E:\code\dih-neobrutalist\components\campaigns\campaign-card.tsx`, `E:\code\dih-neobrutalist\components\campaigns\funding-widget.tsx`, `E:\code\dih-neobrutalist\components\dashboard\CampaignsCard.tsx`.
+  - Prisma migrations: `E:\code\dih-neobrutalist\prisma\migrations\20251126035432_add_crowdfunding_campaigns\migration.sql`, `E:\code\dih-neobrutalist\prisma\migrations\20260423140000_add_source_url_to_donation_and_pledge\migration.sql`.
 
 ## Quality Gates
 
