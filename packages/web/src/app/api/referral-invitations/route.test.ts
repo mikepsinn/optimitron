@@ -31,6 +31,7 @@ vi.mock("@/lib/prisma", () => ({
 vi.mock("@/lib/referral-invitations.server", () => ({
   createReferralInvitation: mocks.createReferralInvitation,
   markReferralInvitationCopied: mocks.markReferralInvitationCopied,
+  SENDER_REMINDER_DELAY_DAYS: 7,
   sendReferralInvitationEmail: mocks.sendReferralInvitationEmail,
 }));
 

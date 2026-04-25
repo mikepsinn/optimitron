@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
 import { EmailLogStatus, Prisma, ShareSource } from "@optimitron/db";
 import { nanoid } from "nanoid";
-import { serverEnv } from "@/lib/env";
+import { sha256Hex } from "@/lib/crypto.server";
+import { getReferralEmailBatchSize } from "@/lib/email/batch";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { getReferralCountsByUserIds } from "@/lib/referral.server";
@@ -32,6 +32,7 @@ import {
   type ShareTemplate,
 } from "@/lib/tasks/share-templates";
 import { resolveUserPresidentHighlight } from "@/lib/tasks/user-president.server";
+import { MS_PER_DAY } from "@/lib/time";
 import { buildUserReferralUrl } from "@/lib/url";
 import { getUserDisplayName } from "@/lib/user-display";
 
@@ -83,11 +84,6 @@ interface ReferralSequenceMessage {
 interface ReferralEmailClaim {
   duplicate: boolean;
   emailLogId: string | null;
-}
-
-function getReferralEmailBatchSize() {
-  const rawValue = Number(serverEnv.REFERRAL_EMAIL_BATCH_SIZE);
-  return Number.isFinite(rawValue) && rawValue > 0 ? rawValue : 50;
 }
 
 async function sendReferralSequenceStep(
@@ -309,7 +305,7 @@ async function buildReferralSequenceMessage(
     countryCode,
     referralCount,
     overdueSignerCount,
-    daysSinceSignup: Math.round((now.getTime() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000)),
+    daysSinceSignup: Math.round((now.getTime() - user.createdAt.getTime()) / MS_PER_DAY),
     presidentSlug: presidentHighlight?.taskId ?? null,
     presidentFullName,
   };
@@ -327,10 +323,6 @@ async function buildReferralSequenceMessage(
     sendContext,
     shareAttempts,
   };
-}
-
-function sha256Hex(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
 }
 
 function getReferralSequenceTemplateId(step: number) {

@@ -12,8 +12,10 @@ import { prisma } from "@/lib/prisma";
 import {
   createReferralInvitation,
   markReferralInvitationCopied,
+  SENDER_REMINDER_DELAY_DAYS,
   sendReferralInvitationEmail,
 } from "@/lib/referral-invitations.server";
+import { MS_PER_DAY } from "@/lib/time";
 
 export const runtime = "nodejs";
 const log = createLogger("referral-invitations");
@@ -28,8 +30,6 @@ const createInvitationSchema = z.object({
   taskId: z.string().trim().min(1).max(128).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
 });
-
-const SENDER_REMINDER_DELAY_DAYS = 7;
 
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
@@ -178,7 +178,7 @@ export async function PATCH(request: Request) {
           : {
               senderReminderOptedInAt: now,
               nextSenderReminderAt:
-                new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000),
+                new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * MS_PER_DAY),
             };
 
     const result = await prisma.referralInvitation.updateMany({

@@ -23,6 +23,43 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [ ] Keep seeded default copy deterministic and reviewable, even after adding database-backed message variants.
 - [ ] Preserve exact rendered outbound messages for replication analysis. The text people actually send is the unit to measure.
 
+## Architecture Refactoring And Deduplication
+
+These are technical-debt items surfaced by a 2026-04-25 architecture audit of the referral/email/share subsystem. They are not launch blockers but should land before the second non-treaty task family is wired up, because every one of them gets harder once a second caller exists.
+
+- [ ] Shrink and split `packages/web/src/lib/referral-invitations.server.ts` (823 lines).
+  - It currently orchestrates invitation CRUD, email dispatch, share-attempt logging, hypercert linkage, vote-token linkage, and task creation in one file.
+  - Move email send into the email module; keep this file focused on invitation lifecycle transitions.
+  - Refactor `sendReferralInvitationEmail()` (line 526, ~170 lines) into focused helpers: validate, build messages, record share attempt, dispatch email, persist status.
+- [ ] Merge `packages/web/src/lib/referral-email-sequence.ts` (784 lines) and `packages/web/src/lib/referral-invitation-email-sequence.ts` (268 lines) into a single sequence module.
+  - Both expose delay schedules, max-step constants (`REFERRAL_*_MAX_STEP`), subject lists, and template builders. Land one ordered sequence per role (recipient, sender) with a single discriminator.
+  - This is the natural home for the eventual `TaskMessageTemplate` / `TaskMessageVariant` lookup.
+- [x] Extract small shared modules for cross-file primitives.
+  - Server `sha256Hex()` lives in `packages/web/src/lib/crypto.server.ts`; both prior duplicates removed.
+  - `SENDER_REMINDER_DELAY_DAYS` is now exported from `referral-invitations.server.ts` and imported by the API route.
+  - `getReferralEmailBatchSize()` lives in `packages/web/src/lib/email/batch.ts`; the duplicate `getReferralInvitationEmailBatchSize()` was deleted and call sites updated.
+  - `MS_PER_DAY` constant added in `packages/web/src/lib/time.ts`; the inline `24 * 60 * 60 * 1000` literals in `referral-invitations.server.ts`, `referral-email.server.ts`, and `app/api/referral-invitations/route.ts` now use it. Other inline occurrences (`treaty-sender-emails.server.ts:447`, `census-aggregation.server.ts:69`) left untouched and can be migrated opportunistically.
+  - Browser-side async `sha256Hex` in `components/landing/PostVoteReminders.tsx:30` and `components/tasks/task-row-share.tsx:29` is still duplicated — Web Crypto is async; not worth the risk in this pass.
+- [ ] Group email infrastructure under `packages/web/src/lib/email/`.
+  - `email-urls.ts`, `magic-link-email.ts`, `referral-email.server.ts`, `referral-email-sequence.ts`, `referral-invitation-email-sequence.ts`, and `treaty-sender-emails.server.ts` currently sit flat in `lib/`.
+  - Centralize the Resend wrapper (`sendResendEmail`, `sendExternalResendEmail`, `isResendConfigured`) and add a single `createEmailLog()` helper that owns QUEUED -> SENT/FAILED transitions instead of inline writes scattered across the email files.
+- [x] Unify `ShareAttempt` writes through one helper.
+  - `recordShareAttempt(tx, { ... })` now lives in `packages/web/src/lib/share-attempts.server.ts` and computes both `templateHash` and `renderedHash` from the inputs, eliminating the per-call `sha256Hex` plumbing.
+  - The two creation paths in `referral-invitations.server.ts` (copied invite, email-send) both go through the helper. Future task families should call the same helper.
+  - `surface` is still a free-form string; an enum/lookup can come later when more surfaces exist.
+- [ ] Fix `getSenderInviteEmailFromAddress()` in `referral-invitations.server.ts:96`.
+  - The current regex (`/^.*<|>.*$/g`) is awkward, the empty-string case returns `undefined` for the From header, and there is no coverage for senders whose display name contains angle brackets, quotes, or newlines. Simplify, always return a valid string, add boundary tests.
+- [ ] Audit the `lib/alignment-legislative-*` file split before the next alignment slice.
+  - `alignment-legislative-sync.server.ts` (369 lines), `alignment-legislative-config.ts` (445 lines), and `alignment-legislative-classification.ts` (193 lines) have overlapping concerns and inconsistent naming.
+  - Decide between a `lib/alignment/legislative/` subdirectory with clear boundaries (sync vs. config vs. classification) or a merge into a single `alignment-legislative.server.ts`.
+- [ ] Audit found clean and out of scope (do not re-check unless behavior changes):
+  - Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`) do not import the Prisma client at runtime — boundary intact.
+  - `getPersonHref()` is used at all 16 call sites; no raw `/people/${id}` URLs.
+  - No display-identity violations: `User.name` / `User.username` reads all flow through `@/lib/user-display`.
+  - `TrackingReminder` is not used in `packages/web/src` — no outreach misuse.
+  - `TreatyPostVoteShareFlow.tsx` numerals are parameter-backed; only the milestone literal `100` and the `<ParameterValue>`-wrapped `95%` CI label remain, both intentional.
+  - `POINT_NAME = "VOTE"` is declared once in `lib/messaging.ts`; the eventual EOP rename is a single-source-of-truth change.
+
 ## Highest Priority
 
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
