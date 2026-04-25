@@ -254,7 +254,7 @@ describe("treaty sender emails", () => {
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "One more?",
-        text: expect.stringContaining("[BUTTON: Assign one more overdue task → https://warondisease.org/send]"),
+        text: expect.stringContaining("[BUTTON: Assign one more Earth optimization task → https://warondisease.org/send]"),
         to: "sender@example.com",
         userId: "referrer_1",
       }),
@@ -294,7 +294,7 @@ describe("treaty sender emails", () => {
     expect(mocks.sendResendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "You voted but didn't tell anyone",
-        text: expect.stringContaining("[BUTTON: Assign one overdue task → https://warondisease.org/send]"),
+        text: expect.stringContaining("[BUTTON: Assign one task → https://warondisease.org/send]"),
         to: "voter@example.com",
         userId: "user_1",
       }),

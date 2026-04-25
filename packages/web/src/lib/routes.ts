@@ -386,10 +386,10 @@ export const settingsLink: NavItem = {
 
 export const sendLink: NavItem = {
   href: ROUTES.send,
-  label: "Assign One Overdue Task",
+  label: "Assign One Task",
   emoji: "📨",
-  description: "Assign one human the overdue task of voting on the 1% Treaty. The project is late by several centuries.",
-  tagline: "Assign one treaty task",
+  description: "Assign one human an Earth optimization task: vote on the 1% Treaty.",
+  tagline: "Assign one Earth optimization task",
   cta: "Assign Task",
 };
 

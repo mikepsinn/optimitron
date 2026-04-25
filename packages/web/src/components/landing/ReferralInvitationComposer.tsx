@@ -204,7 +204,7 @@ export function ReferralInvitationComposer() {
           <Send className="h-6 w-6 shrink-0" aria-hidden="true" />
           <div>
             <h3 className="text-xl font-black uppercase leading-tight">
-              Assign One Tracked Treaty Task
+              Assign One Earth Optimization Task
             </h3>
             <p className="text-sm font-bold leading-snug">
               When {firstName || "they"} completes the vote task: +1 lifetime of
@@ -236,7 +236,7 @@ export function ReferralInvitationComposer() {
 
           <div className="space-y-2">
             <Label className="text-xs font-black uppercase" htmlFor="invite-recipient-email">
-              Their email (optional &mdash; we&apos;ll send overdue task reminders so you don&apos;t have to)
+              Their email (optional &mdash; we&apos;ll send task reminders so you don&apos;t have to)
             </Label>
             <Input
               id="invite-recipient-email"

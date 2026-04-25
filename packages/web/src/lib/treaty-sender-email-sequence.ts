@@ -162,7 +162,7 @@ export function buildTreatySendOneMoreNudgeEmail(input: TreatySenderEmailBaseInp
   ].join("\n");
 
   return buildMessage({
-    buttonLabel: "Assign one more overdue task",
+    buttonLabel: "Assign one more Earth optimization task",
     buttonUrl: sendUrl,
     subject: "One more?",
     text: body,
@@ -180,13 +180,13 @@ export function buildTreatySecondSenderNudgeEmail(input: TreatySenderEmailBaseIn
     "",
     "You can't make them. But you can assign one more Earth optimization task and improve your odds.",
     "",
-    buttonText("Assign one more overdue task", sendUrl),
+    buttonText("Assign one more Earth optimization task", sendUrl),
     "",
     "— warondisease.org",
   ].join("\n");
 
   return buildMessage({
-    buttonLabel: "Assign one more overdue task",
+    buttonLabel: "Assign one more Earth optimization task",
     buttonUrl: sendUrl,
     subject: `Still ${input.pendingCount} pending`,
     text: body,

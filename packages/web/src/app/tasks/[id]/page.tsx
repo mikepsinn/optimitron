@@ -121,17 +121,17 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-black uppercase text-brutal-pink">
-              Treaty referral task
+              Earth optimization task
             </p>
             <ArcadeTag>{getReferralInvitationTaskStatus(invitation.status)}</ArcadeTag>
           </div>
           <h2 className="text-2xl font-black uppercase leading-tight">
-            Make sure {invitation.recipientName} votes on the 1% Treaty
+            Help {invitation.recipientName} vote on the 1% Treaty
           </h2>
           <p className="max-w-3xl text-sm font-bold leading-snug text-muted-foreground">
-            This private task was created from the post-vote send loop. It is
-            verified automatically when {invitation.recipientName} completes a
-            verified treaty vote through the tracked invite link.
+            This is your private task for helping {invitation.recipientName}
+            vote. It completes automatically when they verify a vote from your
+            invite link.
           </p>
         </div>
         <Link

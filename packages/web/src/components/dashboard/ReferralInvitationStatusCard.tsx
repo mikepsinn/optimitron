@@ -174,7 +174,7 @@ export function ReferralInvitationStatusCard() {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h3 className="text-xl font-black uppercase leading-tight">
-              Tracked Treaty Tasks
+              Earth Optimization Tasks
             </h3>
             <p className="text-sm font-bold leading-snug">
               {confirmedCount} confirmed. {pendingCount} pending.
@@ -212,7 +212,7 @@ export function ReferralInvitationStatusCard() {
       <div className="divide-y-4 divide-primary">
         {visibleInvitations.length === 0 ? (
           <p className="px-5 py-4 text-sm font-black uppercase text-muted-foreground">
-            No tracked treaty tasks in this state.
+            No Earth optimization tasks in this state.
           </p>
         ) : null}
         {visibleInvitations.map((invitation) => {

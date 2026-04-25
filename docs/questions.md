@@ -443,7 +443,7 @@ Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message
 >
 > First name: [ _______ ]
 >
-> Their email (optional — we'll send overdue task reminders so you don't have to): [ _______ ]
+> Their email (optional — we'll send task reminders so you don't have to): [ _______ ]
 
 **Default (second+):**
 
@@ -459,7 +459,7 @@ Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message
 >
 > First name: [ _______ ]
 >
-> Their email (optional — we'll send overdue task reminders so you don't have to): [ _______ ]
+> Their email (optional — we'll send task reminders so you don't have to): [ _______ ]
 
 Buttons: **[ Let me just copy ]** ・ **[ Continue ]**
 
@@ -539,7 +539,7 @@ Button: **[ I sent it ]**
 
 **After "Send email":**
 
-> Sent to jake@example.com. We'll send the first overdue task reminder in 3 days if they haven't completed the vote task yet.
+> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed the vote task yet.
 
 Button: **[ Continue ]**
 
@@ -586,13 +586,13 @@ Buttons: **[ I'm done ]** ・ **[ One more ]**
 
 > You just messaged [N] people.
 >
-> The chain continues past round 2 only if someone keeps assigning the next overdue task. Want us to email you in a few days to assign one more?
+> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?
 
 **Alt:**
 
 > Fine. One optional thing:
 >
-> The chain continues past round 2 only if someone keeps assigning the next overdue task. Want us to email you in a few days to assign one more?
+> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?
 
 Buttons: **[ No thanks ]** ・ **[ Yes, send task reminder ]**
 
@@ -654,7 +654,7 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 > Noted. Thank you for helping us end disease slightly faster.
 
-**After submit OR skip → redirect to dashboard.** Shows: Inverse Kills Score (pending/confirmed split), referral tree (who you sent to, who has voted), "assign one overdue task" CTA.
+**After submit OR skip → redirect to dashboard.** Shows: Inverse Kills Score (pending/confirmed split), referral tree (who you sent to, who has voted), "assign one task" CTA.
 
 ---
 
@@ -911,9 +911,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 > You messaged [N] people. [X] of them have voted so far.
 >
-> The chain continues past round 2 only if someone keeps assigning the next overdue task.
+> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task.
 >
-> [BUTTON: Assign one more overdue task → warondisease.org/send]
+> [BUTTON: Assign one more Earth optimization task → warondisease.org/send]
 >
 > Your Inverse Kills Score: **[Y] confirmed, [X] pending.**
 >
@@ -929,9 +929,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 > [X] of your [N] referrals haven't voted yet.
 >
-> You can't make them. But you can assign one more overdue task and improve your odds.
+> You can't make them. But you can assign one more Earth optimization task and improve your odds.
 >
-> [BUTTON: Assign one more overdue task → warondisease.org/send]
+> [BUTTON: Assign one more Earth optimization task → warondisease.org/send]
 >
 > — warondisease.org
 
@@ -971,9 +971,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 >
 > But only if the chain keeps going. Right now your vote is a fact with no momentum.
 >
-> It takes 15 seconds to assign one overdue task. The message is already written for you.
+> It takes 15 seconds to assign one task. The message is already written for you.
 >
-> [BUTTON: Assign one overdue task → warondisease.org/send]
+> [BUTTON: Assign one task → warondisease.org/send]
 >
 > — warondisease.org
 
@@ -983,13 +983,13 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 - **Total email cap per recipient (Jake):** 4 emails maximum. Hard cap. No exceptions.
 - **Format consistency:** if sender chose Task Notification, all 4 recipient emails use the Task variants. Don't mix formats within a recipient's sequence.
-- **Total overdue task reminder cap per sender:** 2 overdue task-reminder emails (B3-B4) plus monthly scorecards.
+- **Total task reminder cap per sender:** 2 task-reminder emails (B3-B4) plus monthly scorecards.
 - **Re-engagement:** 1 email (C1). One shot.
 - **Voice consistency:** Task emails sound like a bureaucratic PM system describing the apocalypse. Sincere emails sound like a concerned friend. Both are funny, but for different reasons.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Task emails get a monospace card border to look like a PM notification. Sincere emails stay plain text.
 - **The "Humanity Project Management System" sign-off** connects to the Optimitron/1percenttreaty.org task management concept. Every task notification Jake receives is a touchpoint with the idea that humanity has a project management problem. The system IS the argument.
 - **Subject lines for task format** use PM conventions: [OVERDUE], REMINDER, ESCALATION, "will be reassigned." These are patterns billions of people recognize from work. The comedy is that the task is "End War and Disease" and the blocker is "Jake has not clicked a button."
-- **Deep links matter.** "Assign one more overdue task" should drop the user directly into Loop Screen 8a, pre-authenticated. Never send them back to the landing page.
+- **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into Loop Screen 8a, pre-authenticated. Never send them back to the landing page.
 - **A/B test the two formats head-to-head.** Track: open rate, click-through rate, vote completion rate, spam report rate, and share rate (does the recipient then send to others?). Hypothesis: Task format wins on open rate and share rate; Sincere format wins on vote completion for close relationships. Blended: Task wins overall.
 
 ---

@@ -39,12 +39,12 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Referral invitation tasks are created with `isPublic: false` and `ownerUserId`.
   - `getTasksPageData()` public task lists use `isPublic: true`; owned private tasks are fetched separately for the signed-in owner.
 - [x] Add a task detail affordance that makes referral-invitation tasks feel intentional, not like generic task rows.
-  - Referral-generated private task detail pages now show a treaty referral task panel with recipient, format, reminder count, status, and a direct `/send` CTA.
+  - Referral-generated private task detail pages now show an Earth optimization task panel with recipient, format, reminder count, status, and a direct `/send` CTA.
 - [x] Decide whether recipient conversion should also attach the recipient user to the existing `Person` when email matches.
   - Yes: invite conversion now opportunistically attaches the converted voter to the invitation's existing `recipientPersonId` when the voter does not already have a `personId`.
 - [ ] Add a merge/cleanup path for duplicate `Person` records created from referrals, imports, and manually assigned tasks.
 - [x] Add dashboard filters for pending, sent, copied, converted, declined, cancelled, and stale referral tasks.
-  - The tracked treaty tasks card now filters all/pending/copied/sent/confirmed/closed rows.
+  - The Earth optimization tasks card now filters all/pending/copied/sent/confirmed/closed rows.
 
 ## Treaty Vote And Referral Flow
 
@@ -58,7 +58,7 @@ This is the working checklist for finishing the treaty migration and post-vote r
   they should still let a later recipient vote and credit generic referral attribution without re-converting the named invitation task.
 - [x] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
 - [x] Add explicit regression tests for username-vs-referral-code resolution on `/vote/<identifier>`.
-- [x] Add an "assign one overdue task" deep link that drops verified users directly into the referral loop.
+- [x] Add an "assign one task" deep link that drops verified users directly into the referral loop.
   - `/send` requires sign-in and renders the referral invitation composer/status view.
   - Sender B3/B4 reminder emails now link directly to `/send`.
 - [ ] Confirm partner/demo survey variants use the lighter mode and do not accidentally enter the full post-vote send loop.
@@ -67,17 +67,20 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 - [x] Port the email sequence v2 copy into Optimitron templates, with the project-wide 4B denominator wording normalized to "a majority of humans on Earth."
   - Recipient Sequence A: Task Notification and Sincere variants.
-  - Sender Sequence B: vote confirmed, recipient voted, overdue task reminders, monthly scorecard.
+  - Sender Sequence B: vote confirmed, recipient voted, task reminders, monthly scorecard.
   - Re-engagement Sequence C: verified but never shared.
 - [x] Replace user-facing "nudge" copy with task-management framing.
-  - Prefer language like "send overdue task reminder" or "send one more overdue task reminder."
+  - Prefer plain language like "assign one task", "task reminder", "Earth optimization task", or "treaty vote task."
+  - Use "overdue" only where the project-management joke is intentional, not as the default noun phrase for every user-facing task.
   - Keep the joke structurally clear: humanity has been assigned the overdue root task "Optimize Earth"; that contains "End War and Disease"; that contains "Ratify the 1% Treaty"; that contains per-person subtasks to vote, get friends to vote, and make sure those friends keep the task tree moving.
   - The task-management language should feel like a project-management system calmly describing civilization-scale overdue work, not generic SaaS notification copy.
-  - Keep internal field names such as `nextSenderNudgeAt` temporarily unless we do a deliberate schema/code rename.
   - Updated post-vote flow copy, email template copy, related tests, and canonical docs together so they do not drift.
-  - Known intentionally internal legacy names: `nudgeOptIn`, `nextSenderNudgeAt`, `senderNudgeStep`, and email builder function names.
+- [ ] Rename internal sender "nudge" fields/actions/functions to "reminder" before launch.
+  - No users exist yet, so preserve behavior but do not preserve misleading names.
+  - Rename schema/API/code/test names such as `nudgeOptIn`, `wantsNudge`, `senderNudgeOptedInAt`, `senderNudgeStep`, `nextSenderNudgeAt`, `lastSenderNudgeAt`, and B3/B4 builder names.
+  - Add a migration that renames the existing `ReferralInvitation` columns/indexes instead of dropping data.
 - [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
-- [x] Wire Sender Sequence B3/B4 sender reminders into cron from `nextSenderNudgeAt`.
+- [x] Wire Sender Sequence B3/B4 sender reminders into cron from the sender reminder schedule.
 - [x] Wire Sender Sequence B5 monthly scorecards.
   - Cron sends one scorecard per user per UTC month when they have at least one copied/sent/converted referral invitation.
   - Current scorecard uses direct invitation totals plus a conservative direct-recipient-shared-further count.
@@ -98,6 +101,23 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Sender template tests cover B1-B5/C1; recipient template tests now cover all A1-A4 Task and Sincere variants plus delay schedule.
 - [ ] Add cron tests for reminder timing, conversion suppression, unsubscribe suppression, and stale invitation cleanup.
 
+## Task Reminder Replication System
+
+- [ ] Treat task reminder text as measurable replication content, not just static copy.
+  - Persist the exact text the sender copied or sent, including user edits, selected format, channel, recipient/task/invite, and created/sent timestamps.
+  - Attribute downstream results to that text: opens, clicks, vote completion, recipient shares, second-generation shares, spam reports, unsubscribes, and conversion delay.
+  - Report a replication coefficient by message/template/variant: average verified voters generated per completed sender action.
+- [ ] Decide whether to add first-class reminder template models before the second non-treaty task family launches.
+  - Candidate shape: `TaskReminderTemplate`, `TaskReminderVariant`, and `TaskReminderDelivery`, linked to `Task`, `Person`, `ReferralInvitation`, `ShareAttempt`, and `EmailLog`.
+  - Templates should support seeded defaults, admin edits, task-context tokens, sender edits, and per-task/per-campaign enablement.
+  - Do not force this into `TrackingReminder`; that model is for health-variable measurement reminders, not outreach/task assignment.
+- [ ] Use task data to populate reminder emails where it improves clarity.
+  - Pull title, assignee, due date, contact URL, parent task, and task tree context from `Task`/`TaskEdge` instead of duplicating hardcoded treaty strings.
+  - Keep `ReferralInvitation` for invite-token lifecycle, recipient unsubscribe, message format, sent/copied state, and conversion linkage.
+- [ ] Add a testable "best current reminder" selection path.
+  - Start with deterministic seeded defaults.
+  - Later promote variants based on replication coefficient, with guardrails for spam reports and unsubscribe rates.
+
 ## Dashboard And Analytics
 
 - [x] Add a dashboard status card for tracked referral invitations.
@@ -105,7 +125,7 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - `ReferralInvitationStatusCard` now displays confirmed and pending lives separately using the flow per-vote value.
 - [ ] Show referral tree depth and named invite state from the current user outward.
 - [x] Show per-invite task status, email status, copied/sent state, and conversion state together.
-  - The tracked treaty tasks card shows status, task link, copied/sent/converted dates, recipient email, and recipient reminder count.
+  - The Earth optimization tasks card shows status, task link, copied/sent/converted dates, recipient email, and recipient reminder count.
 - [ ] Track and report where users abandon the post-vote flow.
 - [ ] Track whether details-fold expansion predicts sharing.
 - [ ] Track Task Notification vs Sincere performance by open, click, vote completion, spam report, and recipient share rate.
@@ -130,7 +150,22 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - `treaty-share-flow-parameters.test.ts` now asserts every flow-visible wrapper export is named in `docs/questions.md`.
 - [x] Add helper wrappers only where display wording differs from raw parameter labels, for example "a majority of humans on Earth."
   - The current wrapper set lives in `packages/web/src/lib/treaty-share-flow-parameters.ts`; dashboard share templates and email-signature copy now use those wrappers instead of local constants.
+- [ ] Decide whether flow-visible wrapper exports should become a general display-parameter helper.
+  - `formatParameter()` should stay a value/formatting function; it should not silently change semantics, labels, or denominators.
+  - Consider a small `createDisplayParameter()` or parameter "presentation profile" helper for rounded/aliased values used across UI, emails, dashboards, and task templates.
+  - Keep explicit wrapper exports for semantically important wording changes such as `FLOW_MAJORITY_OF_HUMANS_ON_EARTH`.
 - [ ] Avoid hardcoded treaty numerals in user-facing UI except where the exact numeral is part of fixed copy and backed by a parameter nearby.
+
+## Copy And Framing Audit
+
+- [ ] Audit user-facing task/referral copy for plain-language clarity.
+  - Replace implementation terms like "post-vote send loop", "tracked invite link", "referral invitation task", "invite-token conversion", and "private referral-generated task" with simple language.
+  - Default to "task", "Earth optimization task", "vote task", "your invite link", "confirmed", and "pending" unless the technical term is necessary.
+  - The copy should be clear to a normal person before it is clever to a developer.
+- [ ] Decide where to frame the user as a project manager for Earth Optimization Services.
+  - Candidate surfaces: `/send`, post-vote share flow, dashboard task card, email task-notification format, monthly scorecard, and task detail pages.
+  - Keep the frame funny and legible: the user is helping assign and verify tasks in the Earth optimization project tree.
+  - Do not over-apply the frame to input labels, error messages, or ordinary action buttons where it makes the UI harder to understand.
 
 ## Donations And Crowdfunding
 

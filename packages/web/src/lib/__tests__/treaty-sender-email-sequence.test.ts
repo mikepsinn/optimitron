@@ -48,7 +48,7 @@ describe("treaty sender email sequence", () => {
     expect(email.subject).toBe("Jake completed their task.");
   });
 
-  it("builds B3 and B4 sender overdue task reminders", () => {
+  it("builds B3 and B4 sender task reminders", () => {
     const first = buildTreatySendOneMoreNudgeEmail({
       confirmedLives: "5.4",
       pendingLives: "2.7",
@@ -64,12 +64,12 @@ describe("treaty sender email sequence", () => {
 
     expect(first.subject).toBe("One more?");
     expect(first.text).toContain("You messaged 3 people. 2 of them have voted so far.");
-    expect(first.text).toContain("The chain continues past round 2 only if someone keeps assigning the next overdue task.");
-    expect(first.text).toContain("[BUTTON: Assign one more overdue task → https://warondisease.org/send]");
+    expect(first.text).toContain("The chain continues past round 2 only if someone keeps assigning the next Earth optimization task.");
+    expect(first.text).toContain("[BUTTON: Assign one more Earth optimization task → https://warondisease.org/send]");
     expect(first.text).toContain("Your Inverse Kills Score: **5.4 confirmed, 2.7 pending.**");
     expect(second.subject).toBe("Still 1 pending");
     expect(second.text).toContain("1 of your 3 referrals haven't voted yet.");
-    expect(second.text).toContain("You can't make them. But you can assign one more overdue task and improve your odds.");
+    expect(second.text).toContain("You can't make them. But you can assign one more Earth optimization task and improve your odds.");
   });
 
   it("builds B5 monthly scorecard copy", () => {
@@ -102,7 +102,7 @@ describe("treaty sender email sequence", () => {
     expect(email.subject).toBe("You voted but didn't tell anyone");
     expect(email.text).toContain("You voted for the 1% Treaty yesterday. That's worth 2.7 lives and 1 lifetime of suffering prevented.");
     expect(email.text).toContain("But only if the chain keeps going. Right now your vote is a fact with no momentum.");
-    expect(email.text).toContain("It takes 15 seconds to assign one overdue task. The message is already written for you.");
-    expect(email.text).toContain("[BUTTON: Assign one overdue task → https://warondisease.org/send]");
+    expect(email.text).toContain("It takes 15 seconds to assign one task. The message is already written for you.");
+    expect(email.text).toContain("[BUTTON: Assign one task → https://warondisease.org/send]");
   });
 });
