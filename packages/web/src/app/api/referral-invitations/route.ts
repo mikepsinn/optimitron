@@ -106,6 +106,7 @@ export async function PATCH(request: Request) {
       const result = await sendReferralInvitationEmail({
         invitationId: parsed.id,
         manualInitialOnly: true,
+        messageText: parsed.messageText,
         referrerUserId: userId,
         now,
       });
@@ -132,22 +133,57 @@ export async function PATCH(request: Request) {
       return NextResponse.json(result);
     }
 
+    if (parsed.action === "markCopied") {
+      const data = {
+        copiedAt: now,
+        messageText: parsed.messageText ?? undefined,
+        shareAttemptId: parsed.shareAttemptId ?? undefined,
+      };
+
+      let result = await prisma.referralInvitation.updateMany({
+        where: {
+          id: parsed.id,
+          referrerUserId: userId,
+          deletedAt: null,
+          status: ReferralInvitationStatus.PENDING,
+        },
+        data: {
+          ...data,
+          status: ReferralInvitationStatus.COPIED,
+        },
+      });
+
+      if (result.count === 0) {
+        result = await prisma.referralInvitation.updateMany({
+          where: {
+            id: parsed.id,
+            referrerUserId: userId,
+            deletedAt: null,
+          },
+          data,
+        });
+      }
+
+      if (result.count === 0) {
+        return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+      }
+
+      const invitation = await prisma.referralInvitation.findUnique({
+        where: { id: parsed.id },
+      });
+
+      return NextResponse.json({ invitation });
+    }
+
     const data =
-      parsed.action === "markCopied"
-        ? {
-            status: ReferralInvitationStatus.COPIED,
-            copiedAt: now,
-            messageText: parsed.messageText ?? undefined,
-            shareAttemptId: parsed.shareAttemptId ?? undefined,
-          }
-        : parsed.action === "decline"
-          ? { status: ReferralInvitationStatus.DECLINED }
-          : parsed.action === "cancel"
-            ? { status: ReferralInvitationStatus.CANCELLED, deletedAt: now }
-            : {
-                senderNudgeOptedInAt: now,
-                nextSenderNudgeAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
-              };
+      parsed.action === "decline"
+        ? { status: ReferralInvitationStatus.DECLINED }
+        : parsed.action === "cancel"
+          ? { status: ReferralInvitationStatus.CANCELLED, deletedAt: now }
+          : {
+              senderNudgeOptedInAt: now,
+              nextSenderNudgeAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+            };
 
     const result = await prisma.referralInvitation.updateMany({
       where: {

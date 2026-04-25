@@ -285,6 +285,7 @@ export async function unsubscribeReferralInvitationRecipient(input: {
 export async function sendReferralInvitationEmail(input: {
   invitationId: string;
   manualInitialOnly?: boolean;
+  messageText?: string | null;
   referrerUserId?: string | null;
   now?: Date;
 }) {
@@ -388,6 +389,7 @@ export async function sendReferralInvitationEmail(input: {
         recipientEmailErrorMessage: null,
         recipientEmailProviderMessageId: result.id,
         recipientEmailStep: step,
+        ...(input.messageText?.trim() ? { messageText: input.messageText.trim() } : {}),
         ...(invitation.status === ReferralInvitationStatus.SENT ? {} : { sentAt: now }),
         status: ReferralInvitationStatus.SENT,
       },

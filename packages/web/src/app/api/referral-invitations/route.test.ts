@@ -149,11 +149,41 @@ describe("/api/referral-invitations", () => {
         id: "invite_1",
         referrerUserId: "user_1",
         deletedAt: null,
+        status: "PENDING",
       },
       data: expect.objectContaining({
         status: "COPIED",
         messageText: "message",
         shareAttemptId: "share_1",
+      }),
+    });
+  });
+
+  it("records copy details without downgrading an already-sent invitation", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.updateMany.mockResolvedValueOnce({ count: 0 }).mockResolvedValueOnce({ count: 1 });
+    mocks.findUnique.mockResolvedValue({ id: "invite_1", status: "SENT" });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "markCopied",
+        messageText: "message",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      invitation: { id: "invite_1", status: "SENT" },
+    });
+    expect(mocks.updateMany).toHaveBeenNthCalledWith(2, {
+      where: {
+        id: "invite_1",
+        referrerUserId: "user_1",
+        deletedAt: null,
+      },
+      data: expect.not.objectContaining({
+        status: "COPIED",
       }),
     });
   });
@@ -169,6 +199,7 @@ describe("/api/referral-invitations", () => {
       makePatchRequest({
         id: "invite_1",
         action: "sendEmail",
+        messageText: "edited message",
       }),
     );
 
@@ -180,6 +211,7 @@ describe("/api/referral-invitations", () => {
     expect(mocks.sendReferralInvitationEmail).toHaveBeenCalledWith({
       invitationId: "invite_1",
       manualInitialOnly: true,
+      messageText: "edited message",
       referrerUserId: "user_1",
       now: expect.any(Date),
     });

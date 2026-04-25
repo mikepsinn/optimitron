@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   referralFindUnique: vi.fn(),
   referralUpdate: vi.fn(),
   referendumFindFirst: vi.fn(),
+  sendExternalResendEmail: vi.fn(),
   userFindUnique: vi.fn(),
 }));
 
@@ -31,9 +32,14 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/resend", () => ({
+  sendExternalResendEmail: mocks.sendExternalResendEmail,
+}));
+
 import {
   convertReferralInvitationForVote,
   createReferralInvitation,
+  sendReferralInvitationEmail,
 } from "@/lib/referral-invitations.server";
 
 describe("referral invitation server helpers", () => {
@@ -49,6 +55,7 @@ describe("referral invitation server helpers", () => {
       id: "invite_1",
       ...data,
     }));
+    mocks.sendExternalResendEmail.mockResolvedValue({ id: "resend_1", status: "sent" });
   });
 
   it("creates a named invitation and links an emailed recipient to Person", async () => {
@@ -139,6 +146,66 @@ describe("referral invitation server helpers", () => {
         nextRecipientEmailAt: null,
         nextSenderNudgeAt: null,
         status: "CONVERTED",
+      }),
+    });
+  });
+
+  it("persists edited message text when sending an invitation email", async () => {
+    const now = new Date("2026-04-25T12:00:00.000Z");
+    mocks.referralFindFirst.mockResolvedValue({
+      convertedAt: null,
+      id: "invite_1",
+      inviteToken: "invite_token",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientEmail: "jake@example.com",
+      recipientEmailStep: 0,
+      recipientName: "Jake",
+      recipientUnsubscribeToken: "unsubscribe_token",
+      recipientUnsubscribedAt: null,
+      referrer: {
+        id: "user_1",
+        name: "Ada",
+        person: null,
+        referralCode: "ada123",
+        username: "ada",
+      },
+      status: "PENDING",
+    });
+    mocks.referralUpdate.mockResolvedValue({
+      id: "invite_1",
+      messageText: "edited message",
+      status: "SENT",
+    });
+
+    const result = await sendReferralInvitationEmail({
+      invitationId: "invite_1",
+      messageText: " edited message ",
+      now,
+      referrerUserId: "user_1",
+    });
+
+    expect(result).toEqual({
+      status: "sent",
+      invitation: {
+        id: "invite_1",
+        messageText: "edited message",
+        status: "SENT",
+      },
+      providerMessageId: "resend_1",
+    });
+    expect(mocks.sendExternalResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: "[OVERDUE] Task assigned to you: End War and Disease",
+        to: "jake@example.com",
+      }),
+    );
+    expect(mocks.referralUpdate).toHaveBeenCalledWith({
+      where: { id: "invite_1" },
+      data: expect.objectContaining({
+        messageText: "edited message",
+        recipientEmailProviderMessageId: "resend_1",
+        recipientEmailStep: 1,
+        status: "SENT",
       }),
     });
   });

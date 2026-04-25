@@ -104,9 +104,10 @@ test("signed-in user can sign out from the dashboard", async ({ page }) => {
     "button:has-text('Sign Out'), button:has-text('SIGN OUT')",
   );
   await expect(signOutButton.first()).toBeVisible({ timeout: 10_000 });
-  await signOutButton.first().click();
-
-  await page.waitForURL(/\/$|\/(\?|$)/, { timeout: 10_000 });
+  await Promise.all([
+    page.waitForURL((url) => url.pathname === "/", { timeout: 10_000 }),
+    signOutButton.first().click(),
+  ]);
 
   // Re-visiting /dashboard should now redirect to /auth/signin.
   await page.goto("/dashboard");

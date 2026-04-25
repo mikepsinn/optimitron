@@ -82,6 +82,7 @@ async function main(): Promise<void> {
   const env = {
     ...process.env,
     DATABASE_URL: databaseUrl,
+    DATABASE_URL_UNPOOLED: databaseUrl,
   };
 
   process.stdout.write("Using local test database at postgresql://postgres:postgres@localhost:5432/optimitron\n");

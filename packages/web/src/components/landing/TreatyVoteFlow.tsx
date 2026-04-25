@@ -9,8 +9,7 @@ import { Square, CheckSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
-import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
-import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer";
+import { TreatyPostVoteShareFlow } from "@/components/landing/TreatyPostVoteShareFlow";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
@@ -464,8 +463,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
           >
             {status === "authenticated" ? (
               <>
-                <ReferralInvitationComposer />
-                <PostVoteReminders />
+                <TreatyPostVoteShareFlow answer={answer} />
                 <div className="mt-6 text-center">
                   <Link
                     href={ROUTES.dashboard}
