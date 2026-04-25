@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   DFDA_PATIENTS_FUNDABLE_ANNUALLY,
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
@@ -12,6 +13,8 @@ import {
 } from "@optimitron/data/parameters";
 import {
   FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  FLOW_GLOBAL_WARHEAD_COUNT,
   FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
   FLOW_TOTAL_LIVES_SAVED,
   FLOW_TOTAL_SUFFERING_HOURS,
@@ -19,6 +22,8 @@ import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
   FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
   FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+  FLOW_WASTEFUL_APOCALYPSES,
+  FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   formatFlowCompactCurrency,
   formatFlowCompactParam,
   formatFlowWords,
@@ -46,5 +51,30 @@ describe("treaty share flow parameter display values", () => {
     expect(formatFlowCompactParam(DFDA_PATIENTS_FUNDABLE_ANNUALLY, 2)).toBe("23M");
     expect(formatFlowCompactCurrency(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, 3)).toBe("$929");
     expect(formatFlowCompactCurrency(TRADITIONAL_PHASE3_COST_PER_PATIENT, 2)).toBe("$41K");
+  });
+
+  it("keeps documented flow wrapper names in sync with the exported parameters", () => {
+    const docs = readFileSync(
+      new URL("../../../../../docs/questions.md", import.meta.url),
+      "utf8",
+    );
+    const flowParameters = [
+      FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
+      FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+      FLOW_TOTAL_LIVES_SAVED,
+      FLOW_TOTAL_SUFFERING_HOURS,
+      FLOW_VOTER_LIVES_SAVED,
+      FLOW_VOTER_LIVES_SAVED_ROUNDED,
+      FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
+      FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+      FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+      FLOW_WASTEFUL_APOCALYPSES,
+      FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+      FLOW_GLOBAL_WARHEAD_COUNT,
+    ];
+
+    for (const parameter of flowParameters) {
+      expect(docs).toContain(`\`${parameter.parameterName}\``);
+    }
   });
 });

@@ -67,6 +67,13 @@ function getMilestoneStatusLabel(status: string) {
   return status.replaceAll("_", " ").toLowerCase();
 }
 
+function formatShortDate(value: Date) {
+  return value.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
 function formatOverdueDays(days: number): string {
   if (days >= 365) {
     const years = days / 365;
@@ -75,6 +82,95 @@ function formatOverdueDays(days: number): string {
   }
   const rounded = Math.round(days);
   return `${rounded.toLocaleString()} ${rounded === 1 ? "day" : "days"} overdue`;
+}
+
+interface ReferralInvitationTaskCardProps {
+  invitation: {
+    convertedAt: Date | null;
+    copiedAt: Date | null;
+    messageFormat: string;
+    nextRecipientEmailAt: Date | null;
+    recipientEmail: string | null;
+    recipientEmailStep: number;
+    recipientName: string;
+    sentAt: Date | null;
+    status: string;
+  };
+}
+
+function getReferralInvitationTaskStatus(status: string) {
+  if (status === "CONVERTED") return "completed";
+  if (status === "SENT") return "email sent";
+  if (status === "COPIED") return "copied";
+  if (status === "DECLINED") return "declined";
+  if (status === "CANCELLED") return "cancelled";
+  return "pending";
+}
+
+function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardProps) {
+  const activityDate =
+    invitation.convertedAt ?? invitation.sentAt ?? invitation.copiedAt ?? null;
+  const nextReminderDate =
+    invitation.nextRecipientEmailAt && invitation.status === "SENT"
+      ? formatShortDate(invitation.nextRecipientEmailAt)
+      : null;
+
+  return (
+    <BrutalCard bgColor="yellow" padding="lg">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-black uppercase text-brutal-pink">
+              Treaty referral task
+            </p>
+            <ArcadeTag>{getReferralInvitationTaskStatus(invitation.status)}</ArcadeTag>
+          </div>
+          <h2 className="text-2xl font-black uppercase leading-tight">
+            Make sure {invitation.recipientName} votes on the 1% Treaty
+          </h2>
+          <p className="max-w-3xl text-sm font-bold leading-snug text-muted-foreground">
+            This private task was created from the post-vote send loop. It is
+            verified automatically when {invitation.recipientName} completes a
+            verified treaty vote through the tracked invite link.
+          </p>
+        </div>
+        <Link
+          className="inline-flex h-11 items-center justify-center border-4 border-primary bg-background px-4 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          href={ROUTES.send}
+        >
+          Assign another
+        </Link>
+      </div>
+      <div className="mt-5 grid gap-3 text-xs font-black uppercase sm:grid-cols-4">
+        <div className="border-4 border-primary bg-background p-3">
+          <p className="text-muted-foreground">Recipient</p>
+          <p className="mt-1 break-words">
+            {invitation.recipientEmail ?? invitation.recipientName}
+          </p>
+        </div>
+        <div className="border-4 border-primary bg-background p-3">
+          <p className="text-muted-foreground">Format</p>
+          <p className="mt-1">
+            {invitation.messageFormat.replaceAll("_", " ").toLowerCase()}
+          </p>
+        </div>
+        <div className="border-4 border-primary bg-background p-3">
+          <p className="text-muted-foreground">Task reminders</p>
+          <p className="mt-1">{invitation.recipientEmailStep}/4 sent</p>
+        </div>
+        <div className="border-4 border-primary bg-background p-3">
+          <p className="text-muted-foreground">Next state</p>
+          <p className="mt-1">
+            {nextReminderDate
+              ? `next reminder ${nextReminderDate}`
+              : activityDate
+                ? formatShortDate(activityDate)
+                : "waiting"}
+          </p>
+        </div>
+      </div>
+    </BrutalCard>
+  );
 }
 
 interface TaskMetaSubtitleProps {
@@ -311,6 +407,7 @@ export default async function TaskDetailPage({
 
   const isTreatySigner = task.taskKey?.startsWith("program:one-percent-treaty:signer:") ?? false;
   const leaderName = task.assigneePerson?.displayName ?? targetLabel;
+  const referralInvitation = task.referralInvitations[0] ?? null;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -389,6 +486,9 @@ export default async function TaskDetailPage({
             dueAt={task.dueAt}
             attributionShare={attributionShare}
           />
+          {referralInvitation ? (
+            <ReferralInvitationTaskCard invitation={referralInvitation} />
+          ) : null}
           {isTreatySigner ? <TaskHowToSignCard leaderName={leaderName} /> : null}
         </section>
 

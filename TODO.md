@@ -38,10 +38,13 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Confirm invitation-created tasks appear in the right task views for the sender without leaking private friend/family invites into public task lists.
   - Referral invitation tasks are created with `isPublic: false` and `ownerUserId`.
   - `getTasksPageData()` public task lists use `isPublic: true`; owned private tasks are fetched separately for the signed-in owner.
-- [ ] Add a task detail affordance that makes referral-invitation tasks feel intentional, not like generic task rows.
-- [ ] Decide whether recipient conversion should also attach the recipient user to the existing `Person` when email matches.
+- [x] Add a task detail affordance that makes referral-invitation tasks feel intentional, not like generic task rows.
+  - Referral-generated private task detail pages now show a treaty referral task panel with recipient, format, reminder count, status, and a direct `/send` CTA.
+- [x] Decide whether recipient conversion should also attach the recipient user to the existing `Person` when email matches.
+  - Yes: invite conversion now opportunistically attaches the converted voter to the invitation's existing `recipientPersonId` when the voter does not already have a `personId`.
 - [ ] Add a merge/cleanup path for duplicate `Person` records created from referrals, imports, and manually assigned tasks.
-- [ ] Add dashboard filters for pending, sent, copied, converted, declined, cancelled, and stale referral tasks.
+- [x] Add dashboard filters for pending, sent, copied, converted, declined, cancelled, and stale referral tasks.
+  - The tracked treaty tasks card now filters all/pending/copied/sent/confirmed/closed rows.
 
 ## Treaty Vote And Referral Flow
 
@@ -55,7 +58,9 @@ This is the working checklist for finishing the treaty migration and post-vote r
   they should still let a later recipient vote and credit generic referral attribution without re-converting the named invitation task.
 - [x] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
 - [x] Add explicit regression tests for username-vs-referral-code resolution on `/vote/<identifier>`.
-- [ ] Add a "send to one more" deep link that drops verified users directly into the referral loop.
+- [x] Add an "assign one overdue task" deep link that drops verified users directly into the referral loop.
+  - `/send` requires sign-in and renders the referral invitation composer/status view.
+  - Sender B3/B4 reminder emails now link directly to `/send`.
 - [ ] Confirm partner/demo survey variants use the lighter mode and do not accidentally enter the full post-vote send loop.
 
 ## Email Sequences
@@ -64,31 +69,43 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Recipient Sequence A: Task Notification and Sincere variants.
   - Sender Sequence B: vote confirmed, recipient voted, overdue task reminders, monthly scorecard.
   - Re-engagement Sequence C: verified but never shared.
-- [ ] Replace user-facing "nudge" copy with task-management framing.
+- [x] Replace user-facing "nudge" copy with task-management framing.
   - Prefer language like "send overdue task reminder" or "send one more overdue task reminder."
   - Keep the joke structurally clear: humanity has been assigned the overdue root task "Optimize Earth"; that contains "End War and Disease"; that contains "Ratify the 1% Treaty"; that contains per-person subtasks to vote, get friends to vote, and make sure those friends keep the task tree moving.
   - The task-management language should feel like a project-management system calmly describing civilization-scale overdue work, not generic SaaS notification copy.
   - Keep internal field names such as `nextSenderNudgeAt` temporarily unless we do a deliberate schema/code rename.
-  - Update post-vote flow copy, email template copy, dashboard labels, and canonical docs together so they do not drift.
-  - Known copy surfaces: `docs/questions.md`, `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`, email sequence headings/tests, and dashboard/referral labels.
+  - Updated post-vote flow copy, email template copy, related tests, and canonical docs together so they do not drift.
+  - Known intentionally internal legacy names: `nudgeOptIn`, `nextSenderNudgeAt`, `senderNudgeStep`, and email builder function names.
 - [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
 - [x] Wire Sender Sequence B3/B4 sender reminders into cron from `nextSenderNudgeAt`.
-- [ ] Wire Sender Sequence B5 monthly scorecards.
-- [ ] Wire Re-engagement Sequence C1 for verified users who never shared.
-- [ ] Preserve format consistency per invite; do not mix Task Notification and Sincere variants within a recipient sequence.
-- [ ] Enforce the recipient hard cap of four emails.
-- [ ] Enforce sender reminder caps and monthly scorecard preferences.
-- [ ] Suppress reminders after conversion, unsubscribe, cancellation, decline, or hard cap.
-- [ ] Use existing email preference/unsubscribe semantics instead of adding a parallel suppression system.
-- [ ] Add email preview fixtures or snapshot tests for every recipient/sender template.
+- [x] Wire Sender Sequence B5 monthly scorecards.
+  - Cron sends one scorecard per user per UTC month when they have at least one copied/sent/converted referral invitation.
+  - Current scorecard uses direct invitation totals plus a conservative direct-recipient-shared-further count.
+- [x] Wire Re-engagement Sequence C1 for verified YES voters who never shared.
+  - Cron sends the one-shot C1 email after 24 hours when the user has no referral invitations and no prior C1 EmailLog.
+  - C1 links directly to `/send`.
+- [x] Preserve format consistency per invite; do not mix Task Notification and Sincere variants within a recipient sequence.
+  - `ReferralInvitation.messageFormat` is read for every recipient email step and covered by regression tests.
+- [x] Enforce the recipient hard cap of four emails.
+  - Recipient processing filters `recipientEmailStep < 4`; direct sends return `maxed` after step 4.
+- [x] Enforce sender reminder caps and monthly scorecard preferences.
+  - Sender reminders stop after two steps; monthly scorecards use one `EmailLog` template per user per UTC month and the shared `referral_sequence` suppression scope.
+- [x] Suppress reminders after conversion, unsubscribe, cancellation, decline, or hard cap.
+  - Recipient reminders filter converted/deleted/unsubscribed/maxed rows, declined rows are inactive, and cancel/decline clear pending recipient/sender schedules.
+- [x] Use existing email preference/unsubscribe semantics instead of adding a parallel suppression system.
+  - Sender sequence emails use `sendResendEmail()` with `scope: "referral_sequence"`; recipient invitations use their one-click per-invite unsubscribe token.
+- [x] Add email preview fixtures or snapshot tests for every recipient/sender template.
+  - Sender template tests cover B1-B5/C1; recipient template tests now cover all A1-A4 Task and Sincere variants plus delay schedule.
 - [ ] Add cron tests for reminder timing, conversion suppression, unsubscribe suppression, and stale invitation cleanup.
 
 ## Dashboard And Analytics
 
 - [x] Add a dashboard status card for tracked referral invitations.
-- [ ] Split pending and confirmed Inverse Kills Score in the treaty dashboard.
+- [x] Split pending and confirmed Inverse Kills Score in the treaty dashboard.
+  - `ReferralInvitationStatusCard` now displays confirmed and pending lives separately using the flow per-vote value.
 - [ ] Show referral tree depth and named invite state from the current user outward.
-- [ ] Show per-invite task status, email status, copied/sent state, and conversion state together.
+- [x] Show per-invite task status, email status, copied/sent state, and conversion state together.
+  - The tracked treaty tasks card shows status, task link, copied/sent/converted dates, recipient email, and recipient reminder count.
 - [ ] Track and report where users abandon the post-vote flow.
 - [ ] Track whether details-fold expansion predicts sharing.
 - [ ] Track Task Notification vs Sincere performance by open, click, vote completion, spam report, and recipient share rate.
@@ -109,8 +126,10 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - trial capacity multiplier;
   - queue clearance years.
   - Covered by `packages/web/src/lib/__tests__/treaty-share-flow-parameters.test.ts`.
-- [ ] Add a lightweight treaty parameter export/contract test so UI docs and task/email templates cannot drift from parameter names.
-- [ ] Add helper wrappers only where display wording differs from raw parameter labels, for example "a majority of humans on Earth."
+- [x] Add a lightweight treaty parameter export/contract test so UI docs and task/email templates cannot drift from parameter names.
+  - `treaty-share-flow-parameters.test.ts` now asserts every flow-visible wrapper export is named in `docs/questions.md`.
+- [x] Add helper wrappers only where display wording differs from raw parameter labels, for example "a majority of humans on Earth."
+  - The current wrapper set lives in `packages/web/src/lib/treaty-share-flow-parameters.ts`; dashboard share templates and email-signature copy now use those wrappers instead of local constants.
 - [ ] Avoid hardcoded treaty numerals in user-facing UI except where the exact numeral is part of fixed copy and backed by a parameter nearby.
 
 ## Donations And Crowdfunding

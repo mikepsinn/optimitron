@@ -4,23 +4,21 @@ import { useState } from "react"
 import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
 import { Copy, Check, Mail } from "lucide-react"
+import { EFFICACY_LAG_YEARS } from "@optimitron/data/parameters"
 import {
-  VOTER_LIVES_SAVED,
-  VOTER_SUFFERING_HOURS_PREVENTED,
-  EFFICACY_LAG_YEARS,
-} from "@optimitron/data/parameters"
+  FLOW_VOTER_LIVES_SAVED_ROUNDED,
+  FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters"
 
 interface EmailSignatureCardProps {
   referralLink: string
   userName: string
 }
 
-const LIVES_PER_VOTE = VOTER_LIVES_SAVED.value.toFixed(1)
-const HOURS_PER_YEAR = 8_760
-const SUFFERING_YEARS = Math.round(
-  VOTER_SUFFERING_HOURS_PREVENTED.value / HOURS_PER_YEAR,
-)
-const EFFICACY_LAG = EFFICACY_LAG_YEARS.value
+const LIVES_PER_VOTE = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2)
+const SUFFERING_YEARS = formatFlowWords(FLOW_VOTER_SUFFERING_YEARS_PREVENTED, 2)
+const EFFICACY_LAG = formatFlowWords(EFFICACY_LAG_YEARS, 2)
 
 export function EmailSignatureCard({ referralLink, userName }: EmailSignatureCardProps) {
   const [copied, setCopied] = useState(false)

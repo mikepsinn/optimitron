@@ -620,7 +620,7 @@ function terminalCopy(tone: "cta-signed" | "cta-shared" | "decline-polite" | "go
     case "cta-shared":
       return "Link copied. Send it to one person tonight while the math is still in your head.";
     case "decline-polite":
-      return "Fair. The door is here, no follow-up, no email, no nudge. Thanks for reading.";
+      return "Fair. The door is here, no follow-up, no email. Thanks for reading.";
     case "goodbye":
       return "Understood. Go in peace.";
   }

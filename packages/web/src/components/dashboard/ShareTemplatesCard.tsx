@@ -5,22 +5,29 @@ import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
 import { Copy, Check, MessageSquare } from "lucide-react"
 import {
-  VOTER_LIVES_SAVED,
-  VOTER_SUFFERING_HOURS_PREVENTED,
+  DFDA_TRIAL_COST_REDUCTION_FACTOR,
   EFFICACY_LAG_YEARS,
   PRIZE_POOL_HORIZON_MULTIPLE,
   fmtParam,
 } from "@optimitron/data/parameters";
+import {
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  FLOW_VOTER_LIVES_SAVED_ROUNDED,
+  FLOW_VOTER_SUFFERING_YEARS_PREVENTED,
+  formatFlowWords,
+} from "@/lib/treaty-share-flow-parameters"
 interface ShareTemplatesCardProps {
   referralLink: string
 }
 
-const LIVES_PER_VOTE = VOTER_LIVES_SAVED.value.toFixed(1)
-const HOURS_PER_YEAR = 8_760
-const SUFFERING_YEARS_PER_VOTE = Math.round(
-  VOTER_SUFFERING_HOURS_PREVENTED.value / HOURS_PER_YEAR,
-).toLocaleString()
-const EFFICACY_LAG = EFFICACY_LAG_YEARS.value
+const LIVES_PER_VOTE = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2)
+const SUFFERING_YEARS_PER_VOTE = formatFlowWords(FLOW_VOTER_SUFFERING_YEARS_PREVENTED, 2)
+const EFFICACY_LAG = formatFlowWords(EFFICACY_LAG_YEARS, 2)
+const DISEASES_WITHOUT_TREATMENT = formatFlowWords(
+  FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
+  2,
+)
+const TRIAL_COST_REDUCTION = formatFlowWords(DFDA_TRIAL_COST_REDUCTION_FACTOR, 2)
 
 export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
@@ -40,7 +47,7 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
     },
     {
       label: "Data-Driven",
-      text: `95% of diseases have no FDA-approved treatment. Pragmatic trials can accelerate cures by ${EFFICACY_LAG} years at 44x less cost. Each verified vote = ${LIVES_PER_VOTE} lives saved. ${referralLink}`,
+      text: `${DISEASES_WITHOUT_TREATMENT} of diseases have no FDA-approved treatment. Pragmatic trials can accelerate cures by ${EFFICACY_LAG} years at ${TRIAL_COST_REDUCTION}x less cost. Each verified vote = ${LIVES_PER_VOTE} lives saved. ${referralLink}`,
     },
     {
       label: "Twitter/X",
@@ -80,7 +87,7 @@ export function ShareTemplatesCard({ referralLink }: ShareTemplatesCardProps) {
           {templates.map((template, index) => (
             <div
               key={index}
-              className="border-4 border-primary p-4 bg-background hover:bg-brutal-yellow/10 transition-colors"
+              className="border-4 border-primary p-4 bg-background hover:bg-brutal-yellow transition-colors"
             >
               <div className="flex items-start justify-between gap-4 mb-2">
                 <p className="font-black uppercase text-sm text-brutal-cyan">{template.label}</p>

@@ -221,6 +221,25 @@ describe("/api/referral-invitations", () => {
     });
   });
 
+  it("rejects sending an inactive invitation", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.sendReferralInvitationEmail.mockResolvedValue({
+      status: "inactive",
+    });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "sendEmail",
+      }),
+    );
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: "This invitation is no longer active.",
+    });
+  });
+
   it("records sender reminder opt-in seven days out", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-04-25T12:00:00.000Z"));
@@ -288,6 +307,52 @@ describe("/api/referral-invitations", () => {
         deletedAt: expect.any(Date),
         status: "STALE",
       }),
+    });
+  });
+
+  it("marks a declined invitation task stale and clears reminder scheduling", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.updateMany.mockResolvedValue({ count: 1 });
+    mocks.taskUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.findUnique.mockResolvedValue({ id: "invite_1", status: "DECLINED" });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "decline",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      invitation: { id: "invite_1", status: "DECLINED" },
+    });
+    expect(mocks.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: "invite_1",
+        referrerUserId: "user_1",
+        deletedAt: null,
+      },
+      data: {
+        nextRecipientEmailAt: null,
+        nextSenderNudgeAt: null,
+        status: "DECLINED",
+      },
+    });
+    expect(mocks.taskUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        referralInvitations: {
+          some: {
+            id: "invite_1",
+            referrerUserId: "user_1",
+          },
+        },
+        status: { not: "VERIFIED" },
+      },
+      data: {
+        status: "STALE",
+      },
     });
   });
 

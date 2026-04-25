@@ -803,7 +803,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-email">
-                    Their email {sentCount === 0 ? "(optional — we'll nudge them so you don't have to)" : "(optional)"}
+                    Their email {sentCount === 0 ? "(optional — we'll send overdue task reminders so you don't have to)" : "(optional)"}
                   </Label>
                   <Input
                     id="post-vote-recipient-email"
@@ -945,7 +945,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       case "sendConfirm":
         return (
           <>
-            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll gently nudge them in 3 days if they haven't voted yet.`}</FlowParagraph>
+            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll send the first overdue task reminder in 3 days if they haven't completed the vote task yet.`}</FlowParagraph>
             <Button className={primaryButtonClass} onClick={completeCurrentInvitation}>
               Continue
             </Button>
@@ -998,14 +998,14 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             <div className="space-y-4">
               {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : <FlowParagraph>You just messaged {sentCount} people.</FlowParagraph>}
-              <FlowParagraph>The chain continues past round 2 only if someone keeps going. Want us to email you in a few days to send to one more?</FlowParagraph>
+              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next overdue task. Want us to email you in a few days to assign one more?</FlowParagraph>
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => void handleDepthHook(false)}>
                 No thanks
               </Button>
               <Button className={primaryButtonClass} onClick={() => void handleDepthHook(true)}>
-                Yes, nudge me
+                Yes, send task reminder
               </Button>
             </FlowButtonRow>
           </>

@@ -369,6 +369,24 @@ const taskDetailSelect = {
     select: taskListSelect,
   },
   contextJson: true,
+  referralInvitations: {
+    where: {
+      deletedAt: null,
+    },
+    orderBy: [{ createdAt: "desc" }],
+    select: {
+      convertedAt: true,
+      copiedAt: true,
+      id: true,
+      messageFormat: true,
+      nextRecipientEmailAt: true,
+      recipientEmail: true,
+      recipientEmailStep: true,
+      recipientName: true,
+      sentAt: true,
+      status: true,
+    },
+  },
   milestones: {
     where: {
       deletedAt: null,

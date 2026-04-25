@@ -152,9 +152,9 @@ export function buildTreatySendOneMoreNudgeEmail(input: TreatySenderEmailBaseInp
   const body = [
     `You messaged ${input.sentCount} people. ${input.votedCount} of them have voted so far.`,
     "",
-    "The chain continues past round 2 only if someone keeps going.",
+    "The chain continues past round 2 only if someone keeps assigning the next Earth optimization task.",
     "",
-    buttonText("Send to one more", sendUrl),
+    buttonText("Assign one more Earth optimization task", sendUrl),
     "",
     `Your Inverse Kills Score: **${input.confirmedLives} confirmed, ${input.pendingLives} pending.**`,
     "",
@@ -162,7 +162,7 @@ export function buildTreatySendOneMoreNudgeEmail(input: TreatySenderEmailBaseInp
   ].join("\n");
 
   return buildMessage({
-    buttonLabel: "Send to one more",
+    buttonLabel: "Assign one more overdue task",
     buttonUrl: sendUrl,
     subject: "One more?",
     text: body,
@@ -178,15 +178,15 @@ export function buildTreatySecondSenderNudgeEmail(input: TreatySenderEmailBaseIn
   const body = [
     `${input.pendingCount} of your ${input.sentCount} referrals haven't voted yet.`,
     "",
-    "You can't make them. But you can send to one more person and improve your odds.",
+    "You can't make them. But you can assign one more Earth optimization task and improve your odds.",
     "",
-    buttonText("Send to one more", sendUrl),
+    buttonText("Assign one more overdue task", sendUrl),
     "",
     "— warondisease.org",
   ].join("\n");
 
   return buildMessage({
-    buttonLabel: "Send to one more",
+    buttonLabel: "Assign one more overdue task",
     buttonUrl: sendUrl,
     subject: `Still ${input.pendingCount} pending`,
     text: body,
@@ -238,15 +238,15 @@ export function buildTreatyNeverSharedReengagementEmail(input: TreatySenderEmail
     "",
     "But only if the chain keeps going. Right now your vote is a fact with no momentum.",
     "",
-    "It takes 15 seconds to send to one person. The message is already written for you.",
+    "It takes 15 seconds to assign one task. The message is already written for you.",
     "",
-    buttonText("Tell one person", sendUrl),
+    buttonText("Assign one task", sendUrl),
     "",
     "— warondisease.org",
   ].join("\n");
 
   return buildMessage({
-    buttonLabel: "Tell one person",
+    buttonLabel: "Assign one task",
     buttonUrl: sendUrl,
     subject: "You voted but didn't tell anyone",
     text: body,

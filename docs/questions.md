@@ -80,6 +80,25 @@ const impactPerVote = {
 
 Current generated parameter result: `~2.6` lives and `~53` years of suffering prevented per vote. The v13 flow copy in this document deliberately displays `2.7` lives and `55` years from a rounded 4 billion denominator; do not replace those visible copy strings with generated parameter output unless the source parameters are updated to the same denominator.
 
+**Flow-visible wrapper exports**
+
+Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flow-parameters.ts` when the v13 copy needs the rounded visible values:
+
+| Variable | Formula | Use |
+| --- | --- | --- |
+| `FLOW_MAJORITY_OF_HUMANS_ON_EARTH` | `roundToSigFigs(GLOBAL_REGISTERED_VOTERS, 1)` | Displays the 4 billion majority-of-humans-on-Earth target. |
+| `FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT` | `DISEASES_WITHOUT_EFFECTIVE_TREATMENT / RARE_DISEASES_COUNT_GLOBAL` | Displays the 95% untreated-disease stakes claim. |
+| `FLOW_TOTAL_LIVES_SAVED` | `roundToSigFigs(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED, 3)` | Displays the 10.7 billion deaths-prevented numerator. |
+| `FLOW_TOTAL_SUFFERING_HOURS` | `roundToSigFigs(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS, 3)` | Displays the 1.93 quadrillion suffering-hours numerator. |
+| `FLOW_VOTER_LIVES_SAVED` | `FLOW_TOTAL_LIVES_SAVED / FLOW_MAJORITY_OF_HUMANS_ON_EARTH` | Displays the exact 2.675 lives-per-vote derivation. |
+| `FLOW_VOTER_LIVES_SAVED_ROUNDED` | `roundToSigFigs(FLOW_VOTER_LIVES_SAVED, 2)` | Displays the 2.7 lives-per-vote headline and pending-score math. |
+| `FLOW_VOTER_SUFFERING_HOURS_PREVENTED` | `FLOW_TOTAL_SUFFERING_HOURS / FLOW_MAJORITY_OF_HUMANS_ON_EARTH` | Displays the 482,500 suffering-hours-per-vote derivation. |
+| `FLOW_VOTER_SUFFERING_YEARS_PREVENTED` | `FLOW_VOTER_SUFFERING_HOURS_PREVENTED / HOURS_PER_YEAR` | Displays the 55 suffering-years-per-vote headline. |
+| `FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR` | `round(NUCLEAR_WINTER_OVERKILL_FACTOR)` | Displays the 122 apocalypse-capacity claim. |
+| `FLOW_WASTEFUL_APOCALYPSES` | `FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR - 1` | Displays the 121 wasteful-apocalypses claim. |
+| `FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD` | `round(NUCLEAR_WINTER_WARHEAD_THRESHOLD)` | Displays the 100-warhead apocalypse threshold. |
+| `FLOW_GLOBAL_WARHEAD_COUNT` | `roundToSigFigs(GLOBAL_WARHEAD_COUNT, 2)` | Displays the 12,000 global-warhead count. |
+
 **Majority target / progress denominator**
 
 | Variable | Formula | Use |
@@ -207,7 +226,7 @@ What verification enables (all of this is now guaranteed for every user in the f
 - Vote counts in the official submitted tally
 - Inverse Kills Score tracked across sessions
 - Email notification when friends vote (pending → confirmed)
-- Nudge emails if opted in at Depth Hook
+- Overdue task-reminder emails if opted in at Depth Hook
 - Monthly scorecard
 - Full dashboard with referral tree
 
@@ -329,7 +348,7 @@ Buttons: **[ [I want to check that](https://manual.warondisease.org) ]** ・ **[
 
 **Default:**
 
-> Imagine you triggered a chain reaction that got a majority of humanity — 4 billion people — to collectively agree:
+> Imagine you triggered a chain reaction that got a majority of humans on Earth — 4 billion people — to collectively agree:
 >
 > "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
 >
@@ -339,7 +358,7 @@ Buttons: **[ [I want to check that](https://manual.warondisease.org) ]** ・ **[
 
 > Respect. Still, imagine:
 >
-> You trigger a chain reaction that gets a majority of humanity — 4 billion people — to collectively agree: "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
+> You trigger a chain reaction that gets a majority of humans on Earth — 4 billion people — to collectively agree: "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
 >
 > Wouldn't that be neat?
 
@@ -391,7 +410,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 >
 > <details>
 > <summary>Show the math</summary>
-> Getting a majority of humanity (4 billion people) to agree the treaty is a good idea makes it politically unstoppable. 10.7 billion deaths prevented ÷ 4 billion voters = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ 4 billion voters = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years** = roughly one full human lifetime.
+> Getting a majority of humans on Earth (4 billion people) to agree the treaty is a good idea makes it politically unstoppable. 10.7 billion deaths prevented ÷ a majority of humans on Earth (4 billion people) = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ a majority of humans on Earth (4 billion people) = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years** = roughly one full human lifetime.
 > </details>
 >
 > Your vote already did this. Every person you get to vote adds another lifetime to your Inverse Kills Score.
@@ -400,7 +419,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 
 > I know. Math again. Last one that matters:
 >
-> Majority of humanity (4 billion) agreeing the 1% Treaty is a good idea makes it politically unstoppable.
+> A majority of humans on Earth (4 billion) agreeing the 1% Treaty is a good idea makes it politically unstoppable.
 >
 > **One vote = 1 lifetime of suffering prevented. One vote = 2.7 lives saved.**
 >
@@ -424,7 +443,7 @@ Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message
 >
 > First name: [ _______ ]
 >
-> Their email (optional — we'll nudge them so you don't have to): [ _______ ]
+> Their email (optional — we'll send overdue task reminders so you don't have to): [ _______ ]
 
 **Default (second+):**
 
@@ -440,7 +459,7 @@ Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message
 >
 > First name: [ _______ ]
 >
-> Their email (optional — we'll nudge them so you don't have to): [ _______ ]
+> Their email (optional — we'll send overdue task reminders so you don't have to): [ _______ ]
 
 Buttons: **[ Let me just copy ]** ・ **[ Continue ]**
 
@@ -520,7 +539,7 @@ Button: **[ I sent it ]**
 
 **After "Send email":**
 
-> Sent to jake@example.com. We'll gently nudge them in 3 days if they haven't voted yet.
+> Sent to jake@example.com. We'll send the first overdue task reminder in 3 days if they haven't completed the vote task yet.
 
 Button: **[ Continue ]**
 
@@ -567,15 +586,15 @@ Buttons: **[ I'm done ]** ・ **[ One more ]**
 
 > You just messaged [N] people.
 >
-> The chain continues past round 2 only if someone keeps going. Want us to email you in a few days to send to one more?
+> The chain continues past round 2 only if someone keeps assigning the next overdue task. Want us to email you in a few days to assign one more?
 
 **Alt:**
 
 > Fine. One optional thing:
 >
-> The chain continues past round 2 only if someone keeps going. Want us to email you in a few days to send to one more?
+> The chain continues past round 2 only if someone keeps assigning the next overdue task. Want us to email you in a few days to assign one more?
 
-Buttons: **[ No thanks ]** ・ **[ Yes, nudge me ]**
+Buttons: **[ No thanks ]** ・ **[ Yes, send task reminder ]**
 
 ---
 
@@ -635,7 +654,7 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 > Noted. Thank you for helping us end disease slightly faster.
 
-**After submit OR skip → redirect to dashboard.** Shows: Inverse Kills Score (pending/confirmed split), referral tree (who you sent to, who has voted), "send to one more" CTA.
+**After submit OR skip → redirect to dashboard.** Shows: Inverse Kills Score (pending/confirmed split), referral tree (who you sent to, who has voted), "assign one overdue task" CTA.
 
 ---
 
@@ -647,14 +666,14 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 # 1% Treaty — Email Sequences (v2, 2026-04-24)
 
-Companion to share-flow-v12. Two message formats: Task Notification and Sincere. Sender chooses per-send. The chosen format determines which email variant the recipient gets throughout the sequence.
+Companion to share-flow-v13. Two message formats: Task Notification and Sincere. Sender chooses per-send. The chosen format determines which email variant the recipient gets throughout the sequence.
 
 **From address for all system emails:** War on Disease <noreply@warondisease.org>
 **From address for share emails:** [Sender name] via War on Disease <noreply@warondisease.org>
 
 **Unsubscribe:** required on every email, one-click, no guilt trip on the unsub page.
 
-**Change log from v1:** Added Task Notification variants for all recipient emails (Sequence A). Sender emails (Sequence B) unchanged. Task notification format uses PM-system styling throughout.
+**Change log from v1:** Added Task Notification variants for all recipient emails (Sequence A). Updated sender emails (Sequence B) to use overdue-task-reminder framing and direct `/send` deep links. Task notification format uses PM-system styling throughout.
 
 ---
 
@@ -709,7 +728,7 @@ Companion to share-flow-v12. Two message formats: Task Notification and Sincere.
 
 ---
 
-### A2. First Nudge (Day 3, if no vote)
+### A2. First Overdue Task Reminder (Day 3, if no vote)
 
 #### A2-TASK
 
@@ -850,7 +869,7 @@ Unchanged from v1. These go to the verified user who completed the flow.
 > What that means, if the treaty passes:
 > **1 human lifetime of suffering prevented. 2.7 lives saved.**
 >
-> That's your share of 10.7 billion deaths prevented, divided across 4 billion voters.
+> That's your share of 10.7 billion deaths prevented, divided across a majority of humans on Earth.
 >
 > [BUTTON: See your dashboard → warondisease.org/dashboard]
 >
@@ -884,7 +903,7 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 ---
 
-### B3. Nudge to Send One More (Day 7, if opted in at Depth Hook)
+### B3. Overdue Task Reminder to Assign One More (Day 7, if opted in at Depth Hook)
 
 **Subject:** One more?
 
@@ -892,9 +911,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 > You messaged [N] people. [X] of them have voted so far.
 >
-> The chain continues past round 2 only if someone keeps going.
+> The chain continues past round 2 only if someone keeps assigning the next overdue task.
 >
-> [BUTTON: Send to one more → warondisease.org/send]
+> [BUTTON: Assign one more overdue task → warondisease.org/send]
 >
 > Your Inverse Kills Score: **[Y] confirmed, [X] pending.**
 >
@@ -902,7 +921,7 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 ---
 
-### B4. Second Nudge (Day 14, if opted in)
+### B4. Second Overdue Task Reminder (Day 14, if opted in)
 
 **Subject:** Still [X] pending
 
@@ -910,9 +929,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 > [X] of your [N] referrals haven't voted yet.
 >
-> You can't make them. But you can send to one more person and improve your odds.
+> You can't make them. But you can assign one more overdue task and improve your odds.
 >
-> [BUTTON: Send to one more → warondisease.org/send]
+> [BUTTON: Assign one more overdue task → warondisease.org/send]
 >
 > — warondisease.org
 
@@ -940,7 +959,7 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 ---
 
-## Sequence C: Re-engagement (users who verified but never shared)
+## Sequence C: Re-engagement (YES voters who verified but never shared)
 
 ### C1. You Forgot the Important Part (Day 1)
 
@@ -952,9 +971,9 @@ Unchanged from v1. These go to the verified user who completed the flow.
 >
 > But only if the chain keeps going. Right now your vote is a fact with no momentum.
 >
-> It takes 15 seconds to send to one person. The message is already written for you.
+> It takes 15 seconds to assign one overdue task. The message is already written for you.
 >
-> [BUTTON: Tell one person → warondisease.org/send]
+> [BUTTON: Assign one overdue task → warondisease.org/send]
 >
 > — warondisease.org
 
@@ -964,15 +983,15 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 - **Total email cap per recipient (Jake):** 4 emails maximum. Hard cap. No exceptions.
 - **Format consistency:** if sender chose Task Notification, all 4 recipient emails use the Task variants. Don't mix formats within a recipient's sequence.
-- **Total nudge cap per sender:** 2 nudge emails (B3-B4) plus monthly scorecards.
+- **Total overdue task reminder cap per sender:** 2 overdue task-reminder emails (B3-B4) plus monthly scorecards.
 - **Re-engagement:** 1 email (C1). One shot.
 - **Voice consistency:** Task emails sound like a bureaucratic PM system describing the apocalypse. Sincere emails sound like a concerned friend. Both are funny, but for different reasons.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Task emails get a monospace card border to look like a PM notification. Sincere emails stay plain text.
 - **The "Humanity Project Management System" sign-off** connects to the Optimitron/1percenttreaty.org task management concept. Every task notification Jake receives is a touchpoint with the idea that humanity has a project management problem. The system IS the argument.
 - **Subject lines for task format** use PM conventions: [OVERDUE], REMINDER, ESCALATION, "will be reassigned." These are patterns billions of people recognize from work. The comedy is that the task is "End War and Disease" and the blocker is "Jake has not clicked a button."
-- **Deep links matter.** "Send to one more" should drop the user directly into Loop Screen 8a, pre-authenticated. Never send them back to the landing page.
+- **Deep links matter.** "Assign one more overdue task" should drop the user directly into Loop Screen 8a, pre-authenticated. Never send them back to the landing page.
 - **A/B test the two formats head-to-head.** Track: open rate, click-through rate, vote completion rate, spam report rate, and share rate (does the recipient then send to others?). Hypothesis: Task format wins on open rate and share rate; Sincere format wins on vote completion for close relationships. Blended: Task wins overall.
 
 ---
 
-*File version: v2 (2026-04-24). Companion to share-flow-v12-apr24.md.*
+*File version: v2 (2026-04-24). Companion to share-flow-v13-apr25.md.*

@@ -336,6 +336,7 @@ export async function resolveInvitationReferrer(inviteToken: string | null | und
       referrerUserId: true,
       referendumId: true,
       convertedVoteId: true,
+      recipientPersonId: true,
       recipientName: true,
       status: true,
       taskId: true,
@@ -385,6 +386,18 @@ export async function convertReferralInvitationForVote(input: {
           status: TaskStatus.VERIFIED,
           verifiedAt: now,
           verifiedByUserId: input.voterUserId,
+        },
+      });
+    }
+
+    if (invitation.recipientPersonId) {
+      await tx.user.updateMany({
+        where: {
+          id: input.voterUserId,
+          personId: null,
+        },
+        data: {
+          personId: invitation.recipientPersonId,
         },
       });
     }
@@ -466,6 +479,12 @@ export async function sendReferralInvitationEmail(input: {
   }
   if (invitation.convertedAt) {
     return { status: "converted" as const };
+  }
+  if (
+    invitation.status === ReferralInvitationStatus.DECLINED ||
+    invitation.status === ReferralInvitationStatus.CANCELLED
+  ) {
+    return { status: "inactive" as const };
   }
   if (invitation.recipientUnsubscribedAt) {
     return { status: "unsubscribed" as const };

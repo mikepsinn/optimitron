@@ -17,9 +17,9 @@ import {
 } from "@/lib/referral-invitation-copy";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import {
-  VOTER_LIVES_SAVED,
-  VOTER_SUFFERING_HOURS_PREVENTED,
-} from "@optimitron/data/parameters";
+  FLOW_VOTER_LIVES_SAVED_ROUNDED,
+  FLOW_VOTER_SUFFERING_HOURS_PREVENTED,
+} from "@/lib/treaty-share-flow-parameters";
 
 interface ReferralInvitation {
   id: string;
@@ -204,11 +204,11 @@ export function ReferralInvitationComposer() {
           <Send className="h-6 w-6 shrink-0" aria-hidden="true" />
           <div>
             <h3 className="text-xl font-black uppercase leading-tight">
-              Send One Tracked Invitation
+              Assign One Tracked Treaty Task
             </h3>
             <p className="text-sm font-bold leading-snug">
-              When {firstName || "they"} votes: +1 lifetime of suffering prevented,
-              +<ParameterValue param={VOTER_LIVES_SAVED} /> lives saved.
+              When {firstName || "they"} completes the vote task: +1 lifetime of
+              suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
             </p>
           </div>
         </div>
@@ -236,7 +236,7 @@ export function ReferralInvitationComposer() {
 
           <div className="space-y-2">
             <Label className="text-xs font-black uppercase" htmlFor="invite-recipient-email">
-              Their email (optional)
+              Their email (optional &mdash; we&apos;ll send overdue task reminders so you don&apos;t have to)
             </Label>
             <Input
               id="invite-recipient-email"
@@ -364,9 +364,9 @@ export function ReferralInvitationComposer() {
 
         <p className="text-xs font-bold leading-snug text-muted-foreground">
           Pending impact uses the current per-vote estimate:{" "}
-          <ParameterValue param={VOTER_SUFFERING_HOURS_PREVENTED} /> hours of suffering
-          prevented and <ParameterValue param={VOTER_LIVES_SAVED} /> lives saved per
-          confirmed vote.
+          <ParameterValue param={FLOW_VOTER_SUFFERING_HOURS_PREVENTED} figures={4} /> hours of suffering
+          prevented and <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved per
+          completed vote task.
         </p>
       </div>
     </Card>

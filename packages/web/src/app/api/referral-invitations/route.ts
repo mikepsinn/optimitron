@@ -129,6 +129,9 @@ export async function PATCH(request: Request) {
       if (result.status === "converted") {
         return NextResponse.json({ error: "This invitation already converted." }, { status: 409 });
       }
+      if (result.status === "inactive") {
+        return NextResponse.json({ error: "This invitation is no longer active." }, { status: 409 });
+      }
       if (result.status === "maxed") {
         return NextResponse.json({ error: "Recipient reminder cap reached." }, { status: 409 });
       }
@@ -184,12 +187,14 @@ export async function PATCH(request: Request) {
     const data =
       parsed.action === "decline"
         ? {
+            nextRecipientEmailAt: null,
             nextSenderNudgeAt: null,
             status: ReferralInvitationStatus.DECLINED,
           }
         : parsed.action === "cancel"
           ? {
               deletedAt: now,
+              nextRecipientEmailAt: null,
               nextSenderNudgeAt: null,
               status: ReferralInvitationStatus.CANCELLED,
             }

@@ -60,6 +60,7 @@ export const ROUTES = {
   census: "/census",
   checkIn: "/check-in",
   settings: "/settings",
+  send: "/send",
   transmit: "/transmit",
   // Futures
   wishonia: "/wishonia",
@@ -381,6 +382,15 @@ export const settingsLink: NavItem = {
   tagline: "Notification preferences and account toggles",
 
   cta: "Open Settings",
+};
+
+export const sendLink: NavItem = {
+  href: ROUTES.send,
+  label: "Assign One Overdue Task",
+  emoji: "📨",
+  description: "Assign one human the overdue task of voting on the 1% Treaty. The project is late by several centuries.",
+  tagline: "Assign one treaty task",
+  cta: "Assign Task",
 };
 
 export const transparencyLink: NavItem = {

@@ -212,7 +212,7 @@ People stop dying	Fewer dead humans per percentage point you shift	5.65 billion 
 TipThis Is a Better Deal Than Any Political Donation in History
 Your money stays with you if this fails and goes to VOTE point-holders if it succeeds (see Contributor Outcomes). Either way, it grows at 17.4% annually, reaching 11.1x by 2040. Name a political donation that does that.
 
-You do not need to tip the scale by yourself. The stakes are so large that even a tiny nudge is worth real money:
+You do not need to tip the scale by yourself. The stakes are so large that even a tiny probability shift is worth real money:
 
 Your unreimbursed contribution	Break-even probability shift (Treaty floor)	Break-even probability shift (Wishonia)
 $1K	0.0067%	0.0019%

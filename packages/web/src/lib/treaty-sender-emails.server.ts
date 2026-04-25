@@ -1,17 +1,27 @@
 import { nanoid } from "nanoid";
-import { EmailLogStatus, Prisma, ReferralInvitationStatus } from "@optimitron/db";
+import {
+  EmailLogStatus,
+  Prisma,
+  ReferralInvitationStatus,
+  VotePosition,
+} from "@optimitron/db";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
 import { sendResendEmail, type SendResult } from "@/lib/resend";
 import {
   buildTreatyRecipientVotedEmail,
+  buildTreatyMonthlyScorecardEmail,
+  buildTreatyNeverSharedReengagementEmail,
   buildTreatySecondSenderNudgeEmail,
   buildTreatySendOneMoreNudgeEmail,
   buildTreatyVoteConfirmedEmail,
 } from "@/lib/treaty-sender-email-sequence";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getBaseUrl } from "@/lib/url";
+
+const DEFAULT_TREATY_SENDER_EMAIL_BATCH_SIZE = 50;
 
 type TreatySenderEmailStatus =
   | SendResult["status"]
@@ -41,6 +51,14 @@ function formatLivesScore(invitationCount: number) {
   const value = invitationCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value;
   if (value === 0) return "0";
   return Number(value.toPrecision(3)).toLocaleString("en-US");
+}
+
+function formatCount(value: number) {
+  return value.toLocaleString("en-US");
+}
+
+function getTreatyMonthlyScorecardPeriodKey(now: Date) {
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 const sharedInvitationStatuses = [
@@ -337,7 +355,7 @@ export async function sendTreatySenderReminderEmailForInvitation(input: {
     }),
   ]);
 
-  const sendUrl = absoluteUrl(`${ROUTES.dashboard}#referral-invitations`);
+  const sendUrl = absoluteUrl(ROUTES.send);
   const emailLogId = nanoid();
   const unsubscribeUrl = buildUnsubscribeUrl({
     emailLogId,
@@ -379,4 +397,282 @@ export async function sendTreatySenderReminderEmailForInvitation(input: {
     toAddress: invitation.referrer.email,
     userId: invitation.referrer.id,
   });
+}
+
+export async function sendTreatyNeverSharedReengagementEmailForVote(input: {
+  referendumId: string;
+  userId: string;
+  now?: Date;
+}): Promise<TreatySenderEmailResult> {
+  const user = await prisma.user.findUnique({
+    where: { id: input.userId },
+    select: { email: true, id: true },
+  });
+
+  if (!user) return { status: "not_found" };
+  if (!user.email) return { status: "missing_email" };
+
+  const emailLogId = nanoid();
+  const sendUrl = absoluteUrl(ROUTES.send);
+  const unsubscribeUrl = buildUnsubscribeUrl({
+    emailLogId,
+    scope: "referral_sequence",
+    userId: user.id,
+  });
+  const email = buildTreatyNeverSharedReengagementEmail({
+    sendUrl,
+    unsubscribeUrl,
+  });
+
+  return sendClaimedTreatySenderEmail({
+    context: {
+      kind: "treaty_never_shared_reengagement",
+      referendumId: input.referendumId,
+    },
+    emailLogId,
+    html: email.html,
+    now: input.now,
+    subject: email.subject,
+    templateId: `treaty_never_shared_reengagement:${input.referendumId}`,
+    text: email.text,
+    toAddress: user.email,
+    userId: user.id,
+  });
+}
+
+export async function processDueTreatyNeverSharedReengagementEmails(
+  now: Date = new Date(),
+  batchSize: number = DEFAULT_TREATY_SENDER_EMAIL_BATCH_SIZE,
+) {
+  const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const candidates = await prisma.referendumVote.findMany({
+    where: {
+      answer: VotePosition.YES,
+      createdAt: { lte: cutoff },
+      deletedAt: null,
+      referendum: {
+        deletedAt: null,
+        slug: TREATY_REFERENDUM_SLUG,
+      },
+      user: {
+        emailLogs: {
+          none: {
+            templateId: { startsWith: "treaty_never_shared_reengagement:" },
+          },
+        },
+        sentReferralInvitations: {
+          none: {
+            deletedAt: null,
+          },
+        },
+      },
+    },
+    orderBy: [{ createdAt: "asc" }],
+    select: {
+      id: true,
+      referendumId: true,
+      userId: true,
+    },
+    take: batchSize,
+  });
+
+  let failures = 0;
+  let sent = 0;
+  let skipped = 0;
+
+  for (const candidate of candidates) {
+    try {
+      const result = await sendTreatyNeverSharedReengagementEmailForVote({
+        referendumId: candidate.referendumId,
+        userId: candidate.userId,
+        now,
+      });
+
+      if (result.status === "sent") {
+        sent += 1;
+      } else {
+        skipped += 1;
+      }
+    } catch {
+      failures += 1;
+    }
+  }
+
+  return {
+    failures,
+    scanned: candidates.length,
+    sent,
+    skipped,
+  };
+}
+
+export async function sendTreatyMonthlyScorecardEmailForUser(input: {
+  periodKey?: string;
+  userId: string;
+  now?: Date;
+}): Promise<TreatySenderEmailResult> {
+  const now = input.now ?? new Date();
+  const periodKey = input.periodKey ?? getTreatyMonthlyScorecardPeriodKey(now);
+  const user = await prisma.user.findUnique({
+    where: { id: input.userId },
+    select: { email: true, id: true },
+  });
+
+  if (!user) return { status: "not_found" };
+  if (!user.email) return { status: "missing_email" };
+
+  const [sentCount, votedCount, pendingCount, pendingInvitations, sharedFurtherCount] =
+    await prisma.$transaction([
+      prisma.referralInvitation.count({
+        where: {
+          deletedAt: null,
+          referrerUserId: user.id,
+          status: { in: sharedInvitationStatuses },
+        },
+      }),
+      prisma.referralInvitation.count({
+        where: {
+          convertedAt: { not: null },
+          deletedAt: null,
+          referrerUserId: user.id,
+        },
+      }),
+      prisma.referralInvitation.count({
+        where: {
+          convertedAt: null,
+          deletedAt: null,
+          referrerUserId: user.id,
+          status: { in: pendingInvitationStatuses },
+        },
+      }),
+      prisma.referralInvitation.findMany({
+        where: {
+          convertedAt: null,
+          deletedAt: null,
+          referrerUserId: user.id,
+          status: { in: pendingInvitationStatuses },
+        },
+        orderBy: [{ createdAt: "asc" }],
+        select: { recipientName: true },
+        take: 5,
+      }),
+      prisma.referralInvitation.count({
+        where: {
+          deletedAt: null,
+          referrer: {
+            referendumVotes: {
+              some: {
+                deletedAt: null,
+                referredByUserId: user.id,
+                referendum: {
+                  deletedAt: null,
+                  slug: TREATY_REFERENDUM_SLUG,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+  const pendingNames =
+    pendingInvitations.length > 0
+      ? pendingInvitations.map((invitation) => invitation.recipientName).join(", ")
+      : "no one";
+  const chainDepth = sharedFurtherCount > 0 ? 2 : sentCount > 0 ? 1 : 0;
+  const emailLogId = nanoid();
+  const dashboardUrl = absoluteUrl(ROUTES.dashboard);
+  const unsubscribeUrl = buildUnsubscribeUrl({
+    emailLogId,
+    scope: "referral_sequence",
+    userId: user.id,
+  });
+  const email = buildTreatyMonthlyScorecardEmail({
+    chainDepth,
+    confirmedLifetimeCount: formatCount(votedCount),
+    confirmedLives: formatLivesScore(votedCount),
+    dashboardUrl,
+    pendingLives: formatLivesScore(pendingCount),
+    pendingNames,
+    sentCount,
+    sharedFurtherCount,
+    totalLives: formatLivesScore(votedCount),
+    unsubscribeUrl,
+    votedCount,
+  });
+
+  return sendClaimedTreatySenderEmail({
+    context: {
+      chainDepth,
+      kind: "treaty_monthly_scorecard",
+      pendingCount,
+      periodKey,
+      sentCount,
+      sharedFurtherCount,
+      votedCount,
+    },
+    emailLogId,
+    html: email.html,
+    now,
+    subject: email.subject,
+    templateId: `treaty_monthly_scorecard:${periodKey}`,
+    text: email.text,
+    toAddress: user.email,
+    userId: user.id,
+  });
+}
+
+export async function processDueTreatyMonthlyScorecardEmails(
+  now: Date = new Date(),
+  batchSize: number = DEFAULT_TREATY_SENDER_EMAIL_BATCH_SIZE,
+) {
+  const periodKey = getTreatyMonthlyScorecardPeriodKey(now);
+  const candidates = await prisma.user.findMany({
+    where: {
+      deletedAt: null,
+      emailLogs: {
+        none: {
+          templateId: `treaty_monthly_scorecard:${periodKey}`,
+        },
+      },
+      sentReferralInvitations: {
+        some: {
+          deletedAt: null,
+          status: { in: sharedInvitationStatuses },
+        },
+      },
+    },
+    orderBy: [{ createdAt: "asc" }],
+    select: { id: true },
+    take: batchSize,
+  });
+
+  let failures = 0;
+  let sent = 0;
+  let skipped = 0;
+
+  for (const candidate of candidates) {
+    try {
+      const result = await sendTreatyMonthlyScorecardEmailForUser({
+        periodKey,
+        userId: candidate.id,
+        now,
+      });
+
+      if (result.status === "sent") {
+        sent += 1;
+      } else {
+        skipped += 1;
+      }
+    } catch {
+      failures += 1;
+    }
+  }
+
+  return {
+    failures,
+    scanned: candidates.length,
+    sent,
+    skipped,
+  };
 }

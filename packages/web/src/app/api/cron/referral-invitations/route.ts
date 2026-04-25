@@ -5,6 +5,10 @@ import {
   processDueReferralInvitationRecipientEmails,
   processDueReferralInvitationSenderEmails,
 } from "@/lib/referral-invitations.server";
+import {
+  processDueTreatyMonthlyScorecardEmails,
+  processDueTreatyNeverSharedReengagementEmails,
+} from "@/lib/treaty-sender-emails.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,11 +21,18 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [recipientEmails, senderEmails] = await Promise.all([
+    const [recipientEmails, senderEmails, reengagementEmails, monthlyScorecardEmails] = await Promise.all([
       processDueReferralInvitationRecipientEmails(),
       processDueReferralInvitationSenderEmails(),
+      processDueTreatyNeverSharedReengagementEmails(),
+      processDueTreatyMonthlyScorecardEmails(),
     ]);
-    return NextResponse.json({ recipientEmails, senderEmails });
+    return NextResponse.json({
+      recipientEmails,
+      senderEmails,
+      reengagementEmails,
+      monthlyScorecardEmails,
+    });
   } catch (error) {
     log.error("Failed to process referral invitation sequence", error);
     return NextResponse.json(
