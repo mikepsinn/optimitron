@@ -27,25 +27,24 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 These are technical-debt items surfaced by a 2026-04-25 architecture audit of the referral/email/share subsystem. They are not launch blockers but should land before the second non-treaty task family is wired up, because every one of them gets harder once a second caller exists.
 
-- [ ] Shrink and split `packages/web/src/lib/referral-invitations.server.ts` (823 lines).
+- [x] Shrink and split `packages/web/src/lib/referral-invitations.server.ts` (823 lines).
   - [x] First split: moved recipient invitation email send/cron logic and sender reminder cron scheduling into `packages/web/src/lib/email/referral-invitation-emails.server.ts`; lifecycle module is down to ~414 lines and no longer imports Resend or treaty sender reminder dispatch.
-  - It currently orchestrates invitation CRUD, email dispatch, share-attempt logging, hypercert linkage, vote-token linkage, and task creation in one file.
-  - Move email send into the email module; keep this file focused on invitation lifecycle transitions.
-  - Refactor `sendReferralInvitationEmail()` (line 526, ~170 lines) into focused helpers: validate, build messages, record share attempt, dispatch email, persist status.
+  - [x] Second split: moved invite task key/title/description generation, task creation, and conversion verification updates into `packages/web/src/lib/referral-invitation-tasks.server.ts`; lifecycle module is down to ~406 lines.
+  - The remaining lifecycle file owns invitation validation, recipient person linkage, status transitions, and share-attempt recording only.
 - [ ] Merge `packages/web/src/lib/referral-email-sequence.ts` (784 lines) and `packages/web/src/lib/referral-invitation-email-sequence.ts` (268 lines) into a single sequence module.
   - Both expose delay schedules, max-step constants (`REFERRAL_*_MAX_STEP`), subject lists, and template builders. Land one ordered sequence per role (recipient, sender) with a single discriminator.
-  - This is the natural home for the eventual `TaskMessageTemplate` / `TaskMessageVariant` lookup.
+  - This is the natural home for the eventual `TaskEmailTemplate` / `TaskEmailVariant` lookup.
 - [x] Extract small shared modules for cross-file primitives.
   - Server `sha256Hex()` lives in `packages/web/src/lib/crypto.server.ts`; both prior duplicates removed.
   - `SENDER_REMINDER_DELAY_DAYS` is now exported from `referral-invitations.server.ts` and imported by the API route.
   - `getReferralEmailBatchSize()` lives in `packages/web/src/lib/email/batch.ts`; the duplicate `getReferralInvitationEmailBatchSize()` was deleted and call sites updated.
   - `MS_PER_DAY` constant added in `packages/web/src/lib/time.ts`; the inline `24 * 60 * 60 * 1000` literals in `referral-invitations.server.ts`, `referral-email.server.ts`, and `app/api/referral-invitations/route.ts` now use it. Other inline occurrences (`treaty-sender-emails.server.ts:447`, `census-aggregation.server.ts:69`) left untouched and can be migrated opportunistically.
   - Browser-side async `sha256Hex` in `components/landing/PostVoteReminders.tsx:30` and `components/tasks/task-row-share.tsx:29` is still duplicated — Web Crypto is async; not worth the risk in this pass.
-- [ ] Group email infrastructure under `packages/web/src/lib/email/`.
+- [x] Group email infrastructure under `packages/web/src/lib/email/`.
   - `email-urls.ts`, `magic-link-email.ts`, `referral-email.server.ts`, `referral-email-sequence.ts`, `referral-invitation-email-sequence.ts`, and `treaty-sender-emails.server.ts` currently sit flat in `lib/`.
   - `referral-invitation-emails.server.ts` now lives under `lib/email/` and owns recipient invitation email send/cron plus sender reminder cron scheduling.
   - [x] Moved flat email infrastructure into `packages/web/src/lib/email/`: URL helpers, magic-link email, referral sequence sender, referral sequence copy builders, recipient invitation sequence builders, treaty sender sequence builders, treaty sender dispatcher, and the Resend wrapper. Updated affected route/test imports.
-  - **IN PROGRESS:** Centralize the Resend wrapper (`sendResendEmail`, `sendExternalResendEmail`, `isResendConfigured`) and add a single `createEmailLog()` helper that owns QUEUED -> SENT/FAILED transitions instead of inline writes scattered across the email files.
+  - [x] Centralized queued `EmailLog` creation and status transitions in `packages/web/src/lib/email/email-log.server.ts`; referral sequence and treaty sender email paths now share `createEmailLog()`, duplicate detection, and SENT/FAILED updates.
 - [x] Unify `ShareAttempt` writes through one helper.
   - `recordShareAttempt(tx, { ... })` now lives in `packages/web/src/lib/share-attempts.server.ts` and computes both `templateHash` and `renderedHash` from the inputs, eliminating the per-call `sha256Hex` plumbing.
   - The two creation paths in `referral-invitations.server.ts` (copied invite, email-send) both go through the helper. Future task families should call the same helper.
@@ -53,9 +52,10 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
 - [x] Fix `getSenderInviteEmailFromAddress()` in `referral-invitations.server.ts`.
   - Extracted shared `parseEmailFromHeader()` and `sanitizeDisplayName()` into `packages/web/src/lib/email/from-address.ts` with full edge-case coverage (`from-address.test.ts`).
   - `referral-invitations.server.ts:getSenderInviteEmailFromAddress`, `resend.ts:getEmailFromAddress`, and `resend.ts:buildUnsubscribeHeaders` all now use the shared parser; removed the duplicated `/^.*<|>.*$/g` regex from both files.
-- [ ] Audit the `lib/alignment-legislative-*` file split before the next alignment slice.
+- [x] Audit the `lib/alignment-legislative-*` file split before the next alignment slice.
   - `alignment-legislative-sync.server.ts` (369 lines), `alignment-legislative-config.ts` (445 lines), and `alignment-legislative-classification.ts` (193 lines) have overlapping concerns and inconsistent naming.
   - Decide between a `lib/alignment/legislative/` subdirectory with clear boundaries (sync vs. config vs. classification) or a merge into a single `alignment-legislative.server.ts`.
+  - **Decision 2026-04-25:** Keep the three-file split for now. `config` is static feeds/category rules, `classification` is pure bill classification used by API/chat/CBA callers, and `sync.server` owns external fetch/dedupe/profile derivation. A subdirectory rename can wait until the next alignment feature touches these files; no merge is justified.
 - [ ] Audit found clean and out of scope (do not re-check unless behavior changes):
   - Library packages (`optimizer`, `wishocracy`, `opg`, `obg`, `data`) do not import the Prisma client at runtime — boundary intact.
   - `getPersonHref()` is used at all 16 call sites; no raw `/people/${id}` URLs.
@@ -66,6 +66,7 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
 
 ## Highest Priority
 
+- [ ] **IN PROGRESS:** Add an MCP server roadmap section from the 2026-04-25 agent-usage feedback, with the first priority on optimization-rate task ranking and the second priority on task/parameter searchability.
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
   - Use Optimitron's canonical parameter exports from `packages/data/src/parameters/parameters-calculations-citations.ts`.
   - Use `packages/web/src/components/shared/ParameterValue.tsx` for visible sourced numbers wherever the JSX shape allows it.
@@ -191,7 +192,7 @@ This section tracks the analytics/measurement layer that sits on top of the gene
   - Later promote variants based on replication coefficient, with guardrails for spam reports and unsubscribe rates.
 - [ ] **Outbound task assignment for external organizations** (the "you have been assigned a task on the Earth Optimization tree" cold-outreach feature).
   - Use the existing task system to track work owed by external orgs we need partnerships from: Wefunder (Track 3 partnership), securities law firms (compliance review), curated companies (apply for pool inclusion), Kingscrowd (curation overlay), media outlets (coverage), allied nonprofits, etc.
-  - Each external task records: target org, contact email, assigned task, deadline, current status, contact-attempt history. Reuses `Task` + `TaskMessageAttempt` models from the generic task migration; no parallel system.
+  - Each external task records: target org, contact email, assigned task, deadline, current status, contact-attempt history. Reuses `Task` + `TaskEmailAttempt` models from the generic task migration; no parallel system.
   - Cold-outreach reminder cadence is **distinct** from friend-to-friend referral reminders: lower frequency (no more than 2 follow-ups over 4 weeks), explicit disclosure that the recipient did not opt in, prominent and trivially actionable opt-out, no embedded tracking pixel, no engagement-bait subject lines. Treat this as cold sales outreach with a Wishonia voice, not as transactional or referral email.
   - Wishonia voice fits naturally — *"Wefunder has been notified. Wefunder has not responded. The Commission has noted this."* — but the funny framing must not paper over the fact that this is unsolicited contact. The voice is the wrapper; the substance is professional cold outreach.
   - Risks to manage: spam-filter reputation damage from any volume of "you have an overdue task" cold emails; legal exposure if the recipient is in a jurisdiction with strict cold-outreach rules (CAN-SPAM, GDPR, CASL); brand damage if the gag reads as obnoxious to a recipient who is otherwise sympathetic; corporate compliance teams flagging the messages.
@@ -201,37 +202,45 @@ This section tracks the analytics/measurement layer that sits on top of the gene
 
 ## Treaty-To-Generic Task System Migration
 
-The task system pretends to be generic but the email sequences, post-vote share flow, share templates, and parts of the cron/lifecycle layer are bolted to the 1% Treaty. The next non-treaty task family will tear half of this code apart unless it lands behind a data-driven layer first. Confirmed by the 2026-04-25 audit. Phases are ordered so each one unblocks the next; every phase should ship byte-identical treaty output until a second task family flips a `TaskMessageTemplate` row to its own copy.
+The task system pretends to be generic but the email sequences, post-vote share flow, share templates, and parts of the cron/lifecycle layer are bolted to the 1% Treaty. The next non-treaty task family will tear half of this code apart unless it lands behind a data-driven layer first. Confirmed by the 2026-04-25 audit. Phases are ordered so each one unblocks the next; every phase should ship byte-identical treaty output until a second task family flips a `TaskEmailTemplate` row to its own copy.
 
 ### Phase A — Schema for task-driven messaging
 
-- [ ] Add `TaskMessageTemplate` and `TaskMessageVariant` models in `packages/db/prisma/schema.prisma`.
-  - `TaskMessageTemplate` keyed by `(taskId, audience, role)` where `audience` ∈ {`RECIPIENT`, `SENDER`, `OBSERVER`} and `role` ∈ {`INVITATION`, `REMINDER`, `SCORECARD`, `RE_ENGAGEMENT`, `VOTE_CONFIRMED`, `RECIPIENT_VOTED`, `SHARE`}.
-  - `TaskMessageVariant` keyed by `(templateId, step, format)` with `subject`, `htmlBody`, `textBody`, `delayDays`, `senderIdentity`, `signature`, `footer`, `unsubscribeScope`, `isActive`, `weight`.
-  - Link variants to `ShareAttempt` via `templateId` so the replication ledger remains the single source of truth.
-  - Seed deterministic defaults that match current treaty copy verbatim. Do **not** reuse `TrackingReminder` (health-variable measurement only).
-- [ ] Add `TaskMessageAttempt` model to own per-recipient send state currently overloaded onto `ReferralInvitation`.
-  - Fields: `taskId`, `recipientPersonId`, `recipientEmail`, `audience`, `role`, `format`, `step`, `nextSendAt`, `lastSentAt`, `unsubscribeToken`, `templateVariantId`, `shareAttemptId`, `status`, `errorMessage`, `providerMessageId`.
-  - Migrate these `ReferralInvitation` columns onto it: `recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`.
-  - `ReferralInvitation` keeps the named-invite lifecycle only: invite token, recipient identity, message format choice, copied/sent state, conversion linkage.
-- [ ] Backfill `Task.contactUrl`, `Task.contactLabel`, `Task.contactTemplate`, `Task.dueAt`, `Task.assigneePersonId`, `Task.parentTaskId` for every existing task. Add a contract test asserting any task with `audience` reminders has non-null `contactUrl` and `contactLabel`.
+> **Completed 2026-04-25** — Schema-additions sub-slice added `TaskEmail*` enums/models, `ShareAttempt.taskEmailVariantId`, relation backrefs, and reviewable migration `20260425170000_task_email_system`. The data-backfill sub-slice (migrating `ReferralInvitation` email-sequence columns onto `TaskEmailAttempt`) is still separate follow-up work.
+>
+> **Naming decision (2026-04-25):** Models renamed from `TaskMessage*` → `TaskEmail*` to avoid confusion with the existing `TaskComment` model (user-authored discussion) and `Notification` model (in-app), and to be honest about the email-only scope. If SMS / push channels are added later, they get sibling models (`TaskSMS*`), not retrofitted polymorphism.
+
+- [x] Add `TaskEmailTemplate` and `TaskEmailVariant` models in `packages/db/prisma/schema.prisma`.
+  - `TaskEmailTemplate` keyed by `(taskId, audience, role)` where `audience` ∈ {`RECIPIENT`, `SENDER`, `OBSERVER`} and `role` ∈ {`INVITATION`, `REMINDER`, `SCORECARD`, `RE_ENGAGEMENT`, `VOTE_CONFIRMED`, `RECIPIENT_VOTED`, `SHARE`}.
+  - `TaskEmailVariant` keyed by `(templateId, step, format)` with `subject`, `htmlBody`, `textBody`, `delayDays`, `senderIdentity`, `signature`, `footer`, `unsubscribeScope`, `isActive`, `weight`.
+  - Link variants to `ShareAttempt` via a new nullable `taskEmailVariantId` FK on `ShareAttempt` so the replication ledger keeps a stable pointer even after template renames.
+  - Seed deterministic defaults that match current treaty copy verbatim (Phase B work). Do **not** reuse `TrackingReminder` (health-variable measurement only).
+- [x] Add `TaskEmailAttempt` model to own per-recipient send state currently overloaded onto `ReferralInvitation`.
+  - Fields: `taskId`, `recipientPersonId`, `recipientUserId`, `recipientEmail`, `audience`, `role`, `format`, `step`, `nextSendAt`, `lastSentAt`, `unsubscribeToken`, `templateVariantId`, `shareAttemptId`, `emailLogId`, `referralInvitationId`, `status`, `errorMessage`, `providerMessageId`, `context`.
+  - Migrate these `ReferralInvitation` columns onto it (separate slice — schema lands first, backfill follows): `recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`.
+  - After backfill: `ReferralInvitation` keeps the named-invite lifecycle only — invite token, recipient identity, message format choice, copied/sent state, conversion linkage.
+- [x] Backfill `Task.contactUrl`, `Task.contactLabel`, `Task.contactTemplate`, `Task.dueAt`, `Task.assigneePersonId`, `Task.parentTaskId` for every existing task. Add a contract test asserting any task with `audience` reminders has non-null `contactUrl` and `contactLabel`.
+  - Seed now fills contact labels/URLs/templates and due dates for the root, treaty, dFDA, AMF, and per-leader signer tasks where applicable.
+  - `seed.integration.test.ts` asserts every treaty signer task has parent, assignee, due date, contact URL/label/template, and any future recipient/sender `TaskEmailTemplate` points at a task with contact URL/label.
 
 ### Phase B — One generic email-sequence engine
 
-- [ ] Collapse the separate builders into one `renderTaskMessage({ task, attempt, variant, tokens })` returning `{ subject, html, text }`. Replaces:
+- [ ] Collapse the separate builders into one `renderTaskEmail({ task, attempt, variant, tokens })` returning `{ subject, html, text }`. Replaces:
   - `buildReferralSequenceEmail` (`lib/referral-email-sequence.ts`)
   - `buildReferralInvitationRecipientEmail` (`lib/referral-invitation-email-sequence.ts`)
   - `buildTreatyVoteConfirmedEmail`, `buildTreatyRecipientVotedEmail`, `buildTreatySenderReminderEmail`, monthly-scorecard, and re-engagement builders (`lib/treaty-sender-email-sequence.ts`)
-- [ ] Move all hardcoded subject pools and body copy into `TaskMessageVariant` rows: `SUBJECT_POOL_GENERIC` / `SUBJECT_POOL_PRESIDENT` (`referral-email-sequence.ts:284-304`), recipient subjects (`referral-invitation-email-sequence.ts:80-241`), sender reminder subjects (`treaty-sender-email-sequence.ts:152-254`).
+- [ ] Move all hardcoded subject pools and body copy into `TaskEmailVariant` rows: `SUBJECT_POOL_GENERIC` / `SUBJECT_POOL_PRESIDENT` (`referral-email-sequence.ts:284-304`), recipient subjects (`referral-invitation-email-sequence.ts:80-241`), sender reminder subjects (`treaty-sender-email-sequence.ts:152-254`).
 - [ ] Replace `getTreatyParentTaskHref()`, `ROUTES.send`, `ROUTES.dashboard` reads in the email layer with `task.contactUrl` / `task.dashboardUrl` from the row. The email engine must not import app-route constants.
 - [ ] Drop the `referendum.slug === TREATY_REFERENDUM_SLUG` filters at `treaty-sender-emails.server.ts:455` (re-engagement) and `:569` (monthly scorecard). Replace with a `taskFamily` or `taskId IN (...)` filter so other campaigns can opt in.
-- [ ] Rename cron functions: `processDueTreatyMonthlyScorecardEmails` → `processDueTaskScorecardEmails`; `processDueTreatyNeverSharedReengagementEmails` → `processDueTaskReengagementEmails`; `processDueReferralInvitationRecipientEmails` → `processDueTaskMessageReminders`; `processDueReferralInvitationSenderEmails` → `processDueTaskSenderReminders`. Update callers and tests in the same change.
+- [ ] Rename cron functions: `processDueTreatyMonthlyScorecardEmails` → `processDueTaskScorecardEmails`; `processDueTreatyNeverSharedReengagementEmails` → `processDueTaskReengagementEmails`; `processDueReferralInvitationRecipientEmails` → `processDueTaskEmailReminders`; `processDueReferralInvitationSenderEmails` → `processDueTaskSenderReminders`. Update callers and tests in the same change.
 - [ ] After the engine ships, delete `lib/referral-email-sequence.ts`, `lib/referral-invitation-email-sequence.ts`, and `lib/treaty-sender-email-sequence.ts`. (The merge to one sequence module in **Architecture Refactoring And Deduplication** is the staging step that immediately precedes this delete.)
 
 ### Phase C — Generic lifecycle, accountability, and cron
 
-- [ ] Replace `isTreatySignerTaskKey()` filters at `lib/tasks/overdue-signers.server.ts:64,87` and `lib/tasks/user-president.server.ts:29-44` with predicate filters: `task.dueAt < now && task.assigneePersonId && task.status !== TaskStatus.VERIFIED`. Leader/president highlights then work for any overdue task with an assigned official.
-- [ ] Move treaty-only follow-up calls out of `app/api/referendums/[slug]/vote/route.ts:15-18`. Replace direct calls to `sendTreatyRecipientVotedEmailForInvitation` and `sendTreatyVoteConfirmedEmailForUser` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskMessageTemplate` rows the task has registered.
+- [x] Replace `isTreatySignerTaskKey()` filters at `lib/tasks/overdue-signers.server.ts:64,87` and `lib/tasks/user-president.server.ts:29-44` with predicate filters: `task.dueAt < now && task.assigneePersonId && task.status !== TaskStatus.VERIFIED`. Leader/president highlights then work for any overdue task with an assigned official.
+  - `countOverdueSigners()` and `getOverdueSignerHighlights()` now key off overdue assigned-official task data instead of treaty task-key prefixes.
+  - Added coverage proving a non-treaty assigned official task can be highlighted.
+- [ ] Move treaty-only follow-up calls out of `app/api/referendums/[slug]/vote/route.ts:15-18`. Replace direct calls to `sendTreatyRecipientVotedEmailForInvitation` and `sendTreatyVoteConfirmedEmailForUser` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskEmailTemplate` rows the task has registered.
 - [ ] Rename treaty-prefixed helpers in `lib/treaty-sender-emails.server.ts` (`sendTreaty*ForInvitation`, `sendTreatyVoteConfirmedEmailForUser`) to drop `Treaty` once the generic engine handles them. Delete the file when empty.
 - [ ] Drop the hardcoded task-key prefix `program:one-percent-treaty:referral-invitation` (`referral-invitations.server.ts:40`) and the `TREATY_REFERENDUM_SLUG` defaults (`:23`, `:236`, `:286`). Each invitation records `taskId` and (optionally) `referendumId` from the calling context.
 - [ ] Generalize the invitation task title/description templates (`referral-invitations.server.ts:155-164`) so they read from `task.contactLabel` / `task.contactTemplate` instead of "1% Treaty" inline strings.
@@ -247,7 +256,7 @@ The principle for this phase: data-drive the components whose variation is *temp
 - [ ] Parameterize `components/landing/ReferralInvitationComposer.tsx`: header "Assign One Earth Optimization Task" (line 239), "vote task" copy (lines 242, 271), and the default `messageFormat` (line 38) all derive from `task.invitationConfig`.
 - [ ] Rewrite `app/send/page.tsx`: replace the hardcoded hierarchy "Optimize Earth contains End War and Disease, which contains Ratify the 1% Treaty…" (lines 29-31) with `getTaskAncestors(task.id)` plus a copy template.
 - [ ] Replace `const isTreaty = program.id === "1-pct-treaty"` at `app/tasks/page.tsx:83` with a `program.hasDetailedSubtaskView` boolean (or equivalent metadata) on the program record. The branch at lines 84-97 then keys off task data.
-- [ ] Keep the Wishonia voice and project-management framing intact through these renames — the goal is to data-drive the copy, not flatten its tone. Seeded `TaskMessageVariant` rows for the treaty must read identically to today's hand-written strings.
+- [ ] Keep the Wishonia voice and project-management framing intact through these renames — the goal is to data-drive the copy, not flatten its tone. Seeded `TaskEmailVariant` rows for the treaty must read identically to today's hand-written strings.
 
 **Structural — extract primitives, keep narrative as code:**
 
@@ -262,9 +271,9 @@ The principle for this phase: data-drive the components whose variation is *temp
 
 The honest reason to move share templates into a data layer is **so non-engineers can edit copy and so the replication-coefficient analytics in "Task Reminder Replication System" can A/B test variants**. It is *not* "campaign #2 will reuse the treaty's templates" — campaign #2 will author its own templates from scratch, just as the treaty did. The shared infrastructure is the engine and the schema, not the copy.
 
-- [ ] Migrate the 17+ share-template variants at `lib/tasks/share-templates.ts:85-380` into `TaskMessageVariant` rows under `audience=OBSERVER` / `role=SHARE`. Each variant carries its own token list and copy. Wins: ops can edit copy without a deploy, and the analytics layer can score variants by replication coefficient.
+- [ ] Migrate the 17+ share-template variants at `lib/tasks/share-templates.ts:85-380` into `TaskEmailVariant` rows under `audience=OBSERVER` / `role=SHARE`. Each variant carries its own token list and copy. Wins: ops can edit copy without a deploy, and the analytics layer can score variants by replication coefficient.
 - [ ] Replace treaty-specific token names (`eradication_years_treaty`, `treaty_url`, `treaty_hale_gain`, etc. at `share-templates.ts:35-49`) with a small generic registry that resolves tokens from `task.contextJson` plus a few standard names (`{taskUrl}`, `{leaderName}`, `{daysOverdue}`, `{impactLabel}`, `{impactValue}`). The treaty stays the only campaign with `eradication_years` until a second campaign actually needs it.
-- [ ] Expose the `lib/treaty-share-flow-parameters.ts` outputs through `task.messageTemplate.flowMetrics` instead of compile-time imports. Once nothing imports the file directly, shrink it to a seed script that populates the treaty's `TaskMessageTemplate` row (don't delete; the seed *is* the canonical treaty config).
+- [ ] Expose the `lib/treaty-share-flow-parameters.ts` outputs through `task.emailTemplate.flowMetrics` instead of compile-time imports. Once nothing imports the file directly, shrink it to a seed script that populates the treaty's `TaskEmailTemplate` row (don't delete; the seed *is* the canonical treaty config).
 
 ### Sequencing notes
 

@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid";
 import {
   EmailLogStatus,
-  Prisma,
   ReferralInvitationStatus,
   VotePosition,
 } from "@optimitron/db";
+import type { Prisma } from "@optimitron/db";
+import { claimEmailLog, markEmailLogStatus } from "@/lib/email/email-log.server";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
@@ -33,10 +34,6 @@ interface TreatySenderEmailResult {
   emailLogId?: string | null;
   providerMessageId?: string | null;
   status: TreatySenderEmailStatus;
-}
-
-function isUniqueConstraintError(error: unknown) {
-  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
 }
 
 function getErrorMessage(error: unknown) {
@@ -72,53 +69,6 @@ const pendingInvitationStatuses = [
   ReferralInvitationStatus.SENT,
 ];
 
-async function claimTreatySenderEmail(input: {
-  context: Prisma.InputJsonValue;
-  emailLogId: string;
-  subject: string;
-  templateId: string;
-  toAddress: string;
-  userId: string;
-  now: Date;
-}) {
-  try {
-    await prisma.emailLog.create({
-      data: {
-        id: input.emailLogId,
-        userId: input.userId,
-        toAddress: input.toAddress,
-        subject: input.subject,
-        templateId: input.templateId,
-        sendContext: input.context,
-        status: EmailLogStatus.QUEUED,
-        sentAt: input.now,
-      },
-    });
-    return { duplicate: false as const, emailLogId: input.emailLogId };
-  } catch (error) {
-    if (isUniqueConstraintError(error)) {
-      return { duplicate: true as const, emailLogId: null };
-    }
-    throw error;
-  }
-}
-
-async function markTreatySenderEmailStatus(
-  emailLogId: string,
-  status: typeof EmailLogStatus[keyof typeof EmailLogStatus],
-  errorMessage?: string | null,
-  providerMessageId?: string | null,
-) {
-  await prisma.emailLog.update({
-    where: { id: emailLogId },
-    data: {
-      errorMessage: errorMessage ?? null,
-      status,
-      ...(providerMessageId ? { providerMessageId } : {}),
-    },
-  });
-}
-
 async function sendClaimedTreatySenderEmail(input: {
   context: Prisma.InputJsonValue;
   emailLogId: string;
@@ -131,14 +81,14 @@ async function sendClaimedTreatySenderEmail(input: {
   now?: Date;
 }): Promise<TreatySenderEmailResult> {
   const now = input.now ?? new Date();
-  const claim = await claimTreatySenderEmail({
-    context: input.context,
-    emailLogId: input.emailLogId,
+  const claim = await claimEmailLog({
+    id: input.emailLogId,
+    now,
+    sendContext: input.context,
     subject: input.subject,
     templateId: input.templateId,
     toAddress: input.toAddress,
     userId: input.userId,
-    now,
   });
 
   if (claim.duplicate || !claim.emailLogId) {
@@ -157,12 +107,11 @@ async function sendClaimedTreatySenderEmail(input: {
     });
 
     if (result.status === "sent") {
-      await markTreatySenderEmailStatus(
-        claim.emailLogId,
-        EmailLogStatus.SENT,
-        null,
-        result.id,
-      );
+      await markEmailLogStatus({
+        emailLogId: claim.emailLogId,
+        providerMessageId: result.id,
+        status: EmailLogStatus.SENT,
+      });
       return {
         emailLogId: claim.emailLogId,
         providerMessageId: result.id,
@@ -174,14 +123,18 @@ async function sendClaimedTreatySenderEmail(input: {
       result.status === "suppressed"
         ? "suppressed:user_opt_out"
         : `send_aborted:${result.status}`;
-    await markTreatySenderEmailStatus(claim.emailLogId, EmailLogStatus.FAILED, errorMessage);
+    await markEmailLogStatus({
+      emailLogId: claim.emailLogId,
+      errorMessage,
+      status: EmailLogStatus.FAILED,
+    });
     return { emailLogId: claim.emailLogId, status: result.status };
   } catch (error) {
-    await markTreatySenderEmailStatus(
-      claim.emailLogId,
-      EmailLogStatus.FAILED,
-      getErrorMessage(error),
-    ).catch(() => undefined);
+    await markEmailLogStatus({
+      emailLogId: claim.emailLogId,
+      errorMessage: getErrorMessage(error),
+      status: EmailLogStatus.FAILED,
+    }).catch(() => undefined);
     throw error;
   }
 }

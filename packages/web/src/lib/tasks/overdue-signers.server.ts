@@ -6,7 +6,6 @@ import {
   type TaskAccountabilityLike,
   type TaskDelayStats,
 } from "./accountability";
-import { isTreatySignerTaskKey } from "./task-keys";
 
 export interface OverdueSignerHighlight {
   taskId: string;
@@ -24,6 +23,7 @@ export interface OverdueSignerHighlight {
 export interface SignerTaskLike extends TaskAccountabilityLike {
   id: string;
   taskKey: string | null;
+  assigneePersonId?: string | null;
   roleTitle?: string | null;
   assigneeAffiliationSnapshot?: string | null;
   assigneePerson?: {
@@ -55,14 +55,22 @@ function compareByDeathsDesc(
   return b.stats.currentDelayDays - a.stats.currentDelayDays;
 }
 
+function hasAssignedOfficial(task: SignerTaskLike): boolean {
+  return Boolean(task.assigneePersonId || task.assigneePerson);
+}
+
+function isOverdueAssignedOfficialTask(task: SignerTaskLike, now: Date): boolean {
+  if (!hasAssignedOfficial(task)) return false;
+  return getTaskDelayStats(task, now).isOverdue;
+}
+
 export function countOverdueSigners<T extends SignerTaskLike>(
   decoratedTasks: readonly T[],
   now: Date,
 ): number {
   let count = 0;
   for (const task of decoratedTasks) {
-    if (!isTreatySignerTaskKey(task.taskKey)) continue;
-    if (getTaskDelayStats(task, now).isOverdue) count += 1;
+    if (isOverdueAssignedOfficialTask(task, now)) count += 1;
   }
   return count;
 }
@@ -84,7 +92,7 @@ export function getOverdueSignerHighlights<T extends SignerTaskLike>(input: {
   const candidates = input.decoratedTasks
     .filter(
       (task): task is T & { assigneePerson: NonNullable<T["assigneePerson"]> } =>
-        isTreatySignerTaskKey(task.taskKey) && task.assigneePerson != null,
+        task.assigneePerson != null && isOverdueAssignedOfficialTask(task, input.now),
     )
     .map((task) => ({ task, stats: getTaskDelayStats(task, input.now) }))
     .filter(({ stats }) => stats.isOverdue);

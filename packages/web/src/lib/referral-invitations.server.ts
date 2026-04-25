@@ -4,13 +4,13 @@ import {
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
   ShareSource,
-  TaskCategory,
-  TaskClaimPolicy,
-  TaskDifficulty,
-  TaskStatus,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import {
+  createReferralInvitationTask,
+  verifyReferralInvitationTask,
+} from "@/lib/referral-invitation-tasks.server";
 import { recordShareAttempt } from "@/lib/share-attempts.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import {
@@ -23,7 +23,6 @@ import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 const INVITE_TOKEN_SIZE = 24;
 const UNSUBSCRIBE_TOKEN_SIZE = 32;
 const CREATE_LIMIT_PER_HOUR = 50;
-const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -85,23 +84,6 @@ export function buildReferralInvitationUnsubscribeUrl(input: {
   url.searchParams.set("i", input.invitationId);
   url.searchParams.set("t", input.token);
   return url.toString();
-}
-
-function buildReferralInvitationTaskKey(inviteToken: string) {
-  return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
-}
-
-function buildReferralInvitationTaskTitle(recipientName: string) {
-  const firstName = getReferralInvitationFirstName(recipientName) || recipientName;
-  return `Invite ${firstName} to vote on the 1% Treaty`;
-}
-
-function buildReferralInvitationTaskDescription(recipientName: string) {
-  const firstName = getReferralInvitationFirstName(recipientName) || recipientName;
-  return [
-    `${firstName} was invited to vote on the 1% Treaty.`,
-    "The task is complete when their verified vote converts the invitation.",
-  ].join("\n\n");
 }
 
 export async function createReferralInvitation(input: {
@@ -212,35 +194,15 @@ export async function createReferralInvitation(input: {
       : null;
 
     if (!linkedTaskId) {
-      const task = await tx.task.create({
-        data: {
-          assigneeAffiliationSnapshot: recipientName,
-          assigneePersonId: recipientPerson?.id ?? null,
-          category: TaskCategory.OUTREACH,
-          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-          contactLabel: "Complete treaty vote",
-          contactTemplate: taskContactTemplate,
-          contactUrl: inviteUrl,
-          contextJson: {
-            inviteToken,
-            kind: "referral_invitation",
-            referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
-          },
-          description: buildReferralInvitationTaskDescription(recipientName),
-          difficulty: TaskDifficulty.TRIVIAL,
-          estimatedEffortHours: 0.01,
-          interestTags: ["one-percent-treaty", "war-on-disease"],
-          isPublic: false,
-          ownerUserId: input.referrerUserId,
-          roleTitle: "Referred treaty voter",
-          skillTags: ["voting"],
-          status: TaskStatus.ACTIVE,
-          taskKey: buildReferralInvitationTaskKey(inviteToken),
-          title: buildReferralInvitationTaskTitle(recipientName),
-        },
-        select: { id: true },
+      linkedTaskId = await createReferralInvitationTask(tx, {
+        contactTemplate: taskContactTemplate,
+        contactUrl: inviteUrl,
+        inviteToken,
+        ownerUserId: input.referrerUserId,
+        recipientName,
+        recipientPersonId: recipientPerson?.id ?? null,
+        referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
       });
-      linkedTaskId = task.id;
     }
 
     return tx.referralInvitation.create({
@@ -397,21 +359,12 @@ export async function convertReferralInvitationForVote(input: {
     });
 
     if (invitation.taskId) {
-      await tx.task.updateMany({
-        where: {
-          id: invitation.taskId,
-          deletedAt: null,
-          status: { not: TaskStatus.VERIFIED },
-        },
-        data: {
-          actualEffortSeconds: 30,
-          completedAt: now,
-          completionEvidence:
-            `${invitation.recipientName} verified a vote through referral invitation ${invitation.id}.`,
-          status: TaskStatus.VERIFIED,
-          verifiedAt: now,
-          verifiedByUserId: input.voterUserId,
-        },
+      await verifyReferralInvitationTask(tx, {
+        invitationId: invitation.id,
+        recipientName: invitation.recipientName,
+        taskId: invitation.taskId,
+        verifiedAt: now,
+        verifiedByUserId: input.voterUserId,
       });
     }
 

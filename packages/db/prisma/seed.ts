@@ -813,6 +813,12 @@ const TREATY_SECONDS_PER_SIGNATURE = 30;
 const TREATY_TOTAL_EFFORT_HOURS =
   (WORLD_LEADERS.length * TREATY_SECONDS_PER_SIGNATURE) / 3600;
 const TREATY_PER_SIGNER_EFFORT_HOURS = TREATY_SECONDS_PER_SIGNATURE / 3600;
+const TREATY_SIGNER_CONTACT_TEMPLATE = [
+  "Your employee has not finished {{taskTitle}}. It is a thirty-second task. One signature. A wrist movement.",
+  "It has been sitting on a desk for {{delayLabel}}. A desk. Not a war. A desk.",
+  "Delay body count so far: {{humanLives}} humans have permanently stopped, {{sufferingHours}} hours of suffering accumulated, {{economicLoss}} evaporated. While the paperwork waited.",
+  "The pen is here: {{taskUrl}}",
+].join(" ");
 
 async function seedTreatyTasks() {
   console.log("📋 Seeding treaty tasks...");
@@ -929,6 +935,10 @@ async function seedTreatyTasks() {
       status: "ACTIVE",
       isPublic: true,
       dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
+      contactLabel: "Open Earth Optimization task tree",
+      contactUrl: "/tasks",
+      contactTemplate:
+        "Complete {{taskTitle}} by clearing the overdue child tasks. Start here: {{taskUrl}}",
       sortOrder: -1000,
       skillTags: ["strategy", "coordination"],
       interestTags: ["earth-optimization-prize", "hale", "median-income"],
@@ -983,6 +993,10 @@ async function seedTreatyTasks() {
       status: "ACTIVE",
       isPublic: true,
       dueAt: TREATY_DUE_AT,
+      contactLabel: "Sign or share the 1% Treaty",
+      contactUrl: "/treaty",
+      contactTemplate:
+        "Please complete {{taskTitle}}. Sign the treaty, then assign one more person an Earth Optimization task. Start here: {{taskUrl}}",
       sortOrder: -100,
       skillTags: ["organizing", "diplomacy", "public-pressure"],
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
@@ -1085,6 +1099,11 @@ async function seedTreatyTasks() {
       difficulty: "EXPERT",
       status: "ACTIVE",
       isPublic: true,
+      dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
+      contactLabel: "Read the dFDA spec",
+      contactUrl: "https://dfda-spec.warondisease.org",
+      contactTemplate:
+        "Please help complete {{taskTitle}}. The dFDA path is the backup route that does not wait for governments. Start here: {{taskUrl}}",
       sortOrder: -90,
       skillTags: ["engineering", "fundraising", "clinical-trials"],
       interestTags: ["dfda", "disease-eradication", "clinical-trials"],
@@ -1165,12 +1184,15 @@ async function seedTreatyTasks() {
       difficulty: "BEGINNER",
       status: "ACTIVE",
       isPublic: true,
+      dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
       sortOrder: -80,
       skillTags: ["fundraising", "global-health"],
       interestTags: ["malaria", "bed-nets", "global-health", "givewell"],
       claimPolicy: "OPEN_MANY",
       contactLabel: "Donate to AMF",
       contactUrl: "https://www.againstmalaria.com/Donation.aspx",
+      contactTemplate:
+        "Please help complete {{taskTitle}}. Bed nets are the clean benchmark: cheap, proven, and blocked mostly by funding. Start here: {{taskUrl}}",
     },
     impact: {
       estimatedCashCostUsdBase: AMF_TOTAL_COST,
@@ -1333,6 +1355,11 @@ async function seedTreatyTasks() {
         roleTitle: record.roleTitle,
         title: "Sign the 1% Treaty",
         description: `**${leaderName}** — ${record.roleTitle} of ${record.countryName}. One job: redirect 1% of ${record.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
+        contactLabel: record.contactLabel ?? "Find official contact",
+        contactUrl:
+          record.contactUrl ??
+          googleSearch(`${leaderName} ${record.roleTitle} ${record.countryName} official contact`),
+        contactTemplate: TREATY_SIGNER_CONTACT_TEMPLATE,
         category: "GOVERNANCE",
         difficulty: "EXPERT",
         status: "ACTIVE",

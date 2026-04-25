@@ -22,8 +22,10 @@
 import "./load-env";
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createMcpServer } from "../src/lib/mcp-server";
+import { ALL_SCOPES, createMcpServer } from "../src/lib/mcp-server";
 
-const server = createMcpServer();
+// Stdio transport: caller has full local access (it's their own machine and DB).
+// Pass ALL_SCOPES explicitly — never rely on undefined-means-allow-everything.
+const server = createMcpServer(undefined, ALL_SCOPES);
 const transport = new StdioServerTransport();
 void server.connect(transport);

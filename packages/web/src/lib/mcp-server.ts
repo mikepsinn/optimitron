@@ -37,6 +37,11 @@ export type McpScope = keyof typeof MCP_SCOPES;
 
 export const DEFAULT_SCOPES: McpScope[] = ["tasks:read", "search"];
 
+/// Full-trust scope set. Stdio transport passes this explicitly. HTTP must NEVER default to it
+/// — unauthenticated HTTP callers get DEFAULT_SCOPES, authenticated callers get the scopes
+/// granted at consent time. The deny-by-default behavior in `hasScope` enforces this.
+export const ALL_SCOPES: McpScope[] = Object.keys(MCP_SCOPES) as McpScope[];
+
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks:read
   getNextTask: ["tasks:read"],
@@ -77,8 +82,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
 };
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
-  // No scopes = local stdio mode, allow everything
-  if (!grantedScopes) return true;
+  // Deny by default. Callers must pass an explicit scopes array — stdio passes ALL_SCOPES,
+  // HTTP unauth passes DEFAULT_SCOPES, HTTP auth passes the granted scopes from the JWT.
+  if (!grantedScopes) return false;
   const required = TOOL_SCOPES[toolName];
   if (!required) return true;
   return required.some((s) => grantedScopes.includes(s));

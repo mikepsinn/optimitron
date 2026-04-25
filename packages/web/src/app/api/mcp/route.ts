@@ -1,12 +1,13 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { createMcpServer } from "@/lib/mcp-server";
+import { createMcpServer, DEFAULT_SCOPES } from "@/lib/mcp-server";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
 import type { McpScope } from "@/lib/mcp-server";
 
 async function handleMcpRequest(req: Request): Promise<Response> {
-  // Extract Bearer token (optional — unauthenticated = public-only)
+  // Unauthenticated callers get DEFAULT_SCOPES (read-only public tasks + manual search).
+  // A valid Bearer token replaces these with the scopes granted at OAuth consent time.
   let userId: string | undefined;
-  let scopes: McpScope[] | undefined;
+  let scopes: McpScope[] = DEFAULT_SCOPES;
   const authHeader = req.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     try {

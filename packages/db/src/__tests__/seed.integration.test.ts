@@ -1,5 +1,9 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { PrismaClient } from "../generated/prisma/client.js";
+import {
+  PrismaClient,
+  TaskEmailAudience,
+  TaskEmailRole,
+} from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
@@ -110,5 +114,49 @@ describeIfDatabase("seedDatabase", () => {
     await expect(
       prisma.organization.findUnique({ where: { slug: "humanity" } }),
     ).resolves.toMatchObject(originalOrganization);
+  }, 15000);
+
+  it("seeds task contact contracts for task-driven email reminders", async () => {
+    await seedDatabase();
+
+    const signerTasksMissingContactContract = await prisma.task.count({
+      where: {
+        taskKey: { startsWith: "program:one-percent-treaty:signer:" },
+        OR: [
+          { assigneePersonId: null },
+          { contactLabel: null },
+          { contactTemplate: null },
+          { contactUrl: null },
+          { dueAt: null },
+          { parentTaskId: null },
+        ],
+      },
+    });
+
+    expect(signerTasksMissingContactContract).toBe(0);
+
+    const taskEmailTemplatesMissingContact = await prisma.taskEmailTemplate.count({
+      where: {
+        audience: {
+          in: [TaskEmailAudience.RECIPIENT, TaskEmailAudience.SENDER],
+        },
+        deletedAt: null,
+        role: {
+          in: [
+            TaskEmailRole.INVITATION,
+            TaskEmailRole.REMINDER,
+            TaskEmailRole.SCORECARD,
+            TaskEmailRole.RE_ENGAGEMENT,
+            TaskEmailRole.VOTE_CONFIRMED,
+            TaskEmailRole.RECIPIENT_VOTED,
+          ],
+        },
+        task: {
+          OR: [{ contactLabel: null }, { contactUrl: null }],
+        },
+      },
+    });
+
+    expect(taskEmailTemplatesMissingContact).toBe(0);
   }, 15000);
 });

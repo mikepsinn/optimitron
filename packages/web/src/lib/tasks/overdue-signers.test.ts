@@ -64,6 +64,7 @@ function buildSignerTask(input: {
   return {
     id: input.id,
     taskKey: `program:one-percent-treaty:signer:${input.countryCode}`,
+    assigneePersonId: `person-${input.countryCode}`,
     dueAt,
     status: TaskStatus.ACTIVE,
     roleTitle: input.roleTitle ?? "President",
@@ -99,13 +100,10 @@ function buildNonSignerTask(id: string): SignerTaskLike {
   return {
     id,
     taskKey: "program:one-percent-treaty:ratify",
+    assigneePersonId: null,
     dueAt: new Date(NOW.getTime() - 30 * 24 * 60 * 60 * 1000),
     status: TaskStatus.ACTIVE,
-    assigneePerson: {
-      countryCode: "US",
-      displayName: "Parent Task",
-      image: null,
-    },
+    assigneePerson: null,
     impact: {
       selectedFrame: buildFrame(10_000_000),
       selectedMetrics: {},
@@ -206,7 +204,7 @@ describe("getOverdueSignerHighlights", () => {
     expect(result).toEqual([]);
   });
 
-  it("filters out non-signer tasks and signers missing an assignee person", () => {
+  it("filters out tasks missing an assigned official", () => {
     const orphanSigner: SignerTaskLike = {
       ...us,
       id: "1-pct-treaty-signer-xx",
@@ -222,6 +220,29 @@ describe("getOverdueSignerHighlights", () => {
     });
     expect(result).toHaveLength(1);
     expect(result[0]!.taskId).toBe("1-pct-treaty-signer-us");
+  });
+
+  it("includes non-treaty assigned official tasks", () => {
+    const genericOfficialTask: SignerTaskLike = {
+      ...us,
+      id: "clean-air-minister-us",
+      taskKey: "program:clean-air:minister:us",
+      assigneePersonId: "person-clean-air-us",
+      assigneePerson: {
+        ...us.assigneePerson!,
+        displayName: "Ada Official",
+      },
+    };
+
+    const result = getOverdueSignerHighlights({
+      decoratedTasks: [genericOfficialTask],
+      userCountryCode: null,
+      now: NOW,
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]!.taskId).toBe("clean-air-minister-us");
+    expect(result[0]!.leaderFullName).toBe("Ada Official");
   });
 
   it("filters out tasks that are not overdue", () => {

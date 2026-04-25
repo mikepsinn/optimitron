@@ -1,7 +1,14 @@
-import { EmailLogStatus, Prisma, ShareSource } from "@optimitron/db";
+import { EmailLogStatus, ShareSource } from "@optimitron/db";
+import type { Prisma } from "@optimitron/db";
 import { nanoid } from "nanoid";
 import { sha256Hex } from "@/lib/crypto.server";
 import { getReferralEmailBatchSize } from "@/lib/email/batch";
+import {
+  createEmailLog,
+  isEmailLogDuplicateError,
+  markEmailLogStatus,
+  markQueuedEmailLogsFailed,
+} from "@/lib/email/email-log.server";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { getReferralCountsByUserIds } from "@/lib/referral.server";
@@ -337,28 +344,8 @@ function getNextReferralSequenceStep(user: ReferralSequenceUser, step: number) {
   return Math.min(step + 1, REFERRAL_EMAIL_SEQUENCE_MAX_STEP);
 }
 
-function isUniqueConstraintError(error: unknown) {
-  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
-}
-
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
-}
-
-async function markReferralEmailStatus(
-  emailLogId: string,
-  status: typeof EmailLogStatus[keyof typeof EmailLogStatus],
-  errorMessage?: string | null,
-  providerMessageId?: string | null,
-) {
-  await prisma.emailLog.update({
-    where: { id: emailLogId },
-    data: {
-      errorMessage: errorMessage ?? null,
-      status,
-      ...(providerMessageId ? { providerMessageId } : {}),
-    },
-  });
 }
 
 async function completeReferralSequenceForUser(userId: string) {
@@ -403,20 +390,17 @@ async function claimReferralSequenceEmail(
         return null;
       }
 
-      const created = await tx.emailLog.create({
-        data: {
-          id: emailLogId,
-          userId: user.id,
-          toAddress: user.email,
-          subject,
-          templateId,
-          subjectVariantId: extras.subjectVariantId,
-          subjectTemplate: extras.subjectTemplate,
-          bodyTemplateId: extras.bodyTemplateId,
-          sendContext: extras.sendContext,
-          status: EmailLogStatus.QUEUED,
-          sentAt: now,
-        },
+      const created = await createEmailLog(tx, {
+        id: emailLogId,
+        bodyTemplateId: extras.bodyTemplateId,
+        now,
+        sendContext: extras.sendContext,
+        subject,
+        subjectTemplate: extras.subjectTemplate,
+        subjectVariantId: extras.subjectVariantId,
+        templateId,
+        toAddress: user.email,
+        userId: user.id,
       });
 
       // Pre-create the ShareAttempt rows whose IDs are already embedded in the
@@ -450,7 +434,7 @@ async function claimReferralSequenceEmail(
       emailLogId: emailLog?.id ?? null,
     };
   } catch (error) {
-    if (!isUniqueConstraintError(error)) {
+    if (!isEmailLogDuplicateError(error)) {
       throw error;
     }
 
@@ -539,24 +523,32 @@ export async function sendWelcomeReferralEmailForUser(
       skipSuppressionCheck: !user.newsletterSubscribed,
     });
     if (result.status === "sent") {
-      await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT, null, result.id);
+      await markEmailLogStatus({
+        emailLogId: claim.emailLogId,
+        providerMessageId: result.id,
+        status: EmailLogStatus.SENT,
+      });
       return result;
     }
 
     const errorMessage =
       result.status === "suppressed" ? "suppressed:user_opt_out" : `send_aborted:${result.status}`;
-    await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.FAILED, errorMessage);
+    await markEmailLogStatus({
+      emailLogId: claim.emailLogId,
+      errorMessage,
+      status: EmailLogStatus.FAILED,
+    });
     if (result.status === "suppressed") {
       await completeReferralSequenceForUser(user.id);
     }
 
     return result;
   } catch (error) {
-    await markReferralEmailStatus(
-      claim.emailLogId,
-      EmailLogStatus.FAILED,
-      getErrorMessage(error),
-    ).catch((updateError) => {
+    await markEmailLogStatus({
+      emailLogId: claim.emailLogId,
+      errorMessage: getErrorMessage(error),
+      status: EmailLogStatus.FAILED,
+    }).catch((updateError) => {
       console.error("[REFERRAL EMAIL] Failed to mark welcome email log", user.id, updateError);
     });
     throw error;
@@ -666,12 +658,20 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
 
       const result = await sendReferralSequenceStep(user, message, claim.emailLogId);
       if (result.status === "sent") {
-        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.SENT, null, result.id);
+        await markEmailLogStatus({
+          emailLogId: claim.emailLogId,
+          providerMessageId: result.id,
+          status: EmailLogStatus.SENT,
+        });
         sent += 1;
       } else {
         const errorMessage =
           result.status === "suppressed" ? "suppressed:user_opt_out" : `send_aborted:${result.status}`;
-        await markReferralEmailStatus(claim.emailLogId, EmailLogStatus.FAILED, errorMessage);
+        await markEmailLogStatus({
+          emailLogId: claim.emailLogId,
+          errorMessage,
+          status: EmailLogStatus.FAILED,
+        });
         if (result.status === "suppressed") {
           await completeReferralSequenceForUser(user.id);
           completed += 1;
@@ -680,18 +680,11 @@ export async function processDueReferralSequenceEmails(now: Date = new Date()) {
     } catch (error) {
       failures += 1;
       const templateId = getReferralSequenceTemplateId(action.step);
-      await prisma.emailLog
-        .updateMany({
-          where: {
-            userId: user.id,
-            templateId,
-            status: EmailLogStatus.QUEUED,
-          },
-          data: {
-            errorMessage: getErrorMessage(error),
-            status: EmailLogStatus.FAILED,
-          },
-        })
+      await markQueuedEmailLogsFailed({
+        errorMessage: getErrorMessage(error),
+        templateId,
+        userId: user.id,
+      })
         .catch((updateError) => {
           console.error("[REFERRAL EMAIL] Failed to mark email log", user.id, updateError);
         });

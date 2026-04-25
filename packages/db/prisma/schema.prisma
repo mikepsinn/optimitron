@@ -444,6 +444,63 @@ enum TaskImpactFrameKey {
   CUSTOM
 }
 
+/// Who an outbound task email is addressed to. Distinct from TaskComment
+/// (user-authored discussion) and Notification (in-app). Drives template
+/// selection and reminder cadence.
+enum TaskEmailAudience {
+  /// Person being asked to complete the task (e.g. named-invite recipient).
+  RECIPIENT
+  /// Person doing the asking (sender / project manager).
+  SENDER
+  /// Public broadcast / share-template audience.
+  OBSERVER
+}
+
+/// Lifecycle role of a task email template within an audience's sequence.
+enum TaskEmailRole {
+  /// First-touch named-invite or assignment email.
+  INVITATION
+  /// Follow-up reminder to take action.
+  REMINDER
+  /// Periodic progress summary (e.g. monthly scorecard).
+  SCORECARD
+  /// Bring back a user who acted but never followed through (e.g. C1).
+  RE_ENGAGEMENT
+  /// Confirmation after the audience completed their action.
+  VOTE_CONFIRMED
+  /// Notification to a sender that their recipient acted.
+  RECIPIENT_VOTED
+  /// Share-template variants (audience = OBSERVER).
+  SHARE
+}
+
+/// Format / style branch within a template — e.g. TASK_NOTIFICATION vs SINCERE
+/// for the named-invite recipient sequence. DEFAULT is for templates that do
+/// not branch on format.
+enum TaskEmailFormat {
+  DEFAULT
+  TASK_NOTIFICATION
+  SINCERE
+}
+
+/// Lifecycle status of a single TaskEmailAttempt row.
+enum TaskEmailAttemptStatus {
+  /// Created but not yet queued.
+  PENDING
+  /// Queued for sending.
+  QUEUED
+  /// Provider accepted the send.
+  SENT
+  /// Provider confirmed delivery.
+  DELIVERED
+  /// Send failed permanently.
+  FAILED
+  /// Suppressed before send (user opt-out, hard cap, conversion).
+  SUPPRESSED
+  /// Recipient unsubscribed from this template's scope.
+  UNSUBSCRIBED
+}
+
 /// Type of survey question
 enum QuestionType {
   MULTIPLE_CHOICE
@@ -520,6 +577,7 @@ model Person {
   user                        User?                @relation("UserPerson")
   assignedTasks               Task[]               @relation("TaskAssigneePerson")
   receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
+  receivedTaskEmailAttempts   TaskEmailAttempt[]   @relation("TaskEmailAttemptRecipientPerson")
 
   @@index([displayName])
   @@index([countryCode])
@@ -748,6 +806,7 @@ model User {
   agentComputeDeposits      AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
   oauthAuthCodes            OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
   oauthGrants               OAuthGrant[]                     @relation("UserOAuthGrants")
+  receivedTaskEmailAttempts TaskEmailAttempt[]               @relation("TaskEmailAttemptRecipientUser")
 
   @@index([email])
   @@index([username])
@@ -2370,12 +2429,13 @@ model ReferralInvitation {
   deletedAt DateTime?
 
   // -- Relations --
-  referrer      User            @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
-  recipient     Person?         @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
-  referendum    Referendum?     @relation(fields: [referendumId], references: [id], onDelete: SetNull)
-  task          Task?           @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
-  shareAttempt  ShareAttempt?   @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
-  convertedVote ReferendumVote? @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
+  referrer          User               @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
+  recipient         Person?            @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
+  referendum        Referendum?        @relation(fields: [referendumId], references: [id], onDelete: SetNull)
+  task              Task?              @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
+  shareAttempt      ShareAttempt?      @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  convertedVote     ReferendumVote?    @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
+  taskEmailAttempts TaskEmailAttempt[] @relation("ReferralInvitationTaskEmailAttempts")
 
   @@index([referrerUserId, createdAt])
   @@index([recipientPersonId])
@@ -3519,6 +3579,8 @@ model Task {
   agentLeases              AgentTaskLease[]        @relation("TaskAgentLeases")
   shareAttempts            ShareAttempt[]          @relation("TaskShareAttempts")
   referralInvitations      ReferralInvitation[]    @relation("TaskReferralInvitations")
+  taskEmailTemplates       TaskEmailTemplate[]     @relation("TaskEmailTemplates")
+  taskEmailAttempts        TaskEmailAttempt[]      @relation("TaskEmailAttempts")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -4198,6 +4260,224 @@ model TaskImpactSourceArtifact {
 }
 
 // ============================================================================
+// TASK EMAIL SYSTEM
+// ----------------------------------------------------------------------------
+// Outbound emails associated with a Task: A1-A4 recipient sequences, B1-B5
+// sender reminders, C1 re-engagement, monthly scorecards, share variants.
+// Distinct from `TaskComment` (user-authored discussion), `Notification`
+// (in-app), and `TrackingReminder` (health-variable measurement reminders).
+// ============================================================================
+
+/// Canonical messaging strategy for outbound emails about a task.
+/// Keyed by (taskId, audience, role) — at most one active template per slot.
+model TaskEmailTemplate {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Task this template applies to
+  taskId String
+
+  /// Who receives messages from this template
+  audience TaskEmailAudience
+
+  /// Lifecycle role of the template (INVITATION / REMINDER / SCORECARD / etc.)
+  role TaskEmailRole
+
+  /// Optional human label for admin/debug surfaces (e.g. "Treaty B3 Sender Reminder")
+  label String?
+
+  /// Whether the engine should select from this template
+  isActive Boolean @default(true)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  task     Task               @relation("TaskEmailTemplates", fields: [taskId], references: [id], onDelete: Cascade)
+  variants TaskEmailVariant[] @relation("TaskEmailTemplateVariants")
+  attempts TaskEmailAttempt[] @relation("TaskEmailAttemptTemplate")
+
+  @@unique([taskId, audience, role])
+  @@index([taskId])
+  @@index([audience, role])
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+/// A specific subject/body variant within a TaskEmailTemplate.
+/// Keyed by (templateId, step, format) so variants can express step-by-step
+/// sequences AND format branches (e.g. TASK_NOTIFICATION vs SINCERE).
+model TaskEmailVariant {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// The template this variant belongs to
+  templateId String
+
+  /// Step number within the sequence (0 for one-shot, 1..N for multi-step)
+  step Int @default(0)
+
+  /// Format / style branch (DEFAULT for templates that do not branch)
+  format TaskEmailFormat @default(DEFAULT)
+
+  /// Subject line
+  subject String?
+
+  /// Rendered HTML body (or template body if rendering happens at send time)
+  htmlBody String?
+
+  /// Plain-text body
+  textBody String?
+
+  /// Days to wait after the prior step before sending this one
+  delayDays Int?
+
+  /// Display name used in the From header (e.g. "Wishonia, PMO")
+  senderIdentity String?
+
+  /// Signature block appended to the body
+  signature String?
+
+  /// Footer text (e.g. unsubscribe disclosure, list-unsubscribe address)
+  footer String?
+
+  /// Email scope used for suppression / unsubscribe routing
+  unsubscribeScope String?
+
+  /// Whether this variant is currently eligible for selection
+  isActive Boolean @default(true)
+
+  /// Variant selection weight when multiple variants share (templateId, step, format)
+  /// in future A/B configurations. Engine picks weighted-random among active.
+  weight Float @default(1.0)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  template      TaskEmailTemplate  @relation("TaskEmailTemplateVariants", fields: [templateId], references: [id], onDelete: Cascade)
+  attempts      TaskEmailAttempt[] @relation("TaskEmailAttemptVariant")
+  shareAttempts ShareAttempt[]     @relation("ShareAttemptTaskEmailVariant")
+
+  @@unique([templateId, step, format])
+  @@index([templateId])
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+/// Per-recipient email send state. Replaces the email-sequence columns
+/// currently overloaded onto `ReferralInvitation` (`recipientEmailStep`,
+/// `nextRecipientEmailAt`, `lastRecipientEmailAt`, `recipientUnsubscribeToken`,
+/// etc.). Also serves the sender / observer sequences once Phase B engine
+/// switches over.
+model TaskEmailAttempt {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Task this attempt is about
+  taskId String
+
+  /// The template that drove the send
+  templateId String
+
+  /// The exact variant rendered (records exact step/format at send time)
+  templateVariantId String?
+
+  /// Optional Person record for the recipient (preferred over raw email when present)
+  recipientPersonId String?
+
+  /// Optional User if the recipient is a known signed-in user
+  recipientUserId String?
+
+  /// Recipient email captured at send time
+  recipientEmail String?
+
+  /// Audience (denormalized snapshot of template.audience for fast filtering)
+  audience TaskEmailAudience
+
+  /// Role (denormalized snapshot of template.role)
+  role TaskEmailRole
+
+  /// Format used for this attempt
+  format TaskEmailFormat @default(DEFAULT)
+
+  /// Step in the sequence this attempt represents
+  step Int @default(0)
+
+  /// When the next send for this recipient/role lineage is scheduled
+  nextSendAt DateTime?
+
+  /// When the most recent send actually went out
+  lastSentAt DateTime?
+
+  /// Per-attempt unsubscribe token for one-click opt-out (when audience requires it)
+  unsubscribeToken String? @unique
+
+  /// Linked ShareAttempt for the outbound-message ledger
+  shareAttemptId String?
+
+  /// Linked EmailLog if this attempt produced a tracked email send
+  emailLogId String?
+
+  /// Optional ReferralInvitation this attempt is associated with (named-invite sequences)
+  referralInvitationId String?
+
+  /// Lifecycle status
+  status TaskEmailAttemptStatus @default(PENDING)
+
+  /// Error message captured on failed sends
+  errorMessage String?
+
+  /// Provider's message id (e.g., Resend)
+  providerMessageId String?
+
+  /// Free-form context for the send (subject pick, mission-fit metrics, etc.)
+  context Json?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  task               Task                @relation("TaskEmailAttempts", fields: [taskId], references: [id], onDelete: Cascade)
+  template           TaskEmailTemplate   @relation("TaskEmailAttemptTemplate", fields: [templateId], references: [id], onDelete: Cascade)
+  templateVariant    TaskEmailVariant?   @relation("TaskEmailAttemptVariant", fields: [templateVariantId], references: [id], onDelete: SetNull)
+  recipientPerson    Person?             @relation("TaskEmailAttemptRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
+  recipientUser      User?               @relation("TaskEmailAttemptRecipientUser", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  shareAttempt       ShareAttempt?       @relation("ShareAttemptTaskEmailAttempts", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  emailLog           EmailLog?           @relation("EmailLogTaskEmailAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
+  referralInvitation ReferralInvitation? @relation("ReferralInvitationTaskEmailAttempts", fields: [referralInvitationId], references: [id], onDelete: SetNull)
+
+  @@index([taskId])
+  @@index([templateId])
+  @@index([templateVariantId])
+  @@index([recipientPersonId])
+  @@index([recipientUserId])
+  @@index([nextSendAt])
+  @@index([status])
+  @@index([referralInvitationId])
+  @@index([emailLogId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
 // SURVEY SYSTEM
 // ============================================================================
 
@@ -4565,8 +4845,9 @@ model EmailLog {
   createdAt DateTime @default(now())
 
   // -- Relations --
-  user          User           @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
-  shareAttempts ShareAttempt[] @relation("EmailLogShareAttempts")
+  user              User               @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+  shareAttempts     ShareAttempt[]     @relation("EmailLogShareAttempts")
+  taskEmailAttempts TaskEmailAttempt[] @relation("EmailLogTaskEmailAttempts")
 
   @@unique([userId, templateId])
   @@index([userId])
@@ -4609,6 +4890,11 @@ model ShareAttempt {
   /// Human label of the share template used (e.g. "lumbergh").
   templateId String?
 
+  /// Optional FK to the typed `TaskEmailVariant` that produced this share.
+  /// Coexists with `templateId` (free-form label) during the migration window;
+  /// once Phase B engine is the only writer, this becomes the canonical link.
+  taskEmailVariantId String?
+
   /// sha256(templateBody) — primary grouping key for analytics (survives renames).
   templateHash String?
 
@@ -4638,11 +4924,14 @@ model ShareAttempt {
   user                User                 @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
   emailLog            EmailLog?            @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
   task                Task?                @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
+  taskEmailVariant    TaskEmailVariant?    @relation("ShareAttemptTaskEmailVariant", fields: [taskEmailVariantId], references: [id], onDelete: SetNull)
   referralInvitations ReferralInvitation[] @relation("ShareAttemptReferralInvitations")
+  taskEmailAttempts   TaskEmailAttempt[]   @relation("ShareAttemptTaskEmailAttempts")
 
   @@index([userId, createdAt])
   @@index([templateHash])
   @@index([emailLogId])
+  @@index([taskEmailVariantId])
   @@index([firstReferralClickAt])
   @@index([source])
   @@index([channel])
