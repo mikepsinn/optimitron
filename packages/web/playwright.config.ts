@@ -17,12 +17,7 @@ export default defineConfig({
     baseURL: process.env.BASE_URL ?? "http://localhost:3001",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    video: isCI
-      ? "retain-on-failure"
-      : {
-          mode: "on",
-          size: { width: 1920, height: 1080 },
-        },
+    video: "retain-on-failure",
     viewport: { width: 1920, height: 1080 },
   },
   projects: [
@@ -31,6 +26,10 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1920, height: 1080 },
+        video: {
+          mode: "on",
+          size: { width: 1920, height: 1080 },
+        },
         // Use headed (full) Chromium for proper CSS rendering in recordings
         headless: false,
         channel: "chromium",

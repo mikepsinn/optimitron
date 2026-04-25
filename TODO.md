@@ -74,7 +74,8 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Add an "assign one task" deep link that drops verified users directly into the referral loop.
   - `/send` requires sign-in and renders the referral invitation composer/status view.
   - Sender B3/B4 reminder emails now link directly to `/send`.
-- [ ] Confirm partner/demo survey variants use the lighter mode and do not accidentally enter the full post-vote send loop.
+- [x] Confirm partner/demo survey variants use the lighter mode and do not accidentally enter the full post-vote send loop.
+  - Guard test covers `/demo` and `/reasoning/embed` so they do not import the full `TreatyVoteFlow` / `TreatyPostVoteShareFlow`.
 
 ## Email Sequences
 
@@ -88,10 +89,11 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Keep the joke structurally clear: humanity has been assigned the overdue root task "Optimize Earth"; that contains "End War and Disease"; that contains "Ratify the 1% Treaty"; that contains per-person subtasks to vote, get friends to vote, and make sure those friends keep the task tree moving.
   - The task-management language should feel like a project-management system calmly describing civilization-scale overdue work, not generic SaaS notification copy.
   - Updated post-vote flow copy, email template copy, related tests, and canonical docs together so they do not drift.
-- [ ] Rename internal sender "nudge" fields/actions/functions to "reminder" before launch.
+- [x] Rename internal sender "nudge" fields/actions/functions to "reminder" before launch.
   - No users exist yet, so preserve behavior but do not preserve misleading names.
   - Rename schema/API/code/test names such as `nudgeOptIn`, `wantsNudge`, `senderNudgeOptedInAt`, `senderNudgeStep`, `nextSenderNudgeAt`, `lastSenderNudgeAt`, and B3/B4 builder names.
   - Add a migration that renames the existing `ReferralInvitation` columns/indexes instead of dropping data.
+  - Implemented as a data-preserving Prisma migration plus generated-client, API, cron, email-builder, analytics, and test updates.
 - [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
 - [x] Wire Sender Sequence B3/B4 sender reminders into cron from the sender reminder schedule.
 - [x] Wire Sender Sequence B5 monthly scorecards.
@@ -112,7 +114,8 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Sender sequence emails use `sendResendEmail()` with `scope: "referral_sequence"`; recipient invitations use their one-click per-invite unsubscribe token.
 - [x] Add email preview fixtures or snapshot tests for every recipient/sender template.
   - Sender template tests cover B1-B5/C1; recipient template tests now cover all A1-A4 Task and Sincere variants plus delay schedule.
-- [ ] Add cron tests for reminder timing, conversion suppression, unsubscribe suppression, and stale invitation cleanup.
+- [x] Add cron tests for reminder timing, conversion suppression, unsubscribe suppression, and stale invitation cleanup.
+  - Recipient and sender reminder tests cover due timing, conversion, unsubscribe, cancellation/decline, hard caps, sender suppression, and terminal-state schedule clearing.
 
 ## Task Reminder Replication System
 
@@ -183,6 +186,36 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Candidate surfaces: `/send`, post-vote share flow, dashboard task card, email task-notification format, monthly scorecard, and task detail pages.
   - Keep the frame funny and legible: the user is helping assign and verify tasks in the Earth optimization project tree.
   - Do not over-apply the frame to input labels, error messages, or ordinary action buttons where it makes the UI harder to understand.
+
+## Earth Optimization Points And Rewards
+
+- [ ] Make the launch reward/accounting decision before adding users or making payout promises.
+  - Default recommendation: one public contribution unit, **Earth Optimization Points** (`EOP`), plus internal reason/status fields.
+  - Treat current "VOTE Points" as the narrow treaty/referral version of EOP, not a separate long-term unit.
+  - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into EOP with honest expected-impact amounts or hide/deprecate them before launch.
+  - Keep on-chain `$WISH` / `packages/treasury-wish` conceptually separate unless the whole monetary-system story is intentionally productized; do not use "wishes" for impact payout claims.
+- [ ] Define the EOP unit from the Optimitron objective function.
+  - Public wording: EOP measure expected contribution to maximizing median healthy life years and median after-tax inflation-adjusted income.
+  - Accounting unit: `1 EOP = 1 expected healthy-life-year equivalent`, where health gains count directly as QALYs gained / DALYs averted.
+  - Income conversion: convert real after-tax income gains to healthy-life-year equivalents with `STANDARD_ECONOMIC_QALY_VALUE_USD`; document the exact formula before showing dollar-like value.
+  - For income improvements, use gains to ordinary humans near the median or modeled distributional gains, not billionaire wealth or raw GDP.
+  - Keep health EOP and income-equivalent EOP as separately stored components even if the UI shows a single total.
+- [ ] Define EOP lifecycle and attribution before schema changes.
+  - Statuses: `PENDING`, `CONFIRMED`, `REJECTED`, `REVERSED`, and optionally `PAID`.
+  - Store `grossImpactEop`, `rewardEop`, `healthEop`, `incomeEop`, `confidence`, `attributionRule`, `sourceModelVersion`, and links to task/vote/referral/deposit evidence.
+  - Do not double-count for payout: if voter, inviter, task assigner, and task completer all contributed, split a single modeled reward amount by an explicit attribution rule.
+  - For treaty launch, start with deterministic rules for verified vote tasks: voter/completer share, inviter/project-manager share, and optional upstream share only if explicitly justified.
+  - Keep "pending impact" separate from payout-eligible confirmed EOP.
+- [ ] Rename and simplify public product language after the accounting decision.
+  - Replace `POINT_NAME = "VOTE"` with EOP-focused copy only after the model is defined.
+  - Rename public "VOTE Points" surfaces to "Earth Optimization Points"; keep "EOP" as the short label in compact UI.
+  - Use "You have been hired by Earth Optimization Services as a project manager" as campaign copy, not legal/employment semantics.
+  - Do not rename `ReferralInvitation` to `EmploymentNotification`; keep `ReferralInvitation` as the internal invite-token lifecycle model and use "task assignment" / "employment notification" only where it improves user-facing copy.
+- [ ] Plan the schema migration as a separate architecture slice.
+  - Candidate replacement for `WishPoint`: `OptimizationPointLedger` or `ContributionCredit`.
+  - Candidate replacement for `VoteTokenMint`: `OptimizationPointMint` if on-chain payout claims generalize beyond votes.
+  - Preserve old rows with a reviewable migration; no destructive reset.
+  - Add reporting tests that prove the same action cannot mint duplicate payout-eligible EOP.
 
 ## Donations And Crowdfunding
 
