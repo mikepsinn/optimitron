@@ -18,9 +18,9 @@ import {
   getBadgeDescription,
 } from "@/lib/activity-descriptions";
 import {
-  GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   GLOBAL_POPULATION_2024,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-target";
 import { getImpactReceipts } from "@/lib/impact-receipts.server";
 import { ROUTES } from "@/lib/routes";
 import { GAME } from "@/lib/messaging";
@@ -111,7 +111,7 @@ export async function getDashboardData(
   const globalProgressPct =
     (totalReferendumVotes / GLOBAL_POPULATION_2024.value) * 100;
   const targetPct =
-    Math.round(GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT.value * 10000) / 100;
+    Math.round((MAJORITY_OF_HUMANS_ON_EARTH_VALUE / GLOBAL_POPULATION_2024.value) * 10000) / 100;
 
   // Quest checklist: which wish reasons has this user completed?
   const todayIso = new Date().toISOString().slice(0, 10);

@@ -8,8 +8,8 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 import { CTA, TAGLINES, POINT, POINTS, REFERRAL } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
 const steps: { number: string; title: string; body: ReactNode; color: "pink" | "cyan" | "yellow"; ctas: { label: string; href: string }[] }[] = [
@@ -33,7 +33,7 @@ const steps: { number: string; title: string; body: ReactNode; color: "pink" | "
   {
     number: "3",
     title: "Play With Friends",
-    body: <>Share your link with 2 friends. They each share with 2 more. 28 rounds of this = <ParameterValue param={{...TREATY_CAMPAIGN_VOTING_BLOC_TARGET, value: Math.round(TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value / 1e6), unit: ""}} display="integer" />M people = tipping point. Each {POINT} is your share of the prize pool if targets are hit.</>,
+    body: <>Share your link with 2 friends. They each share with 2 more. 32 rounds of this reaches <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} display="withUnit" />. Each {POINT} is your share of the prize pool if targets are hit.</>,
     color: "yellow",
     ctas: [],
   },

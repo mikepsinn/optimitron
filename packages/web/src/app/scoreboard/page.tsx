@@ -5,8 +5,8 @@ import { POINT, POINTS, REFERRAL } from "@/lib/messaging";
 import {
   fmtParam,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 import { HumanityScoreboard } from "@/components/shared/HumanityScoreboard";
 import { CollapseCountdownTimer } from "@/components/animations/CollapseCountdownTimer";
 import { GdpTrajectoryChart } from "@/components/animations/GdpTrajectoryChart";
@@ -100,7 +100,7 @@ export default async function ScoreboardPage() {
           columns={4}
           stats={[
             { label: "Prize Pool", value: `$${stats.poolUSD.toLocaleString()}`, description: `grows at ${fmtParam(PRIZE_POOL_HORIZON_MULTIPLE)} over 15yr`, size: "sm" },
-            { label: "Verified Voters", value: stats.verifiedVoters.toLocaleString(), description: `of ${fmtParam({...TREATY_CAMPAIGN_VOTING_BLOC_TARGET, unit: ""})} target`, size: "sm" },
+            { label: "Verified Voters", value: stats.verifiedVoters.toLocaleString(), description: `of ${fmtParam({...MAJORITY_OF_HUMANS_ON_EARTH, unit: ""})} target`, size: "sm" },
             { label: `${POINTS} Earned`, value: stats.votePoints.toLocaleString(), description: REFERRAL.earnOneShort, size: "sm" },
             { label: "Time Remaining", value: <CollapseCountdownTimer size="sm" showLabel={false} />, size: "sm" },
           ]}

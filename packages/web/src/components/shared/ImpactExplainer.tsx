@@ -7,7 +7,6 @@ import { Dialog } from "@/components/retroui/Dialog"
 import { cn } from "@/lib/utils"
 import {
   EFFICACY_LAG_YEARS,
-  GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
@@ -15,6 +14,7 @@ import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   formatParameter,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 import {
   MINUTES_PER_PERSUASION,
   VOTES_PER_HOUR,
@@ -93,10 +93,10 @@ export function ImpactExplainer({
                 <UsersRound className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
                   <p className="text-xs font-black uppercase">
-                    Tipping point: {formatNumberShort(VOTING_BLOC_TARGET)} votes
+                    Treaty target: {formatNumberShort(VOTING_BLOC_TARGET)} people
                   </p>
                   <p className="text-xs">
-                    {formatParameter(GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT)} active support triggers political change (Chenoweth research).
+                    {formatParameter(MAJORITY_OF_HUMANS_ON_EARTH, { compact: false })} is a majority of humans on Earth.
                   </p>
                 </div>
               </div>
@@ -123,7 +123,7 @@ export function ImpactExplainer({
                     Per vote: ~{IMPACT_PER_VOTE.lives.toFixed(1)} lives, ~{(IMPACT_PER_VOTE.sufferingHours / 8760).toFixed(0)} years of suffering prevented
                   </p>
                   <p className="text-xs">
-                    Your share of the one-time benefit when we reach the tipping point.
+                    Your share of the one-time benefit when we reach the treaty target.
                   </p>
                 </div>
               </div>

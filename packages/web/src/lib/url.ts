@@ -20,11 +20,31 @@ export function buildReferralUrl(identifier?: string | null, baseUrl: string = g
   return identifier ? `${baseUrl}/r/${identifier}` : baseUrl;
 }
 
+export function buildInviteReferralUrl(
+  identifier?: string | null,
+  inviteToken?: string | null,
+  baseUrl: string = getBaseUrl(),
+): string {
+  const url = buildReferralUrl(identifier, baseUrl);
+  if (!identifier || !inviteToken) return url;
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}invite=${encodeURIComponent(inviteToken)}`;
+}
+
 export function buildUserReferralUrl(
   user: { username?: string | null; referralCode?: string | null } | null | undefined,
   baseUrl: string = getBaseUrl(),
 ): string {
   return buildReferralUrl(getUsernameOrReferralCode(user), baseUrl);
+}
+
+export function buildUserInviteReferralUrl(
+  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  inviteToken?: string | null,
+  baseUrl: string = getBaseUrl(),
+): string {
+  return buildInviteReferralUrl(getUsernameOrReferralCode(user), inviteToken, baseUrl);
 }
 
 /** Build an alignment sharing link: /agencies/dfec/alignment/identifier */

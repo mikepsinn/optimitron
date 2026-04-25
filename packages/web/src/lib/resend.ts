@@ -28,6 +28,15 @@ interface ResendReactMessage extends BaseMessage {
   react: React.ReactElement;
 }
 
+interface ExternalResendMessage {
+  from?: string;
+  html: string;
+  subject: string;
+  text: string;
+  to: string;
+  unsubscribeUrl?: string | null;
+}
+
 export type SendResult =
   | { status: "disabled" }
   | { status: "suppressed"; reason: "user_opt_out" }
@@ -146,6 +155,34 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
     subject: message.subject,
     html,
     text,
+    ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
+  });
+
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+
+  return {
+    status: "sent",
+    id: response.data?.id ?? null,
+    unsubscribeUrl,
+  };
+}
+
+export async function sendExternalResendEmail(message: ExternalResendMessage): Promise<SendResult> {
+  if (!isResendConfigured()) {
+    return { status: "disabled" };
+  }
+
+  const unsubscribeUrl = message.unsubscribeUrl ?? null;
+  const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
+  const resend = getResendClient();
+  const response = await resend.emails.send({
+    from: message.from ?? getEmailFromAddress(),
+    to: [message.to],
+    subject: message.subject,
+    html: message.html,
+    text: message.text,
     ...(unsubscribeHeaders ? { headers: unsubscribeHeaders } : {}),
   });
 

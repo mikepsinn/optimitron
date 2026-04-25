@@ -13,10 +13,13 @@ import { buildUserReferralUrl } from "@/lib/url";
 import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-  GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   GLOBAL_POPULATION_2024,
 } from "@optimitron/data/parameters";
+import {
+  MAJORITY_OF_HUMANS_ON_EARTH,
+  MAJORITY_OF_HUMANS_ON_EARTH_VALUE,
+} from "@/lib/majority-humanity-target";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,9 +46,9 @@ const HOURS_PER_YEAR = 8_760;
 const SUFFERING_YEARS_PER_VOTE = Math.round(
   SUFFERING_HOURS_PER_VOTE / HOURS_PER_YEAR,
 );
-const TIPPING_POINT_PCT =
-  Math.round(GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT.value * 1000) / 10; // 3.5
-const VOTING_BLOC_TARGET = TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value; // 280M
+const TARGET_PCT =
+  Math.round((MAJORITY_OF_HUMANS_ON_EARTH_VALUE / GLOBAL_POPULATION_2024.value) * 1000) / 10;
+const VOTING_BLOC_TARGET = MAJORITY_OF_HUMANS_ON_EARTH_VALUE;
 const GLOBAL_POP = GLOBAL_POPULATION_2024.value; // 8B
 const AVG_IMPRESSIONS_PER_SHARE = 265;
 
@@ -167,7 +170,7 @@ export function CitizenDashboard() {
   const estimatedReach =
     stats.totalReferrals * AVG_IMPRESSIONS_PER_SHARE;
 
-  // Global tipping point
+  // Global treaty target
   const globalPctOfPopulation = (totalGlobal / GLOBAL_POP) * 100;
   const globalPctOfTarget = (totalGlobal / VOTING_BLOC_TARGET) * 100;
   const votesRemaining = Math.max(0, VOTING_BLOC_TARGET - totalGlobal);
@@ -199,8 +202,8 @@ export function CitizenDashboard() {
               <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   Each verified vote = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives
-                  saved (total lives saved by the treaty ÷ 280M target voting
-                  bloc). Your {stats.verifiedVotes} verified votes ={" "}
+                  saved (total lives saved by the treaty ÷ a majority of humans on
+                  Earth). Your {stats.verifiedVotes} verified votes ={" "}
                   {Math.round(livesSaved).toLocaleString()} lives.
                 </p>
               </Tooltip.Content>
@@ -396,10 +399,10 @@ export function CitizenDashboard() {
         </div>
       )}
 
-      {/* ── Global Tipping Point ── */}
+      {/* ── Global Treaty Target ── */}
       <div className="border-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h3 className="text-lg font-black uppercase mb-1">
-          Progress Toward {TIPPING_POINT_PCT}% Tipping Point{" "}
+          Progress Toward a Majority of Humans on Earth{" "}
           <Tooltip.Provider>
             <Tooltip>
               <Tooltip.Trigger asChild>
@@ -410,19 +413,17 @@ export function CitizenDashboard() {
               <Tooltip.Content className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
                 <p className="font-bold text-sm text-foreground">
                   <span className="text-brutal-pink">
-                    The {TIPPING_POINT_PCT}% Rule:
+                    Treaty target:
                   </span>{" "}
-                  Harvard research by Erica Chenoweth found that nonviolent
-                  campaigns that engaged {TIPPING_POINT_PCT}% of the population
-                  never failed to bring about change. Our target is{" "}
-                  {(VOTING_BLOC_TARGET / 1e6).toFixed(0)}M people globally.
+                  The target is <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} display="withUnit" />:
+                  a majority of humans on Earth publicly agreeing that the 1% Treaty is a good idea.
                 </p>
               </Tooltip.Content>
             </Tooltip>
           </Tooltip.Provider>
         </h3>
         <p className="text-xs sm:text-sm font-bold mb-3">
-          Historical threshold: {TIPPING_POINT_PCT}% active participation — no campaign has ever failed past this point
+          The chain reaction target is a majority of humans on Earth.
         </p>
         <div className="flex flex-col sm:flex-row justify-between text-xs sm:text-sm font-bold mb-2 gap-1">
           <span>
@@ -431,7 +432,7 @@ export function CitizenDashboard() {
             )}
             % of global population
           </span>
-          <span>{TIPPING_POINT_PCT}% target</span>
+          <span>{TARGET_PCT}% target</span>
         </div>
         <div className="h-6 bg-background border-4 border-primary overflow-hidden">
           <div

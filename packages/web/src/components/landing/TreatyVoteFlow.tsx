@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { storage } from "@/lib/storage";
 import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
+import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { syncPendingReferendumVotes } from "@/lib/referendum-vote-sync";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
@@ -69,12 +70,16 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   useEffect(() => {
     const referralCode = searchParams?.get("ref");
     const shareAttemptId = searchParams?.get("sa");
+    const inviteToken = searchParams?.get("invite");
 
     if (referralCode) {
       storage.setSignupReferral(referralCode);
     }
     if (shareAttemptId) {
       storage.setSignupShareAttempt(shareAttemptId);
+    }
+    if (inviteToken) {
+      storage.setSignupInviteToken(inviteToken);
     }
   }, [searchParams]);
 
@@ -191,11 +196,13 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   const handleSliderSubmit = () => {
     const existingVote = storage.getPendingTreatyVote();
     const referralCode = searchParams?.get("ref") || existingVote?.referredBy || null;
+    const inviteToken = searchParams?.get("invite") || existingVote?.inviteToken || storage.getSignupInviteToken();
     const timestamp = existingVote?.timestamp || new Date().toISOString();
 
     storage.setPendingTreatyVote({
       answer: existingVote?.answer ?? "",
       referredBy: referralCode,
+      inviteToken,
       timestamp,
       wishocraticAllocation: buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
@@ -225,11 +232,13 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
 
     const existingVote = storage.getPendingTreatyVote();
     const referralCode = searchParams?.get("ref") || existingVote?.referredBy || null;
+    const inviteToken = searchParams?.get("invite") || existingVote?.inviteToken || storage.getSignupInviteToken();
     const timestamp = existingVote?.timestamp || new Date().toISOString();
 
     storage.setPendingTreatyVote({
       answer: choice.toUpperCase(),
       referredBy: referralCode,
+      inviteToken,
       timestamp,
       wishocraticAllocation:
         getTreatyWishocraticAllocation(existingVote) ??
@@ -455,6 +464,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
           >
             {status === "authenticated" ? (
               <>
+                <ReferralInvitationComposer />
                 <PostVoteReminders />
                 <div className="mt-6 text-center">
                   <Link

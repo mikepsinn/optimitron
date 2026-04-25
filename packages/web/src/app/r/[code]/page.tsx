@@ -16,7 +16,7 @@ interface PageProps {
  * captures `?sa=<shareAttemptId>` so we can tie this click (and any signup
  * that follows) back to the specific ShareAttempt row that generated this
  * outbound message. Then redirects to the homepage with ?ref= for the vote
- * flow.
+ * flow. Directed invitations also preserve ?invite=<token> for conversion.
  */
 export default async function ReferralRedirectPage({ params, searchParams }: PageProps) {
   const { code } = await params;
@@ -26,13 +26,17 @@ export default async function ReferralRedirectPage({ params, searchParams }: Pag
   const userAgent = headerStore.get("user-agent") ?? null;
   const rawSa = query.sa;
   const shareAttemptId = typeof rawSa === "string" ? rawSa : Array.isArray(rawSa) ? rawSa[0] ?? null : null;
+  const rawInvite = query.invite;
+  const inviteToken = typeof rawInvite === "string" ? rawInvite : Array.isArray(rawInvite) ? rawInvite[0] ?? null : null;
 
   // Fire-and-forget: log the click without blocking the redirect.
   void logReferralClick(code, refererUrl, userAgent, shareAttemptId);
 
-  const redirectUrl = shareAttemptId
-    ? `/?ref=${encodeURIComponent(code)}&sa=${encodeURIComponent(shareAttemptId)}#vote`
-    : `/?ref=${encodeURIComponent(code)}#vote`;
+  const redirectParams = new URLSearchParams({ ref: code });
+  if (shareAttemptId) redirectParams.set("sa", shareAttemptId);
+  if (inviteToken) redirectParams.set("invite", inviteToken);
+
+  const redirectUrl = `/?${redirectParams.toString()}#vote`;
 
   redirect(redirectUrl);
 }

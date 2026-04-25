@@ -211,6 +211,30 @@ enum ShareSource {
   IN_APP
 }
 
+/// Lifecycle for a directed treaty/referral invitation to a named person.
+enum ReferralInvitationStatus {
+  PENDING
+  COPIED
+  SENT
+  CONVERTED
+  DECLINED
+  CANCELLED
+}
+
+/// Message family chosen by the sender for a directed invitation.
+enum ReferralInvitationMessageFormat {
+  TASK_NOTIFICATION
+  SINCERE
+}
+
+/// Primary contact channel captured for a directed invitation.
+enum ReferralInvitationContactMethod {
+  EMAIL
+  COPY
+  SMS
+  OTHER
+}
+
 /// Type of in-app notification
 enum NotificationType {
   REFERRAL_SIGNUP
@@ -493,8 +517,9 @@ model Person {
   deletedAt DateTime?
 
   // -- Relations --
-  user          User?  @relation("UserPerson")
-  assignedTasks Task[] @relation("TaskAssigneePerson")
+  user                        User?                @relation("UserPerson")
+  assignedTasks               Task[]               @relation("TaskAssigneePerson")
+  receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
 
   @@index([displayName])
   @@index([countryCode])
@@ -710,6 +735,7 @@ model User {
   socialAccounts            SocialAccount[]                  @relation("UserSocialAccounts")
   emailLogs                 EmailLog[]                       @relation("UserEmailLogs")
   shareAttempts             ShareAttempt[]                   @relation("UserShareAttempts")
+  sentReferralInvitations   ReferralInvitation[]             @relation("ReferralInvitationReferrer")
   surveyResponses           SurveyResponse[]                 @relation("UserSurveyResponses")
   taskClaims                TaskClaim[]                      @relation("UserTaskClaims")
   ownedTasks                Task[]                           @relation("TaskOwner")
@@ -2260,6 +2286,109 @@ model ReferralClick {
   @@index([deletedAt])
 }
 
+/// Directed invitation from a verified voter to a specific named recipient.
+/// Complements generic Referral/ShareAttempt analytics by tracking invite-token
+/// lifecycle, reminder state, and conversion to a referendum vote.
+model ReferralInvitation {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Sender / referrer who created the invitation
+  referrerUserId String
+
+  /// Optional recipient Person record, created later when useful
+  recipientPersonId String?
+
+  /// Optional referendum this invitation asks the recipient to vote on
+  referendumId String?
+
+  /// Optional task created or linked for this recipient
+  taskId String?
+
+  /// Optional ShareAttempt that produced the copied/sent message
+  shareAttemptId String?
+
+  /// Vote that converted this invitation
+  convertedVoteId String? @unique
+
+  /// Opaque token carried in invite links
+  inviteToken String @unique
+
+  /// Opaque token used for recipient one-click unsubscribe links
+  recipientUnsubscribeToken String @unique
+
+  /// Sender-provided display name for the recipient
+  recipientName String
+
+  /// Recipient email if the sender provided one
+  recipientEmail String?
+
+  /// Primary channel for this invitation
+  contactMethod ReferralInvitationContactMethod?
+
+  /// Message family selected by the sender
+  messageFormat ReferralInvitationMessageFormat @default(SINCERE)
+
+  /// Rendered or edited message text the sender saw/sent
+  messageText String?
+
+  /// Current lifecycle status
+  status ReferralInvitationStatus @default(PENDING)
+
+  /// When the sender copied the message/link
+  copiedAt DateTime?
+
+  /// When a server-side invite email was sent
+  sentAt DateTime?
+
+  /// When the invitation first converted to a verified vote
+  convertedAt DateTime?
+
+  /// When the recipient unsubscribed from this invitation's reminder sequence
+  recipientUnsubscribedAt DateTime?
+
+  /// Recipient reminder state
+  recipientEmailStep              Int       @default(0)
+  nextRecipientEmailAt            DateTime?
+  lastRecipientEmailAt            DateTime?
+  recipientEmailProviderMessageId String?
+  recipientEmailErrorMessage      String?
+
+  /// Sender nudge state
+  senderNudgeOptedInAt DateTime?
+  senderNudgeStep      Int       @default(0)
+  nextSenderNudgeAt    DateTime?
+  lastSenderNudgeAt    DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  referrer      User            @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
+  recipient     Person?         @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
+  referendum    Referendum?     @relation(fields: [referendumId], references: [id], onDelete: SetNull)
+  task          Task?           @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
+  shareAttempt  ShareAttempt?   @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  convertedVote ReferendumVote? @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
+
+  @@index([referrerUserId, createdAt])
+  @@index([recipientPersonId])
+  @@index([referendumId])
+  @@index([taskId])
+  @@index([shareAttemptId])
+  @@index([status])
+  @@index([nextRecipientEmailAt])
+  @@index([recipientUnsubscribedAt])
+  @@index([nextSenderNudgeAt])
+  @@index([deletedAt])
+}
+
 /// Saved pairwise allocations for authenticated Wishocracy users
 model WishocraticAllocation {
   /// Unique identifier for this allocation
@@ -2798,6 +2927,7 @@ model Referendum {
   voteTokenMints        VoteTokenMint[]
   surveys               Survey[]
   organizationPositions OrganizationReferendumPosition[]
+  referralInvitations   ReferralInvitation[]
 
   @@index([slug])
   @@index([status])
@@ -2832,9 +2962,10 @@ model ReferendumVote {
   deletedAt DateTime?
 
   // -- Relations --
-  user       User       @relation("UserReferendumVotes", fields: [userId], references: [id], onDelete: Cascade)
-  referendum Referendum @relation(fields: [referendumId], references: [id])
-  referrer   User?      @relation("UserReferendumReferrals", fields: [referredByUserId], references: [id])
+  user                        User                @relation("UserReferendumVotes", fields: [userId], references: [id], onDelete: Cascade)
+  referendum                  Referendum          @relation(fields: [referendumId], references: [id])
+  referrer                    User?               @relation("UserReferendumReferrals", fields: [referredByUserId], references: [id])
+  convertedReferralInvitation ReferralInvitation? @relation("ReferralInvitationConvertedVote")
 
   @@unique([userId, referendumId])
   @@index([userId])
@@ -3387,6 +3518,7 @@ model Task {
   agentRunCosts            AgentRunCost[]          @relation("TaskAgentRunCosts")
   agentLeases              AgentTaskLease[]        @relation("TaskAgentLeases")
   shareAttempts            ShareAttempt[]          @relation("TaskShareAttempts")
+  referralInvitations      ReferralInvitation[]    @relation("TaskReferralInvitations")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -4503,9 +4635,10 @@ model ShareAttempt {
   createdAt DateTime @default(now())
 
   // -- Relations --
-  user     User      @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
-  emailLog EmailLog? @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
-  task     Task?     @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
+  user                User                 @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  emailLog            EmailLog?            @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
+  task                Task?                @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
+  referralInvitations ReferralInvitation[] @relation("ShareAttemptReferralInvitations")
 
   @@index([userId, createdAt])
   @@index([templateHash])

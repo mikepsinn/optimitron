@@ -6,8 +6,8 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { POINT } from "@/lib/messaging";
 import {
   PRIZE_POOL_HORIZON_MULTIPLE,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 
 const objections: { id: string; question: string; answer: ReactNode }[] = [
   {
@@ -19,7 +19,7 @@ const objections: { id: string; question: string; answer: ReactNode }[] = [
   {
     id: "politicians",
     question: "Can politicians just ignore this?",
-    answer: <>3.5% of a population is the tipping point. No campaign in history has failed after reaching it. That&apos;s <ParameterValue param={TREATY_CAMPAIGN_VOTING_BLOC_TARGET} display="withUnit" /> globally. The referendum proves demand. Ignoring proven demand costs more than acting.</>,
+    answer: <>A majority of humans on Earth is the target. That&apos;s <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} display="withUnit" /> publicly agreeing that the 1% Treaty is a good idea. The referendum proves demand. Ignoring proven demand costs more than acting.</>,
   },
   {
     id: "fails",

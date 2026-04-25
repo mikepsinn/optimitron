@@ -6,15 +6,15 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   formatParameter,
 } from "@optimitron/data/parameters";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 // Pre-calculated totals (one-time timeline shift benefits)
 const totalLives = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const totalDALYs = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS)
 const totalEconomicValue = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE)
 const totalSufferingHours = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS)
-const votingBlocTarget = formatParameter(TREATY_CAMPAIGN_VOTING_BLOC_TARGET, { compact: false })
+const votingBlocTarget = formatParameter(MAJORITY_OF_HUMANS_ON_EARTH, { compact: false })
 
 // Derived per-vote impact values from impact-ledger
 const livesPerVote = IMPACT_PER_VOTE.lives
@@ -38,7 +38,7 @@ export function LivesEquation({ votes, className = "" }: EquationProps) {
       <EquationLogic
         votes={votes}
         numerator={`${totalLives} lives (one-time)`}
-        denominator={`${votingBlocTarget} votes needed`}
+        denominator={`${votingBlocTarget} people needed`}
         result={result}
       />
     </div>
@@ -57,7 +57,7 @@ export function SufferingEquation({ votes, className = "" }: EquationProps) {
       <EquationLogic
         votes={votes}
         numerator={`${totalSufferingHours} hours (one-time)`}
-        denominator={`${votingBlocTarget} votes needed`}
+        denominator={`${votingBlocTarget} people needed`}
         result={result}
       />
     </div>
@@ -76,7 +76,7 @@ export function ValueEquation({ votes, className = "" }: EquationProps) {
       <EquationLogic
         votes={votes}
         numerator={`${totalEconomicValue} value (one-time)`}
-        denominator={`${votingBlocTarget} votes needed`}
+        denominator={`${votingBlocTarget} people needed`}
         result={result}
       />
     </div>

@@ -37,6 +37,7 @@ async function postVote(
   slug: string,
   answer: string,
   referredBy: string | null,
+  inviteToken?: string | null,
 ): Promise<boolean> {
   try {
     const res = await fetch(`/api/referendums/${slug}/vote`, {
@@ -45,6 +46,7 @@ async function postVote(
       body: JSON.stringify({
         answer,
         ref: referredBy ?? undefined,
+        inviteToken: inviteToken ?? undefined,
       }),
     });
     return res.ok;
@@ -179,6 +181,7 @@ const treatyConfig: ReferendumConfig = {
     storage.setPendingTreatyVote({
       answer: "YES",
       referredBy: referralCode,
+      inviteToken: null,
       timestamp: new Date().toISOString(),
       organizationId: null,
     }),
@@ -199,6 +202,7 @@ const treatyConfig: ReferendumConfig = {
           TREATY_REFERENDUM_SLUG,
           pending.answer,
           pending.referredBy,
+          pending.inviteToken,
         )
       : true;
 

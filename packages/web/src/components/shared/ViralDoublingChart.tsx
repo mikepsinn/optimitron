@@ -2,14 +2,12 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import {
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
-} from "@optimitron/data/parameters";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BrutalCard } from "@/components/ui/brutal-card";
+import { MAJORITY_OF_HUMANS_ON_EARTH_VALUE } from "@/lib/majority-humanity-target";
 
-const TARGET = TREATY_CAMPAIGN_VOTING_BLOC_TARGET.value;
-const TARGET_M = Math.round(TARGET / 1e6);
+const TARGET = MAJORITY_OF_HUMANS_ON_EARTH_VALUE;
+const TARGET_B = TARGET / 1e9;
 
 const ROUNDS = [
   { round: 1, people: 2 },
@@ -18,7 +16,8 @@ const ROUNDS = [
   { round: 15, people: 32_768 },
   { round: 20, people: 1_048_576 },
   { round: 25, people: 33_554_432 },
-  { round: 28, people: 268_435_456 },
+  { round: 30, people: 1_073_741_824 },
+  { round: 32, people: 4_294_967_296 },
 ];
 
 function fmt(n: number): string {
@@ -36,7 +35,7 @@ export function ViralDoublingChart() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh] px-4 sm:px-8">
       <SectionHeader
-        title="28 Rounds of Doubling"
+        title="32 Rounds of Doubling"
         subtitle="Tell two people. They each tell two. ~8 months at one round per week."
         size="lg"
       />
@@ -90,10 +89,10 @@ export function ViralDoublingChart() {
       >
         <BrutalCard bgColor="yellow" shadowSize={8} className="max-w-xl text-center">
           <p className="text-2xl sm:text-3xl font-black text-brutal-yellow-foreground">
-            {TARGET_M}M = 3.5% Tipping Point
+            {TARGET_B.toFixed(0)}B = A Majority of Humans on Earth
           </p>
           <p className="text-sm font-bold text-brutal-yellow-foreground mt-1">
-            No campaign that reached this threshold has ever failed.
+            Two humans per round reaches the target in months, not decades.
           </p>
         </BrutalCard>
       </motion.div>

@@ -179,12 +179,12 @@ export const REQUIRED_PARAMS_PER_CLAIM: Record<NodeId, readonly string[]> = {
   ],
   "pressure-works": [
     "MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO",
-    "GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT",
+    "GLOBAL_REGISTERED_VOTERS",
   ],
   "paid-recursion": [
     "VOTER_LIVES_SAVED",
     "VOTER_SUFFERING_HOURS_PREVENTED",
-    "TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
+    "GLOBAL_REGISTERED_VOTERS",
   ],
 };
 
@@ -209,7 +209,7 @@ export const ADVERSARIAL_SOURCE_REQUIRED_OBJECTIONS: readonly NodeId[] = [
  */
 export const KILL_CRITERIA: readonly string[] = [
   "The treaty passes.",
-  "280M verified signatures are reached.",
+  "A majority of humans on Earth verifies support.",
   "A peer-reviewed rebuttal of the underlying math is published.",
 ];
 

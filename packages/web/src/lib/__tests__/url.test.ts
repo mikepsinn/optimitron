@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAlignmentUrl,
+  buildInviteReferralUrl,
   buildReferralUrl,
   buildUserAlignmentUrl,
+  buildUserInviteReferralUrl,
   buildUserReferralUrl,
   buildReferendumReferralUrl,
 } from "@/lib/url";
@@ -17,6 +19,22 @@ describe("url helpers", () => {
       "https://example.com/r/REF123",
     );
     expect(buildReferralUrl(null, "https://example.com")).toBe(
+      "https://example.com",
+    );
+  });
+
+  it("builds invite referral links without changing the canonical /r path", () => {
+    expect(
+      buildUserInviteReferralUrl(
+        { username: "jane", referralCode: "REF123" },
+        "invite_123",
+        "https://example.com",
+      ),
+    ).toBe("https://example.com/r/jane?invite=invite_123");
+    expect(
+      buildInviteReferralUrl("REF123", "invite value", "https://example.com"),
+    ).toBe("https://example.com/r/REF123?invite=invite%20value");
+    expect(buildInviteReferralUrl(null, "invite_123", "https://example.com")).toBe(
       "https://example.com",
     );
   });

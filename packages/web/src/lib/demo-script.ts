@@ -26,7 +26,6 @@ import {
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
   VOTE_TOKEN_VALUE,
   PRIZE_POOL_HORIZON_MULTIPLE,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
   US_GOV_WASTE_DRUG_WAR,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
@@ -82,6 +81,7 @@ import {
   GLOBAL_CYBERCRIME_CAGR,
 } from "@optimitron/data/parameters";
 import { POINT, POINTS } from "@/lib/messaging";
+import { MAJORITY_OF_HUMANS_ON_EARTH } from "@/lib/majority-humanity-target";
 
 // ---------------------------------------------------------------------------
 // Speech-formatted parameter values for TTS narration.
@@ -95,7 +95,7 @@ const dysfunctionCost = fmtSpeech(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_
 const dysfunctionPerPerson = fmtSpeech(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL);       // "12600"
 const votePointValue = fmtSpeech(VOTE_TOKEN_VALUE);                         // "8440"
 const poolMultiple = fmtSpeech(PRIZE_POOL_HORIZON_MULTIPLE, 2);            // "11"
-const tippingPoint = fmtSpeech(TREATY_CAMPAIGN_VOTING_BLOC_TARGET, 2);     // "280 million"
+const tippingPoint = fmtSpeech(MAJORITY_OF_HUMANS_ON_EARTH, 2);            // "4 billion"
 const collapseYear = fmtSpeech(DESTRUCTIVE_ECONOMY_50PCT_YEAR);            // "2040"
 const trialCapacity = fmtSpeech(DFDA_TRIAL_CAPACITY_MULTIPLIER);           // "12.3"
 const oldQueue = fmtSpeech(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 2);           // "440"
@@ -542,7 +542,7 @@ export const SEGMENTS = [
     slideId: "viral-doubling-to-4b",
     bgColor: "yellow",
     tags: ["evidence", "mechanism"],
-    narration: `Tell two people. They each tell two more. Twenty-eight rounds of this reaches ${tippingPoint} people — Chenoweth's three point five percent tipping point. No campaign in history that reached this threshold ever failed. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
+    narration: `Tell two people. They each tell two more. Thirty-two rounds of this reaches ${tippingPoint} people — a majority of humans on Earth. At one round per week, that is eight months to critical mass. Your species invented the maths. Use it.`,
   },
   {
     id: "evidence-personal-upside",

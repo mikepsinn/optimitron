@@ -8,6 +8,9 @@ export const API_ROUTES = {
   auth: {
     postSignin: "/api/auth/post-signin",
   },
+  referralInvitations: {
+    root: "/api/referral-invitations",
+  },
   profile: {
     root: "/api/profile",
     checkIn: "/api/profile/check-in",

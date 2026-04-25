@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   signupName: "signup_name",
   signupReferral: "signup_referral",
   signupShareAttempt: "signup_share_attempt",
+  signupInviteToken: "signup_invite_token",
   signupSubscribe: "signup_subscribe",
   pendingWishocracy: "pendingWishocracy",
   pendingTreatyVote: "pending_treaty_vote",
@@ -25,6 +26,7 @@ export type PendingTreatyVoteState = {
   timestamp: string;
   wishocraticAllocation?: PendingWishocraticAllocation;
   organizationId: string | null;
+  inviteToken?: string | null;
 };
 
 export type VoteStatusCache = {
@@ -141,6 +143,11 @@ export const storage = {
     setStringItem(STORAGE_KEYS.signupShareAttempt, shareAttemptId),
   clearSignupShareAttempt: () => removeStorageItem(STORAGE_KEYS.signupShareAttempt),
 
+  getSignupInviteToken: () => getStringItem(STORAGE_KEYS.signupInviteToken),
+  setSignupInviteToken: (inviteToken: string) =>
+    setStringItem(STORAGE_KEYS.signupInviteToken, inviteToken),
+  clearSignupInviteToken: () => removeStorageItem(STORAGE_KEYS.signupInviteToken),
+
   getSignupSubscribe: () => getBooleanItem(STORAGE_KEYS.signupSubscribe),
   setSignupSubscribe: (subscribe: boolean) => setBooleanItem(STORAGE_KEYS.signupSubscribe, subscribe),
   clearSignupSubscribe: () => removeStorageItem(STORAGE_KEYS.signupSubscribe),
@@ -149,6 +156,7 @@ export const storage = {
     removeStorageItem(STORAGE_KEYS.signupName);
     removeStorageItem(STORAGE_KEYS.signupReferral);
     removeStorageItem(STORAGE_KEYS.signupShareAttempt);
+    removeStorageItem(STORAGE_KEYS.signupInviteToken);
     removeStorageItem(STORAGE_KEYS.signupSubscribe);
   },
 

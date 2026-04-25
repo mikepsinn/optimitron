@@ -6,6 +6,13 @@ import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 import { grantWishes } from "@/lib/wishes.server";
 import { checkBadgesAfterWish } from "@/lib/badges.server";
 import { syncReferralVoteTokenMintForVote } from "@/lib/referral-vote-token-mint.server";
+import {
+  convertReferralInvitationForVote,
+  resolveInvitationReferrer,
+} from "@/lib/referral-invitations.server";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("referendum-vote");
 
 export async function POST(
   request: Request,
@@ -18,6 +25,7 @@ export async function POST(
       answer: string;
       ref?: string;
       makePublic?: boolean;
+      inviteToken?: string;
     };
 
     const answer = body.answer?.toUpperCase();
@@ -54,6 +62,12 @@ export async function POST(
         referredByUserId = referrer.id;
       }
     }
+    if (!referredByUserId && body.inviteToken) {
+      const invitationReferrer = await resolveInvitationReferrer(body.inviteToken);
+      if (invitationReferrer && invitationReferrer.referrerUserId !== userId) {
+        referredByUserId = invitationReferrer.referrerUserId;
+      }
+    }
 
     const vote = await prisma.referendumVote.upsert({
       where: {
@@ -73,6 +87,18 @@ export async function POST(
         referredByUserId,
       },
     });
+
+    let convertedReferralInvitation = null;
+    try {
+      convertedReferralInvitation = await convertReferralInvitationForVote({
+        inviteToken: body.inviteToken,
+        voterUserId: userId,
+        referendumId: referendum.id,
+        voteId: vote.id,
+      });
+    } catch (invitationError) {
+      log.error("Referral invitation conversion error", invitationError);
+    }
 
     // Apply public-profile intent from the signature-box checkbox. Only
     // updates User.isPublic when the caller sent an explicit boolean AND it
@@ -108,7 +134,7 @@ export async function POST(
       });
       activityId = activity.id;
     } catch (activityError) {
-      console.error("[REFERENDUM VOTE] Activity log error:", activityError);
+      log.error("Activity log error", activityError);
     }
 
     // Queue referral VOTE reward for the referrer when the referred voter is verified.
@@ -120,7 +146,7 @@ export async function POST(
         referendumId: referendum.id,
       });
     } catch (mintError) {
-      console.error("[VOTE TOKEN MINT] Referral reward queue error:", mintError);
+      log.error("Referral reward queue error", mintError);
     }
 
     // Grant wish points for voting
@@ -136,15 +162,20 @@ export async function POST(
       if (wishResult) wishesEarned = wishResult.amount;
       void checkBadgesAfterWish(userId, "REFERENDUM_VOTE");
     } catch (wishError) {
-      console.error("[REFERENDUM VOTE] Wish grant error:", wishError);
+      log.error("Wish grant error", wishError);
     }
 
-    return NextResponse.json({ vote, referrerVoteTokenMint, wishesEarned });
+    return NextResponse.json({
+      vote,
+      referrerVoteTokenMint,
+      wishesEarned,
+      convertedReferralInvitation,
+    });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error("[REFERENDUM VOTE] Error:", error);
+    log.error("Error", error);
     return NextResponse.json(
       { error: "Failed to cast vote" },
       { status: 500 },

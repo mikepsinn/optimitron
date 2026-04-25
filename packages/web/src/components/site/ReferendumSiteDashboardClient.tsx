@@ -3,6 +3,7 @@
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
+import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer";
 import { Button } from "@/components/retroui/Button";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import type { TaskCardTask } from "@/components/tasks/task-card";
@@ -40,6 +41,7 @@ export function ReferendumSiteDashboardClient({
       <div className="text-center">
         <TasksRootIntro />
         <div className="mx-auto mt-6 max-w-2xl text-left">
+          <ReferralInvitationComposer />
           <PostVoteReminders />
         </div>
       </div>

@@ -24,7 +24,11 @@ export function AuthPostSigninSync() {
     const name = storage.getSignupName();
     const newsletterSubscribed = storage.getSignupSubscribe();
 
-    if (!referralCode && !shareAttemptId && !name && newsletterSubscribed === null) {
+    const hasPostSigninContext =
+      Boolean(referralCode || shareAttemptId || name) || newsletterSubscribed !== null;
+
+    if (!hasPostSigninContext) {
+      void syncPendingReferendumVotes(session);
       setCompletedUserId(userId);
       return;
     }
