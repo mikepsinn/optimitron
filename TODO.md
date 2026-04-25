@@ -41,17 +41,21 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Use `/vote/<username-or-referralCode>?invite=<inviteToken>` for named invitations.
 - [ ] Verify invite-token attribution through the full recipient path in a browser:
   vote link -> landing -> vote -> verification -> vote sync -> invitation converted -> task verified -> dashboard updated.
-- [ ] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
-- [ ] Add explicit regression tests for username-vs-referral-code resolution on `/vote/<identifier>`.
+- [x] Add no-self-credit tests for named invite tokens in addition to generic referral no-self-credit tests.
+- [x] Add explicit regression tests for username-vs-referral-code resolution on `/vote/<identifier>`.
 - [ ] Add a "send to one more" deep link that drops verified users directly into the referral loop.
 - [ ] Confirm partner/demo survey variants use the lighter mode and do not accidentally enter the full post-vote send loop.
 
 ## Email Sequences
 
-- [ ] Port the email sequence v2 copy into Optimitron templates exactly.
+- [x] Port the email sequence v2 copy into Optimitron templates, with the project-wide 4B denominator wording normalized to "a majority of humans on Earth."
   - Recipient Sequence A: Task Notification and Sincere variants.
   - Sender Sequence B: vote confirmed, recipient voted, nudges, monthly scorecard.
   - Re-engagement Sequence C: verified but never shared.
+- [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
+- [ ] Wire Sender Sequence B3/B4 sender nudges into cron from `nextSenderNudgeAt`.
+- [ ] Wire Sender Sequence B5 monthly scorecards.
+- [ ] Wire Re-engagement Sequence C1 for verified users who never shared.
 - [ ] Preserve format consistency per invite; do not mix Task Notification and Sincere variants within a recipient sequence.
 - [ ] Enforce the recipient hard cap of four emails.
 - [ ] Enforce sender nudge caps and monthly scorecard preferences.

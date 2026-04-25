@@ -15,9 +15,9 @@ export function getBaseUrl(): string {
   return getConfiguredSiteOrigin({ allowLocalFallback: true });
 }
 
-/** Build a referral link: /r/identifier — clean URL, redirects to homepage with ref stored */
+/** Build a referral link: /vote/identifier — clean URL, redirects to homepage with ref stored */
 export function buildReferralUrl(identifier?: string | null, baseUrl: string = getBaseUrl()): string {
-  return identifier ? `${baseUrl}/r/${identifier}` : baseUrl;
+  return identifier ? `${baseUrl}/vote/${identifier}` : baseUrl;
 }
 
 export function buildInviteReferralUrl(

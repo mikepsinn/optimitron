@@ -13,7 +13,7 @@ describe("referral invitation copy", () => {
   it("builds the task notification message", () => {
     expect(
       buildReferralInvitationMessage({
-        inviteUrl: "https://example.com/r/sender?invite=abc",
+        inviteUrl: "https://example.com/vote/sender?invite=abc",
         messageFormat: "TASK_NOTIFICATION",
         recipientName: "Jake Smith",
         senderName: "Ada",
@@ -33,7 +33,7 @@ describe("referral invitation copy", () => {
         "",
         "NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building 122 apocalypses worth of nuclear weapons. Management apologizes for the delay.",
         "",
-        "[ COMPLETE TASK → https://example.com/r/sender?invite=abc ]",
+        "[ COMPLETE TASK → https://example.com/vote/sender?invite=abc ]",
       ].join("\n"),
     );
   });
@@ -41,12 +41,12 @@ describe("referral invitation copy", () => {
   it("builds the sincere message", () => {
     expect(
       buildReferralInvitationMessage({
-        inviteUrl: "https://example.com/r/sender?invite=abc",
+        inviteUrl: "https://example.com/vote/sender?invite=abc",
         messageFormat: "SINCERE",
         recipientName: "Jake Smith",
       }),
     ).toBe(
-      "Hi Jake. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? https://example.com/r/sender?invite=abc",
+      "Hi Jake. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? https://example.com/vote/sender?invite=abc",
     );
   });
 });

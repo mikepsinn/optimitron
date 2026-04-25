@@ -419,7 +419,7 @@ export function TaskRowShare({
       ? availableTemplates.find((t) => t.id === selectedTemplateId) ?? null
       : null;
 
-    // Fire-and-forget. Orphan sa= IDs are tolerated by /r/[code].
+    // Fire-and-forget. Orphan sa= IDs are tolerated by /vote/[code].
     void logShareAttempt({
       id: shareAttemptId,
       channel,

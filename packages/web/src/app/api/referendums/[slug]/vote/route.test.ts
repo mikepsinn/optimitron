@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   syncReferralVoteTokenMintForVote: vi.fn(),
   resolveInvitationReferrer: vi.fn(),
   convertReferralInvitationForVote: vi.fn(),
+  sendTreatyRecipientVotedEmailForInvitation: vi.fn(),
+  sendTreatyVoteConfirmedEmailForUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -36,6 +38,11 @@ vi.mock("@/lib/referral-vote-token-mint.server", () => ({
 vi.mock("@/lib/referral-invitations.server", () => ({
   resolveInvitationReferrer: mocks.resolveInvitationReferrer,
   convertReferralInvitationForVote: mocks.convertReferralInvitationForVote,
+}));
+
+vi.mock("@/lib/treaty-sender-emails.server", () => ({
+  sendTreatyRecipientVotedEmailForInvitation: mocks.sendTreatyRecipientVotedEmailForInvitation,
+  sendTreatyVoteConfirmedEmailForUser: mocks.sendTreatyVoteConfirmedEmailForUser,
 }));
 
 vi.mock("@/lib/wishes.server", () => ({
@@ -66,6 +73,11 @@ const ACTIVE_REFERENDUM = {
   deletedAt: null,
 };
 
+const TREATY_REFERENDUM = {
+  ...ACTIVE_REFERENDUM,
+  slug: "one-percent-treaty",
+};
+
 describe("POST /api/referendums/[slug]/vote", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -76,6 +88,8 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
+    mocks.sendTreatyRecipientVotedEmailForInvitation.mockResolvedValue({ status: "sent" });
+    mocks.sendTreatyVoteConfirmedEmailForUser.mockResolvedValue({ status: "sent" });
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -180,6 +194,25 @@ describe("POST /api/referendums/[slug]/vote", () => {
       amount: 2,
       activityId: "activity_1",
       dedupeKey: "ref_1",
+    });
+    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
+  });
+
+  it("sends the treaty vote-confirmed email only for the treaty referendum", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
+    const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
+    mocks.upsert.mockResolvedValue(vote);
+
+    const res = await POST(
+      makeRequest("one-percent-treaty", { answer: "yes" }),
+      makeParams("one-percent-treaty"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.sendTreatyVoteConfirmedEmailForUser).toHaveBeenCalledWith({
+      referendumId: "ref_1",
+      userId: "user_1",
     });
   });
 
@@ -301,6 +334,38 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
   });
 
+  it("does NOT set referrer when invite token belongs to the voter", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.resolveInvitationReferrer.mockResolvedValue({
+      id: "invite_1",
+      referrerUserId: "user_1",
+      referendumId: "ref_1",
+      convertedVoteId: null,
+      status: "PENDING",
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      referredByUserId: null,
+    });
+
+    await POST(
+      makeRequest("test-ref", { answer: "YES", inviteToken: "token_1" }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ referredByUserId: null }),
+      }),
+    );
+    expect(mocks.syncReferralVoteTokenMintForVote).toHaveBeenCalledWith({
+      referredVoterUserId: "user_1",
+      referrerUserId: null,
+      referendumId: "ref_1",
+    });
+  });
+
   it("converts a matching invitation after a verified vote", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
@@ -346,6 +411,46 @@ describe("POST /api/referendums/[slug]/vote", () => {
       voterUserId: "user_1",
       referendumId: "ref_1",
       voteId: "vote_1",
+    });
+    expect(mocks.sendTreatyRecipientVotedEmailForInvitation).not.toHaveBeenCalled();
+  });
+
+  it("sends the recipient-voted sender email when a treaty invitation converts", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
+    const vote = {
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+      referredByUserId: "referrer_1",
+    };
+    mocks.upsert.mockResolvedValue(vote);
+    mocks.resolveInvitationReferrer.mockResolvedValue({
+      id: "invite_1",
+      referrerUserId: "referrer_1",
+      referendumId: "ref_1",
+      convertedVoteId: null,
+      status: "PENDING",
+    });
+    mocks.convertReferralInvitationForVote.mockResolvedValue({
+      id: "invite_1",
+      status: "CONVERTED",
+      convertedVoteId: "vote_1",
+    });
+
+    const res = await POST(
+      makeRequest("one-percent-treaty", { answer: "YES", inviteToken: "token_1" }),
+      makeParams("one-percent-treaty"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(mocks.sendTreatyVoteConfirmedEmailForUser).toHaveBeenCalledWith({
+      referendumId: "ref_1",
+      userId: "user_1",
+    });
+    expect(mocks.sendTreatyRecipientVotedEmailForInvitation).toHaveBeenCalledWith({
+      invitationId: "invite_1",
     });
   });
 

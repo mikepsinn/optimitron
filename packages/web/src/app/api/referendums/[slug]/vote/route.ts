@@ -11,6 +11,11 @@ import {
   resolveInvitationReferrer,
 } from "@/lib/referral-invitations.server";
 import { createLogger } from "@/lib/logger";
+import {
+  sendTreatyRecipientVotedEmailForInvitation,
+  sendTreatyVoteConfirmedEmailForUser,
+} from "@/lib/treaty-sender-emails.server";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const log = createLogger("referendum-vote");
 
@@ -163,6 +168,27 @@ export async function POST(
       void checkBadgesAfterWish(userId, "REFERENDUM_VOTE");
     } catch (wishError) {
       log.error("Wish grant error", wishError);
+    }
+
+    if (referendum.slug === TREATY_REFERENDUM_SLUG) {
+      try {
+        await sendTreatyVoteConfirmedEmailForUser({
+          referendumId: referendum.id,
+          userId,
+        });
+      } catch (emailError) {
+        log.error("Treaty vote-confirmed email error", emailError);
+      }
+
+      if (convertedReferralInvitation?.id) {
+        try {
+          await sendTreatyRecipientVotedEmailForInvitation({
+            invitationId: convertedReferralInvitation.id,
+          });
+        } catch (emailError) {
+          log.error("Treaty recipient-voted email error", emailError);
+        }
+      }
     }
 
     return NextResponse.json({

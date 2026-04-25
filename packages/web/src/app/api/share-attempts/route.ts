@@ -29,7 +29,7 @@ const shareAttemptSchema = z.object({
  * embeds `?sa=<id>` in the outbound referral URL before opening the
  * third-party share window — so this endpoint is fire-and-forget from the
  * client's perspective. Failed inserts leave an orphan `sa=` in the URL,
- * which `/r/[code]` tolerates gracefully.
+ * which `/vote/[code]` tolerates gracefully.
  */
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();

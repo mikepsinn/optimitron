@@ -7,7 +7,7 @@ import {
 describe("referral invitation recipient email sequence", () => {
   it("builds the first task notification email", () => {
     const email = buildReferralInvitationRecipientEmail({
-      inviteUrl: "https://example.com/r/ada?invite=abc",
+      inviteUrl: "https://example.com/vote/ada?invite=abc",
       messageFormat: "TASK_NOTIFICATION",
       recipientName: "Jake Smith",
       senderName: "Ada",
@@ -17,14 +17,14 @@ describe("referral invitation recipient email sequence", () => {
     expect(email.subject).toBe("[OVERDUE] Task assigned to you: End War and Disease");
     expect(email.text).toContain("TASK: End War and Disease");
     expect(email.text).toContain("ASSIGNED BY: Ada");
-    expect(email.text).toContain("[BUTTON: COMPLETE TASK → https://example.com/r/ada?invite=abc]");
+    expect(email.text).toContain("[BUTTON: COMPLETE TASK → https://example.com/vote/ada?invite=abc]");
     expect(email.text).toContain("— The Humanity Project Management System");
-    expect(email.html).toContain("https://example.com/r/ada?invite=abc");
+    expect(email.html).toContain("https://example.com/vote/ada?invite=abc");
   });
 
   it("builds the first sincere email", () => {
     const email = buildReferralInvitationRecipientEmail({
-      inviteUrl: "https://example.com/r/ada?invite=abc",
+      inviteUrl: "https://example.com/vote/ada?invite=abc",
       messageFormat: "SINCERE",
       recipientName: "Jake Smith",
       senderName: "Ada",

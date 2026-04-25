@@ -5,7 +5,7 @@ describe("buildChannelHref", () => {
   const input = {
     message: "Please sign the 1% Treaty.",
     shareText: "Sign the 1% Treaty",
-    shareUrl: "https://optimitron.com/r/jane?sa=abc",
+    shareUrl: "https://optimitron.com/vote/jane?sa=abc",
     taskUrl: "https://optimitron.com/tasks/1?ref=jane",
     taskTitle: "Sign the 1% Treaty",
   };
@@ -45,35 +45,35 @@ describe("buildChannelHref", () => {
 
 describe("embedShareAttemptId", () => {
   it("appends sa= to an owned URL without existing query", () => {
-    const msg = "Check out https://optimitron.com/r/jane and take action.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "abc");
-    expect(out).toBe("Check out https://optimitron.com/r/jane?sa=abc and take action.");
+    const msg = "Check out https://optimitron.com/vote/jane and take action.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "abc");
+    expect(out).toBe("Check out https://optimitron.com/vote/jane?sa=abc and take action.");
   });
 
   it("appends sa= preserving other query params", () => {
-    const msg = "Visit https://optimitron.com/r/jane?utm_source=x for context.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "abc");
+    const msg = "Visit https://optimitron.com/vote/jane?utm_source=x for context.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "abc");
     expect(out).toContain("utm_source=x");
     expect(out).toContain("sa=abc");
   });
 
   it("replaces an existing sa= rather than duplicating it", () => {
-    const msg = "Here https://optimitron.com/r/jane?sa=OLD&foo=bar end.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "NEW");
+    const msg = "Here https://optimitron.com/vote/jane?sa=OLD&foo=bar end.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "NEW");
     expect(out).toContain("sa=NEW");
     expect(out).not.toContain("sa=OLD");
     expect(out).toContain("foo=bar");
   });
 
   it("preserves a url fragment", () => {
-    const msg = "Go https://optimitron.com/r/jane#vote now.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "abc");
-    expect(out).toBe("Go https://optimitron.com/r/jane?sa=abc#vote now.");
+    const msg = "Go https://optimitron.com/vote/jane#vote now.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "abc");
+    expect(out).toBe("Go https://optimitron.com/vote/jane?sa=abc#vote now.");
   });
 
   it("leaves non-matching URLs alone", () => {
-    const msg = "See https://other.example.com/r/jane for details.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "abc");
+    const msg = "See https://other.example.com/vote/jane for details.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "abc");
     expect(out).toBe(msg);
   });
 
@@ -83,8 +83,8 @@ describe("embedShareAttemptId", () => {
   });
 
   it("keeps sentence punctuation outside the attributed URL", () => {
-    const msg = "Sign it at https://optimitron.com/r/jane. It takes 30 seconds.";
-    const out = embedShareAttemptId(msg, "https://optimitron.com/r/jane", "abc");
-    expect(out).toBe("Sign it at https://optimitron.com/r/jane?sa=abc. It takes 30 seconds.");
+    const msg = "Sign it at https://optimitron.com/vote/jane. It takes 30 seconds.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "abc");
+    expect(out).toBe("Sign it at https://optimitron.com/vote/jane?sa=abc. It takes 30 seconds.");
   });
 });

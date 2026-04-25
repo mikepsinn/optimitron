@@ -99,6 +99,84 @@ export function trackReferralShared(params: {
 }
 
 // ============================================
+// Treaty Post-Vote Share Flow Events
+// ============================================
+
+export function trackTreatyPostVoteScreenAdvanced(params: {
+  from: string
+  to: string
+  dismissive: boolean
+  dismissiveCount: number
+  sentCount: number
+}): void {
+  trackEvent('treaty_post_vote_screen_advanced', {
+    from_screen: params.from,
+    to_screen: params.to,
+    dismissive: params.dismissive,
+    dismissive_count: params.dismissiveCount,
+    sent_count: params.sentCount,
+  })
+}
+
+export function trackTreatyPostVoteDetailsExpanded(params: {
+  screen: string
+  detailId: string
+}): void {
+  trackEvent('treaty_post_vote_details_expanded', {
+    screen: params.screen,
+    detail_id: params.detailId,
+  })
+}
+
+export function trackTreatyPostVoteInvitationAction(params: {
+  action: 'copy' | 'send_email' | 'sent_confirmed'
+  messageFormat: string
+  hasEmail: boolean
+  sentCount: number
+}): void {
+  trackEvent('treaty_post_vote_invitation_action', {
+    action: params.action,
+    message_format: params.messageFormat,
+    has_email: params.hasEmail,
+    sent_count: params.sentCount,
+  })
+}
+
+export function trackTreatyPostVoteFormatChoice(params: {
+  messageFormat: string
+  sentCount: number
+  switched: boolean
+}): void {
+  trackEvent('treaty_post_vote_format_choice', {
+    message_format: params.messageFormat,
+    sent_count: params.sentCount,
+    switched: params.switched,
+  })
+}
+
+export function trackTreatyPostVoteDepthHook(params: {
+  wantsNudge: boolean
+  sentCount: number
+}): void {
+  trackEvent('treaty_post_vote_depth_hook', {
+    wants_nudge: params.wantsNudge,
+    sent_count: params.sentCount,
+  })
+}
+
+export function trackTreatyPostVoteFeedback(params: {
+  submitted: boolean
+  sentCount: number
+  characterCount?: number
+}): void {
+  trackEvent('treaty_post_vote_feedback', {
+    submitted: params.submitted,
+    sent_count: params.sentCount,
+    character_count: params.characterCount,
+  })
+}
+
+// ============================================
 // Auth Events
 // ============================================
 
