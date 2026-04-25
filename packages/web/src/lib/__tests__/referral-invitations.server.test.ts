@@ -13,6 +13,10 @@ const mocks = vi.hoisted(() => ({
   taskCreate: vi.fn(),
   taskFindFirst: vi.fn(),
   taskUpdateMany: vi.fn(),
+  taskCommunicationEndpointFindFirst: vi.fn(),
+  taskCommunicationEndpointCreate: vi.fn(),
+  taskCommunicationEndpointUpdate: vi.fn(),
+  taskCommunicationEndpointUpdateMany: vi.fn(),
   transaction: vi.fn(),
   sendExternalResendEmail: vi.fn(),
   sendTreatySenderReminderEmailForInvitation: vi.fn(),
@@ -43,6 +47,12 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.taskCreate,
       findFirst: mocks.taskFindFirst,
       updateMany: mocks.taskUpdateMany,
+    },
+    taskCommunicationEndpoint: {
+      findFirst: mocks.taskCommunicationEndpointFindFirst,
+      create: mocks.taskCommunicationEndpointCreate,
+      update: mocks.taskCommunicationEndpointUpdate,
+      updateMany: mocks.taskCommunicationEndpointUpdateMany,
     },
     user: {
       findUnique: mocks.userFindUnique,
@@ -94,6 +104,10 @@ describe("referral invitation server helpers", () => {
       id: "invite_1",
       ...data,
     }));
+    mocks.taskCommunicationEndpointFindFirst.mockResolvedValue(null);
+    mocks.taskCommunicationEndpointCreate.mockResolvedValue({ id: "endpoint_1" });
+    mocks.taskCommunicationEndpointUpdate.mockResolvedValue({ id: "endpoint_1" });
+    mocks.taskCommunicationEndpointUpdateMany.mockResolvedValue({ count: 0 });
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
         person: { upsert: mocks.personUpsert },
@@ -106,6 +120,12 @@ describe("referral invitation server helpers", () => {
         task: {
           create: mocks.taskCreate,
           updateMany: mocks.taskUpdateMany,
+        },
+        taskCommunicationEndpoint: {
+          findFirst: mocks.taskCommunicationEndpointFindFirst,
+          create: mocks.taskCommunicationEndpointCreate,
+          update: mocks.taskCommunicationEndpointUpdate,
+          updateMany: mocks.taskCommunicationEndpointUpdateMany,
         },
         user: { updateMany: mocks.userUpdateMany },
       }),
@@ -150,7 +170,6 @@ describe("referral invitation server helpers", () => {
         assigneePersonId: "person_1",
         category: "OUTREACH",
         claimPolicy: "ASSIGNED_ONLY",
-        contactLabel: "Complete treaty vote",
         isPublic: false,
         ownerUserId: "user_1",
         status: "ACTIVE",
@@ -158,6 +177,13 @@ describe("referral invitation server helpers", () => {
         title: "Invite Jake to vote on the 1% Treaty",
       }),
       select: { id: true },
+    });
+    expect(mocks.taskCommunicationEndpointCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        isPrimary: true,
+        label: "Complete treaty vote",
+        taskId: "task_1",
+      }),
     });
     expect(invitation.inviteToken).toBe("token_123");
   });

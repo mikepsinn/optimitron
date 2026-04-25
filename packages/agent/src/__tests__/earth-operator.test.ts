@@ -89,7 +89,7 @@ describe('planNextEarthOperatorStep', () => {
       title: 'Contact the President of the United States about the 1% Treaty',
     };
     const adapters = createAdapters(task, {
-      checkContactCooldown: vi.fn(async () => ({ allowed: true })),
+      checkTaskCommunicationCooldown: vi.fn(async () => ({ allowed: true })),
     });
 
     const result = await planNextEarthOperatorStep({

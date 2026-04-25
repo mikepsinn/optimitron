@@ -15,6 +15,7 @@ import {
   AgentRunStatus,
   TaskCategory,
   TaskClaimPolicy,
+  TaskCommentSource,
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
@@ -29,7 +30,7 @@ export const MCP_SCOPES = {
   "tasks:read": "List and view public tasks, blockers, and funding stats",
   "tasks:write": "Create, update, promote tasks and set impact estimates",
   "tasks:personal": "List and manage your own tasks, claim tasks as yourself",
-  "agent:run": "Log agent runs, acquire/release leases, record contact actions",
+  "agent:run": "Log agent runs, acquire/release leases, record task communications",
   "search": "Search the Optimitron manual and ask Wishonia questions",
 } as const;
 
@@ -69,8 +70,8 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   acquireLease: ["agent:run"],
   heartbeatLease: ["agent:run"],
   releaseLease: ["agent:run"],
-  recordContactAction: ["agent:run"],
-  checkContactCooldown: ["agent:run"],
+  recordTaskCommunication: ["agent:run"],
+  checkTaskCommunicationCooldown: ["agent:run"],
   // search
   searchManual: ["search"],
   askWishonia: ["search"],
@@ -95,14 +96,15 @@ function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): bool
 // ---------------------------------------------------------------------------
 
 async function getTaskFunctions() {
-  const [tasks, ranking, impact, contact, lease] = await Promise.all([
+  const [tasks, ranking, impact, communications, endpoints, lease] = await Promise.all([
     import("./tasks.server"),
     import("./tasks/rank-tasks"),
     import("./tasks/impact"),
-    import("./tasks/contact.server"),
+    import("./tasks/task-communications.server"),
+    import("./tasks/task-communication-endpoints.server"),
     import("./tasks/agent-lease.server"),
   ]);
-  return { tasks, ranking, impact, contact, lease };
+  return { tasks, ranking, impact, communications, endpoints, lease };
 }
 
 async function getPrisma() {
@@ -203,6 +205,39 @@ function toStoredProposalIssues(
   }));
 }
 
+function getPrimaryCommunicationEndpoint(input?: {
+  communicationEndpoints?: Array<{
+    email?: string | null;
+    isPrimary?: boolean | null;
+    priority?: number | null;
+    url?: string | null;
+  }> | null;
+}) {
+  const endpoints = input?.communicationEndpoints ?? [];
+  return (
+    endpoints.find((endpoint) => endpoint.isPrimary) ??
+    [...endpoints].sort(
+      (left, right) => (left.priority ?? 0) - (right.priority ?? 0),
+    )[0] ??
+    null
+  );
+}
+
+function getCommunicationEndpointUrl(input?: {
+  communicationEndpoints?: Array<{
+    email?: string | null;
+    isPrimary?: boolean | null;
+    priority?: number | null;
+    url?: string | null;
+  }> | null;
+}) {
+  const endpoint = getPrimaryCommunicationEndpoint(input);
+  if (!endpoint) return null;
+  if (endpoint.url) return endpoint.url;
+  if (endpoint.email) return `mailto:${endpoint.email}`;
+  return null;
+}
+
 type SummarizableTask = {
   id: string;
   title: string;
@@ -214,8 +249,13 @@ type SummarizableTask = {
   dueAt?: Date | string | null;
   parentTaskId?: string | null;
   impactStatement?: string | null;
-  contactUrl?: string | null;
-  contactLabel?: string | null;
+  primaryEndpoint?: {
+    email?: string | null;
+    instructions?: string | null;
+    kind?: string | null;
+    label?: string | null;
+    url?: string | null;
+  } | null;
   claimPolicy?: string | null;
   skillTags?: string[] | null;
   interestTags?: string[] | null;
@@ -316,7 +356,12 @@ function matchCandidateToDecision(
 function taskProposalCandidateFromRecord(task: {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
-  contactUrl?: string | null;
+  communicationEndpoints?: Array<{
+    email?: string | null;
+    isPrimary?: boolean | null;
+    priority?: number | null;
+    url?: string | null;
+  }> | null;
   contextJson?: unknown;
   description: string | null;
   estimatedEffortHours?: number | null;
@@ -344,7 +389,7 @@ function taskProposalCandidateFromRecord(task: {
     assigneePersonId:
       (proposal?.assigneePersonId as string) ?? task.assigneePersonId ?? null,
     blockerRefs: ((proposal?.blockerRefs as string[]) ?? []) as string[],
-    contactUrl: (proposal?.contactUrl as string) ?? task.contactUrl ?? null,
+    contactUrl: (proposal?.contactUrl as string) ?? getCommunicationEndpointUrl(task) ?? null,
     description: (proposal?.description as string) ?? task.description ?? null,
     estimatedEffortHours:
       (proposal?.estimatedEffortHours as number) ?? task.estimatedEffortHours ?? null,
@@ -433,8 +478,7 @@ function summarizeTask(task: SummarizableTask) {
     dueAt: task.dueAt,
     parentTaskId: task.parentTaskId,
     impactStatement: task.impactStatement,
-    contactUrl: task.contactUrl,
-    contactLabel: task.contactLabel,
+    primaryEndpoint: task.primaryEndpoint ?? null,
     claimPolicy: task.claimPolicy,
     skillTags: task.skillTags,
     interestTags: task.interestTags,
@@ -1054,28 +1098,40 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "recordContactAction",
-    description: "Log that an agent or user contacted a task assignee. Subject to server-side cooldown (24h per task+channel).",
+    name: "recordTaskCommunication",
+    description:
+      "Record a task communication envelope and readable task-thread comment. Subject to server-side cooldown (24h per task+channel).",
     inputSchema: {
       type: "object" as const,
       properties: {
         taskId: { type: "string", description: "Task ID" },
         userId: { type: "string", description: "User or agent ID" },
-        channel: { type: "string", enum: ["email", "link"], description: "Contact channel" },
-        message: { type: "string", description: "Message sent (for audit)" },
-        href: { type: "string", description: "URL that was contacted" },
+        channel: {
+          type: "string",
+          enum: ["email", "externalUrl", "mailto", "manual"],
+          description: "Task communication channel",
+        },
+        endpointId: { type: "string", description: "TaskCommunicationEndpoint ID used, if known" },
+        message: { type: "string", description: "Readable message text to store on TaskComment" },
+        href: { type: "string", description: "URL or mailto target opened" },
+        submittedAt: { type: "string", description: "ISO timestamp only when a user/agent confirms external form submission" },
       },
       required: ["taskId", "userId", "channel"],
     },
   },
   {
-    name: "checkContactCooldown",
-    description: "Check whether a contact action is allowed for a task+channel, or if cooldown is active.",
+    name: "checkTaskCommunicationCooldown",
+    description:
+      "Check whether a task communication is allowed for a task+channel, or if cooldown is active.",
     inputSchema: {
       type: "object" as const,
       properties: {
         taskId: { type: "string", description: "Task ID" },
-        channel: { type: "string", enum: ["email", "link"], description: "Contact channel to check" },
+        channel: {
+          type: "string",
+          enum: ["email", "externalUrl", "mailto", "manual"],
+          description: "Task communication channel to check",
+        },
       },
       required: ["taskId", "channel"],
     },
@@ -1373,12 +1429,13 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (!result) return err("Task not found");
           return ok({
             task: result.task,
-            contactActionCount: result.contactActionCount,
+            taskCommunicationCount: result.taskCommunicationCount,
           });
         }
 
         // ── createTask (always DRAFT) ──────────────────────────
         case "createTask": {
+          const { endpoints } = await getTaskFunctions();
           const prisma = await getPrisma();
           const data: Record<string, unknown> = {
             title: a.title as string,
@@ -1398,8 +1455,6 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             assigneeOrganizationId: (a.assigneeOrganizationId as string) ?? null,
             roleTitle: (a.roleTitle as string) ?? null,
             sourceUrl: (a.sourceUrl as string) ?? null,
-            contactUrl: (a.contactUrl as string) ?? null,
-            contactLabel: (a.contactLabel as string) ?? null,
             impactStatement: (a.impactStatement as string) ?? null,
             isPublic: a.isPublic !== false,
             contextJson: mergeTaskContextJson({
@@ -1412,12 +1467,20 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (userId) {
             data.ownerUserId = userId;
           }
-          const task = await prisma.task.create({ data: data as any });
+          const task = await prisma.$transaction(async (tx) => {
+            const created = await tx.task.create({ data: data as any });
+            await endpoints.upsertPrimaryTaskCommunicationEndpoint(tx, created.id, {
+              label: (a.contactLabel as string) ?? null,
+              url: (a.contactUrl as string) ?? null,
+            });
+            return created;
+          });
           return ok({ taskId: task.id, title: task.title, status: "DRAFT" });
         }
 
         // ── proposeTaskBundle ───────────────────────────────────
         case "proposeTaskBundle": {
+          const { endpoints } = await getTaskFunctions();
           const prisma = await getPrisma();
           const { reviewTaskProposalBundle } = await import("@optimitron/agent");
           const { TaskEdgeType } = await import("@optimitron/db");
@@ -1493,13 +1556,15 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
                 assigneePersonId: (candidate.assigneePersonId as string) ?? null,
                 assigneeOrganizationId: (candidate.assigneeOrganizationId as string) ?? null,
                 roleTitle: (candidate.roleTitle as string) ?? null,
-                contactUrl: (candidate.contactUrl as string) ?? null,
                 estimatedEffortHours: (candidate.estimatedEffortHours as number) ?? null,
                 isPublic: (candidate.isPublic as boolean) !== false,
                 impactStatement: (candidate.description as string) ?? null,
                 contextJson: buildStoredProposalContext({ candidate, decision }),
                 status: TaskStatus.DRAFT,
               } as any,
+            });
+            await endpoints.upsertPrimaryTaskCommunicationEndpoint(prisma, task.id, {
+              url: (candidate.contactUrl as string) ?? null,
             });
             await attachProposalImpactEstimate({
               estimatedEffortHours: (candidate.estimatedEffortHours as number) ?? null,
@@ -1568,7 +1633,16 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             select: {
               assigneeOrganizationId: true,
               assigneePersonId: true,
-              contactUrl: true,
+              communicationEndpoints: {
+                where: { deletedAt: null },
+                orderBy: [{ isPrimary: "desc" }, { priority: "asc" }, { createdAt: "asc" }],
+                select: {
+                  email: true,
+                  isPrimary: true,
+                  priority: true,
+                  url: true,
+                },
+              },
               contextJson: true,
               description: true,
               estimatedEffortHours: true,
@@ -1966,23 +2040,33 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           return ok({ leaseId: result.id, released: true });
         }
 
-        // ── recordContactAction ────────────────────────────────
-        case "recordContactAction": {
-          const { contact } = await getTaskFunctions();
-          const activity = await contact.recordTaskContactAction({
+        // ── recordTaskCommunication ───────────────────────────
+        case "recordTaskCommunication": {
+          const { communications } = await getTaskFunctions();
+          const result = await communications.recordTaskCommunication({
             taskId: a.taskId as string,
             userId: a.userId as string,
-            channel: a.channel as "email" | "link",
+            channel: communications.normalizeTaskCommunicationActionChannel(a.channel),
+            endpointId: (a.endpointId as string) ?? null,
             message: (a.message as string) ?? null,
             href: (a.href as string) ?? null,
+            source: TaskCommentSource.AGENT,
+            submittedAt: a.submittedAt ? new Date(a.submittedAt as string) : null,
           });
-          return ok({ activityId: activity.id });
+          return ok({
+            activityId: result.activity.id,
+            communicationId: result.communication.id,
+            taskCommentId: result.comment.id,
+          });
         }
 
-        // ── checkContactCooldown ───────────────────────────────
-        case "checkContactCooldown": {
-          const { contact } = await getTaskFunctions();
-          const result = await contact.checkContactCooldown(a.taskId as string, a.channel as "email" | "link");
+        // ── checkTaskCommunicationCooldown ────────────────────
+        case "checkTaskCommunicationCooldown": {
+          const { communications } = await getTaskFunctions();
+          const result = await communications.checkTaskCommunicationCooldown(
+            a.taskId as string,
+            communications.normalizeTaskCommunicationActionChannel(a.channel),
+          );
           if (result.allowed) return ok({ allowed: true });
           return ok({ allowed: false, retryAfter: result.retryAfter.toISOString() });
         }

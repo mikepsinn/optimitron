@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildTaskContactMessage, resolveTaskContactAction } from "./contact";
+import {
+  buildTaskCommunicationMessage,
+  resolveTaskCommunicationAction,
+} from "./task-communication-action";
 
 const delayStats = {
   currentDelayDays: 42,
@@ -18,9 +21,9 @@ const delayStats = {
   overdueSince: new Date("2026-01-01T00:00:00.000Z"),
 } as const;
 
-describe("task contact helpers", () => {
+describe("task communication action helpers", () => {
   it("builds a default accountability message", () => {
-    const message = buildTaskContactMessage({
+    const message = buildTaskCommunicationMessage({
       delayStats,
       task: {
         assigneePerson: {
@@ -35,15 +38,20 @@ describe("task contact helpers", () => {
     expect(message).toContain("42 days overdue");
   });
 
-  it("interpolates explicit contact templates", () => {
-    const message = buildTaskContactMessage({
+  it("interpolates endpoint instructions", () => {
+    const message = buildTaskCommunicationMessage({
       delayStats,
       task: {
         assigneePerson: {
           displayName: "President Example",
         },
-        contactTemplate:
-          "{{targetLabel}} has delayed \"{{taskTitle}}\" for {{delayLabel}} at a cost of {{humanLives}} lives.",
+        communicationEndpoints: [
+          {
+            instructions:
+              "{{targetLabel}} has delayed \"{{taskTitle}}\" for {{delayLabel}} at a cost of {{humanLives}} lives.",
+            isPrimary: true,
+          },
+        ],
         title: "Sign the 1% Treaty",
       },
     });
@@ -53,26 +61,33 @@ describe("task contact helpers", () => {
     );
   });
 
-  it("resolves explicit contact links and fallback email channels", () => {
-    const linkAction = resolveTaskContactAction({
+  it("resolves explicit external URLs and fallback mailto channels", () => {
+    const linkAction = resolveTaskCommunicationAction({
       delayStats,
       task: {
         assigneePerson: {
           displayName: "President Example",
         },
-        contactLabel: "Contact the office",
-        contactUrl: "https://example.com/contact",
+        communicationEndpoints: [
+          {
+            id: "endpoint_1",
+            isPrimary: true,
+            label: "Contact the office",
+            url: "https://example.com/contact",
+          },
+        ],
         title: "Sign the 1% Treaty",
       },
     });
 
     expect(linkAction).toMatchObject({
-      channel: "link",
+      channel: "externalUrl",
+      endpointId: "endpoint_1",
       href: "https://example.com/contact",
       label: "Contact the office",
     });
 
-    const emailAction = resolveTaskContactAction({
+    const emailAction = resolveTaskCommunicationAction({
       delayStats,
       task: {
         assigneeOrganization: {
@@ -83,14 +98,14 @@ describe("task contact helpers", () => {
       },
     });
 
-    expect(emailAction?.channel).toBe("email");
+    expect(emailAction?.channel).toBe("mailto");
     expect(emailAction?.href).toContain("mailto:contact@example.com");
     expect(emailAction?.href).toContain("subject=");
     expect(emailAction?.href).toContain("body=");
   });
 
-  it("falls back to a search link when no direct office contact exists", () => {
-    const searchAction = resolveTaskContactAction({
+  it("falls back to a search link when no direct endpoint exists", () => {
+    const searchAction = resolveTaskCommunicationAction({
       delayStats,
       task: {
         assigneeOrganization: {
@@ -105,7 +120,7 @@ describe("task contact helpers", () => {
     });
 
     expect(searchAction).toMatchObject({
-      channel: "link",
+      channel: "externalUrl",
       label: "Find office contact",
     });
     expect(searchAction?.href).toContain("google.com/search");

@@ -33,7 +33,7 @@ export interface TaskOperatorRuntimeAdapters<TTask extends RuntimeTask> {
     taskId: string;
     ttlSeconds: number;
   }): Promise<TaskLeaseAcquireResult>;
-  checkContactCooldown?(input: {
+  checkTaskCommunicationCooldown?(input: {
     channel: string;
     taskId: string;
   }): Promise<TaskActionCooldownResult>;
@@ -183,16 +183,17 @@ export async function planNextTaskOperatorStep<TTask extends RuntimeTask, TPlan 
 
   if (
     (decision.plan.channel === 'contact-form' || decision.plan.channel === 'email') &&
-    input.adapters.checkContactCooldown
+    input.adapters.checkTaskCommunicationCooldown
   ) {
-    const cooldown = await input.adapters.checkContactCooldown({
+    const cooldown = await input.adapters.checkTaskCommunicationCooldown({
       channel: decision.plan.channel,
       taskId: nextTask.id,
     });
 
     if (!cooldown.allowed) {
       const reason =
-        cooldown.reason?.trim() ?? `Contact cooldown is active for ${decision.plan.channel}.`;
+        cooldown.reason?.trim() ??
+        `Task communication cooldown is active for ${decision.plan.channel}.`;
 
       await input.adapters.releaseLease({
         leaseId: leaseResult.leaseId,

@@ -1,8 +1,8 @@
 import { afterAll, describe, expect, it } from "vitest";
 import {
   PrismaClient,
-  TaskEmailAudience,
-  TaskEmailRole,
+  TaskCommunicationAudience,
+  TaskCommunicationPurpose,
 } from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
@@ -116,7 +116,7 @@ describeIfDatabase("seedDatabase", () => {
     ).resolves.toMatchObject(originalOrganization);
   }, 15000);
 
-  it("seeds task contact contracts for task-driven email reminders", async () => {
+  it("seeds task communication endpoint contracts for task-driven reminders", async () => {
     await seedDatabase();
 
     const signerTasksMissingContactContract = await prisma.task.count({
@@ -124,39 +124,57 @@ describeIfDatabase("seedDatabase", () => {
         taskKey: { startsWith: "program:one-percent-treaty:signer:" },
         OR: [
           { assigneePersonId: null },
-          { contactLabel: null },
-          { contactTemplate: null },
-          { contactUrl: null },
           { dueAt: null },
           { parentTaskId: null },
+          {
+            communicationEndpoints: {
+              none: {
+                deletedAt: null,
+                isPrimary: true,
+                label: { not: null },
+                instructions: { not: null },
+                url: { not: null },
+              },
+            },
+          },
         ],
       },
     });
 
     expect(signerTasksMissingContactContract).toBe(0);
 
-    const taskEmailTemplatesMissingContact = await prisma.taskEmailTemplate.count({
+    const taskCommunicationTemplatesMissingEndpoint = await prisma.taskCommunicationTemplate.count({
       where: {
         audience: {
-          in: [TaskEmailAudience.RECIPIENT, TaskEmailAudience.SENDER],
+          in: [TaskCommunicationAudience.RECIPIENT, TaskCommunicationAudience.SENDER],
         },
         deletedAt: null,
-        role: {
+        purpose: {
           in: [
-            TaskEmailRole.INVITATION,
-            TaskEmailRole.REMINDER,
-            TaskEmailRole.SCORECARD,
-            TaskEmailRole.RE_ENGAGEMENT,
-            TaskEmailRole.VOTE_CONFIRMED,
-            TaskEmailRole.RECIPIENT_VOTED,
+            TaskCommunicationPurpose.INVITATION,
+            TaskCommunicationPurpose.REMINDER,
+            TaskCommunicationPurpose.SCORECARD,
+            TaskCommunicationPurpose.RE_ENGAGEMENT,
+            TaskCommunicationPurpose.VOTE_CONFIRMED,
+            TaskCommunicationPurpose.RECIPIENT_VOTED,
           ],
         },
         task: {
-          OR: [{ contactLabel: null }, { contactUrl: null }],
+          communicationEndpoints: {
+            none: {
+              deletedAt: null,
+              isPrimary: true,
+              label: { not: null },
+              OR: [
+                { url: { not: null } },
+                { email: { not: null } },
+              ],
+            },
+          },
         },
       },
     });
 
-    expect(taskEmailTemplatesMissingContact).toBe(0);
+    expect(taskCommunicationTemplatesMissingEndpoint).toBe(0);
   }, 15000);
 });

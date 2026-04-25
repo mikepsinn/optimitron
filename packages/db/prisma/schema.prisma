@@ -444,24 +444,36 @@ enum TaskImpactFrameKey {
   CUSTOM
 }
 
-/// Who an outbound task email is addressed to. Distinct from TaskComment
-/// (user-authored discussion) and Notification (in-app). Drives template
-/// selection and reminder cadence.
-enum TaskEmailAudience {
+/// Who a task communication is addressed to. Distinct from TaskComment
+/// (readable thread) and Notification (in-app alert). Drives template
+/// selection, endpoint choice, and cadence.
+enum TaskCommunicationAudience {
   /// Person being asked to complete the task (e.g. named-invite recipient).
   RECIPIENT
   /// Person doing the asking (sender / project manager).
   SENDER
   /// Public broadcast / share-template audience.
   OBSERVER
+  /// External assignee asked to complete the task.
+  ASSIGNEE
 }
 
-/// Lifecycle role of a task email template within an audience's sequence.
-enum TaskEmailRole {
+/// Lifecycle purpose of a task communication template within an audience's sequence.
+enum TaskCommunicationPurpose {
   /// First-touch named-invite or assignment email.
   INVITATION
+  /// First-touch task assignment to an assignee or organization.
+  ASSIGNMENT
   /// Follow-up reminder to take action.
   REMINDER
+  /// Follow-up after an assignment, reply, or missed deadline.
+  FOLLOW_UP
+  /// Request for proof, evidence, or status detail.
+  EVIDENCE_REQUEST
+  /// Status note communicated to the task thread or assignee.
+  STATUS_UPDATE
+  /// Inbound reply captured as part of the task thread.
+  REPLY
   /// Periodic progress summary (e.g. monthly scorecard).
   SCORECARD
   /// Bring back a user who acted but never followed through (e.g. C1).
@@ -474,31 +486,87 @@ enum TaskEmailRole {
   SHARE
 }
 
-/// Format / style branch within a template — e.g. TASK_NOTIFICATION vs SINCERE
+/// Format / style branch within a template - e.g. TASK_NOTIFICATION vs SINCERE
 /// for the named-invite recipient sequence. DEFAULT is for templates that do
 /// not branch on format.
-enum TaskEmailFormat {
+enum TaskCommunicationFormat {
   DEFAULT
   TASK_NOTIFICATION
   SINCERE
 }
 
-/// Lifecycle status of a single TaskEmailAttempt row.
-enum TaskEmailAttemptStatus {
-  /// Created but not yet queued.
-  PENDING
-  /// Queued for sending.
-  QUEUED
-  /// Provider accepted the send.
+/// Direction of a task communication.
+enum TaskCommunicationDirection {
+  OUTBOUND
+  INBOUND
+}
+
+/// Channel used by a task communication envelope.
+enum TaskCommunicationChannel {
+  EMAIL
+  IN_APP
+  SMS
+  PUSH
+  EXTERNAL_URL
+  MAILTO
+  MANUAL
+}
+
+/// Channel-agnostic lifecycle status of a single TaskCommunication row.
+enum TaskCommunicationStatus {
+  /// Drafted but not sent/opened/imported yet.
+  DRAFT
+  /// Outbound communication was sent, opened, or initiated.
   SENT
-  /// Provider confirmed delivery.
-  DELIVERED
-  /// Send failed permanently.
+  /// Inbound communication or manual response was received.
+  RECEIVED
+  /// Delivery/action failed.
   FAILED
-  /// Suppressed before send (user opt-out, hard cap, conversion).
-  SUPPRESSED
-  /// Recipient unsubscribed from this template's scope.
-  UNSUBSCRIBED
+  /// Cancelled, suppressed, or unsubscribed before send.
+  CANCELLED
+}
+
+/// Stored assignee contact method for a task.
+enum TaskCommunicationEndpointKind {
+  EMAIL
+  MAILTO
+  EXTERNAL_URL
+  FORM_URL
+  PUBLIC_PROFILE
+  IN_APP
+  MANUAL
+}
+
+/// Verification state for a task communication endpoint.
+enum TaskCommunicationEndpointVerificationStatus {
+  UNVERIFIED
+  VERIFIED
+  STALE
+  FAILED
+}
+
+/// Readable role of a TaskComment row in the task thread.
+enum TaskCommentKind {
+  COMMENT
+  OUTBOUND_MESSAGE
+  INBOUND_MESSAGE
+  STATUS_UPDATE
+  SYSTEM_NOTE
+}
+
+/// Who can see a TaskComment.
+enum TaskCommentVisibility {
+  PUBLIC
+  INTERNAL
+}
+
+/// How a TaskComment entered the system.
+enum TaskCommentSource {
+  WEB
+  AGENT
+  EMAIL_REPLY
+  MANUAL_IMPORT
+  SYSTEM
 }
 
 /// Type of survey question
@@ -577,7 +645,9 @@ model Person {
   user                        User?                @relation("UserPerson")
   assignedTasks               Task[]               @relation("TaskAssigneePerson")
   receivedReferralInvitations ReferralInvitation[] @relation("ReferralInvitationRecipientPerson")
-  receivedTaskEmailAttempts   TaskEmailAttempt[]   @relation("TaskEmailAttemptRecipientPerson")
+  authoredTaskComments        TaskComment[]        @relation("TaskCommentAuthorPerson")
+  receivedTaskCommunications  TaskCommunication[]  @relation("TaskCommunicationRecipientPerson")
+  sentTaskCommunications      TaskCommunication[]  @relation("TaskCommunicationSenderPerson")
 
   @@index([displayName])
   @@index([countryCode])
@@ -764,49 +834,50 @@ model User {
   deletedAt DateTime?
 
   // -- Relations --
-  person                    Person?                          @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
-  accounts                  Account[]
-  personhoodVerifications   PersonhoodVerification[]
-  referrals                 Referral[]                       @relation("UserReferrals")
-  referralClicks            ReferralClick[]                  @relation("UserReferralClicks")
-  sessions                  Session[]
-  referral                  Referral?                        @relation("UserReferral")
-  wishocraticAllocations    WishocraticAllocation[]          @relation("UserWishocraticAllocations")
-  wishocraticItemInclusions WishocraticItemInclusion[]       @relation("UserWishocraticItemInclusions")
-  citizenBillVotes          CitizenBillVote[]                @relation("UserCitizenBillVotes")
-  webPushSubscriptions      WebPushSubscription[]            @relation("UserWebPushSubscriptions")
-  userPreference            UserPreference?                  @relation("UserPreference")
-  notificationPreferences   NotificationPreference[]         @relation("UserNotificationPreferences")
-  notifications             Notification[]                   @relation("UserNotifications")
-  encryptedAllocations      WishocraticEncryptedAllocation?  @relation("UserEncryptedAllocations")
-  createdReferendums        Referendum[]                     @relation("UserCreatedReferendums")
-  referendumVotes           ReferendumVote[]                 @relation("UserReferendumVotes")
-  referendumReferrals       ReferendumVote[]                 @relation("UserReferendumReferrals")
-  voteTokenMints            VoteTokenMint[]                  @relation("UserVoteTokenMints")
-  activities                Activity[]                       @relation("UserActivities")
-  createdOrganizations      Organization[]                   @relation("OrgCreator")
-  organizationMemberships   OrganizationMember[]             @relation("UserOrgMemberships")
-  submittedOrgPositions     OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
-  approvedOrgPositions      OrganizationReferendumPosition[] @relation("OrgPositionApprover")
-  badges                    Badge[]                          @relation("UserBadges")
-  wishPoints                WishPoint[]                      @relation("UserWishPoints")
-  socialAccounts            SocialAccount[]                  @relation("UserSocialAccounts")
-  emailLogs                 EmailLog[]                       @relation("UserEmailLogs")
-  shareAttempts             ShareAttempt[]                   @relation("UserShareAttempts")
-  sentReferralInvitations   ReferralInvitation[]             @relation("ReferralInvitationReferrer")
-  surveyResponses           SurveyResponse[]                 @relation("UserSurveyResponses")
-  taskClaims                TaskClaim[]                      @relation("UserTaskClaims")
-  ownedTasks                Task[]                           @relation("TaskOwner")
-  verifiedTasks             Task[]                           @relation("TaskVerifiedByUser")
-  verifiedTaskClaims        TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
-  verifiedTaskMilestones    TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
-  taskComments              TaskComment[]                    @relation("TaskCommentAuthor")
-  moderatedTaskComments     TaskComment[]                    @relation("TaskCommentModerator")
-  taskCommentVotes          TaskCommentVote[]                @relation("TaskCommentVoter")
-  agentComputeDeposits      AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
-  oauthAuthCodes            OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
-  oauthGrants               OAuthGrant[]                     @relation("UserOAuthGrants")
-  receivedTaskEmailAttempts TaskEmailAttempt[]               @relation("TaskEmailAttemptRecipientUser")
+  person                     Person?                          @relation("UserPerson", fields: [personId], references: [id], onDelete: SetNull)
+  accounts                   Account[]
+  personhoodVerifications    PersonhoodVerification[]
+  referrals                  Referral[]                       @relation("UserReferrals")
+  referralClicks             ReferralClick[]                  @relation("UserReferralClicks")
+  sessions                   Session[]
+  referral                   Referral?                        @relation("UserReferral")
+  wishocraticAllocations     WishocraticAllocation[]          @relation("UserWishocraticAllocations")
+  wishocraticItemInclusions  WishocraticItemInclusion[]       @relation("UserWishocraticItemInclusions")
+  citizenBillVotes           CitizenBillVote[]                @relation("UserCitizenBillVotes")
+  webPushSubscriptions       WebPushSubscription[]            @relation("UserWebPushSubscriptions")
+  userPreference             UserPreference?                  @relation("UserPreference")
+  notificationPreferences    NotificationPreference[]         @relation("UserNotificationPreferences")
+  notifications              Notification[]                   @relation("UserNotifications")
+  encryptedAllocations       WishocraticEncryptedAllocation?  @relation("UserEncryptedAllocations")
+  createdReferendums         Referendum[]                     @relation("UserCreatedReferendums")
+  referendumVotes            ReferendumVote[]                 @relation("UserReferendumVotes")
+  referendumReferrals        ReferendumVote[]                 @relation("UserReferendumReferrals")
+  voteTokenMints             VoteTokenMint[]                  @relation("UserVoteTokenMints")
+  activities                 Activity[]                       @relation("UserActivities")
+  createdOrganizations       Organization[]                   @relation("OrgCreator")
+  organizationMemberships    OrganizationMember[]             @relation("UserOrgMemberships")
+  submittedOrgPositions      OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
+  approvedOrgPositions       OrganizationReferendumPosition[] @relation("OrgPositionApprover")
+  badges                     Badge[]                          @relation("UserBadges")
+  wishPoints                 WishPoint[]                      @relation("UserWishPoints")
+  socialAccounts             SocialAccount[]                  @relation("UserSocialAccounts")
+  emailLogs                  EmailLog[]                       @relation("UserEmailLogs")
+  shareAttempts              ShareAttempt[]                   @relation("UserShareAttempts")
+  sentReferralInvitations    ReferralInvitation[]             @relation("ReferralInvitationReferrer")
+  surveyResponses            SurveyResponse[]                 @relation("UserSurveyResponses")
+  taskClaims                 TaskClaim[]                      @relation("UserTaskClaims")
+  ownedTasks                 Task[]                           @relation("TaskOwner")
+  verifiedTasks              Task[]                           @relation("TaskVerifiedByUser")
+  verifiedTaskClaims         TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
+  verifiedTaskMilestones     TaskMilestone[]                  @relation("TaskMilestoneVerifiedByUser")
+  taskComments               TaskComment[]                    @relation("TaskCommentAuthor")
+  moderatedTaskComments      TaskComment[]                    @relation("TaskCommentModerator")
+  taskCommentVotes           TaskCommentVote[]                @relation("TaskCommentVoter")
+  agentComputeDeposits       AgentComputeDeposit[]            @relation("UserAgentComputeDeposits")
+  oauthAuthCodes             OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
+  oauthGrants                OAuthGrant[]                     @relation("UserOAuthGrants")
+  receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientUser")
+  sentTaskCommunications     TaskCommunication[]              @relation("TaskCommunicationSenderUser")
 
   @@index([email])
   @@index([username])
@@ -2429,13 +2500,13 @@ model ReferralInvitation {
   deletedAt DateTime?
 
   // -- Relations --
-  referrer          User               @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
-  recipient         Person?            @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
-  referendum        Referendum?        @relation(fields: [referendumId], references: [id], onDelete: SetNull)
-  task              Task?              @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
-  shareAttempt      ShareAttempt?      @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
-  convertedVote     ReferendumVote?    @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
-  taskEmailAttempts TaskEmailAttempt[] @relation("ReferralInvitationTaskEmailAttempts")
+  referrer           User                @relation("ReferralInvitationReferrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
+  recipient          Person?             @relation("ReferralInvitationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
+  referendum         Referendum?         @relation(fields: [referendumId], references: [id], onDelete: SetNull)
+  task               Task?               @relation("TaskReferralInvitations", fields: [taskId], references: [id], onDelete: SetNull)
+  shareAttempt       ShareAttempt?       @relation("ShareAttemptReferralInvitations", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  convertedVote      ReferendumVote?     @relation("ReferralInvitationConvertedVote", fields: [convertedVoteId], references: [id], onDelete: SetNull)
+  taskCommunications TaskCommunication[] @relation("ReferralInvitationTaskCommunications")
 
   @@index([referrerUserId, createdAt])
   @@index([recipientPersonId])
@@ -3350,11 +3421,13 @@ model Organization {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction        Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
-  creator             User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
-  members             OrganizationMember[]
-  assignedTasks       Task[]                           @relation("TaskAssigneeOrganization")
-  referendumPositions OrganizationReferendumPosition[]
+  jurisdiction               Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
+  creator                    User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
+  members                    OrganizationMember[]
+  assignedTasks              Task[]                           @relation("TaskAssigneeOrganization")
+  authoredTaskComments       TaskComment[]                    @relation("TaskCommentAuthorOrganization")
+  receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
+  referendumPositions        OrganizationReferendumPosition[]
 
   @@index([slug])
   @@index([type])
@@ -3532,15 +3605,6 @@ model Task {
   /// Optional due date or target completion date for accountability views
   dueAt DateTime?
 
-  /// Preferred push/contact URL for pressuring the assignee to act on this task
-  contactUrl String?
-
-  /// Human-readable label for the push/contact channel
-  contactLabel String?
-
-  /// Optional prewritten message template used in the push flow
-  contactTemplate String?
-
   /// When the task was completed
   completedAt DateTime?
 
@@ -3560,27 +3624,28 @@ model Task {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction             Jurisdiction?           @relation(fields: [jurisdictionId], references: [id])
-  parentTask               Task?                   @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
-  childTasks               Task[]                  @relation("TaskHierarchy")
-  assigneePerson           Person?                 @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
-  assigneeOrganization     Organization?           @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
-  verifiedByUser           User?                   @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
-  owner                    User?                   @relation("TaskOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
-  currentImpactEstimateSet TaskImpactEstimateSet?  @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
-  impactEstimateSets       TaskImpactEstimateSet[] @relation("TaskImpactEstimateSets")
-  claims                   TaskClaim[]             @relation("TaskClaims")
-  milestones               TaskMilestone[]         @relation("TaskMilestones")
-  comments                 TaskComment[]           @relation("TaskComments")
-  sourceArtifacts          TaskSourceArtifact[]    @relation("TaskSourceArtifacts")
-  outgoingEdges            TaskEdge[]              @relation("TaskOutgoingEdges")
-  incomingEdges            TaskEdge[]              @relation("TaskIncomingEdges")
-  agentRunCosts            AgentRunCost[]          @relation("TaskAgentRunCosts")
-  agentLeases              AgentTaskLease[]        @relation("TaskAgentLeases")
-  shareAttempts            ShareAttempt[]          @relation("TaskShareAttempts")
-  referralInvitations      ReferralInvitation[]    @relation("TaskReferralInvitations")
-  taskEmailTemplates       TaskEmailTemplate[]     @relation("TaskEmailTemplates")
-  taskEmailAttempts        TaskEmailAttempt[]      @relation("TaskEmailAttempts")
+  jurisdiction             Jurisdiction?               @relation(fields: [jurisdictionId], references: [id])
+  parentTask               Task?                       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  childTasks               Task[]                      @relation("TaskHierarchy")
+  assigneePerson           Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
+  assigneeOrganization     Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
+  verifiedByUser           User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  owner                    User?                       @relation("TaskOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  currentImpactEstimateSet TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
+  impactEstimateSets       TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
+  claims                   TaskClaim[]                 @relation("TaskClaims")
+  milestones               TaskMilestone[]             @relation("TaskMilestones")
+  comments                 TaskComment[]               @relation("TaskComments")
+  sourceArtifacts          TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
+  outgoingEdges            TaskEdge[]                  @relation("TaskOutgoingEdges")
+  incomingEdges            TaskEdge[]                  @relation("TaskIncomingEdges")
+  agentRunCosts            AgentRunCost[]              @relation("TaskAgentRunCosts")
+  agentLeases              AgentTaskLease[]            @relation("TaskAgentLeases")
+  shareAttempts            ShareAttempt[]              @relation("TaskShareAttempts")
+  referralInvitations      ReferralInvitation[]        @relation("TaskReferralInvitations")
+  communicationEndpoints   TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
+  communicationTemplates   TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
+  communications           TaskCommunication[]         @relation("TaskCommunications")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -3772,7 +3837,8 @@ model TaskMilestone {
   @@index([deletedAt])
 }
 
-/// Public comment on a task — user posts, Wishonia auto-replies, third-party agent posts
+/// Readable task thread item: user comments, outgoing messages, inbound replies,
+/// manual assignee responses, status notes, and agent/Wishonia posts.
 model TaskComment {
   /// Unique identifier
   id String @id @default(cuid())
@@ -3783,8 +3849,26 @@ model TaskComment {
   /// Parent comment if this is a reply; null for top-level comments
   parentCommentId String?
 
-  /// User who authored the comment (Wishonia is a regular User)
-  authorUserId String
+  /// User who authored the comment (Wishonia is a regular User when present)
+  authorUserId String?
+
+  /// Person snapshot/record when the author is not a signed-in user
+  authorPersonId String?
+
+  /// Organization snapshot/record when the author is an external organization
+  authorOrganizationId String?
+
+  /// Display name captured at ingestion time for external/manual authors
+  authorNameSnapshot String?
+
+  /// Readable role of this thread item
+  kind TaskCommentKind @default(COMMENT)
+
+  /// Visibility for public vs internal coordination notes
+  visibility TaskCommentVisibility @default(PUBLIC)
+
+  /// Source that created or imported this row
+  source TaskCommentSource @default(WEB)
 
   /// Markdown body. Supports GFM plus: $math$, $$block math$$, ```mermaid, ```chart
   message String
@@ -3844,18 +3928,26 @@ model TaskComment {
   updatedAt DateTime @updatedAt
 
   // -- Relations --
-  task          Task              @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
-  parentComment TaskComment?      @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
-  replies       TaskComment[]     @relation("CommentReplies")
-  authorUser    User              @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: Cascade)
-  moderatedBy   User?             @relation("TaskCommentModerator", fields: [moderatedByUserId], references: [id], onDelete: SetNull)
-  votes         TaskCommentVote[] @relation("TaskCommentVotes")
+  task               Task                @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
+  parentComment      TaskComment?        @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
+  replies            TaskComment[]       @relation("CommentReplies")
+  authorUser         User?               @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorPerson       Person?             @relation("TaskCommentAuthorPerson", fields: [authorPersonId], references: [id], onDelete: SetNull)
+  authorOrganization Organization?       @relation("TaskCommentAuthorOrganization", fields: [authorOrganizationId], references: [id], onDelete: SetNull)
+  moderatedBy        User?               @relation("TaskCommentModerator", fields: [moderatedByUserId], references: [id], onDelete: SetNull)
+  votes              TaskCommentVote[]   @relation("TaskCommentVotes")
+  communications     TaskCommunication[] @relation("TaskCommentCommunications")
 
   @@index([taskId, createdAt])
   @@index([taskId, voteScore])
   @@index([taskId, hotScore])
   @@index([parentCommentId])
   @@index([authorUserId, createdAt])
+  @@index([authorPersonId, createdAt])
+  @@index([authorOrganizationId, createdAt])
+  @@index([kind])
+  @@index([visibility])
+  @@index([source])
   @@index([deletedAt])
   @@index([path])
 }
@@ -4260,17 +4352,75 @@ model TaskImpactSourceArtifact {
 }
 
 // ============================================================================
-// TASK EMAIL SYSTEM
+// TASK COMMUNICATION SYSTEM
 // ----------------------------------------------------------------------------
-// Outbound emails associated with a Task: A1-A4 recipient sequences, B1-B5
-// sender reminders, C1 re-engagement, monthly scorecards, share variants.
-// Distinct from `TaskComment` (user-authored discussion), `Notification`
-// (in-app), and `TrackingReminder` (health-variable measurement reminders).
+// TaskComment stores readable thread text. TaskCommunication stores the
+// delivery/contact envelope across email, in-app, mailto, external URL/form,
+// manual imports, and future channels. EmailLog remains provider-level email
+// delivery detail.
 // ============================================================================
 
-/// Canonical messaging strategy for outbound emails about a task.
-/// Keyed by (taskId, audience, role) — at most one active template per slot.
-model TaskEmailTemplate {
+/// Stored assignee contact method for a task.
+model TaskCommunicationEndpoint {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Task this endpoint belongs to
+  taskId String
+
+  /// Contact method type
+  kind TaskCommunicationEndpointKind
+
+  /// Human-readable label, e.g. "White House contact form"
+  label String?
+
+  /// URL for external pages/forms/profiles, or a mailto URL
+  url String?
+
+  /// Raw email address when the endpoint is email/mailto
+  email String?
+
+  /// Prewritten message instructions/template for this endpoint
+  instructions String?
+
+  /// Source used to discover or verify this endpoint
+  sourceUrl String?
+
+  /// Verification state of this endpoint
+  verificationStatus TaskCommunicationEndpointVerificationStatus @default(UNVERIFIED)
+
+  /// When this endpoint was last verified
+  verifiedAt DateTime?
+
+  /// Priority within the task's endpoint list; lower sorts first
+  priority Int @default(0)
+
+  /// Whether this is the primary endpoint shown in compact task cards
+  isPrimary Boolean @default(false)
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  task           Task                @relation("TaskCommunicationEndpoints", fields: [taskId], references: [id], onDelete: Cascade)
+  communications TaskCommunication[] @relation("TaskCommunicationEndpointCommunications")
+
+  @@index([taskId])
+  @@index([taskId, isPrimary])
+  @@index([kind])
+  @@index([verificationStatus])
+  @@index([deletedAt])
+}
+
+/// Canonical strategy for communications about a task.
+/// Keyed by (taskId, audience, purpose) - at most one active template per slot.
+model TaskCommunicationTemplate {
   /// Unique identifier
   id String @id @default(cuid())
 
@@ -4278,10 +4428,10 @@ model TaskEmailTemplate {
   taskId String
 
   /// Who receives messages from this template
-  audience TaskEmailAudience
+  audience TaskCommunicationAudience
 
-  /// Lifecycle role of the template (INVITATION / REMINDER / SCORECARD / etc.)
-  role TaskEmailRole
+  /// Lifecycle purpose of the template (INVITATION / REMINDER / SCORECARD / etc.)
+  purpose TaskCommunicationPurpose
 
   /// Optional human label for admin/debug surfaces (e.g. "Treaty B3 Sender Reminder")
   label String?
@@ -4299,21 +4449,21 @@ model TaskEmailTemplate {
   deletedAt DateTime?
 
   // -- Relations --
-  task     Task               @relation("TaskEmailTemplates", fields: [taskId], references: [id], onDelete: Cascade)
-  variants TaskEmailVariant[] @relation("TaskEmailTemplateVariants")
-  attempts TaskEmailAttempt[] @relation("TaskEmailAttemptTemplate")
+  task           Task                       @relation("TaskCommunicationTemplates", fields: [taskId], references: [id], onDelete: Cascade)
+  variants       TaskCommunicationVariant[] @relation("TaskCommunicationTemplateVariants")
+  communications TaskCommunication[]        @relation("TaskCommunicationTemplateCommunications")
 
-  @@unique([taskId, audience, role])
+  @@unique([taskId, audience, purpose])
   @@index([taskId])
-  @@index([audience, role])
+  @@index([audience, purpose])
   @@index([isActive])
   @@index([deletedAt])
 }
 
-/// A specific subject/body variant within a TaskEmailTemplate.
+/// A specific subject/body variant within a TaskCommunicationTemplate.
 /// Keyed by (templateId, step, format) so variants can express step-by-step
 /// sequences AND format branches (e.g. TASK_NOTIFICATION vs SINCERE).
-model TaskEmailVariant {
+model TaskCommunicationVariant {
   /// Unique identifier
   id String @id @default(cuid())
 
@@ -4324,7 +4474,7 @@ model TaskEmailVariant {
   step Int @default(0)
 
   /// Format / style branch (DEFAULT for templates that do not branch)
-  format TaskEmailFormat @default(DEFAULT)
+  format TaskCommunicationFormat @default(DEFAULT)
 
   /// Subject line
   subject String?
@@ -4367,9 +4517,9 @@ model TaskEmailVariant {
   deletedAt DateTime?
 
   // -- Relations --
-  template      TaskEmailTemplate  @relation("TaskEmailTemplateVariants", fields: [templateId], references: [id], onDelete: Cascade)
-  attempts      TaskEmailAttempt[] @relation("TaskEmailAttemptVariant")
-  shareAttempts ShareAttempt[]     @relation("ShareAttemptTaskEmailVariant")
+  template       TaskCommunicationTemplate @relation("TaskCommunicationTemplateVariants", fields: [templateId], references: [id], onDelete: Cascade)
+  communications TaskCommunication[]       @relation("TaskCommunicationVariantCommunications")
+  shareAttempts  ShareAttempt[]            @relation("ShareAttemptTaskCommunicationVariant")
 
   @@unique([templateId, step, format])
   @@index([templateId])
@@ -4377,23 +4527,27 @@ model TaskEmailVariant {
   @@index([deletedAt])
 }
 
-/// Per-recipient email send state. Replaces the email-sequence columns
-/// currently overloaded onto `ReferralInvitation` (`recipientEmailStep`,
-/// `nextRecipientEmailAt`, `lastRecipientEmailAt`, `recipientUnsubscribeToken`,
-/// etc.). Also serves the sender / observer sequences once Phase B engine
-/// switches over.
-model TaskEmailAttempt {
+/// Per-recipient or per-endpoint communication state. Replaces the
+/// email-sequence columns currently overloaded onto `ReferralInvitation`,
+/// task-level contact columns, and Activity-only contact records.
+model TaskCommunication {
   /// Unique identifier
   id String @id @default(cuid())
 
-  /// Task this attempt is about
+  /// Task this communication is about
   taskId String
 
-  /// The template that drove the send
-  templateId String
+  /// Readable thread item shown to users/agents
+  taskCommentId String?
+
+  /// Template that drove the communication, if any
+  templateId String?
 
   /// The exact variant rendered (records exact step/format at send time)
   templateVariantId String?
+
+  /// Endpoint used for external assignee contact, if any
+  endpointId String?
 
   /// Optional Person record for the recipient (preferred over raw email when present)
   recipientPersonId String?
@@ -4401,28 +4555,58 @@ model TaskEmailAttempt {
   /// Optional User if the recipient is a known signed-in user
   recipientUserId String?
 
+  /// Optional Organization if the recipient is an external org
+  recipientOrganizationId String?
+
   /// Recipient email captured at send time
   recipientEmail String?
 
+  /// Recipient display name captured at send/import time
+  recipientNameSnapshot String?
+
+  /// Optional User who sent/initiated the communication
+  senderUserId String?
+
+  /// Optional Person who sent/initiated the communication
+  senderPersonId String?
+
+  /// Sender display name captured at send/import time
+  senderNameSnapshot String?
+
   /// Audience (denormalized snapshot of template.audience for fast filtering)
-  audience TaskEmailAudience
+  audience TaskCommunicationAudience
 
-  /// Role (denormalized snapshot of template.role)
-  role TaskEmailRole
+  /// Purpose (denormalized snapshot of template.purpose)
+  purpose TaskCommunicationPurpose
 
-  /// Format used for this attempt
-  format TaskEmailFormat @default(DEFAULT)
+  /// Outbound or inbound
+  direction TaskCommunicationDirection @default(OUTBOUND)
 
-  /// Step in the sequence this attempt represents
+  /// Channel used by this envelope
+  channel TaskCommunicationChannel @default(EMAIL)
+
+  /// Format used for this communication
+  format TaskCommunicationFormat @default(DEFAULT)
+
+  /// Step in the sequence this communication represents
   step Int @default(0)
 
-  /// When the next send for this recipient/role lineage is scheduled
+  /// When the next send for this recipient/purpose lineage is scheduled
   nextSendAt DateTime?
 
-  /// When the most recent send actually went out
-  lastSentAt DateTime?
+  /// When the communication was sent/opened/initiated
+  sentAt DateTime?
 
-  /// Per-attempt unsubscribe token for one-click opt-out (when audience requires it)
+  /// When an inbound communication/manual response was received
+  receivedAt DateTime?
+
+  /// When a communication failed
+  failedAt DateTime?
+
+  /// When a communication was cancelled/suppressed
+  cancelledAt DateTime?
+
+  /// Per-communication unsubscribe token for one-click opt-out (when audience requires it)
   unsubscribeToken String? @unique
 
   /// Linked ShareAttempt for the outbound-message ledger
@@ -4435,7 +4619,10 @@ model TaskEmailAttempt {
   referralInvitationId String?
 
   /// Lifecycle status
-  status TaskEmailAttemptStatus @default(PENDING)
+  status TaskCommunicationStatus @default(DRAFT)
+
+  /// External URL/mailto target or provider-facing URL snapshot
+  externalUrl String?
 
   /// Error message captured on failed sends
   errorMessage String?
@@ -4443,8 +4630,8 @@ model TaskEmailAttempt {
   /// Provider's message id (e.g., Resend)
   providerMessageId String?
 
-  /// Free-form context for the send (subject pick, mission-fit metrics, etc.)
-  context Json?
+  /// Free-form metadata for channel-specific details (openedAt, submittedAt, subject pick, etc.)
+  metadataJson Json?
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -4456,22 +4643,34 @@ model TaskEmailAttempt {
   deletedAt DateTime?
 
   // -- Relations --
-  task               Task                @relation("TaskEmailAttempts", fields: [taskId], references: [id], onDelete: Cascade)
-  template           TaskEmailTemplate   @relation("TaskEmailAttemptTemplate", fields: [templateId], references: [id], onDelete: Cascade)
-  templateVariant    TaskEmailVariant?   @relation("TaskEmailAttemptVariant", fields: [templateVariantId], references: [id], onDelete: SetNull)
-  recipientPerson    Person?             @relation("TaskEmailAttemptRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
-  recipientUser      User?               @relation("TaskEmailAttemptRecipientUser", fields: [recipientUserId], references: [id], onDelete: SetNull)
-  shareAttempt       ShareAttempt?       @relation("ShareAttemptTaskEmailAttempts", fields: [shareAttemptId], references: [id], onDelete: SetNull)
-  emailLog           EmailLog?           @relation("EmailLogTaskEmailAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
-  referralInvitation ReferralInvitation? @relation("ReferralInvitationTaskEmailAttempts", fields: [referralInvitationId], references: [id], onDelete: SetNull)
+  task                  Task                       @relation("TaskCommunications", fields: [taskId], references: [id], onDelete: Cascade)
+  taskComment           TaskComment?               @relation("TaskCommentCommunications", fields: [taskCommentId], references: [id], onDelete: SetNull)
+  template              TaskCommunicationTemplate? @relation("TaskCommunicationTemplateCommunications", fields: [templateId], references: [id], onDelete: SetNull)
+  templateVariant       TaskCommunicationVariant?  @relation("TaskCommunicationVariantCommunications", fields: [templateVariantId], references: [id], onDelete: SetNull)
+  endpoint              TaskCommunicationEndpoint? @relation("TaskCommunicationEndpointCommunications", fields: [endpointId], references: [id], onDelete: SetNull)
+  recipientPerson       Person?                    @relation("TaskCommunicationRecipientPerson", fields: [recipientPersonId], references: [id], onDelete: SetNull)
+  recipientUser         User?                      @relation("TaskCommunicationRecipientUser", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  recipientOrganization Organization?              @relation("TaskCommunicationRecipientOrganization", fields: [recipientOrganizationId], references: [id], onDelete: SetNull)
+  senderUser            User?                      @relation("TaskCommunicationSenderUser", fields: [senderUserId], references: [id], onDelete: SetNull)
+  senderPerson          Person?                    @relation("TaskCommunicationSenderPerson", fields: [senderPersonId], references: [id], onDelete: SetNull)
+  shareAttempt          ShareAttempt?              @relation("ShareAttemptTaskCommunications", fields: [shareAttemptId], references: [id], onDelete: SetNull)
+  emailLog              EmailLog?                  @relation("EmailLogTaskCommunications", fields: [emailLogId], references: [id], onDelete: SetNull)
+  referralInvitation    ReferralInvitation?        @relation("ReferralInvitationTaskCommunications", fields: [referralInvitationId], references: [id], onDelete: SetNull)
 
   @@index([taskId])
+  @@index([taskCommentId])
   @@index([templateId])
   @@index([templateVariantId])
+  @@index([endpointId])
   @@index([recipientPersonId])
   @@index([recipientUserId])
+  @@index([recipientOrganizationId])
+  @@index([senderUserId])
+  @@index([senderPersonId])
   @@index([nextSendAt])
   @@index([status])
+  @@index([channel])
+  @@index([purpose])
   @@index([referralInvitationId])
   @@index([emailLogId])
   @@index([deletedAt])
@@ -4791,8 +4990,8 @@ model EmailLog {
   /// Unique identifier
   id String @id @default(cuid())
 
-  /// The user this email was sent to
-  userId String
+  /// The user this email was sent to, when the recipient has an account
+  userId String?
 
   /// Email address it was sent to
   toAddress String
@@ -4841,13 +5040,16 @@ model EmailLog {
   /// Error message if failed/bounced
   errorMessage String?
 
+  /// Optional dedupe key for emails that are not tied to a User row
+  dedupeKey String? @unique
+
   /// When this record was created
   createdAt DateTime @default(now())
 
   // -- Relations --
-  user              User               @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
-  shareAttempts     ShareAttempt[]     @relation("EmailLogShareAttempts")
-  taskEmailAttempts TaskEmailAttempt[] @relation("EmailLogTaskEmailAttempts")
+  user               User?               @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: SetNull)
+  shareAttempts      ShareAttempt[]      @relation("EmailLogShareAttempts")
+  taskCommunications TaskCommunication[] @relation("EmailLogTaskCommunications")
 
   @@unique([userId, templateId])
   @@index([userId])
@@ -4890,10 +5092,10 @@ model ShareAttempt {
   /// Human label of the share template used (e.g. "lumbergh").
   templateId String?
 
-  /// Optional FK to the typed `TaskEmailVariant` that produced this share.
+  /// Optional FK to the typed `TaskCommunicationVariant` that produced this share.
   /// Coexists with `templateId` (free-form label) during the migration window;
   /// once Phase B engine is the only writer, this becomes the canonical link.
-  taskEmailVariantId String?
+  taskCommunicationVariantId String?
 
   /// sha256(templateBody) — primary grouping key for analytics (survives renames).
   templateHash String?
@@ -4921,17 +5123,17 @@ model ShareAttempt {
   createdAt DateTime @default(now())
 
   // -- Relations --
-  user                User                 @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
-  emailLog            EmailLog?            @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
-  task                Task?                @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
-  taskEmailVariant    TaskEmailVariant?    @relation("ShareAttemptTaskEmailVariant", fields: [taskEmailVariantId], references: [id], onDelete: SetNull)
-  referralInvitations ReferralInvitation[] @relation("ShareAttemptReferralInvitations")
-  taskEmailAttempts   TaskEmailAttempt[]   @relation("ShareAttemptTaskEmailAttempts")
+  user                     User                      @relation("UserShareAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  emailLog                 EmailLog?                 @relation("EmailLogShareAttempts", fields: [emailLogId], references: [id], onDelete: SetNull)
+  task                     Task?                     @relation("TaskShareAttempts", fields: [taskId], references: [id], onDelete: SetNull)
+  taskCommunicationVariant TaskCommunicationVariant? @relation("ShareAttemptTaskCommunicationVariant", fields: [taskCommunicationVariantId], references: [id], onDelete: SetNull)
+  referralInvitations      ReferralInvitation[]      @relation("ShareAttemptReferralInvitations")
+  taskCommunications       TaskCommunication[]       @relation("ShareAttemptTaskCommunications")
 
   @@index([userId, createdAt])
   @@index([templateHash])
   @@index([emailLogId])
-  @@index([taskEmailVariantId])
+  @@index([taskCommunicationVariantId])
   @@index([firstReferralClickAt])
   @@index([source])
   @@index([channel])

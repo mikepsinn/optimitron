@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
-import { recordTaskContactAction } from "@/lib/tasks/contact.server";
+import {
+  normalizeTaskCommunicationActionChannel,
+  recordTaskCommunication,
+} from "@/lib/tasks/task-communications.server";
 
 export const runtime = "nodejs";
 
@@ -12,18 +15,23 @@ export async function POST(
     const body = (await request.json().catch(() => null)) as
       | {
           channel?: unknown;
+          endpointId?: unknown;
           href?: unknown;
           message?: unknown;
+          submittedAt?: unknown;
         }
       | null;
     const currentUser = await getCurrentUser();
     const { id } = await context.params;
 
     if (currentUser) {
-      await recordTaskContactAction({
-        channel: body?.channel === "email" ? "email" : "link",
+      await recordTaskCommunication({
+        channel: normalizeTaskCommunicationActionChannel(body?.channel),
+        endpointId: typeof body?.endpointId === "string" ? body.endpointId : null,
         href: typeof body?.href === "string" ? body.href : null,
         message: typeof body?.message === "string" ? body.message : null,
+        submittedAt:
+          typeof body?.submittedAt === "string" ? new Date(body.submittedAt) : null,
         taskId: id,
         userId: currentUser.id,
       });
@@ -34,7 +42,7 @@ export async function POST(
       tracked: Boolean(currentUser),
     });
   } catch (error) {
-    console.error("[TASKS] Failed to track contact action:", error);
-    return NextResponse.json({ error: "Failed to track contact action." }, { status: 500 });
+    console.error("[TASKS] Failed to record task communication:", error);
+    return NextResponse.json({ error: "Failed to record task communication." }, { status: 500 });
   }
 }

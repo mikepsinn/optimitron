@@ -195,8 +195,10 @@ export async function createReferralInvitation(input: {
 
     if (!linkedTaskId) {
       linkedTaskId = await createReferralInvitationTask(tx, {
-        contactTemplate: taskContactTemplate,
-        contactUrl: inviteUrl,
+        endpoint: {
+          instructions: taskContactTemplate,
+          url: inviteUrl,
+        },
         inviteToken,
         ownerUserId: input.referrerUserId,
         recipientName,

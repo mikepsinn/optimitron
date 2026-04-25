@@ -13,7 +13,12 @@ import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { getSearchTerms, scoreSearchRecord } from "@/lib/site-search";
 import { canonicalizeSiteUrl } from "@/lib/site";
-import { countTaskContactActions } from "@/lib/tasks/contact.server";
+import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
+import {
+  buildPrimaryTaskCommunicationEndpointCreateData,
+  type PrimaryTaskCommunicationEndpointInput,
+  upsertPrimaryTaskCommunicationEndpoint,
+} from "@/lib/tasks/task-communication-endpoints.server";
 import {
   DEFAULT_TASK_IMPACT_FRAME,
   deriveImpactRatios,
@@ -221,9 +226,22 @@ const taskListSelect = {
   },
   completedAt: true,
   completionEvidence: true,
-  contactLabel: true,
-  contactTemplate: true,
-  contactUrl: true,
+  communicationEndpoints: {
+    where: {
+      deletedAt: null,
+    },
+    orderBy: [{ isPrimary: "desc" }, { priority: "asc" }, { createdAt: "asc" }],
+    select: {
+      email: true,
+      id: true,
+      instructions: true,
+      isPrimary: true,
+      kind: true,
+      label: true,
+      priority: true,
+      url: true,
+    },
+  },
   assigneeAffiliationSnapshot: true,
   currentImpactEstimateSet: {
     select: impactEstimateSetSelect,
@@ -473,6 +491,32 @@ function normalizeSourceArtifact<T extends { sourceRef: string | null; sourceUrl
         : artifact.sourceRef,
     sourceUrl: canonicalizeSiteUrl(artifact.sourceUrl),
   };
+}
+
+function getPrimaryTaskCommunicationEndpoint(
+  task: Pick<TaskListItem | TaskDetailItem, "communicationEndpoints">,
+) {
+  return (
+    task.communicationEndpoints.find((endpoint) => endpoint.isPrimary) ??
+    task.communicationEndpoints[0] ??
+    null
+  );
+}
+
+function getEndpointUrl(endpoint: ReturnType<typeof getPrimaryTaskCommunicationEndpoint>) {
+  if (!endpoint) {
+    return null;
+  }
+
+  if (endpoint.url) {
+    return endpoint.url;
+  }
+
+  if (endpoint.email) {
+    return `mailto:${endpoint.email}`;
+  }
+
+  return null;
 }
 
 function mapTaskSearchResult(
@@ -754,6 +798,17 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     normalizedSourceArtifacts.find((entry) => entry.isPrimary)?.sourceArtifact ??
     normalizedSourceArtifacts[0]?.sourceArtifact ??
     null;
+  const primaryCommunicationEndpoint = getPrimaryTaskCommunicationEndpoint(task);
+  const primaryEndpointUrl = getEndpointUrl(primaryCommunicationEndpoint);
+  const primaryEndpoint = primaryCommunicationEndpoint
+    ? {
+        email: primaryCommunicationEndpoint.email ?? null,
+        instructions: primaryCommunicationEndpoint.instructions ?? null,
+        kind: primaryCommunicationEndpoint.kind,
+        label: primaryCommunicationEndpoint.label ?? null,
+        url: canonicalizeSiteUrl(primaryEndpointUrl),
+      }
+    : null;
 
   return {
     ...task,
@@ -761,8 +816,8 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     activeChildTaskCount: task._count.childTasks,
     blockerStatuses,
     ...(decoratedChildTasks ? { childTasks: decoratedChildTasks } : {}),
-    contactUrl: canonicalizeSiteUrl(task.contactUrl),
     contextJson: normalizeTaskContextJson(task.contextJson),
+    primaryEndpoint,
     impact: {
       availableFrames: directImpactSelection.availableFrames,
       confidenceSummary: selectedImpactFrame?.summaryStatsJson ?? null,
@@ -1047,7 +1102,7 @@ export async function getTaskDetailData(
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
-  const [task, viewer, contactActionCount] = await Promise.all([
+  const [task, viewer, taskCommunicationCount] = await Promise.all([
     prisma.task.findFirst({
       where: getTaskVisibilityWhere({
         taskId,
@@ -1057,7 +1112,7 @@ export async function getTaskDetailData(
       select: taskDetailSelect,
     }),
     userId ? getTaskViewer(userId) : Promise.resolve(null),
-    countTaskContactActions(taskId),
+    countTaskCommunications(taskId),
   ]);
 
   if (!task) {
@@ -1088,7 +1143,7 @@ export async function getTaskDetailData(
         });
 
   return {
-    contactActionCount,
+    taskCommunicationCount,
     task: decorateTask(task, {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
@@ -1353,9 +1408,6 @@ export async function createOwnedTask(
   input: {
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
-    contactLabel?: string | null;
-    contactTemplate?: string | null;
-    contactUrl?: string | null;
     description?: string | null;
     difficulty?: TaskDifficulty | null;
     dueAt?: Date | null;
@@ -1363,6 +1415,7 @@ export async function createOwnedTask(
     interestTags?: string[] | null;
     isPublic?: boolean | null;
     maxClaims?: number | null;
+    primaryEndpoint?: PrimaryTaskCommunicationEndpointInput | null;
     roleTitle?: string | null;
     skillTags?: string[] | null;
     status?: TaskStatus | null;
@@ -1371,6 +1424,9 @@ export async function createOwnedTask(
 ) {
   const title = input.title.trim();
   const description = input.description?.trim() ?? "";
+  const endpointData = input.primaryEndpoint
+    ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
+    : null;
 
   if (!title) {
     throw new Error("Title is required.");
@@ -1388,9 +1444,13 @@ export async function createOwnedTask(
     data: {
       category: input.category ?? TaskCategory.OTHER,
       claimPolicy: input.claimPolicy ?? TaskClaimPolicy.ASSIGNED_ONLY,
-      contactLabel: input.contactLabel?.trim() || null,
-      contactTemplate: input.contactTemplate?.trim() || null,
-      contactUrl: input.contactUrl?.trim() || null,
+      ...(endpointData
+        ? {
+            communicationEndpoints: {
+              create: endpointData,
+            },
+          }
+        : {}),
       description,
       difficulty: input.difficulty ?? TaskDifficulty.INTERMEDIATE,
       dueAt: input.dueAt ?? null,
@@ -1417,9 +1477,6 @@ export async function updateOwnedTask(
   input: {
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
-    contactLabel?: string | null;
-    contactTemplate?: string | null;
-    contactUrl?: string | null;
     description?: string | null;
     difficulty?: TaskDifficulty | null;
     dueAt?: Date | null;
@@ -1427,6 +1484,7 @@ export async function updateOwnedTask(
     interestTags?: string[] | null;
     isPublic?: boolean | null;
     maxClaims?: number | null;
+    primaryEndpoint?: PrimaryTaskCommunicationEndpointInput | null;
     roleTitle?: string | null;
     skillTags?: string[] | null;
     status?: TaskStatus | null;
@@ -1463,33 +1521,41 @@ export async function updateOwnedTask(
     throw new Error("Title is required.");
   }
 
-  return prisma.task.update({
-    where: { id: taskId },
-    data: {
-      category: input.category ?? undefined,
-      claimPolicy: input.claimPolicy ?? undefined,
-      contactLabel: input.contactLabel == null ? undefined : input.contactLabel.trim() || null,
-      contactTemplate:
-        input.contactTemplate == null ? undefined : input.contactTemplate.trim() || null,
-      contactUrl: input.contactUrl == null ? undefined : input.contactUrl.trim() || null,
-      description: input.description == null ? undefined : input.description.trim(),
-      difficulty: input.difficulty ?? undefined,
-      dueAt: input.dueAt ?? undefined,
-      estimatedEffortHours: input.estimatedEffortHours ?? undefined,
-      interestTags: input.interestTags?.filter(Boolean) ?? undefined,
-      isPublic: input.isPublic ?? undefined,
-      maxClaims:
-        nextClaimPolicy === TaskClaimPolicy.OPEN_MANY
-          ? input.maxClaims ?? undefined
-          : input.claimPolicy
-            ? null
-            : undefined,
-      roleTitle: input.roleTitle == null ? undefined : input.roleTitle.trim() || null,
-      skillTags: input.skillTags?.filter(Boolean) ?? undefined,
-      status: input.status ?? undefined,
-      title,
-    },
-    select: taskDetailSelect,
+  const shouldUpdateEndpoint = input.primaryEndpoint !== undefined;
+
+  return prisma.$transaction(async (tx) => {
+    await tx.task.update({
+      where: { id: taskId },
+      data: {
+        category: input.category ?? undefined,
+        claimPolicy: input.claimPolicy ?? undefined,
+        description: input.description == null ? undefined : input.description.trim(),
+        difficulty: input.difficulty ?? undefined,
+        dueAt: input.dueAt ?? undefined,
+        estimatedEffortHours: input.estimatedEffortHours ?? undefined,
+        interestTags: input.interestTags?.filter(Boolean) ?? undefined,
+        isPublic: input.isPublic ?? undefined,
+        maxClaims:
+          nextClaimPolicy === TaskClaimPolicy.OPEN_MANY
+            ? input.maxClaims ?? undefined
+            : input.claimPolicy
+              ? null
+              : undefined,
+        roleTitle: input.roleTitle == null ? undefined : input.roleTitle.trim() || null,
+        skillTags: input.skillTags?.filter(Boolean) ?? undefined,
+        status: input.status ?? undefined,
+        title,
+      },
+    });
+
+    if (shouldUpdateEndpoint) {
+      await upsertPrimaryTaskCommunicationEndpoint(tx, taskId, input.primaryEndpoint ?? {});
+    }
+
+    return tx.task.findUniqueOrThrow({
+      where: { id: taskId },
+      select: taskDetailSelect,
+    });
   });
 }
 

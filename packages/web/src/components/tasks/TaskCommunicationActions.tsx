@@ -6,29 +6,29 @@ import { Button } from "@/components/retroui/Button";
 import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
 import {
-  resolveTaskContactAction,
-  type TaskContactDelayStats,
-  type TaskContactLike,
-} from "@/lib/tasks/contact";
+  resolveTaskCommunicationAction,
+  type TaskCommunicationDelayStats,
+  type TaskCommunicationLike,
+} from "@/lib/tasks/task-communication-action";
 import { buildTaskUrl } from "@/lib/url";
 
-interface TaskContactActionsProps {
+interface TaskCommunicationActionsProps {
   baseUrl?: string;
   compact?: boolean;
-  contactActionCount?: number;
-  delayStats: TaskContactDelayStats;
-  task: TaskContactLike;
+  delayStats: TaskCommunicationDelayStats;
+  task: TaskCommunicationLike;
+  taskCommunicationCount?: number;
   taskId: string;
 }
 
-export function TaskContactActions({
+export function TaskCommunicationActions({
   baseUrl,
   compact = false,
-  contactActionCount,
   delayStats,
   task,
+  taskCommunicationCount,
   taskId,
-}: TaskContactActionsProps) {
+}: TaskCommunicationActionsProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const { data: session } = useSession();
   const requestOrigin = useRequestSiteOrigin();
@@ -38,7 +38,7 @@ export function TaskContactActions({
     [baseUrl, requestOrigin, taskId, referralId],
   );
   const action = useMemo(
-    () => resolveTaskContactAction({ delayStats, task, taskUrl }),
+    () => resolveTaskCommunicationAction({ delayStats, task, taskUrl }),
     [delayStats, task, taskUrl],
   );
 
@@ -46,15 +46,16 @@ export function TaskContactActions({
     return null;
   }
 
-  const contactAction = action;
+  const communicationAction = action;
 
-  async function trackContact() {
+  async function recordCommunication() {
     try {
-      await fetch(`/api/tasks/${taskId}/contact`, {
+      await fetch(`/api/tasks/${taskId}/communications`, {
         body: JSON.stringify({
-          channel: contactAction.channel,
-          href: contactAction.href,
-          message: contactAction.message,
+          channel: communicationAction.channel,
+          endpointId: communicationAction.endpointId,
+          href: communicationAction.href,
+          message: communicationAction.message,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -62,13 +63,13 @@ export function TaskContactActions({
         method: "POST",
       });
     } catch {
-      // Tracking is advisory; never block the contact flow on analytics.
+      // Recording is advisory; never block the user's communication flow.
     }
   }
 
   function handleCopyMessage() {
     void navigator.clipboard
-      .writeText(contactAction.message)
+      .writeText(communicationAction.message)
       .then(() => {
         setCopyState("copied");
         window.setTimeout(() => setCopyState("idle"), 1500);
@@ -79,15 +80,15 @@ export function TaskContactActions({
       });
   }
 
-  function handleOpenContact() {
-    void trackContact();
+  function handleOpenCommunication() {
+    void recordCommunication();
 
-    if (contactAction.channel === "email") {
-      window.location.href = contactAction.href;
+    if (communicationAction.channel === "mailto") {
+      window.location.href = communicationAction.href;
       return;
     }
 
-    window.open(contactAction.href, "_blank", "noopener,noreferrer");
+    window.open(communicationAction.href, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -97,7 +98,7 @@ export function TaskContactActions({
       </p>
       {!compact ? (
         <div className="border-4 border-foreground bg-background p-3">
-          <p className="text-sm font-bold leading-6">{contactAction.message}</p>
+          <p className="text-sm font-bold leading-6">{communicationAction.message}</p>
         </div>
       ) : null}
       <div className="flex flex-wrap gap-2">
@@ -106,9 +107,9 @@ export function TaskContactActions({
           size="sm"
           type="button"
           variant="outline"
-          onClick={handleOpenContact}
+          onClick={handleOpenCommunication}
         >
-          {contactAction.label}
+          {communicationAction.label}
         </Button>
         <Button
           className="font-black uppercase"
@@ -124,9 +125,9 @@ export function TaskContactActions({
               : "Copy Message"}
         </Button>
       </div>
-      {!compact && typeof contactActionCount === "number" ? (
+      {!compact && typeof taskCommunicationCount === "number" ? (
         <p className="text-xs font-bold uppercase text-muted-foreground">
-          {contactActionCount.toLocaleString("en-US")} recorded contact actions
+          {taskCommunicationCount.toLocaleString("en-US")} recorded communications
         </p>
       ) : null}
     </div>

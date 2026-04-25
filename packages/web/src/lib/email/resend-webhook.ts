@@ -104,7 +104,7 @@ async function writeWebhookActivity(input: {
 
 export async function applyComplaintEvent(event: ResendEvent): Promise<void> {
   const ctx = await findEmailLogContext(event.data.email_id);
-  if (!ctx) return;
+  if (!ctx?.userId) return;
   await applyUnsubscribe({
     userId: ctx.userId,
     scope: "all",
@@ -123,7 +123,7 @@ export async function applyBounceEvent(event: ResendEvent): Promise<void> {
   });
 
   const bounceType = event.data.bounce?.type;
-  if (bounceType === "hard") {
+  if (bounceType === "hard" && ctx.userId) {
     // Invalid address — stop sending entirely, mirroring the complaint effect.
     await applyUnsubscribe({
       userId: ctx.userId,
@@ -131,7 +131,7 @@ export async function applyBounceEvent(event: ResendEvent): Promise<void> {
       emailLogId: ctx.id,
       via: "hard_bounce",
     });
-  } else {
+  } else if (ctx.userId) {
     await writeWebhookActivity({
       userId: ctx.userId,
       emailLogId: ctx.id,

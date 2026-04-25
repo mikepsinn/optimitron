@@ -1,6 +1,7 @@
 import { Prisma } from "@optimitron/db";
 import { upsertTrustedOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
 import type {
   ImportedImpactEstimateDraft,
   ImportedImpactFrameDraft,
@@ -425,9 +426,6 @@ export async function upsertImportedTaskBundle(
         category: bundle.task.category,
         claimPolicy: bundle.task.claimPolicy,
         contextJson: toJsonValue(bundle.task.contextJson),
-        contactLabel: bundle.task.contactLabel,
-        contactTemplate: bundle.task.contactTemplate,
-        contactUrl: bundle.task.contactUrl,
         deletedAt: null,
         description: bundle.task.description,
         difficulty: bundle.task.difficulty,
@@ -453,9 +451,6 @@ export async function upsertImportedTaskBundle(
         category: bundle.task.category,
         claimPolicy: bundle.task.claimPolicy,
         contextJson: toJsonValue(bundle.task.contextJson),
-        contactLabel: bundle.task.contactLabel,
-        contactTemplate: bundle.task.contactTemplate,
-        contactUrl: bundle.task.contactUrl,
         deletedAt: null,
         description: bundle.task.description,
         difficulty: bundle.task.difficulty,
@@ -477,6 +472,12 @@ export async function upsertImportedTaskBundle(
         id: true,
         taskKey: true,
       },
+    });
+
+    await upsertPrimaryTaskCommunicationEndpoint(tx, task.id, {
+      instructions: bundle.task.contactTemplate,
+      label: bundle.task.contactLabel,
+      url: bundle.task.contactUrl,
     });
 
     const sourceArtifacts = await syncTaskSourceArtifacts(

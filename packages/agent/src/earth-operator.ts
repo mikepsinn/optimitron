@@ -518,16 +518,17 @@ export async function planNextEarthOperatorStep(
 
     if (
       (decision.plan.channel === 'contact-form' || decision.plan.channel === 'email') &&
-      input.adapters.checkContactCooldown
+      input.adapters.checkTaskCommunicationCooldown
     ) {
-      const cooldown = await input.adapters.checkContactCooldown({
+      const cooldown = await input.adapters.checkTaskCommunicationCooldown({
         channel: decision.plan.channel,
         taskId: action.task.id,
       });
 
       if (!cooldown.allowed) {
         const reason =
-          cooldown.reason?.trim() ?? `Contact cooldown is active for ${decision.plan.channel}.`;
+          cooldown.reason?.trim() ??
+            `Task communication cooldown is active for ${decision.plan.channel}.`;
 
         await input.adapters.releaseLease({
           leaseId: leaseResult.leaseId,

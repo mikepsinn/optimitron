@@ -4,7 +4,18 @@ import {
   formatDelayDuration,
 } from "@/lib/tasks/accountability";
 
-export interface TaskContactLike {
+export interface TaskCommunicationEndpointLike {
+  email?: string | null;
+  id?: string | null;
+  instructions?: string | null;
+  isPrimary?: boolean | null;
+  kind?: string | null;
+  label?: string | null;
+  priority?: number | null;
+  url?: string | null;
+}
+
+export interface TaskCommunicationLike {
   assigneeOrganization?: {
     contactEmail?: string | null;
     name: string;
@@ -12,28 +23,27 @@ export interface TaskContactLike {
   assigneePerson?: {
     displayName: string;
   } | null;
-  contactLabel?: string | null;
-  contactTemplate?: string | null;
-  contactUrl?: string | null;
+  communicationEndpoints?: TaskCommunicationEndpointLike[] | null;
   roleTitle?: string | null;
   title: string;
 }
 
-export interface TaskContactDelayStats {
+export interface TaskCommunicationDelayStats {
   currentDelayDays: number;
   currentEconomicValueUsdLost: number | null;
   currentHumanLivesLost: number | null;
   currentSufferingHoursLost: number | null;
 }
 
-export interface TaskContactAction {
-  channel: "email" | "link";
+export interface TaskCommunicationAction {
+  channel: "externalUrl" | "mailto";
+  endpointId: string | null;
   href: string;
   label: string;
   message: string;
 }
 
-interface TaskContactTemplateValues {
+interface TaskCommunicationTemplateValues {
   delayDays: string;
   delayLabel: string;
   economicLoss: string;
@@ -50,7 +60,7 @@ function buildMailtoHref(base: string, subject: string, body: string) {
   return `${base}${separator}subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-function buildOfficeSearchHref(task: TaskContactLike) {
+function buildOfficeSearchHref(task: TaskCommunicationLike) {
   const parts = [
     task.assigneePerson?.displayName,
     task.roleTitle,
@@ -65,15 +75,42 @@ function buildOfficeSearchHref(task: TaskContactLike) {
   return `https://www.google.com/search?q=${encodeURIComponent(parts.join(" "))}`;
 }
 
-function getTargetLabel(task: TaskContactLike) {
+function getTargetLabel(task: TaskCommunicationLike) {
   return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
 }
 
+function getPrimaryEndpoint(task: TaskCommunicationLike) {
+  const endpoints = task.communicationEndpoints ?? [];
+  return (
+    endpoints.find((endpoint) => endpoint.isPrimary) ??
+    [...endpoints].sort(
+      (left, right) => (left.priority ?? 0) - (right.priority ?? 0),
+    )[0] ??
+    null
+  );
+}
+
+function endpointUrl(endpoint: TaskCommunicationEndpointLike | null) {
+  if (!endpoint) {
+    return null;
+  }
+
+  if (endpoint.url?.trim()) {
+    return endpoint.url.trim();
+  }
+
+  if (endpoint.email?.trim()) {
+    return `mailto:${endpoint.email.trim()}`;
+  }
+
+  return null;
+}
+
 function buildTemplateValues(input: {
-  delayStats: TaskContactDelayStats;
-  task: TaskContactLike;
+  delayStats: TaskCommunicationDelayStats;
+  task: TaskCommunicationLike;
   taskUrl?: string | null;
-}): TaskContactTemplateValues {
+}): TaskCommunicationTemplateValues {
   return {
     delayDays: String(input.delayStats.currentDelayDays),
     delayLabel:
@@ -90,43 +127,45 @@ function buildTemplateValues(input: {
   };
 }
 
-function interpolateTemplate(template: string, values: TaskContactTemplateValues) {
-  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_match, key: keyof TaskContactTemplateValues) => {
+function interpolateTemplate(template: string, values: TaskCommunicationTemplateValues) {
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_match, key: keyof TaskCommunicationTemplateValues) => {
     return values[key] ?? "";
   });
 }
 
-export function buildTaskContactMessage(input: {
-  delayStats: TaskContactDelayStats;
-  task: TaskContactLike;
+export function buildTaskCommunicationMessage(input: {
+  delayStats: TaskCommunicationDelayStats;
+  task: TaskCommunicationLike;
   taskUrl?: string | null;
 }) {
   const values = buildTemplateValues(input);
+  const primaryEndpoint = getPrimaryEndpoint(input.task);
+  const instructions = primaryEndpoint?.instructions?.trim();
 
-  if (input.task.contactTemplate?.trim()) {
-    return interpolateTemplate(input.task.contactTemplate.trim(), values);
+  if (instructions) {
+    return interpolateTemplate(instructions, values);
   }
 
   return `${values.targetLabel}, please complete "${values.taskTitle}". This task is ${values.delayLabel}. Estimated delay cost so far: ${values.humanLives} lives, ${values.sufferingHours} suffering hours, and ${values.economicLoss}.`;
 }
 
-export function resolveTaskContactAction(input: {
-  delayStats: TaskContactDelayStats;
-  task: TaskContactLike;
+export function resolveTaskCommunicationAction(input: {
+  delayStats: TaskCommunicationDelayStats;
+  task: TaskCommunicationLike;
   taskUrl?: string | null;
-}): TaskContactAction | null {
-  const message = buildTaskContactMessage(input);
+}): TaskCommunicationAction | null {
+  const message = buildTaskCommunicationMessage(input);
   const subject = `Please complete: ${input.task.title}`;
-  const explicitUrl = input.task.contactUrl?.trim();
+  const primaryEndpoint = getPrimaryEndpoint(input.task);
+  const explicitUrl = endpointUrl(primaryEndpoint);
 
   if (explicitUrl) {
+    const isMailto = explicitUrl.toLowerCase().startsWith("mailto:");
     return {
-      channel: explicitUrl.startsWith("mailto:") ? "email" : "link",
-      href:
-        explicitUrl.startsWith("mailto:")
-          ? buildMailtoHref(explicitUrl, subject, message)
-          : explicitUrl,
-      label: input.task.contactLabel?.trim() || "Contact office",
+      channel: isMailto ? "mailto" : "externalUrl",
+      endpointId: primaryEndpoint?.id ?? null,
+      href: isMailto ? buildMailtoHref(explicitUrl, subject, message) : explicitUrl,
+      label: primaryEndpoint?.label?.trim() || "Contact assignee",
       message,
     };
   }
@@ -134,9 +173,10 @@ export function resolveTaskContactAction(input: {
   const contactEmail = input.task.assigneeOrganization?.contactEmail?.trim();
   if (contactEmail) {
     return {
-      channel: "email",
+      channel: "mailto",
+      endpointId: null,
       href: buildMailtoHref(`mailto:${contactEmail}`, subject, message),
-      label: input.task.contactLabel?.trim() || "Email assignee",
+      label: "Email assignee",
       message,
     };
   }
@@ -147,7 +187,8 @@ export function resolveTaskContactAction(input: {
   }
 
   return {
-    channel: "link",
+    channel: "externalUrl",
+    endpointId: null,
     href: officeSearchHref,
     label: "Find office contact",
     message,

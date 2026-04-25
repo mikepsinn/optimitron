@@ -28,6 +28,8 @@ import {
   MeasurementScale,
   JurisdictionType,
   ReferendumStatus,
+  TaskCommunicationEndpointKind,
+  TaskCommunicationEndpointVerificationStatus,
   type Prisma,
 } from "../src/generated/prisma/client.js";
 import {
@@ -935,14 +937,16 @@ async function seedTreatyTasks() {
       status: "ACTIVE",
       isPublic: true,
       dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
-      contactLabel: "Open Earth Optimization task tree",
-      contactUrl: "/tasks",
-      contactTemplate:
-        "Complete {{taskTitle}} by clearing the overdue child tasks. Start here: {{taskUrl}}",
       sortOrder: -1000,
       skillTags: ["strategy", "coordination"],
       interestTags: ["earth-optimization-prize", "hale", "median-income"],
       claimPolicy: "OPEN_MANY",
+    },
+    primaryEndpoint: {
+      label: "Open Earth Optimization task tree",
+      url: "/tasks",
+      instructions:
+        "Complete {{taskTitle}} by clearing the overdue child tasks. Start here: {{taskUrl}}",
     },
     impact: {
       // Cost of the root is the sentinel for "whatever the children cost" —
@@ -993,10 +997,6 @@ async function seedTreatyTasks() {
       status: "ACTIVE",
       isPublic: true,
       dueAt: TREATY_DUE_AT,
-      contactLabel: "Sign or share the 1% Treaty",
-      contactUrl: "/treaty",
-      contactTemplate:
-        "Please complete {{taskTitle}}. Sign the treaty, then assign one more person an Earth Optimization task. Start here: {{taskUrl}}",
       sortOrder: -100,
       skillTags: ["organizing", "diplomacy", "public-pressure"],
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
@@ -1056,6 +1056,12 @@ async function seedTreatyTasks() {
         ],
       } satisfies Prisma.InputJsonValue,
     },
+    primaryEndpoint: {
+      label: "Sign or share the 1% Treaty",
+      url: "/treaty",
+      instructions:
+        "Please complete {{taskTitle}}. Sign the treaty, then assign one more person an Earth Optimization task. Start here: {{taskUrl}}",
+    },
     impact: {
       estimatedCashCostUsdBase: TREATY_NET_COST_USD,
       expectedEconomicValueUsdBase: totalEconValue,
@@ -1100,14 +1106,16 @@ async function seedTreatyTasks() {
       status: "ACTIVE",
       isPublic: true,
       dueAt: EARTH_OPTIMIZATION_PRIZE_DEADLINE,
-      contactLabel: "Read the dFDA spec",
-      contactUrl: "https://dfda-spec.warondisease.org",
-      contactTemplate:
-        "Please help complete {{taskTitle}}. The dFDA path is the backup route that does not wait for governments. Start here: {{taskUrl}}",
       sortOrder: -90,
       skillTags: ["engineering", "fundraising", "clinical-trials"],
       interestTags: ["dfda", "disease-eradication", "clinical-trials"],
       claimPolicy: "OPEN_MANY",
+    },
+    primaryEndpoint: {
+      label: "Read the dFDA spec",
+      url: "https://dfda-spec.warondisease.org",
+      instructions:
+        "Please help complete {{taskTitle}}. The dFDA path is the backup route that does not wait for governments. Start here: {{taskUrl}}",
     },
     impact: {
       estimatedCashCostUsdBase: dfdaDirectFundingNpv,
@@ -1189,9 +1197,11 @@ async function seedTreatyTasks() {
       skillTags: ["fundraising", "global-health"],
       interestTags: ["malaria", "bed-nets", "global-health", "givewell"],
       claimPolicy: "OPEN_MANY",
-      contactLabel: "Donate to AMF",
-      contactUrl: "https://www.againstmalaria.com/Donation.aspx",
-      contactTemplate:
+    },
+    primaryEndpoint: {
+      label: "Donate to AMF",
+      url: "https://www.againstmalaria.com/Donation.aspx",
+      instructions:
         "Please help complete {{taskTitle}}. Bed nets are the clean benchmark: cheap, proven, and blocked mostly by funding. Start here: {{taskUrl}}",
     },
     impact: {
@@ -1355,11 +1365,6 @@ async function seedTreatyTasks() {
         roleTitle: record.roleTitle,
         title: "Sign the 1% Treaty",
         description: `**${leaderName}** — ${record.roleTitle} of ${record.countryName}. One job: redirect 1% of ${record.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
-        contactLabel: record.contactLabel ?? "Find official contact",
-        contactUrl:
-          record.contactUrl ??
-          googleSearch(`${leaderName} ${record.roleTitle} ${record.countryName} official contact`),
-        contactTemplate: TREATY_SIGNER_CONTACT_TEMPLATE,
         category: "GOVERNANCE",
         difficulty: "EXPERT",
         status: "ACTIVE",
@@ -1370,6 +1375,13 @@ async function seedTreatyTasks() {
         interestTags: ["treaty", "disease-eradication", `country-${countryCode.toLowerCase()}`],
         estimatedEffortHours: TREATY_PER_SIGNER_EFFORT_HOURS,
         contextJson: signerContextJson,
+      },
+      primaryEndpoint: {
+        label: record.contactLabel ?? "Find official contact",
+        url:
+          record.contactUrl ??
+          googleSearch(`${leaderName} ${record.roleTitle} ${record.countryName} official contact`),
+        instructions: TREATY_SIGNER_CONTACT_TEMPLATE,
       },
       impact: {
         // Cost stays at the −∞ sentinel for every signer — splitting infinity
@@ -1462,7 +1474,16 @@ async function seedWishoniaUser() {
  * Requires `task.id` to be set for upsert-by-id behavior.
  */
 async function createTaskWithImpact(input: {
-  task: Parameters<typeof prisma.task.create>[0]["data"] & { id: string };
+  task: Parameters<typeof prisma.task.create>[0]["data"] & {
+    id: string;
+  };
+  primaryEndpoint?: {
+    email?: string | null;
+    instructions?: string | null;
+    label?: string | null;
+    sourceUrl?: string | null;
+    url?: string | null;
+  } | null;
   impact: {
     estimatedCashCostUsdBase: number;
     expectedEconomicValueUsdBase: number;
@@ -1478,7 +1499,10 @@ async function createTaskWithImpact(input: {
   parameterSetHashSuffix?: string;
   calculationsUrl?: string;
 }) {
-  const { id: taskId, ...taskData } = input.task;
+  const {
+    id: taskId,
+    ...taskData
+  } = input.task;
 
   // Prisma 7 requires relation syntax (not scalar FK fields) in both create and update.
   const {
@@ -1518,6 +1542,10 @@ async function createTaskWithImpact(input: {
     create: { id: taskId, ...taskScalars, ...createRelations },
     update: { ...taskScalars, ...updateRelations },
   });
+
+  if (input.primaryEndpoint) {
+    await upsertSeedTaskCommunicationEndpoint(task.id, input.primaryEndpoint);
+  }
 
   // Delete old impact estimate sets for this task (cascade deletes frames/metrics)
   await prisma.taskImpactEstimateSet.deleteMany({
@@ -1568,6 +1596,88 @@ async function createTaskWithImpact(input: {
   });
 
   return task;
+}
+
+function inferSeedEndpointKind(input: { email: string | null; url: string | null }) {
+  if (input.url?.toLowerCase().startsWith("mailto:")) {
+    return TaskCommunicationEndpointKind.MAILTO;
+  }
+
+  if (input.email) {
+    return TaskCommunicationEndpointKind.EMAIL;
+  }
+
+  if (input.url) {
+    return TaskCommunicationEndpointKind.EXTERNAL_URL;
+  }
+
+  return TaskCommunicationEndpointKind.MANUAL;
+}
+
+async function upsertSeedTaskCommunicationEndpoint(
+  taskId: string,
+  input: {
+    instructions?: string | null;
+    label?: string | null;
+    url?: string | null;
+  },
+) {
+  const url = input.url?.trim() || null;
+  const label = input.label?.trim() || null;
+  const instructions = input.instructions?.trim() || null;
+  const email =
+    url?.toLowerCase().startsWith("mailto:")
+      ? url.slice("mailto:".length).split("?")[0]?.trim() || null
+      : null;
+
+  if (!url && !label && !instructions) {
+    await prisma.taskCommunicationEndpoint.updateMany({
+      where: {
+        deletedAt: null,
+        isPrimary: true,
+        taskId,
+      },
+      data: {
+        deletedAt: new Date(),
+        isPrimary: false,
+      },
+    });
+    return null;
+  }
+
+  const existing = await prisma.taskCommunicationEndpoint.findFirst({
+    where: {
+      deletedAt: null,
+      isPrimary: true,
+      taskId,
+    },
+    select: { id: true },
+  });
+
+  const data = {
+    email,
+    instructions,
+    isPrimary: true,
+    kind: inferSeedEndpointKind({ email, url }),
+    label,
+    priority: 0,
+    url,
+    verificationStatus: TaskCommunicationEndpointVerificationStatus.UNVERIFIED,
+  };
+
+  if (existing) {
+    return prisma.taskCommunicationEndpoint.update({
+      where: { id: existing.id },
+      data,
+    });
+  }
+
+  return prisma.taskCommunicationEndpoint.create({
+    data: {
+      ...data,
+      taskId,
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------

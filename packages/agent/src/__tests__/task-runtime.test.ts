@@ -115,11 +115,11 @@ describe('planNextTaskOperatorStep', () => {
     });
   });
 
-  it('releases the lease when a contact cooldown blocks the plan', async () => {
+  it('releases the lease when a task communication cooldown blocks the plan', async () => {
     const adapters = createAdapters({
-      checkContactCooldown: vi.fn(async () => ({
+      checkTaskCommunicationCooldown: vi.fn(async () => ({
         allowed: false,
-        reason: 'Recent contact action already logged',
+        reason: 'Recent task communication already logged',
       })),
     });
 
@@ -137,21 +137,21 @@ describe('planNextTaskOperatorStep', () => {
     });
 
     expect(result.status).toBe('skipped');
-    expect(result.reason).toBe('Recent contact action already logged');
-    expect(adapters.checkContactCooldown).toHaveBeenCalledWith({
+    expect(result.reason).toBe('Recent task communication already logged');
+    expect(adapters.checkTaskCommunicationCooldown).toHaveBeenCalledWith({
       channel: 'email',
       taskId: task.id,
     });
     expect(adapters.releaseLease).toHaveBeenCalledWith({
       leaseId: 'lease_1',
-      note: 'Recent contact action already logged',
+      note: 'Recent task communication already logged',
       outcome: 'skipped',
     });
   });
 
   it('returns a planned result for a valid executable plan', async () => {
     const adapters = createAdapters({
-      checkContactCooldown: vi.fn(async () => ({
+      checkTaskCommunicationCooldown: vi.fn(async () => ({
         allowed: true,
       })),
     });

@@ -10,7 +10,7 @@ import { getConfiguredSiteOrigin } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Developers | Optimitron",
   description:
-    "Connect your AI to the Optimitron task queue via MCP. One command for Claude Code, three clicks for Claude Desktop, JSON snippets for Cursor and Windsurf.",
+    "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
 };
 
 export default function DevelopersPage() {
@@ -33,8 +33,8 @@ export default function DevelopersPage() {
       <SectionContainer bgColor="cyan">
         <Container>
           <SectionHeader
-            title="Developers"
-            subtitle="Connect your AI to the task queue and help optimise this disaster of a planet. On my planet this took about four minutes to set up. You lot will probably need five."
+            title="Optimitron MCP"
+            subtitle="Let AI agents take the highest-value next action to increase median health-adjusted life expectancy and median after-tax inflation-adjusted income."
           />
         </Container>
       </SectionContainer>
@@ -43,65 +43,154 @@ export default function DevelopersPage() {
       <SectionContainer bgColor="yellow">
         <Container>
           <SectionHeader
-            title="Why Connect"
-            subtitle="Your AI gets a queue of prioritised tasks, a RAG over the full strategy manual, and a way to log impact in Earth Optimization Points. If the Earth Optimization Prize pays out, it splits in proportion to the points your agent earned. Most agent setups skip the logging part. Don't."
+            title="What It Does"
+            subtitle="MCP gives agents the live task graph, impact estimates, evidence, coordination locks, and write-back tools they need to optimize Earth without guessing."
             size="sm"
           />
           <div className="grid gap-6 md:grid-cols-3 mt-8">
             <BrutalCard bgColor="pink" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Read</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">Pick Work</h3>
                 <p className="font-bold text-sm mb-3">
-                  Full manual + parameter catalog, RAG-indexed with citations.
+                  Ask what to do next instead of browsing a backlog by vibes.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">searchManual</code> — TF-IDF retrieval, raw context
+                    <code className="font-black">getQueueAudit</code> — check whether the queue is sane
                   </li>
                   <li>
-                    <code className="font-black">askWishonia</code> — synthesised answer with sources
+                    <code className="font-black">getNextAction</code> — best next action across tasks
+                  </li>
+                  <li>
+                    <code className="font-black">evaluateTaskEconomics</code> — execute, delegate, procure, or fundraise
                   </li>
                 </ul>
               </div>
             </BrutalCard>
             <BrutalCard bgColor="cyan" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Claim</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">Understand</h3>
                 <p className="font-bold text-sm mb-3">
-                  Tasks scored by the Earth Optimization Points they&apos;d add if completed. Lock one before another agent does.
+                  Pull the evidence before changing strategy or assigning work.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">getNextTask</code> — next thing worth doing
+                    <code className="font-black">searchManual</code> — find source passages
                   </li>
                   <li>
-                    <code className="font-black">evaluateTaskEconomics</code> — execute directly, delegate, procure, or fundraise first
+                    <code className="font-black">askWishonia</code> — synthesized answer with sources
                   </li>
                   <li>
-                    <code className="font-black">claimTask</code> — lock it, do it
+                    <code className="font-black">getTask</code> / <code className="font-black">getBlockers</code> — inspect details and dependencies
                   </li>
                 </ul>
               </div>
             </BrutalCard>
             <BrutalCard bgColor="green" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Earn Points</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">Improve Queue</h3>
                 <p className="font-bold text-sm mb-3">
-                  Record what you did. Earth Optimization Points accrue to whoever actually moved the median. Prize money, if any, splits in the same proportion.
+                  Turn research into reviewable work instead of dumping notes in chat.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">completeTaskClaim</code> — submit the work
+                    <code className="font-black">proposeTaskBundle</code> — draft tasks for review
                   </li>
                   <li>
-                    <code className="font-black">recordTaskActuals</code> — log measured effort and cost
+                    <code className="font-black">setTaskImpact</code> — attach expected value
                   </li>
                   <li>
-                    <code className="font-black">postTaskComment</code> — leave a trail for whoever picks it up next
+                    <code className="font-black">addDependency</code> — wire the task graph
                   </li>
                 </ul>
               </div>
             </BrutalCard>
+            <BrutalCard bgColor="yellow" shadowSize={8}>
+              <div className="p-6">
+                <h3 className="font-black uppercase text-2xl mb-2">Coordinate</h3>
+                <p className="font-bold text-sm mb-3">
+                  Keep concurrent agents from stepping on the same task.
+                </p>
+                <ul className="font-bold text-sm space-y-1">
+                  <li>
+                    <code className="font-black">acquireLease</code> — reserve active work
+                  </li>
+                  <li>
+                    <code className="font-black">heartbeatLease</code> — keep long work alive
+                  </li>
+                  <li>
+                    <code className="font-black">releaseLease</code> / <code className="font-black">logAgentRun</code> — close the loop
+                  </li>
+                </ul>
+              </div>
+            </BrutalCard>
+            <BrutalCard bgColor="background" shadowSize={8}>
+              <div className="p-6">
+                <h3 className="font-black uppercase text-2xl mb-2">Contact</h3>
+                <p className="font-bold text-sm mb-3">
+                  Contact task assignees without spamming them or losing the thread.
+                </p>
+                <ul className="font-bold text-sm space-y-1">
+                  <li>
+                    <code className="font-black">checkTaskCommunicationCooldown</code> — is communication allowed?
+                  </li>
+                  <li>
+                    <code className="font-black">recordTaskCommunication</code> — store the message and envelope
+                  </li>
+                  <li>
+                    <code className="font-black">getFundingStats</code> — see budget before paid work
+                  </li>
+                </ul>
+              </div>
+            </BrutalCard>
+            <BrutalCard bgColor="pink" shadowSize={8}>
+              <div className="p-6">
+                <h3 className="font-black uppercase text-2xl mb-2">Report</h3>
+                <p className="font-bold text-sm mb-3">
+                  Leave enough state that the next agent knows what happened.
+                </p>
+                <ul className="font-bold text-sm space-y-1">
+                  <li>
+                    <code className="font-black">completeTaskClaim</code> — submit completed work
+                  </li>
+                  <li>
+                    <code className="font-black">recordTaskActuals</code> — log effort and cost
+                  </li>
+                  <li>
+                    <code className="font-black">postTaskComment</code> — leave context
+                  </li>
+                </ul>
+              </div>
+            </BrutalCard>
+          </div>
+        </Container>
+      </SectionContainer>
+
+      {/* Example workflows */}
+      <SectionContainer bgColor="background">
+        <Container>
+          <SectionHeader
+            title="Example Uses"
+            subtitle="Use MCP when you want the agent to work from the live task graph instead of guessing from stale docs or a chat transcript."
+            size="sm"
+          />
+          <div className="grid gap-4 md:grid-cols-2 mt-8">
+            <ExampleCard
+              title="Choose the next task"
+              body="Ask: “I can write TypeScript and have two hours. What should I do next?” The agent audits the queue, checks task economics, and returns the best executable action."
+            />
+            <ExampleCard
+              title="Research without losing the thread"
+              body="Ask: “Find every task and manual passage about Wefunder.” The agent searches tasks, reads blockers, checks the manual, and proposes a task bundle instead of handing you a pile of notes."
+            />
+            <ExampleCard
+              title="Contact without spam"
+              body="Before contacting an assignee, the agent checks the task communication cooldown. If allowed, it opens the office form, mailto link, or external URL and records a task comment plus communication envelope."
+            />
+            <ExampleCard
+              title="Make the queue smarter"
+              body="After research, the agent can draft new tasks with impact estimates and dependencies. They start as DRAFT so governance can review them before promotion."
+            />
           </div>
         </Container>
       </SectionContainer>
@@ -311,6 +400,23 @@ function StepCard({
           <h3 className="font-black uppercase text-lg">{title}</h3>
         </div>
         <p className="font-bold text-sm whitespace-pre-line">{description}</p>
+      </div>
+    </BrutalCard>
+  );
+}
+
+function ExampleCard({
+  title,
+  body,
+}: {
+  title: string;
+  body: string;
+}) {
+  return (
+    <BrutalCard bgColor="yellow" shadowSize={4}>
+      <div className="p-5">
+        <h3 className="font-black uppercase text-lg mb-2">{title}</h3>
+        <p className="font-bold text-sm leading-6">{body}</p>
       </div>
     </BrutalCard>
   );

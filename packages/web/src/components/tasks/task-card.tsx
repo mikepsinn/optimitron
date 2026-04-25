@@ -7,7 +7,7 @@ import {
 } from "@optimitron/db";
 import { getPersonHref } from "@/lib/person-href";
 import { getTaskDescriptionSummary } from "@/components/tasks/task-description";
-import { TaskContactActions } from "@/components/tasks/TaskContactActions";
+import { TaskCommunicationActions } from "@/components/tasks/TaskCommunicationActions";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { Avatar } from "@/components/retroui/Avatar";
@@ -53,9 +53,23 @@ export interface TaskCardTask {
   claimPolicy: TaskClaimPolicy;
   completedAt: Date | null;
   contextJson?: unknown;
-  contactLabel?: string | null;
-  contactTemplate?: string | null;
-  contactUrl?: string | null;
+  primaryEndpoint?: {
+    email?: string | null;
+    instructions?: string | null;
+    kind?: string | null;
+    label?: string | null;
+    url?: string | null;
+  } | null;
+  communicationEndpoints?: Array<{
+    email?: string | null;
+    id?: string | null;
+    instructions?: string | null;
+    isPrimary?: boolean | null;
+    kind?: string | null;
+    label?: string | null;
+    priority?: number | null;
+    url?: string | null;
+  }> | null;
   description: string;
   difficulty: TaskDifficulty;
   dueAt: Date | null;
@@ -371,7 +385,7 @@ export function TaskCard({
         </div>
 
         {task.status !== TaskStatus.VERIFIED && (task.assigneePerson || task.assigneeOrganization) ? (
-          <TaskContactActions
+          <TaskCommunicationActions
             compact
             delayStats={{
               currentDelayDays: delayStats.currentDelayDays,

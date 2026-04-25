@@ -17,11 +17,17 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - `Task` = the thing assigned to a person, organization, or user.
   - `ReferralInvitation` = named invite lifecycle, invite token, recipient unsubscribe, copied/sent/converted state, reminder schedule, and converted vote linkage.
   - `ShareAttempt` = exact outbound message attribution ledger, including rendered text/hash, channel, template/variant, invite/task links, and edit state.
+  - `TaskComment` = the readable task thread: comments, outgoing messages, inbound replies, manual assignee responses, and status notes.
+  - `TaskCommunication` = the delivery/contact envelope: channel, recipient, endpoint, provider ids, status, metadata, and the link to the readable comment.
+  - `TaskCommunicationEndpoint` = assignee contact methods such as email, mailto, official forms, public pages, profiles, in-app, or manual instructions.
   - `EmailLog` = email delivery, provider status, webhook events, and dedupe.
   - `TrackingReminder` = health-variable measurement reminders only; do not use it for outreach/task assignment reminders.
 - [ ] Avoid one-off treaty reminder systems. New task/outreach messaging should go through shared task-message selection, rendering, attribution, and analytics helpers.
 - [ ] Keep seeded default copy deterministic and reviewable, even after adding database-backed message variants.
 - [ ] Preserve exact rendered outbound messages for replication analysis. The text people actually send is the unit to measure.
+- [ ] Keep `TaskCommunication.status` channel-agnostic and small: `DRAFT`, `SENT`, `RECEIVED`, `FAILED`, `CANCELLED`.
+  - External URL/form details such as `openedAt` and `submittedAt` belong in `TaskCommunication.metadataJson`, not as top-level lifecycle states.
+  - Only record `submittedAt` when a user or agent confirms submission; opening a URL is not proof that a form was submitted.
 
 ## Architecture Refactoring And Deduplication
 
@@ -33,7 +39,7 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - The remaining lifecycle file owns invitation validation, recipient person linkage, status transitions, and share-attempt recording only.
 - [ ] Merge `packages/web/src/lib/referral-email-sequence.ts` (784 lines) and `packages/web/src/lib/referral-invitation-email-sequence.ts` (268 lines) into a single sequence module.
   - Both expose delay schedules, max-step constants (`REFERRAL_*_MAX_STEP`), subject lists, and template builders. Land one ordered sequence per role (recipient, sender) with a single discriminator.
-  - This is the natural home for the eventual `TaskEmailTemplate` / `TaskEmailVariant` lookup.
+  - This is the natural home for the eventual `TaskCommunicationTemplate` / `TaskCommunicationVariant` lookup.
 - [x] Extract small shared modules for cross-file primitives.
   - Server `sha256Hex()` lives in `packages/web/src/lib/crypto.server.ts`; both prior duplicates removed.
   - `SENDER_REMINDER_DELAY_DAYS` is now exported from `referral-invitations.server.ts` and imported by the API route.
@@ -62,11 +68,57 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - No display-identity violations: `User.name` / `User.username` reads all flow through `@/lib/user-display`.
   - `TrackingReminder` is not used in `packages/web/src` — no outreach misuse.
   - `TreatyPostVoteShareFlow.tsx` numerals are parameter-backed; only the milestone literal `100` and the `<ParameterValue>`-wrapped `95%` CI label remain, both intentional.
-  - `POINT_NAME = "VOTE"` is declared once in `lib/messaging.ts`; the eventual EOP rename is a single-source-of-truth change.
+  - `POINT_NAME = "VOTE"` is declared once in `lib/messaging.ts`; the eventual reward/points rename is a single-source-of-truth change.
+
+## MCP Server Agent Workflow
+
+Agent-usage feedback from 2026-04-25: the current toolset covers the core loop well (`listTasks`, `getTask`, `getBlockers`, `searchManual`, `proposeTaskBundle`, `updateTask`, `setTaskImpact`, `addDependency`, `getNextAction`, `getFundingStats`) and the scope model is basically right. The main missing layer is ranking/search ergonomics.
+
+- [x] Rewrite the MCP/developer documentation as a concise product/features page, not just a tool inventory.
+  - Explain the business purpose in plain language: MCP lets AI agents find the highest-value work, understand why it matters, coordinate without collisions, execute or propose work, and leave an audit trail.
+  - Include examples of why someone would use it: "ask what to do next," "find all tasks about a partner/org," "rank work by USD/hour," "check if outreach is allowed," "propose a task bundle from research," and "look up sourced parameters."
+  - Keep detailed tool schemas in docs, but make the public-facing page lead with outcomes and workflows.
+  - Added `docs/MCP_SERVER.md` for the repo-facing overview and naming boundaries; rewrote `/developers` to lead with business value, feature groups, and example workflows.
+- [x] Verify MCP outreach naming/docs changes with focused web/agent tests and typechecks.
+- [x] **Completed 2026-04-25:** Implement the task communication schema cleanup.
+  - Migration `20260425220000_task_communication_system` applied: TaskEmail* renamed to TaskCommunication*; TaskCommunicationEndpoint added with backfill from Task.contactUrl/Label/Template before those columns were dropped; TaskComment expanded with `kind`/`visibility`/`source`/external-author fields; EmailLog reshaped (`userId` nullable, `dedupeKey` added).
+  - Application code purged of legacy threading: zero `TaskEmail*` / `TaskAssigneeContact*` / `recordTaskAssigneeAssigneeContactActivity` / `formSubmission` references in production code; `Task.contactUrl/Label/Template` deleted across DTO, API, MCP server, components, helpers, seed; replaced with structured `primaryEndpoint` shape sourced from `TaskCommunicationEndpoint`.
+  - MCP tools renamed (`recordTaskCommunication`, `checkTaskCommunicationCooldown`); Slice 4 deleted the legacy flat `contactLabel/contactUrl/contactTemplate` shape across the API/DTO/MCP/component/seed surfaces in favour of the structured `primaryEndpoint` shape.
+  - Outgoing Optimitron/Wishonia messages create a readable `TaskComment` plus linked `TaskCommunication`.
+  - Email sends also link to `EmailLog`; external URL/form actions use `TaskCommunication(status=SENT)` plus metadata such as `openedAt`.
+  - `Activity` stays a lightweight audit feed, not the canonical message store. Doc: `docs/TASK_COMMUNICATION_MODEL.md` (covers TaskCommentKind semantics, system author identity = required `wishonia` user, endpoint priority/selection rules, inbound-email guardrails as deferred multi-week project, Activity-vs-TaskCommunication ownership).
+  - Verification: `prisma migrate deploy` clean; `tsc --noEmit` clean across web/agent/db; tests green (web 790 / agent 96 / db 107).
+- [ ] Add optimization-rate ranking to MCP task discovery.
+  - `listTasks` should accept `sortBy: "accountability" | "optimizationRate" | "delayLoss" | "createdAt"`; keep `accountability` as default until callers deliberately switch.
+  - Consider a `getOptimizationRate` or `rankTasksByOptimizationRate` helper only if the result needs more explanation than `listTasks` can return.
+  - Reuse the existing `getNextAction` / task-economics path so task discovery and queue selection do not diverge.
+  - First pass should compute this in a shared helper and return it from MCP responses; do **not** add `Task.optimizationRate` until profiling proves a persisted/materialized value is needed. A persisted column is a Prisma schema change and requires explicit human approval.
+  - Denominate the ranking metric in USD/hour. Direct term should start from the selected frame's `expectedEconomicValueUsdBase / effortHours`, because existing treaty frames already store risk-adjusted expected value.
+  - Do not multiply `expectedEconomicValueUsdBase` by `successProbabilityBase` again unless the input value is explicitly renamed/documented as gross conditional value; otherwise the formula double-discounts treaty tasks.
+  - Downstream cascade boost should use `TaskEdge` weights when available: `SUM(downstream.expectedEconomicValueUsdBase * COALESCE(edge.probabilityDeltaBase, defaultCascadeWeight)) / effortHours`. Use `0.2` only as a documented fallback, not a magic constant hidden inside sorting.
+  - Include a formula breakdown in leaderboard output: direct USD/hour, cascade USD/hour, delay-loss signal, and fields used.
+- [ ] Expose task full-text search through MCP.
+  - `packages/web/src/lib/tasks.server.ts` already has `searchTasks()`; add either a `searchTasks` MCP tool or a `query` parameter on `listTasks`.
+  - Return compact task summaries plus match score/snippet where available.
+  - Reuse the existing contains-based `searchTasks()` implementation first; add Postgres `tsvector`/ranking later only if search quality or performance needs it.
+- [ ] Add parameter lookup MCP tools.
+  - Add `listParameters` / `getParameter` backed by `@optimitron/data/parameters` and `parameters-calculations-citations.ts`.
+  - Return value, formatted display, unit, confidence/conservative flags, formula, source URL/ref, and manual/calculations URL when present.
+- [ ] Add a natural task-tree MCP view.
+  - `listTasks(parentTaskId)` works, but `getTaskTree(taskId, depth)` should return parent -> children -> grandchildren for structure inspection.
+  - Reuse existing task hierarchy helpers/relations where possible; a recursive SQL query is fine later, but not required for the first version.
+- [ ] Add batch task mutation only after the single-task tools are stable.
+  - `batchUpdateTasks` should be transactional where possible, return per-task validation errors, and require `tasks:write`.
+- [ ] Keep lease and claim tools separate in MCP docs.
+  - Lease tools (`acquireLease`, `heartbeatLease`, `releaseLease`) are Agent Ops for concurrent autonomous workers; keep them.
+  - Claim tools (`claimTask`, `completeTaskClaim`) are human/UI journey tools exposed for completeness, not the primary agent coordination mechanism.
+- [ ] Rename unclear task communication MCP tools directly; no compatibility aliases are needed before external consumers exist.
+  - Final tool names should expose the real model: `checkTaskCommunicationCooldown` and `recordTaskCommunication`.
+  - Naming boundary: `TaskCommunication` owns outbound/inbound delivery/contact envelopes; `TaskComment` owns the readable thread; `EmailLog` owns provider-level email delivery details.
+  - Channel naming: use `externalUrl`, not `link` or `formSubmission`, for office forms / official pages / public profiles. "Link" sounds like the message being sent is the outreach, while "formSubmission" overclaims because the current code records opening/using the external URL, not proof that a form was submitted.
+- [ ] Rename other MCP tools directly when the new name is more self-documenting; do not keep old aliases by default.
 
 ## Highest Priority
-
-- [ ] **IN PROGRESS:** Add an MCP server roadmap section from the 2026-04-25 agent-usage feedback, with the first priority on optimization-rate task ranking and the second priority on task/parameter searchability.
 - [x] Replace hardcoded treaty math in `packages/web/src/components/landing/TreatyPostVoteShareFlow.tsx`.
   - Use Optimitron's canonical parameter exports from `packages/data/src/parameters/parameters-calculations-citations.ts`.
   - Use `packages/web/src/components/shared/ParameterValue.tsx` for visible sourced numbers wherever the JSX shape allows it.
@@ -83,6 +135,7 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - Verify screen order, button text, alt/dismissive branches, details folds, send loop, depth hook, close, feedback, and dashboard redirect.
   - Track details-fold expansion, dismissive-path count, format choice, copy/send events, and completed invitations.
   - Canonical source checked: `docs/questions.md` share-flow v13 (2026-04-25).
+  - Do not reference a missing standalone `share-flow-v13-apr25.md` unless that file is actually added to the repo; current in-repo canonical source is `docs/questions.md`.
   - Audit result: visible screen order/copy remains aligned after parameterization; direct transitions from copy/send confirmation, completed invitations, and feedback submit now use the same tracked transition helper as the rest of the flow.
 
 ## Referral Invitations, Persons, And Tasks
@@ -181,7 +234,7 @@ This section tracks the analytics/measurement layer that sits on top of the gene
   - Attribute downstream results to that text: opens, clicks, vote completion, recipient shares, second-generation shares, spam reports, unsubscribes, and conversion delay.
   - Report a replication coefficient by message/template/variant: average verified voters generated per completed sender action.
 - [ ] Extend `ShareAttempt` as the canonical outbound-message ledger.
-  - Add nullable `referralInvitationId`, `taskMessageVariantId`, and `purpose`.
+  - Add nullable `referralInvitationId`, `taskCommunicationVariantId`, and `purpose`.
   - Every copied message, native share, server-sent invitation email, and recipient reminder email should create or link a `ShareAttempt`.
   - [x] First referral-invitation slice: `/send` and post-vote copied invite messages now pre-generate `sa=`, persist exact copied text/hash/edit state to `ShareAttempt`, and link the invitation to that attempt.
   - [x] First recipient-email slice: server-sent referral invitation emails and recipient reminders now embed `sa=`, persist exact outbound email text/hash/template metadata to `ShareAttempt`, and link the invitation to the latest sent attempt.
@@ -192,7 +245,7 @@ This section tracks the analytics/measurement layer that sits on top of the gene
   - Later promote variants based on replication coefficient, with guardrails for spam reports and unsubscribe rates.
 - [ ] **Outbound task assignment for external organizations** (the "you have been assigned a task on the Earth Optimization tree" cold-outreach feature).
   - Use the existing task system to track work owed by external orgs we need partnerships from: Wefunder (Track 3 partnership), securities law firms (compliance review), curated companies (apply for pool inclusion), Kingscrowd (curation overlay), media outlets (coverage), allied nonprofits, etc.
-  - Each external task records: target org, contact email, assigned task, deadline, current status, contact-attempt history. Reuses `Task` + `TaskEmailAttempt` models from the generic task migration; no parallel system.
+  - Each external task records: target org, communication endpoint, assigned task, deadline, current status, readable thread, and communication history. Reuses `Task`, `TaskCommunicationEndpoint`, `TaskComment`, `TaskCommunication`, and `EmailLog`; no parallel system.
   - Cold-outreach reminder cadence is **distinct** from friend-to-friend referral reminders: lower frequency (no more than 2 follow-ups over 4 weeks), explicit disclosure that the recipient did not opt in, prominent and trivially actionable opt-out, no embedded tracking pixel, no engagement-bait subject lines. Treat this as cold sales outreach with a Wishonia voice, not as transactional or referral email.
   - Wishonia voice fits naturally — *"Wefunder has been notified. Wefunder has not responded. The Commission has noted this."* — but the funny framing must not paper over the fact that this is unsolicited contact. The voice is the wrapper; the substance is professional cold outreach.
   - Risks to manage: spam-filter reputation damage from any volume of "you have an overdue task" cold emails; legal exposure if the recipient is in a jurisdiction with strict cold-outreach rules (CAN-SPAM, GDPR, CASL); brand damage if the gag reads as obnoxious to a recipient who is otherwise sympathetic; corporate compliance teams flagging the messages.
@@ -202,48 +255,55 @@ This section tracks the analytics/measurement layer that sits on top of the gene
 
 ## Treaty-To-Generic Task System Migration
 
-The task system pretends to be generic but the email sequences, post-vote share flow, share templates, and parts of the cron/lifecycle layer are bolted to the 1% Treaty. The next non-treaty task family will tear half of this code apart unless it lands behind a data-driven layer first. Confirmed by the 2026-04-25 audit. Phases are ordered so each one unblocks the next; every phase should ship byte-identical treaty output until a second task family flips a `TaskEmailTemplate` row to its own copy.
+The task system pretends to be generic but the communication sequences, post-vote share flow, share templates, and parts of the cron/lifecycle layer are bolted to the 1% Treaty. The next non-treaty task family will tear half of this code apart unless it lands behind a data-driven layer first. Confirmed by the 2026-04-25 audit. Phases are ordered so each one unblocks the next; every phase should ship byte-identical treaty output until a second task family flips a `TaskCommunicationTemplate` row to its own copy.
 
-### Phase A — Schema for task-driven messaging
+### Phase A — Schema for task-driven communication
 
-> **Completed 2026-04-25** — Schema-additions sub-slice added `TaskEmail*` enums/models, `ShareAttempt.taskEmailVariantId`, relation backrefs, and reviewable migration `20260425170000_task_email_system`. The data-backfill sub-slice (migrating `ReferralInvitation` email-sequence columns onto `TaskEmailAttempt`) is still separate follow-up work.
+> **Completed 2026-04-25** — Migration `20260425220000_task_communication_system` applied. Schema, generated Prisma client, Zod schemas, and application code (DTO + API + MCP + components + seed) all switched to TaskCommunication*. Legacy `Task.contactUrl/Label/Template` flat fields fully removed; replaced by structured `primaryEndpoint` exposed off `TaskCommunicationEndpoint`. `prisma migrate status` clean; `tsc --noEmit` clean; web 790 / agent 96 / db 107 tests green.
 >
-> **Naming decision (2026-04-25):** Models renamed from `TaskMessage*` → `TaskEmail*` to avoid confusion with the existing `TaskComment` model (user-authored discussion) and `Notification` model (in-app), and to be honest about the email-only scope. If SMS / push channels are added later, they get sibling models (`TaskSMS*`), not retrofitted polymorphism.
+> **Naming decision (2026-04-25):** `TaskCommunication*` is the honest long-term name because the same task can be contacted by email, in-app, mailto, external URL/form, manual import, or future channels. `TaskComment` stores the text humans and agents read. `TaskCommunication` stores the envelope and status. `EmailLog` stores email-provider details.
 
-- [x] Add `TaskEmailTemplate` and `TaskEmailVariant` models in `packages/db/prisma/schema.prisma`.
-  - `TaskEmailTemplate` keyed by `(taskId, audience, role)` where `audience` ∈ {`RECIPIENT`, `SENDER`, `OBSERVER`} and `role` ∈ {`INVITATION`, `REMINDER`, `SCORECARD`, `RE_ENGAGEMENT`, `VOTE_CONFIRMED`, `RECIPIENT_VOTED`, `SHARE`}.
-  - `TaskEmailVariant` keyed by `(templateId, step, format)` with `subject`, `htmlBody`, `textBody`, `delayDays`, `senderIdentity`, `signature`, `footer`, `unsubscribeScope`, `isActive`, `weight`.
-  - Link variants to `ShareAttempt` via a new nullable `taskEmailVariantId` FK on `ShareAttempt` so the replication ledger keeps a stable pointer even after template renames.
-  - Seed deterministic defaults that match current treaty copy verbatim (Phase B work). Do **not** reuse `TrackingReminder` (health-variable measurement only).
-- [x] Add `TaskEmailAttempt` model to own per-recipient send state currently overloaded onto `ReferralInvitation`.
-  - Fields: `taskId`, `recipientPersonId`, `recipientUserId`, `recipientEmail`, `audience`, `role`, `format`, `step`, `nextSendAt`, `lastSentAt`, `unsubscribeToken`, `templateVariantId`, `shareAttemptId`, `emailLogId`, `referralInvitationId`, `status`, `errorMessage`, `providerMessageId`, `context`.
-  - Migrate these `ReferralInvitation` columns onto it (separate slice — schema lands first, backfill follows): `recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`.
-  - After backfill: `ReferralInvitation` keeps the named-invite lifecycle only — invite token, recipient identity, message format choice, copied/sent state, conversion linkage.
-- [x] Backfill `Task.contactUrl`, `Task.contactLabel`, `Task.contactTemplate`, `Task.dueAt`, `Task.assigneePersonId`, `Task.parentTaskId` for every existing task. Add a contract test asserting any task with `audience` reminders has non-null `contactUrl` and `contactLabel`.
-  - Seed now fills contact labels/URLs/templates and due dates for the root, treaty, dFDA, AMF, and per-leader signer tasks where applicable.
-  - `seed.integration.test.ts` asserts every treaty signer task has parent, assignee, due date, contact URL/label/template, and any future recipient/sender `TaskEmailTemplate` points at a task with contact URL/label.
+- [x] Add `TaskCommunicationTemplate` and `TaskCommunicationVariant` models in `packages/db/prisma/schema.prisma`.
+  - `TaskCommunicationTemplate` keyed by `(taskId, audience, purpose)` where `audience` ∈ {`RECIPIENT`, `SENDER`, `OBSERVER`, `ASSIGNEE`} and `purpose` ∈ {`INVITATION`, `ASSIGNMENT`, `REMINDER`, `FOLLOW_UP`, `EVIDENCE_REQUEST`, `STATUS_UPDATE`, `REPLY`, `SCORECARD`, `RE_ENGAGEMENT`, `VOTE_CONFIRMED`, `RECIPIENT_VOTED`, `SHARE`}.
+  - `TaskCommunicationVariant` keyed by `(templateId, step, format)` with `subject`, `htmlBody`, `textBody`, `delayDays`, `senderIdentity`, `signature`, `footer`, `unsubscribeScope`, `isActive`, `weight`.
+  - Link variants to `ShareAttempt` via the nullable `taskCommunicationVariantId` FK (added in same migration); `ShareAttempt.templateId` (free-form analytics group key) coexists until Phase B engine becomes the sole writer.
+  - Seeding deterministic defaults that match current treaty copy verbatim is Phase B work (still pending). Do **not** reuse `TrackingReminder` (health-variable measurement only).
+- [x] Add `TaskCommunication` model to own per-recipient/per-endpoint communication state currently overloaded onto `ReferralInvitation`, `Task`, and `Activity`.
+  - Fields landed: `taskId`, `taskCommentId`, `endpointId`, `recipientPersonId`, `recipientUserId`, `recipientOrganizationId`, `recipientEmail`, `audience`, `purpose`, `direction`, `channel`, `format`, `step`, `nextSendAt`, `sentAt`, `receivedAt`, `unsubscribeToken`, `templateVariantId`, `shareAttemptId`, `emailLogId`, `referralInvitationId`, `status`, `errorMessage`, `providerMessageId`, `metadataJson`.
+  - Status reduced to `DRAFT`, `SENT`, `RECEIVED`, `FAILED`, `CANCELLED`; channel-specific details such as external URL `openedAt` / confirmed `submittedAt` live in `metadataJson` per `docs/TASK_COMMUNICATION_MODEL.md`.
+  - **Pending follow-up sub-slice:** migrate these `ReferralInvitation` columns onto `TaskCommunication` and drop them from `ReferralInvitation`: `recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`. After backfill `ReferralInvitation` keeps the named-invite lifecycle only — invite token, recipient identity, message format choice, copied/sent state, conversion linkage.
+- [x] Replace `Task.contactUrl`, `Task.contactLabel`, and `Task.contactTemplate` with `TaskCommunicationEndpoint`.
+  - Schema columns dropped. Seed fills a primary endpoint for the root, treaty, dFDA, AMF, and per-leader signer tasks via `upsertSeedTaskCommunicationEndpoint` (reached through the `createTaskWithImpact` adapter that now takes `primaryEndpoint` directly).
+  - **Pending follow-up:** `seed.integration.test.ts` should assert every treaty signer task has parent, assignee, due date, and a primary communication endpoint with label/url/instructions; future recipient/sender `TaskCommunicationTemplate` rows point at tasks with usable endpoints. The integration test currently skips without a DB — re-enable after the migration becomes the standard dev path.
+
+**Phase A follow-ups still pending:**
+
+- [ ] Migrate `ReferralInvitation` per-recipient send columns (`recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`) onto `TaskCommunication` rows with a data-preserving migration. Then drop the columns from `ReferralInvitation`. With 0 users this is mostly a code refactor — backfill is empty.
+- [ ] Seed the `wishonia` system `User` row that owns all `TaskComment(kind=OUTBOUND_MESSAGE | SYSTEM_NOTE)` rows per the doc. Add `User.isSystem` boolean (or rely on the well-known `wishonia` username) and exclude from normal user listings.
+- [ ] Re-enable `packages/db/src/__tests__/seed.integration.test.ts` against the now-applied migration; assert primary endpoint shape on the seeded treaty tasks.
 
 ### Phase B — One generic email-sequence engine
 
-- [ ] Collapse the separate builders into one `renderTaskEmail({ task, attempt, variant, tokens })` returning `{ subject, html, text }`. Replaces:
+- [ ] Collapse the separate builders into one `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`. Replaces:
   - `buildReferralSequenceEmail` (`lib/referral-email-sequence.ts`)
   - `buildReferralInvitationRecipientEmail` (`lib/referral-invitation-email-sequence.ts`)
   - `buildTreatyVoteConfirmedEmail`, `buildTreatyRecipientVotedEmail`, `buildTreatySenderReminderEmail`, monthly-scorecard, and re-engagement builders (`lib/treaty-sender-email-sequence.ts`)
-- [ ] Move all hardcoded subject pools and body copy into `TaskEmailVariant` rows: `SUBJECT_POOL_GENERIC` / `SUBJECT_POOL_PRESIDENT` (`referral-email-sequence.ts:284-304`), recipient subjects (`referral-invitation-email-sequence.ts:80-241`), sender reminder subjects (`treaty-sender-email-sequence.ts:152-254`).
-- [ ] Replace `getTreatyParentTaskHref()`, `ROUTES.send`, `ROUTES.dashboard` reads in the email layer with `task.contactUrl` / `task.dashboardUrl` from the row. The email engine must not import app-route constants.
+- [ ] Move all hardcoded subject pools and body copy into `TaskCommunicationVariant` rows: `SUBJECT_POOL_GENERIC` / `SUBJECT_POOL_PRESIDENT` (`referral-email-sequence.ts:284-304`), recipient subjects (`referral-invitation-email-sequence.ts:80-241`), sender reminder subjects (`treaty-sender-email-sequence.ts:152-254`).
+- [ ] Replace `getTreatyParentTaskHref()`, `ROUTES.send`, `ROUTES.dashboard` reads in the email layer with task endpoint / dashboard URL data. The communication engine must not import app-route constants.
 - [ ] Drop the `referendum.slug === TREATY_REFERENDUM_SLUG` filters at `treaty-sender-emails.server.ts:455` (re-engagement) and `:569` (monthly scorecard). Replace with a `taskFamily` or `taskId IN (...)` filter so other campaigns can opt in.
-- [ ] Rename cron functions: `processDueTreatyMonthlyScorecardEmails` → `processDueTaskScorecardEmails`; `processDueTreatyNeverSharedReengagementEmails` → `processDueTaskReengagementEmails`; `processDueReferralInvitationRecipientEmails` → `processDueTaskEmailReminders`; `processDueReferralInvitationSenderEmails` → `processDueTaskSenderReminders`. Update callers and tests in the same change.
-- [ ] After the engine ships, delete `lib/referral-email-sequence.ts`, `lib/referral-invitation-email-sequence.ts`, and `lib/treaty-sender-email-sequence.ts`. (The merge to one sequence module in **Architecture Refactoring And Deduplication** is the staging step that immediately precedes this delete.)
+- [ ] Rename cron functions: `processDueTreatyMonthlyScorecardEmails` → `processDueTaskScorecardEmails`; `processDueTreatyNeverSharedReengagementEmails` → `processDueTaskReengagementEmails`; `processDueReferralInvitationRecipientEmails` → `processDueTaskRecipientCommunications`; `processDueReferralInvitationSenderEmails` → `processDueTaskSenderCommunications`. Update callers and tests in the same change.
+- [ ] After the engine ships, delete `lib/referral-email-sequence.ts`, `lib/referral-invitation-email-sequence.ts`, and `lib/treaty-sender-email-sequence.ts`. With 0 users we skip the previously-planned "merge sequence files first" staging step and collapse straight into the engine.
+- [ ] Add `direction: INBOUND` handling — schema-supports inbound replies but no inbound capability exists today. Implementing it is a separate multi-week project requiring DKIM/SPF/DMARC verification, References/In-Reply-To threading, spam filtering, loop prevention, and routing setup with the inbound provider (Resend Inbound / CloudMailin / SES Inbound). Do not surface "task replies via email" until those guardrails exist; manual `INBOUND_MESSAGE` comments via admin tooling are the temporary substitute.
 
 ### Phase C — Generic lifecycle, accountability, and cron
 
 - [x] Replace `isTreatySignerTaskKey()` filters at `lib/tasks/overdue-signers.server.ts:64,87` and `lib/tasks/user-president.server.ts:29-44` with predicate filters: `task.dueAt < now && task.assigneePersonId && task.status !== TaskStatus.VERIFIED`. Leader/president highlights then work for any overdue task with an assigned official.
   - `countOverdueSigners()` and `getOverdueSignerHighlights()` now key off overdue assigned-official task data instead of treaty task-key prefixes.
   - Added coverage proving a non-treaty assigned official task can be highlighted.
-- [ ] Move treaty-only follow-up calls out of `app/api/referendums/[slug]/vote/route.ts:15-18`. Replace direct calls to `sendTreatyRecipientVotedEmailForInvitation` and `sendTreatyVoteConfirmedEmailForUser` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskEmailTemplate` rows the task has registered.
+- [ ] Move treaty-only follow-up calls out of `app/api/referendums/[slug]/vote/route.ts:15-18`. Replace direct calls to `sendTreatyRecipientVotedEmailForInvitation` and `sendTreatyVoteConfirmedEmailForUser` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskCommunicationTemplate` rows the task has registered.
 - [ ] Rename treaty-prefixed helpers in `lib/treaty-sender-emails.server.ts` (`sendTreaty*ForInvitation`, `sendTreatyVoteConfirmedEmailForUser`) to drop `Treaty` once the generic engine handles them. Delete the file when empty.
 - [ ] Drop the hardcoded task-key prefix `program:one-percent-treaty:referral-invitation` (`referral-invitations.server.ts:40`) and the `TREATY_REFERENDUM_SLUG` defaults (`:23`, `:236`, `:286`). Each invitation records `taskId` and (optionally) `referendumId` from the calling context.
-- [ ] Generalize the invitation task title/description templates (`referral-invitations.server.ts:155-164`) so they read from `task.contactLabel` / `task.contactTemplate` instead of "1% Treaty" inline strings.
+- [ ] Generalize the invitation task title/description templates (`referral-invitations.server.ts:155-164`) so they read from task communication endpoint label/instructions instead of "1% Treaty" inline strings.
 
 ### Phase D — Component parameterization (template-shaped only)
 
@@ -256,7 +316,7 @@ The principle for this phase: data-drive the components whose variation is *temp
 - [ ] Parameterize `components/landing/ReferralInvitationComposer.tsx`: header "Assign One Earth Optimization Task" (line 239), "vote task" copy (lines 242, 271), and the default `messageFormat` (line 38) all derive from `task.invitationConfig`.
 - [ ] Rewrite `app/send/page.tsx`: replace the hardcoded hierarchy "Optimize Earth contains End War and Disease, which contains Ratify the 1% Treaty…" (lines 29-31) with `getTaskAncestors(task.id)` plus a copy template.
 - [ ] Replace `const isTreaty = program.id === "1-pct-treaty"` at `app/tasks/page.tsx:83` with a `program.hasDetailedSubtaskView` boolean (or equivalent metadata) on the program record. The branch at lines 84-97 then keys off task data.
-- [ ] Keep the Wishonia voice and project-management framing intact through these renames — the goal is to data-drive the copy, not flatten its tone. Seeded `TaskEmailVariant` rows for the treaty must read identically to today's hand-written strings.
+- [ ] Keep the Wishonia voice and project-management framing intact through these renames — the goal is to data-drive the copy, not flatten its tone. Seeded `TaskCommunicationVariant` rows for the treaty must read identically to today's hand-written strings.
 
 **Structural — extract primitives, keep narrative as code:**
 
@@ -271,9 +331,9 @@ The principle for this phase: data-drive the components whose variation is *temp
 
 The honest reason to move share templates into a data layer is **so non-engineers can edit copy and so the replication-coefficient analytics in "Task Reminder Replication System" can A/B test variants**. It is *not* "campaign #2 will reuse the treaty's templates" — campaign #2 will author its own templates from scratch, just as the treaty did. The shared infrastructure is the engine and the schema, not the copy.
 
-- [ ] Migrate the 17+ share-template variants at `lib/tasks/share-templates.ts:85-380` into `TaskEmailVariant` rows under `audience=OBSERVER` / `role=SHARE`. Each variant carries its own token list and copy. Wins: ops can edit copy without a deploy, and the analytics layer can score variants by replication coefficient.
+- [ ] Migrate the 17+ share-template variants at `lib/tasks/share-templates.ts:85-380` into `TaskCommunicationVariant` rows under `audience=OBSERVER` / `purpose=SHARE`. Each variant carries its own token list and copy. Wins: ops can edit copy without a deploy, and the analytics layer can score variants by replication coefficient.
 - [ ] Replace treaty-specific token names (`eradication_years_treaty`, `treaty_url`, `treaty_hale_gain`, etc. at `share-templates.ts:35-49`) with a small generic registry that resolves tokens from `task.contextJson` plus a few standard names (`{taskUrl}`, `{leaderName}`, `{daysOverdue}`, `{impactLabel}`, `{impactValue}`). The treaty stays the only campaign with `eradication_years` until a second campaign actually needs it.
-- [ ] Expose the `lib/treaty-share-flow-parameters.ts` outputs through `task.emailTemplate.flowMetrics` instead of compile-time imports. Once nothing imports the file directly, shrink it to a seed script that populates the treaty's `TaskEmailTemplate` row (don't delete; the seed *is* the canonical treaty config).
+- [ ] Expose the `lib/treaty-share-flow-parameters.ts` outputs through task communication template metadata instead of compile-time imports. Once nothing imports the file directly, shrink it to a seed script that populates the treaty's `TaskCommunicationTemplate` row (don't delete; the seed *is* the canonical treaty config).
 
 ### Sequencing notes
 
@@ -329,11 +389,11 @@ The honest reason to move share templates into a data layer is **so non-engineer
 - [ ] Site-wide voice + framing audit: commit to "you are a project manager / employee of Earth Optimization Services" as the dominant user-facing metaphor.
   - Inventory every user-facing string (landing, `/send`, dashboard cards, task detail pages, all email subjects + bodies, error messages, empty states, tooltips, button labels, modal copy) and check that it reads consistently as PMO bureaucracy applied to civilizational tasks. The user is a project manager; humanity is the workforce; Wishonia is the disappointed senior auditor.
   - Reject the parallel "Earth Optimization Commission" framing as a user role — it dilutes the deadpan PMO joke and doesn't match the data model (recruit, assign, complete tasks). Reserve "Commission" only for Wishonia narrator asides ("the Commission has reviewed humanity's performance and noted some concerns") so it stays a one-line gag from above, not a competing user identity.
-  - Surfaces that should explicitly carry the PMO frame: post-vote share flow, `/send`, dashboard task card, email task-notification format, monthly scorecard, task detail pages, leaderboards, badges, EOP ledger.
+  - Surfaces that should explicitly carry the PMO frame: post-vote share flow, `/send`, dashboard task card, email task-notification format, monthly scorecard, task detail pages, leaderboards, badges, impact/reward ledger.
   - Surfaces that should NOT carry the frame: input labels, validation errors, sign-in buttons, and ordinary action buttons where the joke would hurt clarity. Default to plain language there.
   - Tie back to existing voice rules: deadpan, data-first, short sentences, sardonic, Wishonia voice (CLAUDE.md). The PMO frame is the *vehicle* for the voice, not a replacement for it.
   - Acceptance: a reviewer reading any 5 random user-facing strings cold can correctly identify the site's voice + role-frame within one read; no string accidentally calls the user a "commissioner", "member", or "delegate."
-  - **Canonical company name**: "Earth Optimization Services" (EOS). Do not churn. Pairs with EOP. "Bureau" / "Authority" / "Co." considered and rejected — EOS keeps the deadpan-vendor register that "Services" implies (someone hired them; nobody on Earth did; Wishonia self-appointed).
+  - **Canonical company name**: "Earth Optimization Services" (EOS). Do not churn. "Bureau" / "Authority" / "Co." considered and rejected — EOS keeps the deadpan-vendor register that "Services" implies (someone hired them; nobody on Earth did; Wishonia self-appointed).
   - **"8 billion direct reports" as gap-stat moments, not a repeated frame.** The funny version is the *gap* between potential and onboarded, not the raw number. Use sparingly — onboarding line, dashboard subtitle, email footer signature. Examples:
     - Onboarding: *"Welcome. You have been promoted to project manager. Your initial assigned headcount is 8 billion. Currently onboarded: 0. The Commission has noted this."*
     - Dashboard subtitle: *"Direct reports onboarded: {n} of 8 billion. Performance review pending."*
@@ -349,52 +409,54 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Lead the page with the *inversion*, not the *admission* — most readers don't know what MLM technically means; they just know "scam." Headline frames the chain-letter-with-true-curse first; the MLM comparison is named in the body where it can be immediately inverted.
   - Land before launch + before any on-chain payout copy goes live. Pair with a legal review (SEC/FTC posture) — the decay-attribution model + no buy-in + transparent accounting is what keeps this on the right side of MLM-fraud thresholds.
   - Test with a hostile reader: someone who already thinks the project is sketchy. If after reading they still think "this is an MLM scam," rewrite. If they think "this is an MLM but actually defensible," ship it.
-  - Surfaces that should link to the explainer: `/send`, post-vote share flow ("why does my recruit's recruit count?"), EOP dashboard, FAQ, footer.
-  - Pair with the decay-attribution commitment in **Earth Optimization Points And Rewards** — the explainer doesn't work if the underlying math isn't actually defensible.
+  - Surfaces that should link to the explainer: `/send`, post-vote share flow ("why does my recruit's recruit count?"), reward/impact dashboard, FAQ, footer.
+  - Pair with the decay-attribution commitment in **Impact Dollars, Points, And Rewards** — the explainer doesn't work if the underlying math isn't actually defensible.
 
-## Earth Optimization Points And Rewards
+## Impact Dollars, Points, And Rewards
 
 - [ ] Make the launch reward/accounting decision before adding users or making payout promises.
-  - Default recommendation: one public contribution unit, **Earth Optimization Points** (`EOP`), plus internal reason/status fields.
-  - Treat current "VOTE Points" as the narrow treaty/referral version of EOP, not a separate long-term unit.
-  - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into EOP with honest expected-impact amounts or hide/deprecate them before launch.
+  - Current leaning after 2026-04-25 MCP PRD feedback: task ranking, MCP economics, and impact accounting should be denominated in USD, not invented units.
+  - Use `STANDARD_ECONOMIC_QALY_VALUE_USD` (`$150K/QALY`) as the canonical health-to-dollar conversion. Median after-tax inflation-adjusted income gains are already dollar-denominated.
+  - Do not create a public **Earth Optimization Points** (`EOP`) unit unless there is a real reward/viral/product reason that dollars cannot handle. If EOP survives, it is a display/reward-credit label backed by impact USD components, not a separate optimization unit.
+  - Treat current "VOTE Points" as the narrow treaty/referral reward label until the decision is made, not a separate long-term unit.
+  - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into dollar-backed contribution credit with honest expected-impact amounts or hide/deprecate them before launch.
   - Keep on-chain `$WISH` / `packages/treasury-wish` conceptually separate unless the whole monetary-system story is intentionally productized; do not use "wishes" for impact payout claims.
-- [ ] Define the EOP unit from the Optimitron objective function.
-  - Public wording: EOP measure expected contribution to maximizing median healthy life years and median after-tax inflation-adjusted income.
-  - Accounting unit: `1 EOP = 1 expected healthy-life-year equivalent`, where health gains count directly as QALYs gained / DALYs averted.
-  - Income conversion: convert real after-tax income gains to healthy-life-year equivalents with `STANDARD_ECONOMIC_QALY_VALUE_USD`; document the exact formula before showing dollar-like value.
+- [ ] Define impact-dollar accounting from the Optimitron objective function.
+  - Public wording: contribution credit measures expected contribution to maximizing median healthy life years and median after-tax inflation-adjusted income.
+  - Accounting unit: `impactUsd`, where QALY / DALY health gains are converted through `STANDARD_ECONOMIC_QALY_VALUE_USD` and income gains are counted as real after-tax income dollars.
+  - If a point label survives, publish the exact conversion from `impactUsd` to public points before showing balances.
   - For income improvements, use gains to ordinary humans near the median or modeled distributional gains, not billionaire wealth or raw GDP.
-  - Keep health EOP and income-equivalent EOP as separately stored components even if the UI shows a single total.
-- [ ] Define EOP lifecycle and attribution before schema changes.
+  - Keep health-impact USD and income-impact USD as separately stored components even if the UI shows a single total.
+- [ ] Define reward-credit lifecycle and attribution before schema changes.
   - Statuses: `PENDING`, `CONFIRMED`, `REJECTED`, `REVERSED`, and optionally `PAID`.
-  - Store `grossImpactEop`, `rewardEop`, `healthEop`, `incomeEop`, `confidence`, `attributionRule`, `sourceModelVersion`, and links to task/vote/referral/deposit evidence.
+  - Store `grossImpactUsd`, `rewardImpactUsd`, `healthImpactUsd`, `incomeImpactUsd`, optional `displayPoints`, `confidence`, `attributionRule`, `sourceModelVersion`, and links to task/vote/referral/deposit evidence.
   - Do not double-count for payout: if voter, inviter, task assigner, and task completer all contributed, split a single modeled reward amount by an explicit attribution rule.
   - For treaty launch, start with deterministic rules for verified vote tasks: voter/completer share, inviter/project-manager share, plus a capped, decaying upstream share (see decay-attribution commitment below).
-  - Keep "pending impact" separate from payout-eligible confirmed EOP.
-- [ ] Commit to a downstream-attribution rule for EOP before launch.
+  - Keep "pending impact" separate from payout-eligible confirmed reward credit.
+- [ ] Commit to a downstream-attribution rule for reward credit before launch.
   - Direct recruit = 100% credit. Depth-2 (recruit-of-recruit) = 50%. Depth-3 = 25%. Hard cap at depth 4 or 5 (decide before launch and write the cap into the rule itself, not as runtime config).
-  - Decay rationale: each downstream layer would have voted at some non-zero rate without the upstream recruiter, so partial credit reflects partial causation. Uncapped uniform credit would (a) inflate total EOP beyond modeled impact and (b) make the system structurally indistinguishable from a pyramid scheme.
-  - Display in dashboard as a transparent subtree breakdown ("3 direct + 7 indirect (depth 2, 50% weight) + 4 indirect (depth 3, 25% weight) = X weighted EOP"), not as an "earn from your downline" hook.
+  - Decay rationale: each downstream layer would have voted at some non-zero rate without the upstream recruiter, so partial credit reflects partial causation. Uncapped uniform credit would (a) inflate total reward credit beyond modeled impact and (b) make the system structurally indistinguishable from a pyramid scheme.
+  - Display in dashboard as a transparent subtree breakdown ("3 direct + 7 indirect (depth 2, 50% weight) + 4 indirect (depth 3, 25% weight) = $X modeled contribution credit" or the final point-label equivalent), not as an "earn from your downline" hook.
   - Do NOT frame downstream credit as competitive urgency in user-facing copy. Treaty deadline is the urgency lever; downstream credit is causal accounting.
   - Surface the named-invite-claim mechanic on `/send` as a fact, not a hype line (see Copy And Framing Audit).
   - MLM-optics review before launch: the decay caps + no-buy-in + transparent accounting + value-flowing-outward are the structural defenses against being mistaken for or classified as multi-level-marketing fraud. Pair this commitment with the canonical MLM-explainer page in **Copy And Framing Audit** — the math has to be defensible *and* explained, in that order.
   - Acceptance: write the page that explains the math. Have someone hostile read it. If they think "this is a pyramid scheme," fix the math, not just the copy.
 - [ ] Rename and simplify public product language after the accounting decision.
-  - Replace `POINT_NAME = "VOTE"` with EOP-focused copy only after the model is defined.
-  - Rename public "VOTE Points" surfaces to "Earth Optimization Points"; keep "EOP" as the short label in compact UI.
+  - Replace `POINT_NAME = "VOTE"` only after the reward model is defined.
+  - Do not rename public "VOTE Points" surfaces to EOP by default; first decide whether the product should show impact dollars, contribution credits, or a short point label.
   - Use "You have been hired by Earth Optimization Services as a project manager" as campaign copy, not legal/employment semantics.
   - Do not rename `ReferralInvitation` to `EmploymentNotification`; keep `ReferralInvitation` as the internal invite-token lifecycle model and use "task assignment" / "employment notification" only where it improves user-facing copy.
 - [ ] Plan the schema migration as a separate architecture slice.
-  - Candidate replacement for `WishPoint`: `OptimizationPointLedger` or `ContributionCredit`.
-  - Candidate replacement for `VoteTokenMint`: `OptimizationPointMint` if on-chain payout claims generalize beyond votes.
+  - Candidate replacement for `WishPoint`: `ContributionCreditLedger`, `ImpactCreditLedger`, or similar dollar-backed ledger.
+  - Candidate replacement for `VoteTokenMint`: generalized reward-credit mint only if on-chain payout claims generalize beyond votes.
   - Preserve old rows with a reviewable migration; no destructive reset.
-  - Add reporting tests that prove the same action cannot mint duplicate payout-eligible EOP.
+  - Add reporting tests that prove the same action cannot mint duplicate payout-eligible reward credit.
 
 ## Donations And Crowdfunding
 
 ### Funding architecture (decided 2026-04-25)
 
-The Earth Optimization Prize / treaty funding ecosystem ships as a four-track architecture, each track serving a distinct audience and risk profile, all funneling into a single EOP-proportional distribution pool on success. See **Earth Optimization Points And Rewards** for the EOP earning formula and decay-attribution rules; see **Copy And Framing Audit** for the MLM-explainer page that must accompany Track 3 / Track 4 launch.
+The Earth Optimization Prize / treaty funding ecosystem ships as a four-track architecture, each track serving a distinct audience and risk profile, all funneling into a single verified contribution-credit / `impactUsd`-proportional distribution pool on success. See **Impact Dollars, Points, And Rewards** for the earning formula and decay-attribution rules; see **Copy And Framing Audit** for the MLM-explainer page that must accompany Track 3 / Track 4 launch.
 
 | Track | Vehicle | Audience | Allocation control | Status |
 |---|---|---|---|---|
@@ -403,11 +465,11 @@ The Earth Optimization Prize / treaty funding ecosystem ships as a four-track ar
 | 3 | **Earth Optimization Coordination Platform** (Wefunder partnership, retail Reg CF / Reg A+) | Mission-aligned retail (no accreditation) | Depositor preference via Wishocracy pairwise comparisons, **binding** | Phase 1.5 — design now, ship after generic-task migration Phase A lands |
 | 4 | DAO-governed tokenized fund (Innovation Exemption sandbox) | Retail post-Innovation-Exemption | On-chain Wishocracy governance, expanded universe beyond Reg CF caps | Phase 2 (12-36 months) |
 
-Allocation rules across all tracks: 100% innovation (no Treasuries / no broad index funds). Aggressive sleeves (Track 3, Track 4) target 17%+ but make no fixed-bonus guarantee — refund on miss is NAV-at-maturity, not principal-plus-bonus. Donations and DAC deposits do **not** mint EOP — only voting + recruitment does.
+Allocation rules across all tracks: 100% innovation (no Treasuries / no broad index funds). Aggressive sleeves (Track 3, Track 4) target 17%+ but make no fixed-bonus guarantee — refund on miss is NAV-at-maturity, not principal-plus-bonus. Donations and DAC deposits do **not** mint payout-eligible reward credit by default; treaty voting + recruitment can only mint after the launch accounting rule is finalized.
 
 ### Track 1 — IAM donation flow
 
-- [ ] `/donate` route — Stripe checkout → IAM 501(c)(3) → audited grant to disease eradication / treaty advocacy. Donor's referrer earns attribution credit, not EOP.
+- [ ] `/donate` route — Stripe checkout → IAM 501(c)(3) → audited grant to disease eradication / treaty advocacy. Donor's referrer earns attribution metadata, not payout-eligible reward credit by default.
 - [ ] `/donate/success` confirmation page with receipt + thank-you copy in Wishonia voice.
 - [ ] `lib/stripe.ts` adapter, `app/api/stripe/{create-checkout,session,webhook}/route.ts` — port DIH structure but route to IAM.
 - [ ] One-time + recurring monthly support via Stripe subscriptions.
@@ -415,13 +477,13 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] Email receipt via Resend (transactional scope, no unsubscribe headers).
 - [ ] Webhook idempotency tests; refund/failure handling; tax receipt generation.
 - [ ] Compliance: confirm IAM 501(c)(3) status; donor record retention.
-- [ ] Dashboard activity entry for donor (no EOP credit, but visible "you donated $X to IAM" line).
+- [ ] Dashboard activity entry for donor (no reward-credit mint, but visible "you donated $X to IAM" line).
 
 ### Track 2 — Conservative DAC (existing `/prize`)
 
 - [ ] Audit existing `/prize` copy against the four-track architecture; ensure it doesn't claim to be the only path or imply the depositor controls allocation.
 - [ ] Cross-link the MLM-explainer page from `/prize` so Aave-DAC depositors land in the same explanation.
-- [ ] Confirm `packages/treasury-prize` contracts handle EOP-proportional distribution at maturity, not just VOTE-proportional. Distribution must be the same end-pool regardless of which track fed it.
+- [ ] Confirm `packages/treasury-prize` contracts can handle verified contribution-credit / `impactUsd`-proportional distribution at maturity, not just VOTE-proportional. Distribution must be the same end-pool regardless of which track fed it.
 
 ### Track 3 — Earth Optimization Coordination Platform
 
@@ -434,7 +496,7 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] `/fund/companies/apply` — application form for companies seeking pool inclusion. Captures entity type, mission alignment, current raise stage, intended use of funds, modeled impact on welfare function (HALE / median income).
 - [ ] `/fund/rank` — Wishocracy pairwise UI for companies in the pool. One-person-one-vote, pairwise sampling, eigenvector aggregation, live weight display. Analogous to the existing `/wishocracy` allocation surface but scoped to the fund pool.
 - [ ] `/fund/commit` — subscription commit flow; depositor specifies amount + cadence (one-time or recurring); handoff to Wefunder for execution against live preference weights.
-- [ ] `/fund/portfolio` — depositor's holdings (aggregated across individual stakes), EOP earned, contribution to the welfare function.
+- [ ] `/fund/portfolio` — depositor's holdings (aggregated across individual stakes), reward credit if any, contribution to the welfare function.
 - [ ] `/fund/explainer` — canonical "yes-this-is-MLM-and-here's-why-that's-fine" page (see **Copy And Framing Audit**). Tracks 3 and 4 both link here.
 - [ ] `/admin/fund/companies` — internal admin: review applications, approve/reject, edit listing-standards compliance, monitor mission-fit scores, retire companies that complete their raises.
 
@@ -453,7 +515,7 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
 - [ ] Wefunder partnership term sheet + master services agreement.
 - [ ] Listing-standards documentation reviewed by counsel (anti-discrimination, fair access, conflict-of-interest disclosures).
 - [ ] MLM-explainer page legal review (counsel reads, hostile reader reads, both sign off).
-- [ ] Trademark filings: "Earth Optimization Services," "Earth Optimization Fund," "Earth Optimization Points," "EOP."
+- [ ] Trademark filings: "Earth Optimization Services," "Earth Optimization Fund"; add "Earth Optimization Points" / "EOP" only if the point label survives the accounting decision.
 - [ ] IAM 501(c)(3) status confirmation for Track 1.
 - [ ] Privacy policy + ToS updates covering the funding platform, KYC handoff, and shared data with Wefunder.
 - [ ] State blue-sky compliance check.
@@ -516,7 +578,7 @@ Allocation rules across all tracks: 100% innovation (no Treasuries / no broad in
   - Public campaign detail and pledge: `E:\code\dih-neobrutalist\app\campaigns\[slug]\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\pledge\page.tsx`.
   - Campaign APIs: `E:\code\dih-neobrutalist\app\api\campaigns\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\pledge\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\publish\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\updates\route.ts`.
 - [x] Decide whether treaty funding should be a Stripe donation flow, a DIH-style crowdfunding campaign, an Earth Optimization Prize deposit path, or an IAB path.
-  - **Decided 2026-04-25:** four-track architecture (see "Funding architecture" section above). Stripe → IAM (Track 1), existing Aave-DAC `/prize` (Track 2), Wefunder-coordinated Wishocracy-allocated pool (Track 3), and Innovation-Exemption DAO (Track 4 / Phase 2). Not "or" — all four, each serving a different audience, all funneling into one EOP-proportional distribution pool.
+  - **Decided 2026-04-25:** four-track architecture (see "Funding architecture" section above). Stripe → IAM (Track 1), existing Aave-DAC `/prize` (Track 2), Wefunder-coordinated Wishocracy-allocated pool (Track 3), and Innovation-Exemption DAO (Track 4 / Phase 2). Not "or" — all four, each serving a different audience, all funneling into one verified contribution-credit / `impactUsd`-proportional distribution pool.
 - [ ] Do not copy DIH campaign schema wholesale if Optimitron's prize/treasury model can represent the campaign goal with less duplicated finance logic.
 - [ ] If Stripe donations are ported, make the Optimitron design explicit:
   - route shape (`/donate`, `/fund`, `/campaigns`, or treaty-specific route);

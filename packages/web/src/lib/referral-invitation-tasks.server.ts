@@ -6,10 +6,13 @@ import {
 } from "@optimitron/db";
 import type { Prisma, PrismaClient } from "@optimitron/db";
 import { getReferralInvitationFirstName } from "@/lib/referral-invitation-copy";
+import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
 
 const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
-type ReferralInvitationTaskClient = Pick<PrismaClient, "task">;
+type ReferralInvitationTaskClient =
+  | Pick<PrismaClient, "task" | "taskCommunicationEndpoint">
+  | Pick<Prisma.TransactionClient, "task" | "taskCommunicationEndpoint">;
 
 export function buildReferralInvitationTaskKey(inviteToken: string) {
   return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
@@ -31,8 +34,7 @@ export function buildReferralInvitationTaskDescription(recipientName: string) {
 export async function createReferralInvitationTask(
   client: ReferralInvitationTaskClient,
   input: {
-    contactTemplate: string;
-    contactUrl: string;
+    endpoint: { instructions: string; url: string };
     inviteToken: string;
     ownerUserId: string;
     recipientName: string;
@@ -46,9 +48,6 @@ export async function createReferralInvitationTask(
       assigneePersonId: input.recipientPersonId ?? null,
       category: TaskCategory.OUTREACH,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-      contactLabel: "Complete treaty vote",
-      contactTemplate: input.contactTemplate,
-      contactUrl: input.contactUrl,
       contextJson: {
         inviteToken: input.inviteToken,
         kind: "referral_invitation",
@@ -67,6 +66,12 @@ export async function createReferralInvitationTask(
       title: buildReferralInvitationTaskTitle(input.recipientName),
     },
     select: { id: true },
+  });
+
+  await upsertPrimaryTaskCommunicationEndpoint(client, task.id, {
+    instructions: input.endpoint.instructions,
+    label: "Complete treaty vote",
+    url: input.endpoint.url,
   });
 
   return task.id;

@@ -20,7 +20,7 @@ export const OPTIMIZE_EARTH_PROTOCOL_STEPS = [
   'Do not create ACTIVE tasks directly; agent-created tasks must start as DRAFT.',
   'Use evaluateTaskEconomics before assuming a paid task should be executed directly.',
   'For non-claim execution paths, use recordTaskActuals to store real cash and effort after the work happens.',
-  'Respect checkContactCooldown and recordContactAction before outreach.',
+  'Respect checkTaskCommunicationCooldown and recordTaskCommunication before outreach.',
   'Log the run with logAgentRun and release the lease when done.',
 ] as const;
 
@@ -44,6 +44,6 @@ export function buildOptimizeEarthInstruction(input: OptimizeEarthPromptOptions 
     'If the action requires procurement or fundraising, emit the plan instead of pretending the task was executed.',
     'If no executable task exists, propose only high-value unblockers or missing subtasks via proposeTaskBundle.',
     'Do not create ACTIVE tasks directly. Do not promote tasks unless review passes.',
-    'Respect outreach cooldowns, log your run, and release the lease when done.',
+    'Respect task communication cooldowns, log your run, and release the lease when done.',
   ].join(' ');
 }

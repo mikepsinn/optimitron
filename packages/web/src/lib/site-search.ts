@@ -78,11 +78,11 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
   },
   {
     href: ROUTES.developers,
-    title: "Developers",
+    title: "Optimitron MCP",
     description:
-      "Developer entry point for MCP, OAuth scopes, API metadata, and building against the Optimitron task and search surfaces.",
+      "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
     section: "Developer Tools",
-    keywords: ["api", "oauth", "mcp", "developers", "integration"],
+    keywords: ["api", "oauth", "mcp", "developers", "integration", "agents", "tasks"],
   },
 ];
 

@@ -681,7 +681,7 @@ export function selectNextTreatyAction(input: {
         ? 'Live execution allowed, but daily and cooldown limits still apply.'
         : 'Draft-only execution until a human approves the outbound step.',
       evaluation.kind === 'contact-office'
-        ? `Respect the office-contact cooldown of ${policy.officeContactCooldownHours} hours.`
+        ? `Respect the office-outreach cooldown of ${policy.officeContactCooldownHours} hours.`
         : 'Do not mass-message targets; keep the action personalized and source-backed.',
     ];
     const selectedChannel: TreatyExecutionChannel = evaluation.channel ?? 'manual-review';

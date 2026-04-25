@@ -288,6 +288,52 @@ export const TaskImpactFrameKeySchema = z.enum([
 ]);
 export type TaskImpactFrameKey = z.infer<typeof TaskImpactFrameKeySchema>;
 
+export const TaskCommunicationAudienceSchema = z.enum(['RECIPIENT', 'SENDER', 'OBSERVER', 'ASSIGNEE']);
+export type TaskCommunicationAudience = z.infer<typeof TaskCommunicationAudienceSchema>;
+
+export const TaskCommunicationPurposeSchema = z.enum([
+  'INVITATION',
+  'ASSIGNMENT',
+  'REMINDER',
+  'FOLLOW_UP',
+  'EVIDENCE_REQUEST',
+  'STATUS_UPDATE',
+  'REPLY',
+  'SCORECARD',
+  'RE_ENGAGEMENT',
+  'VOTE_CONFIRMED',
+  'RECIPIENT_VOTED',
+  'SHARE',
+]);
+export type TaskCommunicationPurpose = z.infer<typeof TaskCommunicationPurposeSchema>;
+
+export const TaskCommunicationFormatSchema = z.enum(['DEFAULT', 'TASK_NOTIFICATION', 'SINCERE']);
+export type TaskCommunicationFormat = z.infer<typeof TaskCommunicationFormatSchema>;
+
+export const TaskCommunicationDirectionSchema = z.enum(['OUTBOUND', 'INBOUND']);
+export type TaskCommunicationDirection = z.infer<typeof TaskCommunicationDirectionSchema>;
+
+export const TaskCommunicationChannelSchema = z.enum(['EMAIL', 'IN_APP', 'SMS', 'PUSH', 'EXTERNAL_URL', 'MAILTO', 'MANUAL']);
+export type TaskCommunicationChannel = z.infer<typeof TaskCommunicationChannelSchema>;
+
+export const TaskCommunicationStatusSchema = z.enum(['DRAFT', 'SENT', 'RECEIVED', 'FAILED', 'CANCELLED']);
+export type TaskCommunicationStatus = z.infer<typeof TaskCommunicationStatusSchema>;
+
+export const TaskCommunicationEndpointKindSchema = z.enum(['EMAIL', 'MAILTO', 'EXTERNAL_URL', 'FORM_URL', 'PUBLIC_PROFILE', 'IN_APP', 'MANUAL']);
+export type TaskCommunicationEndpointKind = z.infer<typeof TaskCommunicationEndpointKindSchema>;
+
+export const TaskCommunicationEndpointVerificationStatusSchema = z.enum(['UNVERIFIED', 'VERIFIED', 'STALE', 'FAILED']);
+export type TaskCommunicationEndpointVerificationStatus = z.infer<typeof TaskCommunicationEndpointVerificationStatusSchema>;
+
+export const TaskCommentKindSchema = z.enum(['COMMENT', 'OUTBOUND_MESSAGE', 'INBOUND_MESSAGE', 'STATUS_UPDATE', 'SYSTEM_NOTE']);
+export type TaskCommentKind = z.infer<typeof TaskCommentKindSchema>;
+
+export const TaskCommentVisibilitySchema = z.enum(['PUBLIC', 'INTERNAL']);
+export type TaskCommentVisibility = z.infer<typeof TaskCommentVisibilitySchema>;
+
+export const TaskCommentSourceSchema = z.enum(['WEB', 'AGENT', 'EMAIL_REPLY', 'MANUAL_IMPORT', 'SYSTEM']);
+export type TaskCommentSource = z.infer<typeof TaskCommentSourceSchema>;
+
 export const QuestionTypeSchema = z.enum([
   'MULTIPLE_CHOICE',
   'FREE_TEXT',
@@ -1269,9 +1315,6 @@ export const TaskSchema = z.object({
   isPublic: z.boolean().default(true),
   completionEvidence: z.string().nullable().optional(),
   dueAt: nullableDateSchema,
-  contactUrl: z.string().nullable().optional(),
-  contactLabel: z.string().nullable().optional(),
-  contactTemplate: z.string().nullable().optional(),
   completedAt: nullableDateSchema,
   verifiedAt: nullableDateSchema,
   sortOrder: z.number().int().default(0),
@@ -1576,7 +1619,7 @@ export type SocialAccountType = z.infer<typeof SocialAccountSchema>;
 /** Zod schema for the EmailLog model */
 export const EmailLogSchema = z.object({
   id: z.string(),
-  userId: z.string(),
+  userId: z.string().nullable().optional(),
   toAddress: z.string(),
   subject: z.string(),
   templateId: z.string().nullable().optional(),
@@ -1586,6 +1629,7 @@ export const EmailLogSchema = z.object({
   openedAt: nullableDateSchema,
   bouncedAt: nullableDateSchema,
   errorMessage: z.string().nullable().optional(),
+  dedupeKey: z.string().nullable().optional(),
   createdAt: dateSchema,
 });
 export type EmailLogType = z.infer<typeof EmailLogSchema>;

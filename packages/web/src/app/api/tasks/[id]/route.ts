@@ -13,13 +13,18 @@ import { getTaskDetailData, updateOwnedTask } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
 
+const PrimaryEndpointBodySchema = z.object({
+  email: z.string().nullish(),
+  instructions: z.string().nullish(),
+  label: z.string().nullish(),
+  sourceUrl: z.string().nullish(),
+  url: z.string().nullish(),
+});
+
 const UpdateTaskBodySchema = z
   .object({
     category: z.nativeEnum(TaskCategory).nullish(),
     claimPolicy: z.nativeEnum(TaskClaimPolicy).nullish(),
-    contactLabel: z.string().nullish(),
-    contactTemplate: z.string().nullish(),
-    contactUrl: z.string().nullish(),
     description: z.string().nullish(),
     difficulty: z.nativeEnum(TaskDifficulty).nullish(),
     dueAt: z.string().datetime().nullish(),
@@ -27,6 +32,7 @@ const UpdateTaskBodySchema = z
     interestTags: z.array(z.string()).nullish(),
     isPublic: z.boolean().nullish(),
     maxClaims: z.number().int().positive().nullish(),
+    primaryEndpoint: PrimaryEndpointBodySchema.nullish(),
     roleTitle: z.string().nullish(),
     skillTags: z.array(z.string()).nullish(),
     status: z.nativeEnum(TaskStatus).nullish(),

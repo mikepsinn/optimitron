@@ -8,6 +8,7 @@ type EmailLogClient = Pick<PrismaClient, "emailLog">;
 
 export interface CreateEmailLogInput {
   bodyTemplateId?: string | null;
+  dedupeKey?: string | null;
   id: string;
   now: Date;
   sendContext?: Prisma.InputJsonValue;
@@ -16,7 +17,7 @@ export interface CreateEmailLogInput {
   subjectVariantId?: string | null;
   templateId?: string | null;
   toAddress: string;
-  userId: string;
+  userId?: string | null;
 }
 
 export function isEmailLogDuplicateError(error: unknown) {
@@ -28,6 +29,7 @@ export async function createEmailLog(client: EmailLogClient, input: CreateEmailL
     data: {
       id: input.id,
       bodyTemplateId: input.bodyTemplateId ?? null,
+      dedupeKey: input.dedupeKey ?? null,
       sendContext: input.sendContext,
       sentAt: input.now,
       status: EmailLogStatus.QUEUED,
@@ -36,7 +38,7 @@ export async function createEmailLog(client: EmailLogClient, input: CreateEmailL
       subjectVariantId: input.subjectVariantId ?? null,
       templateId: input.templateId ?? null,
       toAddress: input.toAddress,
-      userId: input.userId,
+      userId: input.userId ?? null,
     },
   });
 }
@@ -72,13 +74,13 @@ export async function markEmailLogStatus(input: {
 export async function markQueuedEmailLogsFailed(input: {
   errorMessage: string;
   templateId: string;
-  userId: string;
+  userId?: string | null;
 }) {
   await prisma.emailLog.updateMany({
     where: {
       status: EmailLogStatus.QUEUED,
       templateId: input.templateId,
-      userId: input.userId,
+      userId: input.userId ?? null,
     },
     data: {
       errorMessage: input.errorMessage,
