@@ -414,8 +414,8 @@ export const CURRENT_DISEASE_PATIENTS_GLOBAL: Parameter = {
   sourceUrl: "https://www.sciencedaily.com/releases/2015/06/150608081753.htm",
   confidence: "high",
   confidenceInterval: [2000000000.0, 2800000000.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem.html",
-  manualPageTitle: "Diagnostic Summary",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/questions.html",
+  manualPageTitle: "The 20 Questions",
 };
 
 export const CURRENT_DRUG_APPROVALS_PER_YEAR: Parameter = {
@@ -1548,6 +1548,22 @@ export const GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT: Parameter = {
   manualPageTitle: "The Proof: Overview",
 };
 
+export const GLOBAL_REGISTERED_VOTERS: Parameter = {
+  value: 4128142495.0,
+  parameterName: "GLOBAL_REGISTERED_VOTERS",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_registered_voters",
+  unit: "of people",
+  displayName: "Global Registered Voters",
+  description: "Best current register-based estimate of the number of registered voters worldwide, calculated by summing the latest available country-level electoral-roll counts in International IDEA's Voter Turnout Database export. Used as the verified-human headcount proxy for the majority-of-humanity coordination target.",
+  sourceType: "external",
+  sourceRef: "international-idea-voter-turnout-database-2026",
+  sourceUrl: "https://www.idea.int/data-tools/export?type=region_only&themeId=293&world=all&loc=home",
+  confidence: "high",
+  latex: "\\begin{gathered}\nN_{voters,global} \\\\\n= 4{,}128{,}142{,}495 \\\\\n\\approx 4.13B\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html",
+  manualPageTitle: "Global Referendum Strategy",
+};
+
 export const GLOBAL_RETIREMENT_ASSETS: Parameter = {
   value: 70000000000000.0,
   parameterName: "GLOBAL_RETIREMENT_ASSETS",
@@ -1601,6 +1617,8 @@ export const GLOBAL_WARHEAD_COUNT: Parameter = {
   sourceRef: "world-warheads",
   sourceUrl: "https://fas.org/issues/nuclear-weapons/status-world-nuclear-forces/",
   confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/questions.html",
+  manualPageTitle: "The 20 Questions",
 };
 
 export const GLOBAL_YLD_PROPORTION_OF_DALYS: Parameter = {
@@ -5218,17 +5236,17 @@ export const GLOBAL_BULLETS_PURCHASABLE_ANNUAL: Parameter = {
 };
 
 export const GLOBAL_COORDINATION_ACTIVATION_BUDGET: Parameter = {
-  value: 30000000000.0,
+  value: 30832926217.5,
   parameterName: "GLOBAL_COORDINATION_ACTIVATION_BUDGET",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_activation_budget",
   unit: "USD",
   displayName: "Global Coordination Activation Budget",
-  description: "Canonical institutional activation threshold: capital required to make 50% participation credible through direct referral incentives, verification, payment rails, and global launch operations. This is the main institutional ask, not the PRIZE pool seed benchmark.",
+  description: "Canonical institutional activation threshold: capital required to make participation by the majority-of-humanity coordination target credible through direct referral incentives, verification, payment rails, and global launch operations. This is the main institutional ask, not the PRIZE pool seed benchmark.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_COORDINATION_TARGET_SUPPORTERS × GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT + GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST",
-  latex: "\\begin{gathered}\nB_{activate} = N_{coord} \\times C_{activate,pp} + C_{ops}\n\\\\[0.5em]\n\\text{where } N_{coord} = Pop_{global} \\times R_{coord} = 8B \\times 50\\% = 4B\n\\\\[0.5em]\n\\text{where } C_{activate,pp} = R_{activate} + C_{verify,pp} = \\$5 + \\$1.5 = \\$6.5\n\\end{gathered}",
-  confidenceInterval: [15659505129.424488, 46431550642.32959],
+  formula: "GLOBAL_REGISTERED_VOTERS × GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT + GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST",
+  latex: "\\begin{gathered}\nB_{activate} = N_{voters,global} \\times C_{activate,pp} + C_{ops}\n\\\\[0.5em]\n\\text{where } C_{activate,pp} = R_{activate} + C_{verify,pp} = \\$5 + \\$1.5 = \\$6.5\n\\end{gathered}",
+  confidenceInterval: [16402510271.502476, 46859965775.95617],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
   manualPageTitle: "Earth Optimization Protocol v1",
 };
@@ -5249,18 +5267,18 @@ export const GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT: Parameter = {
   manualPageTitle: "Global Referendum Strategy",
 };
 
-export const GLOBAL_COORDINATION_TARGET_SUPPORTERS: Parameter = {
-  value: 4000000000.0,
-  parameterName: "GLOBAL_COORDINATION_TARGET_SUPPORTERS",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_target_supporters",
-  unit: "of people",
-  displayName: "Global Coordination Target Supporters",
-  description: "Number of people implied by the modeled end-state global coordination target (global population × 50%).",
+export const GLOBAL_COORDINATION_TARGET_PCT: Parameter = {
+  value: 0.516017811875,
+  parameterName: "GLOBAL_COORDINATION_TARGET_PCT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_target_pct",
+  unit: "percent",
+  displayName: "Majority of Humanity Coordination Target",
+  description: "Majority-of-humanity public coordination target as a share of global population, using global registered voters as the current verified-human headcount proxy.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_POPULATION_2024 × GLOBAL_COORDINATION_TARGET_PCT",
-  latex: "\\begin{gathered}\nN_{coord} \\\\\n= Pop_{global} \\times R_{coord} \\\\\n= 8B \\times 50\\% \\\\\n= 4B\n\\end{gathered}",
-  confidenceInterval: [3915177459.8186417, 4084361798.0792823],
+  formula: "GLOBAL_REGISTERED_VOTERS / GLOBAL_POPULATION_2024",
+  latex: "\\begin{gathered}\nR_{humanity,majority} \\\\\n= \\frac{N_{voters,global}}{Pop_{global}} \\\\\n= \\frac{4.13B}{8B} \\\\\n= 51.6\\%\n\\end{gathered}",
+  confidenceInterval: [0.5053595517593127, 0.5271973668344914],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html",
   manualPageTitle: "Global Referendum Strategy",
 };
@@ -5640,7 +5658,7 @@ export const INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = 
 };
 
 export const LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE: Parameter = {
-  value: 0.0,
+  value: 3.8802531645569616,
   parameterName: "LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-life_expectancy_gain_1883_1962_years_per_decade",
   unit: "years/decade",
@@ -5651,13 +5669,13 @@ export const LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE: Parameter = {
   sourceUrl: "https://manual.warondisease.org/knowledge/data/us-life-expectancy-fda-budget-1543-2019.csv",
   confidence: "high",
   formula: "(life_exp_1962 - life_exp_1880) / 7.9 decades",
-  latex: "\\begin{gathered}\n\\Delta LE_{pre62} \\\\\n= \\frac{LE_{US,1962} - LE_{US,1880}}{7.69} \\\\\n= \\frac{70.1 - 39.4}{7.69} \\\\\n= 0\n\\end{gathered}",
-  confidenceInterval: [3.85, 3.91],
+  latex: "\\begin{gathered}\n\\Delta LE_{pre62} \\\\\n= \\frac{LE_{US,1962} - LE_{US,1880}}{7.9} \\\\\n= \\frac{70.1 - 39.4}{7.9} \\\\\n= 3.88\n\\end{gathered}",
+  confidenceInterval: [3.853729979409657, 3.907282573742793],
   peerReviewed: true,
 };
 
 export const LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE: Parameter = {
-  value: 0.0,
+  value: 1.5435087719298248,
   parameterName: "LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-life_expectancy_gain_1962_2019_years_per_decade",
   unit: "years/decade",
@@ -5668,7 +5686,7 @@ export const LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE: Parameter = {
   sourceUrl: "https://manual.warondisease.org/knowledge/data/us-life-expectancy-fda-budget-1543-2019.csv",
   confidence: "high",
   formula: "(life_exp_2019 - life_exp_1962) / 5.7 decades",
-  latex: "\\begin{gathered}\n\\Delta LE_{post62} \\\\\n= \\frac{LE_{US,2019} - LE_{US,1962}}{5.56} \\\\\n= \\frac{78.9 - 70.1}{5.56} \\\\\n= 0\n\\end{gathered}",
+  latex: "\\begin{gathered}\n\\Delta LE_{post62} \\\\\n= \\frac{LE_{US,2019} - LE_{US,1962}}{5.7} \\\\\n= \\frac{78.9 - 70.1}{5.7} \\\\\n= 1.54\n\\end{gathered}",
   peerReviewed: true,
 };
 
@@ -5790,8 +5808,8 @@ export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
   formula: "GLOBAL_WARHEAD_COUNT / NUCLEAR_WINTER_WARHEAD_THRESHOLD",
   latex: "\\begin{gathered}\nOverkill_{winter} \\\\\n= \\frac{W_{global}}{W_{winter}} \\\\\n= \\frac{12{,}200}{100} \\\\\n= 122\n\\end{gathered}",
   confidenceInterval: [42.57726523263751, 196.5850911895582],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
-  manualPageTitle: "The Apocalypse Markup",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/questions.html",
+  manualPageTitle: "The 20 Questions",
 };
 
 export const PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT: Parameter = {
@@ -6336,17 +6354,17 @@ export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
 };
 
 export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
-  value: 2211145589288.8613,
+  value: 2281981017443.791,
   parameterName: "PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_retirement_equivalent_principal",
   unit: "USD",
   displayName: "PRIZE Pool Retirement-Equivalent Principal",
-  description: "Secondary PRIZE seed benchmark: initial principal required so that the pool can make two referred votes retirement-equivalent on success at the modeled global coordination target. This is a stronger-incentive visible-pool benchmark, not the minimum capital required to make 50% participation credible.",
+  description: "Secondary PRIZE seed benchmark: initial principal required so that the pool can make two referred votes retirement-equivalent on success at the majority-of-humanity coordination target. This is a stronger-incentive visible-pool benchmark, not the minimum capital required to make majority-of-humanity participation credible.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "GLOBAL_COORDINATION_TARGET_SUPPORTERS × RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET / PRIZE_POOL_HORIZON_MULTIPLE",
-  latex: "\\begin{gathered}\nP_{retire-eq} = N_{coord} \\times \\frac{V_{claim,target}}{M_{pool}}\n\\\\[0.5em]\n\\text{where } N_{coord} = Pop_{global} \\times R_{coord} = 8B \\times 50\\% = 4B\n\\\\[0.5em]\n\\text{where } V_{claim,target} = V_{2claims,target} \\times 0.5 = \\$9.98K \\times 0.5 = \\$4.99K\n\\\\[0.5em]\n\\text{where } V_{2claims,target} = S_{annual,pc} \\times M_{retire} = \\$3.88K \\times 2.57 = \\$9.98K\n\\\\[0.5em]\n\\text{where } S_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\\\[0.5em]\n\\text{where } M_{retire} = (1 + r_{retire}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\end{gathered}",
-  confidenceInterval: [1285683644320.3093, 3998390661831.4233],
+  formula: "GLOBAL_REGISTERED_VOTERS × RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET / PRIZE_POOL_HORIZON_MULTIPLE",
+  latex: "\\begin{gathered}\nP_{retire-eq} = N_{voters,global} \\times \\frac{V_{claim,target}}{M_{pool}}\n\\\\[0.5em]\n\\text{where } V_{claim,target} = V_{2claims,target} \\times 0.5 = \\$9.98K \\times 0.5 = \\$4.99K\n\\\\[0.5em]\n\\text{where } V_{2claims,target} = S_{annual,pc} \\times M_{retire} = \\$3.88K \\times 2.57 = \\$9.98K\n\\\\[0.5em]\n\\text{where } S_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\\\[0.5em]\n\\text{where } M_{retire} = (1 + r_{retire}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\end{gathered}",
+  confidenceInterval: [1299465020398.1055, 4215882057265.197],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
@@ -6607,6 +6625,22 @@ export const THALIDOMIDE_YLL_PER_EVENT: Parameter = {
   confidenceInterval: [17862.446617260102, 44480.37415632956],
 };
 
+export const THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION: Parameter = {
+  value: 280000000.0,
+  parameterName: "THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-three_point_five_percent_of_global_population",
+  unit: "of people",
+  displayName: "3.5% Activism Benchmark",
+  description: "Headcount implied by the 3.5% activism threshold applied to global population. This is a historical tipping-point benchmark, not the public majority-of-humanity coordination target. Wide CI reflects uncertainty in applying Chenoweth's national threshold to global treaty adoption.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "GLOBAL_POPULATION_2024 × GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT",
+  latex: "\\begin{gathered}\nN_{activism} \\\\\n= Pop_{global} \\times Threshold_{activism} \\\\\n= 8B \\times 3.5\\% \\\\\n= 280M\n\\end{gathered}",
+  confidenceInterval: [84175724.43733144, 638719402.961784],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/campaign-budget.html",
+  manualPageTitle: "Campaign Budget: The {{< var campaign_media_budget_max >}} Legal Bribery Machine",
+};
+
 export const TOTAL_RESEARCH_FUNDING_WITH_TREATY: Parameter = {
   value: 94700000000.0,
   parameterName: "TOTAL_RESEARCH_FUNDING_WITH_TREATY",
@@ -6696,22 +6730,6 @@ export const TREATY_CAMPAIGN_TOTAL_COST: Parameter = {
   confidenceInterval: [632220037.6284399, 1514209791.4023836],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: Harnessing Greed to Eradicate Disease",
-};
-
-export const TREATY_CAMPAIGN_VOTING_BLOC_TARGET: Parameter = {
-  value: 280000000.0,
-  parameterName: "TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_campaign_voting_bloc_target",
-  unit: "of people",
-  displayName: "Target Voting Bloc Size for Campaign",
-  description: "Target voting bloc size for campaign (3.5% of global population - critical mass for social change). Wide CI reflects uncertainty in applying Chenoweth's national threshold to global treaty adoption.",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "GLOBAL_POPULATION × 3.5%",
-  latex: "\\begin{gathered}\nN_{voters,target} \\\\\n= Pop_{global} \\times Threshold_{activism} \\\\\n= 8B \\times 3.5\\% \\\\\n= 280M\n\\end{gathered}",
-  confidenceInterval: [84175724.43733144, 638719402.961784],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/campaign-budget.html",
-  manualPageTitle: "Campaign Budget: The {{< var campaign_media_budget_max >}} Legal Bribery Machine",
 };
 
 export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
@@ -7719,39 +7737,39 @@ export const VICTORY_BOND_ANNUAL_RETURN_PCT: Parameter = {
 };
 
 export const VOTER_LIVES_SAVED: Parameter = {
-  value: 38.376849102141854,
+  value: 2.6029909969470952,
   parameterName: "VOTER_LIVES_SAVED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-voter_lives_saved",
   unit: "lives",
-  displayName: "Lives Saved per Voter",
-  description: "Lives saved attributable to each voter if the treaty passes (total lives saved ÷ 3.5% voting bloc target)",
+  displayName: "Lives Saved per Verified Voter",
+  description: "Average lives saved per verified voter if the treaty passes (total lives saved divided by the majority-of-humanity coordination target).",
   sourceType: "calculated",
   confidence: "high",
-  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED ÷ TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
-  latex: "\\begin{gathered}\nLives_{voter} = \\frac{Lives_{max}}{N_{voters,target}} = \\frac{10.7B}{280M} = 38.4\n\\\\[0.5em]\n\\text{where } Lives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } N_{voters,target} = Pop_{global} \\times Threshold_{activism} = 8B \\times 3.5\\% = 280M\n\\end{gathered}",
-  confidenceInterval: [11.58178061150307, 195.44109724189255],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/getting-started.html",
-  manualPageTitle: "Getting Started",
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED ÷ GLOBAL_REGISTERED_VOTERS",
+  latex: "\\begin{gathered}\nLives_{voter} = \\frac{Lives_{max}}{N_{voters,global}} = \\frac{10.7B}{4.13B} = 2.6\n\\\\[0.5em]\n\\text{where } Lives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [1.792023761107045, 3.9302633130291302],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
+  manualPageTitle: "How to Coordinate 10 Million Nonprofits",
 };
 
 export const VOTER_SUFFERING_HOURS_PREVENTED: Parameter = {
-  value: 6896780.305844117,
+  value: 467788.7180433564,
   parameterName: "VOTER_SUFFERING_HOURS_PREVENTED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-voter_suffering_hours_prevented",
   unit: "hours",
-  displayName: "Suffering Hours Prevented per Voter",
-  description: "Hours of suffering prevented attributable to each voter if the treaty passes (total suffering hours ÷ 3.5% voting bloc target)",
+  displayName: "Suffering Hours Prevented per Verified Voter",
+  description: "Average suffering hours prevented per verified voter if the treaty passes (total suffering hours divided by the majority-of-humanity coordination target).",
   sourceType: "calculated",
   confidence: "high",
-  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS ÷ TREATY_CAMPAIGN_VOTING_BLOC_TARGET",
-  latex: "\\begin{gathered}\nHours_{suffer,voter} = \\frac{Hours_{suffer,max}}{N_{voters,target}} = \\frac{1930T}{280M} = 6.9M\n\\\\[0.5em]\n\\text{where } Hours_{suffer,max} = DALYs_{max} \\times Pct_{YLD} \\times 8760 = 565B \\times 0.39 \\times 8760 = 1930T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } N_{voters,target} = Pop_{global} \\times Threshold_{activism} = 8B \\times 3.5\\% = 280M\n\\end{gathered}",
-  confidenceInterval: [2229776.9469145937, 29662948.8293267],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/getting-started.html",
-  manualPageTitle: "Getting Started",
+  formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS ÷ GLOBAL_REGISTERED_VOTERS",
+  latex: "\\begin{gathered}\nHours_{suffer,voter} = \\frac{Hours_{suffer,max}}{N_{voters,global}} = \\frac{1930T}{4.13B} = 468{,}000\n\\\\[0.5em]\n\\text{where } Hours_{suffer,max} = DALYs_{max} \\times Pct_{YLD} \\times 8760 = 565B \\times 0.39 \\times 8760 = 1930T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,dFDA}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,dFDA} = \\frac{Subsidies_{dFDA,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{dFDA,ann} = Funding_{dFDA,ann} - OPEX_{dFDA} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{dFDA} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
+  confidenceInterval: [329949.0212331594, 633715.6994244249],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
+  manualPageTitle: "How to Coordinate 10 Million Nonprofits",
 };
 
 export const VOTE_2_CLAIMS_PAYOUT: Parameter = {
-  value: 13768.867940215503,
+  value: 13341.465762766025,
   parameterName: "VOTE_2_CLAIMS_PAYOUT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_2_claims_payout",
   unit: "USD",
@@ -7760,14 +7778,14 @@ export const VOTE_2_CLAIMS_PAYOUT: Parameter = {
   sourceType: "calculated",
   confidence: "high",
   formula: "2 × VOTE_TOKEN_VALUE",
-  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$6.88K \\times 2 = \\$13.8K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{coord}} = \\frac{\\$27.5T}{4B} = \\$6.88K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } N_{coord} = Pop_{global} \\times R_{coord} = 8B \\times 50\\% = 4B\n\\end{gathered}",
-  confidenceInterval: [587.2057676500277, 113511.0309052138],
+  latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$6.67K \\times 2 = \\$13.3K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
+  confidenceInterval: [556.9126523129366, 112307.1984210392],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
 
 export const VOTE_TOKEN_VALUE: Parameter = {
-  value: 6884.4339701077515,
+  value: 6670.732881383013,
   parameterName: "VOTE_TOKEN_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-vote_token_value",
   unit: "USD",
@@ -7775,9 +7793,9 @@ export const VOTE_TOKEN_VALUE: Parameter = {
   description: "Value of a single VOTE claim based on the modeled PRIZE pool size (investable assets × participation rate × horizon multiple). CI range reflects participation uncertainty (0.1%-10%).",
   sourceType: "calculated",
   confidence: "high",
-  formula: "PRIZE_POOL_SIZE / GLOBAL_COORDINATION_TARGET_SUPPORTERS",
-  latex: "\\begin{gathered}\nV_{vote} = \\frac{Pool}{N_{coord}} = \\frac{\\$27.5T}{4B} = \\$6.88K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } N_{coord} = Pop_{global} \\times R_{coord} = 8B \\times 50\\% = 4B\n\\end{gathered}",
-  confidenceInterval: [293.60288382501386, 56755.5154526069],
+  formula: "PRIZE_POOL_SIZE / GLOBAL_REGISTERED_VOTERS",
+  latex: "\\begin{gathered}\nV_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool}) ^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
+  confidenceInterval: [278.4563261564683, 56153.5992105196],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
@@ -9244,8 +9262,8 @@ export const GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT: Par
   confidence: "medium",
   confidenceInterval: [2.0, 10.0],
   stdError: 1.5,
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
-  manualPageTitle: "The Earth Optimization Prize",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
+  manualPageTitle: "How to Coordinate 10 Million Nonprofits",
 };
 
 export const GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST: Parameter = {
@@ -9254,26 +9272,13 @@ export const GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_platform_and_operations_cost",
   unit: "USD",
   displayName: "Global Coordination Platform and Operations Cost",
-  description: "Fixed cost to run a global activation campaign toward 50% participation: platform buildout, localization, customer support, compliance, payout operations, fraud response, and regional launch infrastructure.",
+  description: "Fixed cost to run a global activation campaign toward majority-of-humanity participation: platform buildout, localization, customer support, compliance, payout operations, fraud response, and regional launch infrastructure.",
   sourceType: "definition",
   confidence: "medium",
   confidenceInterval: [2000000000.0, 8000000000.0],
   stdError: 1500000000.0,
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
-};
-
-export const GLOBAL_COORDINATION_TARGET_PCT: Parameter = {
-  value: 0.5,
-  parameterName: "GLOBAL_COORDINATION_TARGET_PCT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_coordination_target_pct",
-  unit: "percent",
-  displayName: "Global Coordination Target",
-  description: "Modeled end-state global coordination target: half of humanity visibly supports the prize network, used in prose as roughly 90% of likely voters globally.",
-  sourceType: "definition",
-  confidence: "high",
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html",
-  manualPageTitle: "Global Referendum Strategy",
 };
 
 export const GLOBAL_COORDINATION_VERIFICATION_AND_PAYMENT_COST_PER_PARTICIPANT: Parameter = {
@@ -10102,6 +10107,7 @@ export const parameters = {
   GLOBAL_POPULATION_2040_PROJECTED,
   GLOBAL_POPULATION_2045_PROJECTED,
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
+  GLOBAL_REGISTERED_VOTERS,
   GLOBAL_RETIREMENT_ASSETS,
   GLOBAL_SAVINGS_RATE_PCT,
   GLOBAL_SYMPTOMATIC_DISEASE_TREATMENT_ANNUAL,
@@ -10343,7 +10349,7 @@ export const parameters = {
   GLOBAL_BULLETS_PURCHASABLE_ANNUAL,
   GLOBAL_COORDINATION_ACTIVATION_BUDGET,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
-  GLOBAL_COORDINATION_TARGET_SUPPORTERS,
+  GLOBAL_COORDINATION_TARGET_PCT,
   GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL,
   GLOBAL_DESTRUCTIVE_ECONOMY_ANNUAL_2025,
   GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
@@ -10431,13 +10437,13 @@ export const parameters = {
   THALIDOMIDE_US_CASES_PREVENTED,
   THALIDOMIDE_YLD_PER_EVENT,
   THALIDOMIDE_YLL_PER_EVENT,
+  THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION,
   TOTAL_RESEARCH_FUNDING_WITH_TREATY,
   TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS,
   TREATY_ANNUAL_FUNDING,
   TREATY_BENEFIT_MULTIPLIER_VS_VACCINES,
   TREATY_CAMPAIGN_ANNUAL_COST_AMORTIZED,
   TREATY_CAMPAIGN_TOTAL_COST,
-  TREATY_CAMPAIGN_VOTING_BLOC_TARGET,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_CUMULATIVE_20YR_WITH_RATCHET,
   TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15,
@@ -10614,7 +10620,6 @@ export const parameters = {
   GDP_BASELINE_GROWTH_RATE,
   GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT,
   GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST,
-  GLOBAL_COORDINATION_TARGET_PCT,
   GLOBAL_COORDINATION_VERIFICATION_AND_PAYMENT_COST_PER_PARTICIPANT,
   GLOBAL_TO_US_POLITICAL_COST_RATIO,
   HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15,
@@ -10698,25 +10703,25 @@ export const shareableSnippets = {
   declarationOfOptimization: {
     markdown: "### The unanimous Declaration of the Eight Billion Inhabitants of Earth\n\nWhen in the Course of human events, it becomes necessary for a people to optimize the governance systems which have caused immeasurable preventable death and unnecessary poverty, a decent respect to the opinions of mankind requires that they should declare the causes which impel them to the optimization.\n\nWe hold these truths to be self-evident, that all humans are created equal, that they are endowed by their Biology with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.--That to secure these rights, Governments are instituted among Humans, deriving their just powers from the consent of the governed.\n\nThat whenever any Form of Government becomes destructive of these ends, it is the Right of the People to optimize it, laying its foundation on such principles and organizing its powers in such form, as to them shall seem most likely to effect their Safety and Happiness, measured by two metrics: the median number of healthy life years and the median after-tax inflation-adjusted income of its citizens.\n\nPrudence, indeed, will dictate that Governments long established should not be changed for light and transient causes; and accordingly all experience hath shewn, that mankind are more disposed to suffer, while evils are sufferable, than to right themselves by optimizing the forms to which they are accustomed.\n\nBut when a long pattern of abuses and misallocations, pursuing invariably the same end, reveals a design to reduce them under absolute Suboptimality, it is their right, it is their duty, to optimize such Government, and to provide new Guards for their future security.\n\nThe [Political Dysfunction Tax](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html), the total annual burden of suboptimality on the people of Earth: [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) a year.\n\nSuch has been the patient sufferance of the inhabitants of Earth; and such is now the necessity which constrains them to optimize their former Systems of Government. The history of the present Governments of Earth is a history of repeated injuries and misallocations, all having as their direct result the establishment of an absolute Suboptimality over these people. To prove this, let Facts be submitted to a candid world.\n\nThey have refused their Assent to Laws, the most wholesome and necessary for the public good; the [correlation between public opinion and policy outcomes](https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html), measured across 1,779 policy decisions, is effectively zero.\n\nThey have legalized the purchase of legislation at a current annual price of [$4.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/algorithmic-public-administration-paper.html), the legal definition of corruption having been written by the beneficiaries of said corruption.\n\nThey have imposed Taxes without Consent, including the [debasement of currency](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) by unelected officials whose money creation functions as a tax the governed never voted for, reducing the dollar's purchasing power by 96% since 1913.\n\nThey have spent over one trillion dollars across fifty years imprisoning and sometimes killing their own citizens for the crime of exercising [sovereignty over their own bodies](https://manual.WarOnDisease.org/knowledge/problem/genetic-slavery.html), sovereignty being the distinction between a citizen and property.\n\nThe result has been a 1,700% increase in overdose deaths and drug use higher than when they started, while half of all murders go unsolved for want of the resources squandered on the prosecution of those pursuing happiness by means the state did not approve.\n\nThey have lied to the governed to manufacture consent for wars the governed did not want, fabricating attacks that did not occur, presenting evidence they knew to be false, and spraying carcinogenic chemicals on rice farmers and their children, the exposed population now numbering four million with birth defects continuing to this day.\n\nThey have misplaced $2.46 trillion in military funds, failed seven consecutive audits attempting to find it, and requested additional trillions without explanation or apology.\n\nThey have allowed the [destructive economy](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) to reach [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global output, growing faster than the productive economy, on a trajectory that crosses fifty percent by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Once passing this threshold, earth will become a global failed state where it becomes irrational to produce because each dollar of value created is immediately stolen. \n\nThey have plundered our seas, ravaged our coasts, burnt our towns, and [destroyed the lives of our people](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html): [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people since 1900, [8.37 billion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) years of human life stolen, [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) in treasure spent on the enterprise.\n\n[Among them](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and millions of children who will never grow up to replace them.\n\nThey have directed [604](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) times more to the destruction of human life than to testing which medicines might preserve it.\n\nThey have permitted [150 thousand](https://manual.WarOnDisease.org/knowledge/strategy/call-script.html) people to die of diseases every day, [104](https://manual.WarOnDisease.org/knowledge/strategy/call-script.html) every minute that passes, while possessing the means to accelerate solutions. The annual toll: [2.88 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years of healthy life lost to disease and disability, quietly deleted.\n\nNearly ten thousand known safe compounds remain untested for 99.7% of possible disease combinations. Yet the [national health research institutions](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) nominally responsible for finding cures direct only [3.3%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their budgets to the clinical trials necessary to determine which diseases those compounds could treat.\n\nThey have erected [drug regulatory agencies](https://manual.WarOnDisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html) that, after a drug has been proven safe, force patients to wait an additional [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years while a committee determines whether the safe drug works well enough. For every death prevented by this vigilance, [3,068](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people die waiting for the answer. Since 1962, the efficacy lag has killed approximately [102 million](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html) people.\n\nThese regulatory barriers mean treatments without a billion-dollar market are never developed at all. The treatments that never were have killed an uncountable number of patients bounded only by the [55 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) people who die of disease each year.\n\nThrough the combined effect of war spending, research misallocation, and regulatory cost inflation, they have left approximately seven thousand known rare diseases in a [treatment queue](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) that, at the current rate of fifteen approvals per year, requires [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to clear.\n\nThrough the compound effects of this misallocation to war alone, the governed are [23.2](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times poorer than they would otherwise be. The average human earns [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) per year. Without the wars alone, that figure would be [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html). On both metrics by which any government should be judged, healthy life years and median income, the present systems have failed absolutely.\n\nIn every stage of these Misallocations We have Petitioned for Redress in the most humble terms: peer-reviewed papers, public comment periods, protest marches, and online petitions. Our repeated Petitions have been answered only by repeated Misallocation. Governments, whose character is thus marked by every act which may define Suboptimality, are unfit to manage the resources of a free species.\n\nNor have we neglected our governing institutions. We have warned them from time to time of attempts by their legislatures to extend an unwarrantable dysfunction over us. We have reminded them of the circumstances of our biological existence and the budget arithmetic of our premature deaths.\n\nWe have appealed to their stated missions and their campaign promises, and we have invoked the ties of our common mortality to disavow these misallocations, which would inevitably interrupt our survival and progress. They too have been deaf to the voice of justice and of evidence. We must, therefore, accept the necessity, which condemns our current Systems, and hold them, as we hold all governance systems, Accountable to Outcomes.\n\nThat this optimization is achievable requires no faith, only memory. These same governments [cut military spending](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years following the Second World War and produced not collapse but the greatest economic expansion in recorded history. These same governments banned chemical weapons (193 countries), biological weapons (187 countries), and landmines (164 countries). They have signed treaties banning weapons they wished to use. We ask them to buy [one percent](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) fewer of them.\n\nWe, therefore, the Inhabitants of Earth, assembled across every nation and connected by common cause, appealing to the Supreme Judge of the world for the rightness of our intentions, do, in the Name, and by Authority of the good People of this planet, solemnly publish and declare, That the Inhabitants of Earth are, and of Right ought to be Free and Justly Governed; that they are Absolved from all Allegiance to systems that produce outcomes worse than random allocation, and that all political connection between them and Suboptimal Governance, is and ought to be totally optimized.\n\nAnd that as Free Inhabitants of Earth, they have full Power to optimize budgets and institutions, establish transparent allocation systems, contract Alliances with evidence, and to do all other Acts and Things which Self-Governing Civilizations may of right do. And for the support of this Declaration, with a firm reliance on the protection of divine Providence, we mutually pledge to each other our Lives, our Fortunes, and our sacred Votes.\n\nThe proposed replacement system is documented in the [Earth Optimization Protocol](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html).\n",
     sourceFile: "knowledge/strategy/declaration-of-optimization.qmd",
-    updatedAt: "2026-04-22",
+    updatedAt: "2026-04-25",
     originalName: "declaration_of_optimization",
   },
   onePercentTreatyPitch: {
-    markdown: "Your species spends [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year on military forces. That amount is enough to buy enough bullets to murder every man, woman, and child on Earth [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times. Every year. If every nation reduces that by 1% at the same time, the balance of power stays identical. No country gets weaker. Nobody loses a single war they would have otherwise won. You just become slightly less capable of destroying a planet you're still living on (which should be fine, since you were already capable of destroying it [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over).\n\nThat 1% is [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year. For comparison, that's roughly what Americans spend on Valentine's Day. You are currently spending more on heart-shaped candy than on curing heart disease.\n\nA 1% Treaty is a piece of paper that says every signatory nation redirects that 1% so any patient can join [pragmatic clinical trials](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html) for the most promising treatments. That's it. That's the whole idea. On Wishonia, we fought for 12,000 years before we figured this out. Your species has been thinking it over for several thousand years, so you're actually ahead of schedule (barely).\n",
+    markdown: "Your species spends [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year on military forces. That amount is enough to buy enough bullets to murder every man, woman, and child on Earth [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times. Every year. If every nation reduces that by 1% at the same time, the balance of power stays identical. No country gets weaker. Nobody loses a single war they would have otherwise won. You just become slightly less capable of destroying a planet you're still living on (which should be fine, since you were already capable of destroying it [122](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) times over).\n\nThat 1% is [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year. For comparison, that's roughly what Americans spend on Valentine's Day. You are currently spending more on heart-shaped candy than on curing heart disease.\n\nA 1% Treaty is a piece of paper that says every signatory nation redirects that 1% so any patient can join [pragmatic clinical trials](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html) for the most promising treatments. That's it. That's the whole idea. On Wishonia, we fought for 12,000 years before we figured this out. Your species has been thinking it over for several thousand years, so you're actually ahead of schedule (barely).\n",
     sourceFile: "knowledge/solution/1-percent-treaty.qmd",
-    updatedAt: "2026-04-22",
+    updatedAt: "2026-04-25",
     originalName: "one-percent-treaty-pitch",
   },
   onePercentTreatyText: {
-    markdown: "WHEREAS, humanity pays governments \\$36 trillion a year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;\n\nWHEREAS, the citizenry would like to actually receive this service at some point;\n\nWHEREAS, these public servants instead used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment;\n\nWHEREAS, these murdered humans included 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them;\n\nWHEREAS, this seems counterproductive;\n\nWHEREAS, murdering [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of your employers is the opposite of promoting their welfare, and would be grounds for termination in any other service contract humans have ever signed;\n\nWHEREAS, had your governments not spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering those people and destroying everything they built, the average human alive today would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html). Dead scientists do not discover things, dead engineers do not build them, and exploded cities are very expensive to rebuild;\n\nWHEREAS, the governments of Earth have been hitting each other for roughly 10,000 years because the other one hit them last;\n\nWHEREAS, this is the conflict resolution strategy of four-year-olds except four-year-olds eventually get tired and take a nap, and these governments have failed to apply naps to foreign policy;\n\nWHEREAS, the governments of Earth possess nuclear weapons sufficient to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times (even though you can only have one apocalypse) but have not cured Alzheimer's once;\n\nWHEREAS, your employees spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year on their capacity for mass murder, which is enough to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone;\n\nWHEREAS, governments spend [604](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) dollars on the capacity for orphan manufacturing for every one dollar spent on the trials that might cure what is actually going to kill their citizens;\n\nWHEREAS, the Department of \"Defense\" has \"misplaced\" $2.46 trillion, failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology;\n\nWHEREAS, pre-WW2 U.S. military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) lower than today's peacetime budget, in constant dollars. The U.S. still won World War II, then cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years and produced the fastest growth in median standard of living in history. \n\nWHEREAS, unless the human genome has significantly degraded in the two generations since, a one percent improvement in resourrce allocation should be manageable;\n\nWHEREAS, global military spending has been growing [2.76%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) a year for twenty years, and nobody has told it to stop. At this rate, every human alive will pay about [$402,488](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) over their lifetime, mostly for explosions in countries they cannot find on a map. A one percent cut tells it to stop. That saves the average person about [$290,052](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) ([the peace dividend](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html));\n\nWHEREAS, [diseases kill more people than all wars combined](https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html) and, unlike wars, do not even have the decency to be quick about it;\n\nWHEREAS, your chance of dying in a terrorist attack is approximately 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html), and your chance of dying of a disease is 100%, and your current budget does not reflect this;\n\nWHEREAS, only 15 diseases get their first effective treatment each year, while [6,650 diseases](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) are still waiting;\n\nWHEREAS, at this rate, it takes [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to find treatments for all diseases, which is important because you will personally be dead within 80 years, which is mentioned not to be rude but because you seem weirdly calm about this;\n\nWHEREAS, there are [9,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) known safe treatments which have never been tested for [99.7%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their potential uses;\n\nWHEREAS, [pragmatic clinical trials built into ordinary healthcare](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html) cost [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient instead of the usual [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), which makes them [44.1](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times cheaper, which means [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times as many patients can join, which drops the wait from [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), which means treatments arrive [204](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner on average. \n\nWHEREAS, discovering treatments centuries sooner is [projected](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to prevent approximately [10.7 billion deaths](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and [1.93 quadrillion hours](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) of human suffering, which are not metaphors and refer to specific future humans with specific future plans for next Tuesday;\n\nWHEREAS, someone you love is, at this moment, suffering from a disease because the treatment that would help them exists untested on a shelf, because the money that would have tested it was busy turning into a missile; that missile incinerated a child who could have grown up to discover the cure; you lose the treatment, you lose the scientist, you get the inflation, you get the tax bill, you get to pay for her murder;\n\nWHEREAS, this is suboptimal;\n\nNOW, THEREFORE, the undersigned nations agree to try a different approach, as follows:\n\n**Article I**: Each signatory shall redirect exactly 1% of its annual military budget to **the 1% Treaty Fund**, split as follows: [80%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to [pragmatic clinical trials](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html); [10%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to perpetual returns on [Incentive Alignment Bonds](https://manual.WarOnDisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html); and [10%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to a [Political Incentive Fund](https://manual.WarOnDisease.org/knowledge/solution/aligning-incentives.html) that supports campaigns of legislators who vote to implement and expand this Treaty. The [80%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) cures the diseases. The other two slices make sure nobody quietly cancels the part that cures the diseases.\n\n**Article II**: Transfers shall be automatic, immediate, and irrevocable. The money moves on the first of every month, the way your mortgage does, except nobody has to call and yell at anyone.\n\n**Article III**: The percentage can go up. It never goes down. When the treaty works, a mandatory review raises it. Because Article I allocates in percentages, not fixed dollars, every increase enlarges the bondholder payouts and the Political Incentive Fund in lockstep. This produces something your species has never had before: a class of wealthy humans whose bank accounts grow every time a war ends, a disease loses, or a child who would have died gets to grow up and have opinions about things. For ten thousand years your powerful have gotten richer from your suffering. Now they get richer from the absence of it. They will keep wanting this until war and disease stop killing people. Then they can stop.\n\n**Article IV**: Compliance shall be verified by public ledger and independent audits. Relabeling a submarine as \"humanitarian infrastructure\" will be noticed, because submarines are large and loud and do not fit in the humanitarian infrastructure drawer. Non-compliant parties shall be given a stern talking to; their compliant political opponents shall be funded via the Political Incentive Fund, which rewards legislators by recorded vote: campaign support for those seeking reelection, post-office appointments for those retiring. No funds pass directly to any legislator; all disbursements route through [a scoring algorithm](https://manual.WarOnDisease.org/knowledge/legal/election-law.html), which is apparently the only legal way to train a senator. The NRA already perfected this technology; this Treaty plagiarizes it, substituting \"not dying from diseases\" for \"guns.\"\n\n**Article V**: Citizens of any signatory nation may sue their own government in its own courts for non-compliance with this Treaty. Your government works for you; this is the receipt.\n\n**Article VI**: Holders of Article I [Incentive Alignment Bonds](https://manual.WarOnDisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html) may sue any signatory's government in its own courts for non-payment. Billionaires have lawyers the way other humans have socks. This Treaty points those lawyers at the one thing billionaires and dying people both want, which is the treaty to keep working.\n\n**Article VII**: Withdrawal requires unanimous consent of all parties plus 10-year notice. Ten years is enough time for the bondholders to sue, the Political Incentive Fund to replace whoever is trying to leave, and the voters to notice that the party attempting withdrawal is the one that wants the diseases back.\n\n**Article VIII**: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.\n\n**Article IX**: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in human history.\n\nIN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.\n",
+    markdown: "WHEREAS, humanity pays governments \\$36 trillion a year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;\n\nWHEREAS, the citizenry would like to actually receive this service at some point;\n\nWHEREAS, these public servants instead used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment;\n\nWHEREAS, these murdered humans included 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them;\n\nWHEREAS, this seems counterproductive;\n\nWHEREAS, murdering [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of your employers is the opposite of promoting their welfare, and would be grounds for termination in any other service contract humans have ever signed;\n\nWHEREAS, had your governments not spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering those people and destroying everything they built, the average human alive today would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html). Dead scientists do not discover things, dead engineers do not build them, and exploded cities are very expensive to rebuild;\n\nWHEREAS, the governments of Earth have been hitting each other for roughly 10,000 years because the other one hit them last;\n\nWHEREAS, this is the conflict resolution strategy of four-year-olds except four-year-olds eventually get tired and take a nap, and these governments have failed to apply naps to foreign policy;\n\nWHEREAS, the governments of Earth possess nuclear weapons sufficient to end civilization [122](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) times (even though you can only have one apocalypse) but have not cured Alzheimer's once;\n\nWHEREAS, your employees spend [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year on their capacity for mass murder, which is enough to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone;\n\nWHEREAS, governments spend [604](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) dollars on the capacity for orphan manufacturing for every one dollar spent on the trials that might cure what is actually going to kill their citizens;\n\nWHEREAS, the Department of \"Defense\" has \"misplaced\" $2.46 trillion, failed seven consecutive audits trying to find it, and then requested additional trillions without explanation or apology;\n\nWHEREAS, pre-WW2 U.S. military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) lower than today's peacetime budget, in constant dollars. The U.S. still won World War II, then cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) in two years and produced the fastest growth in median standard of living in history. \n\nWHEREAS, unless the human genome has significantly degraded in the two generations since, a one percent improvement in resource allocation should be manageable;\n\nWHEREAS, global military spending has been growing [2.76%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) a year for twenty years, and nobody has told it to stop. At this rate, every human alive will pay about [$402,488](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) over their lifetime, mostly for explosions in countries they cannot find on a map. A one percent cut tells it to stop. That saves the average person about [$290,052](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) ([the peace dividend](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html));\n\nWHEREAS, [diseases kill more people than all wars combined](https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html) and, unlike wars, do not even have the decency to be quick about it;\n\nWHEREAS, your chance of dying in a terrorist attack is approximately 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html), and your chance of dying of a disease is 100%, and your current budget does not reflect this;\n\nWHEREAS, only 15 diseases get their first effective treatment each year, while [6,650 diseases](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) are still waiting;\n\nWHEREAS, at this rate, it takes [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to find treatments for all diseases, which is important because you will personally be dead within 80 years, which is mentioned not to be rude but because you seem weirdly calm about this;\n\nWHEREAS, there are [9,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) known safe treatments which have never been tested for [99.7%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their potential uses;\n\nWHEREAS, [pragmatic clinical trials built into ordinary healthcare](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html) cost [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient instead of the usual [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), which makes them [44.1](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times cheaper, which means [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times as many patients can join, which drops the wait from [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), which means treatments arrive [204](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner on average. \n\nWHEREAS, discovering treatments centuries sooner is [projected](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to prevent approximately [10.7 billion deaths](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and [1.93 quadrillion hours](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) of human suffering, which are not metaphors and refer to specific future humans with specific future plans for next Tuesday;\n\nWHEREAS, someone you love is, at this moment, suffering from a disease because the treatment that would help them exists untested on a shelf, because the money that would have tested it was busy turning into a missile; that missile incinerated a child who could have grown up to discover the cure; you lose the treatment, you lose the scientist, you get the inflation, you get the tax bill, you get to pay for her murder;\n\nWHEREAS, this is suboptimal;\n\nNOW, THEREFORE, the undersigned nations agree to try a different approach, as follows:\n\n**Article I**: Each signatory shall redirect exactly 1% of its annual military budget to **the 1% Treaty Fund**, split as follows: [80%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to [pragmatic clinical trials](https://manual.WarOnDisease.org/knowledge/appendix/dfda-spec-paper.html); [10%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to perpetual returns on [Incentive Alignment Bonds](https://manual.WarOnDisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html); and [10%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) to a [Political Incentive Fund](https://manual.WarOnDisease.org/knowledge/solution/aligning-incentives.html) that supports campaigns of legislators who vote to implement and expand this Treaty. The [80%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html) cures the diseases. The other two slices make sure nobody quietly cancels the part that cures the diseases.\n\n**Article II**: Transfers shall be automatic, immediate, and irrevocable. The money moves on the first of every month, the way your mortgage does, except nobody has to call and yell at anyone.\n\n**Article III**: The percentage can go up. It never goes down. When the treaty works, a mandatory review raises it. Because Article I allocates in percentages, not fixed dollars, every increase enlarges the bondholder payouts and the Political Incentive Fund in lockstep. This produces something your species has never had before: a class of wealthy humans whose bank accounts grow every time a war ends, a disease loses, or a child who would have died gets to grow up and have opinions about things. For ten thousand years your powerful have gotten richer from your suffering. Now they get richer from the absence of it. They will keep wanting this until war and disease stop killing people. Then they can stop.\n\n**Article IV**: Compliance shall be verified by public ledger and independent audits. Relabeling a submarine as \"humanitarian infrastructure\" will be noticed, because submarines are large and loud and do not fit in the humanitarian infrastructure drawer. Non-compliant parties shall be given a stern talking to; their compliant political opponents shall be funded via the Political Incentive Fund, which rewards legislators by recorded vote: campaign support for those seeking reelection, post-office appointments for those retiring. No funds pass directly to any legislator; all disbursements route through [a scoring algorithm](https://manual.WarOnDisease.org/knowledge/legal/election-law.html), which is apparently the only legal way to train a senator. The NRA already perfected this technology; this Treaty plagiarizes it, substituting \"not dying from diseases\" for \"guns.\"\n\n**Article V**: Citizens of any signatory nation may sue their own government in its own courts for non-compliance with this Treaty. Your government works for you; this is the receipt.\n\n**Article VI**: Holders of Article I [Incentive Alignment Bonds](https://manual.WarOnDisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html) may sue any signatory's government in its own courts for non-payment. Billionaires have lawyers the way other humans have socks. This Treaty points those lawyers at the one thing billionaires and dying people both want, which is the treaty to keep working.\n\n**Article VII**: Withdrawal requires unanimous consent of all parties plus 10-year notice. Ten years is enough time for the bondholders to sue, the Political Incentive Fund to replace whoever is trying to leave, and the voters to notice that the party attempting withdrawal is the one that wants the diseases back.\n\n**Article VIII**: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.\n\n**Article IX**: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in human history.\n\nIN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.\n",
     sourceFile: "knowledge/solution/1-percent-treaty.qmd",
-    updatedAt: "2026-04-22",
+    updatedAt: "2026-04-25",
     originalName: "one-percent-treaty-text",
   },
   whyOptimizationIsNecessary: {
-    markdown: "Governments were created to promote the general welfare (i.e. median health and wealth).\n\nInstead, since 1913, these governments have [printed](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) and used it to murder [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans and destroy many of the valuable things those humans spent their entire lives building.\n\nThese murdered humans [include](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.\n\nThat [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) could have funded [37,778 years](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) of clinical trials.  They bought the other thing.\n\nThese governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.\n\nSeven consecutive failed audits have found that the Pentagon has \"misplaced\" $2.46 trillion. They then requested additional trillions without explanation or apology. This \"misplaced\" money could have funded 577 years of clinical trials at current government spending.\n\nFor every [604](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases you and everyone you love will suffer and die from.\n\nYour chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.\n\nAt the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.\n\nThis is important because you personally will be dead within 80 years. (I mention this not to be rude but because you seem weirdly calm about it.)\n\nHad someone properly aligned your governments to maximize median healthy life years and median after-tax inflation-adjusted income in 1900, the average human would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html).\n\nThey did not. So that is what you are going to do.\n\nThis Declaration asks every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.\n\nHere is why this is not clinically insane.  Even adjusting for inflation, governments now spend [30.6](https://manual.WarOnDisease.org/knowledge/proof.html) times more than they did immediately before winning World War II.\n\nAfter that war, governments cut military spending by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) and produced the greatest economic expansion in human history.\n\nUnless the human genome has degraded significantly in the last two generations, one percent should be manageable. \n\nThese governments have already signed multiple global treaties banning entire weapons industries. This one just asks them to buy one percent fewer of them.\n\nThink about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money was busy turnining into a missle. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the inflation. You get the tax bill. You get to pay for her murder.\n\nTHIS. IS. SUBOPTIMAL.\n",
+    markdown: "Governments were created to promote the general welfare (i.e. median health and wealth).\n\nInstead, since 1913, these governments have [printed](https://manual.WarOnDisease.org/knowledge/economics/central-banks.html) [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) and used it to murder [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans and destroy many of the valuable things those humans spent their entire lives building.\n\nThese murdered humans [include](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) approximately 930,000 physicians, 310,000 scientists, 620,000 engineers, 1.24 million nurses, 3.1 million teachers, and [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who will never grow up to replace them.\n\nThat [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) could have funded [37,778 years](https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html) of clinical trials.  They bought the other thing.\n\nThese governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.\n\nSeven consecutive failed audits have found that the Pentagon has \"misplaced\" $2.46 trillion. They then requested additional trillions without explanation or apology. This \"misplaced\" money could have funded 577 years of clinical trials at current government spending.\n\nFor every [604](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases you and everyone you love will suffer and die from.\n\nYour chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.\n\nAt the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.\n\nThis is important because you personally will be dead within 80 years. (I mention this not to be rude but because you seem weirdly calm about it.)\n\nHad someone properly aligned your governments to maximize median healthy life years and median after-tax inflation-adjusted income in 1900, the average human would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html).\n\nThey did not. So that is what you are going to do.\n\nThis Declaration asks every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.\n\nHere is why this is not clinically insane.  Even adjusting for inflation, governments now spend [30.6](https://manual.WarOnDisease.org/knowledge/proof.html) times more than they did immediately before winning World War II.\n\nAfter that war, governments cut military spending by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) and produced the greatest economic expansion in human history.\n\nUnless the human genome has degraded significantly in the last two generations, one percent should be manageable. \n\nThese governments have already signed multiple global treaties banning entire weapons industries. This one just asks them to buy one percent fewer of them.\n\nThink about someone you love who is suffering right now. The treatment that would help them exists as an untested compound on a shelf, because the money was busy turnining into a missle. That missile incinerated a child who would have grown up to discover the cure. You lose the treatment. You lose the scientist. You get the inflation. You get the tax bill. You get to pay for her murder.\n\nTHIS. IS. SUBOPTIMAL.\n",
     sourceFile: "knowledge/strategy/declaration-of-optimization.qmd",
-    updatedAt: "2026-04-22",
+    updatedAt: "2026-04-25",
     originalName: "why-optimization-is-necessary",
   }
 } as const satisfies Record<string, ShareableSnippet>;
@@ -11697,6 +11702,19 @@ export const citations: Record<string, Citation> = {
         'container-title': "World Bank: Infrastructure Investment as Stimulus",
         URL: "https://blogs.worldbank.org/en/ppps/effectiveness-infrastructure-investment-fiscal-stimulus-what-weve-learned",
         note: "World Bank: Infrastructure Investment as Stimulus | Global Infrastructure Hub: Fiscal Multiplier | CEPR: Government Investment | Richmond Fed: Infrastructure Spending",
+  },
+  "international-idea-voter-turnout-database-2026": {
+        id: "international-idea-voter-turnout-database-2026",
+        type: "webpage",
+        title: "International IDEA Voter Turnout Database world export",
+        author: [
+          {
+            literal: "International IDEA"
+          },
+        ],
+        issued: { 'date-parts': [[2026]] },
+        URL: "https://www.idea.int/data-tools/export?type=region_only&themeId=293&world=all&loc=home",
+        note: "International IDEA Voter Turnout Database export plus methodology page",
   },
   "iqvia-global-medicines-2024": {
         id: "iqvia-global-medicines-2024",
@@ -12839,10 +12857,10 @@ export const citations: Record<string, Citation> = {
 /** Summary statistics */
 export const PARAMETER_STATS = {
   total: 668,
-  external: 214,
+  external: 215,
   calculated: 319,
-  definitions: 135,
-  citations: 155,
+  definitions: 134,
+  citations: 156,
 } as const;
 
 // ============================================================================
