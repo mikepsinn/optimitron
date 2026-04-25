@@ -12,14 +12,14 @@ vi.mock("@/lib/cron", () => ({
   isAuthorizedCronRequest: mocks.isAuthorizedCronRequest,
 }));
 
-vi.mock("@/lib/referral-invitations.server", () => ({
+vi.mock("@/lib/email/referral-invitation-emails.server", () => ({
   processDueReferralInvitationRecipientEmails:
     mocks.processDueReferralInvitationRecipientEmails,
   processDueReferralInvitationSenderEmails:
     mocks.processDueReferralInvitationSenderEmails,
 }));
 
-vi.mock("@/lib/treaty-sender-emails.server", () => ({
+vi.mock("@/lib/email/treaty-sender-emails.server", () => ({
   processDueTreatyMonthlyScorecardEmails:
     mocks.processDueTreatyMonthlyScorecardEmails,
   processDueTreatyNeverSharedReengagementEmails:

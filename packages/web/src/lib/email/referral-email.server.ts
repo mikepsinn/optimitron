@@ -13,8 +13,8 @@ import {
   pickSubjectVariant,
   REFERRAL_EMAIL_SEQUENCE_MAX_STEP,
   type EmailShareButton,
-} from "@/lib/referral-email-sequence";
-import { sendResendEmail, isResendConfigured } from "@/lib/resend";
+} from "@/lib/email/referral-email-sequence";
+import { sendResendEmail, isResendConfigured } from "@/lib/email/resend";
 import { embedShareAttemptId } from "@/lib/share-channels";
 import { listTasks } from "@/lib/tasks.server";
 import {

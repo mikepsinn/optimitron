@@ -6,7 +6,7 @@ import {
   buildTreatySecondSenderReminderEmail,
   buildTreatySendOneMoreReminderEmail,
   buildTreatyVoteConfirmedEmail,
-} from "@/lib/treaty-sender-email-sequence";
+} from "@/lib/email/treaty-sender-email-sequence";
 
 describe("treaty sender email sequence", () => {
   it("builds B1 vote confirmed copy", () => {

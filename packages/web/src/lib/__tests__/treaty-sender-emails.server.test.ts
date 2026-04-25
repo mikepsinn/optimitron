@@ -38,7 +38,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/resend", () => ({
+vi.mock("@/lib/email/resend", () => ({
   sendResendEmail: mocks.sendResendEmail,
 }));
 
@@ -58,7 +58,7 @@ import {
   sendTreatyRecipientVotedEmailForInvitation,
   sendTreatySenderReminderEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser,
-} from "@/lib/treaty-sender-emails.server";
+} from "@/lib/email/treaty-sender-emails.server";
 
 describe("treaty sender emails", () => {
   beforeEach(() => {

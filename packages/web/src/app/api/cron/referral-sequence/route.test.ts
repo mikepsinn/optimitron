@@ -9,7 +9,7 @@ vi.mock("@/lib/cron", () => ({
   isAuthorizedCronRequest: mocks.isAuthorizedCronRequest,
 }));
 
-vi.mock("@/lib/referral-email.server", () => ({
+vi.mock("@/lib/email/referral-email.server", () => ({
   processDueReferralSequenceEmails: mocks.processDueReferralSequenceEmails,
 }));
 

@@ -10,10 +10,12 @@ import { requireAuth } from "@/lib/auth-utils";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import {
-  createReferralInvitation,
-  markReferralInvitationCopied,
   SENDER_REMINDER_DELAY_DAYS,
   sendReferralInvitationEmail,
+} from "@/lib/email/referral-invitation-emails.server";
+import {
+  createReferralInvitation,
+  markReferralInvitationCopied,
 } from "@/lib/referral-invitations.server";
 import { MS_PER_DAY } from "@/lib/time";
 

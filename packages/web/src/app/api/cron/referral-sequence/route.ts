@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthorizedCronRequest } from "@/lib/cron";
-import { processDueReferralSequenceEmails } from "@/lib/referral-email.server";
+import { processDueReferralSequenceEmails } from "@/lib/email/referral-email.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getEmailBaseUrl, prefixEmailImage } from "../email-urls";
+import { getEmailBaseUrl, prefixEmailImage } from "../email/email-urls";
 
 describe("getEmailBaseUrl", () => {
   const originalBase = process.env.NEXT_PUBLIC_BASE_URL;

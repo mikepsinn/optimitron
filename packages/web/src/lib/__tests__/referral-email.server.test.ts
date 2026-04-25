@@ -81,7 +81,7 @@ vi.mock("@/lib/referral.server", () => ({
   getReferralCountsByUserIds: mocks.getReferralCountsByUserIds,
 }));
 
-vi.mock("@/lib/resend", () => ({
+vi.mock("@/lib/email/resend", () => ({
   isResendConfigured: mocks.isResendConfigured,
   sendResendEmail: mocks.sendResendEmail,
 }));
@@ -94,8 +94,8 @@ vi.mock("@/lib/url", () => ({
 import {
   processDueReferralSequenceEmails,
   sendWelcomeReferralEmailForUser,
-} from "../referral-email.server";
-import { REFERRAL_EMAIL_SEQUENCE_LENGTH } from "../referral-email-sequence";
+} from "../email/referral-email.server";
+import { REFERRAL_EMAIL_SEQUENCE_LENGTH } from "../email/referral-email-sequence";
 
 function cloneUser(user: StoredUser): StoredUser {
   return {

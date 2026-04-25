@@ -8,7 +8,7 @@ import {
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
-import { sendResendEmail, type SendResult } from "@/lib/resend";
+import { sendResendEmail, type SendResult } from "@/lib/email/resend";
 import {
   buildTreatyRecipientVotedEmail,
   buildTreatyMonthlyScorecardEmail,
@@ -16,7 +16,7 @@ import {
   buildTreatySecondSenderReminderEmail,
   buildTreatySendOneMoreReminderEmail,
   buildTreatyVoteConfirmedEmail,
-} from "@/lib/treaty-sender-email-sequence";
+} from "@/lib/email/treaty-sender-email-sequence";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { getBaseUrl } from "@/lib/url";

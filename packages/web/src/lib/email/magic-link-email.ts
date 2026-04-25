@@ -1,6 +1,6 @@
 import type { SendVerificationRequestParams } from "next-auth/providers/email";
 import { prisma } from "@/lib/prisma";
-import { sendResendEmail } from "@/lib/resend";
+import { sendResendEmail } from "@/lib/email/resend";
 
 function escapeHtml(value: string) {
   return value

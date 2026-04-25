@@ -40,7 +40,7 @@ vi.mock("@/lib/referral-invitations.server", () => ({
   convertReferralInvitationForVote: mocks.convertReferralInvitationForVote,
 }));
 
-vi.mock("@/lib/treaty-sender-emails.server", () => ({
+vi.mock("@/lib/email/treaty-sender-emails.server", () => ({
   sendTreatyRecipientVotedEmailForInvitation: mocks.sendTreatyRecipientVotedEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser: mocks.sendTreatyVoteConfirmedEmailForUser,
 }));

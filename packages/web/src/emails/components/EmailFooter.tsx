@@ -1,6 +1,6 @@
 import { Section, Text, Link } from "@react-email/components"
 import * as React from "react"
-import { getEmailUrls } from "@/lib/email-urls"
+import { getEmailUrls } from "@/lib/email/email-urls"
 
 interface EmailFooterProps {
   /** Short reason they're getting this email, e.g. "you opted in to weekly updates" */

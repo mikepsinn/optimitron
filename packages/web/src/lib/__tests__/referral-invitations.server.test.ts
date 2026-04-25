@@ -51,22 +51,24 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/resend", () => ({
+vi.mock("@/lib/email/resend", () => ({
   sendExternalResendEmail: mocks.sendExternalResendEmail,
 }));
 
-vi.mock("@/lib/treaty-sender-emails.server", () => ({
+vi.mock("@/lib/email/treaty-sender-emails.server", () => ({
   sendTreatySenderReminderEmailForInvitation:
     mocks.sendTreatySenderReminderEmailForInvitation,
 }));
 
 import {
-  convertReferralInvitationForVote,
-  createReferralInvitation,
-  markReferralInvitationCopied,
   processDueReferralInvitationRecipientEmails,
   processDueReferralInvitationSenderEmails,
   sendReferralInvitationEmail,
+} from "@/lib/email/referral-invitation-emails.server";
+import {
+  convertReferralInvitationForVote,
+  createReferralInvitation,
+  markReferralInvitationCopied,
 } from "@/lib/referral-invitations.server";
 
 describe("referral invitation server helpers", () => {

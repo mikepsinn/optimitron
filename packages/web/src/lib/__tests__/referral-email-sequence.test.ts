@@ -6,7 +6,7 @@ import {
   getReferralSequenceAction,
   REFERRAL_EMAIL_SEQUENCE_LENGTH,
   STEP_0_CRON_GRACE_MS,
-} from "../referral-email-sequence";
+} from "../email/referral-email-sequence";
 
 const FIXTURE_HIGHLIGHTS: OverdueSignerHighlight[] = [
   {

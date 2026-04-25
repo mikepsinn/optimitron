@@ -30,7 +30,7 @@ vi.mock("@/lib/referral.server", () => ({
   recordReferralAttributionForUser: mocks.recordReferralAttributionForUser,
 }));
 
-vi.mock("@/lib/referral-email.server", () => ({
+vi.mock("@/lib/email/referral-email.server", () => ({
   sendWelcomeReferralEmailForUser: mocks.sendWelcomeReferralEmailForUser,
 }));
 

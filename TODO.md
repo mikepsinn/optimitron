@@ -28,6 +28,7 @@ This is the working checklist for finishing the treaty migration and post-vote r
 These are technical-debt items surfaced by a 2026-04-25 architecture audit of the referral/email/share subsystem. They are not launch blockers but should land before the second non-treaty task family is wired up, because every one of them gets harder once a second caller exists.
 
 - [ ] Shrink and split `packages/web/src/lib/referral-invitations.server.ts` (823 lines).
+  - [x] First split: moved recipient invitation email send/cron logic and sender reminder cron scheduling into `packages/web/src/lib/email/referral-invitation-emails.server.ts`; lifecycle module is down to ~414 lines and no longer imports Resend or treaty sender reminder dispatch.
   - It currently orchestrates invitation CRUD, email dispatch, share-attempt logging, hypercert linkage, vote-token linkage, and task creation in one file.
   - Move email send into the email module; keep this file focused on invitation lifecycle transitions.
   - Refactor `sendReferralInvitationEmail()` (line 526, ~170 lines) into focused helpers: validate, build messages, record share attempt, dispatch email, persist status.
@@ -42,7 +43,9 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - Browser-side async `sha256Hex` in `components/landing/PostVoteReminders.tsx:30` and `components/tasks/task-row-share.tsx:29` is still duplicated — Web Crypto is async; not worth the risk in this pass.
 - [ ] Group email infrastructure under `packages/web/src/lib/email/`.
   - `email-urls.ts`, `magic-link-email.ts`, `referral-email.server.ts`, `referral-email-sequence.ts`, `referral-invitation-email-sequence.ts`, and `treaty-sender-emails.server.ts` currently sit flat in `lib/`.
-  - Centralize the Resend wrapper (`sendResendEmail`, `sendExternalResendEmail`, `isResendConfigured`) and add a single `createEmailLog()` helper that owns QUEUED -> SENT/FAILED transitions instead of inline writes scattered across the email files.
+  - `referral-invitation-emails.server.ts` now lives under `lib/email/` and owns recipient invitation email send/cron plus sender reminder cron scheduling.
+  - [x] Moved flat email infrastructure into `packages/web/src/lib/email/`: URL helpers, magic-link email, referral sequence sender, referral sequence copy builders, recipient invitation sequence builders, treaty sender sequence builders, treaty sender dispatcher, and the Resend wrapper. Updated affected route/test imports.
+  - **IN PROGRESS:** Centralize the Resend wrapper (`sendResendEmail`, `sendExternalResendEmail`, `isResendConfigured`) and add a single `createEmailLog()` helper that owns QUEUED -> SENT/FAILED transitions instead of inline writes scattered across the email files.
 - [x] Unify `ShareAttempt` writes through one helper.
   - `recordShareAttempt(tx, { ... })` now lives in `packages/web/src/lib/share-attempts.server.ts` and computes both `templateHash` and `renderedHash` from the inputs, eliminating the per-call `sha256Hex` plumbing.
   - The two creation paths in `referral-invitations.server.ts` (copied invite, email-send) both go through the helper. Future task families should call the same helper.
@@ -379,7 +382,7 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Add reporting tests that prove the same action cannot mint duplicate payout-eligible EOP.
 
 ## Donations And Crowdfunding
-OK
+
 ### Funding architecture (decided 2026-04-25)
 
 The Earth Optimization Prize / treaty funding ecosystem ships as a four-track architecture, each track serving a distinct audience and risk profile, all funneling into a single EOP-proportional distribution pool on success. See **Earth Optimization Points And Rewards** for the EOP earning formula and decay-attribution rules; see **Copy And Framing Audit** for the MLM-explainer page that must accompany Track 3 / Track 4 launch.

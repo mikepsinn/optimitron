@@ -5,7 +5,7 @@ import {
   getEmailUrls,
   prefixEmailHref,
   prefixEmailImage,
-} from "@/lib/email-urls";
+} from "@/lib/email/email-urls";
 import { buildChannelHref, type ShareableChannel } from "@/lib/share-channels";
 import {
   formatCompactCount,

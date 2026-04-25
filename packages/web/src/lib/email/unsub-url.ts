@@ -1,4 +1,4 @@
-import { getEmailBaseUrl } from "@/lib/email-urls";
+import { getEmailBaseUrl } from "@/lib/email/email-urls";
 import type { EmailScope } from "@/lib/email/scopes";
 import { signUnsubToken } from "@/lib/email/unsub-token";
 

@@ -35,7 +35,7 @@ vi.mock("@/lib/email/unsub-url", () => ({
   buildUnsubscribeUrl: vi.fn(() => "https://optimitron.com/api/email/unsubscribe?token=abc"),
 }));
 
-import { sendResendEmail } from "../resend";
+import { sendResendEmail } from "../email/resend";
 
 describe("sendResendEmail", () => {
   beforeEach(() => {

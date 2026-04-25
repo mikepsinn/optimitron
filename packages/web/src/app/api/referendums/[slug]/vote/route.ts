@@ -14,7 +14,7 @@ import { createLogger } from "@/lib/logger";
 import {
   sendTreatyRecipientVotedEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser,
-} from "@/lib/treaty-sender-emails.server";
+} from "@/lib/email/treaty-sender-emails.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const log = createLogger("referendum-vote");

@@ -6,10 +6,10 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { compare, hash } from "bcryptjs";
 import { createAuthAdapter } from "@/lib/auth-adapter";
-import { sendMagicLinkEmail } from "@/lib/magic-link-email";
+import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
 import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
-import { sendWelcomeReferralEmailForUser } from "@/lib/referral-email.server";
+import { sendWelcomeReferralEmailForUser } from "@/lib/email/referral-email.server";
 
 async function getSessionIdentity(userId: string) {
   const user = await prisma.user.findUnique({

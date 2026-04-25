@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   pickSubjectVariant,
   type SubjectVariantContext,
-} from "../referral-email-sequence";
+} from "../email/referral-email-sequence";
 
 const baseCtx: SubjectVariantContext = {
   deathsSinceLastEmail: 15000,

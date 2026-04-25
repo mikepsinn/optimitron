@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildReferralInvitationRecipientEmail,
   getReferralInvitationRecipientDelayDays,
-} from "@/lib/referral-invitation-email-sequence";
+} from "@/lib/email/referral-invitation-email-sequence";
 
 describe("referral invitation recipient email sequence", () => {
   it("builds the first task notification email", () => {

@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { isAuthorizedCronRequest } from "@/lib/cron";
-import { createLogger } from "@/lib/logger";
 import {
   processDueReferralInvitationRecipientEmails,
   processDueReferralInvitationSenderEmails,
-} from "@/lib/referral-invitations.server";
+} from "@/lib/email/referral-invitation-emails.server";
+import { createLogger } from "@/lib/logger";
 import {
   processDueTreatyMonthlyScorecardEmails,
   processDueTreatyNeverSharedReengagementEmails,
-} from "@/lib/treaty-sender-emails.server";
+} from "@/lib/email/treaty-sender-emails.server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

@@ -28,11 +28,11 @@ vi.mock("@/lib/auth-adapter", () => ({
   createAuthAdapter: () => ({}),
 }));
 
-vi.mock("@/lib/magic-link-email", () => ({
+vi.mock("@/lib/email/magic-link-email", () => ({
   sendMagicLinkEmail: vi.fn(),
 }));
 
-vi.mock("@/lib/referral-email.server", () => ({
+vi.mock("@/lib/email/referral-email.server", () => ({
   sendWelcomeReferralEmailForUser: vi.fn(),
 }));
 
