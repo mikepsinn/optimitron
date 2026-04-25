@@ -25,6 +25,36 @@ interface PersonDraftInput {
   sourceUrl?: string | null;
 }
 
+interface MergeDuplicatePersonInput {
+  canonicalPersonId: string;
+  duplicatePersonId: string;
+  now?: Date;
+}
+
+interface MergeablePerson {
+  bio: string | null;
+  countryCode: string | null;
+  currentAffiliation: string | null;
+  displayName: string;
+  email: string | null;
+  handle: string | null;
+  id: string;
+  image: string | null;
+  isPublicFigure: boolean;
+  links: Prisma.JsonValue | null;
+  sourceRef: string | null;
+  sourceUrl: string | null;
+  user: { id: string } | null;
+}
+
+export interface MergeDuplicatePersonResult {
+  canonicalPersonId: string;
+  duplicatePersonId: string;
+  reassignedReferralInvitations: number;
+  reassignedTasks: number;
+  reassignedUsers: number;
+}
+
 function slugify(value: string) {
   return value
     .trim()
@@ -95,6 +125,129 @@ async function loadUserIdentity(db: DbClient, userId: string): Promise<UserPerso
       personId: true,
     },
   });
+}
+
+async function loadMergeablePerson(db: DbClient, personId: string) {
+  return db.person.findUnique({
+    where: { id: personId },
+    select: {
+      bio: true,
+      countryCode: true,
+      currentAffiliation: true,
+      displayName: true,
+      email: true,
+      handle: true,
+      id: true,
+      image: true,
+      isPublicFigure: true,
+      links: true,
+      sourceRef: true,
+      sourceUrl: true,
+      user: {
+        select: { id: true },
+      },
+    },
+  }) as Promise<MergeablePerson | null>;
+}
+
+function mergePersonUpdateData(
+  canonical: MergeablePerson,
+  duplicate: MergeablePerson,
+): Prisma.PersonUpdateInput {
+  const links = canonical.links ?? duplicate.links;
+
+  return {
+    bio: canonical.bio ?? duplicate.bio,
+    countryCode: canonical.countryCode ?? duplicate.countryCode,
+    currentAffiliation: canonical.currentAffiliation ?? duplicate.currentAffiliation,
+    displayName: canonical.displayName || duplicate.displayName,
+    email: canonical.email ?? duplicate.email,
+    handle: canonical.handle ?? duplicate.handle,
+    image: canonical.image ?? duplicate.image,
+    isPublicFigure: canonical.isPublicFigure || duplicate.isPublicFigure,
+    ...(links === null ? {} : { links }),
+    sourceRef: canonical.sourceRef ?? duplicate.sourceRef,
+    sourceUrl: canonical.sourceUrl ?? duplicate.sourceUrl,
+  };
+}
+
+async function mergeDuplicatePersonInClient(
+  input: MergeDuplicatePersonInput,
+  db: DbClient,
+): Promise<MergeDuplicatePersonResult> {
+  if (input.canonicalPersonId === input.duplicatePersonId) {
+    throw new Error("canonicalPersonId and duplicatePersonId must be different");
+  }
+
+  const [canonical, duplicate] = await Promise.all([
+    loadMergeablePerson(db, input.canonicalPersonId),
+    loadMergeablePerson(db, input.duplicatePersonId),
+  ]);
+
+  if (!canonical) {
+    throw new Error(`Canonical person not found: ${input.canonicalPersonId}`);
+  }
+  if (!duplicate) {
+    throw new Error(`Duplicate person not found: ${input.duplicatePersonId}`);
+  }
+
+  if (canonical.user && duplicate.user && canonical.user.id !== duplicate.user.id) {
+    throw new Error("Cannot merge two Person records that are linked to different users");
+  }
+
+  const now = input.now ?? new Date();
+  const canonicalData = mergePersonUpdateData(canonical, duplicate);
+
+  const [taskResult, invitationResult, userResult] = await Promise.all([
+    db.task.updateMany({
+      where: { assigneePersonId: duplicate.id },
+      data: { assigneePersonId: canonical.id },
+    }),
+    db.referralInvitation.updateMany({
+      where: { recipientPersonId: duplicate.id },
+      data: { recipientPersonId: canonical.id },
+    }),
+    duplicate.user && !canonical.user
+      ? db.user.updateMany({
+          where: { personId: duplicate.id },
+          data: { personId: canonical.id },
+        })
+      : Promise.resolve({ count: 0 }),
+  ]);
+
+  await db.person.update({
+    where: { id: duplicate.id },
+    data: {
+      deletedAt: now,
+      email: null,
+      handle: null,
+      sourceRef: null,
+    },
+  });
+
+  await db.person.update({
+    where: { id: canonical.id },
+    data: canonicalData,
+  });
+
+  return {
+    canonicalPersonId: canonical.id,
+    duplicatePersonId: duplicate.id,
+    reassignedReferralInvitations: invitationResult.count,
+    reassignedTasks: taskResult.count,
+    reassignedUsers: userResult.count,
+  };
+}
+
+export async function mergeDuplicatePerson(
+  input: MergeDuplicatePersonInput,
+  db: DbClient = prisma,
+): Promise<MergeDuplicatePersonResult> {
+  if ("$transaction" in db) {
+    return db.$transaction((tx) => mergeDuplicatePersonInClient(input, tx));
+  }
+
+  return mergeDuplicatePersonInClient(input, db);
 }
 
 export async function ensurePersonForUser(

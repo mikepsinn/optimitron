@@ -57,6 +57,12 @@ describe("embedShareAttemptId", () => {
     expect(out).toContain("sa=abc");
   });
 
+  it("appends sa= when the owned base URL already contains an invite query", () => {
+    const msg = "Complete https://optimitron.com/vote/jane?invite=tok123 now.";
+    const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane?invite=tok123", "abc");
+    expect(out).toBe("Complete https://optimitron.com/vote/jane?invite=tok123&sa=abc now.");
+  });
+
   it("replaces an existing sa= rather than duplicating it", () => {
     const msg = "Here https://optimitron.com/vote/jane?sa=OLD&foo=bar end.";
     const out = embedShareAttemptId(msg, "https://optimitron.com/vote/jane", "NEW");

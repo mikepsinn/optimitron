@@ -72,19 +72,8 @@ export function embedShareAttemptId(message: string, baseUrl: string, shareAttem
     const trailingMatch = tail.match(/[),.!?:;]+$/);
     const trailing = trailingMatch?.[0] ?? "";
     const cleanTail = trailing ? tail.slice(0, -trailing.length) : tail;
-
-    // Split existing tail into query and fragment.
-    const fragIdx = cleanTail.indexOf("#");
-    const hash = fragIdx >= 0 ? cleanTail.slice(fragIdx) : "";
-    const pathAndQuery = fragIdx >= 0 ? cleanTail.slice(0, fragIdx) : cleanTail;
-    const queryIdx = pathAndQuery.indexOf("?");
-    const path = queryIdx >= 0 ? pathAndQuery.slice(0, queryIdx) : pathAndQuery;
-    const query = queryIdx >= 0 ? pathAndQuery.slice(queryIdx + 1) : "";
-    // Strip any existing sa= param
-    const keptPairs = query
-      .split("&")
-      .filter((pair) => pair.length > 0 && !pair.startsWith("sa="));
-    keptPairs.push(`sa=${encodeURIComponent(shareAttemptId)}`);
-    return `${prefix}${path}?${keptPairs.join("&")}${hash}${trailing}`;
+    const url = new URL(`${prefix}${cleanTail}`);
+    url.searchParams.set("sa", shareAttemptId);
+    return `${url.toString()}${trailing}`;
   });
 }

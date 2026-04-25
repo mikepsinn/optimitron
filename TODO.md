@@ -95,7 +95,10 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - Referral-generated private task detail pages now show an Earth optimization task panel with recipient, format, reminder count, status, and a direct `/send` CTA.
 - [x] Decide whether recipient conversion should also attach the recipient user to the existing `Person` when email matches.
   - Yes: invite conversion now opportunistically attaches the converted voter to the invitation's existing `recipientPersonId` when the voter does not already have a `personId`.
-- [ ] Add a merge/cleanup path for duplicate `Person` records created from referrals, imports, and manually assigned tasks.
+- [x] Add a merge/cleanup path for duplicate `Person` records created from referrals, imports, and manually assigned tasks.
+  - `mergeDuplicatePerson()` in `packages/web/src/lib/person.server.ts` moves duplicate `Task.assigneePersonId`, `ReferralInvitation.recipientPersonId`, and safe one-user `User.personId` links to the canonical person, preserves missing canonical metadata from the duplicate, clears duplicate unique fields, and soft-deletes the duplicate.
+  - It refuses to merge two `Person` rows that are linked to different users. That keeps account identity cleanup explicit instead of silently collapsing two signed-up humans.
+  - Covered by `packages/web/src/lib/__tests__/person.server.test.ts`.
 - [x] Add dashboard filters for pending, sent, copied, converted, declined, cancelled, and stale referral tasks.
   - The Earth optimization tasks card now filters all/pending/copied/sent/confirmed/closed rows.
 
