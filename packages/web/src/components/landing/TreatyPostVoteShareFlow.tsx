@@ -381,7 +381,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
         return (
           <>
             <div className="space-y-4">
-              {alt ? <FlowParagraph>I'm sorry but I still have to tell you this anyway.</FlowParagraph> : null}
+              {alt ? <FlowParagraph>{"I'm sorry but I still have to tell you this anyway."}</FlowParagraph> : null}
               <FlowParagraph>
                 Statistically, you and/or someone you love will get a horrible disease. 95% of diseases have zero FDA-approved treatments. 9,500 known-safe compounds sit on shelves, and 99.7% of their potential uses have never been tested — because the money was busy turning into missiles.
               </FlowParagraph>
@@ -406,7 +406,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans. Call that one apocalypse.
               </FlowParagraph>
               <FlowParagraph>
-                Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity.
+                {"Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity."}
               </FlowParagraph>
               <FlowParagraph>You can only ruin Earth once. The other 121 are just wasteful.</FlowParagraph>
               <FlowParagraph>The 1% Treaty asks you to trade one apocalypse for something slightly nicer.</FlowParagraph>
@@ -441,17 +441,17 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <DetailsBlock>
                   <p>Global military spending 2024 = $2.72 trillion (SIPRI). 1% of that = $27.2B.</p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">Pragmatic clinical trials cost $929/patient, not $41,000. So $27.2B funds 23 million patients per year — instead of today's 1.9 million.</p>
+                <p className="text-xl font-black leading-tight">{"Pragmatic clinical trials cost $929/patient, not $41,000. So $27.2B funds 23 million patients per year — instead of today's 1.9 million."}</p>
                 <DetailsBlock>
                   <p>Traditional Phase 3 trials: median $41,000/patient (FDA data). Pragmatic trials: $929/patient (ADAPTABLE trial real-world cost). Meta-analysis of 64 pragmatic trials finds median $97/patient (Ramsberg & Platt 2018). Using conservative $929. $27.2B × 80% allocated to patient subsidies = $21.8B ÷ $929 = 23.4M patients tested per year. Current global trial participation: 1.9M patients/year (IQVIA 2022).</p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">That's 12x more clinical trial capacity. Disease eradication compresses from 443 years to 36.</p>
+                <p className="text-xl font-black leading-tight">{"That's 12x more clinical trial capacity. Disease eradication compresses from 443 years to 36."}</p>
                 <DetailsBlock>
-                  <p>23.4M funded patients ÷ 1.9M current = 12.3x multiplier. 6,650 diseases currently have no effective treatment (95% of ~7,000 rare diseases per Orphanet 2024). At today's rate, first-ever treatments emerge for 15 new diseases/year. 6,650 ÷ 15 = <strong>443 years</strong> to clear the queue. With 12.3x capacity: 443 ÷ 12.3 = <strong>36 years</strong>.</p>
+                  <p>{"23.4M funded patients ÷ 1.9M current = 12.3x multiplier. 6,650 diseases currently have no effective treatment (95% of ~7,000 rare diseases per Orphanet 2024). At today's rate, first-ever treatments emerge for 15 new diseases/year. 6,650 ÷ 15 = "}<strong>443 years</strong>{" to clear the queue. With 12.3x capacity: 443 ÷ 12.3 = "}<strong>36 years</strong>.</p>
                 </DetailsBlock>
-                <p className="text-xl font-black leading-tight">10.7 billion people don't die of a curable disease while waiting. Plus 1.93 quadrillion hours of suffering doesn't happen.</p>
+                <p className="text-xl font-black leading-tight">{"10.7 billion people don't die of a curable disease while waiting. Plus 1.93 quadrillion hours of suffering doesn't happen."}</p>
                 <DetailsBlock>
-                  <p>Average treatment arrival accelerates by 212 years (204 from more trials + 8.2 from eliminating FDA's efficacy-testing lag). Over that window: global disease deaths (~55M/year) × avoidable fraction × years = 10.7 billion deaths prevented (95% CI: 7.4B–16.2B). Suffering: 1.93 quadrillion hours (95% CI: 1.36Q–2.62Q) from DALY YLD component × hours per year. Full calculation at manual.warondisease.org.</p>
+                  <p>{"Average treatment arrival accelerates by 212 years (204 from more trials + 8.2 from eliminating FDA's efficacy-testing lag). Over that window: global disease deaths (~55M/year) × avoidable fraction × years = 10.7 billion deaths prevented (95% CI: 7.4B–16.2B). Suffering: 1.93 quadrillion hours (95% CI: 1.36Q–2.62Q) from DALY YLD component × hours per year. Full calculation at manual.warondisease.org."}</p>
                 </DetailsBlock>
                 <FlowParagraph>Every number above has a citation. This math is not my opinion.</FlowParagraph>
               </div>
@@ -482,7 +482,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <FlowParagraph>Respect. Still, imagine:</FlowParagraph>
                   <FlowParagraph>
-                    You trigger a chain reaction that gets a majority of humanity — 4 billion people — to collectively agree: "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
+                    {"You trigger a chain reaction that gets a majority of humanity — 4 billion people — to collectively agree: \"Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes.\""}
                   </FlowParagraph>
                 </>
               ) : (
@@ -491,11 +491,11 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                     Imagine you triggered a chain reaction that got a majority of humanity — 4 billion people — to collectively agree:
                   </FlowParagraph>
                   <FlowParagraph>
-                    "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
+                    {"\"Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes.\""}
                   </FlowParagraph>
                 </>
               )}
-              <FlowParagraph>Wouldn't that be neat?</FlowParagraph>
+              <FlowParagraph>{"Wouldn't that be neat?"}</FlowParagraph>
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => go("twoHumans", true)}>
@@ -514,7 +514,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? (
                 <>
-                  <FlowParagraph>Fair. But here's why it's easier than you think:</FlowParagraph>
+                  <FlowParagraph>{"Fair. But here's why it's easier than you think:"}</FlowParagraph>
                   <FlowParagraph>Only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
                   <FlowParagraph>2 → 4 → 8 → 16... 32 rounds reaches 4 billion. One per week = 8 months.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
@@ -525,7 +525,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                   <FlowParagraph>Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: 32 rounds reaches 4 billion. At one per day, 32 days. At one per week, 8 months.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
                   <DetailsBlock summary="Has a chain letter ever actually worked?">
-                    <p>In 1935, a billion people handwrote letters, bought stamps, and mailed actual money to strangers because a piece of paper promised them $1,562.50 that didn't exist. The promise was a lie. The threat was fake. Some of them probably died driving to the post office.</p>
+                    <p>{"In 1935, a billion people handwrote letters, bought stamps, and mailed actual money to strangers because a piece of paper promised them $1,562.50 that didn't exist. The promise was a lie. The threat was fake. Some of them probably died driving to the post office."}</p>
                     <p>This one requires touching a glowing rectangle a few times. It costs nothing. There are no stamps. And the threat — that you and everyone you love will suffer and die of curable diseases if nobody funds the research — is not a superstition. It is an epidemiological fact.</p>
                     <p>So it should probably do fine.</p>
                   </DetailsBlock>
@@ -654,7 +654,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               <FlowParagraph>How do you want to tell {displayName}?</FlowParagraph>
               <TaskPreview senderName={senderName} />
               <div className="border-4 border-primary bg-background p-4 text-sm font-bold leading-snug">
-                "Hi {displayName}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"
+                {`"Hi ${displayName}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"`}
               </div>
             </div>
             <FlowButtonRow>
@@ -716,7 +716,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       case "copyConfirm":
         return (
           <>
-            <FlowParagraph>Now paste it into your texts, WhatsApp, email, Signal — whichever gets to {displayName} fastest. Come back here when you've sent it.</FlowParagraph>
+            <FlowParagraph>{`Now paste it into your texts, WhatsApp, email, Signal — whichever gets to ${displayName} fastest. Come back here when you've sent it.`}</FlowParagraph>
             <Button className={primaryButtonClass} onClick={completeCurrentInvitation}>
               I sent it
             </Button>
@@ -726,7 +726,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       case "sendConfirm":
         return (
           <>
-            <FlowParagraph>Sent to {recipientEmail.trim()}. We'll gently nudge them in 3 days if they haven't voted yet.</FlowParagraph>
+            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll gently nudge them in 3 days if they haven't voted yet.`}</FlowParagraph>
             <Button className={primaryButtonClass} onClick={completeCurrentInvitation}>
               Continue
             </Button>
@@ -743,7 +743,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <FlowParagraph>Your pending totals:</FlowParagraph>
                 <FlowParagraph>Lifetimes of suffering prevented: <strong>{sentCount}</strong></FlowParagraph>
                 <FlowParagraph>Inverse Kills Score: <strong>{pendingLives} lives</strong></FlowParagraph>
-                <FlowParagraph>We'll email you the moment {lastRecipientName || displayName} votes. Pending numbers turn into locked-in numbers.</FlowParagraph>
+                <FlowParagraph>{`We'll email you the moment ${lastRecipientName || displayName} votes. Pending numbers turn into locked-in numbers.`}</FlowParagraph>
                 <FlowParagraph>Most humans stop here. Which is statistically disappointing, but fine.</FlowParagraph>
                 <FlowParagraph>One more?</FlowParagraph>
               </div>
@@ -797,10 +797,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             <div className="space-y-4">
               {dismissiveCount >= 5 ? (
-                <FlowParagraph>You clicked "go to hell" {dismissiveCount} times and you're still reading. That is data.</FlowParagraph>
+                <FlowParagraph>{`You clicked "go to hell" ${dismissiveCount} times and you're still reading. That is data.`}</FlowParagraph>
               ) : null}
-              <FlowParagraph>The chain only breaks if one human says "later." Is that human you?</FlowParagraph>
-              <FlowParagraph>In 32 rounds we run out of humans to ask. That's months, not decades.</FlowParagraph>
+              <FlowParagraph>{"The chain only breaks if one human says \"later.\" Is that human you?"}</FlowParagraph>
+              <FlowParagraph>{"In 32 rounds we run out of humans to ask. That's months, not decades."}</FlowParagraph>
               <FlowParagraph>Then you get to go back to whatever you were doing before the most important thing in the universe rudely interrupted.</FlowParagraph>
             </div>
             <Button className={primaryButtonClass} onClick={() => go("feedback")}>
@@ -815,17 +815,17 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {sentCount === 0 ? (
                 <>
-                  <FlowParagraph>You went through this entire thing and didn't send it to anyone. That's useful data for us.</FlowParagraph>
+                  <FlowParagraph>{"You went through this entire thing and didn't send it to anyone. That's useful data for us."}</FlowParagraph>
                   <FlowParagraph>What would we have to change to make you send it to everyone you love?</FlowParagraph>
                 </>
               ) : sentCount >= 5 ? (
                 <>
-                  <FlowParagraph>You sent to {sentCount} people. You're clearly not the problem.</FlowParagraph>
-                  <FlowParagraph>What would make this work better for the people who aren't you?</FlowParagraph>
+                  <FlowParagraph>{`You sent to ${sentCount} people. You're clearly not the problem.`}</FlowParagraph>
+                  <FlowParagraph>{"What would make this work better for the people who aren't you?"}</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <FlowParagraph>One last thing. We're trying to make this the most effective chain letter in history.</FlowParagraph>
+                  <FlowParagraph>{"One last thing. We're trying to make this the most effective chain letter in history."}</FlowParagraph>
                   <FlowParagraph>What would we have to change about this to make you send it to everyone you love?</FlowParagraph>
                 </>
               )}

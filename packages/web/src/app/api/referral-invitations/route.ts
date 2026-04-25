@@ -4,6 +4,7 @@ import {
   ReferralInvitationContactMethod,
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
+  TaskStatus,
 } from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
 import { createLogger } from "@/lib/logger";
@@ -90,6 +91,9 @@ export async function POST(request: Request) {
     }
     if (error instanceof Error && error.message.includes("rate limit")) {
       return NextResponse.json({ error: error.message }, { status: 429 });
+    }
+    if (error instanceof Error && error.message === "Task not found.") {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     log.error("Failed to create", error);
     return NextResponse.json({ error: "Failed to create invitation." }, { status: 500 });
@@ -196,6 +200,25 @@ export async function PATCH(request: Request) {
 
     if (result.count === 0) {
       return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+    }
+
+    if (parsed.action === "decline" || parsed.action === "cancel") {
+      await prisma.task.updateMany({
+        where: {
+          deletedAt: null,
+          referralInvitations: {
+            some: {
+              id: parsed.id,
+              referrerUserId: userId,
+            },
+          },
+          status: { not: TaskStatus.VERIFIED },
+        },
+        data: {
+          ...(parsed.action === "cancel" ? { deletedAt: now } : {}),
+          status: TaskStatus.STALE,
+        },
+      });
     }
 
     const invitation = await prisma.referralInvitation.findUnique({

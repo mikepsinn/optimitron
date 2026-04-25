@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   requireAuth: vi.fn(),
   sendReferralInvitationEmail: vi.fn(),
+  taskUpdateMany: vi.fn(),
   updateMany: vi.fn(),
 }));
 
@@ -19,6 +20,9 @@ vi.mock("@/lib/prisma", () => ({
       findMany: mocks.findMany,
       findUnique: mocks.findUnique,
       updateMany: mocks.updateMany,
+    },
+    task: {
+      updateMany: mocks.taskUpdateMany,
     },
   },
 }));
@@ -214,6 +218,41 @@ describe("/api/referral-invitations", () => {
       messageText: "edited message",
       referrerUserId: "user_1",
       now: expect.any(Date),
+    });
+  });
+
+  it("marks a cancelled invitation task stale", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.updateMany.mockResolvedValue({ count: 1 });
+    mocks.taskUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.findUnique.mockResolvedValue({ id: "invite_1", status: "CANCELLED" });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "cancel",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      invitation: { id: "invite_1", status: "CANCELLED" },
+    });
+    expect(mocks.taskUpdateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        referralInvitations: {
+          some: {
+            id: "invite_1",
+            referrerUserId: "user_1",
+          },
+        },
+        status: { not: "VERIFIED" },
+      },
+      data: expect.objectContaining({
+        deletedAt: expect.any(Date),
+        status: "STALE",
+      }),
     });
   });
 

@@ -3,6 +3,10 @@ import {
   ReferralInvitationContactMethod,
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
+  TaskCategory,
+  TaskClaimPolicy,
+  TaskDifficulty,
+  TaskStatus,
 } from "@optimitron/db";
 import { serverEnv } from "@/lib/env";
 import {
@@ -19,12 +23,13 @@ import {
 } from "@/lib/referral-invitation-copy";
 import { sendExternalResendEmail } from "@/lib/resend";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
-import { getUserDisplayName } from "@/lib/user-display";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const INVITE_TOKEN_SIZE = 24;
 const UNSUBSCRIBE_TOKEN_SIZE = 32;
 const CREATE_LIMIT_PER_HOUR = 50;
 const DEFAULT_BATCH_SIZE = 50;
+const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -127,6 +132,23 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
+function buildReferralInvitationTaskKey(inviteToken: string) {
+  return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
+}
+
+function buildReferralInvitationTaskTitle(recipientName: string) {
+  const firstName = getReferralInvitationFirstName(recipientName) || recipientName;
+  return `Invite ${firstName} to vote on the 1% Treaty`;
+}
+
+function buildReferralInvitationTaskDescription(recipientName: string) {
+  const firstName = getReferralInvitationFirstName(recipientName) || recipientName;
+  return [
+    `${firstName} was invited to vote on the 1% Treaty.`,
+    "The task is complete when their verified vote converts the invitation.",
+  ].join("\n\n");
+}
+
 export async function createReferralInvitation(input: {
   referrerUserId: string;
   recipientName: string;
@@ -150,7 +172,10 @@ export async function createReferralInvitation(input: {
 
   const referrer = await prisma.user.findUnique({
     where: { id: input.referrerUserId },
-    select: { email: true },
+    select: {
+      ...userDisplaySelect,
+      referralCode: true,
+    },
   });
 
   if (!referrer) {
@@ -173,6 +198,25 @@ export async function createReferralInvitation(input: {
     throw new Error("Referral invitation rate limit exceeded.");
   }
 
+  let linkedTaskId = input.taskId?.trim() || null;
+  if (linkedTaskId) {
+    const linkedTask = await prisma.task.findFirst({
+      where: {
+        id: linkedTaskId,
+        deletedAt: null,
+        OR: [
+          { ownerUserId: input.referrerUserId },
+          { isPublic: true },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (!linkedTask) {
+      throw new Error("Task not found.");
+    }
+  }
+
   const referendum = await prisma.referendum.findFirst({
     where: {
       slug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
@@ -183,36 +227,84 @@ export async function createReferralInvitation(input: {
 
   const inviteToken = await createUniqueInviteToken();
   const recipientUnsubscribeToken = await createUniqueRecipientUnsubscribeToken();
-  const recipientPerson = recipientEmail
-    ? await prisma.person.upsert({
-        where: { email: recipientEmail },
-        update: {
-          deletedAt: null,
-          displayName: recipientName,
-        },
-        create: {
-          displayName: recipientName,
-          email: recipientEmail,
+  const messageFormat = input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
+  const inviteUrl = buildUserInviteReferralUrl(referrer, inviteToken, getBaseUrl());
+  const senderName = getUserDisplayName(referrer) || "A voter";
+  const messageText = input.messageText?.trim() || null;
+  const taskContactTemplate =
+    messageText ??
+    buildDefaultReferralInvitationMessage({
+      messageFormat,
+      recipientName,
+      senderName,
+      treatyUrl: inviteUrl,
+    });
+
+  return prisma.$transaction(async (tx) => {
+    const recipientPerson = recipientEmail
+      ? await tx.person.upsert({
+          where: { email: recipientEmail },
+          update: {
+            deletedAt: null,
+            displayName: recipientName,
+          },
+          create: {
+            displayName: recipientName,
+            email: recipientEmail,
+          },
+          select: { id: true },
+        })
+      : null;
+
+    if (!linkedTaskId) {
+      const task = await tx.task.create({
+        data: {
+          assigneeAffiliationSnapshot: recipientName,
+          assigneePersonId: recipientPerson?.id ?? null,
+          category: TaskCategory.OUTREACH,
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          contactLabel: "Complete treaty vote",
+          contactTemplate: taskContactTemplate,
+          contactUrl: inviteUrl,
+          contextJson: {
+            inviteToken,
+            kind: "referral_invitation",
+            referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
+          },
+          description: buildReferralInvitationTaskDescription(recipientName),
+          difficulty: TaskDifficulty.TRIVIAL,
+          estimatedEffortHours: 0.01,
+          interestTags: ["one-percent-treaty", "war-on-disease"],
+          isPublic: false,
+          ownerUserId: input.referrerUserId,
+          roleTitle: "Referred treaty voter",
+          skillTags: ["voting"],
+          status: TaskStatus.ACTIVE,
+          taskKey: buildReferralInvitationTaskKey(inviteToken),
+          title: buildReferralInvitationTaskTitle(recipientName),
         },
         select: { id: true },
-      })
-    : null;
+      });
+      linkedTaskId = task.id;
+    }
 
-  return prisma.referralInvitation.create({
-    data: {
-      referrerUserId: input.referrerUserId,
-      recipientPersonId: recipientPerson?.id ?? null,
-      recipientName,
-      recipientEmail,
-      contactMethod: input.contactMethod ?? (recipientEmail ? ReferralInvitationContactMethod.EMAIL : null),
-      messageFormat: input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE,
-      messageText: input.messageText?.trim() || null,
-      referendumId: referendum?.id ?? null,
-      taskId: input.taskId || null,
-      shareAttemptId: input.shareAttemptId || null,
-      inviteToken,
-      recipientUnsubscribeToken,
-    },
+    return tx.referralInvitation.create({
+      data: {
+        referrerUserId: input.referrerUserId,
+        recipientPersonId: recipientPerson?.id ?? null,
+        recipientName,
+        recipientEmail,
+        contactMethod:
+          input.contactMethod ?? (recipientEmail ? ReferralInvitationContactMethod.EMAIL : null),
+        messageFormat,
+        messageText,
+        referendumId: referendum?.id ?? null,
+        taskId: linkedTaskId,
+        shareAttemptId: input.shareAttemptId || null,
+        inviteToken,
+        recipientUnsubscribeToken,
+      },
+    });
   });
 }
 
@@ -230,7 +322,9 @@ export async function resolveInvitationReferrer(inviteToken: string | null | und
       referrerUserId: true,
       referendumId: true,
       convertedVoteId: true,
+      recipientName: true,
       status: true,
+      taskId: true,
     },
   });
 }
@@ -249,15 +343,39 @@ export async function convertReferralInvitationForVote(input: {
   }
   if (invitation.convertedVoteId) return invitation;
 
-  return prisma.referralInvitation.update({
-    where: { id: invitation.id },
-    data: {
-      status: ReferralInvitationStatus.CONVERTED,
-      convertedVoteId: input.voteId,
-      convertedAt: new Date(),
-      nextRecipientEmailAt: null,
-      nextSenderNudgeAt: null,
-    },
+  const now = new Date();
+  return prisma.$transaction(async (tx) => {
+    const converted = await tx.referralInvitation.update({
+      where: { id: invitation.id },
+      data: {
+        status: ReferralInvitationStatus.CONVERTED,
+        convertedVoteId: input.voteId,
+        convertedAt: now,
+        nextRecipientEmailAt: null,
+        nextSenderNudgeAt: null,
+      },
+    });
+
+    if (invitation.taskId) {
+      await tx.task.updateMany({
+        where: {
+          id: invitation.taskId,
+          deletedAt: null,
+          status: { not: TaskStatus.VERIFIED },
+        },
+        data: {
+          actualEffortSeconds: 30,
+          completedAt: now,
+          completionEvidence:
+            `${invitation.recipientName} verified a vote through referral invitation ${invitation.id}.`,
+          status: TaskStatus.VERIFIED,
+          verifiedAt: now,
+          verifiedByUserId: input.voterUserId,
+        },
+      });
+    }
+
+    return converted;
   });
 }
 

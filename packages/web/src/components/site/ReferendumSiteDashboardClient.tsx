@@ -2,6 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { ReferralInvitationStatusCard } from "@/components/dashboard/ReferralInvitationStatusCard";
 import { PostVoteReminders } from "@/components/landing/PostVoteReminders";
 import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer";
 import { Button } from "@/components/retroui/Button";
@@ -42,6 +43,7 @@ export function ReferendumSiteDashboardClient({
         <TasksRootIntro />
         <div className="mx-auto mt-6 max-w-2xl text-left">
           <ReferralInvitationComposer />
+          <ReferralInvitationStatusCard />
           <PostVoteReminders />
         </div>
       </div>

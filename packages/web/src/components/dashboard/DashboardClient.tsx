@@ -15,6 +15,7 @@ import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard"
 import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { ShareTemplatesCard } from "@/components/dashboard/ShareTemplatesCard"
+import { ReferralInvitationStatusCard } from "@/components/dashboard/ReferralInvitationStatusCard"
 import { ReferralInvitationComposer } from "@/components/landing/ReferralInvitationComposer"
 import { SortableTaskList } from "@/components/tasks/task-list-controls"
 import type { TaskCardTask } from "@/components/tasks/task-card"
@@ -68,6 +69,7 @@ export function DashboardClient({
 
         <div className="mb-8 max-w-2xl" id="referral-invitations">
           <ReferralInvitationComposer />
+          <ReferralInvitationStatusCard />
         </div>
 
         {topTasks.length > 0 ? (
