@@ -11,7 +11,7 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { getReferralEmailBatchSize } from "@/lib/email/batch";
-import { serverEnv } from "@/lib/env";
+import { getConfiguredFromAddress, sanitizeDisplayName } from "@/lib/email/from-address";
 import {
   buildReferralInvitationRecipientEmail,
   getReferralInvitationRecipientDelayDays,
@@ -89,18 +89,10 @@ async function createUniqueRecipientUnsubscribeToken() {
   throw new Error("Unable to create unique invitation unsubscribe token.");
 }
 
-function getSenderInviteEmailFromAddress(senderName: string) {
-  const rawFrom = serverEnv.EMAIL_FROM ?? "";
-  const emailAddress = rawFrom.includes("<")
-    ? rawFrom.replace(/^.*<|>.*$/g, "").trim()
-    : rawFrom.trim();
-
-  if (!emailAddress || !emailAddress.includes("@")) {
-    return undefined;
-  }
-
-  const safeSenderName = senderName.replace(/[<>\r\n"]/g, "").trim() || "A voter";
-  return `${safeSenderName} via War on Disease <${emailAddress}>`;
+function getSenderInviteEmailFromAddress(senderName: string): string | undefined {
+  const address = getConfiguredFromAddress();
+  if (!address) return undefined;
+  return `${sanitizeDisplayName(senderName, "A voter")} via War on Disease <${address}>`;
 }
 
 export function buildReferralInvitationUnsubscribeUrl(input: {

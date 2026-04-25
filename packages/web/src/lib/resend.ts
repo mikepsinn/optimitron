@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { render } from "@react-email/components";
 import { serverEnv } from "@/lib/env";
 import { canSendEmailToUser } from "@/lib/email/can-send.server";
+import { formatEmailFromHeader, parseEmailFromHeader } from "@/lib/email/from-address";
 import { isTransactionalScope } from "@/lib/email/scopes";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import type { EmailScope } from "@/lib/email/scopes";
@@ -45,12 +46,7 @@ export type SendResult =
 let resendClient: Resend | null = null;
 
 export function getEmailFromAddress() {
-  const raw = serverEnv.EMAIL_FROM ?? "";
-  // Prepend "Wishonia" display name for bare email addresses
-  if (raw && !raw.includes("<") && raw.includes("@")) {
-    return `Wishonia <${raw}>`;
-  }
-  return raw;
+  return formatEmailFromHeader(serverEnv.EMAIL_FROM, "Wishonia");
 }
 
 export function isResendConfigured() {
@@ -71,10 +67,7 @@ function buildUnsubscribeHeaders(unsubscribeUrl: string | null): Record<string, 
     return undefined;
   }
 
-  const fromAddress = serverEnv.EMAIL_FROM;
-  const mailtoAddr = fromAddress && fromAddress.includes("@")
-    ? fromAddress.replace(/^.*<|>.*$/g, "").trim() || "unsubscribe@optimitron.com"
-    : "unsubscribe@optimitron.com";
+  const mailtoAddr = parseEmailFromHeader(serverEnv.EMAIL_FROM)?.address ?? "unsubscribe@optimitron.com";
   const mailto = `mailto:${mailtoAddr}?subject=unsubscribe`;
   return {
     "List-Unsubscribe": `<${unsubscribeUrl}>, <${mailto}>`,
