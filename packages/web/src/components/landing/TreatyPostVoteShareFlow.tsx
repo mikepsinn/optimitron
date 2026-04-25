@@ -248,14 +248,19 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const displayName = firstName || "Jake";
   const pendingLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
 
-  const go = useCallback((next: FlowScreen, dismissive = false) => {
+  const advanceTo = useCallback((
+    next: FlowScreen,
+    options: { dismissive?: boolean; sentCount?: number } = {},
+  ) => {
+    const dismissive = options.dismissive ?? false;
+    const trackedSentCount = options.sentCount ?? sentCount;
     const nextDismissiveCount = dismissive ? dismissiveCount + 1 : dismissiveCount;
     trackTreatyPostVoteScreenAdvanced({
       from: screen,
       to: next,
       dismissive,
       dismissiveCount: nextDismissiveCount,
-      sentCount,
+      sentCount: trackedSentCount,
     });
     setAlt(dismissive);
     if (dismissive) {
@@ -263,6 +268,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     }
     setScreen(next);
   }, [dismissiveCount, screen, sentCount]);
+
+  const go = useCallback((next: FlowScreen, dismissive = false) => {
+    advanceTo(next, { dismissive });
+  }, [advanceTo]);
 
   const resetCurrentRecipient = useCallback(() => {
     setRecipientName("");
@@ -323,15 +332,16 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
 
   const completeCurrentInvitation = useCallback(() => {
     if (!invitation || completedInvitationIds.has(invitation.id)) {
-      setScreen("sendImpact");
+      advanceTo("sendImpact");
       return;
     }
 
+    const nextSentCount = sentCount + 1;
     trackTreatyPostVoteInvitationAction({
       action: "sent_confirmed",
       messageFormat,
       hasEmail: Boolean(invitation.recipientEmail),
-      sentCount,
+      sentCount: nextSentCount,
     });
     setCompletedInvitationIds((ids) => {
       const next = new Set(ids);
@@ -340,27 +350,17 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     });
     setLastRecipientName(getReferralInvitationFirstName(invitation.recipientName));
     setSentCount((count) => count + 1);
-    setScreen("sendImpact");
-  }, [completedInvitationIds, invitation, messageFormat, sentCount]);
+    advanceTo("sendImpact", { sentCount: nextSentCount });
+  }, [advanceTo, completedInvitationIds, invitation, messageFormat, sentCount]);
 
   const handleNameContinue = useCallback((dismissive = false) => {
     if (!recipientName.trim()) {
       setError("First name is required.");
       return;
     }
-    const nextDismissiveCount = dismissive ? dismissiveCount + 1 : dismissiveCount;
-    trackTreatyPostVoteScreenAdvanced({
-      from: screen,
-      to: "sendFormat",
-      dismissive,
-      dismissiveCount: nextDismissiveCount,
-      sentCount,
-    });
     setError(null);
-    setAlt(dismissive);
-    if (dismissive) setDismissiveCount((count) => count + 1);
-    setScreen("sendFormat");
-  }, [dismissiveCount, recipientName, screen, sentCount]);
+    go("sendFormat", dismissive);
+  }, [go, recipientName]);
 
   const handleCopy = useCallback(async () => {
     const created = await createInvitation();
@@ -394,12 +394,12 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       });
       setMessage(copiedText);
       setCopyState("copied");
-      setScreen("copyConfirm");
+      advanceTo("copyConfirm");
     } catch {
       setCopyState("error");
       setError("Copy failed.");
     }
-  }, [createInvitation, message, messageFormat, senderName, sentCount, session?.user]);
+  }, [advanceTo, createInvitation, message, messageFormat, senderName, sentCount, session?.user]);
 
   const handleSendEmail = useCallback(async () => {
     const created = await createInvitation();
@@ -426,13 +426,13 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
         hasEmail: true,
         sentCount,
       });
-      setScreen("sendConfirm");
+      advanceTo("sendConfirm");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not send this invitation.");
     } finally {
       setIsSending(false);
     }
-  }, [createInvitation, message, messageFormat, sentCount]);
+  }, [advanceTo, createInvitation, message, messageFormat, sentCount]);
 
   const handleDepthHook = useCallback(async (wantsReminder: boolean) => {
     trackTreatyPostVoteDepthHook({ wantsReminder, sentCount });
@@ -464,8 +464,8 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       sentCount,
       characterCount: feedback.trim().length,
     });
-    setScreen("submitted");
-  }, [feedback, sentCount]);
+    advanceTo("submitted");
+  }, [advanceTo, feedback, sentCount]);
 
   useEffect(() => {
     if (screen !== "submitted") return;

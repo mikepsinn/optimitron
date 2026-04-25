@@ -75,9 +75,11 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - DIH currently has the source-faithful share-flow copy; Optimitron should have its own canonical doc before more UI/email work.
   - The implementation must match the canonical doc exactly for user-facing copy. No paraphrasing.
   - Include implementation notes for which values are parameter-backed and which values are literal copy.
-- [ ] Audit `TreatyPostVoteShareFlow.tsx` against the canonical doc after parameterization.
+- [x] Audit `TreatyPostVoteShareFlow.tsx` against the canonical doc after parameterization.
   - Verify screen order, button text, alt/dismissive branches, details folds, send loop, depth hook, close, feedback, and dashboard redirect.
   - Track details-fold expansion, dismissive-path count, format choice, copy/send events, and completed invitations.
+  - Canonical source checked: `docs/questions.md` share-flow v13 (2026-04-25).
+  - Audit result: visible screen order/copy remains aligned after parameterization; direct transitions from copy/send confirmation, completed invitations, and feedback submit now use the same tracked transition helper as the rest of the flow.
 
 ## Referral Invitations, Persons, And Tasks
 
@@ -307,6 +309,24 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Surfaces that should NOT carry the frame: input labels, validation errors, sign-in buttons, and ordinary action buttons where the joke would hurt clarity. Default to plain language there.
   - Tie back to existing voice rules: deadpan, data-first, short sentences, sardonic, Wishonia voice (CLAUDE.md). The PMO frame is the *vehicle* for the voice, not a replacement for it.
   - Acceptance: a reviewer reading any 5 random user-facing strings cold can correctly identify the site's voice + role-frame within one read; no string accidentally calls the user a "commissioner", "member", or "delegate."
+  - **Canonical company name**: "Earth Optimization Services" (EOS). Do not churn. Pairs with EOP. "Bureau" / "Authority" / "Co." considered and rejected — EOS keeps the deadpan-vendor register that "Services" implies (someone hired them; nobody on Earth did; Wishonia self-appointed).
+  - **"8 billion direct reports" as gap-stat moments, not a repeated frame.** The funny version is the *gap* between potential and onboarded, not the raw number. Use sparingly — onboarding line, dashboard subtitle, email footer signature. Examples:
+    - Onboarding: *"Welcome. You have been promoted to project manager. Your initial assigned headcount is 8 billion. Currently onboarded: 0. The Commission has noted this."*
+    - Dashboard subtitle: *"Direct reports onboarded: {n} of 8 billion. Performance review pending."*
+    - Email footer: *"Project Manager, Earth Optimization Services. Reporting hierarchy: 8,000,000,000 humans, {n} confirmed."*
+  - **Urgency framed as elapsed-time + treaty deadline, never as competitive scarcity.** Reject "hurry before another peer claims them" copy — it sounds like Black Friday and breaks the deadpan voice. Use deadline-driven and elapsed-time-driven copy instead. Examples:
+    - *"Time elapsed since your appointment: {n} days. Direct reports onboarded: {m}. The treaty deadline does not adjust for your schedule."*
+    - *"Each potential direct report is also a potential direct report for every other project manager. Coordination is the bottleneck. Always has been."*
+  - **Surface the named-invite scarcity mechanic as a fact, not a sales pitch.** On `/send`: *"Note: each human can only be the named direct report of one project manager per task. If a peer onboards them first, you can still credit them via your generic referral link, but they won't appear in your direct reports panel."* Honest mechanic, no hype.
+- [ ] Write the canonical "yes-this-is-MLM-and-here's-why-that's-fine" explainer page.
+  - Lead with the chain-letter analogy already in the post-vote flow: same structural mechanism, inverted ethics. Original chain letters lied about both the curse (no real bad luck) and the reward (no real money); this one tells the truth about both (preventable disease deaths continue every day the chain breaks; eradicating disease compounds prosperity globally). The MLM comparison is the same move applied to recruitment compensation.
+  - Explicit table-of-inversions to include in the page: structure identical (recruit → downline → compounding); economics inverted (value flows out to humanity, not up to top of pyramid); no buy-in; recruitment IS the product (every vote matters, no Trojan-horse soap); math is parameter-backed and citable, not aspirational fiction.
+  - Wishonia voice: deadpan, own the comparison, frame the inversion as *governance, not marketing*. Sample copy: *"On Earth, this structure is currently classified as 'multi-level marketing.' On my planet we called it 'governance.' The Commission is comfortable with the comparison."*
+  - Lead the page with the *inversion*, not the *admission* — most readers don't know what MLM technically means; they just know "scam." Headline frames the chain-letter-with-true-curse first; the MLM comparison is named in the body where it can be immediately inverted.
+  - Land before launch + before any on-chain payout copy goes live. Pair with a legal review (SEC/FTC posture) — the decay-attribution model + no buy-in + transparent accounting is what keeps this on the right side of MLM-fraud thresholds.
+  - Test with a hostile reader: someone who already thinks the project is sketchy. If after reading they still think "this is an MLM scam," rewrite. If they think "this is an MLM but actually defensible," ship it.
+  - Surfaces that should link to the explainer: `/send`, post-vote share flow ("why does my recruit's recruit count?"), EOP dashboard, FAQ, footer.
+  - Pair with the decay-attribution commitment in **Earth Optimization Points And Rewards** — the explainer doesn't work if the underlying math isn't actually defensible.
 
 ## Earth Optimization Points And Rewards
 
@@ -325,8 +345,16 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Statuses: `PENDING`, `CONFIRMED`, `REJECTED`, `REVERSED`, and optionally `PAID`.
   - Store `grossImpactEop`, `rewardEop`, `healthEop`, `incomeEop`, `confidence`, `attributionRule`, `sourceModelVersion`, and links to task/vote/referral/deposit evidence.
   - Do not double-count for payout: if voter, inviter, task assigner, and task completer all contributed, split a single modeled reward amount by an explicit attribution rule.
-  - For treaty launch, start with deterministic rules for verified vote tasks: voter/completer share, inviter/project-manager share, and optional upstream share only if explicitly justified.
+  - For treaty launch, start with deterministic rules for verified vote tasks: voter/completer share, inviter/project-manager share, plus a capped, decaying upstream share (see decay-attribution commitment below).
   - Keep "pending impact" separate from payout-eligible confirmed EOP.
+- [ ] Commit to a downstream-attribution rule for EOP before launch.
+  - Direct recruit = 100% credit. Depth-2 (recruit-of-recruit) = 50%. Depth-3 = 25%. Hard cap at depth 4 or 5 (decide before launch and write the cap into the rule itself, not as runtime config).
+  - Decay rationale: each downstream layer would have voted at some non-zero rate without the upstream recruiter, so partial credit reflects partial causation. Uncapped uniform credit would (a) inflate total EOP beyond modeled impact and (b) make the system structurally indistinguishable from a pyramid scheme.
+  - Display in dashboard as a transparent subtree breakdown ("3 direct + 7 indirect (depth 2, 50% weight) + 4 indirect (depth 3, 25% weight) = X weighted EOP"), not as an "earn from your downline" hook.
+  - Do NOT frame downstream credit as competitive urgency in user-facing copy. Treaty deadline is the urgency lever; downstream credit is causal accounting.
+  - Surface the named-invite-claim mechanic on `/send` as a fact, not a hype line (see Copy And Framing Audit).
+  - MLM-optics review before launch: the decay caps + no-buy-in + transparent accounting + value-flowing-outward are the structural defenses against being mistaken for or classified as multi-level-marketing fraud. Pair this commitment with the canonical MLM-explainer page in **Copy And Framing Audit** — the math has to be defensible *and* explained, in that order.
+  - Acceptance: write the page that explains the math. Have someone hostile read it. If they think "this is a pyramid scheme," fix the math, not just the copy.
 - [ ] Rename and simplify public product language after the accounting decision.
   - Replace `POINT_NAME = "VOTE"` with EOP-focused copy only after the model is defined.
   - Rename public "VOTE Points" surfaces to "Earth Optimization Points"; keep "EOP" as the short label in compact UI.
