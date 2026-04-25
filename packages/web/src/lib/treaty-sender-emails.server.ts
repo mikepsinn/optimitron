@@ -13,8 +13,8 @@ import {
   buildTreatyRecipientVotedEmail,
   buildTreatyMonthlyScorecardEmail,
   buildTreatyNeverSharedReengagementEmail,
-  buildTreatySecondSenderNudgeEmail,
-  buildTreatySendOneMoreNudgeEmail,
+  buildTreatySecondSenderReminderEmail,
+  buildTreatySendOneMoreReminderEmail,
   buildTreatyVoteConfirmedEmail,
 } from "@/lib/treaty-sender-email-sequence";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
@@ -364,7 +364,7 @@ export async function sendTreatySenderReminderEmailForInvitation(input: {
   });
   const email =
     input.reminderStep === 1
-      ? buildTreatySendOneMoreNudgeEmail({
+      ? buildTreatySendOneMoreReminderEmail({
           confirmedLives: formatLivesScore(votedCount),
           pendingLives: formatLivesScore(pendingCount),
           sendUrl,
@@ -372,7 +372,7 @@ export async function sendTreatySenderReminderEmailForInvitation(input: {
           unsubscribeUrl,
           votedCount,
         })
-      : buildTreatySecondSenderNudgeEmail({
+      : buildTreatySecondSenderReminderEmail({
           pendingCount,
           sendUrl,
           sentCount,

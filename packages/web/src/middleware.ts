@@ -24,6 +24,7 @@ const MICROSITE_PUBLIC_PREFIXES = [
 // Note: /api, /_next/*, favicon, etc. are already excluded by the matcher.
 const MICROSITE_OPERATIONAL_PREFIXES = [
   "/r",
+  "/vote",
   "/auth",
   "/dashboard",
   "/profile",
@@ -33,7 +34,7 @@ const MICROSITE_OPERATIONAL_PREFIXES = [
 
 const PUBLIC_FILE_PATH_REGEX = /\.[^/]+$/;
 
-function isMicrositeAllowed(pathname: string): boolean {
+export function isMicrositeAllowed(pathname: string): boolean {
   if (pathname === "/") return true;
   if (PUBLIC_FILE_PATH_REGEX.test(pathname)) return true;
   const matches = (prefix: string) =>

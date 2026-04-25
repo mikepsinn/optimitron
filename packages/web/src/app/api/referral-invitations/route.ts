@@ -32,7 +32,7 @@ const SENDER_REMINDER_DELAY_DAYS = 7;
 
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
-  action: z.enum(["markCopied", "decline", "cancel", "nudgeOptIn", "sendEmail"]),
+  action: z.enum(["markCopied", "decline", "cancel", "senderReminderOptIn", "sendEmail"]),
   messageText: z.string().trim().max(10_000).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
 });
@@ -188,19 +188,19 @@ export async function PATCH(request: Request) {
       parsed.action === "decline"
         ? {
             nextRecipientEmailAt: null,
-            nextSenderNudgeAt: null,
+            nextSenderReminderAt: null,
             status: ReferralInvitationStatus.DECLINED,
           }
         : parsed.action === "cancel"
           ? {
               deletedAt: now,
               nextRecipientEmailAt: null,
-              nextSenderNudgeAt: null,
+              nextSenderReminderAt: null,
               status: ReferralInvitationStatus.CANCELLED,
             }
           : {
-              senderNudgeOptedInAt: now,
-              nextSenderNudgeAt:
+              senderReminderOptedInAt: now,
+              nextSenderReminderAt:
                 new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000),
             };
 

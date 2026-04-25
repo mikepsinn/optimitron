@@ -259,7 +259,7 @@ describe("referral invitation server helpers", () => {
       data: expect.objectContaining({
         convertedVoteId: "vote_1",
         nextRecipientEmailAt: null,
-        nextSenderNudgeAt: null,
+        nextSenderReminderAt: null,
         status: "CONVERTED",
       }),
     });
@@ -492,6 +492,99 @@ describe("referral invitation server helpers", () => {
     expect(mocks.referralUpdate).not.toHaveBeenCalled();
   });
 
+  it("does not send recipient emails for cancelled invitations", async () => {
+    mocks.referralFindFirst.mockResolvedValue({
+      convertedAt: null,
+      id: "invite_1",
+      inviteToken: "invite_token",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientEmail: "jake@example.com",
+      recipientEmailStep: 1,
+      recipientName: "Jake",
+      recipientUnsubscribeToken: "unsubscribe_token",
+      recipientUnsubscribedAt: null,
+      referrer: {
+        id: "user_1",
+        name: "Ada",
+        person: null,
+        referralCode: "ada123",
+        username: "ada",
+      },
+      status: "CANCELLED",
+    });
+
+    const result = await sendReferralInvitationEmail({
+      invitationId: "invite_1",
+      referrerUserId: "user_1",
+    });
+
+    expect(result).toEqual({ status: "inactive" });
+    expect(mocks.sendExternalResendEmail).not.toHaveBeenCalled();
+    expect(mocks.referralUpdate).not.toHaveBeenCalled();
+  });
+
+  it("does not send recipient emails for converted invitations", async () => {
+    mocks.referralFindFirst.mockResolvedValue({
+      convertedAt: new Date("2026-04-25T12:00:00.000Z"),
+      id: "invite_1",
+      inviteToken: "invite_token",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientEmail: "jake@example.com",
+      recipientEmailStep: 1,
+      recipientName: "Jake",
+      recipientUnsubscribeToken: "unsubscribe_token",
+      recipientUnsubscribedAt: null,
+      referrer: {
+        id: "user_1",
+        name: "Ada",
+        person: null,
+        referralCode: "ada123",
+        username: "ada",
+      },
+      status: "CONVERTED",
+    });
+
+    const result = await sendReferralInvitationEmail({
+      invitationId: "invite_1",
+      referrerUserId: "user_1",
+    });
+
+    expect(result).toEqual({ status: "converted" });
+    expect(mocks.sendExternalResendEmail).not.toHaveBeenCalled();
+    expect(mocks.referralUpdate).not.toHaveBeenCalled();
+  });
+
+  it("does not send recipient emails after recipient unsubscribe", async () => {
+    mocks.referralFindFirst.mockResolvedValue({
+      convertedAt: null,
+      id: "invite_1",
+      inviteToken: "invite_token",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientEmail: "jake@example.com",
+      recipientEmailStep: 1,
+      recipientName: "Jake",
+      recipientUnsubscribeToken: "unsubscribe_token",
+      recipientUnsubscribedAt: new Date("2026-04-25T12:00:00.000Z"),
+      referrer: {
+        id: "user_1",
+        name: "Ada",
+        person: null,
+        referralCode: "ada123",
+        username: "ada",
+      },
+      status: "SENT",
+    });
+
+    const result = await sendReferralInvitationEmail({
+      invitationId: "invite_1",
+      referrerUserId: "user_1",
+    });
+
+    expect(result).toEqual({ status: "unsubscribed" });
+    expect(mocks.sendExternalResendEmail).not.toHaveBeenCalled();
+    expect(mocks.referralUpdate).not.toHaveBeenCalled();
+  });
+
   it("processes only eligible due recipient reminders", async () => {
     const now = new Date("2026-04-25T12:00:00.000Z");
     mocks.referralFindMany.mockResolvedValue([{ id: "invite_1" }]);
@@ -548,7 +641,7 @@ describe("referral invitation server helpers", () => {
     mocks.referralFindMany.mockResolvedValue([
       {
         id: "invite_1",
-        senderNudgeStep: 0,
+        senderReminderStep: 0,
       },
     ]);
     mocks.sendTreatySenderReminderEmailForInvitation.mockResolvedValue({
@@ -568,17 +661,17 @@ describe("referral invitation server helpers", () => {
       where: {
         convertedAt: null,
         deletedAt: null,
-        nextSenderNudgeAt: { lte: now },
-        senderNudgeOptedInAt: { not: null },
-        senderNudgeStep: { lt: 2 },
+        nextSenderReminderAt: { lte: now },
+        senderReminderOptedInAt: { not: null },
+        senderReminderStep: { lt: 2 },
         status: {
           in: ["COPIED", "SENT"],
         },
       },
-      orderBy: [{ nextSenderNudgeAt: "asc" }],
+      orderBy: [{ nextSenderReminderAt: "asc" }],
       select: {
         id: true,
-        senderNudgeStep: true,
+        senderReminderStep: true,
       },
       take: 50,
     });
@@ -590,9 +683,9 @@ describe("referral invitation server helpers", () => {
     expect(mocks.referralUpdate).toHaveBeenCalledWith({
       where: { id: "invite_1" },
       data: {
-        lastSenderNudgeAt: now,
-        nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
-        senderNudgeStep: 1,
+        lastSenderReminderAt: now,
+        nextSenderReminderAt: new Date("2026-05-02T12:00:00.000Z"),
+        senderReminderStep: 1,
       },
     });
   });
@@ -602,7 +695,7 @@ describe("referral invitation server helpers", () => {
     mocks.referralFindMany.mockResolvedValue([
       {
         id: "invite_1",
-        senderNudgeStep: 1,
+        senderReminderStep: 1,
       },
     ]);
     mocks.sendTreatySenderReminderEmailForInvitation.mockResolvedValue({
@@ -626,9 +719,9 @@ describe("referral invitation server helpers", () => {
     expect(mocks.referralUpdate).toHaveBeenCalledWith({
       where: { id: "invite_1" },
       data: {
-        lastSenderNudgeAt: now,
-        nextSenderNudgeAt: null,
-        senderNudgeStep: 2,
+        lastSenderReminderAt: now,
+        nextSenderReminderAt: null,
+        senderReminderStep: 2,
       },
     });
   });
@@ -638,7 +731,7 @@ describe("referral invitation server helpers", () => {
     mocks.referralFindMany.mockResolvedValue([
       {
         id: "invite_1",
-        senderNudgeStep: 0,
+        senderReminderStep: 0,
       },
     ]);
     mocks.sendTreatySenderReminderEmailForInvitation.mockResolvedValue({
@@ -657,9 +750,9 @@ describe("referral invitation server helpers", () => {
     expect(mocks.referralUpdate).toHaveBeenCalledWith({
       where: { id: "invite_1" },
       data: {
-        lastSenderNudgeAt: now,
-        nextSenderNudgeAt: null,
-        senderNudgeStep: 2,
+        lastSenderReminderAt: now,
+        nextSenderReminderAt: null,
+        senderReminderStep: 2,
       },
     });
   });

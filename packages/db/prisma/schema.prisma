@@ -2354,11 +2354,11 @@ model ReferralInvitation {
   recipientEmailProviderMessageId String?
   recipientEmailErrorMessage      String?
 
-  /// Sender nudge state
-  senderNudgeOptedInAt DateTime?
-  senderNudgeStep      Int       @default(0)
-  nextSenderNudgeAt    DateTime?
-  lastSenderNudgeAt    DateTime?
+  /// Sender reminder state
+  senderReminderOptedInAt DateTime?
+  senderReminderStep      Int       @default(0)
+  nextSenderReminderAt    DateTime?
+  lastSenderReminderAt    DateTime?
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -2385,7 +2385,7 @@ model ReferralInvitation {
   @@index([status])
   @@index([nextRecipientEmailAt])
   @@index([recipientUnsubscribedAt])
-  @@index([nextSenderNudgeAt])
+  @@index([nextSenderReminderAt])
   @@index([deletedAt])
 }
 

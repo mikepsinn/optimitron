@@ -155,11 +155,11 @@ export function trackTreatyPostVoteFormatChoice(params: {
 }
 
 export function trackTreatyPostVoteDepthHook(params: {
-  wantsNudge: boolean
+  wantsReminder: boolean
   sentCount: number
 }): void {
   trackEvent('treaty_post_vote_depth_hook', {
-    wants_nudge: params.wantsNudge,
+    wants_reminder: params.wantsReminder,
     sent_count: params.sentCount,
   })
 }

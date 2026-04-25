@@ -3,8 +3,8 @@ import {
   buildTreatyMonthlyScorecardEmail,
   buildTreatyNeverSharedReengagementEmail,
   buildTreatyRecipientVotedEmail,
-  buildTreatySecondSenderNudgeEmail,
-  buildTreatySendOneMoreNudgeEmail,
+  buildTreatySecondSenderReminderEmail,
+  buildTreatySendOneMoreReminderEmail,
   buildTreatyVoteConfirmedEmail,
 } from "@/lib/treaty-sender-email-sequence";
 
@@ -49,14 +49,14 @@ describe("treaty sender email sequence", () => {
   });
 
   it("builds B3 and B4 sender task reminders", () => {
-    const first = buildTreatySendOneMoreNudgeEmail({
+    const first = buildTreatySendOneMoreReminderEmail({
       confirmedLives: "5.4",
       pendingLives: "2.7",
       sendUrl: "https://warondisease.org/send",
       sentCount: 3,
       votedCount: 2,
     });
-    const second = buildTreatySecondSenderNudgeEmail({
+    const second = buildTreatySecondSenderReminderEmail({
       pendingCount: 1,
       sendUrl: "https://warondisease.org/send",
       sentCount: 3,

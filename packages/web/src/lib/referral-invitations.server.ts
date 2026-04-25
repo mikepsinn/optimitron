@@ -367,7 +367,7 @@ export async function convertReferralInvitationForVote(input: {
         convertedVoteId: input.voteId,
         convertedAt: now,
         nextRecipientEmailAt: null,
-        nextSenderNudgeAt: null,
+        nextSenderReminderAt: null,
       },
     });
 
@@ -609,9 +609,9 @@ export async function processDueReferralInvitationSenderEmails(now: Date = new D
     where: {
       convertedAt: null,
       deletedAt: null,
-      nextSenderNudgeAt: { lte: now },
-      senderNudgeOptedInAt: { not: null },
-      senderNudgeStep: { lt: SENDER_REMINDER_MAX_STEP },
+      nextSenderReminderAt: { lte: now },
+      senderReminderOptedInAt: { not: null },
+      senderReminderStep: { lt: SENDER_REMINDER_MAX_STEP },
       status: {
         in: [
           ReferralInvitationStatus.COPIED,
@@ -619,10 +619,10 @@ export async function processDueReferralInvitationSenderEmails(now: Date = new D
         ],
       },
     },
-    orderBy: [{ nextSenderNudgeAt: "asc" }],
+    orderBy: [{ nextSenderReminderAt: "asc" }],
     select: {
       id: true,
-      senderNudgeStep: true,
+      senderReminderStep: true,
     },
     take: batchSize,
   });
@@ -632,7 +632,7 @@ export async function processDueReferralInvitationSenderEmails(now: Date = new D
   let skipped = 0;
 
   for (const candidate of candidates) {
-    const reminderStep = getNextSenderReminderStep(candidate.senderNudgeStep);
+    const reminderStep = getNextSenderReminderStep(candidate.senderReminderStep);
     if (!reminderStep) {
       skipped += 1;
       continue;
@@ -661,12 +661,12 @@ export async function processDueReferralInvitationSenderEmails(now: Date = new D
         await prisma.referralInvitation.update({
           where: { id: candidate.id },
           data: {
-            lastSenderNudgeAt: now,
-            nextSenderNudgeAt:
+            lastSenderReminderAt: now,
+            nextSenderReminderAt:
               result.status === "sent" || result.status === "duplicate"
                 ? getNextSenderReminderAt(reminderStep, now)
                 : null,
-            senderNudgeStep:
+            senderReminderStep:
               result.status === "sent" || result.status === "duplicate"
                 ? reminderStep
                 : SENDER_REMINDER_MAX_STEP,

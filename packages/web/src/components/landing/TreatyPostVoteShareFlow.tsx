@@ -47,10 +47,16 @@ import {
 } from "@optimitron/data/parameters";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
-  buildReferralInvitationMessage,
   getReferralInvitationFirstName,
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
+import {
+  buildReferralInvitationShareMessage,
+  createReferralInvitationRequest,
+  getReferralInvitationSenderName,
+  updateReferralInvitationRequest,
+  type ReferralInvitationClientRecord,
+} from "@/lib/referral-invitation-client";
 import { ROUTES } from "@/lib/routes";
 import {
   FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT,
@@ -71,7 +77,6 @@ import {
   formatFlowCompactParam,
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
-import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 
 type FlowScreen =
   | "opening"
@@ -91,13 +96,6 @@ type FlowScreen =
   | "close"
   | "feedback"
   | "submitted";
-
-interface ReferralInvitation {
-  id: string;
-  inviteToken: string;
-  recipientEmail: string | null;
-  recipientName: string;
-}
 
 interface TreatyPostVoteShareFlowProps {
   answer: "yes" | "no";
@@ -231,7 +229,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const [messageFormat, setMessageFormat] =
     useState<ReferralInvitationMessageFormat>("TASK_NOTIFICATION");
   const [showFormatSwitch, setShowFormatSwitch] = useState(false);
-  const [invitation, setInvitation] = useState<ReferralInvitation | null>(null);
+  const [invitation, setInvitation] = useState<ReferralInvitationClientRecord | null>(null);
   const [message, setMessage] = useState("");
   const [sentCount, setSentCount] = useState(0);
   const [lastRecipientName, setLastRecipientName] = useState("");
@@ -242,10 +240,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const senderName =
-    session?.user?.name?.trim() ||
-    session?.user?.username?.trim() ||
-    "A voter";
+  const senderName = getReferralInvitationSenderName(session?.user);
   const firstName = getReferralInvitationFirstName(recipientName);
   const displayName = firstName || "Jake";
   const pendingLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
@@ -289,27 +284,15 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     setError(null);
 
     try {
-      const response = await fetch("/api/referral-invitations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recipientName: trimmedName,
-          recipientEmail: recipientEmail.trim() || null,
-          contactMethod: recipientEmail.trim() ? "EMAIL" : "COPY",
-          messageFormat,
-        }),
+      const created = await createReferralInvitationRequest({
+        recipientName: trimmedName,
+        recipientEmail: recipientEmail.trim() || null,
+        contactMethod: recipientEmail.trim() ? "EMAIL" : "COPY",
+        messageFormat,
       });
-      const payload = (await response.json()) as {
-        error?: string;
-        invitation?: ReferralInvitation;
-      };
 
-      if (!response.ok || !payload.invitation) {
-        throw new Error(payload.error || "Could not create this invitation.");
-      }
-
-      setInvitation(payload.invitation);
-      return payload.invitation;
+      setInvitation(created);
+      return created;
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not create this invitation.");
       return null;
@@ -325,17 +308,12 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
 
   useEffect(() => {
     if (!invitation) return;
-    const createdUrl = buildUserInviteReferralUrl(
-      session?.user,
-      invitation.inviteToken,
-      getBaseUrl(),
-    );
     setMessage(
-      buildReferralInvitationMessage({
-        inviteUrl: createdUrl,
+      buildReferralInvitationShareMessage({
+        invitation,
         messageFormat,
-        recipientName: invitation.recipientName,
         senderName,
+        user: session?.user,
       }),
     );
   }, [invitation, messageFormat, senderName, session?.user]);
@@ -385,11 +363,11 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     const created = await createInvitation();
     if (!created) return;
 
-    const text = message || buildReferralInvitationMessage({
-      inviteUrl: buildUserInviteReferralUrl(session?.user, created.inviteToken, getBaseUrl()),
+    const text = message || buildReferralInvitationShareMessage({
+      invitation: created,
       messageFormat,
-      recipientName: created.recipientName,
       senderName,
+      user: session?.user,
     });
 
     try {
@@ -400,14 +378,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
         hasEmail: Boolean(created.recipientEmail),
         sentCount,
       });
-      await fetch("/api/referral-invitations", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: created.id,
-          action: "markCopied",
-          messageText: text,
-        }),
+      await updateReferralInvitationRequest({
+        id: created.id,
+        action: "markCopied",
+        messageText: text,
       });
       setCopyState("copied");
       setScreen("copyConfirm");
@@ -424,23 +398,14 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     setIsSending(true);
     setError(null);
     try {
-      const response = await fetch("/api/referral-invitations", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: created.id,
-          action: "sendEmail",
-          messageText: message,
-        }),
+      const payload = await updateReferralInvitationRequest({
+        id: created.id,
+        action: "sendEmail",
+        messageText: message,
       });
-      const payload = (await response.json()) as {
-        error?: string;
-        invitation?: ReferralInvitation;
-        status?: string;
-      };
 
-      if (!response.ok || payload.status !== "sent") {
-        throw new Error(payload.error || "Could not send this invitation.");
+      if (payload.status !== "sent") {
+        throw new Error("Could not send this invitation.");
       }
       if (payload.invitation) {
         setInvitation(payload.invitation);
@@ -459,19 +424,15 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     }
   }, [createInvitation, message, messageFormat, sentCount]);
 
-  const handleDepthHook = useCallback(async (wantsNudge: boolean) => {
-    trackTreatyPostVoteDepthHook({ wantsNudge, sentCount });
-    if (wantsNudge && invitation) {
-      await fetch("/api/referral-invitations", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: invitation.id,
-          action: "nudgeOptIn",
-        }),
+  const handleDepthHook = useCallback(async (wantsReminder: boolean) => {
+    trackTreatyPostVoteDepthHook({ wantsReminder, sentCount });
+    if (wantsReminder && invitation) {
+      await updateReferralInvitationRequest({
+        id: invitation.id,
+        action: "senderReminderOptIn",
       }).catch(() => undefined);
     }
-    go("close", !wantsNudge);
+    go("close", !wantsReminder);
   }, [go, invitation, sentCount]);
 
   const goDashboard = useCallback(() => {

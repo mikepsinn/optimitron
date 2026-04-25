@@ -248,13 +248,13 @@ describe("/api/referral-invitations", () => {
       mocks.updateMany.mockResolvedValue({ count: 1 });
       mocks.findUnique.mockResolvedValue({
         id: "invite_1",
-        nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
+        nextSenderReminderAt: new Date("2026-05-02T12:00:00.000Z"),
       });
 
       const response = await PATCH(
         makePatchRequest({
           id: "invite_1",
-          action: "nudgeOptIn",
+          action: "senderReminderOptIn",
         }),
       );
 
@@ -266,8 +266,8 @@ describe("/api/referral-invitations", () => {
           deletedAt: null,
         },
         data: {
-          senderNudgeOptedInAt: new Date("2026-04-25T12:00:00.000Z"),
-          nextSenderNudgeAt: new Date("2026-05-02T12:00:00.000Z"),
+          senderReminderOptedInAt: new Date("2026-04-25T12:00:00.000Z"),
+          nextSenderReminderAt: new Date("2026-05-02T12:00:00.000Z"),
         },
       });
     } finally {
@@ -291,6 +291,19 @@ describe("/api/referral-invitations", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       invitation: { id: "invite_1", status: "CANCELLED" },
+    });
+    expect(mocks.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: "invite_1",
+        referrerUserId: "user_1",
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: expect.any(Date),
+        nextRecipientEmailAt: null,
+        nextSenderReminderAt: null,
+        status: "CANCELLED",
+      },
     });
     expect(mocks.taskUpdateMany).toHaveBeenCalledWith({
       where: {
@@ -335,7 +348,7 @@ describe("/api/referral-invitations", () => {
       },
       data: {
         nextRecipientEmailAt: null,
-        nextSenderNudgeAt: null,
+        nextSenderReminderAt: null,
         status: "DECLINED",
       },
     });

@@ -142,7 +142,7 @@ export function buildTreatyRecipientVotedEmail(input: TreatySenderEmailBaseInput
   });
 }
 
-export function buildTreatySendOneMoreNudgeEmail(input: TreatySenderEmailBaseInput & {
+export function buildTreatySendOneMoreReminderEmail(input: TreatySenderEmailBaseInput & {
   confirmedLives: string;
   pendingLives: string;
   sentCount: number;
@@ -170,7 +170,7 @@ export function buildTreatySendOneMoreNudgeEmail(input: TreatySenderEmailBaseInp
   });
 }
 
-export function buildTreatySecondSenderNudgeEmail(input: TreatySenderEmailBaseInput & {
+export function buildTreatySecondSenderReminderEmail(input: TreatySenderEmailBaseInput & {
   pendingCount: number;
   sentCount: number;
 }): TreatySenderEmailMessage {
