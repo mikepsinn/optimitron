@@ -186,6 +186,15 @@ This section tracks the analytics/measurement layer that sits on top of the gene
 - [ ] Add a testable "best current reminder" selection path.
   - Start with deterministic seeded defaults.
   - Later promote variants based on replication coefficient, with guardrails for spam reports and unsubscribe rates.
+- [ ] **Outbound task assignment for external organizations** (the "you have been assigned a task on the Earth Optimization tree" cold-outreach feature).
+  - Use the existing task system to track work owed by external orgs we need partnerships from: Wefunder (Track 3 partnership), securities law firms (compliance review), curated companies (apply for pool inclusion), Kingscrowd (curation overlay), media outlets (coverage), allied nonprofits, etc.
+  - Each external task records: target org, contact email, assigned task, deadline, current status, contact-attempt history. Reuses `Task` + `TaskMessageAttempt` models from the generic task migration; no parallel system.
+  - Cold-outreach reminder cadence is **distinct** from friend-to-friend referral reminders: lower frequency (no more than 2 follow-ups over 4 weeks), explicit disclosure that the recipient did not opt in, prominent and trivially actionable opt-out, no embedded tracking pixel, no engagement-bait subject lines. Treat this as cold sales outreach with a Wishonia voice, not as transactional or referral email.
+  - Wishonia voice fits naturally — *"Wefunder has been notified. Wefunder has not responded. The Commission has noted this."* — but the funny framing must not paper over the fact that this is unsolicited contact. The voice is the wrapper; the substance is professional cold outreach.
+  - Risks to manage: spam-filter reputation damage from any volume of "you have an overdue task" cold emails; legal exposure if the recipient is in a jurisdiction with strict cold-outreach rules (CAN-SPAM, GDPR, CASL); brand damage if the gag reads as obnoxious to a recipient who is otherwise sympathetic; corporate compliance teams flagging the messages.
+  - Mitigations: send from a dedicated subdomain so spam-reputation issues don't contaminate the main referral mail flow; rate-limit aggressively (a few hundred emails/week, not thousands); always personalize at least the first line; include a clear "I did not sign up for this — remove me" link that one-click unsubscribes; never escalate after a recipient has opted out; never assign the same task to multiple competing orgs (they'll compare notes).
+  - Public dashboard: `/admin/external-tasks` shows which orgs have been notified, response status, contact-attempt history. Internal-only initially; might become a public "leaderboard of who's helping" later if we're confident the framing won't backfire.
+  - Acceptance: a recipient at a partner org reads their cold-outreach email, smiles or at minimum doesn't report it as spam, and the message moves them closer to action (replying, scheduling a call, applying to the pool). Test with three friendly partner-org contacts before any volume.
 
 ## Treaty-To-Generic Task System Migration
 
@@ -370,6 +379,87 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Add reporting tests that prove the same action cannot mint duplicate payout-eligible EOP.
 
 ## Donations And Crowdfunding
+OK
+### Funding architecture (decided 2026-04-25)
+
+The Earth Optimization Prize / treaty funding ecosystem ships as a four-track architecture, each track serving a distinct audience and risk profile, all funneling into a single EOP-proportional distribution pool on success. See **Earth Optimization Points And Rewards** for the EOP earning formula and decay-attribution rules; see **Copy And Framing Audit** for the MLM-explainer page that must accompany Track 3 / Track 4 launch.
+
+| Track | Vehicle | Audience | Allocation control | Status |
+|---|---|---|---|---|
+| 1 | IAM tax-deductible donations (Stripe → 501(c)(3)) | Traditional donors | Charity grants, no allocation choice | Phase 1 — can ship near-term |
+| 2 | Conservative DAC — existing `/prize` (Aave yield) | Anyone with USDC, no KYC | DeFi protocol, fixed yield | Already partially built |
+| 3 | **Earth Optimization Coordination Platform** (Wefunder partnership, retail Reg CF / Reg A+) | Mission-aligned retail (no accreditation) | Depositor preference via Wishocracy pairwise comparisons, **binding** | Phase 1.5 — design now, ship after generic-task migration Phase A lands |
+| 4 | DAO-governed tokenized fund (Innovation Exemption sandbox) | Retail post-Innovation-Exemption | On-chain Wishocracy governance, expanded universe beyond Reg CF caps | Phase 2 (12-36 months) |
+
+Allocation rules across all tracks: 100% innovation (no Treasuries / no broad index funds). Aggressive sleeves (Track 3, Track 4) target 17%+ but make no fixed-bonus guarantee — refund on miss is NAV-at-maturity, not principal-plus-bonus. Donations and DAC deposits do **not** mint EOP — only voting + recruitment does.
+
+### Track 1 — IAM donation flow
+
+- [ ] `/donate` route — Stripe checkout → IAM 501(c)(3) → audited grant to disease eradication / treaty advocacy. Donor's referrer earns attribution credit, not EOP.
+- [ ] `/donate/success` confirmation page with receipt + thank-you copy in Wishonia voice.
+- [ ] `lib/stripe.ts` adapter, `app/api/stripe/{create-checkout,session,webhook}/route.ts` — port DIH structure but route to IAM.
+- [ ] One-time + recurring monthly support via Stripe subscriptions.
+- [ ] Source-URL / referrer / invite-token attribution captured on checkout.
+- [ ] Email receipt via Resend (transactional scope, no unsubscribe headers).
+- [ ] Webhook idempotency tests; refund/failure handling; tax receipt generation.
+- [ ] Compliance: confirm IAM 501(c)(3) status; donor record retention.
+- [ ] Dashboard activity entry for donor (no EOP credit, but visible "you donated $X to IAM" line).
+
+### Track 2 — Conservative DAC (existing `/prize`)
+
+- [ ] Audit existing `/prize` copy against the four-track architecture; ensure it doesn't claim to be the only path or imply the depositor controls allocation.
+- [ ] Cross-link the MLM-explainer page from `/prize` so Aave-DAC depositors land in the same explanation.
+- [ ] Confirm `packages/treasury-prize` contracts handle EOP-proportional distribution at maturity, not just VOTE-proportional. Distribution must be the same end-pool regardless of which track fed it.
+
+### Track 3 — Earth Optimization Coordination Platform
+
+**Architecture summary:** Wefunder is the registered funding portal (regulatory wrapper); Optimitron is the curation + preference-aggregation layer. Each depositor's commitment routes through Wefunder into individual direct equity stakes in pool companies, weighted by aggregated Wishocracy preferences. No pooled fund; no investment adviser. Reg CF caps ($5M/company/year) and Reg A+ Tier 2 ($75M) constrain the universe — fine for the thesis since most early-stage longevity / fusion / drug-discovery / synthetic-bio companies fit.
+
+**Pages to build:**
+- [ ] `/fund` — landing for the Coordination Platform; explains the model, the math, the listing standards, the chain-letter / MLM analogy. Wishonia voice.
+- [ ] `/fund/companies` — pool listing with filters (sector, raise size, mission-fit score) + entry to the pairwise ranking UI.
+- [ ] `/fund/companies/[slug]` — individual company detail; parameter-backed welfare-function impact projection; Reg CF / Reg A+ disclosures pulled from Wefunder.
+- [ ] `/fund/companies/apply` — application form for companies seeking pool inclusion. Captures entity type, mission alignment, current raise stage, intended use of funds, modeled impact on welfare function (HALE / median income).
+- [ ] `/fund/rank` — Wishocracy pairwise UI for companies in the pool. One-person-one-vote, pairwise sampling, eigenvector aggregation, live weight display. Analogous to the existing `/wishocracy` allocation surface but scoped to the fund pool.
+- [ ] `/fund/commit` — subscription commit flow; depositor specifies amount + cadence (one-time or recurring); handoff to Wefunder for execution against live preference weights.
+- [ ] `/fund/portfolio` — depositor's holdings (aggregated across individual stakes), EOP earned, contribution to the welfare function.
+- [ ] `/fund/explainer` — canonical "yes-this-is-MLM-and-here's-why-that's-fine" page (see **Copy And Framing Audit**). Tracks 3 and 4 both link here.
+- [ ] `/admin/fund/companies` — internal admin: review applications, approve/reject, edit listing-standards compliance, monitor mission-fit scores, retire companies that complete their raises.
+
+**Features to build:**
+- [ ] Wefunder partnership API integration: deal feed (curated companies they host), per-depositor investment routing, KYC handoff, transaction status. Confirm whether one commit can route across N pool companies in one transaction.
+- [ ] Listing-standards system: published inclusion criteria, application review workflow, mission-fit scoring against the welfare function, rejection reasons, appeal path.
+- [ ] Pool company state machine: `APPLIED` → `UNDER_REVIEW` → `APPROVED` / `REJECTED` → `ACTIVE` → `RAISE_CLOSED` → `RETIRED`. Each transition emits an audit-loggable event.
+- [ ] Wishocracy pair-ranking adapter for companies: extends existing RAPPA implementation with company-pool scope, one-person-one-vote, weight caps (single-company max ~15-20%, single-sleeve max ~35%) to prevent runaway concentration.
+- [ ] Subscription commit flow: depositor pre-authorizes $X over Y period; system distributes against live weights at each disbursement window.
+- [ ] Portfolio aggregation view: pulls individual stakes from Wefunder, computes weighted exposure per sleeve, shows modeled welfare-function contribution.
+- [ ] Per-company welfare-function impact projection: generalize the `lib/treaty-share-flow-parameters` helpers into a per-company impact module.
+- [ ] Liquidity / secondary-market integration via StartEngine secondary or Wefunder's equivalent (nice-to-have, not blocking).
+
+**Compliance / legal (engage securities counsel before any of this ships):**
+- [ ] Securities counsel engagement.
+- [ ] Wefunder partnership term sheet + master services agreement.
+- [ ] Listing-standards documentation reviewed by counsel (anti-discrimination, fair access, conflict-of-interest disclosures).
+- [ ] MLM-explainer page legal review (counsel reads, hostile reader reads, both sign off).
+- [ ] Trademark filings: "Earth Optimization Services," "Earth Optimization Fund," "Earth Optimization Points," "EOP."
+- [ ] IAM 501(c)(3) status confirmation for Track 1.
+- [ ] Privacy policy + ToS updates covering the funding platform, KYC handoff, and shared data with Wefunder.
+- [ ] State blue-sky compliance check.
+
+**Outreach / partnerships:**
+- [ ] Wefunder BD outreach. Lead message: curated mission-aligned company pool + Wishocracy retail preference-aggregation = a new product category sitting on top of their infrastructure.
+- [ ] Backup paths if Wefunder declines: StartEngine (has secondary market) → Republic.
+- [ ] Curated-company outreach: longevity biotech (Altos, NewLimit, Retro), drug discovery AI (Recursion, Insitro), fusion (Commonwealth, Helion, TAE), synthetic-bio (Ginkgo, Asimov), robotics, frontier energy. Many already file under Reg CF / Reg A+; we're aggregating + ranking, not displacing.
+- [ ] Securities law firm engagement (priority: firms with active Reg CF + DAO experience).
+- [ ] SEC Innovation Exemption tracking: monitor publication; when binding rule lands, evaluate path to Track 4 launch.
+
+### Track 4 — DAO-governed tokenized fund (Phase 2)
+
+- [ ] Architecture not designed yet; depends on Innovation Exemption finalized rule.
+- [ ] When Innovation Exemption is binding, evaluate: token-bound governance, on-chain Wishocracy execution, expanded universe beyond Reg CF caps, retail access without funding-portal partnership.
+- [ ] Write Track-4 architecture spec only after Track 3 has shipped + 6 months of preference-aggregation data is collected. Speculative design now is wasted work.
+
+### Reference: DIH donation/crowdfunding source files (for porting patterns where useful)
 
 - [ ] Default sequencing decision: keep donations/crowdfunding out of the first treaty cutover until vote/share/referral/tasks are stable.
 - [ ] Revisit that sequencing only if the campaign needs a funding CTA before the referral loop is launch-ready.
@@ -413,12 +503,8 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Create/edit/manage: `E:\code\dih-neobrutalist\app\campaigns\create\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\create\campaign-form.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\edit\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\manage\page.tsx`.
   - Public campaign detail and pledge: `E:\code\dih-neobrutalist\app\campaigns\[slug]\page.tsx`, `E:\code\dih-neobrutalist\app\campaigns\[slug]\pledge\page.tsx`.
   - Campaign APIs: `E:\code\dih-neobrutalist\app\api\campaigns\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\pledge\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\publish\route.ts`, `E:\code\dih-neobrutalist\app\api\campaigns\[id]\updates\route.ts`.
-- [ ] Decide whether treaty funding should be:
-  - a simple Stripe donation flow;
-  - a DIH-style crowdfunding campaign;
-  - an Optimitron Earth Optimization Prize deposit path;
-  - an Incentive Alignment Bond / treasury path;
-  - or a temporary CTA that routes to the existing `/prize` and `/fund` surfaces.
+- [x] Decide whether treaty funding should be a Stripe donation flow, a DIH-style crowdfunding campaign, an Earth Optimization Prize deposit path, or an IAB path.
+  - **Decided 2026-04-25:** four-track architecture (see "Funding architecture" section above). Stripe → IAM (Track 1), existing Aave-DAC `/prize` (Track 2), Wefunder-coordinated Wishocracy-allocated pool (Track 3), and Innovation-Exemption DAO (Track 4 / Phase 2). Not "or" — all four, each serving a different audience, all funneling into one EOP-proportional distribution pool.
 - [ ] Do not copy DIH campaign schema wholesale if Optimitron's prize/treasury model can represent the campaign goal with less duplicated finance logic.
 - [ ] If Stripe donations are ported, make the Optimitron design explicit:
   - route shape (`/donate`, `/fund`, `/campaigns`, or treaty-specific route);

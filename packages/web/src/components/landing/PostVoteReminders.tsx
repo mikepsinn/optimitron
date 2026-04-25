@@ -317,7 +317,7 @@ export function PostVoteReminders({
         selectedTemplateId={selectedTemplateId}
         targetLabel={targetLabel}
         taskTitle="Sign the 1% Treaty"
-        heading="Send Overdue Task Reminder"
+        heading="Send Earth Optimization Task Reminder"
         copyIdleLabel="Step 2. Click to Copy"
         copyCopiedLabel="Step 2. Copied ✓"
         copyErrorLabel="Copy Failed"

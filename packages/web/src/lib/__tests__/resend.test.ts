@@ -115,7 +115,10 @@ describe("sendResendEmail", () => {
       status: "sent",
       unsubscribeUrl: null,
     });
-    expect(result.id).toMatch(/^mock_resend_/);
+    expect(result.status).toBe("sent");
+    if (result.status === "sent") {
+      expect(result.id).toMatch(/^mock_resend_/);
+    }
     expect(mocks.emailSend).not.toHaveBeenCalled();
   });
 });

@@ -92,15 +92,21 @@ test.describe("emailed referral invitation", () => {
       test.skip(true, "Send route dependencies not available");
       return;
     }
+    await expect(page.locator("#invite-recipient-name")).toBeEditable({
+      timeout: 15_000,
+    });
+    await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => undefined);
 
     const recipientName = `Email Friend ${Date.now().toString(36)}`;
     const recipientEmail = `email-friend-${Date.now().toString(36)}@example.test`;
 
     await page.locator("#invite-recipient-name").fill(recipientName);
     await page.locator("#invite-recipient-email").fill(recipientEmail);
+    await expect(page.locator("#invite-recipient-name")).toHaveValue(recipientName);
+    await expect(page.locator("#invite-recipient-email")).toHaveValue(recipientEmail);
 
     await page.getByRole("button", {
-      name: new RegExp(`Send email to ${escapeRegExp(recipientEmail)} for me`),
+      name: new RegExp(`Send email to ${escapeRegExp(recipientEmail)} for me`, "i"),
     }).click();
 
     await expect(page.getByRole("button", { name: /^Sent$/ })).toBeVisible({
