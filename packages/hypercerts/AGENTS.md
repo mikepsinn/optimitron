@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/hypercerts
 
-**Lane:** Agent & Infra
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`agent`, `hypercerts`, `storage`).
-
 ## Scope
 
 Hypercert record builders and AT Protocol publishing helpers. Creates verifiable impact certificates for policy analyses, alignment scores, referrals, and deposits.

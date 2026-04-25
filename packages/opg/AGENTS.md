@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/opg
 
-**Lane:** Policy & Budget
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`opg`, `obg`, `data`).
-
 ## Scope
 
 Optimal Policy Generator — policy scoring, jurisdiction analysis, Bradford Hill criteria, welfare metrics, evidence grades, and policy evaluation scheduling.

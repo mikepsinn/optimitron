@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/wishocracy
 
-**Lane:** Core Math
-**Owner rule:** One agent per lane at a time. Do not edit files outside this package.
-
 ## Scope
 
 RAPPA calculation engine — Randomized Aggregated Pairwise Preference Allocation. Pure math for preference aggregation, eigenvector methods, alignment scoring, and manipulation detection.

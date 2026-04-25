@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/agent
 
-**Lane:** Agent & Infra
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`agent`, `hypercerts`, `storage`).
-
 ## Scope
 
 Autonomous policy analyst — Gemini-powered orchestrator that discovers preference gaps, plans analyses, executes them, verifies results, and publishes Hypercerts. This is the brain that turns money into earth optimization.
@@ -33,6 +30,6 @@ Autonomous policy analyst — Gemini-powered orchestrator that discovers prefere
 
 ## Off-Limits
 
-- `packages/web/*` — web agent handles UI
-- `packages/treasury-*/*` — treasury agent handles contracts
-- `packages/db/prisma/schema.prisma` — coordinate with web agent for schema changes
+- `packages/web/*` — UI lives in the web package
+- `packages/treasury-*/*` — smart contracts live in treasury packages
+- `packages/db/prisma/schema.prisma` — schema changes need explicit human approval

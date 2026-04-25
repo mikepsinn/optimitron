@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/treasury-wish
 
-**Lane:** Treasury & Contracts
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane.
-
 ## Scope
 
 $WISH token monetary system — WishToken, WishocraticTreasury, UBIDistributor. Replaces welfare + IRS with programmable UBI and 0.5% transaction tax.

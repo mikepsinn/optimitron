@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/web
 
-**Lane:** Web & API
-**Owner rule:** One agent per lane at a time. Do not edit files outside this package.
-
 ## Scope
 
 Next.js 15 application — auth, dashboard, API routes, task system, treaty pages, prize page, and all user-facing UI. This is the monolithic consumer of all other packages.

@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/treasury-prize
 
-**Lane:** Treasury & Contracts
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`treasury-prize`, `treasury-iab`, `treasury-wish`, `treasury-shared`).
-
 ## Scope
 
 Earth Optimization Prize — Phase 1 referendum campaign. VoteToken and VoterPrizeTreasury contracts.
@@ -27,4 +24,4 @@ Earth Optimization Prize — Phase 1 referendum campaign. VoteToken and VoterPri
 
 - `packages/treasury-iab/*` — separate financial mechanism
 - `packages/treasury-wish/*` — separate monetary system
-- `packages/web/*` — UI integration is the web agent's job
+- `packages/web/*` — UI integration lives in the web package

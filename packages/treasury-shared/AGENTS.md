@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/treasury-shared
 
-**Lane:** Treasury & Contracts
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane.
-
 ## Scope
 
 Shared interfaces and mocks for all treasury contract packages.
@@ -17,5 +14,5 @@ Shared interfaces and mocks for all treasury contract packages.
 
 ## Rules
 
-- **Interface changes affect all treasury packages.** Coordinate with treasury-prize, treasury-iab, and treasury-wish before modifying.
+- **Interface changes affect all treasury packages.** Keep callers in `treasury-prize`, `treasury-iab`, and `treasury-wish` compatible when modifying shared exports.
 - **Mocks are for testing only.** Never deploy mocks.

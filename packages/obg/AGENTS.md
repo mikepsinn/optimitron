@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/obg
 
-**Lane:** Policy & Budget
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`opg`, `obg`, `data`).
-
 ## Scope
 
 Optimal Budget Generator — diminishing returns, cost-effectiveness analysis, Budget Impact Score, efficient frontier, overspend analysis, and budget reports.

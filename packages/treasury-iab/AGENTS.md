@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/treasury-iab
 
-**Lane:** Treasury & Contracts
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane.
-
 ## Scope
 
 Incentive Alignment Bonds — Phase 2 lobbying campaign. IABVault, IABSplitter, PublicGoodsPool, AlignmentScoreOracle, and PoliticalIncentiveAllocator.

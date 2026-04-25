@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/storage
 
-**Lane:** Agent & Infra
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`agent`, `hypercerts`, `storage`).
-
 ## Scope
 
 IPFS-backed snapshot storage for Wishocracy aggregations, policy analyses, and health analyses. Storacha client, Pinata integration, encrypted storage.

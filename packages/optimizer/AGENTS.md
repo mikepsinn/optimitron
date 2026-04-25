@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/optimizer
 
-**Lane:** Core Math
-**Owner rule:** One agent per lane at a time. Do not edit files outside this package.
-
 ## Scope
 
 Domain-agnostic causal inference engine. Takes any two time series and answers: does X cause Y, by how much, and what's the optimal value of X?

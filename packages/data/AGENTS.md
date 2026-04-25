@@ -1,8 +1,5 @@
 # AGENTS.md — @optimitron/data
 
-**Lane:** Policy & Budget
-**Owner rule:** One agent per lane at a time. Do not edit files outside your lane (`opg`, `obg`, `data`).
-
 ## Scope
 
 Data fetchers and importers — OECD, World Bank, WHO, FRED, Congress, IMF, Census, plus health data importers (Apple Health, Fitbit, Oura, etc.), unit conversion, inflation adjustment, and curated datasets.
