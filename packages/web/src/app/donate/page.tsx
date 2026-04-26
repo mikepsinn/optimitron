@@ -7,6 +7,7 @@ import {
   CHILDHOOD_VACCINATION_ROI,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   SMALLPOX_ERADICATION_ROI,
+  TREATY_CAMPAIGN_TOTAL_COST,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_VS_BED_NETS_MULTIPLIER,
@@ -22,12 +23,24 @@ import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Dialog } from "@/components/retroui/Dialog";
 import { PRESET_DONATION_AMOUNTS, type DonationFrequency } from "@/lib/stripe";
+import {
+  formatDonationImpactNumber,
+  getTreatyDonationImpactPerDollar,
+} from "@/lib/treaty-donation-impact";
 
 // Stripe's per-card transaction limit is $999,999 — anything larger
 // silently rejects in checkout. We surface this in the UI rather than letting
 // donors discover it after the fact.
 const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
 const FOUNDER_EMAIL = "m@thinkbynumbers.org";
+const donationImpact = getTreatyDonationImpactPerDollar();
+const conditionalSufferingYearsPerDollarText = formatDonationImpactNumber(
+  donationImpact.conditionalSufferingYearsPreventedPerDollar,
+);
+const conditionalLivesPerDollarText = formatDonationImpactNumber(
+  donationImpact.conditionalLivesAvertedPerDollar,
+  1,
+);
 
 export default function DonatePage() {
   const searchParams = useSearchParams();
@@ -108,11 +121,10 @@ export default function DonatePage() {
           subtitle={
             <>
               Every minute you make that face at this page, 104 humans permanently
-              stop. Please make a different face. Donations fund the Earth Optimization
-              Prize pool (distributed to recruiters by Earth Optimization Points
-              earned), plus the operating cost of running a 4 billion-person treaty
-              survey: hosting, identity verification, coordination. Tax-deductible via
-              the Institute for Accelerated Medicine 501(c)(3).
+              stop. Please make a different face. Donations fund the global 1% Treaty
+              referendum: hosting, identity verification, fraud prevention, translation,
+              outreach, and public evidence pages. Tax-deductible via the Institute for
+              Accelerated Medicine 501(c)(3).
             </>
           }
           size="md"
@@ -183,6 +195,15 @@ export default function DonatePage() {
               </strong>{" "}
               than anti-malaria bed nets. Your calculator will display an error, emit a
               tiny electronic scream, and attempt to leave the desk. This is correct.
+            </p>
+            <p>
+              Assuming the campaign works, the current model divides{" "}
+              <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} figures={1} /> of campaign cost
+              by the projected impact. That works out to about{" "}
+              <strong>{conditionalLivesPerDollarText} modeled deaths averted</strong> and{" "}
+              <strong>{conditionalSufferingYearsPerDollarText} years of suffering prevented</strong>{" "}
+              per campaign dollar. This is conditional modeled impact, not a magic vending
+              machine for immortality.
             </p>
           </div>
         </BrutalCard>
@@ -284,9 +305,10 @@ export default function DonatePage() {
 
             <p className="text-sm font-bold text-muted-foreground">
               Donations are routed through the Institute for Accelerated Medicine, a U.S.
-              501(c)(3), which administers the Earth Optimization Prize pool and the platform
-              operations budget (hosting, identity verification, coordination). Tax-deductible
-              in the United States. Stripe processes the payment; we never see your card number.
+              501(c)(3), which administers referendum and platform operations: hosting,
+              identity verification, fraud prevention, translation, outreach, and public
+              evidence pages. Tax-deductible in the United States. Stripe processes the
+              payment; we never see your card number.
             </p>
           </form>
         </BrutalCard>

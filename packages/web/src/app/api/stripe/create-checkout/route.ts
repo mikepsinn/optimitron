@@ -70,10 +70,10 @@ export async function POST(req: Request) {
             product_data: {
               name:
                 donationType === "monthly"
-                  ? "Monthly donation — Earth Optimization Prize + platform ops"
-                  : "Donation — Earth Optimization Prize + platform ops",
+                  ? "Monthly donation — global 1% Treaty referendum"
+                  : "Donation — global 1% Treaty referendum",
               description:
-                "Funds the Earth Optimization Prize pool (distributed to recruiters by Earth Optimization Points earned) plus platform operations: hosting the 4 billion-person treaty survey, identity verification, and coordination. Tax-deductible via the Institute for Accelerated Medicine 501(c)(3).",
+                "Funds the global 1% Treaty referendum: hosting, identity verification, fraud prevention, translation, outreach, and public evidence pages. Tax-deductible via the Institute for Accelerated Medicine 501(c)(3).",
             },
             ...(donationType === "monthly" ? { recurring: { interval: "month" as const } } : {}),
           },

@@ -96,6 +96,10 @@ describe("POST /api/stripe/create-checkout", () => {
           expect.objectContaining({
             price_data: expect.objectContaining({
               currency: "usd",
+              product_data: expect.objectContaining({
+                description: expect.stringContaining("global 1% Treaty referendum"),
+                name: "Donation — global 1% Treaty referendum",
+              }),
               unit_amount: 10000,
             }),
           }),
@@ -107,6 +111,10 @@ describe("POST /api/stripe/create-checkout", () => {
           cause: "earth-optimization-prize-and-ops",
         }),
       }),
+    );
+    const call = mocks.sessionsCreate.mock.calls[0]![0];
+    expect(call.line_items[0].price_data.product_data.description).not.toContain(
+      "Earth Optimization Points",
     );
     const body = (await res.json()) as { sessionId: string; url: string };
     expect(body.sessionId).toBe("cs_test_123");

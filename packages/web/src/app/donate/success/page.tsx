@@ -72,13 +72,13 @@ function DonateSuccessInner() {
               <p className="font-bold">
                 Receipt sent to {session.customer_email ?? "your email"}. Funds route through
                 the Institute for Accelerated Medicine 501(c)(3) to the Earth Optimization
-                Prize pool and platform operations.
+                referendum campaign and platform operations.
               </p>
               <p className="font-bold">
                 Your donation funds the survey hosting, identity verification, coordination,
-                and the prize pool that's distributed to top recruiters. The most leveraged
-                thing you can do next is recruit one more voter — that's how the chain
-                actually compounds.
+                translation, fraud prevention, and public evidence pages. The most leveraged
+                thing you can do next is recruit one more voter — that is how the referendum
+                signal compounds.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="flex-1">

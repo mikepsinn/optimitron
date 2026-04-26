@@ -425,13 +425,14 @@ The honest reason to move share templates into a data layer is **so non-engineer
 
 ## Impact Dollars, Points, And Rewards
 
-- [ ] Make the launch reward/accounting decision before adding users or making payout promises.
+- [ ] **IN PROGRESS:** Make the launch reward/accounting decision before adding users or making payout promises.
   - Current leaning after 2026-04-25 MCP PRD feedback: task ranking, MCP economics, and impact accounting should be denominated in USD, not invented units.
   - Use `STANDARD_ECONOMIC_QALY_VALUE_USD` (`$150K/QALY`) as the canonical health-to-dollar conversion. Median after-tax inflation-adjusted income gains are already dollar-denominated.
   - Do not create a public **Earth Optimization Points** (`EOP`) unit unless there is a real reward/viral/product reason that dollars cannot handle. If EOP survives, it is a display/reward-credit label backed by impact USD components, not a separate optimization unit.
   - Treat current "VOTE Points" as the narrow treaty/referral reward label until the decision is made, not a separate long-term unit.
   - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into dollar-backed contribution credit with honest expected-impact amounts or hide/deprecate them before launch.
   - Keep on-chain `$WISH` / `packages/treasury-wish` conceptually separate unless the whole monetary-system story is intentionally productized; do not use "wishes" for impact payout claims.
+  - Public donation copy must not promise EOP/VOTE payouts or prize-pool distributions until the ledger and legal structure are final. Use conditional, model-based impact language instead: donations fund the global referendum/survey infrastructure and public education; if the $1B campaign works, current parameters imply about 10.7 modeled deaths averted and about 220 years of suffering prevented per campaign dollar.
 - [ ] Define impact-dollar accounting from the Optimitron objective function.
   - Public wording: contribution credit measures expected contribution to maximizing median healthy life years and median after-tax inflation-adjusted income.
   - Accounting unit: `impactUsd`, where QALY / DALY health gains are converted through `STANDARD_ECONOMIC_QALY_VALUE_USD` and income gains are counted as real after-tax income dollars.
