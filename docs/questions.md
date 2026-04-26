@@ -1,10 +1,8 @@
-# 1% Treaty — Post-Vote Share Flow (v14, 2026-04-26)
+# 1% Treaty — Vote + Share Flow
 
-Post-vote sequence for 1percenttreaty.org / warondisease.org. Each section is a swipeable screen on mobile. Every screen has two buttons: a "Go to hell" / dismissive button and a "Fine" / advance button. **Both buttons advance the flow** — the "Go to hell" path triggers an alt-opener on the next screen.
+Full vote and share sequence for 1percenttreaty.org / warondisease.org. Each section is a swipeable screen on mobile. Every screen has two buttons: a "Go to hell" / dismissive button and a "Fine" / advance button. **Both buttons advance the flow** — the "Go to hell" path triggers an alt-opener on the next screen.
 
 **Progressive disclosure:** High-level claims visible by default. Derivations hidden behind `<details>` folds. Users expanding 3+ folds = engaged and skeptical (track it).
-
-**Change log from v12:** Verification is now REQUIRED before the flow begins. All guest/anonymous branching removed. Seven code forks eliminated. Rationale: someone who won't spend 15 seconds verifying won't spend 60 seconds in the Send Loop. Verification filters for commitment, and uncommitted users have zero viral value.
 
 ---
 
@@ -78,11 +76,11 @@ const impactPerVote = {
 }
 ```
 
-Current generated parameter result: `~2.6` lives and `~53` years of suffering prevented per vote. The v13 flow copy in this document deliberately displays `2.7` lives and `55` years from a rounded 4 billion denominator; do not replace those visible copy strings with generated parameter output unless the source parameters are updated to the same denominator.
+Current generated parameter result: `~2.6` lives and `~53` years of suffering prevented per vote. The flow copy in this document deliberately displays `2.7` lives and `55` years from a rounded 4 billion denominator; do not replace those visible copy strings with generated parameter output unless the source parameters are updated to the same denominator.
 
 **Flow-visible wrapper exports**
 
-Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flow-parameters.ts` when the v13 copy needs the rounded visible values:
+Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flow-parameters.ts` when the flow copy needs the rounded visible values:
 
 | Variable | Formula | Use |
 | --- | --- | --- |
@@ -234,7 +232,7 @@ What verification enables (all of this is now guaranteed for every user in the f
 
 ---
 
-## 1. Opening
+## Opening
 
 **Default (YES voters):**
 
@@ -248,7 +246,7 @@ Buttons: **[ Go to hell ]** ・ **[ Fine ]**
 
 ---
 
-## 2. The Stakes
+## The Stakes
 
 **Default:**
 
@@ -264,7 +262,7 @@ Buttons: **[ I have chosen disease ]** ・ **[ Okay, go on ]**
 
 ---
 
-## 3. The Nuclear Math
+## The Nuclear Math
 
 **Default:**
 
@@ -286,7 +284,7 @@ Buttons: **[ Seriously, stop ]** ・ **[ Go on ]**
 
 ---
 
-## 4. How We Get to 10.7 Billion
+## How We Get to 10.7 Billion
 
 Each beat shows the high-level claim by default. Click-to-expand reveals the derivation. Every source lives on manual.warondisease.org.
 
@@ -340,11 +338,11 @@ Each beat shows the high-level claim by default. Click-to-expand reveals the der
 
 Buttons: **[ [I want to check that](https://manual.warondisease.org) ]** ・ **[ Okay, I buy it ]**
 
-*Implementation: "I want to check that" = anchor to https://manual.warondisease.org, `target="_blank"`. Flow state preserved.*
+Implementation: "I want to check that" = anchor to https://manual.warondisease.org, `target="_blank"`. Flow state preserved.
 
 ---
 
-## 5. Wouldn't That Be Neat
+## Wouldn't That Be Neat
 
 **Default:**
 
@@ -366,7 +364,7 @@ Buttons: **[ Not neat ]** ・ **[ Neat ]**
 
 ---
 
-## 6. Only Two Humans
+## Only Two Humans
 
 **Default:**
 
@@ -396,7 +394,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 
 ---
 
-## 7. The Per-Vote Math
+## The Per-Vote Math
 
 **Default:**
 
@@ -425,13 +423,13 @@ Buttons: **[ I reject mathematics ]** ・ **[ Show me mine ]**
 
 ---
 
-## 8. Send Loop
+## Send Loop
 
 Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message → Impact), then loop back or exit to Depth Hook.
 
 **All users are verified.** Every send gets full attribution, every recipient gets the email sequence, every confirmation triggers the B2 dopamine email.
 
-### 8a. Name & Contact
+### Name & Contact
 
 **Default (first):**
 
@@ -459,7 +457,7 @@ Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message
 
 Buttons: **[ Let me just copy ]** ・ **[ Continue ]**
 
-### 8b. Message Format Choice
+### Message Format Choice
 
 **Shown once (first iteration), then remembered for subsequent sends. User can change later.**
 
@@ -497,9 +495,9 @@ Buttons: **[ Assign the task ]** ・ **[ Send the nice one ]**
 **On second+ iteration:** "Same format for [Maria], or switch?"
 Buttons: **[ Same ]** ・ **[ Switch ]**
 
-*Implementation note: format choice determines which email template the recipient gets throughout their sequence. Track per-send for analytics.*
+Implementation: format choice determines which email template the recipient gets throughout their sequence. Track per-send for analytics.
 
-### 8c. Message & Send
+### Message & Send
 
 **If Task Notification chosen:**
 
@@ -539,7 +537,7 @@ Button: **[ I sent it ]**
 
 Button: **[ Continue ]**
 
-### 8d. Impact & Repeat
+### Impact & Repeat
 
 **Default (after first send):**
 
@@ -576,7 +574,7 @@ Buttons: **[ I'm done ]** ・ **[ One more ]**
 
 ---
 
-## 9. Depth Hook
+## Depth Hook
 
 **Default:**
 
@@ -592,7 +590,7 @@ Buttons: **[ No thanks ]** ・ **[ Yes, send task reminder ]**
 
 ---
 
-## 10. The Close
+## The Close
 
 **Default:**
 
@@ -616,7 +614,7 @@ Button: **[ Done ]**
 
 ---
 
-## 11. The Feedback Question
+## The Feedback Question
 
 **Default:**
 
@@ -652,28 +650,20 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 ---
 
-*File version: v14 (2026-04-26). Supersedes all earlier versions.*
+# 1% Treaty — Email Sequences
 
-*Companion document: email-sequence-v2-apr24.md (still valid, no guest variants needed)*
-
-*Versioning pattern: `share-flow-vN-apr24.md`. New file per revision.*
-
-# 1% Treaty — Email Sequences (v2, 2026-04-24)
-
-Companion to share-flow-v13. Two message formats: Task Notification and Sincere. Sender chooses per-send. The chosen format determines which email variant the recipient gets throughout the sequence.
+Two message formats: Task Notification and Sincere. Sender chooses per-send. The chosen format determines which email variant the recipient gets throughout the sequence.
 
 **From address for all system emails:** War on Disease <noreply@warondisease.org>
 **From address for share emails:** [Sender name] via War on Disease <noreply@warondisease.org>
 
 **Unsubscribe:** required on every email, one-click, no guilt trip on the unsub page.
 
-**Change log from v1:** Added Task Notification variants for all recipient emails (Sequence A). Updated sender emails (Sequence B) to use overdue-task-reminder framing and direct `/send` deep links. Task notification format uses PM-system styling throughout.
-
 ---
 
 ## Sequence A: Recipient Emails (sent to Jake)
 
-4 emails max, hard cap. Format determined by sender's choice on Loop Screen 8b.
+4 emails max, hard cap. Format determined by sender's choice on the Message Format Choice screen.
 
 ---
 
@@ -840,15 +830,13 @@ Companion to share-flow-v13. Two message formats: Task Notification and Sincere.
 >
 > — warondisease.org
 
-**Notes:**
-- After A4, no more emails regardless of outcome. Hard cap. Promise honored.
-- "Will be reassigned to someone who prefers not dying of a curable disease" is the funniest line in the task sequence because it implies Jake prefers dying.
+After A4, no more emails regardless of outcome. Hard cap. Promise honored.
 
 ---
 
 ## Sequence B: Sender Emails (sent to the person who voted and shared)
 
-Unchanged from v1. These go to the verified user who completed the flow.
+These go to the verified user who completed the flow.
 
 ---
 
@@ -891,9 +879,7 @@ Unchanged from v1. These go to the verified user who completed the flow.
 >
 > — warondisease.org
 
-**Notes:**
-- Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
-- If the recipient was sent the Task format, consider adding: "[Recipient name] completed their task." to the subject line. A/B test.
+Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 
 ---
 
@@ -973,19 +959,11 @@ Unchanged from v1. These go to the verified user who completed the flow.
 
 ---
 
-## Design Notes
+## Implementation rules
 
-- **Total email cap per recipient (Jake):** 4 emails maximum. Hard cap. No exceptions.
+- **Total email cap per recipient:** 4 emails maximum. Hard cap. No exceptions.
 - **Format consistency:** if sender chose Task Notification, all 4 recipient emails use the Task variants. Don't mix formats within a recipient's sequence.
 - **Total task reminder cap per sender:** 2 task-reminder emails (B3-B4) plus monthly scorecards.
 - **Re-engagement:** 1 email (C1). One shot.
-- **Voice consistency:** Task emails sound like a bureaucratic PM system describing the apocalypse. Sincere emails sound like a concerned friend. Both are funny, but for different reasons.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Task emails get a monospace card border to look like a PM notification. Sincere emails stay plain text.
-- **The "Humanity Project Management System" sign-off** connects to the Optimitron/1percenttreaty.org task management concept. Every task notification Jake receives is a touchpoint with the idea that humanity has a project management problem. The system IS the argument.
-- **Subject lines for task format** use PM conventions: [OVERDUE], REMINDER, ESCALATION, "will be reassigned." These are patterns billions of people recognize from work. The comedy is that the task is "End War and Disease" and the blocker is "Jake has not clicked a button."
-- **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into Loop Screen 8a, pre-authenticated. Never send them back to the landing page.
-- **A/B test the two formats head-to-head.** Track: open rate, click-through rate, vote completion rate, spam report rate, and share rate (does the recipient then send to others?). Hypothesis: Task format wins on open rate and share rate; Sincere format wins on vote completion for close relationships. Blended: Task wins overall.
-
----
-
-*File version: v2 (2026-04-24). Companion to share-flow-v13-apr25.md.*
+- **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into the Name & Contact screen, pre-authenticated. Never send them back to the landing page.
