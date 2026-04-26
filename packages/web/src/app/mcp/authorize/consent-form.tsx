@@ -3,32 +3,30 @@
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
-import { MCP_SCOPES, type McpScope } from "@/lib/mcp-scopes";
+import { ALL_SCOPES, McpScope, scopeToWire, scopesToWire } from "@/lib/mcp-scopes";
 
 const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
-  "tasks:read": {
+  [McpScope.TASKS_READ]: {
     title: "View public tasks and funding",
     detail: "Read-only access to the public task graph, blockers, and funding stats.",
   },
-  "tasks:write": {
+  [McpScope.TASKS_WRITE]: {
     title: "Create and update tasks",
     detail: "Draft new tasks, update existing ones, propose bundles, set impact estimates.",
   },
-  "tasks:personal": {
+  [McpScope.TASKS_PERSONAL]: {
     title: "Manage your claims and comments",
     detail: "Claim tasks as you, complete claims, post and vote on comments.",
   },
-  "agent:run": {
+  [McpScope.AGENT_RUN]: {
     title: "Run agents and acquire leases",
     detail: "Lock active work so concurrent agents don't collide. Log runs, costs, and contact actions.",
   },
-  search: {
+  [McpScope.SEARCH]: {
     title: "Search the manual",
     detail: "Query the strategy manual and ask Wishonia questions over the documentation.",
   },
 };
-
-const ALL_SCOPE_KEYS = Object.keys(MCP_SCOPES) as McpScope[];
 
 export function McpConsentForm({
   clientId,
@@ -44,7 +42,7 @@ export function McpConsentForm({
   codeChallenge: string;
 }) {
   const [selected, setSelected] = useState<Set<McpScope>>(
-    () => new Set(requestedScopes.filter((s) => s in MCP_SCOPES)),
+    () => new Set(requestedScopes.filter((s) => ALL_SCOPES.includes(s))),
   );
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +66,7 @@ export function McpConsentForm({
           client_id: clientId,
           redirect_uri: redirectUri,
           state,
-          scope: Array.from(selected).join(" "),
+          scope: scopesToWire(Array.from(selected)),
           code_challenge: codeChallenge,
           approved: true,
         }),
@@ -94,7 +92,7 @@ export function McpConsentForm({
     <div>
       <h2 className="text-sm font-black uppercase mb-3">Permissions</h2>
       <ul className="space-y-3 mb-6">
-        {ALL_SCOPE_KEYS.map((scope) => {
+        {ALL_SCOPES.map((scope) => {
           const labels = SCOPE_LABELS[scope];
           const checked = selected.has(scope);
           const wasRequested = requestedScopes.includes(scope);
@@ -109,7 +107,7 @@ export function McpConsentForm({
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <span className="font-black uppercase text-sm">{labels.title}</span>
-                    <code className="text-xs font-bold text-muted-foreground">{scope}</code>
+                    <code className="text-xs font-bold text-muted-foreground">{scopeToWire(scope)}</code>
                     {!wasRequested ? (
                       <span className="text-[10px] font-black uppercase border-2 border-primary bg-brutal-yellow text-brutal-yellow-foreground px-1">
                         Not Requested

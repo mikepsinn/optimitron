@@ -1,7 +1,7 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { createMcpServer, DEFAULT_SCOPES } from "@/lib/mcp-server";
+import { createMcpServer } from "@/lib/mcp-server";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
-import type { McpScope } from "@/lib/mcp-server";
+import { DEFAULT_SCOPES, type McpScope } from "@/lib/mcp-scopes";
 
 async function handleMcpRequest(req: Request): Promise<Response> {
   // Unauthenticated callers get DEFAULT_SCOPES (read-only public tasks + manual search).

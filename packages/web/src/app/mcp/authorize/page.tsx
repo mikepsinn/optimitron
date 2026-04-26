@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { DEFAULT_SCOPES, type McpScope } from "@/lib/mcp-server";
+import { DEFAULT_SCOPES, scopesFromWire, scopesToWire } from "@/lib/mcp-scopes";
 import { McpConsentForm } from "./consent-form";
 
 export default async function McpAuthorizePage({
@@ -13,7 +13,7 @@ export default async function McpAuthorizePage({
   const clientId = typeof params.client_id === "string" ? params.client_id : null;
   const redirectUri = typeof params.redirect_uri === "string" ? params.redirect_uri : null;
   const state = typeof params.state === "string" ? params.state : null;
-  const scope = typeof params.scope === "string" ? params.scope : DEFAULT_SCOPES.join(" ");
+  const scope = typeof params.scope === "string" ? params.scope : scopesToWire(DEFAULT_SCOPES);
   const codeChallenge = typeof params.code_challenge === "string" ? params.code_challenge : null;
   const clientName = typeof params.client_name === "string" ? params.client_name : clientId;
 
@@ -37,7 +37,7 @@ export default async function McpAuthorizePage({
     redirect(`/auth/signin?callbackUrl=${encodeURIComponent(currentUrl.toString())}`);
   }
 
-  const requestedScopes = scope.split(" ").filter(Boolean) as McpScope[];
+  const requestedScopes = scopesFromWire(scope);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-cyan text-brutal-cyan-foreground">

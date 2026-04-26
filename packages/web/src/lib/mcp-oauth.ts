@@ -7,7 +7,7 @@
 
 import { createHash, randomBytes } from "crypto";
 import { SignJWT, jwtVerify } from "jose";
-import type { McpScope } from "./mcp-server";
+import { ALL_WIRE_SCOPES, type McpScope } from "./mcp-scopes";
 
 // ---------------------------------------------------------------------------
 // Config
@@ -149,13 +149,7 @@ export function getOAuthMetadata() {
     grant_types_supported: ["authorization_code", "refresh_token"],
     token_endpoint_auth_methods_supported: ["none"],
     code_challenge_methods_supported: ["S256"],
-    scopes_supported: [
-      "tasks:read",
-      "tasks:write",
-      "tasks:personal",
-      "agent:run",
-      "search",
-    ],
+    scopes_supported: ALL_WIRE_SCOPES,
   };
 }
 
@@ -164,13 +158,7 @@ export function getProtectedResourceMetadata() {
   return {
     resource: `${issuer}/api/mcp`,
     authorization_servers: [issuer],
-    scopes_supported: [
-      "tasks:read",
-      "tasks:write",
-      "tasks:personal",
-      "agent:run",
-      "search",
-    ],
+    scopes_supported: ALL_WIRE_SCOPES,
     bearer_methods_supported: ["header"],
     resource_name: "Optimitron MCP Server",
     resource_documentation: `${issuer}/developers`,

@@ -4,7 +4,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { CopyableCode } from "@/components/ui/copyable-code";
-import { MCP_SCOPES } from "@/lib/mcp-server";
+import { ALL_SCOPES, MCP_SCOPE_DESCRIPTIONS, scopeToWire } from "@/lib/mcp-scopes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -324,11 +324,11 @@ export default function DevelopersPage() {
             Request specific scopes when connecting to control what the agent can do.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
-            {Object.entries(MCP_SCOPES).map(([scope, description]) => (
+            {ALL_SCOPES.map((scope) => (
               <BrutalCard key={scope} bgColor="yellow" shadowSize={4}>
                 <div className="p-4">
-                  <code className="text-sm font-black">{scope}</code>
-                  <p className="font-bold text-sm mt-1">{description}</p>
+                  <code className="text-sm font-black">{scopeToWire(scope)}</code>
+                  <p className="font-bold text-sm mt-1">{MCP_SCOPE_DESCRIPTIONS[scope]}</p>
                 </div>
               </BrutalCard>
             ))}

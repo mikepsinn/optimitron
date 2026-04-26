@@ -19,8 +19,8 @@ import {
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
-  type Prisma,
-} from "@optimitron/db";
+} from "@optimitron/db/enums";
+import type { Prisma } from "@optimitron/db";
 
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
@@ -28,47 +28,52 @@ import {
 // dragging this server-only file into the client bundle.
 // ---------------------------------------------------------------------------
 
-import { MCP_SCOPES, DEFAULT_SCOPES, ALL_SCOPES, type McpScope } from "./mcp-scopes";
+import {
+  MCP_SCOPE_DESCRIPTIONS,
+  DEFAULT_SCOPES,
+  ALL_SCOPES,
+  McpScope,
+} from "./mcp-scopes";
 
-export { MCP_SCOPES, DEFAULT_SCOPES, ALL_SCOPES, type McpScope };
+export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks:read
-  getNextTask: ["tasks:read"],
-  getQueueAudit: ["tasks:read"],
-  getNextAction: ["tasks:read"],
-  evaluateTaskEconomics: ["tasks:read"],
-  listTasks: ["tasks:read"],
-  getTask: ["tasks:read"],
-  getBlockers: ["tasks:read"],
-  getFundingStats: ["tasks:read"],
+  getNextTask: [McpScope.TASKS_READ],
+  getQueueAudit: [McpScope.TASKS_READ],
+  getNextAction: [McpScope.TASKS_READ],
+  evaluateTaskEconomics: [McpScope.TASKS_READ],
+  listTasks: [McpScope.TASKS_READ],
+  getTask: [McpScope.TASKS_READ],
+  getBlockers: [McpScope.TASKS_READ],
+  getFundingStats: [McpScope.TASKS_READ],
   // tasks:write
-  createTask: ["tasks:write"],
-  proposeTaskBundle: ["tasks:write"],
-  promoteTask: ["tasks:write"],
-  updateTask: ["tasks:write"],
-  setTaskImpact: ["tasks:write"],
-  recordTaskActuals: ["tasks:write"],
-  updateMilestone: ["tasks:write"],
-  addDependency: ["tasks:write"],
+  createTask: [McpScope.TASKS_WRITE],
+  proposeTaskBundle: [McpScope.TASKS_WRITE],
+  promoteTask: [McpScope.TASKS_WRITE],
+  updateTask: [McpScope.TASKS_WRITE],
+  setTaskImpact: [McpScope.TASKS_WRITE],
+  recordTaskActuals: [McpScope.TASKS_WRITE],
+  updateMilestone: [McpScope.TASKS_WRITE],
+  addDependency: [McpScope.TASKS_WRITE],
   // tasks:personal
-  claimTask: ["tasks:personal"],
-  completeTaskClaim: ["tasks:personal"],
+  claimTask: [McpScope.TASKS_PERSONAL],
+  completeTaskClaim: [McpScope.TASKS_PERSONAL],
   // agent:run
-  logAgentRun: ["agent:run"],
-  acquireLease: ["agent:run"],
-  heartbeatLease: ["agent:run"],
-  releaseLease: ["agent:run"],
-  recordTaskCommunication: ["agent:run"],
-  checkTaskCommunicationCooldown: ["agent:run"],
+  logAgentRun: [McpScope.AGENT_RUN],
+  acquireLease: [McpScope.AGENT_RUN],
+  heartbeatLease: [McpScope.AGENT_RUN],
+  releaseLease: [McpScope.AGENT_RUN],
+  recordTaskCommunication: [McpScope.AGENT_RUN],
+  checkTaskCommunicationCooldown: [McpScope.AGENT_RUN],
   // search
-  searchManual: ["search"],
-  askWishonia: ["search"],
+  searchManual: [McpScope.SEARCH],
+  askWishonia: [McpScope.SEARCH],
   // task comments
-  postTaskComment: ["tasks:personal"],
-  voteTaskComment: ["tasks:personal"],
-  deleteTaskComment: ["tasks:personal"],
-  getTaskComments: ["tasks:read"],
+  postTaskComment: [McpScope.TASKS_PERSONAL],
+  voteTaskComment: [McpScope.TASKS_PERSONAL],
+  deleteTaskComment: [McpScope.TASKS_PERSONAL],
+  getTaskComments: [McpScope.TASKS_READ],
 };
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {

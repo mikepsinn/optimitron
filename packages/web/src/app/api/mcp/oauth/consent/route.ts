@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateAuthCode, AUTH_CODE_TTL_MS } from "@/lib/mcp-oauth";
-import { MCP_SCOPES, type McpScope } from "@/lib/mcp-server";
+import { scopesFromWire } from "@/lib/mcp-scopes";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -40,12 +40,10 @@ export async function POST(req: Request) {
   }
 
   // Filter to known scopes only — the consent form lets the user pick any scope, so
-  // validate here rather than trusting the bundle. Unknown strings are silently dropped.
+  // validate here rather than trusting the bundle. Unknown strings are silently dropped
+  // by scopesFromWire (they don't map to a McpScope value).
   const code = generateAuthCode();
-  const scopes = scope
-    .split(" ")
-    .filter(Boolean)
-    .filter((s): s is McpScope => s in MCP_SCOPES);
+  const scopes = scopesFromWire(scope);
 
   if (scopes.length === 0) {
     return NextResponse.json(

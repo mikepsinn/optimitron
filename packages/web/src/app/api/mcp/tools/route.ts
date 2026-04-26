@@ -1,4 +1,5 @@
-import { getToolDefinitions, MCP_SCOPES } from "@/lib/mcp-server";
+import { getToolDefinitions } from "@/lib/mcp-server";
+import { ALL_SCOPES, MCP_SCOPE_DESCRIPTIONS, scopeToWire } from "@/lib/mcp-scopes";
 
 export async function GET() {
   const tools = getToolDefinitions().map((tool) => ({
@@ -7,9 +8,14 @@ export async function GET() {
     inputSchema: tool.inputSchema,
   }));
 
+  // Public API — emit the OAuth wire format (`tasks:read`) keys clients expect.
+  const scopes = Object.fromEntries(
+    ALL_SCOPES.map((s) => [scopeToWire(s), MCP_SCOPE_DESCRIPTIONS[s]]),
+  );
+
   return Response.json({
     tools,
-    scopes: MCP_SCOPES,
+    scopes,
     endpoint: "/api/mcp",
     transport: "Streamable HTTP (MCP 2025-03-26)",
   });

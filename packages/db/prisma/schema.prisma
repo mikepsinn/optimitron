@@ -570,6 +570,17 @@ enum TaskCommentSource {
   SYSTEM
 }
 
+/// MCP OAuth permission scopes. The Prisma identifier is what app code sees;
+/// `@map` gives the OAuth wire format ("tasks:read") that's stored in the DB
+/// and surfaced in URLs / JWTs / OAuth metadata.
+enum McpScope {
+  TASKS_READ     @map("tasks:read")
+  TASKS_WRITE    @map("tasks:write")
+  TASKS_PERSONAL @map("tasks:personal")
+  AGENT_RUN      @map("agent:run")
+  SEARCH         @map("search")
+}
+
 /// Type of survey question
 enum QuestionType {
   MULTIPLE_CHOICE
@@ -5349,7 +5360,7 @@ model OAuthAuthCode {
   codeChallenge String
 
   /// Granted scopes
-  scopes String[]
+  scopes McpScope[]
 
   /// When this code expires (10 minutes from creation)
   expiresAt DateTime
@@ -5382,7 +5393,7 @@ model OAuthGrant {
   userId String
 
   /// Scopes the user approved
-  scopes String[]
+  scopes McpScope[]
 
   /// SHA-256 hash of the refresh token (for lookup during refresh)
   refreshTokenHash String? @unique

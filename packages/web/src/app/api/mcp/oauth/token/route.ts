@@ -8,7 +8,7 @@ import {
   hashRefreshToken,
   ACCESS_TOKEN_TTL,
 } from "@/lib/mcp-oauth";
-import type { McpScope } from "@/lib/mcp-server";
+import { scopesToWire } from "@/lib/mcp-scopes";
 
 export async function POST(req: Request) {
   try {
@@ -110,7 +110,7 @@ async function handleAuthorizationCode(
   });
 
   // Issue tokens
-  const scopes = authCode.scopes as McpScope[];
+  const scopes = authCode.scopes;
   const accessToken = await signMcpAccessToken(authCode.userId, clientId, scopes);
   const refreshToken = await signMcpRefreshToken(authCode.userId, clientId);
 
@@ -139,7 +139,7 @@ async function handleAuthorizationCode(
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_TTL,
     refresh_token: refreshToken,
-    scope: scopes.join(" "),
+    scope: scopesToWire(scopes),
   });
 }
 
@@ -189,7 +189,7 @@ async function handleRefreshToken(
   }
 
   // Issue new tokens
-  const scopes = grant.scopes as McpScope[];
+  const scopes = grant.scopes;
   const newAccessToken = await signMcpAccessToken(grant.userId, grant.clientId, scopes);
   const newRefreshToken = await signMcpRefreshToken(grant.userId, grant.clientId);
 
@@ -204,6 +204,6 @@ async function handleRefreshToken(
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_TTL,
     refresh_token: newRefreshToken,
-    scope: scopes.join(" "),
+    scope: scopesToWire(scopes),
   });
 }

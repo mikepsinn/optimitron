@@ -4,14 +4,11 @@ import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   BED_NETS_COST_PER_DALY,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
+  CHILDHOOD_VACCINATION_ROI,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  SMALLPOX_ERADICATION_ROI,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
-  TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_VS_BED_NETS_MULTIPLIER,
 } from "@optimitron/data/parameters";
 import { AmountSelector } from "@/components/ui/amount-selector";
@@ -20,6 +17,7 @@ import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Dialog } from "@/components/retroui/Dialog";
@@ -129,21 +127,32 @@ export default function DonatePage() {
         ) : null}
 
         <BrutalCard bgColor="cyan" shadowSize={8} className="mb-6">
-          <div className="space-y-3 font-bold">
+          <div className="space-y-5">
             <p className="font-black uppercase text-xl">The math</p>
+            <TreatyMechanismExplainer />
+          </div>
+        </BrutalCard>
+
+        <BrutalCard bgColor="yellow" shadowSize={8} className="mb-6">
+          <div className="space-y-3 font-bold">
+            <p className="font-black uppercase text-xl">Cost-effectiveness</p>
             <p>
-              Cost-effectiveness of a successful 1% Treaty campaign:{" "}
               <strong>
-                $
                 <ParameterValue
-                  param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                  param={{
+                    ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+                    unit: "USD",
+                  }}
                   figures={3}
                 />
               </strong>{" "}
               to save one year of healthy human life. Anti-malaria bed nets, the gold
               standard for keeping humans alive, cost{" "}
               <strong>
-                $<ParameterValue param={BED_NETS_COST_PER_DALY} figures={2} />
+                <ParameterValue
+                  param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
+                  figures={2}
+                />
               </strong>
               . This is{" "}
               <strong>
@@ -154,68 +163,26 @@ export default function DonatePage() {
                 />{" "}
                 cheaper
               </strong>
-              .
+              . It beats smallpox eradication (
+              <ParameterValue param={SMALLPOX_ERADICATION_ROI} figures={3} /> to 1) and
+              childhood vaccinations (
+              <ParameterValue param={CHILDHOOD_VACCINATION_ROI} figures={2} /> to 1),
+              which were humanity&apos;s previous greatest hits in the &quot;not
+              dying&quot; genre.
             </p>
             <p>
-              Total return:{" "}
+              Even if you assume only a 1% probability of the treaty actually passing
+              (because you&apos;re you), the expected return is still{" "}
               <strong>
-                $
                 <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE}
+                  param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
+                  display="withUnit"
                   figures={3}
                 />{" "}
-                in modeled economic value
+                better
               </strong>{" "}
-              from a $1B campaign cost. ROI{" "}
-              <ParameterValue
-                param={TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
-                display="auto"
-                figures={3}
-              />
-              -to-1. Your calculator will display an error, emit a tiny electronic scream,
-              and attempt to leave the desk. This is correct.
-            </p>
-            <p>
-              Total prevented over the treaty's effect window:{" "}
-              <strong>
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
-                  figures={3}
-                />{" "}
-                deaths
-              </strong>{" "}
-              and{" "}
-              <strong>
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
-                  figures={3}
-                />{" "}
-                hours of suffering
-              </strong>
-              . Total healthy life-years saved:{" "}
-              <strong>
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS}
-                  figures={3}
-                />
-              </strong>
-              .
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Upper-bound estimate; click any number for math and citations. Global
-              military budget for comparison:{" "}
-              <ParameterValue
-                param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024}
-                display="withUnit"
-              />{" "}
-              per year, or{" "}
-              <ParameterValue
-                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
-                display="withUnit"
-                figures={3}
-              />{" "}
-              what your governments currently spend on testing which medicines actually
-              work.
+              than anti-malaria bed nets. Your calculator will display an error, emit a
+              tiny electronic scream, and attempt to leave the desk. This is correct.
             </p>
           </div>
         </BrutalCard>
@@ -322,6 +289,17 @@ export default function DonatePage() {
               in the United States. Stripe processes the payment; we never see your card number.
             </p>
           </form>
+        </BrutalCard>
+
+        <BrutalCard bgColor="pink" shadowSize={8} className="mt-6">
+          <p className="font-black text-xl leading-tight">
+            <ParameterValue
+              param={{ ...GLOBAL_MILITARY_SPENDING_ANNUAL_2024, unit: "USD" }}
+              figures={3}
+            />{" "}
+            a year exists. The child is dying because every single person who could
+            change that decided it wasn&apos;t their problem.
+          </p>
         </BrutalCard>
 
         <Dialog open={militaryDialogOpen} onOpenChange={setMilitaryDialogOpen}>
