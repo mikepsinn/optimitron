@@ -84,12 +84,17 @@ const serverSchema = z.object({
   PUSH_BATCH_SIZE: z.string().optional(),
   REFERRAL_EMAIL_BATCH_SIZE: z.string().optional(),
   WISHOCRACY_JURISDICTION_KEY: z.string().optional(),
+
+  // ── Stripe (donations to IAM 501(c)(3)) ───────────────────────────
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
 });
 
 const clientSchema = z.object({
   NEXT_PUBLIC_BASE_URL: z.string().optional(),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().optional(),
   NEXT_PUBLIC_WORLD_ID_ENABLED: z.string().optional(),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
 });
 
 /* ------------------------------------------------------------------ */

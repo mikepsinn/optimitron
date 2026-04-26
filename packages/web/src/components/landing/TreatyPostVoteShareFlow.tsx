@@ -467,11 +467,9 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     advanceTo("submitted");
   }, [advanceTo, feedback, sentCount]);
 
-  useEffect(() => {
-    if (screen !== "submitted") return;
-    const timeout = window.setTimeout(goDashboard, 1200);
-    return () => window.clearTimeout(timeout);
-  }, [goDashboard, screen]);
+  // Note: the `submitted` screen used to auto-redirect to the dashboard.
+  // It now waits for the donor / dashboard CTA so the warmest moment after
+  // the share-flow doesn't expire before the user can fund the work.
 
   const renderScreen = () => {
     switch (screen) {
@@ -1039,7 +1037,28 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       case "submitted":
         return (
           <>
-            <FlowParagraph>Noted. Thank you for helping us end disease slightly faster.</FlowParagraph>
+            <div className="space-y-4">
+              <FlowParagraph>Noted. Thank you for helping us end disease slightly faster.</FlowParagraph>
+              <FlowParagraph>
+                A 4 billion-person treaty survey costs money to run — hosting, identity
+                verification, coordination, and the Earth Optimization Prize pool that gets
+                distributed to top recruiters. Donations fund that. Tax-deductible via the
+                Institute for Accelerated Medicine 501(c)(3).
+              </FlowParagraph>
+            </div>
+            <FlowButtonRow>
+              <Button className={dismissButtonClass} onClick={goDashboard}>
+                Skip
+              </Button>
+              <Button
+                className={primaryButtonClass}
+                onClick={() => {
+                  window.location.href = "/donate";
+                }}
+              >
+                Donate
+              </Button>
+            </FlowButtonRow>
           </>
         );
     }

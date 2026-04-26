@@ -75,6 +75,7 @@ export const ROUTES = {
   tools: "/tools",
   contribute: "/contribute",
   fund: "/fund",
+  donate: "/donate",
   signIn: "/auth/signin",
   // Autonomous persuasion optimizer
   reasoning: "/reasoning",

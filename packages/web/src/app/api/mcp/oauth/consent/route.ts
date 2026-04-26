@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateAuthCode, AUTH_CODE_TTL_MS } from "@/lib/mcp-oauth";
-import type { McpScope } from "@/lib/mcp-server";
+import { MCP_SCOPES, type McpScope } from "@/lib/mcp-server";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -39,9 +39,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid redirect_uri" }, { status: 400 });
   }
 
-  // Generate auth code
+  // Filter to known scopes only — the consent form lets the user pick any scope, so
+  // validate here rather than trusting the bundle. Unknown strings are silently dropped.
   const code = generateAuthCode();
-  const scopes = scope.split(" ").filter(Boolean) as McpScope[];
+  const scopes = scope
+    .split(" ")
+    .filter(Boolean)
+    .filter((s): s is McpScope => s in MCP_SCOPES);
+
+  if (scopes.length === 0) {
+    return NextResponse.json(
+      { error: "invalid_scope", error_description: "At least one valid scope is required" },
+      { status: 400 },
+    );
+  }
 
   await prisma.oAuthAuthCode.create({
     data: {
