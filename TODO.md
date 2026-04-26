@@ -4,6 +4,20 @@ This is the working checklist for finishing the treaty migration and post-vote r
 
 ## Working Context
 
+- [x] Resolved the GitHub Actions `pnpm db:deploy` P3009 on `20260425200000_create_task_comment_tables` by inspecting the live migration ledger and partial schema state, marking the stale shim row applied, and rerunning deploy.
+- [x] Renamed the `/donate` founder-email constant to Mike-specific naming and use `m@warondisease.org`.
+- [x] Removed the root `AGENTS.md` rule that requires full `pnpm check` before every completed task; keep focused checks as the default local protocol.
+- [x] Added both conditional-on-success and 1%-success-probability suffering-years-per-dollar figures to `/donate`.
+- [x] Added a Playwright screenshot audit for the treaty survey and post-vote flow so the current UI can be reviewed before deciding on a more minimal black-and-white/serif redesign.
+  - Run: `pnpm --filter @optimitron/web exec playwright test e2e/treaty-vote-post-vote-screenshots.spec.ts --project=default --reporter=list`
+  - Outputs 19 desktop and 19 mobile-width screenshots under `packages/web/public/img/screenshots/treaty-vote-post-vote-flow/`.
+- [x] Redesign the Treaty survey/post-vote cards as a full-screen treaty-style experience: black and white, restrained Libre Baskerville typography, fewer cyan/pink neobrutalist accents, quieter controls, and preserved screen order/copy.
+  - Added a shared `TreatyFlowShell` with full-viewport paper framing, treaty-style buttons/inputs, and drop-cap support.
+  - Regenerated the screenshot audit after the redesign; desktop and mobile-width outputs remain under `packages/web/public/img/screenshots/treaty-vote-post-vote-flow/`.
+- [x] Simplified the treaty flow visual treatment by removing decorative top labels and replacing boxed percentage/math UI with quieter treaty-text-style rules.
+- [x] Removed the remaining full-screen treaty-flow edge outline, centered vote/post-vote text on mobile, and kept desktop paragraphs left-aligned.
+- [x] Replaced the post-vote message-format choice with a two-position Love mode / Bossy mode toggle and updated the screenshot audit path.
+- [x] Kept the treaty allocation percentages side-by-side on mobile with Military & Weapons left and Clinical Trials right.
 - [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
 - [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
@@ -432,7 +446,7 @@ The honest reason to move share templates into a data layer is **so non-engineer
   - Treat current "VOTE Points" as the narrow treaty/referral reward label until the decision is made, not a separate long-term unit.
   - Treat current in-app `WishPoint` grants as temporary engagement rewards; either migrate them into dollar-backed contribution credit with honest expected-impact amounts or hide/deprecate them before launch.
   - Keep on-chain `$WISH` / `packages/treasury-wish` conceptually separate unless the whole monetary-system story is intentionally productized; do not use "wishes" for impact payout claims.
-  - Public donation copy must not promise EOP/VOTE payouts or prize-pool distributions until the ledger and legal structure are final. Use conditional, model-based impact language instead: donations fund the global referendum/survey infrastructure and public education; if the $1B campaign works, current parameters imply about 10.7 modeled deaths averted and about 220 years of suffering prevented per campaign dollar.
+  - Public donation copy must not promise EOP/VOTE payouts or prize-pool distributions until the ledger and legal structure are final. Use conditional, model-based impact language instead: donations fund the global referendum/survey infrastructure and public education; if the $1B campaign works, current parameters imply about 10.7 modeled deaths averted and about 220 years of suffering prevented per campaign dollar. At the 1% success probability used by the model, that is about 2.2 expected years of suffering prevented per campaign dollar.
 - [ ] Define impact-dollar accounting from the Optimitron objective function.
   - Public wording: contribution credit measures expected contribution to maximizing median healthy life years and median after-tax inflation-adjusted income.
   - Accounting unit: `impactUsd`, where QALY / DALY health gains are converted through `STANDARD_ECONOMIC_QALY_VALUE_USD` and income gains are counted as real after-tax income dollars.

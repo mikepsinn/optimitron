@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { useState, useEffect, useRef } from "react";
@@ -28,6 +27,14 @@ import {
   getMilitaryAllocationPercentFromPendingTreatyVote,
   getTreatyWishocraticAllocation,
 } from "@/lib/treaty-vote";
+import { cn } from "@/lib/utils";
+import {
+  TreatyFlowDivider,
+  TreatyFlowParagraph,
+  TreatyFlowShell,
+  treatyPrimaryButtonClass,
+  treatySecondaryButtonClass,
+} from "@/components/landing/TreatyFlowShell";
 
 const militarySpendingPct = Math.round(
   (MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value /
@@ -268,7 +275,12 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   };
 
   return (
-    <div className={className}>
+    <div
+      className={cn(
+        "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[#fbf7ee]",
+        className,
+      )}
+    >
       {/* Slider Card — Shows First */}
       <AnimatePresence>
         {showSlider && (
@@ -278,34 +290,41 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
             exit={{ opacity: 0, scale: 0.8, y: -50 }}
             transition={{ duration: 0.4 }}
           >
-            <Card className="bg-background text-foreground border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
-              <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
+            <TreatyFlowShell
+              data-testid="treaty-vote-slider-card"
+              contentClassName="max-w-4xl"
+            >
+              <TreatyFlowParagraph
+                dropCap
+                className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
+              >
                 {VOTE_SECTION.sliderPrompt}
-              </p>
+              </TreatyFlowParagraph>
+              <TreatyFlowDivider />
 
               {/* Allocation Display */}
-              <div className="mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex-1 text-center">
-                    <div className="text-4xl sm:text-5xl font-black text-brutal-pink mb-2">
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 gap-4 sm:gap-12">
+                  <div className="text-center">
+                    <div className="mb-2 text-5xl font-black text-[#23180d] sm:text-6xl">
                       {militaryAllocation}%
                     </div>
-                    <div className="text-sm sm:text-base font-bold uppercase">
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[#5e513f] sm:text-sm">
                       Military &amp; Weapons
                     </div>
                   </div>
-                  <div className="flex-1 text-center">
-                    <div className="text-4xl sm:text-5xl font-black text-brutal-cyan mb-2">
+                  <div className="text-center">
+                    <div className="mb-2 text-5xl font-black text-[#23180d] sm:text-6xl">
                       {clinicalTrialsAllocation}%
                     </div>
-                    <div className="text-sm sm:text-base font-bold uppercase">
+                    <div className="text-xs font-black uppercase tracking-[0.22em] text-[#5e513f] sm:text-sm">
                       Clinical Trials
                     </div>
                   </div>
                 </div>
 
                 {/* Slider with Animation */}
-                <div className="relative px-2">
+                <div className="relative px-2 pt-3">
                   <AnimatePresence>
                     {showAnimation && !userHasDragged && (
                       <>
@@ -320,9 +339,9 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                             transform: "translateX(-50%)",
                           }}
                         >
-                          <div className="bg-brutal-yellow border-4 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                            <p className="font-black uppercase text-sm whitespace-nowrap">
-                              👇 Slide Me!
+                          <div className="border border-[#23180d] bg-[#fffdf8] px-4 py-2">
+                            <p className="whitespace-nowrap text-xs font-black uppercase tracking-[0.22em] text-[#23180d]">
+                              Slide me
                             </p>
                           </div>
                         </motion.div>
@@ -335,7 +354,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                             top: "16px",
                           }}
                         >
-                          <div className="text-4xl">☝️</div>
+                          <div className="h-8 w-px bg-[#23180d]" />
                         </motion.div>
                       </>
                     )}
@@ -349,9 +368,10 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                     onChange={(e) =>
                       handleSliderChange(100 - Number(e.target.value))
                     }
-                    className="w-full h-4 bg-background border-4 border-primary rounded-none appearance-none cursor-pointer slider-brutal"
+                    className="h-3 w-full cursor-pointer appearance-none rounded-none border border-[#23180d] bg-[#fbf7ee] slider-treaty"
                     style={{
-                      background: `linear-gradient(to right, var(--brutal-pink) ${militaryAllocation}%, var(--brutal-cyan) ${militaryAllocation}%)`,
+                      background: `linear-gradient(to right, #23180d ${militaryAllocation}%, #d8c7a4 ${militaryAllocation}%)`,
+                      accentColor: "#23180d",
                     }}
                   />
                 </div>
@@ -371,14 +391,14 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                   >
                     <Button
                       onClick={handleSliderSubmit}
-                      className="w-full h-16 text-xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      className={`${treatyPrimaryButtonClass} w-full text-base sm:text-lg`}
                     >
                       SUBMIT
                     </Button>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </Card>
+            </TreatyFlowShell>
           </motion.div>
         )}
       </AnimatePresence>
@@ -391,57 +411,60 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Card className="bg-background text-foreground border-4 border-primary p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-3xl mx-auto mb-12">
-              <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-2">
+            <TreatyFlowShell
+              data-testid="treaty-vote-choice-card"
+              contentClassName="max-w-4xl"
+            >
+              <TreatyFlowParagraph dropCap className="text-xl leading-9 sm:text-2xl sm:leading-10">
                 Your governments spend{" "}
                 <br className="hidden sm:block" />
-                <span className="text-brutal-pink">
+                <span className="font-black text-[#23180d]">
                   $<ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
                 </span>{" "}
                 {VOTE_SECTION.realityCheck}
-              </p>
+              </TreatyFlowParagraph>
 
-              <div className="text-base sm:text-lg font-bold text-center">
+              <div className="border-y border-[#23180d]/30 py-5 text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
                 That&apos;s {" "}
-                <span className="text-brutal-pink text-xl">
+                <span className="text-xl font-black text-[#23180d]">
                   {militarySpendingPct}%
                 </span>{" "}
                 to military and {" "}
-                <span className="text-brutal-pink text-xl">
+                <span className="text-xl font-black text-[#23180d]">
                   {clinicalTrialsSpendingPct}%
                 </span>{" "}
                 to clinical trials.
               </div>
 
-              <div className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
+              <div className="text-center text-2xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">
                 {VOTE_SECTION.theQuestion}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Button
                   onClick={() => void handleAnswer("yes")}
-                  className="w-full sm:w-64 h-20 text-2xl font-black uppercase bg-brutal-cyan hover:bg-brutal-cyan/90 text-brutal-cyan-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3"
+                  className={`${treatyPrimaryButtonClass} h-16 w-full text-xl`}
                 >
                   {answer === "yes" ? (
-                    <CheckSquare className="w-8 h-8" />
+                    <CheckSquare className="h-6 w-6" />
                   ) : (
-                    <Square className="w-8 h-8" />
+                    <Square className="h-6 w-6" />
                   )}
                   YES
                 </Button>
                 <Button
                   onClick={() => void handleAnswer("no")}
-                  className="w-full sm:w-64 h-20 text-2xl font-black uppercase bg-brutal-pink hover:bg-brutal-pink/90 text-brutal-pink-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3"
+                  className={`${treatySecondaryButtonClass} h-16 w-full text-xl`}
                 >
                   {answer === "no" ? (
-                    <CheckSquare className="w-8 h-8" />
+                    <CheckSquare className="h-6 w-6" />
                   ) : (
-                    <Square className="w-8 h-8" />
+                    <Square className="h-6 w-6" />
                   )}
                   NO
                 </Button>
               </div>
-            </Card>
+            </TreatyFlowShell>
           </motion.div>
         )}
       </AnimatePresence>
@@ -459,7 +482,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               type: "spring",
               stiffness: 100,
             }}
-            className="max-w-2xl mx-auto mb-16"
+            className="mx-auto"
           >
             {status === "authenticated" ? (
               <>
@@ -467,28 +490,28 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 <div className="mt-6 text-center">
                   <Link
                     href={ROUTES.dashboard}
-                    className="text-sm font-black uppercase text-foreground hover:text-brutal-pink transition-colors"
+                    className="text-xs font-black uppercase tracking-[0.22em] text-[#23180d] underline underline-offset-4 transition-colors hover:text-[#5e513f]"
                   >
                     Go to Dashboard &rarr;
                   </Link>
                 </div>
               </>
             ) : (
-              <Card className="bg-background text-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <div className="mb-6 space-y-3">
-                  <p className="text-center font-black text-xl sm:text-2xl uppercase leading-tight">
+              <TreatyFlowShell contentClassName="max-w-2xl">
+                <div className="space-y-4">
+                  <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
                     Save Your Vote
                   </p>
-                  <p className="text-center font-bold text-base sm:text-lg leading-snug">
+                  <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
                     When the treaty passes, you will be personally to blame for saving{" "}
                     <ParameterValue
                       param={VOTER_LIVES_SAVED}
-                      className="text-brutal-pink"
+                      className="font-black text-[#23180d]"
                     />
                     {" "}lives and preventing{" "}
                     <ParameterValue
                       param={VOTER_SUFFERING_HOURS_PREVENTED}
-                      className="text-brutal-pink"
+                      className="font-black text-[#23180d]"
                     />
                     {" "}hours of suffering.
                   </p>
@@ -505,31 +528,37 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                   emailPendingButtonLabel="Sending save link..."
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />
-              </Card>
+              </TreatyFlowShell>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Slider thumb styles */}
-      <style jsx>{`
-        .slider-brutal::-webkit-slider-thumb {
+      <style jsx global>{`
+        input.slider-treaty {
           appearance: none;
-          width: 32px;
-          height: 32px;
-          background: black;
-          border: 4px solid black;
-          cursor: pointer;
-          box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+          accent-color: #23180d;
         }
 
-        .slider-brutal::-moz-range-thumb {
-          width: 32px;
-          height: 32px;
+        .slider-treaty::-webkit-slider-thumb {
+          appearance: none;
+          width: 24px;
+          height: 24px;
           background: black;
-          border: 4px solid black;
+          border: 1px solid black;
+          border-radius: 0;
           cursor: pointer;
-          box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+          box-shadow: none;
+        }
+
+        .slider-treaty::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+          background: black;
+          border: 1px solid black;
+          cursor: pointer;
+          box-shadow: none;
           border-radius: 0;
         }
       `}</style>

@@ -6,10 +6,18 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
-import { Card } from "@/components/retroui/Card";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import { Textarea } from "@/components/retroui/Textarea";
+import {
+  TreatyFlowButtonRow,
+  TreatyFlowParagraph,
+  TreatyFlowShell,
+  treatyInputClass,
+  treatyPrimaryButtonClass,
+  treatySecondaryButtonClass,
+  treatyTextareaClass,
+} from "@/components/landing/TreatyFlowShell";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
 import {
@@ -82,22 +90,30 @@ interface TreatyPostVoteShareFlowProps {
   answer: "yes" | "no";
 }
 
-const primaryButtonClass =
-  "h-12 justify-center border-4 border-primary bg-brutal-cyan px-4 text-sm font-black uppercase text-brutal-cyan-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed";
-const dismissButtonClass =
-  "h-12 justify-center border-4 border-primary bg-background px-4 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed";
+const primaryButtonClass = treatyPrimaryButtonClass;
+const dismissButtonClass = treatySecondaryButtonClass;
 
 const majorityHumanityText = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
 const nuclearOverkillText = formatFlowWords(FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR, 3);
 const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
 const voterLivesSavedText = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2);
 
-function FlowParagraph({ children }: { children: ReactNode }) {
-  return <p className="text-lg font-bold leading-snug sm:text-xl">{children}</p>;
+function FlowParagraph({
+  children,
+  dropCap = false,
+}: {
+  children: ReactNode;
+  dropCap?: boolean;
+}) {
+  return (
+    <TreatyFlowParagraph dropCap={dropCap}>
+      {children}
+    </TreatyFlowParagraph>
+  );
 }
 
 function FlowButtonRow({ children }: { children: ReactNode }) {
-  return <div className="grid gap-3 sm:grid-cols-2 [&>*:only-child]:sm:col-span-2">{children}</div>;
+  return <TreatyFlowButtonRow>{children}</TreatyFlowButtonRow>;
 }
 
 function DetailsBlock({
@@ -113,14 +129,14 @@ function DetailsBlock({
 }) {
   return (
     <details
-      className="border-4 border-primary bg-background p-4 text-sm font-bold leading-snug"
+      className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
       onToggle={(event) => {
         if (event.currentTarget.open) {
           trackTreatyPostVoteDetailsExpanded({ detailId, screen });
         }
       }}
     >
-      <summary className="cursor-pointer font-black uppercase">{summary}</summary>
+      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[#23180d]">{summary}</summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
   );
@@ -128,7 +144,7 @@ function DetailsBlock({
 
 function TaskPreview({ senderName }: { senderName: string }) {
   return (
-    <pre className="overflow-x-auto whitespace-pre-wrap border-4 border-primary bg-background p-4 text-xs font-black leading-snug">
+    <pre className="overflow-x-auto whitespace-pre-wrap border border-[#23180d] bg-[#fffdf8] p-4 text-xs font-bold leading-snug text-[#23180d]">
 {`┌──────────────────────────────────────┐
 │ ⚠️ [OVERDUE] End War and Disease     │
 │                                      │
@@ -150,6 +166,59 @@ function TaskPreview({ senderName }: { senderName: string }) {
 │ apologizes for the delay.              │
 └──────────────────────────────────────┘`}
     </pre>
+  );
+}
+
+function SincerePreview({ displayName }: { displayName: string }) {
+  return (
+    <div className="border-y border-[#23180d]/25 py-4 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left">
+      {`"Hi ${displayName}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"`}
+    </div>
+  );
+}
+
+function MessageModeToggle({
+  value,
+  onChange,
+}: {
+  value: ReferralInvitationMessageFormat;
+  onChange: (value: ReferralInvitationMessageFormat) => void;
+}) {
+  const options: Array<{
+    label: string;
+    value: ReferralInvitationMessageFormat;
+  }> = [
+    { label: "Love mode", value: "SINCERE" },
+    { label: "Bossy mode", value: "TASK_NOTIFICATION" },
+  ];
+
+  return (
+    <div
+      aria-label="Message mode"
+      className="grid grid-cols-2 overflow-hidden border border-[#23180d]"
+      role="group"
+    >
+      {options.map((option, index) => {
+        const selected = value === option.value;
+        return (
+          <button
+            aria-pressed={selected}
+            className={[
+              "min-h-14 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.16em] transition-colors sm:text-sm",
+              index > 0 ? "border-l border-[#23180d]" : "",
+              selected
+                ? "bg-[#23180d] text-[#fffaf0]"
+                : "bg-[#fbf7ee] text-[#23180d] hover:bg-[#efe4cf]",
+            ].join(" ")}
+            key={option.value}
+            onClick={() => onChange(option.value)}
+            type="button"
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -186,7 +255,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [messageFormat, setMessageFormat] =
-    useState<ReferralInvitationMessageFormat>("TASK_NOTIFICATION");
+    useState<ReferralInvitationMessageFormat>("SINCERE");
   const [showFormatSwitch, setShowFormatSwitch] = useState(false);
   const [invitation, setInvitation] = useState<ReferralInvitationClientRecord | null>(null);
   const [message, setMessage] = useState("");
@@ -433,7 +502,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
         return (
           <>
             <div className="space-y-4">
-              <FlowParagraph>
+              <FlowParagraph dropCap>
                 {answer === "no"
                   ? "You voted no. Totally fine. But I'm going to keep talking anyway because this is kind of the most important thing in the universe and it will only take a few moments of your time."
                   : "I'm very sorry to bother you, but this is kind of the most important thing in the universe and it will only take a few moments of your time."}
@@ -612,13 +681,13 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <FlowParagraph>I know. Math again. Last one that matters:</FlowParagraph>
                   <FlowParagraph>A majority of humans on Earth ({majorityHumanityText}) agreeing the 1% Treaty is a good idea makes it politically unstoppable.</FlowParagraph>
-                  <p className="text-xl font-black leading-tight">One vote = 1 lifetime of suffering prevented. One vote = {voterLivesSavedText} lives saved.</p>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 lifetime of suffering prevented. One vote = {voterLivesSavedText} lives saved.</p>
                   <FlowParagraph>Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <p className="text-xl font-black leading-tight">One vote = 1 full human lifetime of suffering prevented. (<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of it.)</p>
-                  <p className="text-xl font-black leading-tight">One vote = <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.</p>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 full human lifetime of suffering prevented. (<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of it.)</p>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.</p>
                   <DetailsBlock detailId="per-vote-impact" screen="perVote">
                     <p>
                       Getting a majority of humans on Earth ({majorityHumanityText} people) to agree the treaty is a good idea makes it politically unstoppable.{" "}
@@ -666,7 +735,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                       setError(null);
                     }}
                     placeholder="Jake"
-                    className="border-4 border-primary bg-background font-bold"
+                    className={treatyInputClass}
                   />
                 </div>
                 <div className="space-y-2">
@@ -683,7 +752,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                       setError(null);
                     }}
                     placeholder="jake@example.com"
-                    className="border-4 border-primary bg-background font-bold"
+                    className={treatyInputClass}
                     type="email"
                   />
                 </div>
@@ -702,9 +771,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
 
       case "sendFormat":
         if (sentCount > 0 && !showFormatSwitch) {
+          const currentMode = messageFormat === "SINCERE" ? "Love mode" : "Bossy mode";
           return (
             <>
-              <FlowParagraph>Same format for {displayName}, or switch?</FlowParagraph>
+              <FlowParagraph>Same mode ({currentMode}) for {displayName}, or switch?</FlowParagraph>
               <FlowButtonRow>
                 <Button
                   className={dismissButtonClass}
@@ -717,10 +787,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                     go("sendMessage");
                   }}
                 >
-                  Same
+                  Same mode
                 </Button>
                 <Button className={primaryButtonClass} onClick={() => setShowFormatSwitch(true)}>
-                  Switch
+                  Switch mode
                 </Button>
               </FlowButtonRow>
             </>
@@ -731,39 +801,34 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             <div className="space-y-4">
               <FlowParagraph>How do you want to tell {displayName}?</FlowParagraph>
-              <TaskPreview senderName={senderName} />
-              <div className="border-4 border-primary bg-background p-4 text-sm font-bold leading-snug">
-                {`"Hi ${displayName}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"`}
-              </div>
+              <MessageModeToggle
+                value={messageFormat}
+                onChange={(nextFormat) => {
+                  setMessageFormat(nextFormat);
+                  setInvitation(null);
+                  setMessage("");
+                  setError(null);
+                }}
+              />
+              {messageFormat === "TASK_NOTIFICATION" ? (
+                <TaskPreview senderName={senderName} />
+              ) : (
+                <SincerePreview displayName={displayName} />
+              )}
             </div>
             <FlowButtonRow>
-              <Button
-                className={dismissButtonClass}
-                onClick={() => {
-                  trackTreatyPostVoteFormatChoice({
-                    messageFormat: "TASK_NOTIFICATION",
-                    sentCount,
-                    switched: sentCount > 0,
-                  });
-                  setMessageFormat("TASK_NOTIFICATION");
-                  go("sendMessage");
-                }}
-              >
-                Assign the task
-              </Button>
               <Button
                 className={primaryButtonClass}
                 onClick={() => {
                   trackTreatyPostVoteFormatChoice({
-                    messageFormat: "SINCERE",
+                    messageFormat,
                     sentCount,
                     switched: sentCount > 0,
                   });
-                  setMessageFormat("SINCERE");
                   go("sendMessage");
                 }}
               >
-                Send the nice one
+                Continue
               </Button>
             </FlowButtonRow>
           </>
@@ -779,7 +844,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               <Textarea
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                className="min-h-72 border-4 border-primary bg-background font-mono text-sm"
+                className={`${treatyTextareaClass} min-h-72 font-mono text-sm`}
                 disabled={isCreating}
               />
             </div>
@@ -826,7 +891,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             {sentCount <= 1 ? (
               <div className="space-y-4">
-                <p className="text-xl font-black leading-tight">When {lastRecipientName || displayName} votes: +1 lifetime of suffering prevented. +{voterLivesSavedText} lives saved.</p>
+                <p className="text-center text-xl font-black leading-tight sm:text-left">When {lastRecipientName || displayName} votes: +1 lifetime of suffering prevented. +{voterLivesSavedText} lives saved.</p>
                 <FlowParagraph>Your pending totals:</FlowParagraph>
                 <FlowParagraph>Lifetimes of suffering prevented: <strong>{sentCount}</strong></FlowParagraph>
                 <FlowParagraph>Inverse Kills Score: <strong>{pendingLives} lives</strong></FlowParagraph>
@@ -919,7 +984,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               <Textarea
                 value={feedback}
                 onChange={(event) => setFeedback(event.target.value)}
-                className="min-h-40 border-4 border-primary bg-background font-bold"
+                className={`${treatyTextareaClass} min-h-40 font-bold`}
               />
             </div>
             <FlowButtonRow>
@@ -940,8 +1005,8 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               <FlowParagraph>Noted. Thank you for helping us end disease slightly faster.</FlowParagraph>
               <FlowParagraph>
                 A 4 billion-person treaty survey costs money to run — hosting, identity
-                verification, coordination, and the Earth Optimization Prize pool that gets
-                distributed to top recruiters. Donations fund that. Tax-deductible via the
+                verification, fraud prevention, translation, outreach, and public evidence
+                pages. Donations fund that. Tax-deductible via the
                 Institute for Accelerated Medicine 501(c)(3).
               </FlowParagraph>
             </div>
@@ -964,21 +1029,24 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   };
 
   return (
-    <Card className="overflow-hidden border-4 border-primary bg-background p-0 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <TreatyFlowShell
+      data-testid="treaty-post-vote-share-flow"
+      contentClassName="max-w-3xl"
+    >
       <div className="space-y-6 p-5">
         {renderScreen()}
         {error ? (
-          <p className="border-4 border-primary bg-brutal-pink px-3 py-2 text-sm font-black text-brutal-pink-foreground">
+          <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
             {error}
           </p>
         ) : null}
         {copyState === "copied" && screen !== "copyConfirm" ? (
-          <p className="flex items-center gap-2 text-sm font-black uppercase">
+          <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#23180d]">
             <Check className="h-4 w-4" aria-hidden="true" />
             Copied
           </p>
         ) : null}
       </div>
-    </Card>
+    </TreatyFlowShell>
   );
 }

@@ -68,7 +68,7 @@ interface TreatyMechanismExplainerProps {
 }
 
 function StepHeadline({ children }: { children: ReactNode }) {
-  return <p className="text-xl font-black leading-tight">{children}</p>;
+  return <p className="text-center text-xl font-black leading-tight sm:text-left">{children}</p>;
 }
 
 function DetailsBlock({
@@ -84,14 +84,14 @@ function DetailsBlock({
 }) {
   return (
     <details
-      className="border-4 border-primary bg-background p-4 text-sm font-bold leading-snug text-foreground"
+      className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
       onToggle={(event) => {
         if (event.currentTarget.open) {
           onExpand?.(detailId);
         }
       }}
     >
-      <summary className="cursor-pointer font-black uppercase">{summary}</summary>
+      <summary className="cursor-pointer font-black uppercase tracking-[0.12em] text-[#23180d]">{summary}</summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
   );
@@ -104,7 +104,7 @@ export function TreatyMechanismExplainer({
 }: TreatyMechanismExplainerProps) {
   if (variant === "compact") {
     return (
-      <p className="text-lg font-bold leading-snug sm:text-xl">
+      <p className="text-center text-lg font-bold leading-snug sm:text-left sm:text-xl">
         {treatyFundingCompact}/year ({treatyReductionPctText} of {globalMilitarySpendingCompact}{" "}
         military) → {formatFlowCompactParam(DFDA_PATIENTS_FUNDABLE_ANNUALLY, 2)} patients tested
         (at {formatFlowCompactCurrency(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, 3)} each, not{" "}
@@ -248,7 +248,7 @@ export function TreatyMechanismExplainer({
       </DetailsBlock>
 
       {closing ? (
-        <p className="text-lg font-bold leading-snug sm:text-xl">{closing}</p>
+        <p className="text-center text-lg font-bold leading-snug sm:text-left sm:text-xl">{closing}</p>
       ) : null}
     </div>
   );
