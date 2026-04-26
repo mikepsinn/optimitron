@@ -97,8 +97,32 @@ async function stabilizeVisuals(page: Page) {
       [class*="sticky"] {
         display: none !important;
       }
+      [data-testid="treaty-post-vote-overlay"],
+      [data-testid="treaty-math-dialog"] {
+        display: block !important;
+      }
     `,
   });
+}
+
+async function setRangeValue(page: Page, range: Locator, value: string) {
+  await range.scrollIntoViewIfNeeded();
+  const box = await range.boundingBox();
+  expect(box, "range input bounding box").not.toBeNull();
+  if (!box) return;
+
+  const numericValue = Number(value);
+  const min = Number(await range.getAttribute("min") ?? "0");
+  const max = Number(await range.getAttribute("max") ?? "100");
+  const ratio = Math.min(1, Math.max(0, (numericValue - min) / (max - min)));
+  const y = box.y + box.height / 2;
+  const startX = box.x + box.width / 2;
+  const targetX = box.x + box.width * ratio;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(targetX, y, { steps: 8 });
+  await page.mouse.up();
 }
 
 async function capture(
@@ -138,13 +162,48 @@ async function captureChoiceCard(
   await capture(page.getByTestId("treaty-vote-choice-card"), dir, step, slug);
 }
 
+async function expectPostVoteOverlayCoversViewport(page: Page) {
+  const overlay = page.getByTestId("treaty-post-vote-overlay");
+  await expect(overlay).toBeVisible();
+
+  const box = await overlay.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box, "post-vote overlay bounding box").not.toBeNull();
+  if (!box || !viewport) return;
+
+  expect(box.x).toBeLessThanOrEqual(1);
+  expect(box.y).toBeLessThanOrEqual(1);
+  expect(box.width).toBeGreaterThanOrEqual(viewport.width - 2);
+  expect(box.height).toBeGreaterThanOrEqual(viewport.height - 2);
+}
+
 async function capturePostVoteCard(
   page: Page,
   dir: string,
   step: number,
   slug: string,
 ) {
-  await capture(page.getByTestId("treaty-post-vote-share-flow"), dir, step, slug);
+  await expectPostVoteOverlayCoversViewport(page);
+  await capture(page.getByTestId("treaty-post-vote-overlay"), dir, step, slug);
+}
+
+async function capturePage(
+  page: Page,
+  dir: string,
+  step: number,
+  slug: string,
+) {
+  const filePath = path.join(
+    dir,
+    `${String(step).padStart(2, "0")}-${slug}.png`,
+  );
+  await page.screenshot({
+    animations: "disabled",
+    caret: "hide",
+    fullPage: false,
+    path: filePath,
+  });
+  console.log(`Screenshot: ${filePath}`);
 }
 
 test.describe("treaty vote and post-vote screenshot audit", () => {
@@ -196,7 +255,7 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await expect(slider).toBeVisible({ timeout: 15_000 });
     await captureSurveyCard(page, dir, 1, "survey-allocation-slider");
 
-    await slider.fill("30");
+    await setRangeValue(page, slider, "30");
     const submit = voteSection.getByRole("button", { name: "SUBMIT" });
     await expect(submit).toBeVisible({ timeout: 5_000 });
     await captureSurveyCard(page, dir, 2, "survey-allocation-submit-ready");
@@ -220,7 +279,14 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
 
     await page.getByRole("button", { name: "Go on", exact: true }).click();
     await expect(page.getByRole("button", { name: "Okay, I buy it", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Check the math", exact: true })).toBeVisible();
+    await expect(page.getByText("Show the math", { exact: true })).toHaveCount(0);
     await capturePostVoteCard(page, dir, 7, "post-vote-math");
+    await page.getByRole("button", { name: "Check the math", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "Treaty Math" })).toBeVisible();
+    await expect(page.getByText("Military spending to treaty funding")).toBeVisible();
+    await page.getByRole("button", { name: "Close Math", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "Treaty Math" })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Okay, I buy it", exact: true }).click();
     await expect(page.getByText(/Wouldn't that be neat/i)).toBeVisible();
@@ -245,10 +311,18 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await capturePostVoteCard(page, dir, 12, "post-vote-message-format");
 
     await page.getByRole("button", { name: "Bossy mode" }).click();
+    const bossyPreview = page.getByTestId("bossy-task-preview");
+    await expect(bossyPreview).toBeVisible();
+    await expect(bossyPreview).not.toContainText(/[┌┐└┘│─]/);
     await page.getByRole("button", { name: "Continue" }).click();
     const messageBox = page.locator('textarea[placeholder="Enter text..."]');
     await expect(messageBox).toBeVisible();
     await expect(messageBox).not.toHaveValue("");
+    const bossyMessage = await messageBox.inputValue();
+    expect(bossyMessage).not.toMatch(/[┌┐└┘│─]/);
+    expect(bossyMessage).not.toContain("**");
+    expect(bossyMessage).not.toContain("[ COMPLETE TASK");
+    expect(bossyMessage).not.toContain("Management apologizes");
     await capturePostVoteCard(page, dir, 13, "post-vote-message-copy");
 
     await page.getByRole("button", { name: /^Copy$/ }).first().click();
@@ -272,8 +346,11 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await capturePostVoteCard(page, dir, 18, "post-vote-feedback");
 
     await page.getByRole("button", { name: "Submit" }).click();
-    await expect(page.getByText(/Noted. Thank you for helping us end disease/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 19, "post-vote-submitted-donate");
+    await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "EARTH OPTIMIZATION", exact: true })).toBeVisible({
+      timeout: 15_000,
+    });
+    await capturePage(page, dir, 19, "dashboard-after-feedback");
 
     console.log(`Treaty flow screenshots saved to: ${dir}`);
     });

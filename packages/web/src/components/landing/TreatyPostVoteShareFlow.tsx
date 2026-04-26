@@ -1,7 +1,7 @@
 "use client";
 
 import { nanoid } from "nanoid";
-import { Check, Clipboard, Mail } from "lucide-react";
+import { Check, Clipboard, Mail, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -83,8 +83,7 @@ type FlowScreen =
   | "sendImpact"
   | "depthHook"
   | "close"
-  | "feedback"
-  | "submitted";
+  | "feedback";
 
 interface TreatyPostVoteShareFlowProps {
   answer: "yes" | "no";
@@ -94,7 +93,6 @@ const primaryButtonClass = treatyPrimaryButtonClass;
 const dismissButtonClass = treatySecondaryButtonClass;
 
 const majorityHumanityText = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
-const nuclearOverkillText = formatFlowWords(FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR, 3);
 const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
 const voterLivesSavedText = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2);
 
@@ -143,29 +141,51 @@ function DetailsBlock({
 }
 
 function TaskPreview({ senderName }: { senderName: string }) {
+  const assignedBy = senderName || "[Your name]";
+
   return (
-    <pre className="overflow-x-auto whitespace-pre-wrap border border-[#23180d] bg-[#fffdf8] p-4 text-xs font-bold leading-snug text-[#23180d]">
-{`┌──────────────────────────────────────┐
-│ ⚠️ [OVERDUE] End War and Disease     │
-│                                      │
-│ TASK: End War and Disease             │
-│ ASSIGNED BY: ${senderName || "[Your name]"}
-│ STATUS: Overdue (by approximately     │
-│         ${statusQuoQueueYearsText} years)                    │
-│ PRIORITY: Critical                    │
-│ ESTIMATED TIME: 30 seconds            │
-│                                       │
-│ ACTION REQUIRED: Vote on the          │
-│ 1% Treaty at warondisease.org         │
-│                                       │
-│ NOTE: This task was originally due     │
-│ several centuries ago but kept         │
-│ getting deprioritized in favor of      │
-│ building ${nuclearOverkillText} apocalypses worth of      │
-│ nuclear weapons. Management            │
-│ apologizes for the delay.              │
-└──────────────────────────────────────┘`}
-    </pre>
+    <div
+      className="border border-[#23180d] bg-[#fffdf8] p-4 text-left text-sm font-bold leading-7 text-[#23180d]"
+      data-testid="bossy-task-preview"
+    >
+      <p className="mb-4 text-center text-xs font-black uppercase tracking-[0.18em] text-[#5e513f]">
+        Overdue Task
+      </p>
+      <dl className="space-y-3">
+        <div>
+          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
+            Task
+          </dt>
+          <dd className="text-base font-black">End War and Disease</dd>
+        </div>
+        <div>
+          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
+            Assigned By
+          </dt>
+          <dd>{assignedBy}</dd>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
+              Time
+            </dt>
+            <dd>30 seconds</dd>
+          </div>
+          <div>
+            <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
+              Due
+            </dt>
+            <dd>about {statusQuoQueueYearsText} years ago</dd>
+          </div>
+        </div>
+        <div>
+          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
+            Action
+          </dt>
+          <dd>Vote on the 1% Treaty</dd>
+        </div>
+      </dl>
+    </div>
   );
 }
 
@@ -222,6 +242,50 @@ function MessageModeToggle({
   );
 }
 
+function TreatyMathDialog({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      aria-labelledby="treaty-math-dialog-title"
+      aria-modal="true"
+      className="fixed inset-0 z-[90] overflow-y-auto bg-[#fbf7ee] px-4 py-6 text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10"
+      data-testid="treaty-math-dialog"
+      role="dialog"
+    >
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-4xl flex-col gap-6">
+        <div className="flex items-center justify-between gap-4 border-b border-[#23180d]/30 pb-4">
+          <h2
+            className="text-xl font-black uppercase tracking-[0.16em] text-[#23180d] sm:text-2xl"
+            id="treaty-math-dialog-title"
+          >
+            Treaty Math
+          </h2>
+          <Button
+            aria-label="Close math dialog"
+            className={`${dismissButtonClass} min-h-11 px-3 py-2`}
+            onClick={onClose}
+            type="button"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <TreatyMechanismExplainer detailMode="expanded" />
+
+        <div className="grid gap-3 border-t border-[#23180d]/30 pt-4 sm:grid-cols-2">
+          <Button asChild className={dismissButtonClass}>
+            <a href="https://manual.warondisease.org" rel="noreferrer" target="_blank">
+              Open Manual
+            </a>
+          </Button>
+          <Button className={primaryButtonClass} onClick={onClose} type="button">
+            Close Math
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function milestoneCopy(sentCount: number) {
   const milestoneLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
 
@@ -267,6 +331,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [mathDialogOpen, setMathDialogOpen] = useState(false);
 
   const senderName = getReferralInvitationSenderName(session?.user);
   const firstName = getReferralInvitationFirstName(recipientName);
@@ -354,6 +419,24 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       }),
     );
   }, [invitation, messageFormat, senderName, session?.user]);
+
+  useEffect(() => {
+    if (!mathDialogOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMathDialogOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mathDialogOpen]);
+
+  const openMathDialog = useCallback(() => {
+    trackTreatyPostVoteDetailsExpanded({ detailId: "all-math", screen: "math" });
+    setMathDialogOpen(true);
+  }, []);
 
   const completeCurrentInvitation = useCallback(() => {
     if (!invitation || completedInvitationIds.has(invitation.id)) {
@@ -489,12 +572,8 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       sentCount,
       characterCount: feedback.trim().length,
     });
-    advanceTo("submitted");
-  }, [advanceTo, feedback, sentCount]);
-
-  // Note: the `submitted` screen used to auto-redirect to the dashboard.
-  // It now waits for the donor / dashboard CTA so the warmest moment after
-  // the share-flow doesn't expire before the user can fund the work.
+    goDashboard();
+  }, [feedback, goDashboard, sentCount]);
 
   const renderScreen = () => {
     switch (screen) {
@@ -574,28 +653,16 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             {alt ? (
               <div className="space-y-4">
                 <FlowParagraph>Fine, show your work:</FlowParagraph>
-                <TreatyMechanismExplainer variant="compact" />
-                <FlowParagraph>
-                  Expand any number for the derivation. Everything has a citation at manual.warondisease.org.
-                </FlowParagraph>
+                <TreatyMechanismExplainer detailMode="none" />
               </div>
             ) : (
               <TreatyMechanismExplainer
-                onDetailExpanded={(detailId) =>
-                  trackTreatyPostVoteDetailsExpanded({ detailId, screen: "math" })
-                }
+                detailMode="none"
               />
             )}
             <FlowButtonRow>
-              <Button asChild className={dismissButtonClass}>
-                <a
-                  href="https://manual.warondisease.org"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => go("neat", true)}
-                >
-                  I want to check that
-                </a>
+              <Button className={dismissButtonClass} onClick={openMathDialog} type="button">
+                Check the math
               </Button>
               <Button className={primaryButtonClass} onClick={() => go("neat")}>
                 Okay, I buy it
@@ -644,16 +711,14 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? (
                 <>
-                  <FlowParagraph>{"Fair. But here's why it's easier than you think:"}</FlowParagraph>
-                  <FlowParagraph>Only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
-                  <FlowParagraph>2 → 4 → 8 → 16... {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. One per week = {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months.</FlowParagraph>
-                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
+                  <FlowParagraph>{"Fair. But here's the math:"}</FlowParagraph>
+                  <FlowParagraph>Tell 2 friends. They tell 2. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week.</FlowParagraph>
+                  <FlowParagraph>Yes, technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <FlowParagraph>For that chain reaction to reach {majorityHumanityText}, only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</FlowParagraph>
-                  <FlowParagraph>Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. At one per day, {FLOW_DOUBLING_ROUNDS_TO_TARGET} days. At one per week, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months.</FlowParagraph>
-                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
+                  <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText} humans. That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
+                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
                   <DetailsBlock detailId="chain-letter-history" screen="twoHumans" summary="Has a chain letter ever actually worked?">
                     <p>{"In 1935, a billion people handwrote letters, bought stamps, and mailed actual money to strangers because a piece of paper promised them $1,562.50 that didn't exist. The promise was a lie. The threat was fake. Some of them probably died driving to the post office."}</p>
                     <p>This one requires touching a glowing rectangle a few times. It costs nothing. There are no stamps. And the threat — that you and everyone you love will suffer and die of curable diseases if nobody funds the research — is not a superstition. It is an epidemiological fact.</p>
@@ -998,55 +1063,33 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           </>
         );
 
-      case "submitted":
-        return (
-          <>
-            <div className="space-y-4">
-              <FlowParagraph>Noted. Thank you for helping us end disease slightly faster.</FlowParagraph>
-              <FlowParagraph>
-                A 4 billion-person treaty survey costs money to run — hosting, identity
-                verification, fraud prevention, translation, outreach, and public evidence
-                pages. Donations fund that. Tax-deductible via the
-                Institute for Accelerated Medicine 501(c)(3).
-              </FlowParagraph>
-            </div>
-            <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={goDashboard}>
-                Skip
-              </Button>
-              <Button
-                className={primaryButtonClass}
-                onClick={() => {
-                  window.location.href = "/donate";
-                }}
-              >
-                Donate
-              </Button>
-            </FlowButtonRow>
-          </>
-        );
     }
   };
 
   return (
-    <TreatyFlowShell
-      data-testid="treaty-post-vote-share-flow"
-      contentClassName="max-w-3xl"
-    >
-      <div className="space-y-6 p-5">
-        {renderScreen()}
-        {error ? (
-          <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
-            {error}
-          </p>
-        ) : null}
-        {copyState === "copied" && screen !== "copyConfirm" ? (
-          <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#23180d]">
-            <Check className="h-4 w-4" aria-hidden="true" />
-            Copied
-          </p>
-        ) : null}
-      </div>
-    </TreatyFlowShell>
+    <>
+      <TreatyFlowShell
+        data-testid="treaty-post-vote-share-flow"
+        contentClassName="max-w-3xl"
+      >
+        <div className="space-y-6 p-5">
+          {renderScreen()}
+          {error ? (
+            <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
+              {error}
+            </p>
+          ) : null}
+          {copyState === "copied" && screen !== "copyConfirm" ? (
+            <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#23180d]">
+              <Check className="h-4 w-4" aria-hidden="true" />
+              Copied
+            </p>
+          ) : null}
+        </div>
+      </TreatyFlowShell>
+      {mathDialogOpen ? (
+        <TreatyMathDialog onClose={() => setMathDialogOpen(false)} />
+      ) : null}
+    </>
   );
 }

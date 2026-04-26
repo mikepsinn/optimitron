@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/retroui/Button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Square, CheckSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -21,7 +21,6 @@ import {
 } from "@optimitron/data/parameters";
 import { trackSliderSubmitted, trackVoteSubmitted } from "@/lib/analytics";
 import { VOTE_SECTION } from "@/lib/messaging";
-import { ROUTES } from "@/lib/routes";
 import {
   buildTreatyWishocraticAllocation,
   getMilitaryAllocationPercentFromPendingTreatyVote,
@@ -51,11 +50,16 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   const [userHasDragged, setUserHasDragged] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [animatedValue, setAnimatedValue] = useState(50);
+  const [isMounted, setIsMounted] = useState(false);
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Restore state from localStorage on mount
   useEffect(() => {
@@ -253,13 +257,6 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     });
 
     storage.clearVoteStatusCache();
-
-    setTimeout(() => {
-      shareCardRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }, 600);
 
     if (status === "authenticated" && session) {
       await syncPendingReferendumVotes(session);
@@ -470,32 +467,21 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       </AnimatePresence>
 
       {/* Auth or Share Card — Shows After Vote */}
-      <AnimatePresence>
-        {answer && (
+      {answer && isMounted
+        ? createPortal(
           <motion.div
             ref={shareCardRef}
-            initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            data-testid="treaty-post-vote-overlay"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: 0.5,
+              duration: 0.35,
               ease: [0.87, 0, 0.13, 1],
-              type: "spring",
-              stiffness: 100,
             }}
-            className="mx-auto"
+            className="fixed inset-0 z-[70] overflow-y-auto bg-[#fbf7ee]"
           >
             {status === "authenticated" ? (
-              <>
-                <TreatyPostVoteShareFlow answer={answer} />
-                <div className="mt-6 text-center">
-                  <Link
-                    href={ROUTES.dashboard}
-                    className="text-xs font-black uppercase tracking-[0.22em] text-[#23180d] underline underline-offset-4 transition-colors hover:text-[#5e513f]"
-                  >
-                    Go to Dashboard &rarr;
-                  </Link>
-                </div>
-              </>
+              <TreatyPostVoteShareFlow answer={answer} />
             ) : (
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4">
@@ -531,8 +517,10 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               </TreatyFlowShell>
             )}
           </motion.div>
-        )}
-      </AnimatePresence>
+          ,
+          document.body,
+        )
+        : null}
 
       {/* Slider thumb styles */}
       <style jsx global>{`

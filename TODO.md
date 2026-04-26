@@ -18,6 +18,9 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Removed the remaining full-screen treaty-flow edge outline, centered vote/post-vote text on mobile, and kept desktop paragraphs left-aligned.
 - [x] Replaced the post-vote message-format choice with a two-position Love mode / Bossy mode toggle and updated the screenshot audit path.
 - [x] Kept the treaty allocation percentages side-by-side on mobile with Military & Weapons left and Clinical Trials right.
+- [x] Completed agreed post-vote cleanup slice: replaced Bossy mode ASCII/markdown task formatting, removed the final donation screen, redirected feedback submit to dashboard, and removed the stray dashboard link.
+- [x] Fixed the desktop post-vote full-screen framing so screenshots and the live flow cannot show the unrelated yellow landing section beneath the treaty experience.
+- [x] Collapsed the post-vote math screen's repeated inline math toggles into one full-screen math dialog and fixed mobile Frame 07 screenshot containment.
 - [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
 - [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.

@@ -63,6 +63,7 @@ const totalSufferingHoursCiText = totalSufferingHoursCi
 interface TreatyMechanismExplainerProps {
   variant?: "full" | "compact";
   onDetailExpanded?: (detailId: string) => void;
+  detailMode?: "inline" | "none" | "expanded";
   /** Closing line after the last step. Defaults to the citation reminder. Pass null to omit. */
   closingLine?: ReactNode | null;
 }
@@ -74,14 +75,31 @@ function StepHeadline({ children }: { children: ReactNode }) {
 function DetailsBlock({
   children,
   summary = "Show the math",
+  title,
   detailId,
   onExpand,
+  detailMode = "inline",
 }: {
   children: ReactNode;
   summary?: string;
+  title?: string;
   detailId: string;
   onExpand?: (detailId: string) => void;
+  detailMode?: "inline" | "none" | "expanded";
 }) {
+  if (detailMode === "none") return null;
+
+  if (detailMode === "expanded") {
+    return (
+      <section className="border-y border-[#23180d]/25 py-4 text-sm font-bold leading-7 text-[#2f2417]">
+        <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-[#23180d]">
+          {title ?? summary}
+        </p>
+        <div className="space-y-3">{children}</div>
+      </section>
+    );
+  }
+
   return (
     <details
       className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
@@ -100,6 +118,7 @@ function DetailsBlock({
 export function TreatyMechanismExplainer({
   variant = "full",
   onDetailExpanded,
+  detailMode = "inline",
   closingLine,
 }: TreatyMechanismExplainerProps) {
   if (variant === "compact") {
@@ -127,7 +146,12 @@ export function TreatyMechanismExplainer({
         <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> of global military spending ={" "}
         <ParameterValue param={TREATY_ANNUAL_FUNDING} figures={3} /> per year.
       </StepHeadline>
-      <DetailsBlock detailId="military-spending-to-treaty-funding" onExpand={onDetailExpanded}>
+      <DetailsBlock
+        detailId="military-spending-to-treaty-funding"
+        detailMode={detailMode}
+        onExpand={onDetailExpanded}
+        title="Military spending to treaty funding"
+      >
         <p>
           Global military spending 2024 ={" "}
           <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} figures={3} /> (SIPRI).{" "}
@@ -153,7 +177,12 @@ export function TreatyMechanismExplainer({
         instead of today&apos;s{" "}
         <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} figures={2} />.
       </StepHeadline>
-      <DetailsBlock detailId="trial-capacity-funding" onExpand={onDetailExpanded}>
+      <DetailsBlock
+        detailId="trial-capacity-funding"
+        detailMode={detailMode}
+        onExpand={onDetailExpanded}
+        title="Trial capacity funding"
+      >
         <p>
           Traditional Phase 3 trials: median{" "}
           <ParameterValue
@@ -197,7 +226,12 @@ export function TreatyMechanismExplainer({
         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} display="integer" /> years to{" "}
         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} display="integer" />.
       </StepHeadline>
-      <DetailsBlock detailId="queue-clearance-compression" onExpand={onDetailExpanded}>
+      <DetailsBlock
+        detailId="queue-clearance-compression"
+        detailMode={detailMode}
+        onExpand={onDetailExpanded}
+        title="Queue clearance compression"
+      >
         <p>
           {dfdaPatientsFundableCompact} funded patients ÷ {currentTrialSlotsCompact} current ={" "}
           {trialCapacityMultiplierPreciseText}x multiplier.{" "}
@@ -227,7 +261,12 @@ export function TreatyMechanismExplainer({
         <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours of suffering
         doesn&apos;t happen.
       </StepHeadline>
-      <DetailsBlock detailId="lives-and-suffering-prevented" onExpand={onDetailExpanded}>
+      <DetailsBlock
+        detailId="lives-and-suffering-prevented"
+        detailMode={detailMode}
+        onExpand={onDetailExpanded}
+        title="Lives and suffering prevented"
+      >
         <p>
           Average treatment arrival accelerates by{" "}
           <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} figures={3} /> years

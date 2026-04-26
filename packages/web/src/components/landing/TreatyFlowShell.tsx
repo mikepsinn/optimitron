@@ -35,7 +35,7 @@ export function TreatyFlowShell({
     <section
       data-testid={dataTestId}
       className={cn(
-        "relative isolate z-[60] mx-auto flex min-h-[100svh] w-full overflow-hidden bg-[#fbf7ee] px-4 py-6 text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10",
+        "relative isolate z-[60] mx-auto flex min-h-screen min-h-[100dvh] w-full overflow-hidden bg-[#fbf7ee] px-4 py-6 text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10",
         className,
       )}
       style={{ color: ink, backgroundColor: paper }}

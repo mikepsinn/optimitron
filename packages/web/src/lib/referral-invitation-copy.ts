@@ -1,13 +1,9 @@
 import { STATUS_QUO_QUEUE_CLEARANCE_YEARS } from "@optimitron/data/parameters";
-import {
-  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
-  formatFlowWords,
-} from "@/lib/treaty-share-flow-parameters";
+import { formatFlowWords } from "@/lib/treaty-share-flow-parameters";
 
 export type ReferralInvitationMessageFormat = "TASK_NOTIFICATION" | "SINCERE";
 
 const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
-const nuclearOverkillText = formatFlowWords(FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR, 3);
 
 export function getReferralInvitationFirstName(name: string): string {
   return name.trim().split(/\s+/)[0] || name.trim();
@@ -23,20 +19,14 @@ export function buildReferralInvitationMessage(input: {
 
   if (input.messageFormat === "TASK_NOTIFICATION") {
     return [
-      `Here's ${recipient}'s task assignment:`,
+      "Overdue task: End War and Disease",
       "",
-      "⚠️ **[OVERDUE] End War and Disease**",
+      `Assigned by: ${input.senderName || "A voter"}`,
+      "Time required: 30 seconds",
+      `Due: about ${statusQuoQueueYearsText} years ago`,
       "",
-      "TASK: End War and Disease",
-      `ASSIGNED BY: ${input.senderName || "A voter"}`,
-      `STATUS: Overdue (by approximately ${statusQuoQueueYearsText} years)`,
-      "PRIORITY: Critical",
-      "ESTIMATED TIME: 30 seconds",
-      "ACTION REQUIRED: Vote on the 1% Treaty",
-      "",
-      `NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building ${nuclearOverkillText} apocalypses worth of nuclear weapons. Management apologizes for the delay.`,
-      "",
-      `[ COMPLETE TASK → ${input.inviteUrl} ]`,
+      "Please vote on the 1% Treaty:",
+      input.inviteUrl,
     ].join("\n");
   }
 

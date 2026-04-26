@@ -20,22 +20,30 @@ describe("referral invitation copy", () => {
       }),
     ).toBe(
       [
-        "Here's Jake's task assignment:",
+        "Overdue task: End War and Disease",
         "",
-        "⚠️ **[OVERDUE] End War and Disease**",
+        "Assigned by: Ada",
+        "Time required: 30 seconds",
+        "Due: about 443 years ago",
         "",
-        "TASK: End War and Disease",
-        "ASSIGNED BY: Ada",
-        "STATUS: Overdue (by approximately 443 years)",
-        "PRIORITY: Critical",
-        "ESTIMATED TIME: 30 seconds",
-        "ACTION REQUIRED: Vote on the 1% Treaty",
-        "",
-        "NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building 122 apocalypses worth of nuclear weapons. Management apologizes for the delay.",
-        "",
-        "[ COMPLETE TASK → https://example.com/vote/sender?invite=abc ]",
+        "Please vote on the 1% Treaty:",
+        "https://example.com/vote/sender?invite=abc",
       ].join("\n"),
     );
+  });
+
+  it("keeps the task notification plain enough to paste anywhere", () => {
+    const message = buildReferralInvitationMessage({
+      inviteUrl: "https://example.com/vote/sender?invite=abc",
+      messageFormat: "TASK_NOTIFICATION",
+      recipientName: "Jake Smith",
+      senderName: "Ada",
+    });
+
+    expect(message).not.toMatch(/[┌┐└┘│─]/);
+    expect(message).not.toContain("**");
+    expect(message).not.toContain("[ COMPLETE TASK");
+    expect(message).not.toContain("Management apologizes");
   });
 
   it("builds the sincere message", () => {
