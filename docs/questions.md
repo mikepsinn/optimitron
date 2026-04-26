@@ -200,11 +200,10 @@ Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flo
 2. **Pre-vote: Apology** — disarm before showing emotional content. See below.
 3. **Pre-vote: Grandma** — face of disease. See below.
 4. **Pre-vote: Apocalypse framing** — "you have 122 apocalypses, trade one for medicine." See below.
-5. **Interactive slider** — "How would you split the budget between military and clinical trials?"
-6. **Reality check** — the $604:$1 stat plus the 12.3× research-capacity payoff. See below.
-7. **The vote question** — "Would you redirect 1% of military spending to clinical trials?" Yes / No.
-8. **Verification** — required. See below.
-9. **Post-vote share sequence begins** — The Stakes screen.
+5. **Slider** — drag to allocate between military and clinical trials. See below.
+6. **Vote question** — reality check + Yes/No, on a single card after the slider submits. See below.
+7. **Verification** — required. See below.
+8. **Post-vote share sequence begins** — The Stakes screen.
 
 **YES voters** see the default opener on The Stakes. **NO voters** see the NO-voter variant, then the same flow. The math doesn't care how they voted.
 
@@ -268,11 +267,17 @@ Numbers: `FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD`, `FLOW_GLOBAL_WARHEAD_COUNT`, `
 
 ---
 
-## Reality check
+## Slider
 
-Renders between slider submit and the Yes/No question.
+> How do you think global governments should allocate between military spending and high efficiency pragmatic clinical trials to cure and treat disease?
 
-**Copy:**
+"{n}% Military & Weapons" / "{100-n}% Clinical Trials" with the slider underneath.
+
+Button: **[ Submit ]** (only appears after the user has dragged the slider at least once).
+
+---
+
+## Vote question
 
 > Your governments spend **${ratio}** on weapons and military systems for every $1 spent on clinical trials.
 >
@@ -280,9 +285,11 @@ Renders between slider submit and the Yes/No question.
 >
 > Moving 1% of military spending to pragmatic clinical trials would mean **12.3× more medical research** — the same dollars test 23 million patients per year instead of 1.9 million.
 
-Numbers: `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO` for `${ratio}`, `DFDA_TRIAL_CAPACITY_MULTIPLIER` for 12.3×, `DFDA_PATIENTS_FUNDABLE_ANNUALLY` for 23 million, `CURRENT_TRIAL_SLOTS_AVAILABLE` for 1.9 million. Display via `ParameterValue`.
+> Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?
 
-Slider prompt and Yes/No question copy: unchanged from current implementation.
+Buttons: **[ ☐ YES ]** ・ **[ ☐ NO ]**
+
+Numbers: `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO` for `${ratio}`, `DFDA_TRIAL_CAPACITY_MULTIPLIER` for 12.3×, `DFDA_PATIENTS_FUNDABLE_ANNUALLY` for 23 million, `CURRENT_TRIAL_SLOTS_AVAILABLE` for 1.9 million. Display via `ParameterValue`.
 
 ---
 
