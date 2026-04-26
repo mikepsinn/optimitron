@@ -5,7 +5,6 @@
 ## Core Working Rules
 
 - Read the relevant package `AGENTS.md` before editing package files.
-- Run `pnpm check` (typecheck + lint + test) before considering work done.
 - Never import Prisma client in library packages (optimizer, wishocracy, opg, obg, data, agent, hypercerts, storage)
 - Use `import type` for cross-package type imports
 - Follow existing patterns — read surrounding code before writing new code

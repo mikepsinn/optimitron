@@ -32,7 +32,7 @@ import {
 // silently rejects in checkout. We surface this in the UI rather than letting
 // donors discover it after the fact.
 const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
-const FOUNDER_EMAIL = "m@thinkbynumbers.org";
+const MIKE_EMAIL = "m@warondisease.org";
 const donationImpact = getTreatyDonationImpactPerDollar();
 const conditionalSufferingYearsPerDollarText = formatDonationImpactNumber(
   donationImpact.conditionalSufferingYearsPreventedPerDollar,
@@ -40,6 +40,13 @@ const conditionalSufferingYearsPerDollarText = formatDonationImpactNumber(
 const conditionalLivesPerDollarText = formatDonationImpactNumber(
   donationImpact.conditionalLivesAvertedPerDollar,
   1,
+);
+const riskAdjustedSufferingYearsPerDollarText = formatDonationImpactNumber(
+  donationImpact.riskAdjustedSufferingYearsPreventedPerDollar,
+  1,
+);
+const riskAdjustedSuccessProbabilityText = formatDonationImpactNumber(
+  donationImpact.successProbability * 100,
 );
 
 export default function DonatePage() {
@@ -197,13 +204,18 @@ export default function DonatePage() {
               tiny electronic scream, and attempt to leave the desk. This is correct.
             </p>
             <p>
-              Assuming the campaign works, the current model divides{" "}
+              Conditional on success, the current model divides{" "}
               <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} figures={1} /> of campaign cost
               by the projected impact. That works out to about{" "}
               <strong>{conditionalLivesPerDollarText} modeled deaths averted</strong> and{" "}
               <strong>{conditionalSufferingYearsPerDollarText} years of suffering prevented</strong>{" "}
-              per campaign dollar. This is conditional modeled impact, not a magic vending
-              machine for immortality.
+              per campaign dollar. At the deliberately skeptical{" "}
+              <strong>{riskAdjustedSuccessProbabilityText}% success probability</strong> used above,
+              the risk-adjusted figure is still about{" "}
+              <strong>
+                {riskAdjustedSufferingYearsPerDollarText} expected years of suffering prevented
+              </strong>{" "}
+              per campaign dollar.
             </p>
           </div>
         </BrutalCard>
@@ -338,12 +350,12 @@ export default function DonatePage() {
               <p>
                 Or wire it. Email{" "}
                 <a
-                  href={`mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(
+                  href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
                     "Wire instructions for major gift",
                   )}`}
                   className="underline"
                 >
-                  {FOUNDER_EMAIL}
+                  {MIKE_EMAIL}
                 </a>{" "}
                 for instructions.
               </p>

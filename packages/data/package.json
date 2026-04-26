@@ -42,7 +42,7 @@
     "economics",
     "health-data"
   ],
-  "author": "Mike P. Sinn <m@thinkbynumbers.org>",
+  "author": "Mike P. Sinn <m@warondisease.org>",
   "license": "MIT",
   "dependencies": {
     "@optimitron/optimizer": "workspace:*",
