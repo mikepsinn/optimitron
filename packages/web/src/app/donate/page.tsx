@@ -3,8 +3,16 @@
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  BED_NETS_COST_PER_DALY,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
-  PRAGMATIC_TRIAL_COST_PER_QALY,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  TREATY_VS_BED_NETS_MULTIPLIER,
 } from "@optimitron/data/parameters";
 import { AmountSelector } from "@/components/ui/amount-selector";
 import { BrutalCard } from "@/components/ui/brutal-card";
@@ -14,20 +22,14 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
+import { Dialog } from "@/components/retroui/Dialog";
 import { PRESET_DONATION_AMOUNTS, type DonationFrequency } from "@/lib/stripe";
 
-// One-percent redirect math used in the impact card.
-const ONE_PERCENT_OF_GLOBAL_MILITARY_USD =
-  GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value * 0.01;
-const TREATY_LIFETIME_YEARS = 30;
-const ASSUMED_FUNDRAISE_USD = 1_000_000_000;
-
-// Annual healthy life-years unlocked when the treaty redirects 1% of military
-// into pragmatic trials at the published per-QALY cost.
-const ANNUAL_QALYS_UNLOCKED =
-  ONE_PERCENT_OF_GLOBAL_MILITARY_USD / PRAGMATIC_TRIAL_COST_PER_QALY.value;
-const LIFETIME_QALYS_UNLOCKED = ANNUAL_QALYS_UNLOCKED * TREATY_LIFETIME_YEARS;
-const QALYS_PER_DONATED_DOLLAR = LIFETIME_QALYS_UNLOCKED / ASSUMED_FUNDRAISE_USD;
+// Stripe's per-card transaction limit is $999,999 — anything larger
+// silently rejects in checkout. We surface this in the UI rather than letting
+// donors discover it after the fact.
+const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
+const FOUNDER_EMAIL = "m@thinkbynumbers.org";
 
 export default function DonatePage() {
   const searchParams = useSearchParams();
@@ -40,10 +42,14 @@ export default function DonatePage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [militaryDialogOpen, setMilitaryDialogOpen] = useState(false);
 
   const effectiveAmount =
     customAmount.trim() && Number.isFinite(Number(customAmount))
-      ? Math.max(1, Math.round(Number(customAmount)))
+      ? Math.min(
+          STRIPE_MAX_CUSTOM_AMOUNT_USD,
+          Math.max(1, Math.round(Number(customAmount))),
+        )
       : amount;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -101,7 +107,16 @@ export default function DonatePage() {
       <Container size="md">
         <SectionHeader
           title="FUND THE TASK"
-          subtitle="Donations fund the Earth Optimization Prize pool — distributed to recruiters by Earth Optimization Points earned — and the operating cost of running a 4 billion-person treaty survey: hosting, identity verification, coordination. Tax-deductible via the Institute for Accelerated Medicine 501(c)(3)."
+          subtitle={
+            <>
+              Every minute you make that face at this page, 104 humans permanently
+              stop. Please make a different face. Donations fund the Earth Optimization
+              Prize pool (distributed to recruiters by Earth Optimization Points
+              earned), plus the operating cost of running a 4 billion-person treaty
+              survey: hosting, identity verification, coordination. Tax-deductible via
+              the Institute for Accelerated Medicine 501(c)(3).
+            </>
+          }
           size="md"
         />
 
@@ -115,38 +130,92 @@ export default function DonatePage() {
 
         <BrutalCard bgColor="cyan" shadowSize={8} className="mb-6">
           <div className="space-y-3 font-bold">
-            <p className="font-black uppercase text-xl">The leverage chain</p>
+            <p className="font-black uppercase text-xl">The math</p>
             <p>
-              Pragmatic clinical trials cost about{" "}
-              <ParameterValue param={PRAGMATIC_TRIAL_COST_PER_QALY} display="withUnit" /> —
-              one healthy life-year for the price of a sandwich. The 1% Treaty redirects 1% of
-              global military spending —{" "}
-              <ParameterValue
-                param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024}
-                display="withUnit"
-              />{" "}
-              annually — into those trials. That's roughly{" "}
+              Cost-effectiveness of a successful 1% Treaty campaign:{" "}
               <strong>
-                {(ANNUAL_QALYS_UNLOCKED / 1e9).toFixed(1)} billion healthy life-years per year
+                $
+                <ParameterValue
+                  param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                  figures={3}
+                />
               </strong>{" "}
-              of treaty effect.
+              to save one year of healthy human life. Anti-malaria bed nets, the gold
+              standard for keeping humans alive, cost{" "}
+              <strong>
+                $<ParameterValue param={BED_NETS_COST_PER_DALY} figures={2} />
+              </strong>
+              . This is{" "}
+              <strong>
+                <ParameterValue
+                  param={TREATY_VS_BED_NETS_MULTIPLIER}
+                  display="withUnit"
+                  figures={3}
+                />{" "}
+                cheaper
+              </strong>
+              .
             </p>
             <p>
-              If donations totaling about{" "}
-              <strong>${(ASSUMED_FUNDRAISE_USD / 1e9).toFixed(0)} billion</strong>{" "}
-              fund the platform that gets the treaty across the line, the per-dollar leverage
-              over a {TREATY_LIFETIME_YEARS}-year treaty horizon comes out to roughly{" "}
+              Total return:{" "}
               <strong>
-                {Math.round(QALYS_PER_DONATED_DOLLAR).toLocaleString()} healthy life-years per
-                dollar donated
+                $
+                <ParameterValue
+                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE}
+                  figures={3}
+                />{" "}
+                in modeled economic value
+              </strong>{" "}
+              from a $1B campaign cost. ROI{" "}
+              <ParameterValue
+                param={TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                display="auto"
+                figures={3}
+              />
+              -to-1. Your calculator will display an error, emit a tiny electronic scream,
+              and attempt to leave the desk. This is correct.
+            </p>
+            <p>
+              Total prevented over the treaty's effect window:{" "}
+              <strong>
+                <ParameterValue
+                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
+                  figures={3}
+                />{" "}
+                deaths
+              </strong>{" "}
+              and{" "}
+              <strong>
+                <ParameterValue
+                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
+                  figures={3}
+                />{" "}
+                hours of suffering
+              </strong>
+              . Total healthy life-years saved:{" "}
+              <strong>
+                <ParameterValue
+                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS}
+                  figures={3}
+                />
               </strong>
               .
             </p>
             <p className="text-sm text-muted-foreground">
-              Upper-bound estimate. Assumes the treaty passes, operates at scale for{" "}
-              {TREATY_LIFETIME_YEARS} years, and that platform donations are the marginal
-              contribution that gets it ratified. Trial cost-effectiveness benchmark from the
-              RECOVERY trial; click the parameter values for the math and citations.
+              Upper-bound estimate; click any number for math and citations. Global
+              military budget for comparison:{" "}
+              <ParameterValue
+                param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024}
+                display="withUnit"
+              />{" "}
+              per year, or{" "}
+              <ParameterValue
+                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                display="withUnit"
+                figures={3}
+              />{" "}
+              what your governments currently spend on testing which medicines actually
+              work.
             </p>
           </div>
         </BrutalCard>
@@ -189,15 +258,31 @@ export default function DonatePage() {
                 formatSuffix={frequency === "monthly" ? "/mo" : ""}
                 activeColor="pink"
               />
-              <div className="mt-3">
+              <div className="mt-3 space-y-2">
                 <Input
                   type="number"
                   min={1}
+                  max={STRIPE_MAX_CUSTOM_AMOUNT_USD}
                   step={1}
-                  placeholder="Or enter a custom amount"
+                  placeholder={`Or enter a custom amount (up to $${STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()})`}
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                 />
+                <p className="text-xs font-bold text-muted-foreground">
+                  Stripe declines transactions above $999,999. The Commission has noted this.
+                </p>
+              </div>
+              <div className="mt-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start text-left"
+                  onClick={() => setMilitaryDialogOpen(true)}
+                >
+                  ${" "}
+                  {(GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value / 1e12).toFixed(2)}{" "}
+                  trillion (match the global murder budget)
+                </Button>
               </div>
             </div>
 
@@ -238,6 +323,34 @@ export default function DonatePage() {
             </p>
           </form>
         </BrutalCard>
+
+        <Dialog open={militaryDialogOpen} onOpenChange={setMilitaryDialogOpen}>
+          <Dialog.Content title="Stripe limit">
+            <div className="space-y-3 p-2 font-bold">
+              <p>
+                Sorry, Stripe only accepts up to $
+                {STRIPE_MAX_CUSTOM_AMOUNT_USD.toLocaleString()}. So just do that{" "}
+                {Math.ceil(
+                  GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value /
+                    STRIPE_MAX_CUSTOM_AMOUNT_USD,
+                ).toLocaleString()}{" "}
+                times.
+              </p>
+              <p>
+                Or wire it. Email{" "}
+                <a
+                  href={`mailto:${FOUNDER_EMAIL}?subject=${encodeURIComponent(
+                    "Wire instructions for major gift",
+                  )}`}
+                  className="underline"
+                >
+                  {FOUNDER_EMAIL}
+                </a>{" "}
+                for instructions.
+              </p>
+            </div>
+          </Dialog.Content>
+        </Dialog>
       </Container>
     </SectionContainer>
   );

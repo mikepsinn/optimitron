@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
-import { MCP_SCOPES, type McpScope } from "@/lib/mcp-server";
+import { MCP_SCOPES, type McpScope } from "@/lib/mcp-scopes";
 
 const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
   "tasks:read": {
