@@ -307,8 +307,7 @@ export default function DonatePage() {
               Donations are routed through the Institute for Accelerated Medicine, a U.S.
               501(c)(3), which administers referendum and platform operations: hosting,
               identity verification, fraud prevention, translation, outreach, and public
-              evidence pages. Tax-deductible in the United States. Stripe processes the
-              payment; we never see your card number.
+              evidence pages. Tax-deductible in the United States.
             </p>
           </form>
         </BrutalCard>
