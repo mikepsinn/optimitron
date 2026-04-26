@@ -628,7 +628,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? <FlowParagraph>Fair. One more math thing though.</FlowParagraph> : null}
               <FlowParagraph>
-                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans. Call that one apocalypse.
+                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
               </FlowParagraph>
               <FlowParagraph>
                 Humanity has about <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} /> nuclear weapons. That&apos;s <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypses of mass murder capacity.
@@ -995,7 +995,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
         return (
           <>
             <div className="space-y-4">
-              {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : <FlowParagraph>You just messaged {sentCount} people.</FlowParagraph>}
+              {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : null}
               <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?</FlowParagraph>
             </div>
             <FlowButtonRow>
@@ -1042,7 +1042,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 </>
               ) : (
                 <>
-                  <FlowParagraph>{"One last thing. We're trying to make this the most effective chain letter in history."}</FlowParagraph>
+                  <FlowParagraph>{"We're trying to make this the most effective chain letter in history."}</FlowParagraph>
                   <FlowParagraph>What would we have to change about this to make you send it to everyone you love?</FlowParagraph>
                 </>
               )}

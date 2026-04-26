@@ -293,7 +293,7 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await capturePostVoteCard(page, dir, 8, "post-vote-neat");
 
     await page.getByRole("button", { name: "Neat", exact: true }).click();
-    await expect(page.getByText(/For that chain reaction to reach/i)).toBeVisible();
+    await expect(page.getByText(/Tell 2 friends/i)).toBeVisible();
     await capturePostVoteCard(page, dir, 9, "post-vote-two-humans");
 
     await page.getByRole("button", { name: "Okay, two humans", exact: true }).click();
