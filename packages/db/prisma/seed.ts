@@ -1452,12 +1452,14 @@ async function seedWishoniaUser() {
     update: {
       name: WISHONIA_DISPLAY_NAME,
       image: WISHONIA_IMAGE,
+      isSystem: true,
       person: { connect: { id: person.id } },
     },
     create: {
       email: WISHONIA_EMAIL,
       name: WISHONIA_DISPLAY_NAME,
       image: WISHONIA_IMAGE,
+      isSystem: true,
       username: WISHONIA_USERNAME,
       emailVerified: new Date(),
       person: { connect: { id: person.id } },

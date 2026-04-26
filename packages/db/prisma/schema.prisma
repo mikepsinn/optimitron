@@ -685,6 +685,11 @@ model User {
   /// false is equivalent to having "all" in unsubscribedScopes.
   newsletterSubscribed Boolean @default(true)
 
+  /// True for system-owned users like `wishonia` that author OUTBOUND_MESSAGE
+  /// and SYSTEM_NOTE TaskComment rows. Filter out of normal user listings,
+  /// leaderboards, referral attribution, and human accountability views.
+  isSystem Boolean @default(false)
+
   /// Scopes the user has opted out of (e.g. "referral_sequence", "onboarding").
   /// The literal scope "all" means opt-out of every non-transactional email.
   /// Transactional scopes (magic_link, account_security) bypass this list.

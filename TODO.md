@@ -276,13 +276,24 @@ The task system pretends to be generic but the communication sequences, post-vot
   - Schema columns dropped. Seed fills a primary endpoint for the root, treaty, dFDA, AMF, and per-leader signer tasks via `upsertSeedTaskCommunicationEndpoint` (reached through the `createTaskWithImpact` adapter that now takes `primaryEndpoint` directly).
   - **Pending follow-up:** `seed.integration.test.ts` should assert every treaty signer task has parent, assignee, due date, and a primary communication endpoint with label/url/instructions; future recipient/sender `TaskCommunicationTemplate` rows point at tasks with usable endpoints. The integration test currently skips without a DB — re-enable after the migration becomes the standard dev path.
 
-**Phase A follow-ups still pending:**
+**Phase A follow-ups status (updated 2026-04-25):**
 
-- [ ] Migrate `ReferralInvitation` per-recipient send columns (`recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`) onto `TaskCommunication` rows with a data-preserving migration. Then drop the columns from `ReferralInvitation`. With 0 users this is mostly a code refactor — backfill is empty.
-- [ ] Seed the `wishonia` system `User` row that owns all `TaskComment(kind=OUTBOUND_MESSAGE | SYSTEM_NOTE)` rows per the doc. Add `User.isSystem` boolean (or rely on the well-known `wishonia` username) and exclude from normal user listings.
-- [ ] Re-enable `packages/db/src/__tests__/seed.integration.test.ts` against the now-applied migration; assert primary endpoint shape on the seeded treaty tasks.
+- [x] Seed the `wishonia` system `User` row + add `User.isSystem` boolean. Migration `20260425230000_add_user_is_system` adds the column; `seedWishoniaUser()` sets `isSystem: true` on upsert. Filtering helpers across listings/leaderboards/attribution are still needed where they touch user lists — track per surface as found.
+- [x] `packages/db/src/__tests__/seed.integration.test.ts` already includes the endpoint-contract assertion (lines 119-179) — runs whenever a local Postgres `DATABASE_URL` is set; intentionally skips against shared dev DB (Neon) per `assertSafeLocalTestDatabaseUrl` safety. No code change needed.
+- [→] **Folded into Phase B:** Migrate `ReferralInvitation` per-recipient send columns (`recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId`) onto `TaskCommunication` rows. Doing this separately would mean rewriting the same cron twice — the Phase B engine collapse touches the exact same code paths. Track this as Phase B step (6) below.
 
 ### Phase B — One generic email-sequence engine
+
+> **Next-session work, scoped 2026-04-25.** Estimate 4-6 hours of focused work. Do NOT bundle with anything else; the parity-proof step requires concentration.
+>
+> **Plan (in order):**
+> 1. Add `packages/web/src/lib/tasks/render-task-communication.server.ts` exporting `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`. Pure function; no DB writes.
+> 2. Add seed helpers `seedTaskCommunicationTemplate` + `seedTaskCommunicationVariants` invoked from `seedTreatyTasks()` for the five audience/purpose families: A1-A4 recipient invitation (4 steps × 2 formats), B1-B5 sender reminders, B5 monthly scorecard, C1 re-engagement, vote-confirmed, recipient-voted. Transcribe content verbatim from `lib/email/referral-invitation-email-sequence.ts`, `lib/email/referral-email-sequence.ts`, `lib/email/treaty-sender-email-sequence.ts`.
+> 3. Add a parity test suite: for each family, render via the legacy builder and via the new engine, assert byte-equal subject/html/text across N seed inputs.
+> 4. Migrate the cron callers (`processDueReferralInvitationRecipientEmails`, `processDueReferralInvitationSenderEmails`, `processDueTreatyMonthlyScorecardEmails`, `processDueTreatyNeverSharedReengagementEmails`, treaty vote / recipient-voted handlers) to use the engine. Drop the `referendum.slug === TREATY_REFERENDUM_SLUG` filters in the same change. Rename functions to generic (`processDueTaskRecipientCommunications`, etc.).
+> 5. After parity proven and callers migrated, delete `lib/email/referral-invitation-email-sequence.ts`, `lib/email/referral-email-sequence.ts`, `lib/email/treaty-sender-email-sequence.ts`.
+> 6. Fold in the deferred Phase A column migration: drop `ReferralInvitation.recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId` once `TaskCommunication` rows are load-bearing.
+
 
 - [ ] Collapse the separate builders into one `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`. Replaces:
   - `buildReferralSequenceEmail` (`lib/referral-email-sequence.ts`)
