@@ -1,4 +1,4 @@
-# 1% Treaty — Post-Vote Share Flow (v13, 2026-04-25)
+# 1% Treaty — Post-Vote Share Flow (v14, 2026-04-26)
 
 Post-vote sequence for 1percenttreaty.org / warondisease.org. Each section is a swipeable screen on mobile. Every screen has two buttons: a "Go to hell" / dismissive button and a "Fine" / advance button. **Both buttons advance the flow** — the "Go to hell" path triggers an alt-opener on the next screen.
 
@@ -268,7 +268,7 @@ Buttons: **[ I have chosen disease ]** ・ **[ Okay, go on ]**
 
 **Default:**
 
-> 100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans. Call that one apocalypse.
+> 100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
 >
 > Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity.
 >
@@ -370,9 +370,7 @@ Buttons: **[ Not neat ]** ・ **[ Neat ]**
 
 **Default:**
 
-> For that chain reaction to reach 4 billion, only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.
->
-> Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: 32 rounds reaches 4 billion. At one per day, 32 days. At one per week, 8 months.
+> Tell 2 friends. They tell 2 friends. 32 rounds reaches 4 billion humans (a majority of humanity). That's 32 days at one per day, 8 months at one per week.
 >
 > Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.
 >
@@ -388,11 +386,9 @@ Buttons: **[ Not neat ]** ・ **[ Neat ]**
 
 **Alt:**
 
-> Fair. But here's why it's easier than you think:
+> Fair. But here's the math:
 >
-> Only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.
->
-> 2 → 4 → 8 → 16... 32 rounds reaches 4 billion. One per week = 8 months.
+> Tell 2 friends. They tell 2. 32 rounds reaches 4 billion. 8 months at one per week.
 >
 > Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.
 
@@ -584,8 +580,6 @@ Buttons: **[ I'm done ]** ・ **[ One more ]**
 
 **Default:**
 
-> You just messaged [N] people.
->
 > The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?
 
 **Alt:**
@@ -626,7 +620,7 @@ Button: **[ Done ]**
 
 **Default:**
 
-> One last thing. We're trying to make this the most effective chain letter in history.
+> We're trying to make this the most effective chain letter in history.
 >
 > What would we have to change about this to make you send it to everyone you love?
 >
@@ -658,7 +652,7 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 ---
 
-*File version: v13 (2026-04-25). Supersedes all earlier versions.*
+*File version: v14 (2026-04-26). Supersedes all earlier versions.*
 
 *Companion document: email-sequence-v2-apr24.md (still valid, no guest variants needed)*
 
