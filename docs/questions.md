@@ -197,12 +197,94 @@ Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flo
 ## Context: before this flow
 
 1. **Landing hero** — headline, CTA to engage
-2. **Interactive slider** — "How would you split the budget between military and clinical trials?"
-3. **The vote question** — "Would you redirect 1% of military spending to clinical trials?" Yes / No.
-4. **Verification** — required. See below.
-5. **This flow begins** — Opening screen
+2. **Pre-vote: Apology** — disarm before showing emotional content. See below.
+3. **Pre-vote: Grandma** — face of disease. See below.
+4. **Pre-vote: Apocalypse framing** — "you have 122 apocalypses, trade one for medicine." See below.
+5. **Interactive slider** — "How would you split the budget between military and clinical trials?"
+6. **Reality check** — the $604:$1 stat plus the 12.3× research-capacity payoff. See below.
+7. **The vote question** — "Would you redirect 1% of military spending to clinical trials?" Yes / No.
+8. **Verification** — required. See below.
+9. **Post-vote share sequence begins** — The Stakes screen.
 
-**YES voters** see the default Opening. **NO voters** see the NO-voter variant, then the same flow. The math doesn't care how they voted.
+**YES voters** see the default opener on The Stakes. **NO voters** see the NO-voter variant, then the same flow. The math doesn't care how they voted.
+
+## Pre-vote: Apology
+
+**Default:**
+
+> I'm very sorry to bother you, but this is kind of the most important thing in the universe and it will only take a few moments of your time.
+
+Buttons: **[ Go to hell ]** ・ **[ Fine ]**
+
+Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for the next screen.
+
+---
+
+## Pre-vote: Grandma
+
+**Default:**
+
+> [Photo of grandma]
+>
+> This is my grandmother. She's really nice.
+>
+> Her brain is turning into mush. The money that would have paid for the clinical trials to find a cure was busy turning into missiles.
+
+**Alt (if user clicked "Go to hell" on Apology):**
+
+> Sorry. Grandma's in this part.
+>
+> [same body]
+
+Buttons: **[ I don't care ]** ・ **[ I'm sorry about your grandmother ]**
+
+Both buttons advance to the Apocalypse screen. "I don't care" sets the alt flag for the next screen.
+
+Asset: photo lives at `packages/web/public/img/grandma.jpg`.
+
+---
+
+## Pre-vote: Apocalypse framing
+
+**Default:**
+
+> 100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
+>
+> Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity.
+>
+> You can only ruin Earth once. The other 121 are just wasteful.
+>
+> The 1% Treaty asks you to trade one apocalypse for something slightly nicer.
+
+**Alt (if dismissive on Apology or Grandma):**
+
+> Fair. One more math thing though.
+>
+> [same body]
+
+Buttons: **[ Take me to the vote ]**
+
+Numbers: `FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD`, `FLOW_GLOBAL_WARHEAD_COUNT`, `FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR`, `FLOW_WASTEFUL_APOCALYPSES`. Display via `ParameterValue`.
+
+---
+
+## Reality check
+
+Renders between slider submit and the Yes/No question.
+
+**Copy:**
+
+> Your governments spend **${ratio}** on weapons and military systems for every $1 spent on clinical trials.
+>
+> That's **99.8%** to military and **0.2%** to clinical trials.
+>
+> Moving 1% of military spending to pragmatic clinical trials would mean **12.3× more medical research** — the same dollars test 23 million patients per year instead of 1.9 million.
+
+Numbers: `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO` for `${ratio}`, `DFDA_TRIAL_CAPACITY_MULTIPLIER` for 12.3×, `DFDA_PATIENTS_FUNDABLE_ANNUALLY` for 23 million, `CURRENT_TRIAL_SLOTS_AVAILABLE` for 1.9 million. Display via `ParameterValue`.
+
+Slider prompt and Yes/No question copy: unchanged from current implementation.
+
+---
 
 ## Verification (required)
 
@@ -232,55 +314,25 @@ What verification enables (all of this is now guaranteed for every user in the f
 
 ---
 
-## Opening
+## The Stakes
 
 **Default (YES voters):**
 
-> I'm very sorry to bother you, but this is kind of the most important thing in the universe and it will only take a few moments of your time.
-
-**NO-voter variant:**
-
-> You voted no. Totally fine. But I'm going to keep talking anyway because this is kind of the most important thing in the universe and it will only take a few moments of your time.
-
-Buttons: **[ Go to hell ]** ・ **[ Fine ]**
-
----
-
-## The Stakes
-
-**Default:**
-
 > Statistically, you and/or someone you love will get a horrible disease. 95% of diseases have zero FDA-approved treatments. 9,500 known-safe compounds sit on shelves, and 99.7% of their potential uses have never been tested — because the money was busy turning into missiles.
 
-**Alt:**
+**NO-voter variant (prepended to the body):**
+
+> You voted no. Totally fine. The math doesn't change.
+>
+> [same body]
+
+**Alt (prior dismissive click):**
 
 > I'm sorry but I still have to tell you this anyway.
 >
 > [same body]
 
 Buttons: **[ I have chosen disease ]** ・ **[ Okay, go on ]**
-
----
-
-## The Nuclear Math
-
-**Default:**
-
-> 100 nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
->
-> Humanity has about 12,000 nuclear weapons. That's 122 apocalypses of mass murder capacity.
->
-> You can only ruin Earth once. The other 121 are just wasteful.
->
-> The 1% Treaty asks you to trade one apocalypse for something slightly nicer.
-
-**Alt:**
-
-> Fair. One more math thing though.
->
-> [same body]
-
-Buttons: **[ Seriously, stop ]** ・ **[ Go on ]**
 
 ---
 
