@@ -355,7 +355,7 @@ Button: **[ I sent it ]**
 
 **After "Send email":**
 
-> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed the Earth optimization task yet.
+> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed it yet.
 
 Button: **[ Continue ]**
 
