@@ -401,14 +401,14 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               ) : null}
               <figure className="mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden border border-[#23180d] bg-[#fffdf8]">
                 <img
-                  alt="Mike's grandmother sitting on a bench"
+                  alt="Grandma Kay sitting on a bench"
                   className="h-full w-full object-cover object-[50%_15%] grayscale"
                   data-testid="treaty-grandma-photo"
                   src="/img/grandma.jpg"
                 />
               </figure>
               <TreatyFlowParagraph>
-                This is my grandma. She&apos;s really nice.
+                This is Grandma Kay.
               </TreatyFlowParagraph>
               <TreatyFlowParagraph>
                 She&apos;s really nice.

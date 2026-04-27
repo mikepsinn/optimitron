@@ -38,9 +38,11 @@ Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for t
 
 **Default:**
 
-> [Photo of grandma]
+> [Photo of Grandma Kay]
 >
-> This is my grandmother. She's really nice.
+> This is Grandma Kay.
+>
+> She's really nice.
 >
 > Her brain is turning into mush because the money for fixing that was busy turning into missiles.
 
