@@ -264,7 +264,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 >
 > <details>
 > <summary>Show the math</summary>
-> Getting a majority of humans on Earth (4 billion people) to agree the treaty is a good idea makes it politically unstoppable. 10.7 billion deaths prevented ÷ a majority of humans on Earth (4 billion people) = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ a majority of humans on Earth (4 billion people) = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years** = roughly one full human lifetime.
+> A majority of humans on Earth agreeing forces politicians to choose: vote yes, or lose to someone who will. 10.7 billion deaths prevented ÷ 4 billion = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ 4 billion = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years**.
 > </details>
 >
 > Your vote already did this. Every friend you get to vote adds another lifetime to your Inverse Kills Score.
@@ -410,8 +410,6 @@ The death counter is live — ticks up since screen mount at the global preventa
 
 Compensation numbers via `ParameterValue` — `TREATY_HALE_GAIN_YEAR_15` for 21.7 years, `TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA` for $3.48M. Click reveals derivation popover.
 
-The dismissive button **[ I'll remember ]** is the comedy: every user clicking this will forget.
-
 ---
 
 ## The Close
@@ -428,11 +426,7 @@ The dismissive button **[ I'll remember ]** is the comedy: every user clicking t
 
 > You clicked "go to hell" [N] times and you're still reading. That is data.
 >
-> The chain only breaks if one human says "later." Is that human you?
->
-> In 32 rounds we run out of humans to ask. That's months, not decades.
->
-> Then you get to go back to whatever you were doing before the most important thing in the universe rudely interrupted.
+> [same body]
 
 Button: **[ Done ]**
 
