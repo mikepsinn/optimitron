@@ -166,12 +166,12 @@ export function trackTreatyPostVoteFormatChoice(params: {
   })
 }
 
-export function trackTreatyPostVoteDepthHook(params: {
+export function trackTreatyPostVotePromotion(params: {
   wantsReminder: boolean
   sentCount: number
   flowVariant?: string
 }): void {
-  trackEvent('treaty_post_vote_depth_hook', {
+  trackEvent('treaty_post_vote_promotion', {
     wants_reminder: params.wantsReminder,
     sent_count: params.sentCount,
     flow_variant: params.flowVariant,

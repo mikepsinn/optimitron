@@ -362,6 +362,10 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await capturePostVoteCard(page, dir, step++, "post-vote-per-vote-impact");
 
     await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "promotion");
+    await capturePostVoteCard(page, dir, step++, "post-vote-promotion");
+
+    await clickPostVotePrimary(page);
     await expectPostVoteScreen(page, "sendMessage");
     await capturePostVoteCard(page, dir, step++, "post-vote-message-composer");
 
@@ -386,11 +390,7 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await expectPostVoteScreen(page, "sendImpact");
     await capturePostVoteCard(page, dir, step++, "post-vote-send-impact");
 
-    await postVoteFlow(page).locator("button").first().click();
-    await expectPostVoteScreen(page, "depthHook");
-    await capturePostVoteCard(page, dir, step++, "post-vote-depth-hook");
-
-    await postVoteFlow(page).locator("button").first().click();
+    await postVoteFlow(page).getByRole("button", { name: /more people to die/i }).click();
     await expectPostVoteScreen(page, "close");
     await capturePostVoteCard(page, dir, step++, "post-vote-close");
 

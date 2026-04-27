@@ -3,7 +3,7 @@
 import { nanoid } from "nanoid";
 import { Check, Clipboard, Mail, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
@@ -21,7 +21,7 @@ import {
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
 import {
-  trackTreatyPostVoteDepthHook,
+  trackTreatyPostVotePromotion,
   trackTreatyPostVoteDetailsExpanded,
   trackTreatyPostVoteFeedback,
   trackTreatyPostVoteFormatChoice,
@@ -30,8 +30,12 @@ import {
 } from "@/lib/analytics";
 import type { TreatyFlowVariant } from "@/lib/treaty-flow-variants";
 import {
+  EVENTUALLY_AVOIDABLE_DEATH_PCT,
+  GLOBAL_DISEASE_DEATHS_DAILY,
   HOURS_PER_YEAR,
   SAFE_COMPOUNDS_COUNT,
+  TREATY_HALE_GAIN_YEAR_15,
+  TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
   UNEXPLORED_RATIO,
 } from "@optimitron/data/parameters";
 import { copyTextToClipboard } from "@/lib/clipboard";
@@ -76,11 +80,11 @@ type FlowScreen =
   | "neat"
   | "twoHumans"
   | "perVote"
+  | "promotion"
   | "sendMessage"
   | "copyConfirm"
   | "sendConfirm"
   | "sendImpact"
-  | "depthHook"
   | "close"
   | "feedback";
 
@@ -216,6 +220,77 @@ function replaceDraftInviteUrl(messageText: string, inviteUrl: string) {
   return `${textWithInviteUrl}\n\n${inviteUrl}`;
 }
 
+const PREVENTABLE_DEATHS_PER_MS =
+  (GLOBAL_DISEASE_DEATHS_DAILY.value * EVENTUALLY_AVOIDABLE_DEATH_PCT.value) /
+  86_400_000;
+
+function useLivePreventableDeathCount(active: boolean): number {
+  const COUNTER_WARMUP_MS = 2_000;
+  const [count, setCount] = useState(() =>
+    active ? Math.floor(COUNTER_WARMUP_MS * PREVENTABLE_DEATHS_PER_MS) : 0,
+  );
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!active) {
+      startRef.current = null;
+      setCount(0);
+      return;
+    }
+    startRef.current = Date.now() - COUNTER_WARMUP_MS;
+    const interval = setInterval(() => {
+      if (!startRef.current) return;
+      const elapsed = Date.now() - startRef.current;
+      setCount(Math.floor(elapsed * PREVENTABLE_DEATHS_PER_MS));
+    }, 100);
+    return () => clearInterval(interval);
+  }, [active]);
+
+  return count;
+}
+
+function PromotionScreen({ onChoice }: { onChoice: (wantsReminder: boolean) => void }) {
+  const deathCount = useLivePreventableDeathCount(true);
+
+  return (
+    <>
+      <div className="space-y-5">
+        <p className="text-center text-2xl font-black uppercase tracking-[0.08em] text-[#23180d] sm:text-3xl">
+          🎉 Congratulations
+        </p>
+        <FlowParagraph>
+          You have been promoted to <strong>Humanity Manager</strong> at Earth Optimization Services, LLC.
+        </FlowParagraph>
+        <dl className="space-y-3 border-y border-[#23180d]/30 py-4 text-sm font-bold leading-7 text-[#2f2417] sm:text-base">
+          <div>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Direct reports</dt>
+            <dd>~8 billion humans</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Primary KPI</dt>
+            <dd>Hours of human suffering prevented per week</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-[#5e513f]">Compensation</dt>
+            <dd>~<ParameterValue param={TREATY_HALE_GAIN_YEAR_15} figures={3} /> extra years of healthy life + ~<ParameterValue param={TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA} figures={3} /> additional lifetime income. Vesting: treaty must pass. Forfeited on dismissal.</dd>
+          </div>
+        </dl>
+        <FlowParagraph>
+          <strong>Performance to date:</strong> ~<strong>{deathCount.toLocaleString()}</strong> preventable deaths since you started reading. Counter resets when you assign a task.
+        </FlowParagraph>
+      </div>
+      <FlowButtonRow>
+        <Button className={dismissButtonClass} onClick={() => onChoice(false)}>
+          I&apos;ll remember
+        </Button>
+        <Button className={primaryButtonClass} onClick={() => onChoice(true)}>
+          Send me reminders
+        </Button>
+      </FlowButtonRow>
+    </>
+  );
+}
+
 function TreatyMathDialog({ onClose }: { onClose: () => void }) {
   return (
     <div
@@ -312,6 +387,8 @@ export function TreatyPostVoteShareFlow({
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [mathDialogOpen, setMathDialogOpen] = useState(false);
+  const [wantsReminderEmails, setWantsReminderEmails] = useState(false);
+  const [reminderOptInFired, setReminderOptInFired] = useState(false);
 
   const senderName = getReferralInvitationSenderName(session?.user);
   const firstName = getReferralInvitationFirstName(recipientName);
@@ -448,8 +525,17 @@ export function TreatyPostVoteShareFlow({
     });
     setLastRecipientName(getReferralInvitationFirstName(invitation.recipientName));
     setSentCount((count) => count + 1);
+
+    if (wantsReminderEmails && !reminderOptInFired) {
+      setReminderOptInFired(true);
+      void updateReferralInvitationRequest({
+        id: invitation.id,
+        action: "senderReminderOptIn",
+      }).catch(() => undefined);
+    }
+
     advanceTo("sendImpact", { sentCount: nextSentCount });
-  }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, sentCount]);
+  }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, reminderOptInFired, sentCount, wantsReminderEmails]);
 
   const handleCopy = useCallback(async () => {
     const created = await createInvitation();
@@ -540,16 +626,11 @@ export function TreatyPostVoteShareFlow({
     }
   }, [advanceTo, createInvitation, flowVariant, message, messageEdited, messageFormat, senderName, sentCount, session?.user]);
 
-  const handleDepthHook = useCallback(async (wantsReminder: boolean) => {
-    trackTreatyPostVoteDepthHook({ flowVariant, wantsReminder, sentCount });
-    if (wantsReminder && invitation) {
-      await updateReferralInvitationRequest({
-        id: invitation.id,
-        action: "senderReminderOptIn",
-      }).catch(() => undefined);
-    }
-    go("close", !wantsReminder);
-  }, [flowVariant, go, invitation, sentCount]);
+  const handlePromotion = useCallback((wantsReminder: boolean) => {
+    trackTreatyPostVotePromotion({ flowVariant, wantsReminder, sentCount });
+    setWantsReminderEmails(wantsReminder);
+    go("sendMessage", !wantsReminder);
+  }, [flowVariant, go, sentCount]);
 
   const goDashboard = useCallback(() => {
     window.location.href = ROUTES.dashboard;
@@ -727,12 +808,12 @@ export function TreatyPostVoteShareFlow({
               {alt ? (
                 <>
                   <FlowParagraph>{"Two humans is the smallest possible amount of humans. Here:"}</FlowParagraph>
-                  <FlowParagraph>Tell 2 friends. They tell 2. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week.</FlowParagraph>
+                  <FlowParagraph>Tell 2 friends. They tell 2. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} />. {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week.</FlowParagraph>
                   <FlowParagraph>Yes, technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText} humans. That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
+                  <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> humans. That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
                   <DetailsBlock
                     detailId="chain-letter-history"
@@ -765,13 +846,13 @@ export function TreatyPostVoteShareFlow({
               {alt ? (
                 <>
                   <FlowParagraph>Last math. Then you can return to your regularly scheduled apathy.</FlowParagraph>
-                  <FlowParagraph>A majority of humans on Earth ({majorityHumanityText}) agreeing the 1% Treaty is a good idea makes it politically unstoppable.</FlowParagraph>
-                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 lifetime of suffering prevented. One vote = {voterLivesSavedText} lives saved.</p>
-                  <FlowParagraph>Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = <ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented.</p>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = {voterLivesSavedText} lives saved.</p>
+                  <FlowParagraph>Every friend you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 full human lifetime of suffering prevented. (<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of it.)</p>
+                  <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = <ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented.</p>
                   <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.</p>
                   <DetailsBlock
                     detailId="per-vote-impact"
@@ -779,24 +860,25 @@ export function TreatyPostVoteShareFlow({
                     screen="perVote"
                   >
                     <p>
-                      Getting a majority of humans on Earth ({majorityHumanityText} people) to agree the treaty is a good idea makes it politically unstoppable.{" "}
-                      <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> deaths prevented ÷ a majority of humans on Earth ({majorityHumanityText}) ={" "}
+                      When a majority of humans on Earth publicly agree that letting their families die for{" "}
+                      <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypses is idiotic, no politician can refuse the trade without losing their seat.{" "}
+                      <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> deaths prevented ÷ {majorityHumanityText} ={" "}
                       <strong><ParameterValue param={FLOW_VOTER_LIVES_SAVED} figures={4} /> lives per vote</strong>.{" "}
-                      <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours of suffering prevented ÷ a majority of humans on Earth ({majorityHumanityText}) ={" "}
+                      <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} /> hours of suffering prevented ÷ {majorityHumanityText} ={" "}
                       <strong><ParameterValue param={FLOW_VOTER_SUFFERING_HOURS_PREVENTED} figures={4} /> hours per vote</strong>. At{" "}
                       <ParameterValue param={HOURS_PER_YEAR} figures={3} /> hours/year ={" "}
-                      <strong>~<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> person-years</strong> = roughly one full human lifetime.
+                      <strong>~<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> person-years</strong>.
                     </p>
                   </DetailsBlock>
-                  <FlowParagraph>Your vote already did this. Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
+                  <FlowParagraph>Your vote already did this. Every friend you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
                 </>
               )}
             </div>
             <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => go("sendMessage", true)}>
+              <Button className={dismissButtonClass} onClick={() => go("promotion", true)}>
                 I reject mathematics
               </Button>
-              <Button className={primaryButtonClass} onClick={() => go("sendMessage")}>
+              <Button className={primaryButtonClass} onClick={() => go("promotion")}>
                 Show me mine
               </Button>
             </FlowButtonRow>
@@ -808,7 +890,7 @@ export function TreatyPostVoteShareFlow({
           <>
             <div className="space-y-5">
               {alt ? <FlowParagraph>One at a time. Bear with me.</FlowParagraph> : null}
-              <FlowParagraph>{sentCount === 0 ? "How do you want to tell someone?" : "Who's next?"}</FlowParagraph>
+              <FlowParagraph>{sentCount === 0 ? "Assign your first task. Start with your easiest yes." : "Assign the next task."}</FlowParagraph>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-name">
@@ -863,11 +945,6 @@ export function TreatyPostVoteShareFlow({
                   setError(null);
                 }}
               />
-              <div className="border-t border-[#23180d]/25 pt-4">
-                <p className="mb-2 text-center text-xs font-black uppercase tracking-[0.16em] text-[#5e513f] sm:text-left">
-                  Message to {displayName}
-                </p>
-              </div>
               <Textarea
                 value={message}
                 onChange={(event) => {
@@ -908,7 +985,7 @@ export function TreatyPostVoteShareFlow({
       case "sendConfirm":
         return (
           <>
-            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll send the first task reminder in 3 days if they haven't completed the vote task yet.`}</FlowParagraph>
+            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll send the first task reminder in 3 days if they haven't completed it yet.`}</FlowParagraph>
             <Button className={primaryButtonClass} onClick={completeCurrentInvitation}>
               Continue
             </Button>
@@ -917,30 +994,25 @@ export function TreatyPostVoteShareFlow({
 
       case "sendImpact": {
         const milestone = milestoneCopy(sentCount);
+        const recipientLabel = lastRecipientName || displayName;
         return (
           <>
             {sentCount <= 1 ? (
               <div className="space-y-4">
-                <p className="text-center text-xl font-black leading-tight sm:text-left">When {lastRecipientName || displayName} votes: +1 lifetime of suffering prevented. +{voterLivesSavedText} lives saved.</p>
-                <FlowParagraph>Your pending totals:</FlowParagraph>
-                <FlowParagraph>Lifetimes of suffering prevented: <strong>{sentCount}</strong></FlowParagraph>
-                <FlowParagraph>Inverse Kills Score: <strong>{pendingLives} lives</strong></FlowParagraph>
-                <FlowParagraph>{`We'll email you the moment ${lastRecipientName || displayName} votes. Pending → confirmed.`}</FlowParagraph>
-                <FlowParagraph>Most humans stop here. Which is statistically disappointing, but fine.</FlowParagraph>
-                <FlowParagraph>One more?</FlowParagraph>
+                <p className="text-center text-xl font-black leading-tight sm:text-left">
+                  When {recipientLabel} votes: +<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of suffering prevented. +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
+                </p>
+                <FlowParagraph>{`${recipientLabel} added to your direct reports. We'll notify you when they complete the task.`}</FlowParagraph>
               </div>
             ) : (
               <div className="space-y-4">
-                <FlowParagraph>Sent to {lastRecipientName || displayName}.</FlowParagraph>
-                <FlowParagraph>Lifetimes of suffering prevented (pending): <strong>{sentCount}</strong></FlowParagraph>
-                <FlowParagraph>Inverse Kills Score (pending): <strong>{pendingLives} lives</strong></FlowParagraph>
+                <FlowParagraph>{`${recipientLabel} added to your direct reports. Pending: `}<strong>{sentCount}</strong>{` lifetimes / `}<strong>{pendingLives}</strong>{` lives.`}</FlowParagraph>
                 {milestone ? <FlowParagraph>{milestone}</FlowParagraph> : null}
-                <FlowParagraph>One more?</FlowParagraph>
               </div>
             )}
             <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => go("depthHook", true)}>
-                {sentCount <= 1 ? "No, I'm done" : "I'm done"}
+              <Button className={dismissButtonClass} onClick={() => go("close", true)}>
+                Allow {voterLivesSavedText} more people to die
               </Button>
               <Button
                 className={primaryButtonClass}
@@ -949,30 +1021,15 @@ export function TreatyPostVoteShareFlow({
                   go("sendMessage");
                 }}
               >
-                {sentCount <= 1 ? "Yes, one more" : "One more"}
+                Save {voterLivesSavedText} more lives
               </Button>
             </FlowButtonRow>
           </>
         );
       }
 
-      case "depthHook":
-        return (
-          <>
-            <div className="space-y-4">
-              {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : null}
-              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?</FlowParagraph>
-            </div>
-            <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => void handleDepthHook(false)}>
-                No thanks
-              </Button>
-              <Button className={primaryButtonClass} onClick={() => void handleDepthHook(true)}>
-                Yes, send task reminder
-              </Button>
-            </FlowButtonRow>
-          </>
-        );
+      case "promotion":
+        return <PromotionScreen onChoice={handlePromotion} />;
 
       case "close":
         return (
@@ -1043,12 +1100,6 @@ export function TreatyPostVoteShareFlow({
           {error ? (
             <p className="border border-[#23180d] bg-[#fffdf8] px-3 py-2 text-sm font-black text-[#23180d]">
               {error}
-            </p>
-          ) : null}
-          {copyState === "copied" && screen !== "copyConfirm" ? (
-            <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#23180d]">
-              <Check className="h-4 w-4" aria-hidden="true" />
-              Copied
             </p>
           ) : null}
         </div>
