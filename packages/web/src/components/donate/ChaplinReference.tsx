@@ -1,15 +1,8 @@
 import { BrutalCard } from "@/components/ui/brutal-card";
 
-const CHAPLIN_FILE = "chaplin-great-dictator-320.mp4";
-const CHAPLIN_POSTER = "chaplin-great-dictator-thumbnail.png";
-
-const CDN_BASE = process.env.NEXT_PUBLIC_MEDIA_CDN_URL?.replace(/\/$/, "") ?? "";
-const VIDEO_SRC = CDN_BASE
-  ? `${CDN_BASE}/${CHAPLIN_FILE}`
-  : `/media/${CHAPLIN_FILE}`;
-const POSTER_SRC = CDN_BASE
-  ? `${CDN_BASE}/${CHAPLIN_POSTER}`
-  : `/media/${CHAPLIN_POSTER}`;
+const MEDIA_CDN_BASE = "https://static.warondisease.org";
+const VIDEO_SRC = `${MEDIA_CDN_BASE}/chaplin-great-dictator-320.mp4`;
+const POSTER_SRC = `${MEDIA_CDN_BASE}/chaplin-great-dictator-thumbnail.png`;
 const YOUTUBE_FALLBACK_URL =
   "https://www.youtube.com/results?search_query=charlie+chaplin+the+great+dictator+speech";
 

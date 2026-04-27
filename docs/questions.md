@@ -18,6 +18,7 @@ Full vote and share sequence for 1percenttreaty.org / warondisease.org. Each sec
 6. **Vote question** — reality check + Yes/No, on a single card after the slider submits. See below.
 7. **Verification** — required. See below.
 8. **Post-vote share sequence begins** — The Stakes screen.
+9. **Promotion** — bureaucratic appointment as Manager at Earth Optimization Services, LLC. Renders between Per-Vote Math and the first Send Loop iteration. See below.
 
 **YES voters** see the default opener on The Stakes. **NO voters** see the NO-voter variant, then the same flow. The math doesn't care how they voted.
 
@@ -41,7 +42,7 @@ Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for t
 >
 > This is my grandmother. She's really nice.
 >
-> Her brain is turning into mush because the money that could have been trying to fix that was busy turning into missiles.
+> Her brain is turning into mush because the money for fixing that was busy turning into missiles.
 
 **Alt (if user clicked "Go to hell" on Apology):**
 
@@ -129,7 +130,7 @@ What verification enables (all of this is now guaranteed for every user in the f
 - Vote counts in the official submitted tally
 - Inverse Kills Score tracked across sessions
 - Email notification when friends vote (pending → confirmed)
-- Overdue task-reminder emails if opted in at Depth Hook
+- Overdue task-reminder emails if opted in on the Promotion screen
 - Monthly scorecard
 - Full dashboard with referral tree
 
@@ -259,7 +260,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 
 **Default:**
 
-> **One vote = 1 full human lifetime of suffering prevented.** (55 years of it.)
+> **One vote = 55 years of suffering prevented.**
 >
 > **One vote = 2.7 lives saved.**
 >
@@ -383,7 +384,7 @@ Button: **[ I sent it ]**
 
 **After "Send email":**
 
-> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed the vote task yet.
+> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed the Earth optimization task yet.
 
 Button: **[ Continue ]**
 
@@ -393,50 +394,52 @@ Button: **[ Continue ]**
 
 > **When Jake votes: +1 lifetime of suffering prevented. +2.7 lives saved.**
 >
-> Your pending totals:
-> Lifetimes of suffering prevented: **1**
-> Inverse Kills Score: **2.7 lives**
->
-> We'll email you the moment Jake votes. Pending → confirmed.
->
-> Most humans stop here. Which is statistically disappointing, but fine.
->
-> One more?
+> [Jake] added to your direct reports. We'll notify you when they complete the task.
 
-Buttons: **[ No, I'm done ]** ・ **[ Yes, one more ]**
+Buttons: **[ Allow 2.7 more people to die ]** ・ **[ Save 2.7 more lives ]**
 
 **After second+ send:**
 
-> Sent to [Maria].
->
-> Lifetimes of suffering prevented (pending): **[N]**
-> Inverse Kills Score (pending): **[N × 2.7] lives**
+> [Maria] added to your direct reports. Pending: **[N]** lifetimes / **[N × 2.7]** lives.
 >
 > [If N == 5]: "Five. Five full human lifetimes of suffering, prevented. 13.5 lives. More than most humans save in a lifetime of caring about things."
 > [If N == 10]: "Ten. You've now done more for humanity than most world leaders. Which, to be fair, is a low bar."
 > [If N == 20]: "Twenty lifetimes. 54 lives. At this point you are just showing off. Please continue."
 > [If N == 40]: "Forty. You've either messaged everyone you love, or you've discovered you love more people than you thought. Both are good outcomes."
 > [If N == 100]: "One hundred lifetimes. 270 lives. A village worth of people who will not die of a curable disease. Specifically because of you."
->
-> One more?
 
-Buttons: **[ I'm done ]** ・ **[ One more ]**
+Buttons: **[ Allow 2.7 more people to die ]** ・ **[ Save 2.7 more lives ]**
+
+The 2.7 (and the per-vote stat in the headline) renders via `ParameterValue` from `FLOW_VOTER_LIVES_SAVED_ROUNDED` — click reveals the derivation popover.
 
 ---
 
-## Depth Hook
+## Promotion
+
+Renders between Per-Vote Math and the first Send Loop iteration. Wishonia bureaucratically appoints the user as Humanity Manager and assigns them their first management task: keep the chain alive. Replaces the old Depth Hook screen entirely.
 
 **Default:**
 
-> The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?
-
-**Alt:**
-
-> Fine. One optional thing:
+> 🎉 **CONGRATULATIONS**
 >
-> The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?
+> You have been promoted to **Humanity Manager** at Earth Optimization Services, LLC.
+>
+> **Direct reports:** ~8 billion humans
+> **Primary KPI:** Hours of human suffering prevented per week
+> **Compensation:**
+> - ~**21.7** extra years of healthy life
+> - ~**$3.48M** additional lifetime income
+> - Vesting: contingent on treaty passage. Forfeited on dismissal.
+>
+> **Performance to date:** ~**[X]** preventable deaths since you started reading. Counter resets when you assign a task.
 
-Buttons: **[ No thanks ]** ・ **[ Yes, send task reminder ]**
+Buttons: **[ I'll remember ]** ・ **[ Send me reminders ]**
+
+The death counter is live — ticks up since screen mount at the global preventable-disease death rate. Use `GLOBAL_DISEASE_DEATHS_DAILY × EVENTUALLY_AVOIDABLE_DEATH_PCT` to compute deaths-per-second, then increment from `Date.now()` at screen mount. Format with thousands separators.
+
+Compensation numbers via `ParameterValue` — `TREATY_HALE_GAIN_YEAR_15` for 21.7 years, `TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA` for $3.48M. Click reveals derivation popover.
+
+The dismissive button **[ I'll remember ]** is the comedy: every user clicking this will forget.
 
 ---
 
@@ -504,8 +507,8 @@ Buttons: **[ Skip ]** ・ **[ Submit ]**
 
 Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses per-send. The chosen mode determines which email variant the recipient gets throughout the sequence. Internal names may remain `TASK_NOTIFICATION` and `SINCERE`.
 
-**From address for all system emails:** War on Disease <noreply@warondisease.org>
-**From address for share emails:** [Sender name] via War on Disease <noreply@warondisease.org>
+**From address for all system emails:** Earth Optimization Services <noreply@warondisease.org>
+**From address for share emails:** [Sender name] via Earth Optimization Services <noreply@warondisease.org>
 
 **Unsubscribe:** required on every email, one-click, no guilt trip on the unsub page.
 
@@ -528,7 +531,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **[OVERDUE] End War and Disease**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name]
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
 > STATUS: Overdue (by approximately 443 years)
 > PRIORITY: Critical
 > ESTIMATED TIME: 30 seconds
@@ -538,7 +541,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building 122 apocalypses worth of nuclear weapons. Management apologizes for the delay.
 >
-> — The Humanity Project Management System
+> — Earth Optimization Services, LLC
 
 #### A1-LOVE (Love mode / Sincere format)
 
@@ -558,7 +561,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > If you're wondering why this matters, the short version: 95% of diseases have zero treatments, and redirecting 1% of military spending to clinical trials could fix that in 36 years instead of 443. The math is at manual.warondisease.org if you want to check it.
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -573,7 +576,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **TASK OVERDUE — 3 DAYS**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name]
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
 > STATUS: Incomplete
 > ESTIMATED TIME: 30 seconds
 > DAYS OVERDUE: 3 (plus the original 443 years)
@@ -582,7 +585,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > Your project manager ([Sender name]) has been notified of this delay. They seem disappointed. Not angry, just disappointed.
 >
-> — The Humanity Project Management System
+> — Earth Optimization Services, LLC
 
 #### A2-LOVE
 
@@ -598,7 +601,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: 30 seconds → warondisease.org]
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -613,7 +616,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **TASK ESCALATED**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name]
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
 > STATUS: Blocked (by you)
 > DAYS OVERDUE: 7 (plus the original 443 years)
 > BLOCKER: Jake has not clicked a button
@@ -626,7 +629,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > We'll stop sending task reminders after this if you don't respond.
 >
-> — The Humanity Project Management System
+> — Earth Optimization Services, LLC
 
 #### A3-LOVE
 
@@ -644,7 +647,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [Sender name] asked us to send this because they care about you. We'll stop emailing after this if you don't respond.
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -662,7 +665,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: COMPLETE TASK → warondisease.org]
 >
-> — The Humanity Project Management System
+> — Earth Optimization Services, LLC
 
 #### A4-LOVE
 
@@ -678,7 +681,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: warondisease.org]
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 After A4, no more emails regardless of outcome. Hard cap. Promise honored.
 
@@ -707,13 +710,13 @@ These go to the verified user who completed the flow.
 >
 > If you shared with anyone during the flow, their status is on your dashboard. We'll email you the moment any of them vote.
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
 ### B2. [Name] Just Voted (triggered, whenever it happens)
 
-**Subject:** [Recipient name] just voted
+**Subject:** [Recipient name] completed their task
 
 **Body:**
 
@@ -727,7 +730,7 @@ These go to the verified user who completed the flow.
 >
 > [BUTTON: See your dashboard → warondisease.org/dashboard]
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 
@@ -747,7 +750,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 >
 > Your Inverse Kills Score: **[Y] confirmed, [X] pending.**
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -763,7 +766,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 >
 > [BUTTON: Assign one more Earth optimization task → warondisease.org/send]
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -785,7 +788,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 >
 > The chain only breaks if one human says "later."
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 
@@ -805,7 +808,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 >
 > [BUTTON: Assign one task → warondisease.org/send]
 >
-> — warondisease.org
+> — Earth Optimization Services, LLC
 
 ---
 

@@ -961,7 +961,7 @@ export function TreatyPostVoteShareFlow({
           <>
             <div className="space-y-4">
               {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : null}
-              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?</FlowParagraph>
+              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?</FlowParagraph>
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => void handleDepthHook(false)}>

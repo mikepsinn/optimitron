@@ -415,11 +415,13 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 />
               </figure>
               <TreatyFlowParagraph>
-                This is my grandmother. She&apos;s really nice.
+                This is my grandma. She&apos;s really nice.
               </TreatyFlowParagraph>
               <TreatyFlowParagraph>
-                Her brain is turning into mush because the money that could
-                have been trying to fix that was busy turning into missiles.
+                She&apos;s really nice.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                Her brain is turning into mush because the money for fixing that was busy turning into missiles.
               </TreatyFlowParagraph>
             </div>
             <TreatyFlowButtonRow>
