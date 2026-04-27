@@ -264,7 +264,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 >
 > <details>
 > <summary>Show the math</summary>
-> A majority of humans on Earth agreeing forces politicians to choose: vote yes, or lose to someone who will. 10.7 billion deaths prevented ÷ 4 billion = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ 4 billion = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years**.
+> When a majority of humans on Earth publicly agree that letting their families die for 122 apocalypses is idiotic, no politician can refuse the trade without losing their job. 10.7 billion deaths prevented ÷ 4 billion = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ 4 billion = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years**.
 > </details>
 >
 > Your vote already did this. Every friend you get to vote adds another lifetime to your Inverse Kills Score.
