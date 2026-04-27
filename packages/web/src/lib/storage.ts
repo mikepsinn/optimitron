@@ -14,6 +14,7 @@ const STORAGE_KEYS = {
   declarationSigned: "declaration_signed",
   pendingDeclarationVote: "pending_declaration_vote",
   reasoningState: "reasoning_state",
+  treatyFlowVariant: "treaty_flow_variant",
 } as const;
 
 export type PendingWishocraticAllocation = WishocraticAllocationInput & {
@@ -194,6 +195,11 @@ export const storage = {
   setVoteStatusCache: (data: VoteStatusCache) =>
     setStorageItem(STORAGE_KEYS.voteStatusCache, data),
   clearVoteStatusCache: () => removeStorageItem(STORAGE_KEYS.voteStatusCache),
+
+  getTreatyFlowVariant: () => getStringItem(STORAGE_KEYS.treatyFlowVariant),
+  setTreatyFlowVariant: (variant: string) =>
+    setStringItem(STORAGE_KEYS.treatyFlowVariant, variant),
+  clearTreatyFlowVariant: () => removeStorageItem(STORAGE_KEYS.treatyFlowVariant),
 
   getReasoningState: () =>
     getStorageItem<ReasoningPersistedState>(STORAGE_KEYS.reasoningState),

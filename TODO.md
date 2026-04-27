@@ -21,6 +21,14 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Completed agreed post-vote cleanup slice: replaced Bossy mode ASCII/markdown task formatting, removed the final donation screen, redirected feedback submit to dashboard, and removed the stray dashboard link.
 - [x] Fixed the desktop post-vote full-screen framing so screenshots and the live flow cannot show the unrelated yellow landing section beneath the treaty experience.
 - [x] Collapsed the post-vote math screen's repeated inline math toggles into one full-screen math dialog and fixed mobile Frame 07 screenshot containment.
+- [x] Updated `docs/questions.md` to match the current Check the Math modal and Love/Bossy mode flow while preserving ASCII as ideation reference.
+- [x] Implement numbered Treaty flow variants with minimal duplication.
+  - `treaty_flow_v1_vote_first` preserves the current implemented slider-first flow for later comparison.
+  - `treaty_flow_v2_context_first` implements the current `docs/questions.md` context-first flow as the default.
+  - Keep the fork at the orchestration/screen-sequence layer; share the slider, vote submission, verification, post-vote send loop, math dialog, and analytics plumbing.
+  - Support explicit URL override with `?treatyFlow=...` and attach the selected `flowVariant` to funnel analytics.
+  - Update the screenshot audit so each captured folder is keyed by flow variant and viewport.
+  - `docs/questions.md` references `packages/web/public/img/grandma.jpg`; the current UI renders a framed placeholder until that real asset is added.
 - [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
 - [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.

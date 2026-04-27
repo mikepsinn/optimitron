@@ -1,5 +1,7 @@
 # 1% Treaty — Vote + Share Flow
 
+Variant ID: `treaty_flow_v2_context_first`. See `docs/treaty-flow-variants.md` for the preserved slider-first comparison variant and URL override rules.
+
 Full vote and share sequence for 1percenttreaty.org / warondisease.org. Each section is a full-screen treaty-style screen on mobile. Some persuasion screens have a dismissive button and an advance button; when present, **both buttons advance the flow** and the dismissive path sets the alt-opener on the next screen. 
 
 **Progressive disclosure:** High-level claims are visible by default. Dense derivations live behind a single **Check the math** full-screen dialog on the 10.7 billion screen; other screens may still use a small `<details>` fold where the fold itself is part of the joke or pacing. Users opening math/detail views = engaged and skeptical (track it).
@@ -43,7 +45,7 @@ Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for t
 
 **Alt (if user clicked "Go to hell" on Apology):**
 
-> Sorry. Grandma's in this part.
+> I don't have the ability to go to hell. Continuing.
 >
 > [same body]
 
@@ -69,7 +71,7 @@ Asset: photo lives at `packages/web/public/img/grandma.jpg`.
 
 **Alt (if dismissive on Apology or Grandma):**
 
-> Fair. One more math thing though.
+> Cool. The 122 apocalypses haven't moved.
 >
 > [same body]
 
@@ -147,7 +149,7 @@ What verification enables (all of this is now guaranteed for every user in the f
 
 **Alt (prior dismissive click):**
 
-> I'm sorry but I still have to tell you this anyway.
+> You and everyone you love are going to die of horrible diseases. Just so we're clear.
 >
 > [same body]
 
@@ -173,7 +175,7 @@ Each beat shows the high-level claim by default. Keep the main screen clean. The
 
 **Alt:**
 
-> Fine, show your work:
+> You said stop. Here's the math anyway:
 >
 > [same high-level claims]
 
@@ -211,7 +213,7 @@ Implementation: **Check the math** opens a full-screen modal/dialog. It does not
 
 **Alt:**
 
-> Respect. Still, imagine:
+> Imagine anyway. It's free.
 >
 > You trigger a chain reaction that gets a majority of humans on Earth — 4 billion people — to collectively agree: "Yes, we are willing to sacrifice one apocalypse of our 122 apocalypse capacity in exchange for eradicating disease within our lifetimes."
 >
@@ -241,7 +243,7 @@ Buttons: **[ Not neat ]** ・ **[ Neat ]**
 
 **Alt:**
 
-> Fair. But here's the math:
+> Two humans is the smallest possible amount of humans. Here:
 >
 > Tell 2 friends. They tell 2. 32 rounds reaches 4 billion. 8 months at one per week.
 >
@@ -268,7 +270,7 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 
 **Alt:**
 
-> I know. Math again. Last one that matters:
+> Last math. Then you can return to your regularly scheduled apathy.
 >
 > A majority of humans on Earth (4 billion) agreeing the 1% Treaty is a good idea makes it politically unstoppable.
 >

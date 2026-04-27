@@ -15,11 +15,18 @@ import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  CURRENT_TRIAL_SLOTS_AVAILABLE,
+  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
-import { trackSliderSubmitted, trackVoteSubmitted } from "@/lib/analytics";
+import {
+  trackSliderSubmitted,
+  trackTreatyFlowScreenAdvanced,
+  trackVoteSubmitted,
+} from "@/lib/analytics";
 import { VOTE_SECTION } from "@/lib/messaging";
 import {
   buildTreatyWishocraticAllocation,
@@ -28,12 +35,26 @@ import {
 } from "@/lib/treaty-vote";
 import { cn } from "@/lib/utils";
 import {
+  TreatyFlowButtonRow,
   TreatyFlowDivider,
   TreatyFlowParagraph,
   TreatyFlowShell,
   treatyPrimaryButtonClass,
   treatySecondaryButtonClass,
 } from "@/components/landing/TreatyFlowShell";
+import {
+  DEFAULT_TREATY_FLOW_VARIANT,
+  normalizeTreatyFlowVariant,
+  TREATY_FLOW_VARIANT_QUERY_PARAM,
+  TREATY_FLOW_VARIANTS,
+  type TreatyFlowVariant,
+} from "@/lib/treaty-flow-variants";
+import {
+  FLOW_GLOBAL_WARHEAD_COUNT,
+  FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
+  FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD,
+  FLOW_WASTEFUL_APOCALYPSES,
+} from "@/lib/treaty-share-flow-parameters";
 
 const militarySpendingPct = Math.round(
   (MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value /
@@ -42,17 +63,34 @@ const militarySpendingPct = Math.round(
 ) / 10; // one decimal place: 99.8%
 const clinicalTrialsSpendingPct = Math.round((100 - militarySpendingPct) * 10) / 10;
 
+type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
+
 export function TreatyVoteFlow({ className }: { className?: string }) {
+  const searchParams = useSearchParams();
+  const queryFlowVariant =
+    normalizeTreatyFlowVariant(searchParams?.get(TREATY_FLOW_VARIANT_QUERY_PARAM)) ??
+    normalizeTreatyFlowVariant(searchParams?.get("flowVariant"));
+  const initialFlowVariant = queryFlowVariant ?? DEFAULT_TREATY_FLOW_VARIANT;
+  const initialPreVoteScreen: PreVoteScreen =
+    initialFlowVariant === TREATY_FLOW_VARIANTS.contextFirstV2
+      ? "apology"
+      : "slider";
+
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null);
   const [militaryAllocation, setMilitaryAllocation] = useState<number>(50);
-  const [showSlider, setShowSlider] = useState(true);
+  const [flowVariant, setFlowVariant] =
+    useState<TreatyFlowVariant>(initialFlowVariant);
+  const [preVoteScreen, setPreVoteScreen] =
+    useState<PreVoteScreen>(initialPreVoteScreen);
+  const [preVoteAlt, setPreVoteAlt] = useState(false);
+  const [preVoteDismissiveCount, setPreVoteDismissiveCount] = useState(0);
+  const [showSlider, setShowSlider] = useState(initialPreVoteScreen === "slider");
   const [sliderSubmitted, setSliderSubmitted] = useState(false);
   const [userHasDragged, setUserHasDragged] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [animatedValue, setAnimatedValue] = useState(50);
   const [isMounted, setIsMounted] = useState(false);
   const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -60,6 +98,28 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    const requestedVariant =
+      normalizeTreatyFlowVariant(searchParams?.get(TREATY_FLOW_VARIANT_QUERY_PARAM)) ??
+      normalizeTreatyFlowVariant(searchParams?.get("flowVariant")) ??
+      normalizeTreatyFlowVariant(storage.getTreatyFlowVariant()) ??
+      DEFAULT_TREATY_FLOW_VARIANT;
+
+    setFlowVariant(requestedVariant);
+    storage.setTreatyFlowVariant(requestedVariant);
+
+    if (!sliderSubmitted && !answer) {
+      const nextPreVoteScreen =
+        requestedVariant === TREATY_FLOW_VARIANTS.contextFirstV2
+          ? "apology"
+          : "slider";
+      setPreVoteScreen(nextPreVoteScreen);
+      setShowSlider(nextPreVoteScreen === "slider");
+      setPreVoteAlt(false);
+      setPreVoteDismissiveCount(0);
+    }
+  }, [answer, searchParams, sliderSubmitted]);
 
   // Restore state from localStorage on mount
   useEffect(() => {
@@ -195,6 +255,32 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     fire(0.1, { spread: 120, startVelocity: 45 });
   };
 
+  const isContextFirstVariant =
+    flowVariant === TREATY_FLOW_VARIANTS.contextFirstV2;
+
+  const advancePreVote = (next: PreVoteScreen, dismissive = false) => {
+    const nextDismissiveCount = dismissive
+      ? preVoteDismissiveCount + 1
+      : preVoteDismissiveCount;
+
+    trackTreatyFlowScreenAdvanced({
+      from: preVoteScreen,
+      to: next,
+      dismissive,
+      dismissiveCount: nextDismissiveCount,
+      flowVariant,
+    });
+
+    setPreVoteAlt(dismissive);
+    if (dismissive) {
+      setPreVoteDismissiveCount((count) => count + 1);
+    }
+    setPreVoteScreen(next);
+    if (next === "slider") {
+      setShowSlider(true);
+    }
+  };
+
   const handleSliderChange = (value: number) => {
     setMilitaryAllocation(value);
     if (!userHasDragged) {
@@ -217,7 +303,10 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       wishocraticAllocation: buildTreatyWishocraticAllocation(militaryAllocation, timestamp),
       organizationId: existingVote?.organizationId ?? null,
     });
-    trackSliderSubmitted({ militaryAllocationPercent: militaryAllocation });
+    trackSliderSubmitted({
+      flowVariant,
+      militaryAllocationPercent: militaryAllocation,
+    });
     setSliderSubmitted(true);
     setShowSlider(false);
 
@@ -234,6 +323,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       voteType: "treaty_vote",
       answer: choice.toUpperCase(),
       authenticated: status === "authenticated",
+      flowVariant,
     });
 
     if (choice === "yes") {
@@ -271,6 +361,125 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     }
   };
 
+  const renderPreVoteScreen = () => {
+    switch (preVoteScreen) {
+      case "apology":
+        return (
+          <TreatyFlowShell
+            data-testid="treaty-vote-prelude-card"
+            contentClassName="max-w-3xl"
+          >
+            <TreatyFlowParagraph
+              dropCap
+              className="mx-auto max-w-3xl text-xl leading-9 sm:text-2xl sm:leading-10"
+            >
+              I&apos;m very sorry to bother you, but this is kind of the most
+              important thing in the universe and it will only take a few
+              moments of your time.
+            </TreatyFlowParagraph>
+            <TreatyFlowButtonRow>
+              <Button
+                className={treatySecondaryButtonClass}
+                onClick={() => advancePreVote("grandma", true)}
+              >
+                Go to hell
+              </Button>
+              <Button
+                className={treatyPrimaryButtonClass}
+                onClick={() => advancePreVote("grandma")}
+              >
+                Fine
+              </Button>
+            </TreatyFlowButtonRow>
+          </TreatyFlowShell>
+        );
+      case "grandma":
+        return (
+          <TreatyFlowShell
+            data-testid="treaty-vote-prelude-card"
+            contentClassName="max-w-3xl"
+          >
+            <div className="space-y-6">
+              {preVoteAlt ? (
+                <TreatyFlowParagraph>Sorry. Grandma&apos;s in this part.</TreatyFlowParagraph>
+              ) : null}
+              <div
+                aria-label="Photo of Mike's grandmother"
+                className="mx-auto flex aspect-[4/3] w-full max-w-sm items-center justify-center border border-[#23180d] bg-[#fffdf8] p-6 text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]"
+                data-testid="treaty-grandma-photo-placeholder"
+              >
+                Photo of Grandma
+              </div>
+              <TreatyFlowParagraph>
+                This is my grandmother. She&apos;s really nice.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                Her brain is turning into mush. The money that would have paid
+                for the clinical trials to find a cure was busy turning into
+                missiles.
+              </TreatyFlowParagraph>
+            </div>
+            <TreatyFlowButtonRow>
+              <Button
+                className={treatySecondaryButtonClass}
+                onClick={() => advancePreVote("apocalypse", true)}
+              >
+                I don&apos;t care
+              </Button>
+              <Button
+                className={treatyPrimaryButtonClass}
+                onClick={() => advancePreVote("apocalypse")}
+              >
+                I&apos;m sorry about your grandmother
+              </Button>
+            </TreatyFlowButtonRow>
+          </TreatyFlowShell>
+        );
+      case "apocalypse":
+        return (
+          <TreatyFlowShell
+            data-testid="treaty-vote-prelude-card"
+            contentClassName="max-w-3xl"
+          >
+            <div className="space-y-4">
+              {preVoteDismissiveCount > 0 ? (
+                <TreatyFlowParagraph>Fair. One more math thing though.</TreatyFlowParagraph>
+              ) : null}
+              <TreatyFlowParagraph>
+                <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} />{" "}
+                nuclear weapons exploding triggers a nuclear winter that
+                collapses the food chain and kills most humans.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                Humanity has about{" "}
+                <ParameterValue param={FLOW_GLOBAL_WARHEAD_COUNT} figures={2} />{" "}
+                nuclear weapons. That&apos;s{" "}
+                <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} />{" "}
+                apocalypses of mass murder capacity.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                You can only ruin Earth once. The other{" "}
+                <ParameterValue param={FLOW_WASTEFUL_APOCALYPSES} figures={3} />{" "}
+                are just wasteful.
+              </TreatyFlowParagraph>
+              <TreatyFlowParagraph>
+                The 1% Treaty asks you to trade one apocalypse for something
+                slightly nicer.
+              </TreatyFlowParagraph>
+            </div>
+            <Button
+              className={treatyPrimaryButtonClass}
+              onClick={() => advancePreVote("slider")}
+            >
+              Take me to the vote
+            </Button>
+          </TreatyFlowShell>
+        );
+      case "slider":
+        return null;
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -278,6 +487,10 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
         className,
       )}
     >
+      {isContextFirstVariant && !sliderSubmitted && !showSlider
+        ? renderPreVoteScreen()
+        : null}
+
       {/* Slider Card — Shows First */}
       <AnimatePresence>
         {showSlider && (
@@ -410,9 +623,9 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
           >
             <TreatyFlowShell
               data-testid="treaty-vote-choice-card"
-              contentClassName="max-w-4xl"
+              contentClassName="max-w-4xl space-y-5 py-6 sm:space-y-8 sm:py-12"
             >
-              <TreatyFlowParagraph dropCap className="text-xl leading-9 sm:text-2xl sm:leading-10">
+              <TreatyFlowParagraph dropCap className="text-lg leading-8 sm:text-2xl sm:leading-10">
                 Your governments spend{" "}
                 <br className="hidden sm:block" />
                 <span className="font-black text-[#23180d]">
@@ -421,26 +634,50 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 {VOTE_SECTION.realityCheck}
               </TreatyFlowParagraph>
 
-              <div className="border-y border-[#23180d]/30 py-5 text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+              <div className="border-y border-[#23180d]/30 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:py-5 sm:text-lg sm:leading-8">
                 That&apos;s {" "}
-                <span className="text-xl font-black text-[#23180d]">
+                <span className="text-lg font-black text-[#23180d] sm:text-xl">
                   {militarySpendingPct}%
                 </span>{" "}
                 to military and {" "}
-                <span className="text-xl font-black text-[#23180d]">
+                <span className="text-lg font-black text-[#23180d] sm:text-xl">
                   {clinicalTrialsSpendingPct}%
                 </span>{" "}
                 to clinical trials.
               </div>
 
-              <div className="text-center text-2xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">
+              <TreatyFlowParagraph center className="text-sm leading-7 sm:text-lg sm:leading-8">
+                Moving 1% of military spending to pragmatic clinical trials
+                would mean{" "}
+                <ParameterValue
+                  param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                  className="font-black text-[#23180d]"
+                  display="withUnit"
+                  figures={2}
+                />{" "}
+                more medical research — the same dollars test{" "}
+                <ParameterValue
+                  param={DFDA_PATIENTS_FUNDABLE_ANNUALLY}
+                  className="font-black text-[#23180d]"
+                  figures={2}
+                />{" "}
+                patients per year instead of{" "}
+                <ParameterValue
+                  param={CURRENT_TRIAL_SLOTS_AVAILABLE}
+                  className="font-black text-[#23180d]"
+                  figures={2}
+                />
+                .
+              </TreatyFlowParagraph>
+
+              <div className="text-center text-xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">
                 {VOTE_SECTION.theQuestion}
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <Button
                   onClick={() => void handleAnswer("yes")}
-                  className={`${treatyPrimaryButtonClass} h-16 w-full text-xl`}
+                  className={`${treatyPrimaryButtonClass} h-14 w-full text-lg sm:h-16 sm:text-xl`}
                 >
                   {answer === "yes" ? (
                     <CheckSquare className="h-6 w-6" />
@@ -451,7 +688,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 </Button>
                 <Button
                   onClick={() => void handleAnswer("no")}
-                  className={`${treatySecondaryButtonClass} h-16 w-full text-xl`}
+                  className={`${treatySecondaryButtonClass} h-14 w-full text-lg sm:h-16 sm:text-xl`}
                 >
                   {answer === "no" ? (
                     <CheckSquare className="h-6 w-6" />
@@ -481,25 +718,45 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
             className="fixed inset-0 z-[70] overflow-y-auto bg-[#fbf7ee]"
           >
             {status === "authenticated" ? (
-              <TreatyPostVoteShareFlow answer={answer} />
+              <TreatyPostVoteShareFlow
+                answer={answer}
+                flowVariant={flowVariant}
+                initialAlt={isContextFirstVariant && preVoteDismissiveCount > 0}
+                initialDismissiveCount={
+                  isContextFirstVariant ? preVoteDismissiveCount : 0
+                }
+                initialScreen={isContextFirstVariant ? "stakes" : "opening"}
+              />
             ) : (
               <TreatyFlowShell contentClassName="max-w-2xl">
                 <div className="space-y-4">
                   <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
-                    Save Your Vote
+                    {isContextFirstVariant ? "Vote counted." : "Save Your Vote"}
                   </p>
                   <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
-                    When the treaty passes, you will be personally to blame for saving{" "}
-                    <ParameterValue
-                      param={VOTER_LIVES_SAVED}
-                      className="font-black text-[#23180d]"
-                    />
-                    {" "}lives and preventing{" "}
-                    <ParameterValue
-                      param={VOTER_SUFFERING_HOURS_PREVENTED}
-                      className="font-black text-[#23180d]"
-                    />
-                    {" "}hours of suffering.
+                    {isContextFirstVariant ? (
+                      <>
+                        Governments won&apos;t listen to bot votes. They barely
+                        listen to human ones, but at least yours will be on
+                        file. Verify you&apos;re a real human so yours counts in
+                        the final tally.
+                      </>
+                    ) : (
+                      <>
+                        When the treaty passes, you will be personally to blame
+                        for saving{" "}
+                        <ParameterValue
+                          param={VOTER_LIVES_SAVED}
+                          className="font-black text-[#23180d]"
+                        />{" "}
+                        lives and preventing{" "}
+                        <ParameterValue
+                          param={VOTER_SUFFERING_HOURS_PREVENTED}
+                          className="font-black text-[#23180d]"
+                        />{" "}
+                        hours of suffering.
+                      </>
+                    )}
                   </p>
                 </div>
                 <AuthForm
@@ -509,9 +766,9 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                   compact={true}
                   hideContainer
                   title={null}
-                  googleButtonLabel="Save with Google"
-                  emailButtonLabel="Email me a save link"
-                  emailPendingButtonLabel="Sending save link..."
+                  googleButtonLabel={isContextFirstVariant ? "Verify with Google" : "Save with Google"}
+                  emailButtonLabel={isContextFirstVariant ? "Verify by email" : "Email me a save link"}
+                  emailPendingButtonLabel={isContextFirstVariant ? "Sending verification link..." : "Sending save link..."}
                   emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
                 />
               </TreatyFlowShell>

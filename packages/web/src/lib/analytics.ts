@@ -58,9 +58,11 @@ export function trackDepositCompleted(params: {
 
 export function trackSliderSubmitted(params: {
   militaryAllocationPercent: number
+  flowVariant?: string
 }): void {
   trackEvent('slider_submitted', {
     military_allocation_percent: params.militaryAllocationPercent,
+    flow_variant: params.flowVariant,
   })
 }
 
@@ -68,11 +70,13 @@ export function trackVoteSubmitted(params: {
   voteType: string
   answer: string
   authenticated: boolean
+  flowVariant?: string
 }): void {
   trackEvent('vote_submitted', {
     vote_type: params.voteType,
     answer: params.answer,
     authenticated: params.authenticated,
+    flow_variant: params.flowVariant,
   })
 }
 
@@ -108,6 +112,7 @@ export function trackTreatyPostVoteScreenAdvanced(params: {
   dismissive: boolean
   dismissiveCount: number
   sentCount: number
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_screen_advanced', {
     from_screen: params.from,
@@ -115,16 +120,19 @@ export function trackTreatyPostVoteScreenAdvanced(params: {
     dismissive: params.dismissive,
     dismissive_count: params.dismissiveCount,
     sent_count: params.sentCount,
+    flow_variant: params.flowVariant,
   })
 }
 
 export function trackTreatyPostVoteDetailsExpanded(params: {
   screen: string
   detailId: string
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_details_expanded', {
     screen: params.screen,
     detail_id: params.detailId,
+    flow_variant: params.flowVariant,
   })
 }
 
@@ -133,12 +141,14 @@ export function trackTreatyPostVoteInvitationAction(params: {
   messageFormat: string
   hasEmail: boolean
   sentCount: number
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_invitation_action', {
     action: params.action,
     message_format: params.messageFormat,
     has_email: params.hasEmail,
     sent_count: params.sentCount,
+    flow_variant: params.flowVariant,
   })
 }
 
@@ -146,21 +156,25 @@ export function trackTreatyPostVoteFormatChoice(params: {
   messageFormat: string
   sentCount: number
   switched: boolean
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_format_choice', {
     message_format: params.messageFormat,
     sent_count: params.sentCount,
     switched: params.switched,
+    flow_variant: params.flowVariant,
   })
 }
 
 export function trackTreatyPostVoteDepthHook(params: {
   wantsReminder: boolean
   sentCount: number
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_depth_hook', {
     wants_reminder: params.wantsReminder,
     sent_count: params.sentCount,
+    flow_variant: params.flowVariant,
   })
 }
 
@@ -168,11 +182,29 @@ export function trackTreatyPostVoteFeedback(params: {
   submitted: boolean
   sentCount: number
   characterCount?: number
+  flowVariant?: string
 }): void {
   trackEvent('treaty_post_vote_feedback', {
     submitted: params.submitted,
     sent_count: params.sentCount,
     character_count: params.characterCount,
+    flow_variant: params.flowVariant,
+  })
+}
+
+export function trackTreatyFlowScreenAdvanced(params: {
+  from: string
+  to: string
+  dismissive: boolean
+  dismissiveCount: number
+  flowVariant?: string
+}): void {
+  trackEvent('treaty_flow_screen_advanced', {
+    from_screen: params.from,
+    to_screen: params.to,
+    dismissive: params.dismissive,
+    dismissive_count: params.dismissiveCount,
+    flow_variant: params.flowVariant,
   })
 }
 

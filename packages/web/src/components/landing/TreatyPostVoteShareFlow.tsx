@@ -28,6 +28,7 @@ import {
   trackTreatyPostVoteInvitationAction,
   trackTreatyPostVoteScreenAdvanced,
 } from "@/lib/analytics";
+import type { TreatyFlowVariant } from "@/lib/treaty-flow-variants";
 import {
   HOURS_PER_YEAR,
   SAFE_COMPOUNDS_COUNT,
@@ -87,6 +88,10 @@ type FlowScreen =
 
 interface TreatyPostVoteShareFlowProps {
   answer: "yes" | "no";
+  flowVariant?: TreatyFlowVariant;
+  initialAlt?: boolean;
+  initialDismissiveCount?: number;
+  initialScreen?: FlowScreen;
 }
 
 const primaryButtonClass = treatyPrimaryButtonClass;
@@ -118,11 +123,13 @@ function DetailsBlock({
   children,
   summary = "Show the math",
   detailId,
+  flowVariant,
   screen,
 }: {
   children: ReactNode;
   summary?: string;
   detailId: string;
+  flowVariant?: TreatyFlowVariant;
   screen: FlowScreen;
 }) {
   return (
@@ -130,7 +137,7 @@ function DetailsBlock({
       className="border-y border-[#23180d]/25 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left"
       onToggle={(event) => {
         if (event.currentTarget.open) {
-          trackTreatyPostVoteDetailsExpanded({ detailId, screen });
+          trackTreatyPostVoteDetailsExpanded({ detailId, flowVariant, screen });
         }
       }}
     >
@@ -311,11 +318,17 @@ function formatLives(value: number) {
   return Number.isInteger(value) ? value.toString() : value.toFixed(1);
 }
 
-export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps) {
+export function TreatyPostVoteShareFlow({
+  answer,
+  flowVariant,
+  initialAlt = false,
+  initialDismissiveCount = 0,
+  initialScreen = "opening",
+}: TreatyPostVoteShareFlowProps) {
   const { data: session } = useSession();
-  const [screen, setScreen] = useState<FlowScreen>("opening");
-  const [alt, setAlt] = useState(false);
-  const [dismissiveCount, setDismissiveCount] = useState(0);
+  const [screen, setScreen] = useState<FlowScreen>(initialScreen);
+  const [alt, setAlt] = useState(initialAlt);
+  const [dismissiveCount, setDismissiveCount] = useState(initialDismissiveCount);
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [messageFormat, setMessageFormat] =
@@ -350,6 +363,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       to: next,
       dismissive,
       dismissiveCount: nextDismissiveCount,
+      flowVariant,
       sentCount: trackedSentCount,
     });
     setAlt(dismissive);
@@ -357,7 +371,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       setDismissiveCount((count) => count + 1);
     }
     setScreen(next);
-  }, [dismissiveCount, screen, sentCount]);
+  }, [dismissiveCount, flowVariant, screen, sentCount]);
 
   const go = useCallback((next: FlowScreen, dismissive = false) => {
     advanceTo(next, { dismissive });
@@ -434,9 +448,13 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   }, [mathDialogOpen]);
 
   const openMathDialog = useCallback(() => {
-    trackTreatyPostVoteDetailsExpanded({ detailId: "all-math", screen: "math" });
+    trackTreatyPostVoteDetailsExpanded({
+      detailId: "all-math",
+      flowVariant,
+      screen: "math",
+    });
     setMathDialogOpen(true);
-  }, []);
+  }, [flowVariant]);
 
   const completeCurrentInvitation = useCallback(() => {
     if (!invitation || completedInvitationIds.has(invitation.id)) {
@@ -447,6 +465,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     const nextSentCount = sentCount + 1;
     trackTreatyPostVoteInvitationAction({
       action: "sent_confirmed",
+      flowVariant,
       messageFormat,
       hasEmail: Boolean(invitation.recipientEmail),
       sentCount: nextSentCount,
@@ -459,7 +478,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     setLastRecipientName(getReferralInvitationFirstName(invitation.recipientName));
     setSentCount((count) => count + 1);
     advanceTo("sendImpact", { sentCount: nextSentCount });
-  }, [advanceTo, completedInvitationIds, invitation, messageFormat, sentCount]);
+  }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, sentCount]);
 
   const handleNameContinue = useCallback((dismissive = false) => {
     if (!recipientName.trim()) {
@@ -489,6 +508,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       await copyTextToClipboard(copiedText);
       trackTreatyPostVoteInvitationAction({
         action: "copy",
+        flowVariant,
         messageFormat,
         hasEmail: Boolean(created.recipientEmail),
         sentCount,
@@ -507,7 +527,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       setCopyState("error");
       setError("Copy failed.");
     }
-  }, [advanceTo, createInvitation, message, messageFormat, senderName, sentCount, session?.user]);
+  }, [advanceTo, createInvitation, flowVariant, message, messageFormat, senderName, sentCount, session?.user]);
 
   const handleSendEmail = useCallback(async () => {
     const created = await createInvitation();
@@ -530,6 +550,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       }
       trackTreatyPostVoteInvitationAction({
         action: "send_email",
+        flowVariant,
         messageFormat,
         hasEmail: true,
         sentCount,
@@ -540,10 +561,10 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
     } finally {
       setIsSending(false);
     }
-  }, [advanceTo, createInvitation, message, messageFormat, sentCount]);
+  }, [advanceTo, createInvitation, flowVariant, message, messageFormat, sentCount]);
 
   const handleDepthHook = useCallback(async (wantsReminder: boolean) => {
-    trackTreatyPostVoteDepthHook({ wantsReminder, sentCount });
+    trackTreatyPostVoteDepthHook({ flowVariant, wantsReminder, sentCount });
     if (wantsReminder && invitation) {
       await updateReferralInvitationRequest({
         id: invitation.id,
@@ -551,7 +572,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
       }).catch(() => undefined);
     }
     go("close", !wantsReminder);
-  }, [go, invitation, sentCount]);
+  }, [flowVariant, go, invitation, sentCount]);
 
   const goDashboard = useCallback(() => {
     window.location.href = ROUTES.dashboard;
@@ -560,22 +581,26 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
   const handleFeedbackSkip = useCallback(() => {
     trackTreatyPostVoteFeedback({
       submitted: false,
+      flowVariant,
       sentCount,
       characterCount: feedback.trim().length,
     });
     goDashboard();
-  }, [feedback, goDashboard, sentCount]);
+  }, [feedback, flowVariant, goDashboard, sentCount]);
 
   const handleFeedbackSubmit = useCallback(() => {
     trackTreatyPostVoteFeedback({
       submitted: true,
+      flowVariant,
       sentCount,
       characterCount: feedback.trim().length,
     });
     goDashboard();
-  }, [feedback, goDashboard, sentCount]);
+  }, [feedback, flowVariant, goDashboard, sentCount]);
 
   const renderScreen = () => {
+    const skippedOpening = initialScreen !== "opening";
+
     switch (screen) {
       case "opening":
         return (
@@ -598,11 +623,18 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           </>
         );
 
-      case "stakes":
+      case "stakes": {
+        const nextAfterStakes: FlowScreen = skippedOpening ? "math" : "nuclear";
+
         return (
           <>
             <div className="space-y-4">
-              {alt ? <FlowParagraph>{"I'm sorry but I still have to tell you this anyway."}</FlowParagraph> : null}
+              {answer === "no" && skippedOpening ? (
+                <FlowParagraph>
+                  You voted no. Totally fine. The math doesn&apos;t change.
+                </FlowParagraph>
+              ) : null}
+              {alt ? <FlowParagraph>{"You and everyone you love are going to die of horrible diseases. Just so we're clear."}</FlowParagraph> : null}
               <FlowParagraph>
                 Statistically, you and/or someone you love will get a horrible disease.{" "}
                 <ParameterValue param={FLOW_DISEASES_WITHOUT_EFFECTIVE_TREATMENT_PCT} figures={2} />{" "}
@@ -612,21 +644,22 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
               </FlowParagraph>
             </div>
             <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => go("nuclear", true)}>
+              <Button className={dismissButtonClass} onClick={() => go(nextAfterStakes, true)}>
                 I have chosen disease
               </Button>
-              <Button className={primaryButtonClass} onClick={() => go("nuclear")}>
+              <Button className={primaryButtonClass} onClick={() => go(nextAfterStakes)}>
                 Okay, go on
               </Button>
             </FlowButtonRow>
           </>
         );
+      }
 
       case "nuclear":
         return (
           <>
             <div className="space-y-4">
-              {alt ? <FlowParagraph>Fair. One more math thing though.</FlowParagraph> : null}
+              {alt ? <FlowParagraph>Cool. The 122 apocalypses haven&apos;t moved.</FlowParagraph> : null}
               <FlowParagraph>
                 <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} /> nuclear weapons exploding triggers a nuclear winter that collapses the food chain and kills most humans.
               </FlowParagraph>
@@ -652,7 +685,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
           <>
             {alt ? (
               <div className="space-y-4">
-                <FlowParagraph>Fine, show your work:</FlowParagraph>
+                <FlowParagraph>You said stop. Here&apos;s the math anyway:</FlowParagraph>
                 <TreatyMechanismExplainer detailMode="none" />
               </div>
             ) : (
@@ -677,7 +710,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? (
                 <>
-                  <FlowParagraph>Respect. Still, imagine:</FlowParagraph>
+                  <FlowParagraph>Imagine anyway. It&apos;s free.</FlowParagraph>
                   <FlowParagraph>
                     You trigger a chain reaction that gets a majority of humans on Earth — <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> people — to collectively agree: &quot;Yes, we are willing to sacrifice one apocalypse of our <ParameterValue param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR} figures={3} /> apocalypse capacity in exchange for eradicating disease within our lifetimes.&quot;
                   </FlowParagraph>
@@ -711,7 +744,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? (
                 <>
-                  <FlowParagraph>{"Fair. But here's the math:"}</FlowParagraph>
+                  <FlowParagraph>{"Two humans is the smallest possible amount of humans. Here:"}</FlowParagraph>
                   <FlowParagraph>Tell 2 friends. They tell 2. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText}. {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week.</FlowParagraph>
                   <FlowParagraph>Yes, technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
                 </>
@@ -719,7 +752,12 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches {majorityHumanityText} humans. That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
                   <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
-                  <DetailsBlock detailId="chain-letter-history" screen="twoHumans" summary="Has a chain letter ever actually worked?">
+                  <DetailsBlock
+                    detailId="chain-letter-history"
+                    flowVariant={flowVariant}
+                    screen="twoHumans"
+                    summary="Has a chain letter ever actually worked?"
+                  >
                     <p>{"In 1935, a billion people handwrote letters, bought stamps, and mailed actual money to strangers because a piece of paper promised them $1,562.50 that didn't exist. The promise was a lie. The threat was fake. Some of them probably died driving to the post office."}</p>
                     <p>This one requires touching a glowing rectangle a few times. It costs nothing. There are no stamps. And the threat — that you and everyone you love will suffer and die of curable diseases if nobody funds the research — is not a superstition. It is an epidemiological fact.</p>
                     <p>So it should probably do fine.</p>
@@ -744,7 +782,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
             <div className="space-y-4">
               {alt ? (
                 <>
-                  <FlowParagraph>I know. Math again. Last one that matters:</FlowParagraph>
+                  <FlowParagraph>Last math. Then you can return to your regularly scheduled apathy.</FlowParagraph>
                   <FlowParagraph>A majority of humans on Earth ({majorityHumanityText}) agreeing the 1% Treaty is a good idea makes it politically unstoppable.</FlowParagraph>
                   <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 lifetime of suffering prevented. One vote = {voterLivesSavedText} lives saved.</p>
                   <FlowParagraph>Every person you get to vote adds another lifetime to your Inverse Kills Score.</FlowParagraph>
@@ -753,7 +791,11 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 <>
                   <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = 1 full human lifetime of suffering prevented. (<ParameterValue param={FLOW_VOTER_SUFFERING_YEARS_PREVENTED} figures={2} /> years of it.)</p>
                   <p className="text-center text-xl font-black leading-tight sm:text-left">One vote = <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.</p>
-                  <DetailsBlock detailId="per-vote-impact" screen="perVote">
+                  <DetailsBlock
+                    detailId="per-vote-impact"
+                    flowVariant={flowVariant}
+                    screen="perVote"
+                  >
                     <p>
                       Getting a majority of humans on Earth ({majorityHumanityText} people) to agree the treaty is a good idea makes it politically unstoppable.{" "}
                       <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> deaths prevented ÷ a majority of humans on Earth ({majorityHumanityText}) ={" "}
@@ -845,6 +887,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                   className={dismissButtonClass}
                   onClick={() => {
                     trackTreatyPostVoteFormatChoice({
+                      flowVariant,
                       messageFormat,
                       sentCount,
                       switched: false,
@@ -886,6 +929,7 @@ export function TreatyPostVoteShareFlow({ answer }: TreatyPostVoteShareFlowProps
                 className={primaryButtonClass}
                 onClick={() => {
                   trackTreatyPostVoteFormatChoice({
+                    flowVariant,
                     messageFormat,
                     sentCount,
                     switched: sentCount > 0,

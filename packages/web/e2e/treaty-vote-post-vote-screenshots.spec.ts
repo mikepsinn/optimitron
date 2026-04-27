@@ -23,7 +23,20 @@ const SCREENSHOT_ROOT = path.resolve(
   "../public/img/screenshots/treaty-vote-post-vote-flow",
 );
 
-const SCREENSHOT_VARIANTS = [
+const FLOW_VARIANTS = [
+  {
+    hasPrelude: false,
+    queryValue: "treaty_flow_v1_vote_first",
+    slug: "treaty-flow-v1-vote-first",
+  },
+  {
+    hasPrelude: true,
+    queryValue: "treaty_flow_v2_context_first",
+    slug: "treaty-flow-v2-context-first",
+  },
+] as const;
+
+const VIEWPORT_VARIANTS = [
   { slug: "desktop", viewport: null },
   { slug: "mobile", viewport: { width: 390, height: 844 } },
 ] as const;
@@ -37,9 +50,10 @@ function makeUniqueUser(): TestUser {
   };
 }
 
-function screenshotDir(testInfo: TestInfo, viewportSlug: string) {
+function screenshotDir(testInfo: TestInfo, flowSlug: string, viewportSlug: string) {
   const project = [
     testInfo.project.name,
+    flowSlug,
     viewportSlug,
   ]
     .filter(Boolean)
@@ -48,8 +62,8 @@ function screenshotDir(testInfo: TestInfo, viewportSlug: string) {
   return path.join(SCREENSHOT_ROOT, safeProject);
 }
 
-function resetScreenshotDir(testInfo: TestInfo, viewportSlug: string) {
-  const dir = screenshotDir(testInfo, viewportSlug);
+function resetScreenshotDir(testInfo: TestInfo, flowSlug: string, viewportSlug: string) {
+  const dir = screenshotDir(testInfo, flowSlug, viewportSlug);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
   return dir;
@@ -210,15 +224,17 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(180_000);
 
-  for (const variant of SCREENSHOT_VARIANTS) {
-    test(`captures the primary survey and post-vote flow screens (${variant.slug})`, async ({
-      page,
-      request,
-    }, testInfo) => {
-    const dir = resetScreenshotDir(testInfo, variant.slug);
+  for (const flowVariant of FLOW_VARIANTS) {
+    for (const viewportVariant of VIEWPORT_VARIANTS) {
+      test(`captures the primary survey and post-vote flow screens (${flowVariant.slug}, ${viewportVariant.slug})`, async ({
+        page,
+        request,
+      }, testInfo) => {
+    const dir = resetScreenshotDir(testInfo, flowVariant.slug, viewportVariant.slug);
+    let step = 1;
     await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
-    if (variant.viewport) {
-      await page.setViewportSize(variant.viewport);
+    if (viewportVariant.viewport) {
+      await page.setViewportSize(viewportVariant.viewport);
     }
 
     const user = makeUniqueUser();
@@ -237,7 +253,7 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
       return;
     }
 
-    const response = await page.goto("/", {
+    const response = await page.goto(`/?treatyFlow=${flowVariant.queryValue}`, {
       timeout: 60_000,
       waitUntil: "domcontentloaded",
     });
@@ -251,37 +267,55 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     const voteSection = page.locator("#vote");
     await voteSection.scrollIntoViewIfNeeded();
 
+    if (flowVariant.hasPrelude) {
+      await expect(page.getByText(/I'm very sorry to bother you/i)).toBeVisible({ timeout: 15_000 });
+      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-apology");
+
+      await page.getByRole("button", { name: "Fine", exact: true }).click();
+      await expect(page.getByText(/This is my grandmother/i)).toBeVisible();
+      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-grandma");
+
+      await page.getByRole("button", { name: "I'm sorry about your grandmother", exact: true }).click();
+      await expect(page.getByText(/nuclear winter that collapses the food chain/i)).toBeVisible();
+      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-apocalypse");
+
+      await page.getByRole("button", { name: "Take me to the vote", exact: true }).click();
+    }
+
     const slider = voteSection.locator('input[type="range"]');
     await expect(slider).toBeVisible({ timeout: 15_000 });
-    await captureSurveyCard(page, dir, 1, "survey-allocation-slider");
+    await captureSurveyCard(page, dir, step++, "survey-allocation-slider");
 
     await setRangeValue(page, slider, "30");
     const submit = voteSection.getByRole("button", { name: "SUBMIT" });
     await expect(submit).toBeVisible({ timeout: 5_000 });
-    await captureSurveyCard(page, dir, 2, "survey-allocation-submit-ready");
+    await captureSurveyCard(page, dir, step++, "survey-allocation-submit-ready");
 
     await submit.click();
     await expect(voteSection.getByRole("button", { name: "YES" })).toBeVisible({ timeout: 10_000 });
-    await captureChoiceCard(page, dir, 3, "survey-yes-no-question");
+    await captureChoiceCard(page, dir, step++, "survey-yes-no-question");
 
     await voteSection.getByRole("button", { name: "YES" }).click();
-    await expect(page.getByText(/I'm very sorry to bother you/i)).toBeVisible({ timeout: 15_000 });
     await page.waitForTimeout(800);
-    await capturePostVoteCard(page, dir, 4, "post-vote-opening");
+    if (!flowVariant.hasPrelude) {
+      await expect(page.getByText(/I'm very sorry to bother you/i)).toBeVisible({ timeout: 15_000 });
+      await capturePostVoteCard(page, dir, step++, "post-vote-opening");
+      await page.getByRole("button", { name: "Fine", exact: true }).click();
+    }
 
-    await page.getByRole("button", { name: "Fine", exact: true }).click();
     await expect(page.getByText(/someone you love will get a horrible disease/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 5, "post-vote-stakes");
+    await capturePostVoteCard(page, dir, step++, "post-vote-stakes");
 
     await page.getByRole("button", { name: "Okay, go on", exact: true }).click();
-    await expect(page.getByText(/nuclear winter that collapses the food chain/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 6, "post-vote-nuclear");
-
-    await page.getByRole("button", { name: "Go on", exact: true }).click();
+    if (!flowVariant.hasPrelude) {
+      await expect(page.getByText(/nuclear winter that collapses the food chain/i)).toBeVisible();
+      await capturePostVoteCard(page, dir, step++, "post-vote-nuclear");
+      await page.getByRole("button", { name: "Go on", exact: true }).click();
+    }
     await expect(page.getByRole("button", { name: "Okay, I buy it", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Check the math", exact: true })).toBeVisible();
     await expect(page.getByText("Show the math", { exact: true })).toHaveCount(0);
-    await capturePostVoteCard(page, dir, 7, "post-vote-math");
+    await capturePostVoteCard(page, dir, step++, "post-vote-math");
     await page.getByRole("button", { name: "Check the math", exact: true }).click();
     await expect(page.getByRole("dialog", { name: "Treaty Math" })).toBeVisible();
     await expect(page.getByText("Military spending to treaty funding")).toBeVisible();
@@ -290,25 +324,25 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
 
     await page.getByRole("button", { name: "Okay, I buy it", exact: true }).click();
     await expect(page.getByText(/Wouldn't that be neat/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 8, "post-vote-neat");
+    await capturePostVoteCard(page, dir, step++, "post-vote-neat");
 
     await page.getByRole("button", { name: "Neat", exact: true }).click();
     await expect(page.getByText(/Tell 2 friends/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 9, "post-vote-two-humans");
+    await capturePostVoteCard(page, dir, step++, "post-vote-two-humans");
 
     await page.getByRole("button", { name: "Okay, two humans", exact: true }).click();
     await expect(page.getByText(/One vote = 1 full human lifetime/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 10, "post-vote-per-vote-impact");
+    await capturePostVoteCard(page, dir, step++, "post-vote-per-vote-impact");
 
     await page.getByRole("button", { name: "Show me mine", exact: true }).click();
     await expect(page.getByText("Who do you want to tell first?")).toBeVisible();
-    await capturePostVoteCard(page, dir, 11, "post-vote-recipient-name");
+    await capturePostVoteCard(page, dir, step++, "post-vote-recipient-name");
 
     const recipientName = `Screenshot Friend ${Date.now().toString(36)}`;
     await page.locator("#post-vote-recipient-name").fill(recipientName);
     await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByText(/How do you want to tell/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 12, "post-vote-message-format");
+    await capturePostVoteCard(page, dir, step++, "post-vote-message-format");
 
     await page.getByRole("button", { name: "Bossy mode" }).click();
     const bossyPreview = page.getByTestId("bossy-task-preview");
@@ -323,36 +357,37 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     expect(bossyMessage).not.toContain("**");
     expect(bossyMessage).not.toContain("[ COMPLETE TASK");
     expect(bossyMessage).not.toContain("Management apologizes");
-    await capturePostVoteCard(page, dir, 13, "post-vote-message-copy");
+    await capturePostVoteCard(page, dir, step++, "post-vote-message-copy");
 
     await page.getByRole("button", { name: /^Copy$/ }).first().click();
     await expect(page.getByText(/Now paste it into your texts/i)).toBeVisible({ timeout: 10_000 });
-    await capturePostVoteCard(page, dir, 14, "post-vote-copy-confirm");
+    await capturePostVoteCard(page, dir, step++, "post-vote-copy-confirm");
 
     await page.getByRole("button", { name: "I sent it" }).click();
     await expect(page.getByText(/When Screenshot votes: \+1 lifetime of suffering prevented/i)).toBeVisible({ timeout: 10_000 });
-    await capturePostVoteCard(page, dir, 15, "post-vote-send-impact");
+    await capturePostVoteCard(page, dir, step++, "post-vote-send-impact");
 
     await page.getByRole("button", { name: "No, I'm done" }).click();
     await expect(page.getByText(/Want us to email you in a few days/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 16, "post-vote-depth-hook");
+    await capturePostVoteCard(page, dir, step++, "post-vote-depth-hook");
 
     await page.getByRole("button", { name: "No thanks" }).click();
     await expect(page.getByText(/The chain only breaks if one human says/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 17, "post-vote-close");
+    await capturePostVoteCard(page, dir, step++, "post-vote-close");
 
     await page.getByRole("button", { name: "Done" }).click();
     await expect(page.getByText(/most effective chain letter in history/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, 18, "post-vote-feedback");
+    await capturePostVoteCard(page, dir, step++, "post-vote-feedback");
 
     await page.getByRole("button", { name: "Submit" }).click();
     await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, { timeout: 15_000 });
     await expect(page.getByRole("heading", { name: "EARTH OPTIMIZATION", exact: true })).toBeVisible({
       timeout: 15_000,
     });
-    await capturePage(page, dir, 19, "dashboard-after-feedback");
+    await capturePage(page, dir, step++, "dashboard-after-feedback");
 
     console.log(`Treaty flow screenshots saved to: ${dir}`);
     });
+    }
   }
 });
