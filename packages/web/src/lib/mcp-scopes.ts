@@ -1,5 +1,5 @@
 /**
- * MCP scope catalog — browser-safe.
+ * MCP scope catalog - browser-safe.
  *
  * `McpScope` itself is the Prisma enum, imported from the browser-safe
  * `@optimitron/db/enums` subpath so client components (consent UI, dev portal)
@@ -24,9 +24,9 @@ export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
 
 export const DEFAULT_SCOPES: McpScope[] = [McpScope.TASKS_READ, McpScope.SEARCH];
 
-/// Full-trust scope set. Stdio transport passes this explicitly. HTTP must NEVER default to it
-/// — unauthenticated HTTP callers get DEFAULT_SCOPES, authenticated callers get the scopes
-/// granted at consent time. The deny-by-default behavior in `hasScope` enforces this.
+// Full-trust scope set. Stdio transport passes this explicitly. HTTP must NEVER default to it:
+// unauthenticated HTTP callers get DEFAULT_SCOPES, authenticated callers get the scopes
+// granted at consent time. The deny-by-default behavior in `hasScope` enforces this.
 export const ALL_SCOPES: McpScope[] = Object.values(McpScope) as McpScope[];
 
 // ---------------------------------------------------------------------------

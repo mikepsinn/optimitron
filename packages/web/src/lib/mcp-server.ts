@@ -13,9 +13,14 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import {
   AgentRunStatus,
+  OrgType,
   TaskCategory,
   TaskClaimPolicy,
   TaskCommentSource,
+  TaskCommunicationAudience,
+  TaskCommunicationChannel,
+  TaskCommunicationFormat,
+  TaskCommunicationPurpose,
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
@@ -42,6 +47,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getNextTask: [McpScope.TASKS_READ],
   getQueueAudit: [McpScope.TASKS_READ],
   getNextAction: [McpScope.TASKS_READ],
+  getMyOptimalNextAction: [McpScope.TASKS_PERSONAL],
+  rankMyActionOptions: [McpScope.TASKS_PERSONAL],
+  explainTaskRanking: [McpScope.TASKS_PERSONAL],
   evaluateTaskEconomics: [McpScope.TASKS_READ],
   listTasks: [McpScope.TASKS_READ],
   getTask: [McpScope.TASKS_READ],
@@ -56,6 +64,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   recordTaskActuals: [McpScope.TASKS_WRITE],
   updateMilestone: [McpScope.TASKS_WRITE],
   addDependency: [McpScope.TASKS_WRITE],
+  upsertOrganization: [McpScope.TASKS_WRITE],
+  draftTaskNotification: [McpScope.TASKS_WRITE],
+  sendTaskNotification: [McpScope.TASKS_WRITE],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL],
@@ -128,6 +139,21 @@ function toTaskDifficulty(value: unknown) {
   return TaskDifficulty[value as keyof typeof TaskDifficulty] ?? null;
 }
 
+function enumValue<T extends Record<string, string>>(
+  values: T,
+  value: unknown,
+  fallback: T[keyof T],
+) {
+  if (typeof value !== "string") return fallback;
+  return values[value as keyof T] ?? fallback;
+}
+
+function emailFromMailto(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed?.toLowerCase().startsWith("mailto:")) return null;
+  return trimmed.slice("mailto:".length).split("?")[0]?.trim() || null;
+}
+
 function buildAgentCapabilities(args: Record<string, unknown>) {
   return {
     availableHoursPerWeek: (args.availableHoursPerWeek as number) ?? null,
@@ -135,6 +161,63 @@ function buildAgentCapabilities(args: Record<string, unknown>) {
     maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
     skillTags: (args.skillTags as string[]) ?? [],
   };
+}
+
+function buildOptimalActorCapabilities(args: Record<string, unknown>) {
+  return {
+    availableHoursPerWeek: (args.availableHoursPerWeek as number) ?? null,
+    budgetUsd: (args.budgetUsd as number) ?? null,
+    hourlyRateUsd: (args.hourlyRateUsd as number) ?? null,
+    interestTags: (args.interestTags as string[]) ?? [],
+    kind: (args.actorKind as string) ?? "AGENT",
+    maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
+    organizationId: (args.organizationId as string) ?? null,
+    organizationTags: (args.organizationTags as string[]) ?? [],
+    runwayDays: (args.runwayDays as number) ?? null,
+    skillTags: (args.skillTags as string[]) ?? [],
+  };
+}
+
+function buildOptimalPolicy(args: Record<string, unknown>, fallbackExternalBudgetUsd = 0) {
+  const policy = {
+    externalBudgetUsd: (args.externalBudgetUsd as number) ?? fallbackExternalBudgetUsd,
+    platformRunwayDays: (args.platformRunwayDays as number) ?? null,
+  } as {
+    dependencyFallbackShare?: number;
+    externalBudgetUsd: number;
+    platformRunwayDays: number | null;
+    platformRunwayTargetDays?: number;
+    platformSurvivalWeight?: number;
+    uncertaintyPenaltyWeight?: number;
+    valueOfInformationWeight?: number;
+  };
+
+  const dependencyFallbackShare = args.dependencyFallbackShare;
+  if (typeof dependencyFallbackShare === "number" && Number.isFinite(dependencyFallbackShare)) {
+    policy.dependencyFallbackShare = dependencyFallbackShare;
+  }
+
+  const platformRunwayTargetDays = args.platformRunwayTargetDays;
+  if (typeof platformRunwayTargetDays === "number" && Number.isFinite(platformRunwayTargetDays)) {
+    policy.platformRunwayTargetDays = platformRunwayTargetDays;
+  }
+
+  const platformSurvivalWeight = args.platformSurvivalWeight;
+  if (typeof platformSurvivalWeight === "number" && Number.isFinite(platformSurvivalWeight)) {
+    policy.platformSurvivalWeight = platformSurvivalWeight;
+  }
+
+  const uncertaintyPenaltyWeight = args.uncertaintyPenaltyWeight;
+  if (typeof uncertaintyPenaltyWeight === "number" && Number.isFinite(uncertaintyPenaltyWeight)) {
+    policy.uncertaintyPenaltyWeight = uncertaintyPenaltyWeight;
+  }
+
+  const valueOfInformationWeight = args.valueOfInformationWeight;
+  if (typeof valueOfInformationWeight === "number" && Number.isFinite(valueOfInformationWeight)) {
+    policy.valueOfInformationWeight = valueOfInformationWeight;
+  }
+
+  return policy;
 }
 
 async function listActivePublicEarthTasks() {
@@ -486,6 +569,74 @@ function summarizeTask(task: SummarizableTask) {
   };
 }
 
+function normalizeOptimalRankingTask(task: Record<string, unknown>): Record<string, unknown> {
+  const directImpactFrame = asObject(task.directImpactFrame);
+  const selectedImpactFrame = directImpactFrame ?? task.selectedImpactFrame ?? null;
+  const outgoingEdges = Array.isArray(task.outgoingEdges)
+    ? task.outgoingEdges.map((edge) => {
+        const edgeRecord = asObject(edge);
+        if (!edgeRecord) return edge;
+        const toTask = asObject(edgeRecord.toTask);
+        return {
+          ...edgeRecord,
+          ...(toTask ? { toTask: normalizeOptimalRankingTask(toTask) } : {}),
+        };
+      })
+    : task.outgoingEdges;
+
+  return {
+    ...task,
+    outgoingEdges,
+    selectedImpactFrame,
+  };
+}
+
+function summarizeRankedAction(option: {
+  actionBlockMinutes: number;
+  actionKind: string;
+  assumptions: string[];
+  autoExecutable: boolean;
+  capabilityFit: number;
+  cashCostUsd: number;
+  computeCostUsd: number;
+  coordinationCostUsd: number;
+  expectedMarginalUtilityUsd: number;
+  explanation: string[];
+  normalizedBy: string;
+  requiredApproval: boolean;
+  riskAdjustedScore: number;
+  route: string;
+  scarceResourceHours: number;
+  sensitivity: string[];
+  task: (SummarizableTask & { id: string; title: string }) | null;
+  uncertaintyPenaltyUsd: number;
+  valueOfInformationBonusUsd: number;
+  whatWouldChangeMyMind: string[];
+}) {
+  return {
+    actionBlockMinutes: option.actionBlockMinutes,
+    actionKind: option.actionKind,
+    assumptions: option.assumptions,
+    autoExecutable: option.autoExecutable,
+    capabilityFit: option.capabilityFit,
+    cashCostUsd: option.cashCostUsd,
+    computeCostUsd: option.computeCostUsd,
+    coordinationCostUsd: option.coordinationCostUsd,
+    expectedMarginalUtilityUsd: option.expectedMarginalUtilityUsd,
+    explanation: option.explanation,
+    normalizedBy: option.normalizedBy,
+    requiredApproval: option.requiredApproval,
+    riskAdjustedScore: option.riskAdjustedScore,
+    route: option.route,
+    scarceResourceHours: option.scarceResourceHours,
+    sensitivity: option.sensitivity,
+    task: option.task ? summarizeTask(option.task) : null,
+    uncertaintyPenaltyUsd: option.uncertaintyPenaltyUsd,
+    valueOfInformationBonusUsd: option.valueOfInformationBonusUsd,
+    whatWouldChangeMyMind: option.whatWouldChangeMyMind,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Shared `contextJson` schema exposed on createTask + updateTask
 // ---------------------------------------------------------------------------
@@ -761,6 +912,72 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "getMyOptimalNextAction",
+    description:
+      "Get the risk-adjusted optimal next action for the authenticated user or local agent. Ranks action options, not just tasks, using EV, uncertainty, dependencies, execution route, platform runway, and value of information.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"], description: "Who is taking the action" },
+        skillTags: { type: "array", items: { type: "string" }, description: "Actor skill tags for capability matching" },
+        interestTags: { type: "array", items: { type: "string" }, description: "Actor interest tags for capability matching" },
+        organizationTags: { type: "array", items: { type: "string" }, description: "Organization capabilities or mission tags if actorKind is ORGANIZATION" },
+        organizationId: { type: "string", description: "Organization ID if ranking for an organization" },
+        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Max difficulty the actor can handle" },
+        availableHoursPerWeek: { type: "number", description: "Hours per week the actor can commit" },
+        hourlyRateUsd: { type: "number", description: "Opportunity cost of the actor's time" },
+        platformRunwayDays: { type: "number", description: "Days of platform runway; low values boost survival/revenue actions" },
+        platformRunwayTargetDays: { type: "number", description: "Runway target before survival boost fades" },
+        externalBudgetUsd: { type: "number", description: "Available external spend budget" },
+      },
+    },
+  },
+  {
+    name: "rankMyActionOptions",
+    description:
+      "Rank concrete action options across accessible tasks. Returns route-level choices like execute, outsource, de-risk, decompose, funding unblocker, queue repair, or kill.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"] },
+        skillTags: { type: "array", items: { type: "string" } },
+        interestTags: { type: "array", items: { type: "string" } },
+        organizationTags: { type: "array", items: { type: "string" } },
+        organizationId: { type: "string" },
+        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] },
+        availableHoursPerWeek: { type: "number" },
+        hourlyRateUsd: { type: "number" },
+        platformRunwayDays: { type: "number" },
+        platformRunwayTargetDays: { type: "number" },
+        externalBudgetUsd: { type: "number" },
+        limit: { type: "number", description: "Max action options to return (default 10, max 50)" },
+      },
+    },
+  },
+  {
+    name: "explainTaskRanking",
+    description:
+      "Explain how a specific accessible task ranks under the risk-adjusted optimal-action engine, including assumptions, sensitivity, and what would change the recommendation.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task ID to explain" },
+        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"] },
+        skillTags: { type: "array", items: { type: "string" } },
+        interestTags: { type: "array", items: { type: "string" } },
+        organizationTags: { type: "array", items: { type: "string" } },
+        organizationId: { type: "string" },
+        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] },
+        availableHoursPerWeek: { type: "number" },
+        hourlyRateUsd: { type: "number" },
+        platformRunwayDays: { type: "number" },
+        platformRunwayTargetDays: { type: "number" },
+        externalBudgetUsd: { type: "number" },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
     name: "evaluateTaskEconomics",
     description: "Evaluate the execution economics for a single task. Returns whether the current agent should execute directly, delegate, prepare procurement, or raise money first.",
     inputSchema: {
@@ -848,6 +1065,45 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "upsertOrganization",
+    description:
+      "Create or update a general Organization record for task assignment. This is not outreach-specific; use it for nonprofits, governments, companies, universities, and other assignees.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string", description: "Organization name" },
+        type: {
+          type: "string",
+          enum: [
+            "UNIVERSITY",
+            "RESEARCH_CENTER",
+            "NONPROFIT",
+            "DAO",
+            "GOVERNMENT",
+            "GOVERNMENT_AGENCY",
+            "HOSPITAL",
+            "BIOTECH",
+            "COMPANY",
+            "FOUNDATION",
+            "INTERGOVERNMENTAL",
+            "MEDIA",
+            "POLITICAL_PARTY",
+            "ADVOCACY",
+            "OTHER",
+          ],
+          description: "Organization type",
+        },
+        website: { type: "string", description: "Website URL" },
+        contactEmail: { type: "string", description: "General contact email" },
+        description: { type: "string", description: "Mission or provenance note" },
+        logo: { type: "string", description: "Logo image URL" },
+        sourceRef: { type: "string", description: "Stable source reference for idempotent imports" },
+        sourceUrl: { type: "string", description: "Source URL proving this organization/contact" },
+      },
+      required: ["name"],
+    },
+  },
+  {
     name: "proposeTaskBundle",
     description: "Propose a bundle of tasks for review. Creates each as DRAFT, runs validation, returns review decisions. Does NOT auto-promote.",
     inputSchema: {
@@ -874,10 +1130,10 @@ const TASK_TOOL_DEFINITIONS = [
               impact: {
                 type: "object",
                 properties: {
-                  delayDalysLostPerDay: { type: "number" },
-                  delayEconomicValueUsdLostPerDay: { type: "number" },
-                  expectedValuePerHourDalys: { type: "number" },
-                  expectedValuePerHourUsd: { type: "number" },
+                  delayDalysLostPerDay: { type: "number", description: "Expected DALYs lost per day of delay; use only with a sourced delay model" },
+                  delayEconomicValueUsdLostPerDay: { type: "number", description: "Expected USD-equivalent welfare lost per day of delay; use only with a sourced delay model" },
+                  expectedValuePerHourDalys: { type: "number", description: "Probability-weighted expected DALYs per hour, not gross conditional value" },
+                  expectedValuePerHourUsd: { type: "number", description: "Probability-weighted expected USD-equivalent welfare per hour, not gross conditional value" },
                 },
               },
             },
@@ -932,7 +1188,8 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "setTaskImpact",
-    description: "Create or replace the impact estimate for a task. Sets the impact frame and optional metrics. Negative values represent harm caused.",
+    description:
+      "Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -940,16 +1197,31 @@ const TASK_TOOL_DEFINITIONS = [
         frameKey: { type: "string", enum: ["IMMEDIATE", "ONE_YEAR", "FIVE_YEAR", "TWENTY_YEAR", "LIFETIME"], description: "Time horizon for evaluation (default: FIVE_YEAR)" },
         frame: {
           type: "object",
-          description: "Impact frame with delay costs and expected values",
+          description:
+            "Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; for Notion imports use P(success) * Value.",
           properties: {
-            evaluationHorizonYears: { type: "number" },
-            successProbabilityBase: { type: "number" },
+            evaluationHorizonYears: { type: "number", description: "Years covered by this estimate" },
+            successProbabilityLow: { type: "number", description: "Low success probability, 0-1" },
+            successProbabilityBase: { type: "number", description: "Base success probability, 0-1" },
+            successProbabilityHigh: { type: "number", description: "High success probability, 0-1" },
+            delayDalysLostPerDayLow: { type: "number" },
             delayDalysLostPerDayBase: { type: "number" },
+            delayDalysLostPerDayHigh: { type: "number" },
+            delayEconomicValueUsdLostPerDayLow: { type: "number" },
             delayEconomicValueUsdLostPerDayBase: { type: "number" },
+            delayEconomicValueUsdLostPerDayHigh: { type: "number" },
+            expectedDalysAvertedLow: { type: "number" },
             expectedDalysAvertedBase: { type: "number" },
-            expectedEconomicValueUsdBase: { type: "number" },
+            expectedDalysAvertedHigh: { type: "number" },
+            expectedEconomicValueUsdLow: { type: "number", description: "Low probability-weighted USD-equivalent welfare" },
+            expectedEconomicValueUsdBase: { type: "number", description: "Base probability-weighted USD-equivalent welfare" },
+            expectedEconomicValueUsdHigh: { type: "number", description: "High probability-weighted USD-equivalent welfare" },
+            estimatedCashCostUsdLow: { type: "number" },
             estimatedCashCostUsdBase: { type: "number" },
+            estimatedCashCostUsdHigh: { type: "number" },
+            estimatedEffortHoursLow: { type: "number" },
             estimatedEffortHoursBase: { type: "number" },
+            estimatedEffortHoursHigh: { type: "number" },
           },
         },
         metrics: {
@@ -967,6 +1239,20 @@ const TASK_TOOL_DEFINITIONS = [
             },
             required: ["metricKey", "baseValue", "unit"],
           },
+        },
+        assumptions: {
+          type: "array",
+          items: { type: "string" },
+          description: "Human-readable assumptions, including probability gates and why subjective values are plausible",
+        },
+        sourceUrls: {
+          type: "array",
+          items: { type: "string" },
+          description: "Sources/citations for the value, probability, deadline, or conversion assumptions",
+        },
+        estimateNotes: {
+          type: "string",
+          description: "Short explanation of the calculation and what would change the estimate",
         },
         calculationVersion: { type: "string", description: "Version tag for the calculation method" },
       },
@@ -1111,6 +1397,45 @@ const TASK_TOOL_DEFINITIONS = [
         submittedAt: { type: "string", description: "ISO timestamp only when a user/agent confirms external form submission" },
       },
       required: ["taskId", "userId", "channel"],
+    },
+  },
+  {
+    name: "draftTaskNotification",
+    description:
+      "Draft a general task notification email for an assigned person, organization, or user. Does not send; call sendTaskNotification only after explicit approval.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task being assigned or reminded" },
+        recipientEmail: { type: "string", description: "Recipient email. Defaults to the task primary endpoint email when available." },
+        recipientName: { type: "string", description: "Recipient display name snapshot" },
+        recipientOrganizationId: { type: "string", description: "Recipient organization ID" },
+        recipientPersonId: { type: "string", description: "Recipient person ID" },
+        recipientUserId: { type: "string", description: "Recipient user ID" },
+        endpointId: { type: "string", description: "TaskCommunicationEndpoint ID used" },
+        audience: { type: "string", enum: ["RECIPIENT", "SENDER", "OBSERVER", "ASSIGNEE"] },
+        purpose: {
+          type: "string",
+          enum: ["INVITATION", "ASSIGNMENT", "REMINDER", "FOLLOW_UP", "EVIDENCE_REQUEST", "STATUS_UPDATE", "REPLY", "SCORECARD", "RE_ENGAGEMENT", "VOTE_CONFIRMED", "RECIPIENT_VOTED", "SHARE"],
+        },
+        format: { type: "string", enum: ["DEFAULT", "TASK_NOTIFICATION", "SINCERE"] },
+        subject: { type: "string", description: "Email subject. Defaults from the task title." },
+        message: { type: "string", description: "Plain-text message. Defaults from the task title and impact statement." },
+        nextSendAt: { type: "string", description: "Optional scheduled send time (ISO 8601)" },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "sendTaskNotification",
+    description:
+      "Send one approved draft task notification email. This is the generalized replacement for custom task-like email sends.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        communicationId: { type: "string", description: "Draft TaskCommunication ID to send" },
+      },
+      required: ["communicationId"],
     },
   },
   {
@@ -1261,7 +1586,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
   }));
 
   // -- Tool dispatch --
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(
+    CallToolRequestSchema,
+    async (request: { params: { arguments?: unknown; name: string } }) => {
     const { name, arguments: args } = request.params;
     const a = (args ?? {}) as Record<string, unknown>;
 
@@ -1378,7 +1705,97 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           });
         }
 
-        // ── evaluateTaskEconomics ──────────────────────────────
+        // Risk-adjusted optimal next action tools.
+        case "getMyOptimalNextAction": {
+          const { tasks } = await getTaskFunctions();
+          const { selectOptimalNextAction } = await import("@optimitron/agent");
+          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
+          const policy = getEarthExecutionPolicy();
+          const accessibleTasks = await tasks.listTasks({
+            limit: 5000,
+            userId: userId ?? null,
+            visibility: userId ? "accessible" : "public",
+            status: TaskStatus.ACTIVE,
+          });
+          const rankingTasks = accessibleTasks.map((task) =>
+            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
+          );
+          const decision = selectOptimalNextAction({
+            actor: buildOptimalActorCapabilities(a) as any,
+            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
+            tasks: rankingTasks as any,
+          });
+
+          return ok({
+            action: decision.action ? summarizeRankedAction(decision.action as any) : null,
+            alternatives: decision.alternatives.map((option) => summarizeRankedAction(option as any)),
+            assumptions: decision.assumptions,
+            rationale: decision.rationale,
+            sensitivity: decision.sensitivity,
+          });
+        }
+
+        case "rankMyActionOptions": {
+          const { tasks } = await getTaskFunctions();
+          const { rankActionOptions } = await import("@optimitron/agent");
+          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
+          const policy = getEarthExecutionPolicy();
+          const limit = Math.min(Number(a.limit) || 10, 50);
+          const accessibleTasks = await tasks.listTasks({
+            limit: 5000,
+            userId: userId ?? null,
+            visibility: userId ? "accessible" : "public",
+            status: TaskStatus.ACTIVE,
+          });
+          const rankingTasks = accessibleTasks.map((task) =>
+            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
+          );
+          const ranked = rankActionOptions({
+            actor: buildOptimalActorCapabilities(a) as any,
+            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
+            tasks: rankingTasks as any,
+          });
+
+          return ok(ranked.slice(0, limit).map((option) => summarizeRankedAction(option as any)));
+        }
+
+        case "explainTaskRanking": {
+          const { tasks } = await getTaskFunctions();
+          const { rankActionOptions } = await import("@optimitron/agent");
+          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
+          const policy = getEarthExecutionPolicy();
+          const accessibleTasks = await tasks.listTasks({
+            limit: 5000,
+            userId: userId ?? null,
+            visibility: userId ? "accessible" : "public",
+            status: TaskStatus.ACTIVE,
+          });
+          const rankingTasks = accessibleTasks.map((task) =>
+            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
+          );
+          const ranked = rankActionOptions({
+            actor: buildOptimalActorCapabilities(a) as any,
+            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
+            tasks: rankingTasks as any,
+          });
+          const targetOptions = ranked
+            .map((option, index) => ({ index, option }))
+            .filter(({ option }) => option.task?.id === a.taskId);
+          const bestForTask = targetOptions[0] ?? null;
+
+          if (!bestForTask) {
+            return err("Task not found in accessible active queue or has no feasible action options");
+          }
+
+          return ok({
+            bestForTask: summarizeRankedAction(bestForTask.option as any),
+            overallBest: ranked[0] ? summarizeRankedAction(ranked[0] as any) : null,
+            rank: bestForTask.index + 1,
+            taskId: a.taskId,
+            taskOptionCount: targetOptions.length,
+          });
+        }
+
         case "evaluateTaskEconomics": {
           const { tasks } = await getTaskFunctions();
           const { evaluateEarthTaskEconomics } = await import("@optimitron/agent");
@@ -1470,6 +1887,31 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             return created;
           });
           return ok({ taskId: task.id, title: task.title, status: "DRAFT" });
+        }
+
+        case "upsertOrganization": {
+          const { upsertTrustedOrganization } = await import("./organization.server");
+          const organization = await upsertTrustedOrganization({
+            contactEmail: (a.contactEmail as string) ?? null,
+            description: (a.description as string) ?? null,
+            logo: (a.logo as string) ?? null,
+            name: a.name as string,
+            sourceRef: (a.sourceRef as string) ?? null,
+            sourceUrl: (a.sourceUrl as string) ?? null,
+            type: enumValue(OrgType, a.type, OrgType.OTHER),
+            website: (a.website as string) ?? null,
+          });
+
+          return ok({
+            organization: {
+              contactEmail: organization.contactEmail,
+              id: organization.id,
+              name: organization.name,
+              slug: organization.slug,
+              type: organization.type,
+              website: organization.website,
+            },
+          });
         }
 
         // ── proposeTaskBundle ───────────────────────────────────
@@ -1841,11 +2283,17 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           const frameKey = TaskImpactFrameKey[frameKeyStr as keyof typeof TaskImpactFrameKey] ?? TaskImpactFrameKey.FIVE_YEAR;
           const calculationVersion = (a.calculationVersion as string) ?? "agent-estimate-v1";
           const frameSlug = `${frameKeyStr.toLowerCase()}-agent`;
+          const impactAssumptionsJson: Prisma.InputJsonObject = {
+            assumptions: asStringArray(a.assumptions),
+            estimateNotes: typeof a.estimateNotes === "string" ? a.estimateNotes : null,
+            expectedEconomicValueSemantics: "expectedEconomicValueUsd* values are already probability-weighted",
+            sourceUrls: asStringArray(a.sourceUrls),
+          };
 
           const result = await prisma.$transaction(async (tx) => {
             const estimateSet = await tx.taskImpactEstimateSet.create({
               data: {
-                assumptionsJson: {},
+                assumptionsJson: impactAssumptionsJson,
                 calculationVersion,
                 counterfactualKey: "status-quo",
                 estimateKind: "FORECAST",
@@ -1864,13 +2312,27 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
                 frameKey,
                 frameSlug,
                 evaluationHorizonYears: (frameInput.evaluationHorizonYears as number) ?? 5,
+                successProbabilityLow: (frameInput.successProbabilityLow as number) ?? null,
                 successProbabilityBase: (frameInput.successProbabilityBase as number) ?? null,
+                successProbabilityHigh: (frameInput.successProbabilityHigh as number) ?? null,
+                delayDalysLostPerDayLow: (frameInput.delayDalysLostPerDayLow as number) ?? null,
                 delayDalysLostPerDayBase: (frameInput.delayDalysLostPerDayBase as number) ?? null,
+                delayDalysLostPerDayHigh: (frameInput.delayDalysLostPerDayHigh as number) ?? null,
+                delayEconomicValueUsdLostPerDayLow: (frameInput.delayEconomicValueUsdLostPerDayLow as number) ?? null,
                 delayEconomicValueUsdLostPerDayBase: (frameInput.delayEconomicValueUsdLostPerDayBase as number) ?? null,
+                delayEconomicValueUsdLostPerDayHigh: (frameInput.delayEconomicValueUsdLostPerDayHigh as number) ?? null,
+                expectedDalysAvertedLow: (frameInput.expectedDalysAvertedLow as number) ?? null,
                 expectedDalysAvertedBase: (frameInput.expectedDalysAvertedBase as number) ?? null,
+                expectedDalysAvertedHigh: (frameInput.expectedDalysAvertedHigh as number) ?? null,
+                expectedEconomicValueUsdLow: (frameInput.expectedEconomicValueUsdLow as number) ?? null,
                 expectedEconomicValueUsdBase: (frameInput.expectedEconomicValueUsdBase as number) ?? null,
+                expectedEconomicValueUsdHigh: (frameInput.expectedEconomicValueUsdHigh as number) ?? null,
+                estimatedCashCostUsdLow: (frameInput.estimatedCashCostUsdLow as number) ?? null,
                 estimatedCashCostUsdBase: (frameInput.estimatedCashCostUsdBase as number) ?? null,
+                estimatedCashCostUsdHigh: (frameInput.estimatedCashCostUsdHigh as number) ?? null,
+                estimatedEffortHoursLow: (frameInput.estimatedEffortHoursLow as number) ?? null,
                 estimatedEffortHoursBase: (frameInput.estimatedEffortHoursBase as number) ?? null,
+                estimatedEffortHoursHigh: (frameInput.estimatedEffortHoursHigh as number) ?? null,
                 adoptionRampYears: 0,
                 annualDiscountRate: 0.03,
                 benefitDurationYears: (frameInput.evaluationHorizonYears as number) ?? 5,
@@ -2052,6 +2514,88 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             communicationId: result.communication.id,
             taskCommentId: result.comment.id,
           });
+        }
+
+        case "draftTaskNotification": {
+          const { tasks } = await getTaskFunctions();
+          const { draftTaskNotification } = await import("./tasks/task-notifications.server");
+          const result = await tasks.getTaskDetailData(a.taskId as string, userId ?? null);
+          if (!result) return err("Task not found");
+
+          const task = result.task as unknown as {
+            assigneeOrganization?: { id?: string | null; contactEmail?: string | null; name?: string | null } | null;
+            assigneePerson?: { id?: string | null; displayName?: string | null; email?: string | null } | null;
+            description?: string | null;
+            impactStatement?: string | null;
+            primaryEndpoint?: { email?: string | null; url?: string | null } | null;
+            title: string;
+          };
+          const recipientEmail =
+            (a.recipientEmail as string) ??
+            task.primaryEndpoint?.email ??
+            emailFromMailto(task.primaryEndpoint?.url) ??
+            task.assigneeOrganization?.contactEmail ??
+            task.assigneePerson?.email ??
+            null;
+          if (!recipientEmail) {
+            return err("recipientEmail is required because this task has no email endpoint.");
+          }
+
+          const recipientName =
+            (a.recipientName as string) ??
+            task.assigneePerson?.displayName ??
+            task.assigneeOrganization?.name ??
+            "there";
+          const subject = (a.subject as string) ?? `Please complete: ${task.title}`;
+          const message =
+            (a.message as string) ??
+            [
+              `Hi ${recipientName},`,
+              "",
+              `Please complete this task: ${task.title}`,
+              task.impactStatement ? `Why this matters: ${task.impactStatement}` : null,
+              task.description ? `Details: ${task.description}` : null,
+            ]
+              .filter(Boolean)
+              .join("\n");
+          const communication = await draftTaskNotification({
+            audience: enumValue(TaskCommunicationAudience, a.audience, TaskCommunicationAudience.ASSIGNEE),
+            channel: TaskCommunicationChannel.EMAIL,
+            endpointId: (a.endpointId as string) ?? null,
+            format: enumValue(TaskCommunicationFormat, a.format, TaskCommunicationFormat.DEFAULT),
+            nextSendAt: a.nextSendAt ? new Date(a.nextSendAt as string) : null,
+            purpose: enumValue(TaskCommunicationPurpose, a.purpose, TaskCommunicationPurpose.ASSIGNMENT),
+            recipientEmail,
+            recipientName,
+            recipientOrganizationId:
+              (a.recipientOrganizationId as string) ?? task.assigneeOrganization?.id ?? null,
+            recipientPersonId: (a.recipientPersonId as string) ?? task.assigneePerson?.id ?? null,
+            recipientUserId: (a.recipientUserId as string) ?? null,
+            senderUserId: userId ?? null,
+            subject,
+            taskId: a.taskId as string,
+            text: message,
+          });
+
+          return ok({
+            communicationId: communication.id,
+            preview: {
+              message,
+              recipientEmail,
+              recipientName,
+              subject,
+            },
+            status: communication.status,
+          });
+        }
+
+        case "sendTaskNotification": {
+          const { sendDraftTaskNotification } = await import("./tasks/task-notifications.server");
+          const result = await sendDraftTaskNotification({
+            communicationId: a.communicationId as string,
+            senderUserId: userId ?? null,
+          });
+          return ok(result);
         }
 
         // ── checkTaskCommunicationCooldown ────────────────────
@@ -2257,7 +2801,8 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
       const message = error instanceof Error ? error.message : String(error);
       return err(message);
     }
-  });
+    },
+  );
 
   return server;
 }

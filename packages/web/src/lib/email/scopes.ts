@@ -38,6 +38,11 @@ export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
     description: "First-week emails that help you find the core features.",
     transactional: false,
   },
+  task_notifications: {
+    label: "Task notifications",
+    description: "Assignments, reminders, and task updates.",
+    transactional: false,
+  },
   magic_link: {
     label: "Sign-in links",
     transactional: true,
@@ -48,13 +53,20 @@ export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
   },
 };
 
-export type EmailScope = "all" | "referral_sequence" | "onboarding" | "magic_link" | "account_security";
+export type EmailScope =
+  | "all"
+  | "referral_sequence"
+  | "onboarding"
+  | "task_notifications"
+  | "magic_link"
+  | "account_security";
 
 /** All known scopes — useful for the preferences UI and the "all" expansion. */
 export const ALL_EMAIL_SCOPES: readonly EmailScope[] = [
   "all",
   "referral_sequence",
   "onboarding",
+  "task_notifications",
   "magic_link",
   "account_security",
 ];

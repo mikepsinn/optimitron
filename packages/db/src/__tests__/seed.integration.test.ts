@@ -1,12 +1,11 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 import {
   PrismaClient,
   TaskCommunicationAudience,
   TaskCommunicationPurpose,
 } from "../generated/prisma/client.js";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
-import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
 
 const databaseUrl = process.env.DATABASE_URL
   ? assertSafeLocalTestDatabaseUrl(process.env.DATABASE_URL)
@@ -14,8 +13,16 @@ const databaseUrl = process.env.DATABASE_URL
 const describeIfDatabase = databaseUrl ? describe : describe.skip;
 
 describeIfDatabase("seedDatabase", () => {
+  let seedDatabase: () => Promise<void>;
+  let disconnectSeedClient: () => Promise<void>;
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
+
+  beforeAll(async () => {
+    const seed = await import("../../prisma/seed.ts");
+    seedDatabase = seed.seedDatabase;
+    disconnectSeedClient = seed.disconnectSeedClient;
+  });
 
   afterAll(async () => {
     await prisma.$disconnect();

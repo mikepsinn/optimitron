@@ -17,6 +17,14 @@ const mocks = vi.hoisted(() => ({
   taskCommunicationEndpointCreate: vi.fn(),
   taskCommunicationEndpointUpdate: vi.fn(),
   taskCommunicationEndpointUpdateMany: vi.fn(),
+  taskCommunicationCreate: vi.fn(),
+  taskCommunicationFindFirst: vi.fn(),
+  taskCommunicationFindMany: vi.fn(),
+  taskCommunicationFindUnique: vi.fn(),
+  taskCommunicationUpdate: vi.fn(),
+  taskCommentCreate: vi.fn(),
+  emailLogCreate: vi.fn(),
+  emailLogUpdate: vi.fn(),
   transaction: vi.fn(),
   sendExternalResendEmail: vi.fn(),
   sendTreatySenderReminderEmailForInvitation: vi.fn(),
@@ -43,6 +51,10 @@ vi.mock("@/lib/prisma", () => ({
     },
     referendum: { findFirst: mocks.referendumFindFirst },
     shareAttempt: { create: mocks.shareAttemptCreate },
+    emailLog: {
+      create: mocks.emailLogCreate,
+      update: mocks.emailLogUpdate,
+    },
     task: {
       create: mocks.taskCreate,
       findFirst: mocks.taskFindFirst,
@@ -53,6 +65,16 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.taskCommunicationEndpointCreate,
       update: mocks.taskCommunicationEndpointUpdate,
       updateMany: mocks.taskCommunicationEndpointUpdateMany,
+    },
+    taskCommunication: {
+      create: mocks.taskCommunicationCreate,
+      findFirst: mocks.taskCommunicationFindFirst,
+      findMany: mocks.taskCommunicationFindMany,
+      findUnique: mocks.taskCommunicationFindUnique,
+      update: mocks.taskCommunicationUpdate,
+    },
+    taskComment: {
+      create: mocks.taskCommentCreate,
     },
     user: {
       findUnique: mocks.userFindUnique,
@@ -81,9 +103,14 @@ import {
   markReferralInvitationCopied,
 } from "@/lib/referral-invitations.server";
 
+function nowDate() {
+  return new Date("2026-04-25T12:00:00.000Z");
+}
+
 describe("referral invitation server helpers", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    let latestCommunication: Record<string, unknown> | null = null;
     mocks.nanoid.mockReturnValue("token_123");
     mocks.userFindUnique.mockResolvedValue({
       email: "sender@example.com",
@@ -108,8 +135,65 @@ describe("referral invitation server helpers", () => {
     mocks.taskCommunicationEndpointCreate.mockResolvedValue({ id: "endpoint_1" });
     mocks.taskCommunicationEndpointUpdate.mockResolvedValue({ id: "endpoint_1" });
     mocks.taskCommunicationEndpointUpdateMany.mockResolvedValue({ count: 0 });
+    mocks.taskCommunicationFindFirst.mockResolvedValue(null);
+    mocks.taskCommunicationFindMany.mockResolvedValue([]);
+    mocks.taskCommunicationCreate.mockImplementation(async ({ data }) => {
+      latestCommunication = {
+        id: "communication_1",
+        createdAt: nowDate(),
+        deletedAt: null,
+        task: { id: data.taskId, title: "Invite Jake to vote on the 1% Treaty" },
+        ...data,
+      };
+      return latestCommunication;
+    });
+    mocks.taskCommunicationUpdate.mockImplementation(async ({ data, where }) => {
+      latestCommunication = {
+        ...(latestCommunication ?? {
+          channel: "EMAIL",
+          createdAt: nowDate(),
+          deletedAt: null,
+          recipientEmail: "jake@example.com",
+          status: "DRAFT",
+          taskId: "task_1",
+        }),
+        id: where.id,
+        ...data,
+      };
+      return latestCommunication;
+    });
+    mocks.taskCommunicationFindUnique.mockImplementation(async () =>
+    latestCommunication ?? {
+      id: 'communication_1',
+      audience: 'RECIPIENT',
+      channel: 'EMAIL',
+      deletedAt: null,
+      idempotencyKey: null,
+      metadataJson: {
+        html: '<p>Hello</p>',
+        subject: '[OVERDUE] Task assigned to you: End War and Disease',
+        text: '[BUTTON: COMPLETE TASK -> https://optimitron.test/r/ada123?invite=invite_token&sa=token_123]',
+        unsubscribeUrl: 'https://optimitron.test/api/referral-invitations/unsubscribe',
+      },
+      purpose: 'INVITATION',
+      recipientEmail: 'jake@example.com',
+      recipientUserId: null,
+      status: 'DRAFT',
+      step: 1,
+      task: { id: 'task_1', title: 'Invite Jake to vote on the 1% Treaty' },
+      taskId: 'task_1',
+      templateId: null,
+    },
+  );
+    mocks.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
+    mocks.emailLogCreate.mockResolvedValue({ id: "email_log_1" });
+    mocks.emailLogUpdate.mockResolvedValue({ id: "email_log_1" });
     mocks.transaction.mockImplementation(async (callback) =>
       callback({
+        emailLog: {
+          create: mocks.emailLogCreate,
+          update: mocks.emailLogUpdate,
+        },
         person: { upsert: mocks.personUpsert },
         referralInvitation: {
           create: mocks.referralCreate,
@@ -117,6 +201,14 @@ describe("referral invitation server helpers", () => {
           update: mocks.referralUpdate,
         },
         shareAttempt: { create: mocks.shareAttemptCreate },
+        taskComment: { create: mocks.taskCommentCreate },
+        taskCommunication: {
+          create: mocks.taskCommunicationCreate,
+          findFirst: mocks.taskCommunicationFindFirst,
+          findMany: mocks.taskCommunicationFindMany,
+          findUnique: mocks.taskCommunicationFindUnique,
+          update: mocks.taskCommunicationUpdate,
+        },
         task: {
           create: mocks.taskCreate,
           updateMany: mocks.taskUpdateMany,
@@ -455,6 +547,7 @@ describe("referral invitation server helpers", () => {
 
     expect(result).toEqual({
       status: "sent",
+      communicationId: "communication_1",
       invitation: {
         id: "invite_1",
         messageText: "edited message",
@@ -516,6 +609,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "SENT",
+      taskId: "task_1",
     });
     mocks.referralUpdate.mockResolvedValue({
       id: "invite_1",
@@ -565,6 +659,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "SENT",
+      taskId: "task_1",
     });
 
     const result = await sendReferralInvitationEmail({
@@ -596,6 +691,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "DECLINED",
+      taskId: "task_1",
     });
 
     const result = await sendReferralInvitationEmail({
@@ -627,6 +723,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "CANCELLED",
+      taskId: "task_1",
     });
 
     const result = await sendReferralInvitationEmail({
@@ -658,6 +755,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "CONVERTED",
+      taskId: "task_1",
     });
 
     const result = await sendReferralInvitationEmail({
@@ -689,6 +787,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "SENT",
+      taskId: "task_1",
     });
 
     const result = await sendReferralInvitationEmail({
@@ -722,6 +821,7 @@ describe("referral invitation server helpers", () => {
         username: "ada",
       },
       status: "SENT",
+      taskId: "task_1",
     });
     mocks.referralUpdate.mockResolvedValue({
       id: "invite_1",
@@ -873,3 +973,4 @@ describe("referral invitation server helpers", () => {
     });
   });
 });
+

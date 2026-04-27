@@ -612,7 +612,9 @@ function buildResearchPrompt(
   wishoniaContext?: WishoniaLegislativePromptContext,
 ): string {
   const countryList = evidence.topEfficient
-    .map(c => `${c.name}: $${c.spendingPerCapita}/cap, ${evidence.outcomeName} ${c.outcome}`)
+    .map((c: { name: string; spendingPerCapita: number; outcome: number }) =>
+      `${c.name}: $${c.spendingPerCapita}/cap, ${evidence.outcomeName} ${c.outcome}`
+    )
     .join('\n    ');
 
   const exemplarList = exemplars.length > 0

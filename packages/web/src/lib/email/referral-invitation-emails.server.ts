@@ -2,7 +2,10 @@ import { nanoid } from "nanoid";
 import {
   ReferralInvitationStatus,
   ShareSource,
-} from "@optimitron/db";
+  TaskCommunicationAudience,
+  TaskCommunicationFormat,
+  TaskCommunicationPurpose,
+} from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 import { getReferralEmailBatchSize } from "@/lib/email/batch";
 import { getConfiguredFromAddress, sanitizeDisplayName } from "@/lib/email/from-address";
@@ -13,10 +16,10 @@ import {
   type ReferralInvitationRecipientEmailStep,
 } from "@/lib/email/referral-invitation-email-sequence";
 import { prisma } from "@/lib/prisma";
-import { sendExternalResendEmail } from "@/lib/email/resend";
 import { buildReferralInvitationUnsubscribeUrl } from "@/lib/referral-invitations.server";
 import { recordShareAttempt } from "@/lib/share-attempts.server";
 import { embedShareAttemptId } from "@/lib/share-channels";
+import { sendTaskNotification } from "@/lib/tasks/task-notifications.server";
 import { sendTreatySenderReminderEmailForInvitation } from "@/lib/email/treaty-sender-emails.server";
 import { MS_PER_DAY } from "@/lib/time";
 import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
@@ -62,6 +65,12 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
+function toTaskCommunicationFormat(messageFormat: string) {
+  return messageFormat === "TASK_NOTIFICATION"
+    ? TaskCommunicationFormat.TASK_NOTIFICATION
+    : TaskCommunicationFormat.SINCERE;
+}
+
 export async function sendReferralInvitationEmail(input: {
   invitationId: string;
   manualInitialOnly?: boolean;
@@ -102,6 +111,9 @@ export async function sendReferralInvitationEmail(input: {
   }
   if (!invitation.recipientEmail) {
     return { status: "missing_recipient_email" as const };
+  }
+  if (!invitation.taskId) {
+    return { status: "missing_task" as const };
   }
   if (invitation.convertedAt) {
     return { status: "converted" as const };
@@ -154,12 +166,27 @@ export async function sendReferralInvitationEmail(input: {
   });
 
   try {
-    const result = await sendExternalResendEmail({
+    const result = await sendTaskNotification({
+      audience: TaskCommunicationAudience.RECIPIENT,
       from: getSenderInviteEmailFromAddress(senderName),
+      format: toTaskCommunicationFormat(invitation.messageFormat),
       html: email.html,
+      metadataJson: {
+        inviteUrl,
+        messageFormat: invitation.messageFormat,
+        provider: "resend",
+        recipientEmailStep: step,
+      } satisfies Prisma.InputJsonObject,
+      now,
+      purpose: TaskCommunicationPurpose.INVITATION,
+      recipientEmail: invitation.recipientEmail,
+      recipientName: invitation.recipientName,
+      referralInvitationId: invitation.id,
+      senderName,
+      step,
       subject: email.subject,
+      taskId: invitation.taskId,
       text: email.text,
-      to: invitation.recipientEmail,
       unsubscribeUrl,
     });
 
@@ -181,9 +208,10 @@ export async function sendReferralInvitationEmail(input: {
         renderedMessage: email.text,
         wasEdited: false,
         context: {
+          communicationId: result.communication.id,
           invitationId: invitation.id,
           messageFormat: invitation.messageFormat,
-          providerMessageId: result.id,
+          providerMessageId: result.providerMessageId,
           purpose: "referral_invitation_email",
           recipientEmailStep: step,
           recipientName: invitation.recipientName,
@@ -191,13 +219,13 @@ export async function sendReferralInvitationEmail(input: {
         } satisfies Prisma.InputJsonObject,
       });
 
-      return tx.referralInvitation.update({
+      const updatedInvitation = await tx.referralInvitation.update({
         where: { id: invitation.id },
         data: {
           lastRecipientEmailAt: now,
           nextRecipientEmailAt,
           recipientEmailErrorMessage: null,
-          recipientEmailProviderMessageId: result.id,
+          recipientEmailProviderMessageId: result.providerMessageId,
           recipientEmailStep: step,
           shareAttemptId,
           ...(input.messageText?.trim() ? { messageText: input.messageText.trim() } : {}),
@@ -205,9 +233,23 @@ export async function sendReferralInvitationEmail(input: {
           status: ReferralInvitationStatus.SENT,
         },
       });
+
+      await tx.taskCommunication.update({
+        where: { id: result.communication.id },
+        data: {
+          shareAttemptId,
+        },
+      });
+
+      return updatedInvitation;
     });
 
-    return { status: "sent" as const, invitation: updated, providerMessageId: result.id };
+    return {
+      status: "sent" as const,
+      communicationId: result.communication.id,
+      invitation: updated,
+      providerMessageId: result.providerMessageId,
+    };
   } catch (error) {
     await prisma.referralInvitation.update({
       where: { id: invitation.id },

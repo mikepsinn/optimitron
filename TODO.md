@@ -1,6 +1,6 @@
-# Optimitron Treaty Migration TODO
+# Optimitron TODO
 
-This is the working checklist for finishing the treaty migration and post-vote referral flow in Optimitron.
+This is the working checklist for Optimitron's task, expected-value, treaty, MCP, and funding work. The treaty migration is still the largest active product slice, but the direction is now a generic Earth optimization task system: every person, organization, agent, and AI worker gets ranked actions, task communications, and measurable outcomes through the same primitives.
 
 ## Working Context
 
@@ -35,15 +35,21 @@ This is the working checklist for finishing the treaty migration and post-vote r
 - [x] Add a focused `/vote` route for the treaty question flow and point `/vote/[code]` referral redirects at it instead of the homepage anchor.
 - [x] Add a repo testing rule to keep E2E focused on behavior, screenshots, and route/data contracts instead of brittle exact-copy assertions.
 - [x] Remove brittle long-form copy assertions from content-heavy E2E tests while preserving behavior/data-contract coverage.
-- [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
+- [x] Current active workspace for this slice is `C:\code\optimitron`.
+- [ ] Do Optimitron implementation from `C:\code\optimitron`, not from the DIH reference repo.
 - [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
-- [ ] Before each implementation slice, confirm the active shell `cwd` is `E:\code\optimitron` and the target package is usually `packages/web` or `packages/db`.
+- [ ] Before each implementation slice, confirm the active shell `cwd` is `C:\code\optimitron` and the target package is usually `packages/web`, `packages/agent`, or `packages/db`.
 - [ ] Keep the source repo and target repo names explicit in commits, notes, and final handoffs so DIH build failures are not confused with Optimitron build failures.
 - [ ] If the IDE/session is currently open in `E:\code\dih-neobrutalist`, reopen `E:\code\optimitron` before editing implementation files. Use DIH only for read-only reference unless a task explicitly targets DIH.
 
 ## Architecture Guardrails
 
+- [x] **Decision 2026-04-27:** Do not add special outreach models for nonprofit/company/partner tasks. Use the existing `Task` assignment model plus `Organization`, `Person`, `TaskCommunicationEndpoint`, `TaskCommunication`, `TaskComment`, and `EmailLog`.
+- [x] **Decision 2026-04-27:** Do not keep a parallel local enum mirror in web. Regenerate/build `@optimitron/db` when schema enums or delegates are stale, then import generated enums from `@optimitron/db/enums`.
+- [x] **Decision 2026-04-27:** Rank concrete action options, not abstract tasks. The production engine should choose between execute, agent execution, delegate, outsource, fund, de-risk, decompose, queue repair, and kill.
+- [ ] Do not add Stripe Connect, marketplace payments, Wish tokens, or new credit-ledger schema until generic private tasks + ranking + notifications are boring and stable.
+- [ ] Do not introduce a second task model. Personal/private work, org-assigned work, treaty invite work, and agent-proposed work all remain `Task` rows with scoped ownership/visibility and optional assignee relations.
 - [ ] Keep the long-term ownership split explicit:
   - `Task` = the thing assigned to a person, organization, or user.
   - `ReferralInvitation` = named invite lifecycle, invite token, recipient unsubscribe, copied/sent/converted state, reminder schedule, and converted vote linkage.
@@ -119,19 +125,35 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
   - Email sends also link to `EmailLog`; external URL/form actions use `TaskCommunication(status=SENT)` plus metadata such as `openedAt`.
   - `Activity` stays a lightweight audit feed, not the canonical message store. Doc: `docs/TASK_COMMUNICATION_MODEL.md` (covers TaskCommentKind semantics, system author identity = required `wishonia` user, endpoint priority/selection rules, inbound-email guardrails as deferred multi-week project, Activity-vs-TaskCommunication ownership).
   - Verification: `prisma migrate deploy` clean; `tsc --noEmit` clean across web/agent/db; tests green (web 790 / agent 96 / db 107).
-- [ ] Add optimization-rate ranking to MCP task discovery.
-  - `listTasks` should accept `sortBy: "accountability" | "optimizationRate" | "delayLoss" | "createdAt"`; keep `accountability` as default until callers deliberately switch.
-  - Consider a `getOptimizationRate` or `rankTasksByOptimizationRate` helper only if the result needs more explanation than `listTasks` can return.
-  - Reuse the existing `getNextAction` / task-economics path so task discovery and queue selection do not diverge.
-  - First pass should compute this in a shared helper and return it from MCP responses; do **not** add `Task.optimizationRate` until profiling proves a persisted/materialized value is needed. A persisted column is a Prisma schema change and requires explicit human approval.
-  - Denominate the ranking metric in USD/hour. Direct term should start from the selected frame's `expectedEconomicValueUsdBase / effortHours`, because existing treaty frames already store risk-adjusted expected value.
-  - Do not multiply `expectedEconomicValueUsdBase` by `successProbabilityBase` again unless the input value is explicitly renamed/documented as gross conditional value; otherwise the formula double-discounts treaty tasks.
-  - Downstream cascade boost should use `TaskEdge` weights when available: `SUM(downstream.expectedEconomicValueUsdBase * COALESCE(edge.probabilityDeltaBase, defaultCascadeWeight)) / effortHours`. Use `0.2` only as a documented fallback, not a magic constant hidden inside sorting.
-  - Include a formula breakdown in leaderboard output: direct USD/hour, cascade USD/hour, delay-loss signal, and fields used.
-- [ ] Expose task full-text search through MCP.
-  - `packages/web/src/lib/tasks.server.ts` already has `searchTasks()`; add either a `searchTasks` MCP tool or a `query` parameter on `listTasks`.
+- [x] Replace the old "optimizationRate sort" idea with a risk-adjusted optimal next action engine.
+  - Pure engine lives in `packages/agent/src/optimal-next-action.ts`.
+  - MCP tools added: `getMyOptimalNextAction`, `rankMyActionOptions`, and `explainTaskRanking`.
+  - The engine ranks action options, not just task rows, and returns assumptions, sensitivity, next-best alternatives, required approvals, and a recommended action block.
+  - `expectedEconomicValueUsdBase` is treated as already probability-weighted to avoid double-discounting imported Notion/treaty estimates.
+  - Downstream value uses `TaskEdge` data where present; fallback dependency boosts are explicit and flagged lower-confidence.
+- [x] Add Notion EV regression coverage without importing private row dumps.
+  - `notionExpectedValuePerHourUsd()` covers the confirmed Notion `P(success) * Value / Hours` baseline.
+  - `notionOptimizationRateUsdPerHour()` covers the confirmed `EV/hr + Downstream Value * 0.2 * P(success) / Hours` baseline.
+  - Tests use anonymized/generalized Notion-style tasks and verify that readiness constraints still beat a blocked high-rate task.
+  - Tests also cover generalized treaty onboarding actions for a new user and a low-value Notion-style merchandise task (`0.5 * $300 / 8hr = $18.75/hr`) so low-EV work stays low.
+- [x] Improve MCP estimate guidance for subjective task values.
+  - `docs/MCP_SERVER.md` now documents USD-equivalent welfare, probability-weighted expected value semantics, low/base/high ranges, source URLs, assumptions, anti-inflation rules, and a concrete `setTaskImpact` example.
+  - `setTaskImpact` now exposes/stores low/base/high probability, value, effort, cash cost, DALY, and delay-cost fields instead of base-only estimates.
+  - `setTaskImpact` stores `assumptions`, `sourceUrls`, and `estimateNotes` in `TaskImpactEstimateSet.assumptionsJson` so future explanations can cite why a subjective number exists.
+- [ ] Add first-class support for the remaining Notion ranking signals that are currently only partially represented.
+  - `Context Fit` should become an actor/current-session input so the same task ranks differently for deep-work, quick-win, admin, exhausted, or mobile contexts.
+  - `Exposure risk` should become a hard or near-hard health/safety constraint with citations required before recommending in-person or COVID-risky work.
+  - `Sensitivity` / `Trust Level` should constrain which actors, agents, vendors, and organizations can see or execute private tasks.
+  - Revenue-path gates should become structured marginal-EV inputs instead of only text/tag/runway heuristics.
+  - Execution Options should import into `contextJson.executionV1` or a typed adapter so route choice can use Mike hours, external hours, cash cost, route probability, quality risk, and acceptance criteria.
+  - Deadline urgency should be modeled as cost-of-delay / expiry risk rather than a blunt multiplier, while preserving a Notion-parity test for the old 7-day/14-day behavior.
+- [ ] Split MCP implementation before it grows further.
+  - Move optimal-action tool definitions/handlers out of `packages/web/src/lib/mcp-server.ts` into a small module.
+  - Move organization/task-notification tool definitions/handlers out of `mcp-server.ts` into a small module.
+  - Keep `mcp-server.ts` as the registry/composition layer, not the home for every tool's business logic.
+- [ ] Add a compact `searchTasks` MCP tool or `query` parameter on `listTasks`.
+  - `packages/web/src/lib/tasks.server.ts` already has `searchTasks()`; reuse it before adding full-text indexes.
   - Return compact task summaries plus match score/snippet where available.
-  - Reuse the existing contains-based `searchTasks()` implementation first; add Postgres `tsvector`/ranking later only if search quality or performance needs it.
 - [ ] Add parameter lookup MCP tools.
   - Add `listParameters` / `getParameter` backed by `@optimitron/data/parameters` and `parameters-calculations-citations.ts`.
   - Return value, formatted display, unit, confidence/conservative flags, formula, source URL/ref, and manual/calculations URL when present.

@@ -714,6 +714,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
   activeClaimCount: number;
   activeChildTaskCount: number;
   blockerStatuses: TaskStatus[];
+  directImpactFrame: TaskImpactSelection["selectedFrame"];
   impact: {
     availableFrames: TaskImpactSelection["availableFrames"];
     confidenceSummary: unknown;
@@ -817,6 +818,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     blockerStatuses,
     ...(decoratedChildTasks ? { childTasks: decoratedChildTasks } : {}),
     contextJson: normalizeTaskContextJson(task.contextJson),
+    directImpactFrame: directImpactSelection.selectedFrame,
     primaryEndpoint,
     impact: {
       availableFrames: directImpactSelection.availableFrames,
@@ -838,6 +840,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     activeClaimCount: number;
     activeChildTaskCount: number;
     blockerStatuses: TaskStatus[];
+    directImpactFrame: TaskImpactSelection["selectedFrame"];
     impact: {
       availableFrames: TaskImpactSelection["availableFrames"];
       confidenceSummary: unknown;

@@ -1,9 +1,9 @@
+import type { Prisma, PrismaClient } from "@optimitron/db";
 import {
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
-  type Prisma,
-  type PrismaClient,
-} from "@optimitron/db";
+  type TaskCommunicationEndpointKind as TaskCommunicationEndpointKindValue,
+} from "@optimitron/db/enums";
 
 type EndpointDelegate = Pick<
   PrismaClient["taskCommunicationEndpoint"],
@@ -25,7 +25,7 @@ export interface PrimaryTaskCommunicationEndpointInput {
 export interface NormalizedTaskCommunicationEndpoint {
   email: string | null;
   instructions: string | null;
-  kind: TaskCommunicationEndpointKind;
+  kind: TaskCommunicationEndpointKindValue;
   label: string | null;
   sourceUrl: string | null;
   url: string | null;

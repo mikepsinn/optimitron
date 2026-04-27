@@ -14,6 +14,7 @@ export * from './optimize-earth.js';
 export * from './treaty-operator.js';
 export * from './earth-operator.js';
 export * from './earth-action.js';
+export * from './optimal-next-action.js';
 export * from './earth-prioritization.js';
 export * from './task-governance.js';
 export * from './task-runtime.js';

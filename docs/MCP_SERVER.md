@@ -20,8 +20,49 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - "I can write TypeScript for two hours. What should I do next?"
 - "Find every task and manual passage about Wefunder, then propose the missing tasks."
 - "Before contacting this official, check whether communication is allowed and record what URL was opened."
-- "Rank tasks by USD/hour once optimization-rate sorting is implemented."
+- "Rank my feasible action options and explain why the selected one beats the next-best alternatives."
+- "Create a private task for a user, add a probability-weighted value estimate, and ask for the next best action."
 - "Look up the sourced parameter value behind this expected-value calculation once parameter tools are implemented."
+
+## Estimate Standards For Agents
+
+Agents should use `setTaskImpact` when they know enough to estimate value. If they do not, they should create or rank a `DECOMPOSE`, `DE_RISK`, or `QUEUE_REPAIR` action rather than inventing confidence.
+
+- Use USD-equivalent welfare as the canonical unit. Health effects can be converted using sourced QALY/DALY assumptions; income and runway effects should already be in dollars.
+- `expectedEconomicValueUsdBase` is already probability-weighted expected value. If an agent starts from a conditional payoff, it should store `P(success) * valueIfSuccessful`, not the gross payoff.
+- Always include `estimatedEffortHoursBase`; add low/high bounds when the task is subjective or uncertain.
+- Use low/base/high values for subjective estimates. A wide range is better than false precision.
+- Include `successProbabilityBase` and, when possible, low/high probability bounds. Decompose probabilities into gates for revenue, outreach, or conversion tasks.
+- Include `sourceUrls` and `assumptions` for high-value or subjective claims. Any estimate over `$10K/hr` should include a sanity-check assumption or citation.
+- Use `delayEconomicValueUsdLostPerDayBase` only when there is a real deadline, expiry risk, or cost of delay. Do not use deadline multipliers as a substitute for evidence.
+- Keep `Wish Points`, tokens, or other incentive signals separate from welfare value. They can route attention, but they are not the objective unit.
+- For imported Notion-style rows, convert `Value`, `P(success)`, and `Hours` as: `expectedEconomicValueUsdBase = P(success) * Value`, `estimatedEffortHoursBase = Hours`, and `successProbabilityBase = P(success)`.
+
+Example impact frame for a subjective but useful outreach task:
+
+```json
+{
+  "taskId": "task_123",
+  "frameKey": "ONE_YEAR",
+  "frame": {
+    "successProbabilityLow": 0.05,
+    "successProbabilityBase": 0.2,
+    "successProbabilityHigh": 0.4,
+    "expectedEconomicValueUsdLow": 5000,
+    "expectedEconomicValueUsdBase": 25000,
+    "expectedEconomicValueUsdHigh": 80000,
+    "estimatedEffortHoursLow": 0.5,
+    "estimatedEffortHoursBase": 1,
+    "estimatedEffortHoursHigh": 2
+  },
+  "sourceUrls": ["https://example.org/source"],
+  "assumptions": [
+    "Expected value is already probability-weighted.",
+    "Conversion probability is based on a small audience and should be revisited after first responses."
+  ],
+  "calculationVersion": "agent-ev-v1"
+}
+```
 
 ## Naming Boundaries
 

@@ -4,7 +4,7 @@ import {
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
   ShareSource,
-} from "@optimitron/db";
+} from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
