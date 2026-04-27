@@ -10,6 +10,11 @@ interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+function firstQueryValue(value: string | string[] | undefined) {
+  if (typeof value === "string") return value;
+  return Array.isArray(value) ? value[0] ?? null : null;
+}
+
 /**
  * Compatibility referral landing route: /r/jane or /r/REF123
  *
@@ -17,8 +22,8 @@ interface PageProps {
  * can trace where shares originated (e.g. official social accounts). Also
  * captures `?sa=<shareAttemptId>` so we can tie this click (and any signup
  * that follows) back to the specific ShareAttempt row that generated this
- * outbound message. Then redirects to the homepage with ?ref= for the vote
- * flow. Directed invitations also preserve ?invite=<token> for conversion.
+ * outbound message. Then redirects to the focused /vote flow. Directed
+ * invitations also preserve ?invite=<token> for conversion.
  */
 export default async function ReferralRedirectPage({ params, searchParams }: PageProps) {
   const { code } = await params;
@@ -26,12 +31,20 @@ export default async function ReferralRedirectPage({ params, searchParams }: Pag
   const headerStore = await headers();
   const refererUrl = headerStore.get("referer") ?? null;
   const userAgent = headerStore.get("user-agent") ?? null;
-  const rawSa = query.sa;
-  const shareAttemptId = typeof rawSa === "string" ? rawSa : Array.isArray(rawSa) ? rawSa[0] ?? null : null;
-  const rawInvite = query.invite;
-  const inviteToken = typeof rawInvite === "string" ? rawInvite : Array.isArray(rawInvite) ? rawInvite[0] ?? null : null;
+  const shareAttemptId = firstQueryValue(query.sa);
+  const inviteToken = firstQueryValue(query.invite);
+  const treatyFlow = firstQueryValue(query.treatyFlow);
+  const flowVariant = firstQueryValue(query.flowVariant);
 
   await logReferralRedirectClick({ code, refererUrl, shareAttemptId, userAgent });
 
-  redirect(buildReferralRedirectUrl({ code, inviteToken, shareAttemptId }));
+  redirect(
+    buildReferralRedirectUrl({
+      code,
+      flowVariant,
+      inviteToken,
+      shareAttemptId,
+      treatyFlow,
+    }),
+  );
 }

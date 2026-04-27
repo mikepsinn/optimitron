@@ -19,6 +19,12 @@ import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { TreatyMechanismExplainer } from "@/components/shared/TreatyMechanismExplainer";
+import { ChaplinReference } from "@/components/donate/ChaplinReference";
+import { DeathTicker } from "@/components/donate/DeathTicker";
+import { DonationImpactCalculator } from "@/components/donate/DonationImpactCalculator";
+import { IdentifiableVictimCard } from "@/components/donate/IdentifiableVictimCard";
+import { MonthlyLifetimeImpact } from "@/components/donate/MonthlyLifetimeImpact";
+import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Dialog } from "@/components/retroui/Dialog";
@@ -33,6 +39,10 @@ import {
 // donors discover it after the fact.
 const STRIPE_MAX_CUSTOM_AMOUNT_USD = 999_999;
 const MIKE_EMAIL = "m@warondisease.org";
+const MAJOR_GIFT_THRESHOLD_USD = 5_000;
+// 24% federal bracket — rough median for households with disposable income
+// large enough to itemize. Itemizers only — flagged in the copy.
+const FEDERAL_TAX_BRACKET_RATE = 0.24;
 const donationImpact = getTreatyDonationImpactPerDollar();
 const conditionalSufferingYearsPerDollarText = formatDonationImpactNumber(
   donationImpact.conditionalSufferingYearsPreventedPerDollar,
@@ -145,12 +155,18 @@ export default function DonatePage() {
           </BrutalCard>
         ) : null}
 
+        <DeathTicker />
+
         <BrutalCard bgColor="cyan" shadowSize={8} className="mb-6">
           <div className="space-y-5">
             <p className="font-black uppercase text-xl">The math</p>
             <TreatyMechanismExplainer />
           </div>
         </BrutalCard>
+
+        <DonationImpactCalculator
+          onSetAmount={(amount) => setCustomAmount(String(amount))}
+        />
 
         <BrutalCard bgColor="yellow" shadowSize={8} className="mb-6">
           <div className="space-y-3 font-bold">
@@ -220,6 +236,8 @@ export default function DonatePage() {
           </div>
         </BrutalCard>
 
+        <IdentifiableVictimCard />
+
         <BrutalCard bgColor="background" shadowSize={8}>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -269,7 +287,7 @@ export default function DonatePage() {
                   onChange={(e) => setCustomAmount(e.target.value)}
                 />
                 <p className="text-xs font-bold text-muted-foreground">
-                  Stripe declines transactions above $999,999. The Commission has noted this.
+                  Stripe declines transactions above $999,999.
                 </p>
               </div>
               <div className="mt-3">
@@ -284,6 +302,11 @@ export default function DonatePage() {
                   trillion (match the global murder budget)
                 </Button>
               </div>
+              {frequency === "monthly" && effectiveAmount >= 1 ? (
+                <div className="mt-3">
+                  <MonthlyLifetimeImpact monthlyAmountUsd={effectiveAmount} />
+                </div>
+              ) : null}
             </div>
 
             <div className="grid gap-3">
@@ -315,6 +338,31 @@ export default function DonatePage() {
                 : `Donate $${effectiveAmount}${frequency === "monthly" ? "/mo" : ""}`}
             </Button>
 
+            <p className="text-xs font-bold text-muted-foreground">
+              ≈ $
+              {Math.round(
+                effectiveAmount * (1 - FEDERAL_TAX_BRACKET_RATE),
+              ).toLocaleString()}{" "}
+              after federal deduction (
+              {Math.round(FEDERAL_TAX_BRACKET_RATE * 100)}% bracket, if you itemize).
+            </p>
+
+            {effectiveAmount >= MAJOR_GIFT_THRESHOLD_USD ? (
+              <p className="text-xs font-bold">
+                Donating ${MAJOR_GIFT_THRESHOLD_USD.toLocaleString()}+? Stripe&apos;s fees
+                eat ~3%. Email{" "}
+                <a
+                  href={`mailto:${MIKE_EMAIL}?subject=${encodeURIComponent(
+                    "Wire instructions for major gift",
+                  )}`}
+                  className="underline"
+                >
+                  {MIKE_EMAIL}
+                </a>{" "}
+                for wire instructions and skip the haircut.
+              </p>
+            ) : null}
+
             <p className="text-sm font-bold text-muted-foreground">
               Donations are routed through the Institute for Accelerated Medicine, a U.S.
               501(c)(3), which administers referendum and platform operations: hosting,
@@ -323,6 +371,8 @@ export default function DonatePage() {
             </p>
           </form>
         </BrutalCard>
+
+        <WaysToGiveCard />
 
         <BrutalCard bgColor="pink" shadowSize={8} className="mt-6">
           <p className="font-black text-xl leading-tight">
@@ -334,6 +384,8 @@ export default function DonatePage() {
             change that decided it wasn&apos;t their problem.
           </p>
         </BrutalCard>
+
+        <ChaplinReference />
 
         <Dialog open={militaryDialogOpen} onOpenChange={setMilitaryDialogOpen}>
           <Dialog.Content title="Stripe limit">

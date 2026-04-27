@@ -3,8 +3,8 @@
  *
  * Launch-blocker check. Verifies the URL → localStorage → vote-API plumbing
  * for `?invite=<token>` survives:
- *   1. The server-side redirect from `/vote/<code>` to `/?ref=&invite=#vote`.
- *   2. The landing-page mount effect that captures the token to localStorage.
+ *   1. The server-side redirect from `/vote/<code>` to `/vote?ref=&invite=`.
+ *   2. The vote-route mount effect that captures the token to localStorage.
  *   3. The auth roundtrip (localStorage is preserved across same-origin reloads).
  *   4. The vote POST body actually carrying `inviteToken` to `/api/referendums/<slug>/vote`.
  *   5. A real sender-created invitation converting when a different recipient
@@ -26,6 +26,7 @@ const FAKE_INVITE_TOKEN = "pwtest_invite_token_abc123_attribution";
 const REF_CODE = "DEMO";
 const STORAGE_KEY = "signup_invite_token";
 const RECIPIENT_PASSWORD = DEMO_PASSWORD;
+const VOTE_FIRST_QUERY = "treatyFlow=v1";
 
 interface InvitationApiRecord {
   convertedAt: string | null;
@@ -137,7 +138,9 @@ async function expectDashboardInvitationStatus(
 
 test.describe("invite-token attribution path", () => {
   test("/vote/<code>?invite=<token> redirect preserves both ref and invite", async ({ page }) => {
-    const response = await page.goto(`/vote/${REF_CODE}?invite=${FAKE_INVITE_TOKEN}`);
+    const response = await page.goto(
+      `/vote/${REF_CODE}?invite=${FAKE_INVITE_TOKEN}&${VOTE_FIRST_QUERY}`,
+    );
     if ((response?.status() ?? 0) >= 500) {
       test.skip(true, "Needs database");
       return;
@@ -145,14 +148,16 @@ test.describe("invite-token attribution path", () => {
     await page.waitForLoadState("domcontentloaded");
 
     const url = new URL(page.url());
-    expect(url.pathname).toBe("/");
+    expect(url.pathname).toBe("/vote");
     expect(url.searchParams.get("ref")).toBe(REF_CODE);
     expect(url.searchParams.get("invite")).toBe(FAKE_INVITE_TOKEN);
-    expect(page.url()).toContain("#vote");
+    expect(url.searchParams.get("treatyFlow")).toBe("v1");
+    const voteBox = await page.locator("#vote").boundingBox();
+    expect(voteBox?.y ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
   });
 
-  test("invite token from URL is captured in localStorage on landing-page mount", async ({ page }) => {
-    const response = await page.goto(`/?invite=${FAKE_INVITE_TOKEN}#vote`);
+  test("invite token from URL is captured in localStorage on vote-route mount", async ({ page }) => {
+    const response = await page.goto(`/vote?invite=${FAKE_INVITE_TOKEN}&${VOTE_FIRST_QUERY}`);
     if ((response?.status() ?? 0) >= 500) {
       test.skip(true, "Needs database");
       return;
@@ -173,7 +178,7 @@ test.describe("invite-token attribution path", () => {
   });
 
   test("invite token persists in localStorage across an auth roundtrip", async ({ page }) => {
-    const response = await page.goto(`/?invite=${FAKE_INVITE_TOKEN}#vote`);
+    const response = await page.goto(`/vote?invite=${FAKE_INVITE_TOKEN}&${VOTE_FIRST_QUERY}`);
     if ((response?.status() ?? 0) >= 500) {
       test.skip(true, "Needs database");
       return;
@@ -204,21 +209,25 @@ test.describe("invite-token attribution path", () => {
     expect(stillStored).toBe(FAKE_INVITE_TOKEN);
   });
 
-  test("vote POST body carries inviteToken end-to-end", async ({ page }) => {
-    // Pre-authenticate first so we land on the vote flow as a signed-in user.
-    const goCheck = await page.goto("/");
-    if ((goCheck?.status() ?? 0) >= 500) {
-      test.skip(true, "Needs database");
-      return;
-    }
-    const signedIn = await signInViaApi(page.context().request);
-    if (!signedIn) {
-      test.skip(true, "Demo credentials not available");
+  test("vote POST body carries inviteToken end-to-end", async ({ page, request }) => {
+    const voter = makeUniqueRecipient();
+    const created = await createRecipientAccount(request, voter);
+    if (!created) {
+      test.skip(true, "Signup API/database not available");
       return;
     }
 
-    // Visit the landing page WITH ?invite= so the mount effect captures it.
-    await page.goto(`/?invite=${FAKE_INVITE_TOKEN}#vote`);
+    const signedIn = await signInUser(page, {
+      email: voter.email,
+      password: voter.password,
+    });
+    if (!signedIn) {
+      test.skip(true, "Fresh user credentials not available");
+      return;
+    }
+
+    // Visit the focused vote route WITH ?invite= so the mount effect captures it.
+    await page.goto(`/vote?invite=${FAKE_INVITE_TOKEN}&${VOTE_FIRST_QUERY}`);
     await page.waitForLoadState("domcontentloaded");
 
     await page.waitForFunction(
@@ -288,10 +297,12 @@ test.describe("invite-token attribution path", () => {
       return;
     }
 
-    // The redirect path is covered above; enter through the resolved landing URL
+    // The redirect path is covered above; enter through the resolved vote URL
     // here so this test isolates the real conversion + dashboard update.
     const landingUrl =
-      `/?ref=${encodeURIComponent(REF_CODE)}&invite=${encodeURIComponent(invitation.inviteToken)}#vote`;
+      `/vote?ref=${encodeURIComponent(REF_CODE)}&invite=${encodeURIComponent(
+        invitation.inviteToken,
+      )}&${VOTE_FIRST_QUERY}`;
     const response = await page.goto(landingUrl);
     if ((response?.status() ?? 0) >= 500) {
       test.skip(true, "Needs database");

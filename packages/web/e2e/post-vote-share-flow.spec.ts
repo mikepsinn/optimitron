@@ -27,6 +27,24 @@ interface InvitationApiRecord {
   taskId: string | null;
 }
 
+function postVoteFlow(page: Page) {
+  return page.getByTestId("treaty-post-vote-share-flow");
+}
+
+async function expectPostVoteScreen(page: Page, screen: string) {
+  await expect(postVoteFlow(page)).toHaveAttribute("data-screen", screen, {
+    timeout: 15_000,
+  });
+}
+
+async function clickPostVotePrimary(page: Page) {
+  await postVoteFlow(page).locator("button").last().click();
+}
+
+async function clickPreVotePrimary(page: Page) {
+  await page.getByTestId("treaty-vote-prelude-card").locator("button").last().click();
+}
+
 function makeUniqueUser(): TestUser {
   const nonce = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
   return {
@@ -56,6 +74,16 @@ async function createUserAccount(
 
 async function completeSliderAndVote(page: Page) {
   const voteSection = page.locator("#vote");
+  const prelude = page.getByTestId("treaty-vote-prelude-card");
+  if (await prelude.isVisible().catch(() => false)) {
+    await expect(prelude).toHaveAttribute("data-screen", "apology", { timeout: 10_000 });
+    await clickPreVotePrimary(page);
+    await expect(prelude).toHaveAttribute("data-screen", "grandma", { timeout: 10_000 });
+    await clickPreVotePrimary(page);
+    await expect(prelude).toHaveAttribute("data-screen", "apocalypse", { timeout: 10_000 });
+    await clickPreVotePrimary(page);
+  }
+
   const slider = voteSection.locator('input[type="range"]');
   await expect(slider).toBeVisible({ timeout: 15_000 });
   await slider.fill("30");
@@ -69,20 +97,31 @@ async function completeSliderAndVote(page: Page) {
   await yesButton.click();
 }
 
-async function continueToSendName(page: Page) {
-  await expect(
-    page.getByText("I'm very sorry to bother you, but this is kind of the most important thing in the universe"),
-  ).toBeVisible({ timeout: 15_000 });
+async function continueToMessageComposer(page: Page) {
+  await expect(page.getByTestId("treaty-post-vote-overlay")).toBeVisible({ timeout: 15_000 });
 
-  await page.getByRole("button", { name: "Fine", exact: true }).click();
-  await page.getByRole("button", { name: "Okay, go on", exact: true }).click();
-  await page.getByRole("button", { name: "Go on", exact: true }).click();
-  await page.getByRole("button", { name: "Okay, I buy it", exact: true }).click();
-  await page.getByRole("button", { name: "Neat", exact: true }).click();
-  await page.getByRole("button", { name: "Okay, two humans", exact: true }).click();
-  await page.getByRole("button", { name: "Show me mine", exact: true }).click();
+  await expect(postVoteFlow(page)).toBeVisible({ timeout: 15_000 });
+  if ((await postVoteFlow(page).getAttribute("data-screen")) === "opening") {
+    await clickPostVotePrimary(page);
+  }
 
-  await expect(page.getByText("Who do you want to tell first?")).toBeVisible({ timeout: 10_000 });
+  await expectPostVoteScreen(page, "stakes");
+  await clickPostVotePrimary(page);
+
+  if ((await postVoteFlow(page).getAttribute("data-screen")) === "nuclear") {
+    await clickPostVotePrimary(page);
+  }
+
+  await expectPostVoteScreen(page, "math");
+  await clickPostVotePrimary(page);
+  await expectPostVoteScreen(page, "neat");
+  await clickPostVotePrimary(page);
+  await expectPostVoteScreen(page, "twoHumans");
+  await clickPostVotePrimary(page);
+  await expectPostVoteScreen(page, "perVote");
+  await clickPostVotePrimary(page);
+
+  await expectPostVoteScreen(page, "sendMessage");
 }
 
 async function fetchInvitations(page: Page): Promise<InvitationApiRecord[]> {
@@ -125,21 +164,17 @@ test.describe("post-vote share flow", () => {
     await page.locator("#vote").scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
     await completeSliderAndVote(page);
-    await continueToSendName(page);
+    await continueToMessageComposer(page);
 
     const recipientName = `Copy Friend ${Date.now().toString(36)}`;
     await page.locator("#post-vote-recipient-name").fill(recipientName);
-    await page.getByRole("button", { name: "Continue" }).click();
-    await page.getByRole("button", { name: "Assign the task" }).click();
+    await page.getByRole("button", { name: "Bossy mode" }).click();
 
-    const firstName = recipientName.split(" ")[0];
     const messageBox = page.locator('textarea[placeholder="Enter text..."]');
-    await expect(messageBox).toHaveValue(new RegExp(`Here's ${firstName}'s task assignment`));
-    await page.getByRole("button", { name: /^Copy$/ }).first().click();
-
-    await expect(
-      page.getByText(new RegExp(`Now paste it into your texts, WhatsApp, email, Signal.*${firstName} fastest\\.`)),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(messageBox).not.toHaveValue("");
+    await expect(messageBox).not.toHaveValue(/[┌┐└┘│─]/);
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "copyConfirm");
 
     const copiedText = await page.evaluate(async () => navigator.clipboard.readText().catch(() => ""));
     expect(copiedText).toContain("sa=");
@@ -156,11 +191,7 @@ test.describe("post-vote share flow", () => {
     expect(invitation?.shareAttemptId).toBeTruthy();
     expect(invitation?.taskId).toBeTruthy();
 
-    await page.getByRole("button", { name: "I sent it" }).click();
-
-    await expect(
-      page.getByText(`When ${firstName} votes: +1 lifetime of suffering prevented.`),
-    ).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText("Inverse Kills Score:")).toBeVisible();
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "sendImpact");
   });
 });

@@ -47,6 +47,7 @@ export const ROUTES = {
   politicians: "/politicians",
   // The Treaty
   treaty: "/treaty",
+  vote: "/vote",
   // The Game
   prize: "/prize",
   scoreboard: "/scoreboard",
@@ -510,6 +511,16 @@ export const treatyLink: NavItem = {
   description: "The full text of the treaty that redirects 1% of military spending to clinical trials. Read it, sign it, share it. Every signature from an official account is verified on the public ledger.",
   tagline: "1% of war budgets → clinical trials",
   cta: "Read the Treaty",
+};
+
+export const voteLink: NavItem = {
+  href: ROUTES.vote,
+  label: "Vote",
+  emoji: "🗳️",
+  description: "Answer the 1% Treaty question. Thirty seconds. Then recruit the next human.",
+  tagline: "Answer the 1% Treaty question",
+  matchPrefixes: [ROUTES.vote],
+  cta: "Vote Now",
 };
 
 export const prizeLink: NavItem = {

@@ -41,7 +41,7 @@ Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for t
 >
 > This is my grandmother. She's really nice.
 >
-> Her brain is turning into mush. The money that would have paid for the clinical trials to find a cure was busy turning into missiles.
+> Her brain is turning into mush because the money that could have been trying to fix that was busy turning into missiles.
 
 **Alt (if user clicked "Go to hell" on Apology):**
 
@@ -49,7 +49,7 @@ Both buttons advance to the Grandma screen. "Go to hell" sets the alt flag for t
 >
 > [same body]
 
-Buttons: **[ I don't care ]** ・ **[ I'm sorry about your grandmother ]**
+Buttons: **[ I don't care ]** ・ **[ That's a shame ]**
 
 Both buttons advance to the Apocalypse screen. "I don't care" sets the alt flag for the next screen.
 
@@ -75,7 +75,9 @@ Asset: photo lives at `packages/web/public/img/grandma.jpg`.
 >
 > [same body]
 
-Buttons: **[ Take me to the vote ]**
+Buttons: **[ More apocalypses please ]** ・ **[ Fewer apocalypses please ]**
+
+Both buttons advance to the Slider screen. (Slider has no variant copy, so the dismissive flag isn't propagated past this screen — but track the click for analytics.)
 
 Numbers: `FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD`, `FLOW_GLOBAL_WARHEAD_COUNT`, `FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR`, `FLOW_WASTEFUL_APOCALYPSES`. Display via `ParameterValue`.
 
@@ -97,13 +99,13 @@ Button: **[ Submit ]** (only appears after the user has dragged the slider at le
 >
 > That's **99.8%** to military and **0.2%** to clinical trials.
 >
-> Moving 1% of military spending to pragmatic clinical trials would mean **12.3× more medical research** — the same dollars test 23 million patients per year instead of 1.9 million.
+> Moving 1% of military spending to pragmatic clinical trials would increase clinical trial capacity by **12×**, compressing disease eradication from **443 years to 36 years**.
 
 > Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?
 
 Buttons: **[ ☐ YES ]** ・ **[ ☐ NO ]**
 
-Numbers: `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO` for `${ratio}`, `DFDA_TRIAL_CAPACITY_MULTIPLIER` for 12.3×, `DFDA_PATIENTS_FUNDABLE_ANNUALLY` for 23 million, `CURRENT_TRIAL_SLOTS_AVAILABLE` for 1.9 million. Display via `ParameterValue`.
+Numbers: `MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO` for `${ratio}`, `DFDA_TRIAL_CAPACITY_MULTIPLIER` for 12×, `STATUS_QUO_QUEUE_CLEARANCE_YEARS` for 443 years, `DFDA_QUEUE_CLEARANCE_YEARS` for 36 years. Display via `ParameterValue`.
 
 ---
 
@@ -171,7 +173,7 @@ Each beat shows the high-level claim by default. Keep the main screen clean. The
 >
 > **10.7 billion people don't die of a curable disease while waiting. Plus 1.93 quadrillion hours of suffering doesn't happen.**
 >
-> Every number above has a citation. This math is not my opinion.
+> Feel free to argue with the multiplication and division symbols.
 
 **Alt:**
 
@@ -284,43 +286,54 @@ Buttons: **[ I reject mathematics ]** ・ **[ Show me mine ]**
 
 ## Send Loop
 
-Mini sub-flow, **repeats per person**. Four screens (Name → Format → Message → Impact), then loop back or exit to Depth Hook.
+Mini sub-flow, **repeats per person**. Composer → Impact, then loop back or exit to Depth Hook.
 
 **All users are verified.** Every send gets full attribution, every recipient gets the email sequence, every confirmation triggers the B2 dopamine email.
 
-### Name & Contact
+### Message Composer
+
+This screen combines recipient entry, Love/Bossy mode, the editable message, and copy/send actions. The recipient fields should feel like writing a message, not filling out a separate database form.
 
 **Default (first):**
 
-> Who do you want to tell first?
+> How do you want to tell someone?
 >
-> First name: [ _______ ]
+> To: [ First name or nickname ]
 >
-> Their email (optional — we'll send task reminders so you don't have to): [ _______ ]
+> Email optional: [ jake@example.com ]
+>
+> [ Love mode | Bossy mode ]
+>
+> Message to [someone/Jake]:
+>
+> [ editable message box ]
 
 **Default (second+):**
 
 > Who's next?
 >
-> First name: [ _______ ]
+> To: [ First name or nickname ]
 >
-> Their email (optional): [ _______ ]
+> Email optional: [ jake@example.com ]
+>
+> [ Love mode | Bossy mode ]
+>
+> Message to [someone/Maria]:
+>
+> [ editable message box ]
 
 **Alt:**
 
 > One at a time. Bear with me.
 >
-> First name: [ _______ ]
->
-> Their email (optional — we'll send task reminders so you don't have to): [ _______ ]
+> [same composer]
 
-Buttons: **[ Let me just copy ]** ・ **[ Continue ]**
+Buttons (email provided): **[ Copy ]** ・ **[ Send email to jake@example.com for me ]**
+Buttons (no email): **[ Copy ]** (full width)
 
-### Message Format Choice
+### Message Modes
 
-**Shown once (first iteration), then remembered for subsequent sends. User can change later. Current UI is a two-position toggle: `Love mode` on the left and `Bossy mode` on the right. Internal format values remain `SINCERE` and `TASK_NOTIFICATION`.**
-
-> How do you want to tell [Jake]?
+Current UI is a two-position toggle: `Love mode` on the left and `Bossy mode` on the right. Internal format values remain `SINCERE` and `TASK_NOTIFICATION`.
 
 **Bossy mode concept sketch (ASCII illustration for ideation, not necessarily exact production rendering):**
 
@@ -345,40 +358,22 @@ Buttons: **[ Let me just copy ]** ・ **[ Continue ]**
 > │ apologizes for the delay.              │
 > └──────────────────────────────────────┘
 
-**Current production Bossy mode preview:** clean task-card styling with task, assigned-by, time, due, and action fields. Production copied/sent text should be plain shareable text, not box-drawing characters.
+**Current production Bossy mode editable text:**
 
-**Love mode preview:**
+> Overdue task: End War and Disease
+>
+> Assigned by: [Your name]
+> Time required: 30 seconds
+> Due: about 443 years ago
+>
+> Please vote on the 1% Treaty:
+> warondisease.org
+
+**Love mode editable text:**
 
 > "Hi Jake. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"
-
-Buttons: **[ Continue ]**
-
-**On second+ iteration:** keep the previously selected mode by default. If the user chooses to switch, show the same Love mode / Bossy mode toggle again.
 
 Implementation: format choice determines which email template the recipient gets throughout their sequence. Track per-send for analytics. Keep visible labels human-facing (`Love mode`, `Bossy mode`) even if internal enum names stay technical.
-
-### Message & Send
-
-**If Bossy mode chosen:**
-
-> Here's [Jake]'s task assignment:
->
-> End War and Disease is overdue.
->
-> [Your name] assigned you one Earth optimization task: take 30 seconds to vote on the 1% Treaty.
->
-> The task is late by approximately 443 years because humanity kept funding 122 apocalypses worth of nuclear weapons instead of disease eradication.
->
-> Complete it here: warondisease.org
-
-**If Love mode chosen:**
-
-> Here's your message to [Jake]:
->
-> "Hi Jake. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"
-
-Buttons (email provided): **[ Copy ]** ・ **[ Send email to jake@example.com for me ]**
-Buttons (no email): **[ Copy ]** (full width)
 
 **After "Copy":**
 
@@ -402,7 +397,7 @@ Button: **[ Continue ]**
 > Lifetimes of suffering prevented: **1**
 > Inverse Kills Score: **2.7 lives**
 >
-> We'll email you the moment Jake votes. Pending numbers turn into locked-in numbers.
+> We'll email you the moment Jake votes. Pending → confirmed.
 >
 > Most humans stop here. Which is statistically disappointing, but fine.
 >
@@ -433,13 +428,13 @@ Buttons: **[ I'm done ]** ・ **[ One more ]**
 
 **Default:**
 
-> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?
+> The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?
 
 **Alt:**
 
 > Fine. One optional thing:
 >
-> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?
+> The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?
 
 Buttons: **[ No thanks ]** ・ **[ Yes, send task reminder ]**
 
@@ -518,7 +513,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 
 ## Sequence A: Recipient Emails (sent to Jake)
 
-4 emails max, hard cap. Format determined by sender's choice on the Message Format Choice screen.
+4 emails max, hard cap. Format determined by sender's choice in the message composer.
 
 ---
 
@@ -821,7 +816,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 - **Total task reminder cap per sender:** 2 task-reminder emails (B3-B4) plus monthly scorecards.
 - **Re-engagement:** 1 email (C1). One shot.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Bossy emails can use task-card styling. Love emails stay plain text.
-- **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into the Name & Contact screen, pre-authenticated. Never send them back to the landing page.
+- **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into the message composer, pre-authenticated. Never send them back to the landing page.
 
 ---
 

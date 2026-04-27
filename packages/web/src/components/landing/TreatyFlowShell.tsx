@@ -22,6 +22,7 @@ interface TreatyFlowShellProps {
   children: ReactNode;
   className?: string;
   contentClassName?: string;
+  "data-screen"?: string;
   "data-testid"?: string;
 }
 
@@ -29,10 +30,12 @@ export function TreatyFlowShell({
   children,
   className,
   contentClassName,
+  "data-screen": dataScreen,
   "data-testid": dataTestId,
 }: TreatyFlowShellProps) {
   return (
     <section
+      data-screen={dataScreen}
       data-testid={dataTestId}
       className={cn(
         "relative isolate z-[60] mx-auto flex min-h-screen min-h-[100dvh] w-full overflow-hidden bg-[#fbf7ee] px-4 py-6 text-[#23180d] [font-family:var(--v0-font-libre-baskerville)] sm:px-8 sm:py-10",
@@ -42,7 +45,7 @@ export function TreatyFlowShell({
     >
       <div
         className={cn(
-          "relative mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center space-y-8 py-10 sm:py-12",
+          "relative mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center space-y-10 py-10 sm:py-12",
           contentClassName,
         )}
       >
@@ -66,7 +69,7 @@ export function TreatyFlowParagraph({
   return (
     <p
       className={cn(
-        "text-lg font-bold leading-8 text-[#2f2417] sm:text-xl sm:leading-9",
+        "text-xl font-bold leading-9 text-[#2f2417] sm:text-2xl sm:leading-10",
         center ? "text-center" : "text-center sm:text-left",
         dropCap && !center ? "sm:drop-cap-deep" : "",
         className,

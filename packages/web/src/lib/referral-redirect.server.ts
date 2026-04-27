@@ -3,13 +3,17 @@ import { findUserByUsernameOrReferralCode } from "@/lib/referral.server";
 
 export function buildReferralRedirectUrl(input: {
   code: string;
+  flowVariant?: string | null;
   inviteToken?: string | null;
   shareAttemptId?: string | null;
+  treatyFlow?: string | null;
 }) {
   const redirectParams = new URLSearchParams({ ref: input.code });
   if (input.shareAttemptId) redirectParams.set("sa", input.shareAttemptId);
   if (input.inviteToken) redirectParams.set("invite", input.inviteToken);
-  return `/?${redirectParams.toString()}#vote`;
+  if (input.treatyFlow) redirectParams.set("treatyFlow", input.treatyFlow);
+  if (input.flowVariant) redirectParams.set("flowVariant", input.flowVariant);
+  return `/vote?${redirectParams.toString()}`;
 }
 
 export async function logReferralRedirectClick(input: {

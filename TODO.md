@@ -29,6 +29,12 @@ This is the working checklist for finishing the treaty migration and post-vote r
   - Support explicit URL override with `?treatyFlow=...` and attach the selected `flowVariant` to funnel analytics.
   - Update the screenshot audit so each captured folder is keyed by flow variant and viewport.
   - `docs/questions.md` references `packages/web/public/img/grandma.jpg`; the current UI renders a framed placeholder until that real asset is added.
+- [x] Replace the v2 grandma placeholder with the real `packages/web/public/img/grandma.jpg` asset and regenerate the context-first screenshots.
+- [x] Add a reusable treaty screenshot e2e mode that reuses the running dev server and update the screenshot audit selector for the current Grandma-screen copy.
+- [x] Fold the separate post-vote recipient-name screen into the message composer so voters enter the recipient inline while previewing Love/Bossy mode.
+- [x] Add a focused `/vote` route for the treaty question flow and point `/vote/[code]` referral redirects at it instead of the homepage anchor.
+- [x] Add a repo testing rule to keep E2E focused on behavior, screenshots, and route/data contracts instead of brittle exact-copy assertions.
+- [x] Remove brittle long-form copy assertions from content-heavy E2E tests while preserving behavior/data-contract coverage.
 - [ ] Do treaty migration implementation from `E:\code\optimitron`, not from `E:\code\dih-neobrutalist`.
 - [ ] Treat `E:\code\dih-neobrutalist` as the source/reference repo for DIH features until each feature is deliberately ported.
 - [ ] Keep this file as the compaction-safe control document. If a migration decision is made in chat, add it here before starting the next code slice.
@@ -191,10 +197,10 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
 - [x] Use `/vote/<username-or-referralCode>` as the clean generic referral URL.
 - [x] Use `/vote/<username-or-referralCode>?invite=<inviteToken>` for named invitations.
 - [x] Verify invite-token attribution through the full recipient path in a browser:
-  vote link -> landing -> vote -> verification -> vote sync -> invitation converted -> task verified -> dashboard updated.
+  vote link -> focused vote route -> vote -> verification -> vote sync -> invitation converted -> task verified -> dashboard updated.
   - Playwright coverage exists at `packages/web/e2e/invite-token-attribution.spec.ts`:
     1. `/vote/<code>?invite=<token>` server redirect preserves both query params.
-    2. Landing-page mount effect captures the token to `localStorage` (`signup_invite_token`).
+    2. Vote-route mount effect captures the token to `localStorage` (`signup_invite_token`).
     3. Token survives a demo-credentials auth roundtrip (same-origin reload).
     4. Vote POST body carries `inviteToken` end-to-end.
     5. Demo sender creates a named invitation, a fresh recipient account votes through the token, the vote response returns `CONVERTED`, `/api/referral-invitations` shows `convertedAt`, and the sender dashboard row renders as confirmed.
@@ -358,7 +364,7 @@ The principle for this phase: data-drive the components whose variation is *temp
 
 - [ ] Split `components/landing/TreatyPostVoteShareFlow.tsx` (~1000 lines) into reusable primitives + treaty-specific narrative.
   - Extract reusable, task-agnostic primitives into `components/share-flow/` (or similar): the send-loop subcomponent (much of which already lives in `ReferralInvitationComposer`), the screen-transition / animation wrapper, the depth-hook component, the analytics tracker scaffolding, the feedback step, and the completion → dashboard redirect. These take a `task` prop and don't know anything about the treaty.
-  - Leave the screen sequence (`opening`, `stakes`, `nuclear`, `math`, `neat`, `twoHumans`, `perVote`, `sendName` at lines 84-101) and the narrative copy at lines 239-620 (nuclear / wasteful-apocalypses / chain-letter screens) inside `TreatyPostVoteShareFlow.tsx`. They are deliberately campaign-specific persuasion. Do **not** move them to database rows.
+  - Leave the screen sequence (`opening`, `stakes`, `nuclear`, `math`, `neat`, `twoHumans`, `perVote`, `sendMessage`) and the narrative copy (nuclear / wasteful-apocalypses / chain-letter screens) inside `TreatyPostVoteShareFlow.tsx`. They are deliberately campaign-specific persuasion. Do **not** move them to database rows.
   - Replace `manual.warondisease.org` citation URLs (lines 558, 617, 626) with parameter-backed wrappers (`task.helpUrl` if it exists, otherwise leave the literal — these are cite links, not generic).
   - Rename analytics events from `trackTreatyPostVote*` (lines 15-21) to `trackTaskShareFlow*` with a `taskId` dimension *only if* the underlying primitive emits the event. Treaty-specific screen-advanced events stay treaty-named.
   - Acceptance: when campaign #2 needs a post-action share flow, the engineer writes a sibling component (e.g., `Campaign2PostActionFlow.tsx`) that imports the same primitives — not a JSON config. If that authoring experience is cleaner than today, the split worked.

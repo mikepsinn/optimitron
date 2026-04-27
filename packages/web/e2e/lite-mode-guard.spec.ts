@@ -9,7 +9,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const FULL_SEND_LOOP_TEXT = [
   "I'm very sorry to bother you, but this is kind of the most important thing in the universe",
-  "Who do you want to tell first?",
+  "How do you want to tell someone?",
 ];
 
 async function expectNoFullPostVoteSendLoop(page: Page) {

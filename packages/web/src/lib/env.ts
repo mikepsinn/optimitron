@@ -88,6 +88,14 @@ const serverSchema = z.object({
   // ── Stripe (donations to IAM 501(c)(3)) ───────────────────────────
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+  // ── Cloudflare R2 (large media: video, audio, downloads) ─────────
+  CLOUDFLARE_TOKEN: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_ENDPOINT: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_URL: z.string().optional(),
 });
 
 const clientSchema = z.object({
@@ -95,6 +103,7 @@ const clientSchema = z.object({
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().optional(),
   NEXT_PUBLIC_WORLD_ID_ENABLED: z.string().optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+  NEXT_PUBLIC_MEDIA_CDN_URL: z.string().optional(),
 });
 
 /* ------------------------------------------------------------------ */
@@ -141,6 +150,8 @@ export function getClientEnv(): ClientEnv {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
     NEXT_PUBLIC_WORLD_ID_ENABLED: process.env.NEXT_PUBLIC_WORLD_ID_ENABLED,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_MEDIA_CDN_URL: process.env.NEXT_PUBLIC_MEDIA_CDN_URL,
   });
   if (!parsed.success) {
     const formatted = parsed.error.flatten().fieldErrors;

@@ -35,17 +35,21 @@ describe("referral redirect helpers", () => {
   });
 
   it("builds the vote-surface redirect for generic referral links", () => {
-    expect(buildReferralRedirectUrl({ code: "jane" })).toBe("/?ref=jane#vote");
+    expect(buildReferralRedirectUrl({ code: "jane" })).toBe("/vote?ref=jane");
   });
 
   it("preserves share-attempt and invite attribution params", () => {
     expect(
       buildReferralRedirectUrl({
         code: "REF123",
+        flowVariant: "vote-first",
         inviteToken: "invite 1",
         shareAttemptId: "share_1",
+        treatyFlow: "v1",
       }),
-    ).toBe("/?ref=REF123&sa=share_1&invite=invite+1#vote");
+    ).toBe(
+      "/vote?ref=REF123&sa=share_1&invite=invite+1&treatyFlow=v1&flowVariant=vote-first",
+    );
   });
 
   it("logs canonical /vote username clicks through the shared resolver", async () => {

@@ -5,7 +5,7 @@
  * loop so the current UI can be reviewed before visual redesign work.
  *
  * Run:
- *   pnpm --filter @optimitron/web exec playwright test e2e/treaty-vote-post-vote-screenshots.spec.ts --project=default --reporter=list
+ *   pnpm --filter @optimitron/web run e2e -- treaty-screenshots --reporter=list
  */
 import { expect, test, type APIRequestContext, type Locator, type Page, type TestInfo } from "@playwright/test";
 import * as fs from "fs";
@@ -220,6 +220,34 @@ async function capturePage(
   console.log(`Screenshot: ${filePath}`);
 }
 
+function preVoteCard(page: Page) {
+  return page.getByTestId("treaty-vote-prelude-card");
+}
+
+async function expectPreVoteScreen(page: Page, screen: string) {
+  await expect(preVoteCard(page)).toHaveAttribute("data-screen", screen, {
+    timeout: 15_000,
+  });
+}
+
+async function clickPreVotePrimary(page: Page) {
+  await preVoteCard(page).locator("button").last().click();
+}
+
+function postVoteFlow(page: Page) {
+  return page.getByTestId("treaty-post-vote-share-flow");
+}
+
+async function expectPostVoteScreen(page: Page, screen: string) {
+  await expect(postVoteFlow(page)).toHaveAttribute("data-screen", screen, {
+    timeout: 15_000,
+  });
+}
+
+async function clickPostVotePrimary(page: Page) {
+  await postVoteFlow(page).locator("button").last().click();
+}
+
 test.describe("treaty vote and post-vote screenshot audit", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(180_000);
@@ -268,18 +296,18 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await voteSection.scrollIntoViewIfNeeded();
 
     if (flowVariant.hasPrelude) {
-      await expect(page.getByText(/I'm very sorry to bother you/i)).toBeVisible({ timeout: 15_000 });
-      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-apology");
+      await expectPreVoteScreen(page, "apology");
+      await capture(preVoteCard(page), dir, step++, "pre-vote-apology");
 
-      await page.getByRole("button", { name: "Fine", exact: true }).click();
-      await expect(page.getByText(/This is my grandmother/i)).toBeVisible();
-      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-grandma");
+      await clickPreVotePrimary(page);
+      await expectPreVoteScreen(page, "grandma");
+      await capture(preVoteCard(page), dir, step++, "pre-vote-grandma");
 
-      await page.getByRole("button", { name: "I'm sorry about your grandmother", exact: true }).click();
-      await expect(page.getByText(/nuclear winter that collapses the food chain/i)).toBeVisible();
-      await capture(page.getByTestId("treaty-vote-prelude-card"), dir, step++, "pre-vote-apocalypse");
+      await clickPreVotePrimary(page);
+      await expectPreVoteScreen(page, "apocalypse");
+      await capture(preVoteCard(page), dir, step++, "pre-vote-apocalypse");
 
-      await page.getByRole("button", { name: "Take me to the vote", exact: true }).click();
+      await clickPreVotePrimary(page);
     }
 
     const slider = voteSection.locator('input[type="range"]');
@@ -298,57 +326,48 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     await voteSection.getByRole("button", { name: "YES" }).click();
     await page.waitForTimeout(800);
     if (!flowVariant.hasPrelude) {
-      await expect(page.getByText(/I'm very sorry to bother you/i)).toBeVisible({ timeout: 15_000 });
+      await expectPostVoteScreen(page, "opening");
       await capturePostVoteCard(page, dir, step++, "post-vote-opening");
-      await page.getByRole("button", { name: "Fine", exact: true }).click();
+      await clickPostVotePrimary(page);
     }
 
-    await expect(page.getByText(/someone you love will get a horrible disease/i)).toBeVisible();
+    await expectPostVoteScreen(page, "stakes");
     await capturePostVoteCard(page, dir, step++, "post-vote-stakes");
 
-    await page.getByRole("button", { name: "Okay, go on", exact: true }).click();
+    await clickPostVotePrimary(page);
     if (!flowVariant.hasPrelude) {
-      await expect(page.getByText(/nuclear winter that collapses the food chain/i)).toBeVisible();
+      await expectPostVoteScreen(page, "nuclear");
       await capturePostVoteCard(page, dir, step++, "post-vote-nuclear");
-      await page.getByRole("button", { name: "Go on", exact: true }).click();
+      await clickPostVotePrimary(page);
     }
-    await expect(page.getByRole("button", { name: "Okay, I buy it", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Check the math", exact: true })).toBeVisible();
+    await expectPostVoteScreen(page, "math");
     await expect(page.getByText("Show the math", { exact: true })).toHaveCount(0);
     await capturePostVoteCard(page, dir, step++, "post-vote-math");
-    await page.getByRole("button", { name: "Check the math", exact: true }).click();
-    await expect(page.getByRole("dialog", { name: "Treaty Math" })).toBeVisible();
-    await expect(page.getByText("Military spending to treaty funding")).toBeVisible();
-    await page.getByRole("button", { name: "Close Math", exact: true }).click();
-    await expect(page.getByRole("dialog", { name: "Treaty Math" })).toHaveCount(0);
+    await page.getByTestId("treaty-post-vote-open-math").click();
+    const mathDialog = page.getByTestId("treaty-math-dialog");
+    await expect(mathDialog).toBeVisible();
+    await mathDialog.locator("button").last().click();
+    await expect(mathDialog).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Okay, I buy it", exact: true }).click();
-    await expect(page.getByText(/Wouldn't that be neat/i)).toBeVisible();
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "neat");
     await capturePostVoteCard(page, dir, step++, "post-vote-neat");
 
-    await page.getByRole("button", { name: "Neat", exact: true }).click();
-    await expect(page.getByText(/Tell 2 friends/i)).toBeVisible();
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "twoHumans");
     await capturePostVoteCard(page, dir, step++, "post-vote-two-humans");
 
-    await page.getByRole("button", { name: "Okay, two humans", exact: true }).click();
-    await expect(page.getByText(/One vote = 1 full human lifetime/i)).toBeVisible();
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "perVote");
     await capturePostVoteCard(page, dir, step++, "post-vote-per-vote-impact");
 
-    await page.getByRole("button", { name: "Show me mine", exact: true }).click();
-    await expect(page.getByText("Who do you want to tell first?")).toBeVisible();
-    await capturePostVoteCard(page, dir, step++, "post-vote-recipient-name");
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "sendMessage");
+    await capturePostVoteCard(page, dir, step++, "post-vote-message-composer");
 
     const recipientName = `Screenshot Friend ${Date.now().toString(36)}`;
     await page.locator("#post-vote-recipient-name").fill(recipientName);
-    await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText(/How do you want to tell/i)).toBeVisible();
-    await capturePostVoteCard(page, dir, step++, "post-vote-message-format");
-
     await page.getByRole("button", { name: "Bossy mode" }).click();
-    const bossyPreview = page.getByTestId("bossy-task-preview");
-    await expect(bossyPreview).toBeVisible();
-    await expect(bossyPreview).not.toContainText(/[┌┐└┘│─]/);
-    await page.getByRole("button", { name: "Continue" }).click();
     const messageBox = page.locator('textarea[placeholder="Enter text..."]');
     await expect(messageBox).toBeVisible();
     await expect(messageBox).not.toHaveValue("");
@@ -359,31 +378,28 @@ test.describe("treaty vote and post-vote screenshot audit", () => {
     expect(bossyMessage).not.toContain("Management apologizes");
     await capturePostVoteCard(page, dir, step++, "post-vote-message-copy");
 
-    await page.getByRole("button", { name: /^Copy$/ }).first().click();
-    await expect(page.getByText(/Now paste it into your texts/i)).toBeVisible({ timeout: 10_000 });
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "copyConfirm");
     await capturePostVoteCard(page, dir, step++, "post-vote-copy-confirm");
 
-    await page.getByRole("button", { name: "I sent it" }).click();
-    await expect(page.getByText(/When Screenshot votes: \+1 lifetime of suffering prevented/i)).toBeVisible({ timeout: 10_000 });
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "sendImpact");
     await capturePostVoteCard(page, dir, step++, "post-vote-send-impact");
 
-    await page.getByRole("button", { name: "No, I'm done" }).click();
-    await expect(page.getByText(/Want us to email you in a few days/i)).toBeVisible();
+    await postVoteFlow(page).locator("button").first().click();
+    await expectPostVoteScreen(page, "depthHook");
     await capturePostVoteCard(page, dir, step++, "post-vote-depth-hook");
 
-    await page.getByRole("button", { name: "No thanks" }).click();
-    await expect(page.getByText(/The chain only breaks if one human says/i)).toBeVisible();
+    await postVoteFlow(page).locator("button").first().click();
+    await expectPostVoteScreen(page, "close");
     await capturePostVoteCard(page, dir, step++, "post-vote-close");
 
-    await page.getByRole("button", { name: "Done" }).click();
-    await expect(page.getByText(/most effective chain letter in history/i)).toBeVisible();
+    await clickPostVotePrimary(page);
+    await expectPostVoteScreen(page, "feedback");
     await capturePostVoteCard(page, dir, step++, "post-vote-feedback");
 
-    await page.getByRole("button", { name: "Submit" }).click();
+    await clickPostVotePrimary(page);
     await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, { timeout: 15_000 });
-    await expect(page.getByRole("heading", { name: "EARTH OPTIMIZATION", exact: true })).toBeVisible({
-      timeout: 15_000,
-    });
     await capturePage(page, dir, step++, "dashboard-after-feedback");
 
     console.log(`Treaty flow screenshots saved to: ${dir}`);

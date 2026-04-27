@@ -36,7 +36,8 @@
     "report:task-tree": "tsx scripts/export-task-tree.ts",
     "report:next-action": "tsx scripts/report-next-action.ts",
     "bootstrap:optimize-earth": "tsx scripts/bootstrap-optimize-earth.ts",
-    "draft:legislation": "tsx scripts/draft-legislation.ts"
+    "draft:legislation": "tsx scripts/draft-legislation.ts",
+    "media:upload": "tsx scripts/upload-media-to-r2.ts"
   },
   "dependencies": {
     "@base-org/account": "^2.5.2",
@@ -137,10 +138,12 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1037.0",
     "@axe-core/playwright": "^4.11.1",
     "@next/bundle-analyzer": "^16.2.2",
     "@playwright/test": "1.58.2",
     "@tailwindcss/postcss": "^4.1.9",
+    "@types/mime-types": "^3.0.1",
     "@types/node": "^20.11.0",
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",
@@ -153,6 +156,7 @@
     "dotenv": "^17.3.1",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.35",
+    "mime-types": "^3.0.2",
     "openai": "^6.27.0",
     "playwright-core": "1.58.2",
     "png-to-ico": "^3.0.1",

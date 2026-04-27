@@ -37,6 +37,7 @@ const MODE_SPECS = {
     : ["e2e/smoke.spec.ts"],
   contrast: ["e2e/contrast-audit.spec.ts"],
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
+  "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
 };
 
 const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
@@ -226,6 +227,8 @@ Modes:
   smoke      Run smoke tests locally; in CI also includes a critical-route contrast audit
   contrast   Run only the contrast audit
   mobile     Run only the mobile responsiveness audit
+  treaty-screenshots
+            Regenerate the treaty vote/post-vote screenshots
 
 Behavior:
   - In CI, uses the Playwright-managed built server path

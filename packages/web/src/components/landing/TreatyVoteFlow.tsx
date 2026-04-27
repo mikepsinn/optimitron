@@ -15,10 +15,10 @@ import { getUsernameOrReferralCode } from "@/lib/referral.client";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CURRENT_TRIAL_SLOTS_AVAILABLE,
-  DFDA_PATIENTS_FUNDABLE_ANNUALLY,
+  DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
@@ -349,15 +349,16 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     storage.clearVoteStatusCache();
 
     if (status === "authenticated" && session) {
-      await syncPendingReferendumVotes(session);
-      const referralIdentifier = getUsernameOrReferralCode(session.user);
-      if (referralIdentifier) {
-        storage.setVoteStatusCache({
-          hasVoted: true,
-          voteAnswer: choice.toUpperCase(),
-          referralCode: referralIdentifier,
-        });
-      }
+      void syncPendingReferendumVotes(session).then(() => {
+        const referralIdentifier = getUsernameOrReferralCode(session.user);
+        if (referralIdentifier) {
+          storage.setVoteStatusCache({
+            hasVoted: true,
+            voteAnswer: choice.toUpperCase(),
+            referralCode: referralIdentifier,
+          });
+        }
+      });
     }
   };
 
@@ -366,6 +367,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       case "apology":
         return (
           <TreatyFlowShell
+            data-screen="apology"
             data-testid="treaty-vote-prelude-card"
             contentClassName="max-w-3xl"
           >
@@ -396,27 +398,28 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       case "grandma":
         return (
           <TreatyFlowShell
+            data-screen="grandma"
             data-testid="treaty-vote-prelude-card"
             contentClassName="max-w-3xl"
           >
             <div className="space-y-6">
               {preVoteAlt ? (
-                <TreatyFlowParagraph>Sorry. Grandma&apos;s in this part.</TreatyFlowParagraph>
+                <TreatyFlowParagraph>I don&apos;t have the ability to go to hell. Continuing.</TreatyFlowParagraph>
               ) : null}
-              <div
-                aria-label="Photo of Mike's grandmother"
-                className="mx-auto flex aspect-[4/3] w-full max-w-sm items-center justify-center border border-[#23180d] bg-[#fffdf8] p-6 text-center text-xs font-black uppercase tracking-[0.22em] text-[#5e513f]"
-                data-testid="treaty-grandma-photo-placeholder"
-              >
-                Photo of Grandma
-              </div>
+              <figure className="mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden border border-[#23180d] bg-[#fffdf8]">
+                <img
+                  alt="Mike's grandmother sitting on a bench"
+                  className="h-full w-full object-cover object-[50%_15%] grayscale"
+                  data-testid="treaty-grandma-photo"
+                  src="/img/grandma.jpg"
+                />
+              </figure>
               <TreatyFlowParagraph>
                 This is my grandmother. She&apos;s really nice.
               </TreatyFlowParagraph>
               <TreatyFlowParagraph>
-                Her brain is turning into mush. The money that would have paid
-                for the clinical trials to find a cure was busy turning into
-                missiles.
+                Her brain is turning into mush because the money that could
+                have been trying to fix that was busy turning into missiles.
               </TreatyFlowParagraph>
             </div>
             <TreatyFlowButtonRow>
@@ -430,7 +433,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 className={treatyPrimaryButtonClass}
                 onClick={() => advancePreVote("apocalypse")}
               >
-                I&apos;m sorry about your grandmother
+                That&apos;s a shame
               </Button>
             </TreatyFlowButtonRow>
           </TreatyFlowShell>
@@ -438,12 +441,13 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       case "apocalypse":
         return (
           <TreatyFlowShell
+            data-screen="apocalypse"
             data-testid="treaty-vote-prelude-card"
             contentClassName="max-w-3xl"
           >
             <div className="space-y-4">
               {preVoteDismissiveCount > 0 ? (
-                <TreatyFlowParagraph>Fair. One more math thing though.</TreatyFlowParagraph>
+                <TreatyFlowParagraph>Cool. The 122 apocalypses haven&apos;t moved.</TreatyFlowParagraph>
               ) : null}
               <TreatyFlowParagraph>
                 <ParameterValue param={FLOW_NUCLEAR_WINTER_WARHEAD_THRESHOLD} figures={1} />{" "}
@@ -467,12 +471,20 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 slightly nicer.
               </TreatyFlowParagraph>
             </div>
-            <Button
-              className={treatyPrimaryButtonClass}
-              onClick={() => advancePreVote("slider")}
-            >
-              Take me to the vote
-            </Button>
+            <TreatyFlowButtonRow>
+              <Button
+                className={treatySecondaryButtonClass}
+                onClick={() => advancePreVote("slider", true)}
+              >
+                More apocalypses please
+              </Button>
+              <Button
+                className={treatyPrimaryButtonClass}
+                onClick={() => advancePreVote("slider")}
+              >
+                Fewer apocalypses please
+              </Button>
+            </TreatyFlowButtonRow>
           </TreatyFlowShell>
         );
       case "slider":
@@ -501,6 +513,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
             transition={{ duration: 0.4 }}
           >
             <TreatyFlowShell
+              data-screen="slider"
               data-testid="treaty-vote-slider-card"
               contentClassName="max-w-4xl"
             >
@@ -622,6 +635,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <TreatyFlowShell
+              data-screen="choice"
               data-testid="treaty-vote-choice-card"
               contentClassName="max-w-4xl space-y-5 py-6 sm:space-y-8 sm:py-12"
             >
@@ -648,26 +662,26 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
 
               <TreatyFlowParagraph center className="text-sm leading-7 sm:text-lg sm:leading-8">
                 Moving 1% of military spending to pragmatic clinical trials
-                would mean{" "}
+                would increase clinical trial capacity by{" "}
                 <ParameterValue
                   param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
                   className="font-black text-[#23180d]"
                   display="withUnit"
                   figures={2}
-                />{" "}
-                more medical research — the same dollars test{" "}
+                />
+                , compressing disease eradication from{" "}
                 <ParameterValue
-                  param={DFDA_PATIENTS_FUNDABLE_ANNUALLY}
+                  param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
                   className="font-black text-[#23180d]"
-                  figures={2}
+                  figures={3}
                 />{" "}
-                patients per year instead of{" "}
+                years to{" "}
                 <ParameterValue
-                  param={CURRENT_TRIAL_SLOTS_AVAILABLE}
+                  param={DFDA_QUEUE_CLEARANCE_YEARS}
                   className="font-black text-[#23180d]"
                   figures={2}
                 />
-                .
+                {" "}years.
               </TreatyFlowParagraph>
 
               <div className="text-center text-xl font-black leading-tight text-[#23180d] sm:text-3xl md:text-4xl">

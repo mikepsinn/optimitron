@@ -137,7 +137,7 @@ export function TreatyMechanismExplainer({
 
   const closing =
     closingLine === undefined
-      ? "Every number above has a citation. This math is not my opinion."
+      ? "Feel free to argue with the multiplication and division symbols."
       : closingLine;
 
   return (

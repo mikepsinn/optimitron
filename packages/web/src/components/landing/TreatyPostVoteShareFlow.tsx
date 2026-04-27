@@ -32,11 +32,11 @@ import type { TreatyFlowVariant } from "@/lib/treaty-flow-variants";
 import {
   HOURS_PER_YEAR,
   SAFE_COMPOUNDS_COUNT,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   UNEXPLORED_RATIO,
 } from "@optimitron/data/parameters";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
+  buildReferralInvitationMessage,
   getReferralInvitationFirstName,
   type ReferralInvitationMessageFormat,
 } from "@/lib/referral-invitation-copy";
@@ -76,8 +76,6 @@ type FlowScreen =
   | "neat"
   | "twoHumans"
   | "perVote"
-  | "sendName"
-  | "sendFormat"
   | "sendMessage"
   | "copyConfirm"
   | "sendConfirm"
@@ -98,8 +96,8 @@ const primaryButtonClass = treatyPrimaryButtonClass;
 const dismissButtonClass = treatySecondaryButtonClass;
 
 const majorityHumanityText = formatFlowWords(FLOW_MAJORITY_OF_HUMANS_ON_EARTH, 1);
-const statusQuoQueueYearsText = formatFlowWords(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 3);
 const voterLivesSavedText = formatFlowWords(FLOW_VOTER_LIVES_SAVED_ROUNDED, 2);
+const draftInviteUrl = "warondisease.org";
 
 function FlowParagraph({
   children,
@@ -147,63 +145,6 @@ function DetailsBlock({
   );
 }
 
-function TaskPreview({ senderName }: { senderName: string }) {
-  const assignedBy = senderName || "[Your name]";
-
-  return (
-    <div
-      className="border border-[#23180d] bg-[#fffdf8] p-4 text-left text-sm font-bold leading-7 text-[#23180d]"
-      data-testid="bossy-task-preview"
-    >
-      <p className="mb-4 text-center text-xs font-black uppercase tracking-[0.18em] text-[#5e513f]">
-        Overdue Task
-      </p>
-      <dl className="space-y-3">
-        <div>
-          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
-            Task
-          </dt>
-          <dd className="text-base font-black">End War and Disease</dd>
-        </div>
-        <div>
-          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
-            Assigned By
-          </dt>
-          <dd>{assignedBy}</dd>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
-              Time
-            </dt>
-            <dd>30 seconds</dd>
-          </div>
-          <div>
-            <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
-              Due
-            </dt>
-            <dd>about {statusQuoQueueYearsText} years ago</dd>
-          </div>
-        </div>
-        <div>
-          <dt className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#5e513f]">
-            Action
-          </dt>
-          <dd>Vote on the 1% Treaty</dd>
-        </div>
-      </dl>
-    </div>
-  );
-}
-
-function SincerePreview({ displayName }: { displayName: string }) {
-  return (
-    <div className="border-y border-[#23180d]/25 py-4 text-center text-sm font-bold leading-7 text-[#2f2417] sm:text-left">
-      {`"Hi ${displayName}. I love you very much and I don't want you to get a horrible disease and die. Could you please take 30 seconds to respond to this stupid survey in order to end war and disease? warondisease.org"`}
-    </div>
-  );
-}
-
 function MessageModeToggle({
   value,
   onChange,
@@ -247,6 +188,32 @@ function MessageModeToggle({
       })}
     </div>
   );
+}
+
+function buildDraftReferralMessage(input: {
+  messageFormat: ReferralInvitationMessageFormat;
+  recipientName: string;
+  senderName: string;
+}) {
+  return buildReferralInvitationMessage({
+    inviteUrl: draftInviteUrl,
+    messageFormat: input.messageFormat,
+    recipientName: input.recipientName.trim() || "there",
+    senderName: input.senderName,
+  });
+}
+
+function replaceDraftInviteUrl(messageText: string, inviteUrl: string) {
+  const text = messageText.trim();
+  if (!text) return inviteUrl;
+
+  const draftUrlPattern = /https?:\/\/warondisease\.org|warondisease\.org/g;
+  const textWithInviteUrl = text.replace(draftUrlPattern, inviteUrl);
+  if (textWithInviteUrl !== text || textWithInviteUrl.includes(inviteUrl)) {
+    return textWithInviteUrl;
+  }
+
+  return `${textWithInviteUrl}\n\n${inviteUrl}`;
 }
 
 function TreatyMathDialog({ onClose }: { onClose: () => void }) {
@@ -333,9 +300,9 @@ export function TreatyPostVoteShareFlow({
   const [recipientEmail, setRecipientEmail] = useState("");
   const [messageFormat, setMessageFormat] =
     useState<ReferralInvitationMessageFormat>("SINCERE");
-  const [showFormatSwitch, setShowFormatSwitch] = useState(false);
   const [invitation, setInvitation] = useState<ReferralInvitationClientRecord | null>(null);
   const [message, setMessage] = useState("");
+  const [messageEdited, setMessageEdited] = useState(false);
   const [sentCount, setSentCount] = useState(0);
   const [lastRecipientName, setLastRecipientName] = useState("");
   const [completedInvitationIds, setCompletedInvitationIds] = useState<Set<string>>(new Set());
@@ -348,7 +315,7 @@ export function TreatyPostVoteShareFlow({
 
   const senderName = getReferralInvitationSenderName(session?.user);
   const firstName = getReferralInvitationFirstName(recipientName);
-  const displayName = firstName || "Jake";
+  const displayName = firstName || "someone";
   const pendingLives = formatLives(sentCount * FLOW_VOTER_LIVES_SAVED_ROUNDED.value);
 
   const advanceTo = useCallback((
@@ -382,9 +349,9 @@ export function TreatyPostVoteShareFlow({
     setRecipientEmail("");
     setInvitation(null);
     setMessage("");
+    setMessageEdited(false);
     setCopyState("idle");
     setError(null);
-    setShowFormatSwitch(false);
   }, []);
 
   const createInvitation = useCallback(async () => {
@@ -418,12 +385,16 @@ export function TreatyPostVoteShareFlow({
   }, [invitation, messageFormat, recipientEmail, recipientName]);
 
   useEffect(() => {
-    if (screen !== "sendMessage" || invitation || isCreating) return;
-    void createInvitation();
-  }, [createInvitation, invitation, isCreating, screen]);
+    if (screen !== "sendMessage" || invitation || messageEdited) return;
+    setMessage(buildDraftReferralMessage({
+      messageFormat,
+      recipientName,
+      senderName,
+    }));
+  }, [invitation, messageEdited, messageFormat, recipientName, screen, senderName]);
 
   useEffect(() => {
-    if (!invitation) return;
+    if (screen !== "sendMessage" || !invitation || messageEdited) return;
     setMessage(
       buildReferralInvitationShareMessage({
         invitation,
@@ -432,7 +403,7 @@ export function TreatyPostVoteShareFlow({
         user: session?.user,
       }),
     );
-  }, [invitation, messageFormat, senderName, session?.user]);
+  }, [invitation, messageEdited, messageFormat, screen, senderName, session?.user]);
 
   useEffect(() => {
     if (!mathDialogOpen) return;
@@ -480,15 +451,6 @@ export function TreatyPostVoteShareFlow({
     advanceTo("sendImpact", { sentCount: nextSentCount });
   }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, sentCount]);
 
-  const handleNameContinue = useCallback((dismissive = false) => {
-    if (!recipientName.trim()) {
-      setError("First name is required.");
-      return;
-    }
-    setError(null);
-    go("sendFormat", dismissive);
-  }, [go, recipientName]);
-
   const handleCopy = useCallback(async () => {
     const created = await createInvitation();
     if (!created) return;
@@ -499,9 +461,11 @@ export function TreatyPostVoteShareFlow({
       senderName,
       user: session?.user,
     });
-    const text = message || defaultText;
-    const shareAttemptId = nanoid();
     const inviteUrl = buildUserInviteReferralUrl(session?.user, created.inviteToken, getBaseUrl());
+    const text = messageEdited
+      ? replaceDraftInviteUrl(message, inviteUrl)
+      : defaultText;
+    const shareAttemptId = nanoid();
     const copiedText = embedShareAttemptId(text, inviteUrl, shareAttemptId);
 
     try {
@@ -521,13 +485,14 @@ export function TreatyPostVoteShareFlow({
         wasEdited: text !== defaultText,
       });
       setMessage(copiedText);
+      setMessageEdited(false);
       setCopyState("copied");
       advanceTo("copyConfirm");
     } catch {
       setCopyState("error");
       setError("Copy failed.");
     }
-  }, [advanceTo, createInvitation, flowVariant, message, messageFormat, senderName, sentCount, session?.user]);
+  }, [advanceTo, createInvitation, flowVariant, message, messageEdited, messageFormat, senderName, sentCount, session?.user]);
 
   const handleSendEmail = useCallback(async () => {
     const created = await createInvitation();
@@ -536,10 +501,20 @@ export function TreatyPostVoteShareFlow({
     setIsSending(true);
     setError(null);
     try {
+      const defaultText = buildReferralInvitationShareMessage({
+        invitation: created,
+        messageFormat,
+        senderName,
+        user: session?.user,
+      });
+      const inviteUrl = buildUserInviteReferralUrl(session?.user, created.inviteToken, getBaseUrl());
+      const outboundText = messageEdited
+        ? replaceDraftInviteUrl(message, inviteUrl)
+        : defaultText;
       const payload = await updateReferralInvitationRequest({
         id: created.id,
         action: "sendEmail",
-        messageText: message,
+        messageText: outboundText,
       });
 
       if (payload.status !== "sent") {
@@ -548,6 +523,8 @@ export function TreatyPostVoteShareFlow({
       if (payload.invitation) {
         setInvitation(payload.invitation);
       }
+      setMessage(outboundText);
+      setMessageEdited(false);
       trackTreatyPostVoteInvitationAction({
         action: "send_email",
         flowVariant,
@@ -561,7 +538,7 @@ export function TreatyPostVoteShareFlow({
     } finally {
       setIsSending(false);
     }
-  }, [advanceTo, createInvitation, flowVariant, message, messageFormat, sentCount]);
+  }, [advanceTo, createInvitation, flowVariant, message, messageEdited, messageFormat, senderName, sentCount, session?.user]);
 
   const handleDepthHook = useCallback(async (wantsReminder: boolean) => {
     trackTreatyPostVoteDepthHook({ flowVariant, wantsReminder, sentCount });
@@ -694,7 +671,12 @@ export function TreatyPostVoteShareFlow({
               />
             )}
             <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={openMathDialog} type="button">
+              <Button
+                className={dismissButtonClass}
+                data-testid="treaty-post-vote-open-math"
+                onClick={openMathDialog}
+                type="button"
+              >
                 Check the math
               </Button>
               <Button className={primaryButtonClass} onClick={() => go("neat")}>
@@ -811,133 +793,11 @@ export function TreatyPostVoteShareFlow({
               )}
             </div>
             <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => go("sendName", true)}>
+              <Button className={dismissButtonClass} onClick={() => go("sendMessage", true)}>
                 I reject mathematics
               </Button>
-              <Button className={primaryButtonClass} onClick={() => go("sendName")}>
+              <Button className={primaryButtonClass} onClick={() => go("sendMessage")}>
                 Show me mine
-              </Button>
-            </FlowButtonRow>
-          </>
-        );
-
-      case "sendName":
-        return (
-          <>
-            <div className="space-y-5">
-              {alt ? <FlowParagraph>One at a time. Bear with me.</FlowParagraph> : null}
-              <FlowParagraph>{sentCount === 0 ? "Who do you want to tell first?" : "Who's next?"}</FlowParagraph>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-name">
-                    First name
-                  </Label>
-                  <Input
-                    id="post-vote-recipient-name"
-                    value={recipientName}
-                    onChange={(event) => {
-                      setRecipientName(event.target.value);
-                      setInvitation(null);
-                      setMessage("");
-                      setError(null);
-                    }}
-                    placeholder="Jake"
-                    className={treatyInputClass}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-email">
-                    Their email {sentCount === 0 ? "(optional — we'll send task reminders so you don't have to)" : "(optional)"}
-                  </Label>
-                  <Input
-                    id="post-vote-recipient-email"
-                    value={recipientEmail}
-                    onChange={(event) => {
-                      setRecipientEmail(event.target.value);
-                      setInvitation(null);
-                      setMessage("");
-                      setError(null);
-                    }}
-                    placeholder="jake@example.com"
-                    className={treatyInputClass}
-                    type="email"
-                  />
-                </div>
-              </div>
-            </div>
-            <FlowButtonRow>
-              <Button className={dismissButtonClass} onClick={() => handleNameContinue(true)}>
-                Let me just copy
-              </Button>
-              <Button className={primaryButtonClass} onClick={() => handleNameContinue(false)}>
-                Continue
-              </Button>
-            </FlowButtonRow>
-          </>
-        );
-
-      case "sendFormat":
-        if (sentCount > 0 && !showFormatSwitch) {
-          const currentMode = messageFormat === "SINCERE" ? "Love mode" : "Bossy mode";
-          return (
-            <>
-              <FlowParagraph>Same mode ({currentMode}) for {displayName}, or switch?</FlowParagraph>
-              <FlowButtonRow>
-                <Button
-                  className={dismissButtonClass}
-                  onClick={() => {
-                    trackTreatyPostVoteFormatChoice({
-                      flowVariant,
-                      messageFormat,
-                      sentCount,
-                      switched: false,
-                    });
-                    go("sendMessage");
-                  }}
-                >
-                  Same mode
-                </Button>
-                <Button className={primaryButtonClass} onClick={() => setShowFormatSwitch(true)}>
-                  Switch mode
-                </Button>
-              </FlowButtonRow>
-            </>
-          );
-        }
-
-        return (
-          <>
-            <div className="space-y-4">
-              <FlowParagraph>How do you want to tell {displayName}?</FlowParagraph>
-              <MessageModeToggle
-                value={messageFormat}
-                onChange={(nextFormat) => {
-                  setMessageFormat(nextFormat);
-                  setInvitation(null);
-                  setMessage("");
-                  setError(null);
-                }}
-              />
-              {messageFormat === "TASK_NOTIFICATION" ? (
-                <TaskPreview senderName={senderName} />
-              ) : (
-                <SincerePreview displayName={displayName} />
-              )}
-            </div>
-            <FlowButtonRow>
-              <Button
-                className={primaryButtonClass}
-                onClick={() => {
-                  trackTreatyPostVoteFormatChoice({
-                    flowVariant,
-                    messageFormat,
-                    sentCount,
-                    switched: sentCount > 0,
-                  });
-                  go("sendMessage");
-                }}
-              >
-                Continue
               </Button>
             </FlowButtonRow>
           </>
@@ -946,14 +806,75 @@ export function TreatyPostVoteShareFlow({
       case "sendMessage":
         return (
           <>
-            <div className="space-y-4">
-              {messageFormat === "SINCERE" ? (
-                <FlowParagraph>{`Here's your message to ${displayName}:`}</FlowParagraph>
-              ) : null}
+            <div className="space-y-5">
+              {alt ? <FlowParagraph>One at a time. Bear with me.</FlowParagraph> : null}
+              <FlowParagraph>{sentCount === 0 ? "How do you want to tell someone?" : "Who's next?"}</FlowParagraph>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-name">
+                    To
+                  </Label>
+                  <Input
+                    id="post-vote-recipient-name"
+                    value={recipientName}
+                    onChange={(event) => {
+                      setRecipientName(event.target.value);
+                      setInvitation(null);
+                      setMessage("");
+                      setMessageEdited(false);
+                      setError(null);
+                    }}
+                    placeholder="First name or nickname"
+                    className={treatyInputClass}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-email">
+                    Email optional
+                  </Label>
+                  <Input
+                    id="post-vote-recipient-email"
+                    value={recipientEmail}
+                    onChange={(event) => {
+                      setRecipientEmail(event.target.value);
+                      setInvitation(null);
+                      setError(null);
+                    }}
+                    placeholder="jake@example.com"
+                    className={treatyInputClass}
+                    type="email"
+                  />
+                </div>
+              </div>
+              <MessageModeToggle
+                value={messageFormat}
+                onChange={(nextFormat) => {
+                  if (nextFormat === messageFormat) return;
+                  trackTreatyPostVoteFormatChoice({
+                    flowVariant,
+                    messageFormat: nextFormat,
+                    sentCount,
+                    switched: sentCount > 0,
+                  });
+                  setMessageFormat(nextFormat);
+                  setInvitation(null);
+                  setMessage("");
+                  setMessageEdited(false);
+                  setError(null);
+                }}
+              />
+              <div className="border-t border-[#23180d]/25 pt-4">
+                <p className="mb-2 text-center text-xs font-black uppercase tracking-[0.16em] text-[#5e513f] sm:text-left">
+                  Message to {displayName}
+                </p>
+              </div>
               <Textarea
                 value={message}
-                onChange={(event) => setMessage(event.target.value)}
-                className={`${treatyTextareaClass} min-h-72 font-mono text-sm`}
+                onChange={(event) => {
+                  setMessage(event.target.value);
+                  setMessageEdited(true);
+                }}
+                className={`${treatyTextareaClass} min-h-64 font-mono text-sm`}
                 disabled={isCreating}
               />
             </div>
@@ -1004,7 +925,7 @@ export function TreatyPostVoteShareFlow({
                 <FlowParagraph>Your pending totals:</FlowParagraph>
                 <FlowParagraph>Lifetimes of suffering prevented: <strong>{sentCount}</strong></FlowParagraph>
                 <FlowParagraph>Inverse Kills Score: <strong>{pendingLives} lives</strong></FlowParagraph>
-                <FlowParagraph>{`We'll email you the moment ${lastRecipientName || displayName} votes. Pending numbers turn into locked-in numbers.`}</FlowParagraph>
+                <FlowParagraph>{`We'll email you the moment ${lastRecipientName || displayName} votes. Pending → confirmed.`}</FlowParagraph>
                 <FlowParagraph>Most humans stop here. Which is statistically disappointing, but fine.</FlowParagraph>
                 <FlowParagraph>One more?</FlowParagraph>
               </div>
@@ -1025,7 +946,7 @@ export function TreatyPostVoteShareFlow({
                 className={primaryButtonClass}
                 onClick={() => {
                   resetCurrentRecipient();
-                  go("sendName");
+                  go("sendMessage");
                 }}
               >
                 {sentCount <= 1 ? "Yes, one more" : "One more"}
@@ -1040,7 +961,7 @@ export function TreatyPostVoteShareFlow({
           <>
             <div className="space-y-4">
               {alt ? <FlowParagraph>Fine. One optional thing:</FlowParagraph> : null}
-              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next Earth optimization task. Want us to email you in a few days to assign one more?</FlowParagraph>
+              <FlowParagraph>The chain continues past round 2 only if someone keeps assigning the next vote task. Want us to email you in a few days to assign one more?</FlowParagraph>
             </div>
             <FlowButtonRow>
               <Button className={dismissButtonClass} onClick={() => void handleDepthHook(false)}>
@@ -1113,6 +1034,7 @@ export function TreatyPostVoteShareFlow({
   return (
     <>
       <TreatyFlowShell
+        data-screen={screen}
         data-testid="treaty-post-vote-share-flow"
         contentClassName="max-w-3xl"
       >
