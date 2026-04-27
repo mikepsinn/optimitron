@@ -98,8 +98,6 @@ Button: **[ Submit ]** (only appears after the user has dragged the slider at le
 
 > Your governments spend **${ratio}** on weapons and military systems for every $1 spent on clinical trials.
 >
-> That's **99.8%** to military and **0.2%** to clinical trials.
->
 > Moving 1% of military spending to pragmatic clinical trials would increase clinical trial capacity by **12×**, compressing disease eradication from **443 years to 36 years**.
 
 > Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?

@@ -56,13 +56,6 @@ import {
   FLOW_WASTEFUL_APOCALYPSES,
 } from "@/lib/treaty-share-flow-parameters";
 
-const militarySpendingPct = Math.round(
-  (MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value /
-    (MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value + 1)) *
-    1000,
-) / 10; // one decimal place: 99.8%
-const clinicalTrialsSpendingPct = Math.round((100 - militarySpendingPct) * 10) / 10;
-
 type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
 
 export function TreatyVoteFlow({ className }: { className?: string }) {
@@ -649,18 +642,6 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                 </span>{" "}
                 {VOTE_SECTION.realityCheck}
               </TreatyFlowParagraph>
-
-              <div className="border-y border-[#23180d]/30 py-3 text-center text-sm font-bold leading-7 text-[#2f2417] sm:py-5 sm:text-lg sm:leading-8">
-                That&apos;s {" "}
-                <span className="text-lg font-black text-[#23180d] sm:text-xl">
-                  {militarySpendingPct}%
-                </span>{" "}
-                to military and {" "}
-                <span className="text-lg font-black text-[#23180d] sm:text-xl">
-                  {clinicalTrialsSpendingPct}%
-                </span>{" "}
-                to clinical trials.
-              </div>
 
               <TreatyFlowParagraph center className="text-sm leading-7 sm:text-lg sm:leading-8">
                 Moving 1% of military spending to pragmatic clinical trials
