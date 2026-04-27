@@ -297,29 +297,25 @@ This screen combines recipient entry, Love/Bossy mode, the editable message, and
 
 **Default (first):**
 
-> How do you want to tell someone?
+> Assign your first task. Start with your easiest yes.
 >
 > To: [ First name or nickname ]
 >
 > Email optional: [ jake@example.com ]
 >
 > [ Love mode | Bossy mode ]
->
-> Message to [someone/Jake]:
 >
 > [ editable message box ]
 
 **Default (second+):**
 
-> Who's next?
+> Assign the next task.
 >
 > To: [ First name or nickname ]
 >
 > Email optional: [ jake@example.com ]
 >
 > [ Love mode | Bossy mode ]
->
-> Message to [someone/Maria]:
 >
 > [ editable message box ]
 
