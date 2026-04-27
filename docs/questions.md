@@ -269,17 +269,17 @@ Buttons: **[ Still too much ]** ・ **[ Okay, two humans ]**
 > Getting a majority of humans on Earth (4 billion people) to agree the treaty is a good idea makes it politically unstoppable. 10.7 billion deaths prevented ÷ a majority of humans on Earth (4 billion people) = **2.675 lives per vote**. 1.93 quadrillion hours of suffering prevented ÷ a majority of humans on Earth (4 billion people) = **482,500 hours per vote**. At 8,760 hours/year = **~55 person-years** = roughly one full human lifetime.
 > </details>
 >
-> Your vote already did this. Every person you get to vote adds another lifetime to your Inverse Kills Score.
+> Your vote already did this. Every friend you get to vote adds another lifetime to your Inverse Kills Score.
 
 **Alt:**
 
 > Last math. Then you can return to your regularly scheduled apathy.
 >
-> A majority of humans on Earth (4 billion) agreeing the 1% Treaty is a good idea makes it politically unstoppable.
+> **One vote = 55 years of suffering prevented.**
 >
-> **One vote = 1 lifetime of suffering prevented. One vote = 2.7 lives saved.**
+> **One vote = 2.7 lives saved.**
 >
-> Every person you get to vote adds another lifetime to your Inverse Kills Score.
+> Every friend you get to vote adds another lifetime to your Inverse Kills Score.
 
 Buttons: **[ I reject mathematics ]** ・ **[ Show me mine ]**
 
@@ -287,7 +287,7 @@ Buttons: **[ I reject mathematics ]** ・ **[ Show me mine ]**
 
 ## Send Loop
 
-Mini sub-flow, **repeats per person**. Composer → Impact, then loop back or exit to Depth Hook.
+Mini sub-flow, **repeats per person**. Composer → Impact, then loop back or exit to The Close.
 
 **All users are verified.** Every send gets full attribution, every recipient gets the email sequence, every confirmation triggers the B2 dopamine email.
 
@@ -332,30 +332,7 @@ Buttons (no email): **[ Copy ]** (full width)
 
 Current UI is a two-position toggle: `Love mode` on the left and `Bossy mode` on the right. Internal format values remain `SINCERE` and `TASK_NOTIFICATION`.
 
-**Bossy mode concept sketch (ASCII illustration for ideation, not necessarily exact production rendering):**
-
-> ┌──────────────────────────────────────┐
-> │ ⚠️ [OVERDUE] End War and Disease     │
-> │                                      │
-> │ TASK: End War and Disease             │
-> │ ASSIGNED BY: [Your name]              │
-> │ STATUS: Overdue (by approximately     │
-> │         443 years)                    │
-> │ PRIORITY: Critical                    │
-> │ ESTIMATED TIME: 30 seconds            │
-> │                                       │
-> │ ACTION REQUIRED: Vote on the          │
-> │ 1% Treaty at warondisease.org         │
-> │                                       │
-> │ NOTE: This task was originally due     │
-> │ several centuries ago but kept         │
-> │ getting deprioritized in favor of      │
-> │ building 122 apocalypses worth of      │
-> │ nuclear weapons. Management            │
-> │ apologizes for the delay.              │
-> └──────────────────────────────────────┘
-
-**Current production Bossy mode editable text:**
+**Bossy mode editable text:**
 
 > Overdue task: End War and Disease
 >
@@ -388,7 +365,7 @@ Button: **[ Continue ]**
 
 **Default (after first send):**
 
-> **When Jake votes: +1 lifetime of suffering prevented. +2.7 lives saved.**
+> **When Jake votes: +55 years of suffering prevented. +2.7 lives saved.**
 >
 > [Jake] added to your direct reports. We'll notify you when they complete the task.
 
@@ -698,7 +675,7 @@ These go to the verified user who completed the flow.
 > Your vote for the 1% Treaty was verified.
 >
 > What that means, if the treaty passes:
-> **1 human lifetime of suffering prevented. 2.7 lives saved.**
+> **55 years of suffering prevented. 2.7 lives saved.**
 >
 > That's your share of 10.7 billion deaths prevented, divided across a majority of humans on Earth.
 >
@@ -718,7 +695,7 @@ These go to the verified user who completed the flow.
 
 > [Recipient name] voted for the 1% Treaty.
 >
-> **+2.7 lives confirmed. +1 lifetime of suffering prevented.**
+> **+2.7 lives confirmed. +55 years of suffering prevented.**
 >
 > Your Inverse Kills Score:
 > Confirmed: **[Y] lives**
@@ -732,7 +709,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 
 ---
 
-### B3. Overdue Task Reminder to Assign One More (Day 7, if opted in at Depth Hook)
+### B3. Overdue Task Reminder to Assign One More (Day 7, if opted in on the Promotion screen)
 
 **Subject:** One more?
 
@@ -796,7 +773,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 
 **Body:**
 
-> You voted for the 1% Treaty yesterday. That's worth 2.7 lives and 1 lifetime of suffering prevented.
+> You voted for the 1% Treaty yesterday. That's worth 2.7 lives and 55 years of suffering prevented.
 >
 > But only if the chain keeps going. Right now your vote is a fact with no momentum.
 >
