@@ -14,19 +14,29 @@ const describeIfDatabase = databaseUrl ? describe : describe.skip;
 
 describeIfDatabase("seedDatabase", () => {
   let seedDatabase: () => Promise<void>;
-  let disconnectSeedClient: () => Promise<void>;
+  let disconnectSeedClient: (() => Promise<void>) | null = null;
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
 
   beforeAll(async () => {
     const seed = await import("../../prisma/seed.ts");
-    seedDatabase = seed.seedDatabase;
-    disconnectSeedClient = seed.disconnectSeedClient;
+    const maybeSeedDatabase = (seed.seedDatabase ?? seed.default?.seedDatabase) as
+      | (() => Promise<void>)
+      | undefined;
+    if (!maybeSeedDatabase) {
+      throw new Error("seed integration test could not resolve seedDatabase export");
+    }
+
+    seedDatabase = maybeSeedDatabase;
+    disconnectSeedClient = (seed.disconnectSeedClient ??
+      seed.default?.disconnectSeedClient) as (() => Promise<void>) | null;
   });
 
   afterAll(async () => {
     await prisma.$disconnect();
-    await disconnectSeedClient();
+    if (disconnectSeedClient) {
+      await disconnectSeedClient();
+    }
   });
 
   it("seeds baseline reference data idempotently", async () => {
