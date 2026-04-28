@@ -9,6 +9,9 @@ const { REDIRECTS } = require("./src/lib/redirects");
 const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 
 const nextConfig = {
+  experimental: {
+    webpackMemoryOptimizations: true,
+  },
   transpilePackages: ['@optimitron/data'],
   serverExternalPackages: ['@storacha/client', 'multiformats', 'pinata'],
   // Next.js matches dev origins against the request hostname, not a full URL.

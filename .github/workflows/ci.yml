@@ -137,7 +137,7 @@ jobs:
 
       - name: Build web app
         env:
-          NODE_OPTIONS: --max-old-space-size=5632
+          NODE_OPTIONS: --max-old-space-size=6144
         run: pnpm --filter @optimitron/web run build
 
       - name: Cache Playwright browsers
@@ -223,7 +223,7 @@ jobs:
 
       - name: Build Vercel production artifact
         env:
-          NODE_OPTIONS: --max-old-space-size=5632
+          NODE_OPTIONS: --max-old-space-size=6144
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --token "$VERCEL_TOKEN"
