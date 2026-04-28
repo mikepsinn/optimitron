@@ -48,6 +48,8 @@ export const ROUTES = {
   // The Treaty
   treaty: "/treaty",
   vote: "/vote",
+  questions: "/questions",
+  humanityManagementTraining: "/humanity-management-training",
   // The Game
   prize: "/prize",
   scoreboard: "/scoreboard",
@@ -395,6 +397,15 @@ export const sendLink: NavItem = {
   cta: "Assign Task",
 };
 
+export const humanityManagementTrainingLink: NavItem = {
+  href: ROUTES.humanityManagementTraining,
+  label: "Humanity Management Training",
+  emoji: "ðŸ“‹",
+  description: "Post-vote training for newly promoted Humanity Managers: share your referral URL and give two humans their voting tasks.",
+  tagline: "Give two humans their voting tasks",
+  cta: "Start Training",
+};
+
 export const transparencyLink: NavItem = {
   href: ROUTES.dgao,
   label: AGENCIES.dgao.dName,
@@ -517,10 +528,20 @@ export const voteLink: NavItem = {
   href: ROUTES.vote,
   label: "Vote",
   emoji: "🗳️",
-  description: "Answer the 1% Treaty question. Thirty seconds. Then recruit the next human.",
+  description: "Answer the 1% Treaty question. Thirty seconds. Then give the next human their voting task.",
   tagline: "Answer the 1% Treaty question",
   matchPrefixes: [ROUTES.vote],
   cta: "Vote Now",
+};
+
+export const questionsLink: NavItem = {
+  href: ROUTES.questions,
+  label: "Treaty Questions",
+  emoji: "ðŸ—³ï¸",
+  description: "The longer context-first treaty walkthrough with the story, stakes, math, and vote question.",
+  tagline: "Story, stakes, math, and the treaty vote",
+  matchPrefixes: [ROUTES.questions],
+  cta: "See the Questions",
 };
 
 export const prizeLink: NavItem = {

@@ -8,6 +8,7 @@ import { GameScoreBar } from "@/components/game/GameScoreBar";
 import { getSiteFromHost } from "@/lib/site";
 import { ReferendumSiteNavbar } from "@/components/site/ReferendumSiteNavbar";
 import { ReferendumSiteFooter } from "@/components/site/ReferendumSiteFooter";
+import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 
 export async function SiteChrome({
   children,
@@ -21,9 +22,12 @@ export async function SiteChrome({
   if (site.primaryReferendumSlug) {
     return (
       <>
-        <ReferendumSiteNavbar config={site} />
-        <main className="min-h-screen">{children}</main>
-        <ReferendumSiteFooter config={site} content={content} />
+        <SiteChromeFrame
+          navbar={<ReferendumSiteNavbar config={site} />}
+          footer={<ReferendumSiteFooter config={site} content={content} />}
+        >
+          {children}
+        </SiteChromeFrame>
         {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
       </>
     );
@@ -31,10 +35,13 @@ export async function SiteChrome({
 
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen">{children}</main>
-      <Footer />
-      <GameScoreBar />
+      <SiteChromeFrame
+        navbar={<Navbar />}
+        footer={<Footer />}
+        bottomBar={<GameScoreBar />}
+      >
+        {children}
+      </SiteChromeFrame>
       <Analytics />
       {site.analyticsId ? <GoogleAnalytics gaId={site.analyticsId} /> : null}
     </>

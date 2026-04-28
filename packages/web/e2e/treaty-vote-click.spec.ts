@@ -57,10 +57,10 @@ test.describe("treaty vote yes-click regression", () => {
     const parsed = JSON.parse(pendingVote!) as { answer: string };
     expect(parsed.answer).toBe("YES");
 
-    const postVoteOverlay = page.getByTestId("treaty-post-vote-overlay");
-    await expect(postVoteOverlay).toBeVisible({ timeout: 15_000 });
+    const postVoteRedirect = page.getByTestId("treaty-post-vote-redirect");
+    await expect(postVoteRedirect).toBeVisible({ timeout: 15_000 });
     await expect(
-      postVoteOverlay.getByRole("button", { name: /(Save|Verify) with Google/i }),
+      postVoteRedirect.getByRole("button", { name: /(Save|Verify) with Google/i }),
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -103,10 +103,10 @@ test.describe("treaty vote yes-click regression", () => {
     expect(parsed.inviteToken).toBe(VOTE_INVITE_TOKEN);
     expect(parsed.referredBy).toBe(VOTE_INVITE_CODE);
 
-    const postVoteOverlay = page.getByTestId("treaty-post-vote-overlay");
-    await expect(postVoteOverlay).toBeVisible({ timeout: 15_000 });
+    const postVoteRedirect = page.getByTestId("treaty-post-vote-redirect");
+    await expect(postVoteRedirect).toBeVisible({ timeout: 15_000 });
     await expect(
-      postVoteOverlay.getByRole("button", { name: /(Save|Verify) with Google/i }),
+      postVoteRedirect.getByRole("button", { name: /(Save|Verify) with Google/i }),
     ).toBeVisible({ timeout: 10_000 });
   });
 });

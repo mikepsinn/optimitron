@@ -21,6 +21,7 @@ export interface ReferralInvitationUser {
 
 export type ReferralInvitationUpdateAction =
   | "markCopied"
+  | "markManualContacted"
   | "decline"
   | "cancel"
   | "sendMessage";

@@ -15,6 +15,8 @@ import {
   sendTreatyRecipientVotedEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser,
 } from "@/lib/email/treaty-sender-emails.server";
+import { ensurePersonForUser } from "@/lib/person.server";
+import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 const log = createLogger("referendum-vote");
@@ -171,6 +173,16 @@ export async function POST(
     }
 
     if (referendum.slug === TREATY_REFERENDUM_SLUG) {
+      try {
+        const person = await ensurePersonForUser(userId);
+        await ensureUserTreatyTask({
+          personId: person.id,
+          userId,
+        });
+      } catch (taskError) {
+        log.error("Treaty humanity-management task sync error", taskError);
+      }
+
       try {
         await sendTreatyVoteConfirmedEmailForUser({
           referendumId: referendum.id,

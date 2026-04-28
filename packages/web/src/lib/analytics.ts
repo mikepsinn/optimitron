@@ -71,12 +71,14 @@ export function trackVoteSubmitted(params: {
   answer: string
   authenticated: boolean
   flowVariant?: string
+  surface?: string
 }): void {
   trackEvent('vote_submitted', {
     vote_type: params.voteType,
     answer: params.answer,
     authenticated: params.authenticated,
     flow_variant: params.flowVariant,
+    surface: params.surface,
   })
 }
 
@@ -189,6 +191,58 @@ export function trackTreatyPostVoteFeedback(params: {
     sent_count: params.sentCount,
     character_count: params.characterCount,
     flow_variant: params.flowVariant,
+  })
+}
+
+export function trackHumanityTrainingScreenAdvanced(params: {
+  from: string
+  to: string
+  completedCount: number
+}): void {
+  trackEvent('humanity_training_screen_advanced', {
+    from_screen: params.from,
+    to_screen: params.to,
+    completed_count: params.completedCount,
+    surface: 'humanity_management_training',
+  })
+}
+
+export function trackHumanityTrainingContactAction(params: {
+  action: 'copy' | 'send_email' | 'sms' | 'call' | 'manual_contacted'
+  messageFormat: string
+  completedCount: number
+  hasEmail: boolean
+  hasPhone: boolean
+}): void {
+  trackEvent('humanity_training_contact_action', {
+    action: params.action,
+    message_format: params.messageFormat,
+    completed_count: params.completedCount,
+    has_email: params.hasEmail,
+    has_phone: params.hasPhone,
+    surface: 'humanity_management_training',
+  })
+}
+
+export function trackHumanityTrainingShareAction(params: {
+  channel: string
+  completedCount: number
+}): void {
+  trackEvent('humanity_training_share_action', {
+    channel: params.channel,
+    completed_count: params.completedCount,
+    surface: 'humanity_management_training',
+  })
+}
+
+export function trackHumanityTrainingMilestone(params: {
+  milestone: 'first_contact_completed' | 'second_contact_completed' | 'dashboard_exit'
+  completedCount: number
+}): void {
+  trackEvent('humanity_training_milestone', {
+    milestone: params.milestone,
+    completed_count: params.completedCount,
+    surface: 'humanity_management_training',
   })
 }
 

@@ -152,6 +152,7 @@ describe("/api/referral-invitations", () => {
     });
     expect(mocks.markReferralInvitationCopied).toHaveBeenCalledWith({
       invitationId: "invite_1",
+      contactConfirmed: false,
       messageText: "message",
       referrerUserId: "user_1",
       shareAttemptId: "share_1",
@@ -178,10 +179,48 @@ describe("/api/referral-invitations", () => {
     });
     expect(mocks.markReferralInvitationCopied).toHaveBeenCalledWith({
       invitationId: "invite_1",
+      contactConfirmed: false,
       messageText: "message",
       referrerUserId: "user_1",
       shareAttemptId: undefined,
       wasEdited: undefined,
+      now: expect.any(Date),
+    });
+  });
+
+  it("marks manual phone/text contact using the copied status without requiring email", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.markReferralInvitationCopied.mockResolvedValue({
+      id: "invite_1",
+      recipientEmail: null,
+      status: "COPIED",
+    });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "markManualContacted",
+        messageText: "Called Jake with the treaty link.",
+        shareAttemptId: "share_manual_1",
+        wasEdited: false,
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      invitation: {
+        id: "invite_1",
+        recipientEmail: null,
+        status: "COPIED",
+      },
+    });
+    expect(mocks.markReferralInvitationCopied).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      contactConfirmed: true,
+      messageText: "Called Jake with the treaty link.",
+      referrerUserId: "user_1",
+      shareAttemptId: "share_manual_1",
+      wasEdited: false,
       now: expect.any(Date),
     });
   });

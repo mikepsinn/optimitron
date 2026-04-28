@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
+import { markUserTreatyReferralShareComplete } from "@/lib/tasks/user-treaty-task-progress.server";
 import { grantWishes } from "@/lib/wishes.server";
 
 export const runtime = "nodejs";
@@ -73,6 +74,27 @@ export async function POST(request: Request) {
     if (code !== "P2002") {
       console.error("[SHARE ATTEMPT] Failed to persist:", error);
       return NextResponse.json({ error: "Failed to log share." }, { status: 500 });
+    }
+  }
+
+  const sharePurpose =
+    parsed.context && typeof parsed.context.purpose === "string"
+      ? parsed.context.purpose
+      : null;
+  if (
+    parsed.taskId &&
+    (parsed.surface === "humanity_management_training" ||
+      sharePurpose === "humanity_management_training_referral_share")
+  ) {
+    try {
+      await markUserTreatyReferralShareComplete({
+        channel: parsed.channel,
+        personId: currentUser.person?.id ?? null,
+        taskId: parsed.taskId,
+        userId: currentUser.id,
+      });
+    } catch (taskError) {
+      console.error("[SHARE ATTEMPT] Failed to sync training share task:", taskError);
     }
   }
 

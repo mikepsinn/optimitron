@@ -72,8 +72,8 @@ async function signInViaApi(request: import("@playwright/test").APIRequestContex
 // 1. Slider → vote → auth card appears (unauthenticated)
 // ---------------------------------------------------------------------------
 
-test("landing: slider → vote → auth card appears", async ({ page }) => {
-  const response = await page.goto("/");
+test("vote page: slider -> vote -> auth card appears", async ({ page }) => {
+  const response = await page.goto("/vote");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
@@ -105,8 +105,8 @@ test("landing: slider → vote → auth card appears", async ({ page }) => {
 // 2. Vote persists in localStorage across navigation
 // ---------------------------------------------------------------------------
 
-test("landing: vote persists in localStorage", async ({ page }) => {
-  const response = await page.goto("/");
+test("vote page: vote persists in localStorage", async ({ page }) => {
+  const response = await page.goto("/vote");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
@@ -121,7 +121,7 @@ test("landing: vote persists in localStorage", async ({ page }) => {
 
   // Verify localStorage has pending vote
   const pendingVote = await page.evaluate(() =>
-    localStorage.getItem("pending_vote"),
+    localStorage.getItem("pending_treaty_vote"),
   );
   expect(pendingVote).toBeTruthy();
 
@@ -133,7 +133,7 @@ test("landing: vote persists in localStorage", async ({ page }) => {
   await page.waitForLoadState("domcontentloaded");
 
   // Navigate back
-  await page.goto("/");
+  await page.goto("/vote");
   await page.waitForLoadState("domcontentloaded");
 
   // Scroll to vote section — slider should NOT be visible (already voted)
@@ -149,7 +149,7 @@ test("landing: vote persists in localStorage", async ({ page }) => {
 // 3. Authenticated user sees share card after voting
 // ---------------------------------------------------------------------------
 
-test("landing: authenticated user sees share card after voting", async ({
+test("vote page: authenticated user reaches training after voting", async ({
   page,
   request,
 }) => {
@@ -160,7 +160,7 @@ test("landing: authenticated user sees share card after voting", async ({
     return;
   }
 
-  const response = await page.goto("/");
+  const response = await page.goto("/vote");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
@@ -168,7 +168,7 @@ test("landing: authenticated user sees share card after voting", async ({
   await page.waitForLoadState("domcontentloaded");
 
   // Clear any existing localStorage vote state for a clean test
-  await page.evaluate(() => localStorage.removeItem("pending_vote"));
+  await page.evaluate(() => localStorage.removeItem("pending_treaty_vote"));
   await page.reload();
   await page.waitForLoadState("domcontentloaded");
 
@@ -178,11 +178,12 @@ test("landing: authenticated user sees share card after voting", async ({
   await completeSlider(page);
   await voteYes(page);
 
-  // Should see share card (referral link), NOT auth card
-  // ReferralLinkCard has a copy button and social share buttons
-  await expect(
-    page.locator("text=/referral|share/i").first(),
-  ).toBeVisible({ timeout: 10_000 });
+  await expect(page).toHaveURL(/\/humanity-management-training(?:[?#]|$)/, {
+    timeout: 15_000,
+  });
+  await expect(page.getByTestId("humanity-management-training-flow")).toBeVisible({
+    timeout: 10_000,
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -230,7 +231,7 @@ test("landing: VoteValueReveal shows parameter values", async ({ page }) => {
 test("landing: vote flow captures referral code from URL", async ({
   page,
 }) => {
-  const response = await page.goto("/?ref=testuser");
+  const response = await page.goto("/vote?ref=testuser");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
@@ -245,7 +246,7 @@ test("landing: vote flow captures referral code from URL", async ({
 
   // Verify localStorage pendingVote has the referral code
   const pendingVote = await page.evaluate(() =>
-    localStorage.getItem("pending_vote"),
+    localStorage.getItem("pending_treaty_vote"),
   );
   expect(pendingVote).toBeTruthy();
 

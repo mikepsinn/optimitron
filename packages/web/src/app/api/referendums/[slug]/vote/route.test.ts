@@ -13,6 +13,8 @@ const mocks = vi.hoisted(() => ({
   convertReferralInvitationForVote: vi.fn(),
   sendTreatyRecipientVotedEmailForInvitation: vi.fn(),
   sendTreatyVoteConfirmedEmailForUser: vi.fn(),
+  ensurePersonForUser: vi.fn(),
+  ensureUserTreatyTask: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -43,6 +45,14 @@ vi.mock("@/lib/referral-invitations.server", () => ({
 vi.mock("@/lib/email/treaty-sender-emails.server", () => ({
   sendTreatyRecipientVotedEmailForInvitation: mocks.sendTreatyRecipientVotedEmailForInvitation,
   sendTreatyVoteConfirmedEmailForUser: mocks.sendTreatyVoteConfirmedEmailForUser,
+}));
+
+vi.mock("@/lib/person.server", () => ({
+  ensurePersonForUser: mocks.ensurePersonForUser,
+}));
+
+vi.mock("@/lib/tasks/user-treaty-task.server", () => ({
+  ensureUserTreatyTask: mocks.ensureUserTreatyTask,
 }));
 
 vi.mock("@/lib/wishes.server", () => ({
@@ -90,6 +100,17 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
     mocks.sendTreatyRecipientVotedEmailForInvitation.mockResolvedValue({ status: "sent" });
     mocks.sendTreatyVoteConfirmedEmailForUser.mockResolvedValue({ status: "sent" });
+    mocks.ensurePersonForUser.mockResolvedValue({ id: "person_1" });
+    mocks.ensureUserTreatyTask.mockResolvedValue({
+      created: false,
+      taskId: "task_root",
+      subtaskIds: {
+        assignFirstHuman: "task_assign_1",
+        assignSecondHuman: "task_assign_2",
+        completeTraining: "task_training",
+        shareReferralUrl: "task_share",
+      },
+    });
   });
 
   it("returns 401 when unauthenticated", async () => {
@@ -212,6 +233,11 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(res.status).toBe(200);
     expect(mocks.sendTreatyVoteConfirmedEmailForUser).toHaveBeenCalledWith({
       referendumId: "ref_1",
+      userId: "user_1",
+    });
+    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
+    expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith({
+      personId: "person_1",
       userId: "user_1",
     });
   });

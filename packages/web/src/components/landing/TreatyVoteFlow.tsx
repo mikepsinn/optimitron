@@ -27,6 +27,7 @@ import {
   trackTreatyFlowScreenAdvanced,
   trackVoteSubmitted,
 } from "@/lib/analytics";
+import { ROUTES } from "@/lib/routes";
 import { VOTE_SECTION } from "@/lib/messaging";
 import {
   buildTreatyWishocraticAllocation,
@@ -58,12 +59,30 @@ import {
 
 type PreVoteScreen = "apology" | "grandma" | "apocalypse" | "slider";
 
-export function TreatyVoteFlow({ className }: { className?: string }) {
+interface TreatyVoteFlowProps {
+  authCallbackUrl?: string;
+  className?: string;
+  defaultFlowVariant?: TreatyFlowVariant;
+  postVoteBehavior?: "overlay" | "redirect";
+  postVoteRedirectUrl?: string;
+  respectStoredFlowVariant?: boolean;
+  surface?: string;
+}
+
+export function TreatyVoteFlow({
+  authCallbackUrl = ROUTES.dashboard,
+  className,
+  defaultFlowVariant = DEFAULT_TREATY_FLOW_VARIANT,
+  postVoteBehavior = "overlay",
+  postVoteRedirectUrl = ROUTES.dashboard,
+  respectStoredFlowVariant = true,
+  surface = "treaty_vote_flow",
+}: TreatyVoteFlowProps) {
   const searchParams = useSearchParams();
   const queryFlowVariant =
     normalizeTreatyFlowVariant(searchParams?.get(TREATY_FLOW_VARIANT_QUERY_PARAM)) ??
     normalizeTreatyFlowVariant(searchParams?.get("flowVariant"));
-  const initialFlowVariant = queryFlowVariant ?? DEFAULT_TREATY_FLOW_VARIANT;
+  const initialFlowVariant = queryFlowVariant ?? defaultFlowVariant;
   const initialPreVoteScreen: PreVoteScreen =
     initialFlowVariant === TREATY_FLOW_VARIANTS.contextFirstV2
       ? "apology"
@@ -87,6 +106,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
   const shareCardRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const postVoteRedirectStartedRef = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -96,8 +116,10 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
     const requestedVariant =
       normalizeTreatyFlowVariant(searchParams?.get(TREATY_FLOW_VARIANT_QUERY_PARAM)) ??
       normalizeTreatyFlowVariant(searchParams?.get("flowVariant")) ??
-      normalizeTreatyFlowVariant(storage.getTreatyFlowVariant()) ??
-      DEFAULT_TREATY_FLOW_VARIANT;
+      (respectStoredFlowVariant
+        ? normalizeTreatyFlowVariant(storage.getTreatyFlowVariant())
+        : null) ??
+      defaultFlowVariant;
 
     setFlowVariant(requestedVariant);
     storage.setTreatyFlowVariant(requestedVariant);
@@ -112,7 +134,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       setPreVoteAlt(false);
       setPreVoteDismissiveCount(0);
     }
-  }, [answer, searchParams, sliderSubmitted]);
+  }, [answer, defaultFlowVariant, respectStoredFlowVariant, searchParams, sliderSubmitted]);
 
   // Restore state from localStorage on mount
   useEffect(() => {
@@ -317,6 +339,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       answer: choice.toUpperCase(),
       authenticated: status === "authenticated",
       flowVariant,
+      surface,
     });
 
     if (choice === "yes") {
@@ -341,7 +364,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
 
     storage.clearVoteStatusCache();
 
-    if (status === "authenticated" && session) {
+    if (status === "authenticated" && session && postVoteBehavior === "overlay") {
       void syncPendingReferendumVotes(session).then(() => {
         const referralIdentifier = getUsernameOrReferralCode(session.user);
         if (referralIdentifier) {
@@ -354,6 +377,34 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       });
     }
   };
+
+  useEffect(() => {
+    if (
+      !answer ||
+      postVoteBehavior !== "redirect" ||
+      status !== "authenticated" ||
+      !session ||
+      postVoteRedirectStartedRef.current
+    ) {
+      return;
+    }
+
+    postVoteRedirectStartedRef.current = true;
+    void syncPendingReferendumVotes(session)
+      .then(() => {
+        const referralIdentifier = getUsernameOrReferralCode(session.user);
+        if (referralIdentifier) {
+          storage.setVoteStatusCache({
+            hasVoted: true,
+            voteAnswer: answer.toUpperCase(),
+            referralCode: referralIdentifier,
+          });
+        }
+      })
+      .finally(() => {
+        window.location.href = postVoteRedirectUrl;
+      });
+  }, [answer, postVoteBehavior, postVoteRedirectUrl, session, status]);
 
   const renderPreVoteScreen = () => {
     switch (preVoteScreen) {
@@ -486,6 +537,69 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
         return null;
     }
   };
+
+  if (answer && isMounted && postVoteBehavior === "redirect") {
+    const isWaitingForAuth = status === "loading" || status === "authenticated";
+
+    return (
+      <div
+        className={cn(
+          "relative left-1/2 w-screen max-w-none -translate-x-1/2 bg-[#fbf7ee]",
+          className,
+        )}
+      >
+        <motion.div
+          ref={shareCardRef}
+          data-testid="treaty-post-vote-redirect"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.35,
+            ease: [0.87, 0, 0.13, 1],
+          }}
+        >
+          {isWaitingForAuth ? (
+            <TreatyFlowShell contentClassName="max-w-2xl">
+              <div className="space-y-4 text-center">
+                <p className="text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                  Vote counted.
+                </p>
+                <p className="text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                  Saving your vote and opening Humanity Management Training.
+                </p>
+              </div>
+            </TreatyFlowShell>
+          ) : (
+            <TreatyFlowShell contentClassName="max-w-2xl">
+              <div className="space-y-4">
+                <p className="text-center text-2xl font-black uppercase leading-tight tracking-[0.08em] text-[#23180d] sm:text-3xl">
+                  Vote counted.
+                </p>
+                <p className="text-center text-base font-bold leading-8 text-[#2f2417] sm:text-lg">
+                  Governments won&apos;t listen to bot votes. They barely
+                  listen to human ones, but at least yours will be on file.
+                  Verify you&apos;re a real human so yours counts in the final
+                  tally and opens Humanity Management Training.
+                </p>
+              </div>
+              <AuthForm
+                callbackUrl={authCallbackUrl}
+                referralCode={searchParams?.get("ref")}
+                shareAttemptId={searchParams?.get("sa")}
+                compact={true}
+                hideContainer
+                title={null}
+                googleButtonLabel="Verify with Google"
+                emailButtonLabel="Verify by email"
+                emailPendingButtonLabel="Sending verification link..."
+                emailSuccessFooter={VOTE_SECTION.emailSuccessFooter}
+              />
+            </TreatyFlowShell>
+          )}
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -701,7 +815,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
       </AnimatePresence>
 
       {/* Auth or Share Card — Shows After Vote */}
-      {answer && isMounted
+      {answer && isMounted && postVoteBehavior === "overlay"
         ? createPortal(
           <motion.div
             ref={shareCardRef}
@@ -757,7 +871,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
                   </p>
                 </div>
                 <AuthForm
-                  callbackUrl="/dashboard"
+                  callbackUrl={authCallbackUrl}
                   referralCode={searchParams?.get("ref")}
                   shareAttemptId={searchParams?.get("sa")}
                   compact={true}

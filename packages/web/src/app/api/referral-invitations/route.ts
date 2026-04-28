@@ -31,7 +31,7 @@ const createInvitationSchema = z.object({
 
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
-  action: z.enum(["markCopied", "decline", "cancel", "sendMessage"]),
+  action: z.enum(["markCopied", "markManualContacted", "decline", "cancel", "sendMessage"]),
   messageText: z.string().trim().max(10_000).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
   wasEdited: z.boolean().optional(),
@@ -108,9 +108,10 @@ export async function PATCH(request: Request) {
     const parsed = patchInvitationSchema.parse(await request.json());
     const now = new Date();
 
-    if (parsed.action === "markCopied") {
+    if (parsed.action === "markCopied" || parsed.action === "markManualContacted") {
       const invitation = await markReferralInvitationCopied({
         invitationId: parsed.id,
+        contactConfirmed: parsed.action === "markManualContacted",
         messageText: parsed.messageText,
         referrerUserId: userId,
         shareAttemptId: parsed.shareAttemptId,

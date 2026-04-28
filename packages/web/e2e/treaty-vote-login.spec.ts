@@ -29,10 +29,10 @@ async function completeSliderAndVote(page: Page) {
   await yesButton.click();
 }
 
-test("treaty vote → demo login → lands on /dashboard (not /auth/signin)", async ({
+test("treaty vote -> demo login -> lands on training (not /auth/signin)", async ({
   page,
 }) => {
-  const response = await page.goto("/");
+  const response = await page.goto("/vote");
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
@@ -51,12 +51,15 @@ test("treaty vote → demo login → lands on /dashboard (not /auth/signin)", as
   await expect(demoButton).toBeVisible({ timeout: 10_000 });
   await demoButton.click();
 
-  // Primary assertion: browser lands on /dashboard, not /auth/signin.
+  // Primary assertion: browser lands on training, not /auth/signin.
   // This is the bug the user reported: avatar set, but server session
-  // missing user.id, so the dashboard bounced them back to login.
-  await page.waitForURL(/\/dashboard(\?|$)/, { timeout: 15_000 });
-  expect(page.url()).toMatch(/\/dashboard(\?|$)/);
+  // missing user.id, so gated pages bounced them back to login.
+  await page.waitForURL(/\/humanity-management-training(\?|$)/, { timeout: 15_000 });
+  expect(page.url()).toMatch(/\/humanity-management-training(\?|$)/);
   expect(page.url()).not.toMatch(/\/auth\/signin/);
+  await expect(page.getByTestId("humanity-management-training-flow")).toBeVisible({
+    timeout: 10_000,
+  });
 });
 
 test("signed-in user can sign out from the dashboard", async ({ page }) => {

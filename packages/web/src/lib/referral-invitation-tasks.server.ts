@@ -20,7 +20,7 @@ export function buildReferralInvitationTaskKey(inviteToken: string) {
 
 export function buildReferralInvitationTaskTitle(recipientName: string) {
   const firstName = getReferralInvitationFirstName(recipientName) || recipientName;
-  return `Invite ${firstName} to vote on the 1% Treaty`;
+  return `${firstName}: vote on the 1% Treaty`;
 }
 
 export function buildReferralInvitationTaskDescription(recipientName: string) {
