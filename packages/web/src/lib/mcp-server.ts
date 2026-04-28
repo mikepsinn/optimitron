@@ -169,6 +169,7 @@ function authRequired(toolName: string, reason: string) {
         text: JSON.stringify(
           {
             error: "authentication_required",
+            tool: toolName,
             message: `Tool "${toolName}" needs an authenticated user. ${reason}`,
             remediation: {
               remote_http: {
