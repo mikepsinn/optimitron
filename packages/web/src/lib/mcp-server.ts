@@ -1443,7 +1443,9 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "createTask",
-    description: "Create a new task as DRAFT. Private visibility is the default (isPublic = false).",
+    description:
+      "Create a new task as DRAFT. Private visibility is the default (isPublic = false). " +
+      "Before adding blockers/dependents, use searchTasks to find candidate related task IDs.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1459,14 +1461,16 @@ const TASK_TOOL_DEFINITIONS = [
           type: "array",
           items: { type: "string" },
           description:
-            "Optional IDs of existing tasks that block this task (must be completed first).",
+            "Optional IDs of existing tasks that block this task (must be completed first). " +
+            "Use searchTasks first to discover valid blocker task IDs.",
           minItems: 0,
         },
         blockedTaskIds: {
           type: "array",
           items: { type: "string" },
           description:
-            "Optional IDs of existing tasks that are blocked by this task (tasks that depend on it).",
+            "Optional IDs of existing tasks that are blocked by this task (tasks that depend on it). " +
+            "Use searchTasks first to discover valid dependent task IDs.",
           minItems: 0,
         },
         estimatedEffortHours: { type: "number", description: "Estimated hours to complete" },
@@ -1949,7 +1953,8 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "searchTasks",
     description:
-      "Search your accessible tasks by title, description, task key, assignee, or organization. Useful for finding blockers and dependent task IDs.",
+      "Search your accessible tasks by title, description, task key, assignee, or organization. " +
+      "Use this before createTask/updateTask when you need blockerTaskIds or blockedTaskIds.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1960,6 +1965,11 @@ const TASK_TOOL_DEFINITIONS = [
           enum: ["public", "accessible"],
           description:
             "What visibility to search. Use public for public tasks only, accessible for your private + public tasks.",
+        },
+        status: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          description: "Optional status filter to narrow dependency candidates.",
         },
       },
       required: ["query"],
@@ -2427,6 +2437,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
           const limit = parseQueueLimit(a.limit, 20, 100);
           const scope = a.scope === "public" ? "public" : "accessible";
+          const status = a.status
+            ? (a.status as "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE")
+            : undefined;
           if (scope === "accessible" && !userId) {
             return err("Authentication required for accessible scope.");
           }
@@ -2434,6 +2447,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           const results = await tasks.searchTasks(query, {
             limit,
             userId: scope === "accessible" ? userId : null,
+            status,
           });
 
           return ok(results);

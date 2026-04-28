@@ -1228,6 +1228,7 @@ export async function searchTasks(
   options?: {
     limit?: number | null;
     userId?: string | null;
+    status?: "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE" | null;
   },
 ): Promise<TaskSearchResult[]> {
   const searchTerms = getSearchTerms(query);
@@ -1248,6 +1249,7 @@ export async function searchTasks(
           userId: options?.userId,
           visibility: options?.userId ? "accessible" : "public",
         }),
+        ...(options?.status ? [{ status: options.status }] : []),
         {
           OR: searchPhrases.flatMap((term) => [
             {
