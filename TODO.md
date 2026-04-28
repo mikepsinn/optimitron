@@ -74,9 +74,9 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - [x] First split: moved recipient invitation email send/cron logic and sender reminder cron scheduling into `packages/web/src/lib/email/referral-invitation-emails.server.ts`; lifecycle module is down to ~414 lines and no longer imports Resend or treaty sender reminder dispatch.
   - [x] Second split: moved invite task key/title/description generation, task creation, and conversion verification updates into `packages/web/src/lib/referral-invitation-tasks.server.ts`; lifecycle module is down to ~406 lines.
   - The remaining lifecycle file owns invitation validation, recipient person linkage, status transitions, and share-attempt recording only.
-- [ ] Merge `packages/web/src/lib/referral-email-sequence.ts` (784 lines) and `packages/web/src/lib/referral-invitation-email-sequence.ts` (268 lines) into a single sequence module.
-  - Both expose delay schedules, max-step constants (`REFERRAL_*_MAX_STEP`), subject lists, and template builders. Land one ordered sequence per role (recipient, sender) with a single discriminator.
-  - This is the natural home for the eventual `TaskCommunicationTemplate` / `TaskCommunicationVariant` lookup.
+- [x] Retire the legacy `referral_sequence_*` sender lifecycle.
+  - Follow-up is now owned by concrete `Task` rows and the generic overdue-task reminder cron.
+  - Do not recreate standalone sender receipt, reminder, scorecard, or re-engagement emails outside the task system.
 - [x] Extract small shared modules for cross-file primitives.
   - Server `sha256Hex()` lives in `packages/web/src/lib/crypto.server.ts`; both prior duplicates removed.
   - `SENDER_REMINDER_DELAY_DAYS` is now exported from `referral-invitations.server.ts` and imported by the API route.
@@ -84,10 +84,8 @@ These are technical-debt items surfaced by a 2026-04-25 architecture audit of th
   - `MS_PER_DAY` constant added in `packages/web/src/lib/time.ts`; the inline `24 * 60 * 60 * 1000` literals in `referral-invitations.server.ts`, `referral-email.server.ts`, and `app/api/referral-invitations/route.ts` now use it. Other inline occurrences (`treaty-sender-emails.server.ts:447`, `census-aggregation.server.ts:69`) left untouched and can be migrated opportunistically.
   - Browser-side async `sha256Hex` in `components/landing/PostVoteReminders.tsx:30` and `components/tasks/task-row-share.tsx:29` is still duplicated — Web Crypto is async; not worth the risk in this pass.
 - [x] Group email infrastructure under `packages/web/src/lib/email/`.
-  - `email-urls.ts`, `magic-link-email.ts`, `referral-email.server.ts`, `referral-email-sequence.ts`, `referral-invitation-email-sequence.ts`, and `treaty-sender-emails.server.ts` currently sit flat in `lib/`.
-  - `referral-invitation-emails.server.ts` now lives under `lib/email/` and owns recipient invitation email send/cron plus sender reminder cron scheduling.
-  - [x] Moved flat email infrastructure into `packages/web/src/lib/email/`: URL helpers, magic-link email, referral sequence sender, referral sequence copy builders, recipient invitation sequence builders, treaty sender sequence builders, treaty sender dispatcher, and the Resend wrapper. Updated affected route/test imports.
-  - [x] Centralized queued `EmailLog` creation and status transitions in `packages/web/src/lib/email/email-log.server.ts`; referral sequence and treaty sender email paths now share `createEmailLog()`, duplicate detection, and SENT/FAILED updates.
+  - Current active paths are magic-link email, explicit task notifications, recipient-voted sender notification, and the Resend wrapper.
+  - [x] Centralized queued `EmailLog` creation and status transitions in `packages/web/src/lib/email/email-log.server.ts`; task notification paths share durable claim/send/update logic.
 - [x] Unify `ShareAttempt` writes through one helper.
   - `recordShareAttempt(tx, { ... })` now lives in `packages/web/src/lib/share-attempts.server.ts` and computes both `templateHash` and `renderedHash` from the inputs, eliminating the per-call `sha256Hex` plumbing.
   - The two creation paths in `referral-invitations.server.ts` (copied invite, email-send) both go through the helper. Future task families should call the same helper.
@@ -255,28 +253,23 @@ Agent-usage feedback from 2026-04-25: the current toolset covers the core loop w
   - Rename schema/API/code/test names such as `nudgeOptIn`, `wantsNudge`, `senderNudgeOptedInAt`, `senderNudgeStep`, `nextSenderNudgeAt`, `lastSenderNudgeAt`, and B3/B4 builder names.
   - Add a migration that renames the existing `ReferralInvitation` columns/indexes instead of dropping data.
   - Implemented as a data-preserving Prisma migration plus generated-client, API, cron, email-builder, analytics, and test updates.
-- [x] Wire Sender Sequence B1/B2 triggered emails into verified vote and invite-conversion paths with `EmailLog` dedupe.
-- [x] Wire Sender Sequence B3/B4 sender reminders into cron from the sender reminder schedule.
-- [x] Wire Sender Sequence B5 monthly scorecards.
-  - Cron sends one scorecard per user per UTC month when they have at least one copied/sent/converted referral invitation.
-  - Current scorecard uses direct invitation totals plus a conservative direct-recipient-shared-further count.
-- [x] Wire Re-engagement Sequence C1 for verified YES voters who never shared.
-  - Cron sends the one-shot C1 email after 24 hours when the user has no referral invitations and no prior C1 EmailLog.
-  - C1 links directly to `/send`.
+- [x] Remove standalone sender receipt/follow-up email sequences.
+  - Deleted the vote-confirmed receipt send from the referendum vote route.
+  - Keep only the triggered recipient-voted notification; it reports a real external event.
+  - Sender follow-up, "assign one more," scorecard, and "you voted but did not share" nudges are task states, not separate `referral_sequence_*` emails.
 - [x] Preserve format consistency per invite; do not mix Task Notification and Sincere variants within a recipient sequence.
   - `ReferralInvitation.messageFormat` is read for every recipient email step and covered by regression tests.
 - [x] Enforce the recipient hard cap of four emails.
   - Recipient processing filters `recipientEmailStep < 4`; direct sends return `maxed` after step 4.
-- [x] Enforce sender reminder caps and monthly scorecard preferences.
-  - Sender reminders stop after two steps; monthly scorecards use one `EmailLog` template per user per UTC month and the shared `referral_sequence` suppression scope.
+- [x] Enforce sender follow-up through task reminders.
+  - The task reminder cron owns cadence/caps for overdue sender work; no dedicated sender reminder or monthly scorecard sequence should be reintroduced.
 - [x] Suppress reminders after conversion, unsubscribe, cancellation, decline, or hard cap.
   - Recipient reminders filter converted/deleted/unsubscribed/maxed rows, declined rows are inactive, and cancel/decline clear pending recipient/sender schedules.
 - [x] Use existing email preference/unsubscribe semantics instead of adding a parallel suppression system.
   - Sender sequence emails use `sendResendEmail()` with `scope: "referral_sequence"`; recipient invitations use their one-click per-invite unsubscribe token.
-- [x] Add email preview fixtures or snapshot tests for every recipient/sender template.
-  - Sender template tests cover B1-B5/C1; recipient template tests now cover all A1-A4 Task and Sincere variants plus delay schedule.
-- [x] Add cron tests for reminder timing, conversion suppression, unsubscribe suppression, and stale invitation cleanup.
-  - Recipient and sender reminder tests cover due timing, conversion, unsubscribe, cancellation/decline, hard caps, sender suppression, and terminal-state schedule clearing.
+- [x] Keep tests focused on active email paths.
+  - Recipient-voted template tests cover the triggered sender notification.
+  - Task reminder tests cover due timing, cooldowns, caps, and unsubscribe replacement for generic overdue work.
 
 ## Task Reminder Replication System
 
@@ -341,22 +334,19 @@ The task system pretends to be generic but the communication sequences, post-vot
 >
 > **Plan (in order):**
 > 1. Add `packages/web/src/lib/tasks/render-task-communication.server.ts` exporting `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`. Pure function; no DB writes.
-> 2. Add seed helpers `seedTaskCommunicationTemplate` + `seedTaskCommunicationVariants` invoked from `seedTreatyTasks()` for the five audience/purpose families: A1-A4 recipient invitation (4 steps × 2 formats), B1-B5 sender reminders, B5 monthly scorecard, C1 re-engagement, vote-confirmed, recipient-voted. Transcribe content verbatim from `lib/email/referral-invitation-email-sequence.ts`, `lib/email/referral-email-sequence.ts`, `lib/email/treaty-sender-email-sequence.ts`.
+> 2. Add seed helpers `seedTaskCommunicationTemplate` + `seedTaskCommunicationVariants` only for active task-communication families. Do not seed retired `referral_sequence_*` sender reminders, vote receipts, monthly scorecards, or re-engagement nudges.
 > 3. Add a parity test suite: for each family, render via the legacy builder and via the new engine, assert byte-equal subject/html/text across N seed inputs.
-> 4. Migrate the cron callers (`processDueReferralInvitationRecipientEmails`, `processDueReferralInvitationSenderEmails`, `processDueTreatyMonthlyScorecardEmails`, `processDueTreatyNeverSharedReengagementEmails`, treaty vote / recipient-voted handlers) to use the engine. Drop the `referendum.slug === TREATY_REFERENDUM_SLUG` filters in the same change. Rename functions to generic (`processDueTaskRecipientCommunications`, etc.).
-> 5. After parity proven and callers migrated, delete `lib/email/referral-invitation-email-sequence.ts`, `lib/email/referral-email-sequence.ts`, `lib/email/treaty-sender-email-sequence.ts`.
+> 4. Migrate active task-notification callers to the engine. Drop treaty-only filters where the task itself can identify the communication family.
+> 5. After active callers are migrated, delete any remaining legacy sequence modules that no longer own a live send path.
 > 6. Fold in the deferred Phase A column migration: drop `ReferralInvitation.recipientEmailStep`, `recipientUnsubscribeToken`, `senderReminderStep`, `nextRecipientEmailAt`, `nextSenderReminderAt`, `lastRecipientEmailAt`, `lastSenderReminderAt`, `recipientEmailErrorMessage`, `recipientEmailProviderMessageId` once `TaskCommunication` rows are load-bearing.
 
 
-- [ ] Collapse the separate builders into one `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`. Replaces:
-  - `buildReferralSequenceEmail` (`lib/referral-email-sequence.ts`)
-  - `buildReferralInvitationRecipientEmail` (`lib/referral-invitation-email-sequence.ts`)
-  - `buildTreatyVoteConfirmedEmail`, `buildTreatyRecipientVotedEmail`, `buildTreatySenderReminderEmail`, monthly-scorecard, and re-engagement builders (`lib/treaty-sender-email-sequence.ts`)
-- [ ] Move all hardcoded subject pools and body copy into `TaskCommunicationVariant` rows: `SUBJECT_POOL_GENERIC` / `SUBJECT_POOL_PRESIDENT` (`referral-email-sequence.ts:284-304`), recipient subjects (`referral-invitation-email-sequence.ts:80-241`), sender reminder subjects (`treaty-sender-email-sequence.ts:152-254`).
+- [ ] Collapse active builders into one `renderTaskCommunication({ task, communication, variant, tokens })` returning `{ subject, html, text }`.
+  - Keep the recipient-voted notification or move it into the generic engine.
+  - Do not restore the deleted vote receipt, sender reminders, monthly scorecard, or re-engagement builders.
+- [ ] Move active hardcoded subject/body copy into `TaskCommunicationVariant` rows only when the communication still has a concrete job.
 - [ ] Replace `getTreatyParentTaskHref()`, `ROUTES.send`, `ROUTES.dashboard` reads in the email layer with task endpoint / dashboard URL data. The communication engine must not import app-route constants.
-- [ ] Drop the `referendum.slug === TREATY_REFERENDUM_SLUG` filters at `treaty-sender-emails.server.ts:455` (re-engagement) and `:569` (monthly scorecard). Replace with a `taskFamily` or `taskId IN (...)` filter so other campaigns can opt in.
-- [ ] Rename cron functions: `processDueTreatyMonthlyScorecardEmails` → `processDueTaskScorecardEmails`; `processDueTreatyNeverSharedReengagementEmails` → `processDueTaskReengagementEmails`; `processDueReferralInvitationRecipientEmails` → `processDueTaskRecipientCommunications`; `processDueReferralInvitationSenderEmails` → `processDueTaskSenderCommunications`. Update callers and tests in the same change.
-- [ ] After the engine ships, delete `lib/referral-email-sequence.ts`, `lib/referral-invitation-email-sequence.ts`, and `lib/treaty-sender-email-sequence.ts`. With 0 users we skip the previously-planned "merge sequence files first" staging step and collapse straight into the engine.
+- [ ] After the engine ships, delete any remaining legacy email-sequence modules once they have no active caller.
 - [ ] Add `direction: INBOUND` handling — schema-supports inbound replies but no inbound capability exists today. Implementing it is a separate multi-week project requiring DKIM/SPF/DMARC verification, References/In-Reply-To threading, spam filtering, loop prevention, and routing setup with the inbound provider (Resend Inbound / CloudMailin / SES Inbound). Do not surface "task replies via email" until those guardrails exist; manual `INBOUND_MESSAGE` comments via admin tooling are the temporary substitute.
 
 ### Phase C — Generic lifecycle, accountability, and cron
@@ -364,8 +354,9 @@ The task system pretends to be generic but the communication sequences, post-vot
 - [x] Replace `isTreatySignerTaskKey()` filters at `lib/tasks/overdue-signers.server.ts:64,87` and `lib/tasks/user-president.server.ts:29-44` with predicate filters: `task.dueAt < now && task.assigneePersonId && task.status !== TaskStatus.VERIFIED`. Leader/president highlights then work for any overdue task with an assigned official.
   - `countOverdueSigners()` and `getOverdueSignerHighlights()` now key off overdue assigned-official task data instead of treaty task-key prefixes.
   - Added coverage proving a non-treaty assigned official task can be highlighted.
-- [ ] Move treaty-only follow-up calls out of `app/api/referendums/[slug]/vote/route.ts:15-18`. Replace direct calls to `sendTreatyRecipientVotedEmailForInvitation` and `sendTreatyVoteConfirmedEmailForUser` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskCommunicationTemplate` rows the task has registered.
-- [ ] Rename treaty-prefixed helpers in `lib/treaty-sender-emails.server.ts` (`sendTreaty*ForInvitation`, `sendTreatyVoteConfirmedEmailForUser`) to drop `Treaty` once the generic engine handles them. Delete the file when empty.
+- [x] Remove the treaty vote-confirmed receipt from `app/api/referendums/[slug]/vote/route.ts`.
+- [ ] Move the remaining treaty-only recipient-voted call out of `app/api/referendums/[slug]/vote/route.ts`. Replace the direct call to `sendTreatyRecipientVotedEmailForInvitation` with a generic `onTaskCompletion(task, completionContext)` hook that fans out via the `TaskCommunicationTemplate` rows the task has registered.
+- [ ] Rename treaty-prefixed helpers in `lib/treaty-sender-emails.server.ts` (`sendTreaty*ForInvitation`) to drop `Treaty` once the generic engine handles them. Delete the file when empty.
 - [ ] Drop the hardcoded task-key prefix `program:one-percent-treaty:referral-invitation` (`referral-invitations.server.ts:40`) and the `TREATY_REFERENDUM_SLUG` defaults (`:23`, `:236`, `:286`). Each invitation records `taskId` and (optionally) `referendumId` from the calling context.
 - [ ] Generalize the invitation task title/description templates (`referral-invitations.server.ts:155-164`) so they read from task communication endpoint label/instructions instead of "1% Treaty" inline strings.
 

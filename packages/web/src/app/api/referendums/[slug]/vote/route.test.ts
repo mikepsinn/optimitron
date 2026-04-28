@@ -219,7 +219,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
   });
 
-  it("sends the treaty vote-confirmed email only for the treaty referendum", async () => {
+  it("syncs the treaty task without sending a vote-receipt email", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
     const vote = { id: "vote_1", answer: "YES", userId: "user_1", referendumId: "ref_1" };
@@ -231,10 +231,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mocks.sendTreatyVoteConfirmedEmailForUser).toHaveBeenCalledWith({
-      referendumId: "ref_1",
-      userId: "user_1",
-    });
+    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
     expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith({
       personId: "person_1",
@@ -510,10 +507,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mocks.sendTreatyVoteConfirmedEmailForUser).toHaveBeenCalledWith({
-      referendumId: "ref_1",
-      userId: "user_1",
-    });
+    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
     expect(mocks.sendTreatyRecipientVotedEmailForInvitation).toHaveBeenCalledWith({
       invitationId: "invite_1",
     });

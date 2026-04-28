@@ -6,12 +6,8 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
-import {
-  buildTreatyRecipientVotedEmail,
-  buildTreatyVoteConfirmedEmail,
-} from "@/lib/email/treaty-sender-email-sequence";
+import { buildTreatyRecipientVotedEmail } from "@/lib/email/treaty-sender-email-sequence";
 import { sendTaskNotification } from "@/lib/tasks/task-notifications.server";
-import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { FLOW_VOTER_LIVES_SAVED_ROUNDED } from "@/lib/treaty-share-flow-parameters";
 import { getBaseUrl } from "@/lib/url";
 
@@ -43,47 +39,6 @@ function toResultStatus(
   if (status === "sent") return "sent";
   if (status === "duplicate") return "duplicate";
   return "skipped";
-}
-
-export async function sendTreatyVoteConfirmedEmailForUser(input: {
-  referendumId: string;
-  userId: string;
-  now?: Date;
-}): Promise<TreatySenderEmailResult> {
-  const user = await prisma.user.findUnique({
-    where: { id: input.userId },
-    select: { email: true, id: true, personId: true },
-  });
-
-  if (!user) return { status: "not_found" };
-  if (!user.email) return { status: "missing_email" };
-
-  const treatyTask = await ensureUserTreatyTask({
-    personId: user.personId,
-    userId: user.id,
-  });
-  const taskId = treatyTask.taskId;
-
-  const dashboardUrl = absoluteUrl(ROUTES.dashboard);
-  const email = buildTreatyVoteConfirmedEmail({ dashboardUrl });
-
-  const result = await sendTaskNotification({
-    audience: TaskCommunicationAudience.ASSIGNEE,
-    channel: TaskCommunicationChannel.EMAIL,
-    dedupeKey: `treaty_vote_confirmed:${input.referendumId}:${user.id}`,
-    emailScope: "task_notifications",
-    html: email.html,
-    now: input.now,
-    purpose: TaskCommunicationPurpose.VOTE_CONFIRMED,
-    recipientEmail: user.email,
-    recipientUserId: user.id,
-    skipUserSuppressionCheck: true,
-    subject: email.subject,
-    taskId,
-    text: email.text,
-  });
-
-  return { status: toResultStatus(result.status) };
 }
 
 export async function sendTreatyRecipientVotedEmailForInvitation(input: {

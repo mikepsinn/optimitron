@@ -648,6 +648,92 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("createTask omits null FK fields and sourceUrl from prisma.task.create — Prisma's checked TaskCreateInput rejects scalar FKs and the Task model has no sourceUrl column", async () => {
+      // Regression for two production bugs found via the structured catch block:
+      //   1. `parentTaskId: null` → "Unknown argument `parentTaskId`. Did you mean `parentTask`?"
+      //   2. `sourceUrl: <anything>` → "Unknown argument `sourceUrl`" (no such column)
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          contextJson: {
+            executor_type: "Self",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+            sourceUrls: ["https://example.com/source"],
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Without parent or assignee or sourceUrl column",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          executor_type: "Self",
+          sourceUrl: "https://example.com/source",
+        },
+      });
+
+      expect(mocks.taskCreate).toHaveBeenCalledTimes(1);
+      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      expect(data).not.toHaveProperty("parentTaskId");
+      expect(data).not.toHaveProperty("assigneePersonId");
+      expect(data).not.toHaveProperty("assigneeOrganizationId");
+      expect(data).not.toHaveProperty("sourceUrl");
+      // The URL should still survive — folded into contextJson.sourceUrls.
+      expect(data.contextJson).toMatchObject({
+        sourceUrls: expect.arrayContaining(["https://example.com/source"]),
+      });
+    });
+
+    it("createTask passes parentTaskId / assigneePersonId when supplied (the spread is conditional, not always-omit)", async () => {
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "parent-1", isPublic: false, ownerUserId: "user-1" },
+      ]);
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          parentTaskId: "parent-1",
+          contextJson: { executor_type: "Self", value: 100, p_success: 0.5, cash_cost: 0 },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Subtask with parent + assignee",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          parentTaskId: "parent-1",
+          assigneePersonId: "person-1",
+        },
+      });
+
+      const data = (mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }).data;
+      expect(data.parentTaskId).toBe("parent-1");
+      expect(data.assigneePersonId).toBe("person-1");
+    });
+
     it("updateTask replaces dependencies with depends_on", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({

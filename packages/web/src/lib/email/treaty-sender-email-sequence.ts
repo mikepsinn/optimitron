@@ -81,32 +81,6 @@ function buildMessage(input: {
   };
 }
 
-export function buildTreatyVoteConfirmedEmail(input: TreatySenderEmailBaseInput = {}): TreatySenderEmailMessage {
-  const dashboardUrl = input.dashboardUrl ?? "https://warondisease.org/dashboard";
-  const body = [
-    "Your vote for the 1% Treaty was verified.",
-    "",
-    "What that means, if the treaty passes:",
-    `**1 human lifetime of suffering prevented. ${voterLivesText} lives saved.**`,
-    "",
-    `That's your share of ${totalLivesText} deaths prevented, divided across ${majorityHumanityPhrase}.`,
-    "",
-    buttonText("See your dashboard", dashboardUrl),
-    "",
-    "If you shared with anyone during the flow, their status is on your dashboard. We'll email you the moment any of them vote.",
-    "",
-    "— warondisease.org",
-  ].join("\n");
-
-  return buildMessage({
-    buttonLabel: "See your dashboard",
-    buttonUrl: dashboardUrl,
-    subject: "Vote counted. Here's what it's worth.",
-    text: body,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-}
-
 export function buildTreatyRecipientVotedEmail(input: TreatySenderEmailBaseInput & {
   confirmedLives: string;
   messageFormat?: "TASK_NOTIFICATION" | "SINCERE";

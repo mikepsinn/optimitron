@@ -659,34 +659,17 @@ After A4, no more emails regardless of outcome. Hard cap. Promise honored.
 
 ---
 
-## Sequence B: Sender Emails (sent to the person who voted and shared)
+## Sequence B: Sender Emails
 
-These go to the verified user who completed the flow.
-
----
-
-### B1. Vote Confirmed (Day 0, post-verification)
-
-**Subject:** Vote counted. Here's what it's worth.
-
-**Body:**
-
-> Your vote for the 1% Treaty was verified.
->
-> What that means, if the treaty passes:
-> **55 years of suffering prevented. 2.7 lives saved.**
->
-> That's your share of 10.7 billion deaths prevented, divided across a majority of humans on Earth.
->
-> [BUTTON: See your dashboard → warondisease.org/dashboard]
->
-> If you shared with anyone during the flow, their status is on your dashboard. We'll email you the moment any of them vote.
->
-> — Earth Optimization Services, LLC
+Sender emails must exist only when something external happens. Do not send a
+standalone vote receipt. The vote is acknowledged in-product, and follow-up is
+handled by the task system: the user's treaty task and invitation subtasks are
+created with due dates, then the generic overdue-task reminder cron owns any
+later reminder emails.
 
 ---
 
-### B2. [Name] Just Voted (triggered, whenever it happens)
+### B1. [Name] Just Voted (triggered, whenever it happens)
 
 **Subject:** [Recipient name] completed their task
 
@@ -708,88 +691,12 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 
 ---
 
-### B3. Overdue Task Reminder to Assign One More (Day 7, if opted in on the Promotion screen)
-
-**Subject:** One more?
-
-**Body:**
-
-> You messaged [N] people. [X] of them have voted so far.
->
-> The chain continues past round 2 only if someone keeps assigning the next Earth optimization task.
->
-> [BUTTON: Assign one more Earth optimization task → warondisease.org/send]
->
-> Your Inverse Kills Score: **[Y] confirmed, [X] pending.**
->
-> — Earth Optimization Services, LLC
-
----
-
-### B4. Second Overdue Task Reminder (Day 14, if opted in)
-
-**Subject:** Still [X] pending
-
-**Body:**
-
-> [X] of your [N] referrals haven't voted yet.
->
-> You can't make them. But you can assign one more Earth optimization task and improve your odds.
->
-> [BUTTON: Assign one more Earth optimization task → warondisease.org/send]
->
-> — Earth Optimization Services, LLC
-
----
-
-### B5. Monthly Scorecard (Day 30, then monthly)
-
-**Subject:** Your Inverse Kills Score: [total] lives
-
-**Body:**
-
-> Monthly update:
->
-> **Confirmed:** [Y] lives saved, [Y÷2.7] lifetimes of suffering prevented
-> **Pending:** [X] lives, waiting on [names]
-> **Your referral chain:** [N] people you sent to → [M] of them voted → [K] of those shared further
->
-> Total chain depth from you: [D] rounds
->
-> [BUTTON: See full dashboard → warondisease.org/dashboard]
->
-> The chain only breaks if one human says "later."
->
-> — Earth Optimization Services, LLC
-
----
-
-## Sequence C: Re-engagement (YES voters who verified but never shared)
-
-### C1. You Forgot the Important Part (Day 1)
-
-**Subject:** You voted but didn't tell anyone
-
-**Body:**
-
-> You voted for the 1% Treaty yesterday. That's worth 2.7 lives and 55 years of suffering prevented.
->
-> But only if the chain keeps going. Right now your vote is a fact with no momentum.
->
-> It takes 15 seconds to assign one task. The message is already written for you.
->
-> [BUTTON: Assign one task → warondisease.org/send]
->
-> — Earth Optimization Services, LLC
-
----
-
 ## Implementation rules
 
 - **Total email cap per recipient:** 4 emails maximum. Hard cap. No exceptions.
 - **Format consistency:** if sender chose Bossy mode, all 4 recipient emails use the bossy/task variants. If they chose Love mode, all 4 recipient emails use the sincere/love variants. Don't mix formats within a recipient's sequence.
-- **Total task reminder cap per sender:** 2 task-reminder emails (B3-B4) plus monthly scorecards.
-- **Re-engagement:** 1 email (C1). One shot.
+- **Sender follow-up:** no parallel sender sequence. User treaty tasks, referral-invitation tasks, and generic task overdue reminders own the lifecycle.
+- **No `referral_sequence_*` resurrection:** the old dedicated referral-sequence sender is retired. New outbound email must be a task notification, an explicit sender-authored invitation, or the triggered recipient-voted notification above.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Bossy emails can use task-card styling. Love emails stay plain text.
 - **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into the message composer, pre-authenticated. Never send them back to the landing page.
 

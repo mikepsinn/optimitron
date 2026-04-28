@@ -1,24 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildTreatyRecipientVotedEmail,
-  buildTreatyVoteConfirmedEmail,
-} from "@/lib/email/treaty-sender-email-sequence";
+import { buildTreatyRecipientVotedEmail } from "@/lib/email/treaty-sender-email-sequence";
 
 describe("treaty sender email sequence", () => {
-  it("builds vote confirmed copy", () => {
-    const email = buildTreatyVoteConfirmedEmail({
-      dashboardUrl: "https://warondisease.org/dashboard",
-    });
-
-    expect(email.subject).toBe("Vote counted. Here's what it's worth.");
-    expect(email.text).toContain("Your vote for the 1% Treaty was verified.");
-    expect(email.text).toContain("**1 human lifetime of suffering prevented. 2.7 lives saved.**");
-    expect(email.text).toContain(
-      "That's your share of 10.7 billion deaths prevented, divided across a majority of humans on Earth.",
-    );
-    expect(email.text).toContain("[BUTTON: See your dashboard → https://warondisease.org/dashboard]");
-  });
-
   it("builds recipient voted copy", () => {
     const email = buildTreatyRecipientVotedEmail({
       confirmedLives: "5.4",

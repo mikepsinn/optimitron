@@ -3171,10 +3171,17 @@ export function createMcpServer(
           const dueAt = a.due_at !== undefined || a.dueAt !== undefined
             ? parseTaskDate(a.due_at ?? a.dueAt)
             : null;
+          // Prisma's TaskCreateInput accepts FK relations (`parentTask: { connect }`)
+          // but rejects bare scalar FKs (`parentTaskId`) on null. The unchecked
+          // variant accepts scalars, but to stay compatible with both we just
+          // omit the FK fields entirely when no value was supplied.
+          const parentTaskId = (a.parentTaskId as string | undefined) || undefined;
+          const assigneePersonId = (a.assigneePersonId as string | undefined) || undefined;
+          const assigneeOrganizationId = (a.assigneeOrganizationId as string | undefined) || undefined;
           const data: Record<string, unknown> = {
             title: a.title as string,
             description: (a.description as string) ?? "",
-            parentTaskId: (a.parentTaskId as string) ?? null,
+            ...(parentTaskId ? { parentTaskId } : {}),
             taskKey: (a.taskKey as string) ?? null,
             category: a.category ? TaskCategory[a.category as keyof typeof TaskCategory] : TaskCategory.OTHER,
             difficulty: a.difficulty ? TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty] : TaskDifficulty.INTERMEDIATE,
@@ -3187,10 +3194,11 @@ export function createMcpServer(
             completedAt: a.completedAt ? new Date(a.completedAt as string) : null,
             verifiedAt: a.verifiedAt ? new Date(a.verifiedAt as string) : null,
             claimPolicy: a.claimPolicy ? TaskClaimPolicy[a.claimPolicy as keyof typeof TaskClaimPolicy] : TaskClaimPolicy.OPEN_MANY,
-            assigneePersonId: (a.assigneePersonId as string) ?? null,
-            assigneeOrganizationId: (a.assigneeOrganizationId as string) ?? null,
+            ...(assigneePersonId ? { assigneePersonId } : {}),
+            ...(assigneeOrganizationId ? { assigneeOrganizationId } : {}),
             roleTitle: (a.roleTitle as string) ?? null,
-            sourceUrl: (a.sourceUrl as string) ?? null,
+            // sourceUrl is absorbed into contextJson.sourceUrls by
+            // buildPersonalTaskContext — the Task model has no sourceUrl column.
             impactStatement: (a.impactStatement as string) ?? null,
             isPublic,
             contextJson: buildPersonalTaskContext(a, economics),
