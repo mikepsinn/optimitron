@@ -218,4 +218,44 @@ describe("task notifications", () => {
       communication: expect.any(Object),
     });
   });
+
+  it("passes bcc recipients to external resend send", async () => {
+    mocks.findUnique.mockResolvedValue({
+      ...baseDraftRecord(),
+      metadataJson: {
+        subject: "Please complete your task",
+        text: "Do this thing in 10 minutes.",
+        bccEmails: ["admin1@example.com", "admin2@example.com"],
+      },
+      task: { id: "task_1", title: "Sample task" },
+    });
+    mocks.findMany.mockResolvedValue([]);
+    mocks.claimEmailLog.mockResolvedValue({
+      duplicate: false,
+      emailLogId: "log_1",
+    });
+    mocks.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
+    mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
+
+    const result = await sendDraftTaskNotification({
+      communicationId: "comm_1",
+      senderUserId: "user_1",
+    });
+
+    expect(mocks.sendExternalResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bcc: ["admin1@example.com", "admin2@example.com"],
+        to: "recipient@example.com",
+      }),
+    );
+    expect(result).toEqual({
+      communication: expect.objectContaining({
+        id: "comm_1",
+        status: "SENT",
+      }),
+      emailLogId: "log_1",
+      providerMessageId: "external-id",
+      status: "sent",
+    });
+  });
 });

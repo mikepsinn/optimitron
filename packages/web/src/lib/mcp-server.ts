@@ -13,6 +13,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import {
   AgentRunStatus,
+  OrgStatus,
   OrgType,
   TaskCategory,
   TaskClaimPolicy,
@@ -59,6 +60,11 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getTask: [McpScope.TASKS_READ],
   getBlockers: [McpScope.TASKS_READ],
   getFundingStats: [McpScope.TASKS_READ],
+  listOrganizations: [McpScope.TASKS_READ],
+  createOrganization: [McpScope.TASKS_WRITE],
+  listPeople: [McpScope.TASKS_READ],
+  getPersonTasks: [McpScope.TASKS_READ],
+  getOrganizationTasks: [McpScope.TASKS_READ],
   // tasks:write
   createTask: [McpScope.TASKS_WRITE],
   proposeTaskBundle: [McpScope.TASKS_WRITE],
@@ -69,6 +75,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   recordTaskActuals: [McpScope.TASKS_WRITE],
   updateMilestone: [McpScope.TASKS_WRITE],
   addDependency: [McpScope.TASKS_WRITE],
+  createPerson: [McpScope.TASKS_WRITE],
   upsertOrganization: [McpScope.TASKS_WRITE],
   draftTaskNotification: [McpScope.TASKS_WRITE],
   sendTaskNotification: [McpScope.TASKS_WRITE],
@@ -1442,6 +1449,205 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "listOrganizations",
+    description:
+      "List organizations (for example to create task targets), optionally including active/target-filtered tasks.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string", description: "Search query for name, slug, description, website, or contact email." },
+        type: {
+          type: "string",
+          enum: [
+            "UNIVERSITY",
+            "RESEARCH_CENTER",
+            "NONPROFIT",
+            "DAO",
+            "GOVERNMENT",
+            "GOVERNMENT_AGENCY",
+            "HOSPITAL",
+            "BIOTECH",
+            "COMPANY",
+            "FOUNDATION",
+            "INTERGOVERNMENTAL",
+            "MEDIA",
+            "POLITICAL_PARTY",
+            "ADVOCACY",
+            "OTHER",
+          ],
+          description: "Optional organization type filter.",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "APPROVED", "REJECTED"],
+          description: "Optional organization status filter.",
+        },
+        includeTasks: {
+          type: "boolean",
+          description:
+            "Include a short active task summary for each organization (default false).",
+        },
+        limit: { type: "number", description: "Max organizations to return (default 100, max 500)." },
+        taskLimit: {
+          type: "number",
+          description: "Max tasks per organization when includeTasks=true (default 3, max 50).",
+        },
+        taskScope: {
+          type: "string",
+          enum: ["public", "accessible"],
+          description:
+            "Task scope for returned summary. `public` is default and safe for shared data.",
+        },
+        taskStatus: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          description: "Task status used when includeTasks=true (default ACTIVE).",
+        },
+      },
+    },
+  },
+  {
+    name: "getOrganizationTasks",
+    description: "List tasks currently assigned to a specific organization.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        organizationId: { type: "string", description: "Organization ID." },
+        limit: { type: "number", description: "Max tasks to return (default 50, max 200)." },
+        scope: {
+          type: "string",
+          enum: ["public", "accessible"],
+          description:
+            "Use `public` unless you are explicitly authenticated and want your private assigned tasks.",
+        },
+        status: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          description: "Optional task status filter.",
+        },
+      },
+      required: ["organizationId"],
+    },
+  },
+  {
+    name: "listPeople",
+    description: "List people (optionally public-figure-only) and optionally include their assigned active tasks.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string", description: "Search by display name, handle, current affiliation, source ref, or email." },
+        publicProfilesOnly: {
+          type: "boolean",
+          description: "When true, only includes people marked as public-figure profiles (default true).",
+        },
+        includeTasks: {
+          type: "boolean",
+          description:
+            "Include a short active task summary for each person (default false).",
+        },
+        limit: { type: "number", description: "Max people to return (default 100, max 500)." },
+        taskLimit: {
+          type: "number",
+          description: "Max tasks per person when includeTasks=true (default 3, max 50).",
+        },
+        taskScope: {
+          type: "string",
+          enum: ["public", "accessible"],
+          description:
+            "Task scope for returned summary. `public` is default and safe for shared data.",
+        },
+        taskStatus: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          description: "Task status used when includeTasks=true (default ACTIVE).",
+        },
+      },
+    },
+  },
+  {
+    name: "getPersonTasks",
+    description: "List tasks currently assigned to a specific person.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        personId: { type: "string", description: "Person ID." },
+        limit: { type: "number", description: "Max tasks to return (default 50, max 200)." },
+        scope: {
+          type: "string",
+          enum: ["public", "accessible"],
+          description:
+            "Use `public` unless you are explicitly authenticated and want your private assigned tasks.",
+        },
+        status: {
+          type: "string",
+          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          description: "Optional task status filter.",
+        },
+      },
+      required: ["personId"],
+    },
+  },
+  {
+    name: "createPerson",
+    description:
+      "Create or idempotently update a person profile by displayName, email, sourceRef, or public-figure signature.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        displayName: { type: "string", description: "Person display name." },
+        email: { type: "string", description: "Person email (used for de-dup and notification)." },
+        currentAffiliation: { type: "string", description: "Current organization/affiliation." },
+        countryCode: { type: "string", description: "ISO-3166 country code." },
+        image: { type: "string", description: "Avatar image URL." },
+        isPublicFigure: {
+          type: "boolean",
+          description: "Marks this person as a public-facing profile.",
+        },
+        sourceRef: { type: "string", description: "Stable source key for idempotent updates." },
+        sourceUrl: { type: "string", description: "Source URL for provenance." },
+      },
+      required: ["displayName"],
+    },
+  },
+  {
+    name: "createOrganization",
+    description:
+      "Create an organization (adds your user as owner) for task assignment, defaulting to pending state.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string", description: "Organization name" },
+        type: {
+          type: "string",
+          enum: [
+            "UNIVERSITY",
+            "RESEARCH_CENTER",
+            "NONPROFIT",
+            "DAO",
+            "GOVERNMENT",
+            "GOVERNMENT_AGENCY",
+            "HOSPITAL",
+            "BIOTECH",
+            "COMPANY",
+            "FOUNDATION",
+            "INTERGOVERNMENTAL",
+            "MEDIA",
+            "POLITICAL_PARTY",
+            "ADVOCACY",
+            "OTHER",
+          ],
+          description: "Organization type",
+        },
+        website: { type: "string", description: "Website URL" },
+        contactEmail: { type: "string", description: "Primary contact email" },
+        description: { type: "string", description: "Mission or provenance note" },
+        logo: { type: "string", description: "Logo image URL" },
+        jurisdictionId: { type: "string", description: "Optional jurisdiction ID" },
+      },
+      required: ["name"],
+    },
+  },
+  {
     name: "createTask",
     description:
       "Create a new task as DRAFT. Private visibility is the default (isPublic = false). " +
@@ -1997,6 +2203,11 @@ Posting a comment automatically triggers a Wishonia auto-reply in the background
           type: "string",
           description: "Markdown body (1-20000 chars, supports math/mermaid/chart fences)",
         },
+        sendNotification: {
+          type: "boolean",
+          description:
+            "When true (default), send/attempt email notifications to the task assignee, owner, and admin users (unless the author is the only recipient). Set false to skip notification.",
+        },
         mediaUrl: {
           type: "string",
           description: "Optional evidence URL (tweet, screenshot, article)",
@@ -2427,6 +2638,228 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           return ok(filtered.slice(0, limit).map(summarizeTask));
         }
 
+        // ── listPeople ────────────────────────────────────────
+        case "listPeople": {
+          const prisma = await getPrisma();
+          const { tasks } = await getTaskFunctions();
+          const query = typeof a.query === "string" ? a.query.trim() : "";
+          const includeTasks = a.includeTasks === true;
+          const publicProfilesOnly = a.publicProfilesOnly !== false;
+          const limit = parseQueueLimit(a.limit, 100, 500);
+          const taskLimit = parseQueueLimit(a.taskLimit, 3, 50);
+          const taskScope = a.taskScope === "accessible" ? "accessible" : "public";
+          const taskStatus = a.taskStatus
+            ? TaskStatus[a.taskStatus as keyof typeof TaskStatus] ?? null
+            : TaskStatus.ACTIVE;
+          const includePrivateTaskScope = taskScope === "accessible" && !userId;
+
+          if (includePrivateTaskScope) {
+            return err("Authentication required for taskScope=accessible.");
+          }
+
+          const people = await prisma.person.findMany({
+            where: {
+              deletedAt: null,
+              ...(publicProfilesOnly ? { isPublicFigure: true } : {}),
+              ...(query
+                ? {
+                    OR: [
+                      { displayName: { contains: query, mode: "insensitive" } },
+                      { currentAffiliation: { contains: query, mode: "insensitive" } },
+                      { handle: { contains: query, mode: "insensitive" } },
+                      { email: { contains: query, mode: "insensitive" } },
+                      { sourceRef: { contains: query, mode: "insensitive" } },
+                    ],
+                  }
+                : {}),
+            },
+            take: limit,
+            orderBy: [{ displayName: "asc" }],
+            select: {
+              id: true,
+              bio: true,
+              countryCode: true,
+              currentAffiliation: true,
+              displayName: true,
+              email: true,
+              handle: true,
+              image: true,
+              isPublicFigure: true,
+              sourceRef: true,
+              sourceUrl: true,
+            },
+          });
+
+          const rows = await Promise.all(
+            people.map(async (person) => {
+              if (!includeTasks) return { ...person, tasks: [] };
+              const listed = await tasks.listTasks({
+                assigneePersonId: person.id,
+                limit: taskLimit,
+                status: taskStatus,
+                visibility: taskScope,
+                userId: userId ?? null,
+              });
+              return { ...person, tasks: listed.map(summarizeTask) };
+            }),
+          );
+
+          return ok(rows);
+        }
+
+        // ── getPersonTasks ───────────────────────────────────
+        case "getPersonTasks": {
+          const prisma = await getPrisma();
+          const { tasks } = await getTaskFunctions();
+          const personId = (a.personId as string) ?? "";
+          if (!personId) return err("personId is required");
+          const scope = a.scope === "accessible" ? "accessible" : "public";
+          const person = await prisma.person.findFirst({
+            where: { deletedAt: null, id: personId },
+            select: {
+              id: true,
+              displayName: true,
+              currentAffiliation: true,
+              handle: true,
+              image: true,
+              isPublicFigure: true,
+            },
+          });
+          if (!person) return err("Person not found");
+          if (scope === "accessible" && !userId) return err("Authentication required for accessible scope.");
+
+          const status = a.status
+            ? TaskStatus[a.status as keyof typeof TaskStatus] ?? null
+            : TaskStatus.ACTIVE;
+          const limit = parseQueueLimit(a.limit, 50, 200);
+
+          const personTasks = await tasks.listTasks({
+            assigneePersonId: person.id,
+            status,
+            visibility: scope,
+            userId: userId ?? null,
+            limit,
+          });
+
+          return ok({
+            person,
+            scope,
+            status,
+            tasks: personTasks.map(summarizeTask),
+          });
+        }
+
+        // ── listOrganizations ────────────────────────────────
+        case "listOrganizations": {
+          const prisma = await getPrisma();
+          const { tasks } = await getTaskFunctions();
+          const query = typeof a.query === "string" ? a.query.trim() : "";
+          const queryMode: Prisma.QueryMode = "insensitive";
+          const includeTasks = a.includeTasks === true;
+          const limit = parseQueueLimit(a.limit, 100, 500);
+          const taskLimit = parseQueueLimit(a.taskLimit, 3, 50);
+          const taskScope = a.taskScope === "accessible" ? "accessible" : "public";
+          const taskStatus = a.taskStatus
+            ? TaskStatus[a.taskStatus as keyof typeof TaskStatus] ?? TaskStatus.ACTIVE
+            : TaskStatus.ACTIVE;
+          if (taskScope === "accessible" && !userId) {
+            return err("Authentication required for taskScope=accessible.");
+          }
+          const organizationWhere = {
+            deletedAt: null,
+            ...(a.status ? { status: enumValue(OrgStatus, a.status, OrgStatus.APPROVED) } : {}),
+            ...(a.type ? { type: enumValue(OrgType, a.type, OrgType.OTHER) } : {}),
+            ...(query
+              ? {
+                  OR: [
+                    { name: { contains: query, mode: queryMode } },
+                    { slug: { contains: query, mode: queryMode } },
+                    { description: { contains: query, mode: queryMode } },
+                    { website: { contains: query, mode: queryMode } },
+                    { contactEmail: { contains: query, mode: queryMode } },
+                    { sourceUrl: { contains: query, mode: queryMode } },
+                  ],
+                }
+              : {}),
+          };
+          const organizations = await prisma.organization.findMany({
+            where: organizationWhere,
+            take: limit,
+            orderBy: [{ name: "asc" }],
+            select: {
+              contactEmail: true,
+              createdAt: true,
+              description: true,
+              id: true,
+              name: true,
+              slug: true,
+              status: true,
+              type: true,
+              website: true,
+            },
+          });
+
+          const rows = await Promise.all(
+            organizations.map(async (organization) => {
+              if (!includeTasks) return { ...organization, tasks: [] };
+              const listed = await tasks.listTasks({
+                assigneeOrganizationId: organization.id,
+                limit: taskLimit,
+                status: taskStatus,
+                visibility: taskScope,
+                userId: userId ?? null,
+              });
+              return {
+                ...organization,
+                tasks: listed.map(summarizeTask),
+              };
+            }),
+          );
+
+          return ok(rows);
+        }
+
+        // ── getOrganizationTasks ────────────────────────────
+        case "getOrganizationTasks": {
+          const prisma = await getPrisma();
+          const { tasks } = await getTaskFunctions();
+          const organizationId = (a.organizationId as string) ?? "";
+          if (!organizationId) return err("organizationId is required");
+          const scope = a.scope === "accessible" ? "accessible" : "public";
+          const organization = await prisma.organization.findFirst({
+            where: { deletedAt: null, id: organizationId },
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              type: true,
+              status: true,
+            },
+          });
+          if (!organization) return err("Organization not found");
+          if (scope === "accessible" && !userId) return err("Authentication required for accessible scope.");
+
+          const status = a.status
+            ? TaskStatus[a.status as keyof typeof TaskStatus] ?? null
+            : TaskStatus.ACTIVE;
+          const limit = parseQueueLimit(a.limit, 50, 200);
+
+          const organizationTasks = await tasks.listTasks({
+            assigneeOrganizationId: organization.id,
+            status,
+            visibility: scope,
+            userId: userId ?? null,
+            limit,
+          });
+
+          return ok({
+            organization,
+            scope,
+            status,
+            tasks: organizationTasks.map(summarizeTask),
+          });
+        }
+
         // ── searchTasks ───────────────────────────────────────
         case "searchTasks": {
           const { tasks } = await getTaskFunctions();
@@ -2625,6 +3058,66 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               type: organization.type,
               website: organization.website,
             },
+          });
+        }
+
+        case "createPerson": {
+          if (!userId) return err("Authentication required");
+          const { findOrCreatePerson } = await import("./person.server");
+          const displayName = (a.displayName as string) ?? "";
+          if (!displayName.trim()) {
+            return err("displayName is required");
+          }
+          const person = await findOrCreatePerson({
+            countryCode: (a.countryCode as string) ?? null,
+            currentAffiliation: (a.currentAffiliation as string) ?? null,
+            displayName,
+            email: (a.email as string) ?? null,
+            image: (a.image as string) ?? null,
+            isPublicFigure: a.isPublicFigure === true,
+            sourceRef: (a.sourceRef as string) ?? null,
+            sourceUrl: (a.sourceUrl as string) ?? null,
+          });
+          return ok({
+            person: {
+              id: person.id,
+              bio: person.bio,
+              countryCode: person.countryCode,
+              currentAffiliation: person.currentAffiliation,
+              displayName: person.displayName,
+              email: person.email,
+              handle: person.handle,
+              image: person.image,
+              isPublicFigure: person.isPublicFigure,
+              sourceRef: person.sourceRef,
+              sourceUrl: person.sourceUrl,
+            },
+          });
+        }
+
+        case "createOrganization": {
+          if (!userId) return err("Authentication required");
+          const { createOrganizationWithOwner } = await import(
+            "./organization.server"
+          );
+          const name = (a.name as string) ?? "";
+          if (!name.trim()) return err("name is required");
+
+          const organization = await createOrganizationWithOwner(
+            {
+              contactEmail: (a.contactEmail as string) ?? null,
+              description: (a.description as string) ?? null,
+              jurisdictionId: (a.jurisdictionId as string) ?? null,
+              logo: (a.logo as string) ?? null,
+              name,
+              website: (a.website as string) ?? null,
+              type: enumValue(OrgType, a.type, OrgType.OTHER),
+            },
+            userId,
+          );
+
+          return ok({
+            organization,
           });
         }
 
@@ -3442,6 +3935,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             countUserCommentsInWindow,
             postComment,
           } = await import("./tasks/task-comments.server");
+          const { notifyTaskCommentRecipients } = await import(
+            "./tasks/task-comment-notifications.server"
+          );
           const { generateAndPostWishoniaReply } = await import(
             "./tasks/wishonia-task-reply.server"
           );
@@ -3481,6 +3977,16 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             message,
             mediaUrl,
           });
+
+          const shouldNotify = a.sendNotification !== false;
+          if (shouldNotify) {
+            void notifyTaskCommentRecipients({
+              authorUserId: userId,
+              commentId: comment.id,
+              message,
+              taskId,
+            });
+          }
 
           void generateAndPostWishoniaReply({
             taskId,

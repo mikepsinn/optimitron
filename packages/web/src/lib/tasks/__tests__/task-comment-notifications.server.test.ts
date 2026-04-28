@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   draftTaskNotification: vi.fn(),
   getTaskAncestors: vi.fn(),
   personFindUnique: vi.fn(),
+  resolveTaskRecipients: vi.fn(),
   recipientWithinRateLimits: vi.fn(),
   resolveTaskRecipient: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
@@ -46,6 +47,7 @@ vi.mock("@/lib/tasks/task-recipient-rate-limit.server", async () => {
 
 vi.mock("@/lib/tasks/task-recipients.server", () => ({
   resolveTaskRecipient: mocks.resolveTaskRecipient,
+  resolveTaskRecipients: mocks.resolveTaskRecipients,
 }));
 
 vi.mock("@/lib/tasks.server", () => ({
@@ -61,6 +63,10 @@ describe("postTaskCommentAndNotify", () => {
     mocks.resolveTaskRecipient.mockResolvedValue({
       email: "joe@example.com",
       personId: "person_2",
+    });
+    mocks.resolveTaskRecipients.mockImplementation(async () => {
+      const recipient = await mocks.resolveTaskRecipient();
+      return recipient ? [recipient] : [];
     });
     mocks.recipientWithinRateLimits.mockResolvedValue(true);
     mocks.cooldownAllowed.mockResolvedValue({ allowed: true });
@@ -111,6 +117,45 @@ describe("postTaskCommentAndNotify", () => {
       }),
     );
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
+  });
+
+  it("puts admins in BCC instead of direct recipients", async () => {
+    mocks.resolveTaskRecipient.mockResolvedValue({
+      email: "joe@example.com",
+      personId: "person_2",
+      isAdmin: false,
+    });
+    mocks.resolveTaskRecipients.mockResolvedValue([
+      {
+        email: "joe@example.com",
+        personId: "person_2",
+        isAdmin: false,
+      },
+      {
+        email: "admin1@example.com",
+        isAdmin: true,
+        userId: "admin_1",
+      },
+      {
+        email: "admin2@example.com",
+        isAdmin: true,
+        userId: "admin_2",
+      },
+    ]);
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "Hey Joe, please vote.",
+      taskId: "task_1",
+    });
+
+    expect(result.status).toBe("sent");
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipientEmail: "joe@example.com",
+        bccEmails: ["admin1@example.com", "admin2@example.com"],
+      }),
+    );
   });
 
   it("uses the explicit authorNameOverride when provided", async () => {

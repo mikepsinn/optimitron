@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   taskFindUnique: vi.fn(),
+  userFindMany: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -9,14 +10,22 @@ vi.mock("@/lib/prisma", () => ({
     task: {
       findUnique: mocks.taskFindUnique,
     },
+    user: {
+      findMany: mocks.userFindMany,
+    },
   },
 }));
 
-import { resolveTaskRecipient } from "@/lib/tasks/task-recipients.server";
+import {
+  resolveTaskRecipient,
+  resolveTaskRecipients,
+} from "@/lib/tasks/task-recipients.server";
 
 describe("resolveTaskRecipient", () => {
   beforeEach(() => {
     mocks.taskFindUnique.mockReset();
+    mocks.userFindMany.mockReset();
+    mocks.userFindMany.mockResolvedValue([]);
   });
 
   it("returns null when the task does not exist", async () => {
@@ -59,6 +68,7 @@ describe("resolveTaskRecipient", () => {
       email: "user@example.com",
       personId: "person_1",
       userId: "user_1",
+      isAdmin: false,
     });
   });
 
@@ -83,6 +93,7 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "person@example.com",
       personId: "person_1",
+      isAdmin: false,
     });
   });
 
@@ -102,6 +113,7 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "org@example.com",
       organizationId: "org_1",
+      isAdmin: false,
     });
   });
 
@@ -119,6 +131,7 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "endpoint@example.com",
       endpointId: "endpoint_1",
+      isAdmin: false,
     });
   });
 
@@ -132,5 +145,50 @@ describe("resolveTaskRecipient", () => {
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toBeNull();
+  });
+
+  it("includes owner and admin recipients", async () => {
+    mocks.taskFindUnique.mockResolvedValue({
+      assigneeOrganization: null,
+      assigneePerson: null,
+      assigneePersonId: null,
+      assigneeOrganizationId: null,
+      owner: {
+        deletedAt: null,
+        email: "owner@example.com",
+        id: "owner_1",
+      },
+      communicationEndpoints: [],
+      deletedAt: null,
+      id: "task_1",
+    });
+    mocks.userFindMany.mockResolvedValue([
+      { id: "admin_1", email: "admin@example.com" },
+      { id: "owner_1", email: "owner@example.com" },
+    ]);
+
+    const result = await resolveTaskRecipients("task_1");
+    expect(result).toEqual([
+      { email: "owner@example.com", isAdmin: false, userId: "owner_1" },
+      { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
+    ]);
+  });
+
+  it("deduplicates admin recipients by email", async () => {
+    mocks.taskFindUnique.mockResolvedValue({
+      assigneeOrganization: null,
+      assigneePerson: null,
+      communicationEndpoints: [],
+      owner: null,
+      deletedAt: null,
+      id: "task_1",
+    });
+    mocks.userFindMany.mockResolvedValue([
+      { id: "admin_1", email: "Admin@Example.com" },
+      { id: "admin_2", email: "admin@example.com" },
+    ]);
+
+    const result = await resolveTaskRecipients("task_1");
+    expect(result).toEqual([{ email: "admin@example.com", isAdmin: true, userId: "admin_1" }]);
   });
 });

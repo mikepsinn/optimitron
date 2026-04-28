@@ -18,6 +18,7 @@ import type { Prisma } from "@optimitron/db";
 import { claimEmailLog, markEmailLogStatus } from "@/lib/email/email-log.server";
 import { isEmailScope, type EmailScope } from "@/lib/email/scopes";
 import { sendExternalResendEmail, sendResendEmail } from "@/lib/email/resend";
+import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
 import { prisma } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/url";
 
@@ -30,6 +31,7 @@ export interface TaskNotificationMessage {
 export interface DraftTaskNotificationInput extends TaskNotificationMessage {
   audience?: TaskCommunicationAudienceValue;
   channel?: TaskCommunicationChannelValue;
+  bccEmails?: string[] | null;
   dedupeKey?: string | null;
   emailScope?: EmailScope | null;
   endpointId?: string | null;
@@ -93,6 +95,35 @@ function normalizeEmail(email?: string | null) {
   return email?.trim().toLowerCase() || null;
 }
 
+function toNormalizedEmailList(emails: string[] | null | undefined) {
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+
+  for (const value of emails ?? []) {
+    const email = normalizeEmail(value);
+    if (!email || seen.has(email)) continue;
+    seen.add(email);
+    normalized.push(email);
+  }
+
+  return normalized;
+}
+
+function removeRecipientFromBcc(input: {
+  bccEmails: string[] | null;
+  recipientEmail: string | null;
+}) {
+  if (!input.recipientEmail) return input.bccEmails;
+  return input.bccEmails?.filter((email) => email !== input.recipientEmail) ?? null;
+}
+
+async function defaultBccEmails(taskId: string) {
+  const recipients = await resolveTaskRecipients(taskId);
+  return recipients
+    .filter((recipient) => recipient.isAdmin)
+    .map((recipient) => recipient.email);
+}
+
 function buildTaskCommunicationUnsubscribeUrl(input: {
   communicationId: string;
   unsubscribeToken: string;
@@ -109,6 +140,7 @@ function getMetadata(input: DraftTaskNotificationInput & {
   return {
     ...(input.metadataJson ?? {}),
     dedupeKey: input.dedupeKey ?? null,
+    bccEmails: input.bccEmails ?? null,
     html: input.html ?? null,
     emailScope: input.emailScope ?? null,
     skipUserSuppressionCheck: input.skipUserSuppressionCheck ?? false,
@@ -173,6 +205,27 @@ function getStoredDedupeKey(metadata: unknown) {
   }
   const value = (metadata as Record<string, unknown>).dedupeKey;
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function getStoredBccEmails(metadata: unknown) {
+  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return [];
+  }
+
+  const value = (metadata as Record<string, unknown>).bccEmails;
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of value) {
+    const normalized = normalizeEmail(typeof raw === "string" ? raw : null);
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    out.push(normalized);
+  }
+  return out;
 }
 
 function getStoredUserEmailOptions(metadata: unknown): {
@@ -244,7 +297,14 @@ export async function draftTaskNotification(input: DraftTaskNotificationInput) {
   const purpose = input.purpose ?? TaskCommunicationPurpose.ASSIGNMENT;
   const unsubscribeToken =
     recipientEmail && !input.recipientUserId && !input.unsubscribeUrl ? nanoid(32) : null;
-  const initialMetadata = getMetadata({ ...input, unsubscribeToken });
+  const adminBccEmails =
+    input.bccEmails === undefined ? await defaultBccEmails(input.taskId) : input.bccEmails ?? null;
+  const bccEmails = toNormalizedEmailList(removeRecipientFromBcc({
+    bccEmails: toNormalizedEmailList(adminBccEmails),
+    recipientEmail,
+  }));
+  const metadataInput = { ...input, bccEmails, unsubscribeToken };
+  const initialMetadata = getMetadata(metadataInput);
 
   const communication = await prisma.taskCommunication.create({
     data: {
@@ -403,10 +463,12 @@ export async function sendDraftTaskNotification(input: SendDraftTaskNotification
   try {
     const html = message.html ?? renderPlainTextHtml(message.text);
     const userEmailOptions = getStoredUserEmailOptions(communication.metadataJson);
+    const bccEmails = getStoredBccEmails(communication.metadataJson);
     const result = communication.recipientUserId
       ? await sendResendEmail({
           emailLogId: claimed.emailLogId,
           html,
+          bcc: bccEmails,
           scope: userEmailOptions.emailScope,
           skipSuppressionCheck: userEmailOptions.skipSuppressionCheck,
           subject: message.subject,
@@ -417,6 +479,7 @@ export async function sendDraftTaskNotification(input: SendDraftTaskNotification
       : await sendExternalResendEmail({
           from: input.from ?? undefined,
           html,
+          bcc: bccEmails,
           subject: message.subject,
           text: message.text,
           to: communication.recipientEmail,

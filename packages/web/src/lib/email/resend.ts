@@ -17,6 +17,7 @@ interface BaseMessage {
   emailLogId?: string;
   /** When true, bypass the DB-backed suppression check (cron has already filtered). */
   skipSuppressionCheck?: boolean;
+  bcc?: string[];
   subject: string;
   to: string;
 }
@@ -33,6 +34,7 @@ interface ResendReactMessage extends BaseMessage {
 interface ExternalResendMessage {
   from?: string;
   html: string;
+  bcc?: string[];
   subject: string;
   text: string;
   to: string;
@@ -123,6 +125,7 @@ export async function sendResendEmail(message: ResendMessage): Promise<SendResul
   const response = await resend.emails.send({
     from: getEmailFromAddress(),
     to: [message.to],
+    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
     html: message.html,
     text: message.text,
@@ -166,6 +169,7 @@ export async function sendReactEmail(message: ResendReactMessage): Promise<SendR
   const response = await resend.emails.send({
     from: getEmailFromAddress(),
     to: [message.to],
+    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
     html,
     text,
@@ -199,6 +203,7 @@ export async function sendExternalResendEmail(message: ExternalResendMessage): P
   const response = await resend.emails.send({
     from: message.from ?? getEmailFromAddress(),
     to: [message.to],
+    ...(message.bcc?.length ? { bcc: message.bcc } : {}),
     subject: message.subject,
     html: message.html,
     text: message.text,
