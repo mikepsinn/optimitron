@@ -28,11 +28,6 @@ export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
     transactional: false,
     master: true,
   },
-  referral_sequence: {
-    label: "Weekly referral reminders",
-    description: "Emails about your overdue head-of-state and the 1% Treaty.",
-    transactional: false,
-  },
   onboarding: {
     label: "Welcome and setup",
     description: "First-week emails that help you find the core features.",
@@ -55,7 +50,6 @@ export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
 
 export type EmailScope =
   | "all"
-  | "referral_sequence"
   | "onboarding"
   | "task_notifications"
   | "magic_link"
@@ -64,7 +58,6 @@ export type EmailScope =
 /** All known scopes — useful for the preferences UI and the "all" expansion. */
 export const ALL_EMAIL_SCOPES: readonly EmailScope[] = [
   "all",
-  "referral_sequence",
   "onboarding",
   "task_notifications",
   "magic_link",

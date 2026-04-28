@@ -102,7 +102,14 @@ module.exports = isDev
       org: "wishonia-org",
       project: "optimitron-web",
       silent: !process.env.CI,
-      widenClientFileUpload: true,
+      // widenClientFileUpload was OOMing CI: Sentry's post-build pass injects
+      // debug IDs into every widened client bundle in memory, and at ~800
+      // files we crossed the 6GB heap ceiling. Standard upload (server +
+      // server-side-rendered chunks) is enough to symbolicate the errors we
+      // actually see; client-only bundles can be re-enabled if needed once
+      // we trim the bundle. Re-enable behind an env flag if a CI runner with
+      // more RAM is configured.
+      widenClientFileUpload: process.env.SENTRY_WIDEN_CLIENT_UPLOAD === "true",
       sourcemaps: {
         disable: !process.env.SENTRY_AUTH_TOKEN,
       },

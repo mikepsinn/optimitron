@@ -14,7 +14,10 @@ import {
   verifyReferralInvitationTask,
 } from "@/lib/referral-invitation-tasks.server";
 import { recordShareAttempt } from "@/lib/share-attempts.server";
-import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+import {
+  notifyTaskCommentRecipients,
+  postTaskCommentAndNotify,
+} from "@/lib/tasks/task-comment-notifications.server";
 import { markNextHumanAssignmentSubtaskComplete } from "@/lib/tasks/user-treaty-task-progress.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -594,7 +597,7 @@ export async function convertReferralInvitationForVote(input: {
   if (invitation.convertedVoteId) return invitation;
 
   const now = new Date();
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const converted = await tx.referralInvitation.update({
       where: { id: invitation.id },
       data: {
@@ -604,14 +607,27 @@ export async function convertReferralInvitationForVote(input: {
       },
     });
 
+    let completionNotification: {
+      commentId: string;
+      message: string;
+      taskId: string;
+    } | null = null;
+
     if (invitation.taskId) {
-      await verifyReferralInvitationTask(tx, {
+      const verification = await verifyReferralInvitationTask(tx, {
         invitationId: invitation.id,
         recipientName: invitation.recipientName,
         taskId: invitation.taskId,
         verifiedAt: now,
         verifiedByUserId: input.voterUserId,
       });
+      if (verification.commentId && verification.message) {
+        completionNotification = {
+          commentId: verification.commentId,
+          message: verification.message,
+          taskId: invitation.taskId,
+        };
+      }
     }
 
     if (invitation.recipientPersonId) {
@@ -626,6 +642,17 @@ export async function convertReferralInvitationForVote(input: {
       });
     }
 
-    return converted;
+    return { completionNotification, converted };
   });
+
+  if (result.completionNotification) {
+    await notifyTaskCommentRecipients({
+      authorUserId: input.voterUserId,
+      commentId: result.completionNotification.commentId,
+      message: result.completionNotification.message,
+      taskId: result.completionNotification.taskId,
+    });
+  }
+
+  return result.converted;
 }

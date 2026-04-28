@@ -13,22 +13,22 @@ describe("isSendAllowed", () => {
   });
 
   it("allows non-transactional scopes when fully subscribed", () => {
-    expect(isSendAllowed("referral_sequence", subscribed)).toBe(true);
+    expect(isSendAllowed("task_notifications", subscribed)).toBe(true);
     expect(isSendAllowed("onboarding", subscribed)).toBe(true);
   });
 
   it("blocks non-transactional scopes when newsletter is off", () => {
-    expect(isSendAllowed("referral_sequence", { newsletterSubscribed: false, unsubscribedScopes: [] })).toBe(false);
+    expect(isSendAllowed("task_notifications", { newsletterSubscribed: false, unsubscribedScopes: [] })).toBe(false);
   });
 
   it("blocks non-transactional scopes when 'all' is in unsubscribedScopes", () => {
-    expect(isSendAllowed("referral_sequence", { newsletterSubscribed: true, unsubscribedScopes: ["all"] })).toBe(false);
+    expect(isSendAllowed("task_notifications", { newsletterSubscribed: true, unsubscribedScopes: ["all"] })).toBe(false);
     expect(isSendAllowed("onboarding", { newsletterSubscribed: true, unsubscribedScopes: ["all"] })).toBe(false);
   });
 
   it("blocks a specific scope when it's in unsubscribedScopes", () => {
-    const state = { newsletterSubscribed: true, unsubscribedScopes: ["referral_sequence"] };
-    expect(isSendAllowed("referral_sequence", state)).toBe(false);
+    const state = { newsletterSubscribed: true, unsubscribedScopes: ["task_notifications"] };
+    expect(isSendAllowed("task_notifications", state)).toBe(false);
     // Other non-transactional scopes still flow through.
     expect(isSendAllowed("onboarding", state)).toBe(true);
   });

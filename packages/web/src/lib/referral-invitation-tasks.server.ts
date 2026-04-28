@@ -1,6 +1,8 @@
 import {
   TaskCategory,
   TaskClaimPolicy,
+  TaskCommentKind,
+  TaskCommentSource,
   TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
@@ -11,8 +13,8 @@ import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communi
 const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
 
 type ReferralInvitationTaskClient =
-  | Pick<PrismaClient, "task" | "taskCommunicationEndpoint">
-  | Pick<Prisma.TransactionClient, "task" | "taskCommunicationEndpoint">;
+  | Pick<PrismaClient, "task" | "taskComment" | "taskCommunicationEndpoint">
+  | Pick<Prisma.TransactionClient, "task" | "taskComment" | "taskCommunicationEndpoint">;
 
 export function buildReferralInvitationTaskKey(inviteToken: string) {
   return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
@@ -29,6 +31,10 @@ export function buildReferralInvitationTaskDescription(recipientName: string) {
     `${firstName} was invited to vote on the 1% Treaty.`,
     "The task is complete when their verified vote converts the invitation.",
   ].join("\n\n");
+}
+
+export function buildReferralInvitationTaskCompletionMessage(recipientName: string) {
+  return `${recipientName} voted on the 1% Treaty. This referral task is now verified.`;
 }
 
 const REFERRAL_INVITATION_DUE_DAYS = 3;
@@ -98,8 +104,8 @@ export async function verifyReferralInvitationTask(
     verifiedAt: Date;
     verifiedByUserId: string;
   },
-) {
-  await client.task.updateMany({
+): Promise<{ commentId: string | null; message: string | null; verified: boolean }> {
+  const updated = await client.task.updateMany({
     where: {
       id: input.taskId,
       deletedAt: null,
@@ -115,4 +121,22 @@ export async function verifyReferralInvitationTask(
       verifiedByUserId: input.verifiedByUserId,
     },
   });
+
+  if (updated.count === 0) {
+    return { commentId: null, message: null, verified: false };
+  }
+
+  const message = buildReferralInvitationTaskCompletionMessage(input.recipientName);
+  const comment = await client.taskComment.create({
+    data: {
+      authorUserId: input.verifiedByUserId,
+      kind: TaskCommentKind.STATUS_UPDATE,
+      message,
+      source: TaskCommentSource.SYSTEM,
+      taskId: input.taskId,
+    },
+    select: { id: true },
+  });
+
+  return { commentId: comment.id, message, verified: true };
 }

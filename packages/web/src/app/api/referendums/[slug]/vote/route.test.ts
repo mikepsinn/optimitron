@@ -11,8 +11,6 @@ const mocks = vi.hoisted(() => ({
   syncReferralVoteTokenMintForVote: vi.fn(),
   resolveInvitationReferrer: vi.fn(),
   convertReferralInvitationForVote: vi.fn(),
-  sendTreatyRecipientVotedEmailForInvitation: vi.fn(),
-  sendTreatyVoteConfirmedEmailForUser: vi.fn(),
   ensurePersonForUser: vi.fn(),
   ensureUserTreatyTask: vi.fn(),
 }));
@@ -40,11 +38,6 @@ vi.mock("@/lib/referral-vote-token-mint.server", () => ({
 vi.mock("@/lib/referral-invitations.server", () => ({
   resolveInvitationReferrer: mocks.resolveInvitationReferrer,
   convertReferralInvitationForVote: mocks.convertReferralInvitationForVote,
-}));
-
-vi.mock("@/lib/email/treaty-sender-emails.server", () => ({
-  sendTreatyRecipientVotedEmailForInvitation: mocks.sendTreatyRecipientVotedEmailForInvitation,
-  sendTreatyVoteConfirmedEmailForUser: mocks.sendTreatyVoteConfirmedEmailForUser,
 }));
 
 vi.mock("@/lib/person.server", () => ({
@@ -98,8 +91,6 @@ describe("POST /api/referendums/[slug]/vote", () => {
     mocks.syncReferralVoteTokenMintForVote.mockResolvedValue(null);
     mocks.resolveInvitationReferrer.mockResolvedValue(null);
     mocks.convertReferralInvitationForVote.mockResolvedValue(null);
-    mocks.sendTreatyRecipientVotedEmailForInvitation.mockResolvedValue({ status: "sent" });
-    mocks.sendTreatyVoteConfirmedEmailForUser.mockResolvedValue({ status: "sent" });
     mocks.ensurePersonForUser.mockResolvedValue({ id: "person_1" });
     mocks.ensureUserTreatyTask.mockResolvedValue({
       created: false,
@@ -216,7 +207,6 @@ describe("POST /api/referendums/[slug]/vote", () => {
       activityId: "activity_1",
       dedupeKey: "ref_1",
     });
-    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
   });
 
   it("syncs the treaty task without sending a vote-receipt email", async () => {
@@ -231,7 +221,6 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
     expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith({
       personId: "person_1",
@@ -474,10 +463,9 @@ describe("POST /api/referendums/[slug]/vote", () => {
       referendumId: "ref_1",
       voteId: "vote_1",
     });
-    expect(mocks.sendTreatyRecipientVotedEmailForInvitation).not.toHaveBeenCalled();
   });
 
-  it("sends the recipient-voted sender email when a treaty invitation converts", async () => {
+  it("leaves treaty invitation conversion notification to the task system", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.findUnique.mockResolvedValue(TREATY_REFERENDUM);
     const vote = {
@@ -507,9 +495,16 @@ describe("POST /api/referendums/[slug]/vote", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mocks.sendTreatyVoteConfirmedEmailForUser).not.toHaveBeenCalled();
-    expect(mocks.sendTreatyRecipientVotedEmailForInvitation).toHaveBeenCalledWith({
-      invitationId: "invite_1",
+    expect(mocks.convertReferralInvitationForVote).toHaveBeenCalledWith({
+      inviteToken: "token_1",
+      voterUserId: "user_1",
+      referendumId: "ref_1",
+      voteId: "vote_1",
+    });
+    expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
+    expect(mocks.ensureUserTreatyTask).toHaveBeenCalledWith({
+      personId: "person_1",
+      userId: "user_1",
     });
   });
 

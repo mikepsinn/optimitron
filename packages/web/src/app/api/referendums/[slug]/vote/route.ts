@@ -11,7 +11,6 @@ import {
   resolveInvitationReferrer,
 } from "@/lib/referral-invitations.server";
 import { createLogger } from "@/lib/logger";
-import { sendTreatyRecipientVotedEmailForInvitation } from "@/lib/email/treaty-sender-emails.server";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
@@ -180,15 +179,6 @@ export async function POST(
         log.error("Treaty humanity-management task sync error", taskError);
       }
 
-      if (convertedReferralInvitation?.id) {
-        try {
-          await sendTreatyRecipientVotedEmailForInvitation({
-            invitationId: convertedReferralInvitation.id,
-          });
-        } catch (emailError) {
-          log.error("Treaty recipient-voted email error", emailError);
-        }
-      }
     }
 
     return NextResponse.json({

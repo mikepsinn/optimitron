@@ -667,27 +667,9 @@ handled by the task system: the user's treaty task and invitation subtasks are
 created with due dates, then the generic overdue-task reminder cron owns any
 later reminder emails.
 
----
-
-### B1. [Name] Just Voted (triggered, whenever it happens)
-
-**Subject:** [Recipient name] completed their task
-
-**Body:**
-
-> [Recipient name] voted for the 1% Treaty.
->
-> **+2.7 lives confirmed. +55 years of suffering prevented.**
->
-> Your Inverse Kills Score:
-> Confirmed: **[Y] lives**
-> Pending: **[X] lives**
->
-> [BUTTON: See your dashboard → warondisease.org/dashboard]
->
-> — Earth Optimization Services, LLC
-
-Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
+When a named invitee votes, the referral-invitation task is verified and a
+`STATUS_UPDATE` comment is added to that task. Any email is the generic task
+comment notification, not a treaty-specific sender sequence.
 
 ---
 
@@ -696,7 +678,7 @@ Send IMMEDIATELY when the recipient votes. Delay kills the dopamine.
 - **Total email cap per recipient:** 4 emails maximum. Hard cap. No exceptions.
 - **Format consistency:** if sender chose Bossy mode, all 4 recipient emails use the bossy/task variants. If they chose Love mode, all 4 recipient emails use the sincere/love variants. Don't mix formats within a recipient's sequence.
 - **Sender follow-up:** no parallel sender sequence. User treaty tasks, referral-invitation tasks, and generic task overdue reminders own the lifecycle.
-- **No `referral_sequence_*` resurrection:** the old dedicated referral-sequence sender is retired. New outbound email must be a task notification, an explicit sender-authored invitation, or the triggered recipient-voted notification above.
+- **No `referral_sequence_*` resurrection:** the old dedicated referral-sequence sender is retired. New outbound email must be a task notification or an explicit sender-authored invitation.
 - **No images, no HTML formatting beyond the button and the task "card" styling.** Bossy emails can use task-card styling. Love emails stay plain text.
 - **Deep links matter.** "Assign one more Earth optimization task" should drop the user directly into the message composer, pre-authenticated. Never send them back to the landing page.
 

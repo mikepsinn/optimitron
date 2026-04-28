@@ -55,7 +55,7 @@ describe("settings email preferences route", () => {
         method: "PATCH",
         body: JSON.stringify({
           newsletterSubscribed: false,
-          unsubscribedScopes: ["referral_sequence", "magic_link"],
+          unsubscribedScopes: ["task_notifications", "magic_link", "referral_sequence"],
         }),
       }) as never,
     );
@@ -64,7 +64,7 @@ describe("settings email preferences route", () => {
       where: { id: "user_1" },
       data: {
         newsletterSubscribed: false,
-        unsubscribedScopes: ["referral_sequence", "all"],
+        unsubscribedScopes: ["task_notifications", "all"],
       },
     });
     expect(response.status).toBe(200);
@@ -72,7 +72,7 @@ describe("settings email preferences route", () => {
       success: true,
       emailPreferences: {
         newsletterSubscribed: false,
-        unsubscribedScopes: ["referral_sequence", "all"],
+        unsubscribedScopes: ["task_notifications", "all"],
       },
     });
   });

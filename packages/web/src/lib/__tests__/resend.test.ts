@@ -54,7 +54,7 @@ describe("sendResendEmail", () => {
   it("adds one-click unsubscribe headers for non-transactional email", async () => {
     const result = await sendResendEmail({
       html: "<p>Hello</p>",
-      scope: "referral_sequence",
+      scope: "task_notifications",
       subject: "Hello",
       text: "Hello",
       to: "citizen@example.com",

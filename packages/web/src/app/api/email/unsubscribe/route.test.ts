@@ -43,7 +43,7 @@ describe("unsubscribe route", () => {
 
     mocks.verifyUnsubToken.mockReturnValue(true);
     mocks.buildUnsubscribeUrl.mockReturnValue(
-      "https://optimitron.com/api/email/unsubscribe?u=user_1&s=referral_sequence&t=abc",
+      "https://optimitron.com/api/email/unsubscribe?u=user_1&s=task_notifications&t=abc",
     );
   });
 
@@ -57,13 +57,13 @@ describe("unsubscribe route", () => {
 
     const response = await GET(
       new Request(
-        "http://localhost/api/email/unsubscribe?u=user_1&s=referral_sequence&t=abc&action=resubscribe",
+        "http://localhost/api/email/unsubscribe?u=user_1&s=task_notifications&t=abc&action=resubscribe",
       ),
     );
 
     expect(mocks.applyResubscribe).toHaveBeenCalledWith({
       userId: "user_1",
-      scope: "referral_sequence",
+      scope: "task_notifications",
       emailLogId: null,
       via: "GET",
     });
