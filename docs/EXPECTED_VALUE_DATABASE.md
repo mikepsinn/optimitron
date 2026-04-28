@@ -111,8 +111,8 @@ The exact Notion formula source was not available through the connector in this 
 |---|---|
 | `EV/hr` | Confirmed by design note: `P(success) * Value / Hours`. |
 | `Optimization Rate` | Confirmed by schema description/design note: `EV/hr + (Downstream Value * 0.2 * P(success) / Hours)`. The `0.2` factor models the expected lift from completing a prerequisite. |
-| `Time Discount` | Inferred from schema/design notes. Discounts tasks whose value arrives later; the revenue-path note says sprint work should prefer a 30-day payoff over a 5-year payoff. |
-| `Deadline Status` | MCP-derived metadata. Hard deadlines can trigger a latest-start guardrail in `getNextAction`, but they do not multiply `priority`. |
+| `Time Discount` | Legacy/Notion-style metadata for revenue-path analysis. Personal MCP `priority` does not use time discounts. |
+| `Deadline Status` | MCP-derived metadata. `REQUIRED` and `EXPIRES` deadlines can trigger a latest-start guardrail in `getNextAction`, but they do not multiply `priority`. |
 | `Real EV/hr` | Inferred from schema/design notes. Uses revenue-path marginal EV where a task is tied to a path. |
 | `Task Priority` | Canonical MCP score: expected net value per hour-equivalent of effort/cash. |
 | `Uncertainty` | Inferred from schema/design notes. Represents uncertainty from value/hour/probability assumptions. |
