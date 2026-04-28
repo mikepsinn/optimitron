@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateAuthCode, AUTH_CODE_TTL_MS } from "@/lib/mcp-oauth";
+import { generateAuthCode, AUTH_CODE_TTL_MS, isRedirectUriAllowed } from "@/lib/mcp-oauth";
 import { McpScope, scopesFromWire } from "@/lib/mcp-scopes";
 
 export async function POST(req: Request) {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unknown client" }, { status: 400 });
   }
 
-  if (!client.redirectUris.includes(redirectUri)) {
+  if (!isRedirectUriAllowed(client.redirectUris, redirectUri)) {
     return NextResponse.json({ error: "Invalid redirect_uri" }, { status: 400 });
   }
 
