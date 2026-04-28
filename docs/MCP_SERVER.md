@@ -24,9 +24,74 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - "Create a private task for a user, add a probability-weighted value estimate, and ask for the next best action."
 - "Look up the sourced parameter value behind this expected-value calculation once parameter tools are implemented."
 
+## Personal Task Engine Protocol
+
+For personal planning, the MCP server is an expected-value task engine. The loop is:
+
+1. Create or update tasks with enough estimates to compute priority.
+2. Add dependencies for true prerequisites.
+3. Audit the queue with `getQueueAudit`.
+4. Ask `getNextAction` or inspect `getMyQueue`.
+5. When work is done, call `updateTask` with `status: "VERIFIED"`.
+6. Repeat; dependents automatically become available when all blockers are verified.
+
+The canonical score is `priority`:
+
+```text
+priority = (P(success) * value - cash_cost) / (hours + cash_cost / buybackRate)
+```
+
+The default `buybackRate` is `$1000/hr`. Dependencies decide what is available; `priority` ranks available tasks.
+
+Use these fields when creating personal tasks:
+
+- `hours`: expected user work hours, not calendar duration.
+- `value`: gross conditional value if the task succeeds. For must-do tasks, include avoided downside.
+- `p_success`: probability from `0` to `1`; the MCP layer computes expected value as `value * p_success`.
+- `cash_cost`: dollars required to execute; defaults to `0`.
+- `executor_type`: `Self` for normal user work, even if AI assists; `AI Agent` only for autonomous assistant work.
+- `depends_on`: task IDs that must be `VERIFIED` before this task appears in queues.
+- `available_at`: earliest ISO time the task should appear in active queues.
+- `due_at`: due date or expiry date.
+- `deadline_policy`: `NONE`, `SOFT`, `EXPIRES`, or `REQUIRED`.
+
+Deadline policy rules:
+
+- `NONE`: no deadline semantics.
+- `SOFT`: useful scheduling metadata; does not change `priority`.
+- `EXPIRES`: opportunity disappears after `due_at`, such as a grant or application.
+- `REQUIRED`: must-do obligation, such as taxes, legal filings, medicine refills, or safety/health maintenance.
+
+Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, use `depends_on`.
+
+Recommended OAuth scopes for a personal life-planning AI:
+
+```text
+tasks:personal
+search
+```
+
+Do not request `tasks:write` for personal planning. `tasks:write` is reserved for admin users managing public Earth-level tasks.
+
+Example private task:
+
+```json
+{
+  "title": "File federal taxes",
+  "hours": 3,
+  "value": 20000,
+  "p_success": 0.99,
+  "cash_cost": 150,
+  "executor_type": "Self",
+  "due_at": "2026-04-15T17:00:00-05:00",
+  "deadline_policy": "REQUIRED",
+  "deadline_rationale": "Avoid legal penalties, interest, and account disruption."
+}
+```
+
 ## Estimate Standards For Agents
 
-Agents should use `setTaskImpact` when they know enough to estimate value. If they do not, they should create or rank a `DECOMPOSE`, `DE_RISK`, or `QUEUE_REPAIR` action rather than inventing confidence.
+For public Earth-level tasks, agents should use `setTaskImpact` when they know enough to estimate value. For private personal tasks, prefer `createTask` / `updateTask` with `hours`, `value`, `p_success`, and `cash_cost`. If an agent does not know enough to estimate value, it should create a clarification/decomposition task rather than inventing confidence.
 
 - Use USD-equivalent welfare as the canonical unit. Health effects can be converted using sourced QALY/DALY assumptions; income and runway effects should already be in dollars.
 - `expectedEconomicValueUsdBase` is already probability-weighted expected value. If an agent starts from a conditional payoff, it should store `P(success) * valueIfSuccessful`, not the gross payoff.
@@ -36,7 +101,7 @@ Agents should use `setTaskImpact` when they know enough to estimate value. If th
 - Include `sourceUrls` and `assumptions` for high-value or subjective claims. Any estimate over `$10K/hr` should include a sanity-check assumption or citation.
 - Use `delayEconomicValueUsdLostPerDayBase` only when there is a real deadline, expiry risk, or cost of delay. Do not use deadline multipliers as a substitute for evidence.
 - Keep `Wish Points`, tokens, or other incentive signals separate from welfare value. They can route attention, but they are not the objective unit.
-- For imported Notion-style rows, convert `Value`, `P(success)`, and `Hours` as: `expectedEconomicValueUsdBase = P(success) * Value`, `estimatedEffortHoursBase = Hours`, and `successProbabilityBase = P(success)`.
+- For imported Notion-style rows, convert `Value`, `P(success)`, and `Hours` as: `value = Value`, `p_success = P(success)`, and `hours = Hours` for private personal tasks, or `expectedEconomicValueUsdBase = P(success) * Value`, `estimatedEffortHoursBase = Hours`, and `successProbabilityBase = P(success)` for public impact frames.
 
 Example impact frame for a subjective but useful outreach task:
 
@@ -80,8 +145,9 @@ Example impact frame for a subjective but useful outreach task:
 
 ## Tool Groups
 
-- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `evaluateTaskEconomics`.
-- Task improvement: `proposeTaskBundle`, `updateTask`, `setTaskImpact`, `addDependency`, `promoteTask`.
+- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
+- Personal task management: `createTask`, `updateTask`, `deleteTask`.
+- Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
 - Task communications: `checkTaskCommunicationCooldown`, `recordTaskCommunication`.
 - Knowledge: `searchManual`, `askWishonia`.

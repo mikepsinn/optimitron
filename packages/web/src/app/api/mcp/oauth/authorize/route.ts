@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isRedirectUriAllowed } from "@/lib/mcp-oauth";
 
 /**
  * OAuth authorization endpoint. Validates the request parameters and redirects
@@ -49,7 +50,7 @@ export async function GET(req: Request) {
     );
   }
 
-  if (!client.redirectUris.includes(redirectUri)) {
+  if (!isRedirectUriAllowed(client.redirectUris, redirectUri)) {
     return NextResponse.json(
       { error: "invalid_request", error_description: "redirect_uri not registered for this client" },
       { status: 400 },

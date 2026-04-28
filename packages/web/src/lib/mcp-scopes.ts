@@ -16,8 +16,8 @@ export { McpScope };
 
 export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
   [McpScope.TASKS_READ]: "List and view public tasks, blockers, and funding stats",
-  [McpScope.TASKS_WRITE]: "Create, update, promote tasks and set impact estimates",
-  [McpScope.TASKS_PERSONAL]: "List and manage your own tasks, claim tasks as yourself",
+  [McpScope.TASKS_WRITE]: "Create, update, promote, and estimate public tasks",
+  [McpScope.TASKS_PERSONAL]: "List and manage your private personal tasks, comments, claims, and queues",
   [McpScope.AGENT_RUN]: "Log agent runs, acquire/release leases, record task communications",
   [McpScope.SEARCH]: "Search the Optimitron manual and ask Wishonia questions",
 };

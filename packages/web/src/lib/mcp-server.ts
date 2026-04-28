@@ -43,18 +43,15 @@ export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks:read
   getNextTask: [McpScope.TASKS_READ],
-  getQueueAudit: [McpScope.TASKS_READ],
-  getNextAction: [McpScope.TASKS_READ],
-  getMyQueue: [McpScope.TASKS_READ],
-  getAIQueue: [McpScope.TASKS_READ],
-  getMyOptimalNextAction: [McpScope.TASKS_PERSONAL],
-  rankMyActionOptions: [McpScope.TASKS_PERSONAL],
-  explainTaskRanking: [McpScope.TASKS_PERSONAL],
+  getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getNextAction: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getMyQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getAIQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
   evaluateTaskEconomics: [McpScope.TASKS_READ],
   listTasks: [McpScope.TASKS_READ],
-  searchTasks: [McpScope.TASKS_READ],
-  getTask: [McpScope.TASKS_READ],
-  getBlockers: [McpScope.TASKS_READ],
+  searchTasks: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getBlockers: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
   getFundingStats: [McpScope.TASKS_READ],
   listOrganizations: [McpScope.TASKS_READ],
   createOrganization: [McpScope.TASKS_WRITE],
@@ -62,11 +59,11 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getPersonTasks: [McpScope.TASKS_READ],
   getOrganizationTasks: [McpScope.TASKS_READ],
   // tasks:write
-  createTask: [McpScope.TASKS_WRITE],
+  createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
   proposeTaskBundle: [McpScope.TASKS_WRITE],
   promoteTask: [McpScope.TASKS_WRITE],
-  deleteTask: [McpScope.TASKS_WRITE],
-  updateTask: [McpScope.TASKS_WRITE],
+  deleteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
+  updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
   setTaskImpact: [McpScope.TASKS_WRITE],
   recordTaskActuals: [McpScope.TASKS_WRITE],
   updateMilestone: [McpScope.TASKS_WRITE],
@@ -90,8 +87,20 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   postTaskComment: [McpScope.TASKS_PERSONAL],
   voteTaskComment: [McpScope.TASKS_PERSONAL],
   deleteTaskComment: [McpScope.TASKS_PERSONAL],
-  getTaskComments: [McpScope.TASKS_READ],
+  getTaskComments: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
 };
+
+const ADMIN_ONLY_PUBLIC_WRITE_TOOLS = new Set([
+  "createOrganization",
+  "proposeTaskBundle",
+  "promoteTask",
+  "setTaskImpact",
+  "recordTaskActuals",
+  "updateMilestone",
+  "addDependency",
+  "createPerson",
+  "upsertOrganization",
+]);
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
   // Deny by default. Callers must pass an explicit scopes array — stdio passes ALL_SCOPES,
@@ -101,6 +110,10 @@ function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): bool
   const required = TOOL_SCOPES[toolName];
   if (!required) return true;
   return required.some((s) => grantedScopes.includes(s));
+}
+
+function hasAdminTaskWriteAccess(scopes: McpScope[] | undefined, isAdmin: boolean) {
+  return isAdmin && !!scopes?.includes(McpScope.TASKS_WRITE);
 }
 
 // ---------------------------------------------------------------------------
@@ -212,63 +225,6 @@ function buildAgentCapabilities(args: Record<string, unknown>) {
     maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
     skillTags: (args.skillTags as string[]) ?? [],
   };
-}
-
-function buildOptimalActorCapabilities(args: Record<string, unknown>) {
-  return {
-    availableHoursPerWeek: (args.availableHoursPerWeek as number) ?? null,
-    budgetUsd: (args.budgetUsd as number) ?? null,
-    hourlyRateUsd: (args.hourlyRateUsd as number) ?? null,
-    interestTags: (args.interestTags as string[]) ?? [],
-    kind: (args.actorKind as string) ?? "AGENT",
-    maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
-    organizationId: (args.organizationId as string) ?? null,
-    organizationTags: (args.organizationTags as string[]) ?? [],
-    runwayDays: (args.runwayDays as number) ?? null,
-    skillTags: (args.skillTags as string[]) ?? [],
-  };
-}
-
-function buildOptimalPolicy(args: Record<string, unknown>, fallbackExternalBudgetUsd = 0) {
-  const policy = {
-    externalBudgetUsd: (args.externalBudgetUsd as number) ?? fallbackExternalBudgetUsd,
-    platformRunwayDays: (args.platformRunwayDays as number) ?? null,
-  } as {
-    dependencyFallbackShare?: number;
-    externalBudgetUsd: number;
-    platformRunwayDays: number | null;
-    platformRunwayTargetDays?: number;
-    platformSurvivalWeight?: number;
-    uncertaintyPenaltyWeight?: number;
-    valueOfInformationWeight?: number;
-  };
-
-  const dependencyFallbackShare = args.dependencyFallbackShare;
-  if (typeof dependencyFallbackShare === "number" && Number.isFinite(dependencyFallbackShare)) {
-    policy.dependencyFallbackShare = dependencyFallbackShare;
-  }
-
-  const platformRunwayTargetDays = args.platformRunwayTargetDays;
-  if (typeof platformRunwayTargetDays === "number" && Number.isFinite(platformRunwayTargetDays)) {
-    policy.platformRunwayTargetDays = platformRunwayTargetDays;
-  }
-
-  const platformSurvivalWeight = args.platformSurvivalWeight;
-  if (typeof platformSurvivalWeight === "number" && Number.isFinite(platformSurvivalWeight)) {
-    policy.platformSurvivalWeight = platformSurvivalWeight;
-  }
-
-  const uncertaintyPenaltyWeight = args.uncertaintyPenaltyWeight;
-  if (typeof uncertaintyPenaltyWeight === "number" && Number.isFinite(uncertaintyPenaltyWeight)) {
-    policy.uncertaintyPenaltyWeight = uncertaintyPenaltyWeight;
-  }
-
-  const valueOfInformationWeight = args.valueOfInformationWeight;
-  if (typeof valueOfInformationWeight === "number" && Number.isFinite(valueOfInformationWeight)) {
-    policy.valueOfInformationWeight = valueOfInformationWeight;
-  }
-
-  return policy;
 }
 
 async function listActivePublicEarthTasks() {
@@ -1101,28 +1057,6 @@ function parseQueueLimit(value: unknown, fallback = 20, max = 100) {
   return Math.max(1, Math.min(clamped, max));
 }
 
-function normalizeOptimalRankingTask(task: Record<string, unknown>): Record<string, unknown> {
-  const directImpactFrame = asObject(task.directImpactFrame);
-  const selectedImpactFrame = directImpactFrame ?? task.selectedImpactFrame ?? null;
-  const outgoingEdges = Array.isArray(task.outgoingEdges)
-    ? task.outgoingEdges.map((edge) => {
-        const edgeRecord = asObject(edge);
-        if (!edgeRecord) return edge;
-        const toTask = asObject(edgeRecord.toTask);
-        return {
-          ...edgeRecord,
-          ...(toTask ? { toTask: normalizeOptimalRankingTask(toTask) } : {}),
-        };
-      })
-    : task.outgoingEdges;
-
-  return {
-    ...task,
-    outgoingEdges,
-    selectedImpactFrame,
-  };
-}
-
 function nextActionRecommendation(task: PersonalQueueRow | null) {
   if (!task) {
     return {
@@ -1194,52 +1128,6 @@ function selectPersonalNextAction(queue: PersonalQueueRow[]) {
     deadlineOverride: false,
     selectionReason: "highest_priority",
     task: selected,
-  };
-}
-
-function summarizeRankedAction(option: {
-  actionBlockMinutes: number;
-  actionKind: string;
-  assumptions: string[];
-  autoExecutable: boolean;
-  capabilityFit: number;
-  cashCostUsd: number;
-  computeCostUsd: number;
-  coordinationCostUsd: number;
-  expectedMarginalUtilityUsd: number;
-  explanation: string[];
-  normalizedBy: string;
-  requiredApproval: boolean;
-  riskAdjustedScore: number;
-  route: string;
-  scarceResourceHours: number;
-  sensitivity: string[];
-  task: (SummarizableTask & { id: string; title: string }) | null;
-  uncertaintyPenaltyUsd: number;
-  valueOfInformationBonusUsd: number;
-  whatWouldChangeMyMind: string[];
-}) {
-  return {
-    actionBlockMinutes: option.actionBlockMinutes,
-    actionKind: option.actionKind,
-    assumptions: option.assumptions,
-    autoExecutable: option.autoExecutable,
-    capabilityFit: option.capabilityFit,
-    cashCostUsd: option.cashCostUsd,
-    computeCostUsd: option.computeCostUsd,
-    coordinationCostUsd: option.coordinationCostUsd,
-    expectedMarginalUtilityUsd: option.expectedMarginalUtilityUsd,
-    explanation: option.explanation,
-    normalizedBy: option.normalizedBy,
-    requiredApproval: option.requiredApproval,
-    riskAdjustedScore: option.riskAdjustedScore,
-    route: option.route,
-    scarceResourceHours: option.scarceResourceHours,
-    sensitivity: option.sensitivity,
-    task: option.task ? summarizeTask(option.task) : null,
-    uncertaintyPenaltyUsd: option.uncertaintyPenaltyUsd,
-    valueOfInformationBonusUsd: option.valueOfInformationBonusUsd,
-    whatWouldChangeMyMind: option.whatWouldChangeMyMind,
   };
 }
 
@@ -1515,7 +1403,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getQueueAudit",
     description:
-      "Audit active owned private tasks for missing estimates, blocked dependencies, impossible priority inputs, and other data issues.",
+      "Start here before trusting a personal task queue. Audits active owned private tasks for missing estimates, blocked dependencies, impossible priority inputs, required/expiring deadline risks, and other data issues. A life-planning agent should repair or clarify high-severity issues before relying on getNextAction.",
     inputSchema: { type: "object" as const, properties: {} },
     outputSchema: {
       type: "object",
@@ -1567,7 +1455,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getMyQueue",
     description:
-      "Get the authenticated user's private queue sorted by computed task priority with blockers removed.",
+      "Get the authenticated user's available private self-work queue sorted by computed priority. Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1637,7 +1525,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getAIQueue",
     description:
-      "Get the authenticated user's AI-agent-executable private tasks ranked by computed task priority.",
+      "Get the authenticated user's available private AI-agent tasks sorted by computed priority. Use executor_type='AI Agent' for work the assistant can do autonomously; otherwise create normal self-work tasks with executor_type='Self'.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1679,7 +1567,8 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "getNextAction",
-    description: "Get the mathematically best next action from the user's available private tasks.",
+    description:
+      "Get the best next self-work action from available private tasks. Priority is pure expected net value per hour-equivalent: (P(success) * value - cash_cost) / (hours + cash_cost / buybackRate). Dependencies decide availability. REQUIRED and EXPIRES deadline tasks can override pure priority when they have reached latest-start time.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1720,72 +1609,6 @@ const TASK_TOOL_DEFINITIONS = [
           },
         },
       },
-    },
-  },
-  {
-    name: "getMyOptimalNextAction",
-    description:
-      "Get the risk-adjusted optimal next action for the authenticated user or local agent. Ranks action options, not just tasks, using EV, uncertainty, dependencies, execution route, platform runway, and value of information.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"], description: "Who is taking the action" },
-        skillTags: { type: "array", items: { type: "string" }, description: "Actor skill tags for capability matching" },
-        interestTags: { type: "array", items: { type: "string" }, description: "Actor interest tags for capability matching" },
-        organizationTags: { type: "array", items: { type: "string" }, description: "Organization capabilities or mission tags if actorKind is ORGANIZATION" },
-        organizationId: { type: "string", description: "Organization ID if ranking for an organization" },
-        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Max difficulty the actor can handle" },
-        availableHoursPerWeek: { type: "number", description: "Hours per week the actor can commit" },
-        hourlyRateUsd: { type: "number", description: "Opportunity cost of the actor's time" },
-        platformRunwayDays: { type: "number", description: "Days of platform runway; low values boost survival/revenue actions" },
-        platformRunwayTargetDays: { type: "number", description: "Runway target before survival boost fades" },
-        externalBudgetUsd: { type: "number", description: "Available external spend budget" },
-      },
-    },
-  },
-  {
-    name: "rankMyActionOptions",
-    description:
-      "Rank concrete action options across accessible tasks. Returns route-level choices like execute, outsource, de-risk, decompose, funding unblocker, queue repair, or kill.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"] },
-        skillTags: { type: "array", items: { type: "string" } },
-        interestTags: { type: "array", items: { type: "string" } },
-        organizationTags: { type: "array", items: { type: "string" } },
-        organizationId: { type: "string" },
-        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] },
-        availableHoursPerWeek: { type: "number" },
-        hourlyRateUsd: { type: "number" },
-        platformRunwayDays: { type: "number" },
-        platformRunwayTargetDays: { type: "number" },
-        externalBudgetUsd: { type: "number" },
-        limit: { type: "number", description: "Max action options to return (default 10, max 50)" },
-      },
-    },
-  },
-  {
-    name: "explainTaskRanking",
-    description:
-      "Explain how a specific accessible task ranks under the risk-adjusted optimal-action engine, including assumptions, sensitivity, and what would change the recommendation.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        taskId: { type: "string", description: "Task ID to explain" },
-        actorKind: { type: "string", enum: ["USER", "ORGANIZATION", "AGENT", "CONTRACTOR", "VENDOR", "ALLY", "AUTOMATION"] },
-        skillTags: { type: "array", items: { type: "string" } },
-        interestTags: { type: "array", items: { type: "string" } },
-        organizationTags: { type: "array", items: { type: "string" } },
-        organizationId: { type: "string" },
-        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] },
-        availableHoursPerWeek: { type: "number" },
-        hourlyRateUsd: { type: "number" },
-        platformRunwayDays: { type: "number" },
-        platformRunwayTargetDays: { type: "number" },
-        externalBudgetUsd: { type: "number" },
-      },
-      required: ["taskId"],
     },
   },
   {
@@ -2044,8 +1867,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a new private task. Private visibility is the default (isPublic = false). " +
-      "Before adding blockers/dependents, use searchTasks to find candidate related task IDs.",
+      "Create a new private personal task. Private visibility is the default (isPublic=false), and private tasks default to ACTIVE so they can enter the queue immediately. For useful life planning, include hours, value, p_success, and cash_cost whenever possible; use depends_on for true prerequisites; use executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; use deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2054,13 +1876,13 @@ const TASK_TOOL_DEFINITIONS = [
         parentTaskId: { type: "string", description: "Parent task ID for subtask hierarchy" },
         taskKey: { type: "string", description: "Stable dedup key (e.g. accountability:us:golf-2025)" },
         category: { type: "string", enum: ["ADVOCACY", "RESEARCH", "COMMUNICATION", "ENGINEERING", "ORGANIZING", "OUTREACH", "GOVERNANCE", "SCIENCE", "LEGAL", "CREATIVE", "OTHER"], description: "Task category" },
-        difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Estimated difficulty" },
+        difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Optional metadata for public task presentation and capability filtering; not part of personal priority." },
         skillTags: { type: "array", items: { type: "string" }, description: "Skills needed" },
         interestTags: { type: "array", items: { type: "string" }, description: "Related topics/causes" },
         depends_on: {
           type: "array",
           items: { type: "string" },
-          description: "Alias for blockerTaskIds: existing task IDs that must be completed first.",
+          description: "Alias for blockerTaskIds: existing task IDs that must be VERIFIED before this task appears in active queues. Use only for real prerequisites, not generic importance.",
           minItems: 0,
         },
         blockerTaskIds: {
@@ -2080,11 +1902,11 @@ const TASK_TOOL_DEFINITIONS = [
           minItems: 0,
         },
         estimatedEffortHours: { type: "number", description: "Estimated hours to complete" },
-        hours: { type: "number", description: "Alias for estimatedEffortHours" },
-        value: { type: "number", description: "Gross conditional value if the task succeeds" },
-        p_success: { type: "number", description: "Success probability, 0-1" },
-        cash_cost: { type: "number", description: "Cash cost in USD" },
-        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task" },
+        hours: { type: "number", description: "Alias for estimatedEffortHours. Required for reliable priority; use expected user hours, not calendar duration." },
+        value: { type: "number", description: "Gross conditional value if the task succeeds. For required tasks, include avoided downside such as penalties, health loss, or system failure." },
+        p_success: { type: "number", description: "Success probability, 0-1. MCP computes expected value as value * p_success when value is supplied." },
+        cash_cost: { type: "number", description: "Cash cost in USD. Priority converts this to hour-equivalent cost using buybackRate, default $1000/hr." },
+        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task. Use Self for normal user tasks even if AI assists; use AI Agent only for autonomous assistant tasks." },
         expectedEconomicValueUsdBase: {
           type: "number",
           description: "Expected economic value in USD-equivalent welfare (probability-adjusted by your model)",
@@ -2099,15 +1921,15 @@ const TASK_TOOL_DEFINITIONS = [
         },
         timeToImpactStartDays: {
           type: "number",
-          description: "Days until value can start being realized (for time discount)",
+          description: "Days until value can start being realized. Metadata/public impact-frame input; not part of personal priority.",
         },
-        available_at: { type: "string", description: "Earliest time this task should appear in active queues (ISO 8601)" },
+        available_at: { type: "string", description: "Earliest time this task should appear in active queues (ISO 8601). Use for tasks that cannot or should not be started yet." },
         dueAt: { type: "string", description: "Due date (ISO 8601)" },
         due_at: { type: "string", description: "Alias for dueAt" },
         deadline_policy: {
           type: "string",
           enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"],
-          description: "Whether dueAt is ignored, a soft target, an expiring opportunity, or required work.",
+          description: "Whether due_at is ignored, a soft target, an expiring opportunity, or required work. REQUIRED is for must-do tasks like taxes or medicine refills; EXPIRES is for grants/applications/opportunities that vanish after due_at.",
         },
         deadline_rationale: {
           type: "string",
@@ -2128,7 +1950,7 @@ const TASK_TOOL_DEFINITIONS = [
         best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
         isPublic: { type: "boolean", description: "Visible in public views (default false)" },
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
-        sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
+        sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
       },
       required: ["title"],
     },
@@ -2239,7 +2061,7 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "updateTask",
-    description: "Update a task's status, description, or other fields.",
+    description: "Update a private task's estimates, dependencies, deadline metadata, executor, or status. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2249,7 +2071,7 @@ const TASK_TOOL_DEFINITIONS = [
         description: { type: "string" },
         completionEvidence: { type: "string", description: "Evidence that the task is done" },
         impactStatement: { type: "string" },
-        difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] },
+        difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Optional metadata; not part of personal priority." },
         taskKey: { type: "string", description: "Stable dedup key" },
         assigneePersonId: { type: "string", description: "Person ID to assign (use empty string to clear)" },
         assigneeOrganizationId: { type: "string", description: "Organization ID to assign (use empty string to clear)" },
@@ -2277,22 +2099,22 @@ const TASK_TOOL_DEFINITIONS = [
         depends_on: {
           type: "array",
           items: { type: "string" },
-          description: "Replace blocker dependencies with this exact list of task IDs.",
+          description: "Replace blocker dependencies with this exact list of task IDs. Blockers must be completed/VERIFIED before this task appears in active queues.",
         },
         blockerTaskIds: {
           type: "array",
           items: { type: "string" },
           description: "Replace blocker dependencies with this exact list of task IDs.",
         },
-        hours: { type: "number", description: "Alias for estimatedEffortHours" },
-        value: { type: "number", description: "Gross conditional value if the task succeeds" },
-        p_success: { type: "number", description: "Success probability, 0-1" },
-        cash_cost: { type: "number", description: "Cash cost in USD" },
-        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task" },
+        hours: { type: "number", description: "Alias for estimatedEffortHours. Keep this current when task scope changes." },
+        value: { type: "number", description: "Gross conditional value if the task succeeds. Update when the upside/downside estimate changes." },
+        p_success: { type: "number", description: "Success probability, 0-1. Update after new information changes the odds." },
+        cash_cost: { type: "number", description: "Cash cost in USD. Update if execution cost changes." },
+        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task. Use Self for normal user tasks even with AI assistance; AI Agent means autonomous assistant work." },
         ev_math: { type: "string", description: "Freeform rationale for value/probability/hour assumptions" },
         can_delegate: { type: "boolean", description: "Whether an agent or contractor can do this task" },
         best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
-        sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
+        sortOrder: { type: "number", description: "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score." },
       },
       required: ["taskId"],
     },
@@ -2671,7 +2493,12 @@ Posting a comment automatically sends comment notifications to task recipients a
  * @param userId  Authenticated user ID (undefined = public-only access)
  * @param scopes  Granted OAuth scopes (undefined = stdio/local, no restrictions)
  */
-export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
+export function createMcpServer(
+  userId?: string,
+  scopes?: McpScope[],
+  options: { isAdmin?: boolean } = {},
+): Server {
+  const isAdmin = options.isAdmin === true;
   const server = new Server(
     { name: "optimitron-tasks", version: "1.0.0" },
     { capabilities: { tools: {} } },
@@ -2679,7 +2506,11 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
   // -- Tool listing (filtered by granted scopes) --
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: TASK_TOOL_DEFINITIONS.filter((t) => hasScope(scopes, t.name)),
+    tools: TASK_TOOL_DEFINITIONS.filter(
+      (t) =>
+        hasScope(scopes, t.name) &&
+        (!ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(t.name) || isAdmin),
+    ),
   }));
 
   // -- Tool dispatch --
@@ -2692,6 +2523,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
     // Scope check
     if (!hasScope(scopes, name)) {
       return err(`Insufficient scope for tool "${name}". Required: ${TOOL_SCOPES[name]?.join(", ")}`);
+    }
+    if (ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(name) && !isAdmin) {
+      return err(`Admin privileges are required for public/Earth task tool "${name}".`);
     }
 
     try {
@@ -2970,97 +2804,6 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               activeOwnedTasks: ownedTasks.length,
               unblockedTasks: queue.length,
             },
-          });
-        }
-
-        // Risk-adjusted optimal next action tools.
-        case "getMyOptimalNextAction": {
-          const { tasks } = await getTaskFunctions();
-          const { selectOptimalNextAction } = await import("@optimitron/agent");
-          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
-          const policy = getEarthExecutionPolicy();
-          const accessibleTasks = await tasks.listTasks({
-            limit: 5000,
-            userId: userId ?? null,
-            visibility: userId ? "accessible" : "public",
-            status: TaskStatus.ACTIVE,
-          });
-          const rankingTasks = accessibleTasks.map((task) =>
-            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
-          );
-          const decision = selectOptimalNextAction({
-            actor: buildOptimalActorCapabilities(a) as any,
-            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
-            tasks: rankingTasks as any,
-          });
-
-          return ok({
-            action: decision.action ? summarizeRankedAction(decision.action as any) : null,
-            alternatives: decision.alternatives.map((option) => summarizeRankedAction(option as any)),
-            assumptions: decision.assumptions,
-            rationale: decision.rationale,
-            sensitivity: decision.sensitivity,
-          });
-        }
-
-        case "rankMyActionOptions": {
-          const { tasks } = await getTaskFunctions();
-          const { rankActionOptions } = await import("@optimitron/agent");
-          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
-          const policy = getEarthExecutionPolicy();
-          const limit = Math.min(Number(a.limit) || 10, 50);
-          const accessibleTasks = await tasks.listTasks({
-            limit: 5000,
-            userId: userId ?? null,
-            visibility: userId ? "accessible" : "public",
-            status: TaskStatus.ACTIVE,
-          });
-          const rankingTasks = accessibleTasks.map((task) =>
-            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
-          );
-          const ranked = rankActionOptions({
-            actor: buildOptimalActorCapabilities(a) as any,
-            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
-            tasks: rankingTasks as any,
-          });
-
-          return ok(ranked.slice(0, limit).map((option) => summarizeRankedAction(option as any)));
-        }
-
-        case "explainTaskRanking": {
-          const { tasks } = await getTaskFunctions();
-          const { rankActionOptions } = await import("@optimitron/agent");
-          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
-          const policy = getEarthExecutionPolicy();
-          const accessibleTasks = await tasks.listTasks({
-            limit: 5000,
-            userId: userId ?? null,
-            visibility: userId ? "accessible" : "public",
-            status: TaskStatus.ACTIVE,
-          });
-          const rankingTasks = accessibleTasks.map((task) =>
-            normalizeOptimalRankingTask(task as unknown as Record<string, unknown>),
-          );
-          const ranked = rankActionOptions({
-            actor: buildOptimalActorCapabilities(a) as any,
-            policy: buildOptimalPolicy(a, policy.availableExternalBudgetUsd),
-            tasks: rankingTasks as any,
-          });
-          const targetOptions = ranked
-            .map((option, index) => ({ index, option }))
-            .filter(({ option }) => option.task?.id === a.taskId);
-          const bestForTask = targetOptions[0] ?? null;
-
-          if (!bestForTask) {
-            return err("Task not found in accessible active queue or has no feasible action options");
-          }
-
-          return ok({
-            bestForTask: summarizeRankedAction(bestForTask.option as any),
-            overallBest: ranked[0] ? summarizeRankedAction(ranked[0] as any) : null,
-            rank: bestForTask.index + 1,
-            taskId: a.taskId,
-            taskOptionCount: targetOptions.length,
           });
         }
 
@@ -3422,6 +3165,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           }
 
           const isPublic = a.isPublic === true;
+          if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Creating public tasks requires an admin user with the tasks:write scope.");
+          }
           const availableAt = a.available_at !== undefined || a.availableAt !== undefined
             ? parseTaskDate(a.available_at ?? a.availableAt)
             : null;
@@ -3871,6 +3617,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (existingTask.ownerUserId !== userId) {
             return err("Forbidden: Task is not owned by current user");
           }
+          if (existingTask.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Updating public tasks requires an admin user with the tasks:write scope.");
+          }
           const dependencyPatchProvided = Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
           const blockerTaskIds = dependencyPatchProvided
             ? dedupeStrings([
@@ -4027,11 +3776,14 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
           const existing = await prisma.task.findFirst({
             where: { id: taskId, deletedAt: null },
-            select: { ownerUserId: true },
+            select: { isPublic: true, ownerUserId: true },
           });
           if (!existing) return err("Task not found");
           if (existing.ownerUserId !== userId) {
             return err("Forbidden: Task is not owned by current user");
+          }
+          if (existing.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Deleting public tasks requires an admin user with the tasks:write scope.");
           }
 
           await prisma.task.update({

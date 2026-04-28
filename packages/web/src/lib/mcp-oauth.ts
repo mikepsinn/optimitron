@@ -113,6 +113,39 @@ export function verifyPkceChallenge(
   return hash === codeChallenge;
 }
 
+// Native MCP clients such as Codex use loopback redirects with ephemeral
+// callback ports. RFC 8252 allows authorization servers to accept any port for
+// loopback redirect URIs, while still matching the registered scheme/path.
+function isLoopbackHost(hostname: string) {
+  const normalized = hostname.toLowerCase();
+  return normalized === "localhost" || normalized === "127.0.0.1" || normalized === "::1";
+}
+
+function isSameLoopbackRedirect(registeredUri: string, requestedUri: string) {
+  try {
+    const registered = new URL(registeredUri);
+    const requested = new URL(requestedUri);
+    return (
+      isLoopbackHost(registered.hostname) &&
+      isLoopbackHost(requested.hostname) &&
+      registered.protocol === requested.protocol &&
+      registered.pathname === requested.pathname &&
+      registered.search === requested.search
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function isRedirectUriAllowed(registeredUris: string[], requestedUri: string | null | undefined) {
+  if (!requestedUri) return false;
+  return registeredUris.some(
+    (registeredUri) =>
+      registeredUri === requestedUri ||
+      isSameLoopbackRedirect(registeredUri, requestedUri),
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Refresh token hashing
 // ---------------------------------------------------------------------------

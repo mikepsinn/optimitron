@@ -47,9 +47,10 @@ Every agent must follow this order:
 
 ## Task Creation Rules
 
-- Agent-created tasks start as `DRAFT`.
-- New tasks should be proposed with `proposeTaskBundle`.
-- Canonical work enters the queue only after review and promotion.
+- For public Earth-level work, agent-created tasks start as `DRAFT`.
+- Public canonical tasks should normally be proposed with `proposeTaskBundle`.
+- Public canonical work enters the queue only after review and promotion.
+- Private personal tasks are different: MCP `createTask` defaults to private `ACTIVE` tasks so a user's AI can maintain a live personal queue.
 - If a task is blocked, prefer proposing the smallest high-value unblocker.
 
 ## Ranking Rules

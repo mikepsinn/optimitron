@@ -1,6 +1,7 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createMcpServer } from "@/lib/mcp-server";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
+import { prisma } from "@/lib/prisma";
 import type { McpScope } from "@/lib/mcp-scopes";
 
 function getResourceMetadataUrl(req: Request): string {
@@ -53,8 +54,13 @@ async function handleMcpRequest(req: Request): Promise<Response> {
     return unauthorized(req, "invalid_token");
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { isAdmin: true },
+  });
+
   const transport = new WebStandardStreamableHTTPServerTransport();
-  const server = createMcpServer(userId, scopes);
+  const server = createMcpServer(userId, scopes, { isAdmin: user?.isAdmin === true });
   await server.connect(transport);
   return transport.handleRequest(req);
 }
