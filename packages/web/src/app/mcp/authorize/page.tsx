@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { DEFAULT_SCOPES, scopesFromWire, scopesToWire } from "@/lib/mcp-scopes";
+import { DEFAULT_SCOPES, allowedMcpScopesForUser, scopesFromWire, scopesToWire } from "@/lib/mcp-scopes";
+import { prisma } from "@/lib/prisma";
 import { McpConsentForm } from "./consent-form";
 
 export default async function McpAuthorizePage({
@@ -38,6 +39,11 @@ export default async function McpAuthorizePage({
   }
 
   const requestedScopes = scopesFromWire(scope);
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  });
+  const availableScopes = allowedMcpScopesForUser(user?.isAdmin === true);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-cyan text-brutal-cyan-foreground">
@@ -53,6 +59,7 @@ export default async function McpAuthorizePage({
             redirectUri={redirectUri}
             state={state}
             requestedScopes={requestedScopes}
+            availableScopes={availableScopes}
             codeChallenge={codeChallenge}
           />
 

@@ -583,14 +583,12 @@ enum TaskCommentSource {
 }
 
 /// MCP OAuth permission scopes. The Prisma identifier is what app code sees;
-/// `@map` gives the OAuth wire format ("tasks:read") that's stored in the DB
+/// `@map` gives the OAuth wire format ("tasks:personal") that's stored in the DB
 /// and surfaced in URLs / JWTs / OAuth metadata.
 enum McpScope {
-  TASKS_READ     @map("tasks:read")
-  TASKS_WRITE    @map("tasks:write")
+  TASKS_ADMIN    @map("tasks:admin")
   TASKS_PERSONAL @map("tasks:personal")
   AGENT_RUN      @map("agent:run")
-  SEARCH         @map("search")
 }
 
 /// Type of survey question

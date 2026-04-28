@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateAuthCode, AUTH_CODE_TTL_MS, isRedirectUriAllowed } from "@/lib/mcp-oauth";
-import { McpScope, scopesFromWire } from "@/lib/mcp-scopes";
+import { filterAllowedMcpScopes, scopesFromWire } from "@/lib/mcp-scopes";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -39,18 +39,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid redirect_uri" }, { status: 400 });
   }
 
-  // Filter to known scopes only — the consent form lets the user pick any scope, so
-  // validate here rather than trusting the bundle. Unknown strings are silently dropped
-  // by scopesFromWire (they don't map to a McpScope value).
+  // Filter to known and user-allowed scopes. Unknown strings are silently
+  // dropped by scopesFromWire. Non-admin users get only personal-task access;
+  // public read/manual search tools no longer need OAuth scopes.
   const code = generateAuthCode();
   const requestedScopes = scopesFromWire(scope);
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { isAdmin: true },
   });
-  const scopes = user?.isAdmin === true
-    ? requestedScopes
-    : requestedScopes.filter((s) => s !== McpScope.TASKS_WRITE);
+  const scopes = filterAllowedMcpScopes(requestedScopes, user?.isAdmin === true);
 
   if (scopes.length === 0) {
     return NextResponse.json(

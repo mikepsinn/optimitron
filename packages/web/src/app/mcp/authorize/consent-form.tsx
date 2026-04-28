@@ -3,28 +3,20 @@
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
-import { ALL_SCOPES, McpScope, scopeToWire, scopesToWire } from "@/lib/mcp-scopes";
+import { McpScope, scopeToWire, scopesToWire } from "@/lib/mcp-scopes";
 
 const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
-  [McpScope.TASKS_READ]: {
-    title: "View public tasks and funding",
-    detail: "Read-only access to the public task graph, blockers, and funding stats.",
-  },
-  [McpScope.TASKS_WRITE]: {
-    title: "Create and update tasks",
-    detail: "Draft new tasks, update existing ones, propose bundles, set impact estimates.",
+  [McpScope.TASKS_ADMIN]: {
+    title: "Admin public task management",
+    detail: "Create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones.",
   },
   [McpScope.TASKS_PERSONAL]: {
-    title: "Manage your claims and comments",
-    detail: "Claim tasks as you, complete claims, post and vote on comments.",
+    title: "Manage private tasks",
+    detail: "Create, update, delete, prioritize, and comment on your private tasks.",
   },
   [McpScope.AGENT_RUN]: {
-    title: "Run agents and acquire leases",
-    detail: "Lock active work so concurrent agents don't collide. Log runs, costs, and contact actions.",
-  },
-  [McpScope.SEARCH]: {
-    title: "Search the manual",
-    detail: "Query the strategy manual and ask Wishonia questions over the documentation.",
+    title: "Run coordinated agents",
+    detail: "Acquire leases and log multi-agent runs for public optimize-earth workflows.",
   },
 };
 
@@ -33,16 +25,18 @@ export function McpConsentForm({
   redirectUri,
   state,
   requestedScopes,
+  availableScopes,
   codeChallenge,
 }: {
   clientId: string;
   redirectUri: string;
   state: string | null;
   requestedScopes: McpScope[];
+  availableScopes: readonly McpScope[];
   codeChallenge: string;
 }) {
   const [selected, setSelected] = useState<Set<McpScope>>(
-    () => new Set(requestedScopes.filter((s) => ALL_SCOPES.includes(s))),
+    () => new Set(requestedScopes.filter((s) => availableScopes.includes(s))),
   );
   const [loading, setLoading] = useState(false);
 
@@ -92,7 +86,7 @@ export function McpConsentForm({
     <div>
       <h2 className="text-sm font-black uppercase mb-3">Permissions</h2>
       <ul className="space-y-3 mb-6">
-        {ALL_SCOPES.map((scope) => {
+        {availableScopes.map((scope) => {
           const labels = SCOPE_LABELS[scope];
           const checked = selected.has(scope);
           const wasRequested = requestedScopes.includes(scope);

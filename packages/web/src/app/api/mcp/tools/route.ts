@@ -4,7 +4,7 @@ import { ALL_SCOPES, MCP_SCOPE_DESCRIPTIONS, scopeToWire } from "@/lib/mcp-scope
 export async function GET() {
   const tools = getToolDefinitions();
 
-  // Public API — emit the OAuth wire format (`tasks:read`) keys clients expect.
+  // Public API — emit OAuth wire-format scope keys clients expect.
   const scopes = Object.fromEntries(
     ALL_SCOPES.map((s) => [scopeToWire(s), MCP_SCOPE_DESCRIPTIONS[s]]),
   );

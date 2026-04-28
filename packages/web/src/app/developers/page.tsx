@@ -126,16 +126,16 @@ export default function DevelopersPage() {
             </BrutalCard>
             <BrutalCard bgColor="background" shadowSize={8}>
               <div className="p-6">
-                <h3 className="font-black uppercase text-2xl mb-2">Contact</h3>
+                <h3 className="font-black uppercase text-2xl mb-2">Discuss</h3>
                 <p className="font-bold text-sm mb-3">
-                  Contact task assignees without spamming them or losing the thread.
+                  Keep task coordination in the readable thread.
                 </p>
                 <ul className="font-bold text-sm space-y-1">
                   <li>
-                    <code className="font-black">checkTaskCommunicationCooldown</code> — is communication allowed?
+                    <code className="font-black">postTaskComment</code> — leave status, questions, and agent notes
                   </li>
                   <li>
-                    <code className="font-black">recordTaskCommunication</code> — store the message and envelope
+                    <code className="font-black">getTaskComments</code> — read the task thread
                   </li>
                   <li>
                     <code className="font-black">getFundingStats</code> — see budget before paid work
@@ -184,8 +184,8 @@ export default function DevelopersPage() {
               body="Ask: “Find every task and manual passage about Wefunder.” The agent searches tasks, reads blockers, checks the manual, and proposes a task bundle instead of handing you a pile of notes."
             />
             <ExampleCard
-              title="Contact without spam"
-              body="Before contacting an assignee, the agent checks the task communication cooldown. If allowed, it opens the office form, mailto link, or external URL and records a task comment plus communication envelope."
+              title="Coordinate without losing the thread"
+              body="The agent posts task comments for status updates, questions, and next steps. Comment posting handles comment notifications; delivery envelopes stay internal."
             />
             <ExampleCard
               title="Make the queue smarter"

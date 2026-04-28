@@ -17,7 +17,6 @@ import {
   OrgType,
   TaskCategory,
   TaskClaimPolicy,
-  TaskCommentSource,
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
@@ -41,56 +40,36 @@ import type { RankableTask, TaskPriorityInput, TaskPriorityResult } from "./task
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
-  // tasks:read
-  getNextTask: [McpScope.TASKS_READ],
-  getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getNextAction: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getMyQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getAIQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  evaluateTaskEconomics: [McpScope.TASKS_READ],
-  listTasks: [McpScope.TASKS_READ],
-  searchTasks: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getBlockers: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
-  getFundingStats: [McpScope.TASKS_READ],
-  listOrganizations: [McpScope.TASKS_READ],
-  createOrganization: [McpScope.TASKS_WRITE],
-  listPeople: [McpScope.TASKS_READ],
-  getPersonTasks: [McpScope.TASKS_READ],
-  getOrganizationTasks: [McpScope.TASKS_READ],
-  // tasks:write
-  createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
-  proposeTaskBundle: [McpScope.TASKS_WRITE],
-  promoteTask: [McpScope.TASKS_WRITE],
-  deleteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
-  updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE],
-  setTaskImpact: [McpScope.TASKS_WRITE],
-  recordTaskActuals: [McpScope.TASKS_WRITE],
-  updateMilestone: [McpScope.TASKS_WRITE],
-  addDependency: [McpScope.TASKS_WRITE],
-  createPerson: [McpScope.TASKS_WRITE],
-  upsertOrganization: [McpScope.TASKS_WRITE],
+  createOrganization: [McpScope.TASKS_ADMIN],
+  createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  proposeTaskBundle: [McpScope.TASKS_ADMIN],
+  promoteTask: [McpScope.TASKS_ADMIN],
+  deleteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  setTaskImpact: [McpScope.TASKS_ADMIN],
+  recordTaskActuals: [McpScope.TASKS_ADMIN],
+  updateMilestone: [McpScope.TASKS_ADMIN],
+  addDependency: [McpScope.TASKS_ADMIN],
+  createPerson: [McpScope.TASKS_ADMIN],
+  upsertOrganization: [McpScope.TASKS_ADMIN],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL],
-  // agent:run
   logAgentRun: [McpScope.AGENT_RUN],
   acquireLease: [McpScope.AGENT_RUN],
   heartbeatLease: [McpScope.AGENT_RUN],
   releaseLease: [McpScope.AGENT_RUN],
-  recordTaskCommunication: [McpScope.AGENT_RUN],
-  checkTaskCommunicationCooldown: [McpScope.AGENT_RUN],
-  // search
-  searchManual: [McpScope.SEARCH],
-  askWishonia: [McpScope.SEARCH],
-  // task comments
   postTaskComment: [McpScope.TASKS_PERSONAL],
   voteTaskComment: [McpScope.TASKS_PERSONAL],
   deleteTaskComment: [McpScope.TASKS_PERSONAL],
-  getTaskComments: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
+  getTaskComments: [McpScope.TASKS_PERSONAL],
+  getMyQueue: [McpScope.TASKS_PERSONAL],
+  getAIQueue: [McpScope.TASKS_PERSONAL],
+  getNextAction: [McpScope.TASKS_PERSONAL],
+  getQueueAudit: [McpScope.TASKS_PERSONAL],
 };
 
-const ADMIN_ONLY_PUBLIC_WRITE_TOOLS = new Set([
+const ADMIN_ONLY_TOOLS = new Set([
   "createOrganization",
   "proposeTaskBundle",
   "promoteTask",
@@ -100,6 +79,10 @@ const ADMIN_ONLY_PUBLIC_WRITE_TOOLS = new Set([
   "addDependency",
   "createPerson",
   "upsertOrganization",
+  "logAgentRun",
+  "acquireLease",
+  "heartbeatLease",
+  "releaseLease",
 ]);
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
@@ -113,7 +96,7 @@ function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): bool
 }
 
 function hasAdminTaskWriteAccess(scopes: McpScope[] | undefined, isAdmin: boolean) {
-  return isAdmin && !!scopes?.includes(McpScope.TASKS_WRITE);
+  return isAdmin && !!scopes?.includes(McpScope.TASKS_ADMIN);
 }
 
 // ---------------------------------------------------------------------------
@@ -121,15 +104,14 @@ function hasAdminTaskWriteAccess(scopes: McpScope[] | undefined, isAdmin: boolea
 // ---------------------------------------------------------------------------
 
 async function getTaskFunctions() {
-  const [tasks, ranking, impact, communications, endpoints, lease] = await Promise.all([
+  const [tasks, ranking, impact, endpoints, lease] = await Promise.all([
     import("./tasks.server"),
     import("./tasks/rank-tasks"),
     import("./tasks/impact"),
-    import("./tasks/task-communications.server"),
     import("./tasks/task-communication-endpoints.server"),
     import("./tasks/agent-lease.server"),
   ]);
-  return { tasks, ranking, impact, communications, endpoints, lease };
+  return { tasks, ranking, impact, endpoints, lease };
 }
 
 async function getPrisma() {
@@ -2311,45 +2293,6 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "recordTaskCommunication",
-    description:
-      "Record a task communication envelope and readable task-thread comment. Subject to server-side cooldown (24h per task+channel).",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        taskId: { type: "string", description: "Task ID" },
-        userId: { type: "string", description: "User or agent ID" },
-        channel: {
-          type: "string",
-          enum: ["email", "externalUrl", "mailto", "manual"],
-          description: "Task communication channel",
-        },
-        endpointId: { type: "string", description: "TaskCommunicationEndpoint ID used, if known" },
-        message: { type: "string", description: "Readable message text to store on TaskComment" },
-        href: { type: "string", description: "URL or mailto target opened" },
-        submittedAt: { type: "string", description: "ISO timestamp only when a user/agent confirms external form submission" },
-      },
-      required: ["taskId", "userId", "channel"],
-    },
-  },
-  {
-    name: "checkTaskCommunicationCooldown",
-    description:
-      "Check whether a task communication is allowed for a task+channel, or if cooldown is active.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        taskId: { type: "string", description: "Task ID" },
-        channel: {
-          type: "string",
-          enum: ["email", "externalUrl", "mailto", "manual"],
-          description: "Task communication channel to check",
-        },
-      },
-      required: ["taskId", "channel"],
-    },
-  },
-  {
     name: "getFundingStats",
     description: "Get aggregate funding stats — total deposited, total spent, total agent runs, remaining budget.",
     inputSchema: { type: "object" as const, properties: {} },
@@ -2491,7 +2434,7 @@ Posting a comment automatically sends comment notifications to task recipients a
  * Create a configured MCP server instance.
  *
  * @param userId  Authenticated user ID (undefined = public-only access)
- * @param scopes  Granted OAuth scopes (undefined = stdio/local, no restrictions)
+ * @param scopes  Granted OAuth scopes. Undefined denies all scoped tools.
  */
 export function createMcpServer(
   userId?: string,
@@ -2509,7 +2452,7 @@ export function createMcpServer(
     tools: TASK_TOOL_DEFINITIONS.filter(
       (t) =>
         hasScope(scopes, t.name) &&
-        (!ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(t.name) || isAdmin),
+        (!ADMIN_ONLY_TOOLS.has(t.name) || isAdmin),
     ),
   }));
 
@@ -2524,7 +2467,7 @@ export function createMcpServer(
     if (!hasScope(scopes, name)) {
       return err(`Insufficient scope for tool "${name}". Required: ${TOOL_SCOPES[name]?.join(", ")}`);
     }
-    if (ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(name) && !isAdmin) {
+    if (ADMIN_ONLY_TOOLS.has(name) && !isAdmin) {
       return err(`Admin privileges are required for public/Earth task tool "${name}".`);
     }
 
@@ -3166,7 +3109,7 @@ export function createMcpServer(
 
           const isPublic = a.isPublic === true;
           if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
-            return err("Creating public tasks requires an admin user with the tasks:write scope.");
+            return err("Creating public tasks requires an admin user with the tasks:admin scope.");
           }
           const availableAt = a.available_at !== undefined || a.availableAt !== undefined
             ? parseTaskDate(a.available_at ?? a.availableAt)
@@ -3618,7 +3561,7 @@ export function createMcpServer(
             return err("Forbidden: Task is not owned by current user");
           }
           if (existingTask.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
-            return err("Updating public tasks requires an admin user with the tasks:write scope.");
+            return err("Updating public tasks requires an admin user with the tasks:admin scope.");
           }
           const dependencyPatchProvided = Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
           const blockerTaskIds = dependencyPatchProvided
@@ -3783,7 +3726,7 @@ export function createMcpServer(
             return err("Forbidden: Task is not owned by current user");
           }
           if (existing.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
-            return err("Deleting public tasks requires an admin user with the tasks:write scope.");
+            return err("Deleting public tasks requires an admin user with the tasks:admin scope.");
           }
 
           await prisma.task.update({
@@ -4077,37 +4020,6 @@ export function createMcpServer(
           const { lease } = await getTaskFunctions();
           const result = await lease.releaseLease(a.taskId as string, a.agentId as string);
           return ok({ leaseId: result.id, released: true });
-        }
-
-        // ── recordTaskCommunication ───────────────────────────
-        case "recordTaskCommunication": {
-          const { communications } = await getTaskFunctions();
-          const result = await communications.recordTaskCommunication({
-            taskId: a.taskId as string,
-            userId: a.userId as string,
-            channel: communications.normalizeTaskCommunicationActionChannel(a.channel),
-            endpointId: (a.endpointId as string) ?? null,
-            message: (a.message as string) ?? null,
-            href: (a.href as string) ?? null,
-            source: TaskCommentSource.AGENT,
-            submittedAt: a.submittedAt ? new Date(a.submittedAt as string) : null,
-          });
-          return ok({
-            activityId: result.activity.id,
-            communicationId: result.communication.id,
-            taskCommentId: result.comment.id,
-          });
-        }
-
-        // ── checkTaskCommunicationCooldown ────────────────────
-        case "checkTaskCommunicationCooldown": {
-          const { communications } = await getTaskFunctions();
-          const result = await communications.checkTaskCommunicationCooldown(
-            a.taskId as string,
-            communications.normalizeTaskCommunicationActionChannel(a.channel),
-          );
-          if (result.allowed) return ok({ allowed: true });
-          return ok({ allowed: false, retryAfter: result.retryAfter.toISOString() });
         }
 
         // ── getFundingStats ────────────────────────────────────

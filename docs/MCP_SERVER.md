@@ -12,7 +12,7 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - Understand context: search the manual, read task details, and inspect blockers before changing strategy.
 - Improve the queue: propose draft task bundles, set impact estimates, and add dependencies.
 - Coordinate execution: acquire leases, heartbeat long-running work, release abandoned work, and log agent runs.
-- Contact assignees: check task communication cooldowns before opening a mailto link, office form, public contact page, or official profile, then record the readable thread comment and communication envelope.
+- Coordinate through comments: post task comments for status updates, questions, and agent notes. Comment posting handles comment notifications; low-level delivery envelopes are internal infrastructure.
 - Report progress: complete claims, record actual effort/cost, and leave task comments.
 
 ## Example Uses
@@ -68,10 +68,9 @@ Recommended OAuth scopes for a personal life-planning AI:
 
 ```text
 tasks:personal
-search
 ```
 
-Do not request `tasks:write` for personal planning. `tasks:write` is reserved for admin users managing public Earth-level tasks.
+Do not request `tasks:admin` for personal planning. `tasks:admin` is reserved for admin users managing public Earth-level tasks. Public manual search and public task reads do not require OAuth permissions.
 
 Example private task:
 
@@ -137,7 +136,7 @@ Example impact frame for a subjective but useful outreach task:
 - `TaskCommunication` stores the delivery/contact envelope: channel, recipient, endpoint, provider IDs, status, metadata, and the link to the readable comment.
 - `EmailLog` stores provider-level email delivery details.
 - `Activity` is a lightweight audit feed, not the canonical message store.
-- User/agent-opened channels such as `mailto:` links, official office forms, public contact pages, or public profiles create `TaskCommunication` rows and may also write `ActivityType.CONTACTED_ASSIGNEE`.
+- User/agent comments are the normal MCP-facing coordination path. `TaskCommunication` rows are internal delivery/audit envelopes, not tools agents should call directly.
 - Use `externalUrl` for opened office forms, public pages, and profiles. Do not call it `formSubmission` unless Optimitron actually verifies that a form was submitted.
 - `TrackingReminder` is for health-variable measurement reminders, not task assignee contact or assignment.
 - `ReferralInvitation` is the invite lifecycle. `ShareAttempt` is the exact outbound-message ledger.
@@ -149,9 +148,8 @@ Example impact frame for a subjective but useful outreach task:
 - Personal task management: `createTask`, `updateTask`, `deleteTask`.
 - Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
-- Task communications: `checkTaskCommunicationCooldown`, `recordTaskCommunication`.
+- Comments and comment notifications: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 - Knowledge: `searchManual`, `askWishonia`.
 - Funding and claims: `getFundingStats`, `claimTask`, `completeTaskClaim`, `recordTaskActuals`.
-- Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 
 Detailed tool schemas are exposed at `/api/mcp/tools`.

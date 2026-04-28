@@ -32,9 +32,9 @@ Every agent must follow this order:
 8. Work only on the leased task.
 9. If the work outlives the lease TTL, call `heartbeatLease`.
 10. If the work involves outreach:
-   - preflight with `checkContactCooldown`
-   - respect the result
-   - log the action with `recordContactAction`
+   - do not perform automated live outreach unless the task explicitly authorizes it
+   - post a source-backed `postTaskComment` with the proposed message, target, and rationale
+   - let comment notifications/delivery infrastructure handle recipients where configured
 11. Log the run with `logAgentRun`.
 12. Release the lease when the step is complete or skipped.
 

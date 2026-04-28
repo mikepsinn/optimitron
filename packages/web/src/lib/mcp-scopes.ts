@@ -5,8 +5,8 @@
  * `@optimitron/db/enums` subpath so client components (consent UI, dev portal)
  * don't drag the Prisma client into the browser bundle.
  *
- * Wire-format helpers translate between the Prisma identifier (`TASKS_READ`,
- * what app code and JWTs see) and the OAuth wire string (`tasks:read`, what
+ * Wire-format helpers translate between the Prisma identifier (`TASKS_PERSONAL`,
+ * what app code and JWTs see) and the OAuth wire string (`tasks:personal`, what
  * URL params, OAuth metadata, and the DB store via `@map`).
  */
 
@@ -15,35 +15,54 @@ import { McpScope } from "@optimitron/db/enums";
 export { McpScope };
 
 export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
-  [McpScope.TASKS_READ]: "List and view public tasks, blockers, and funding stats",
-  [McpScope.TASKS_WRITE]: "Create, update, promote, and estimate public tasks",
-  [McpScope.TASKS_PERSONAL]: "List and manage your private personal tasks, comments, claims, and queues",
-  [McpScope.AGENT_RUN]: "Log agent runs, acquire/release leases, record task communications",
-  [McpScope.SEARCH]: "Search the Optimitron manual and ask Wishonia questions",
+  [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones",
+  [McpScope.TASKS_PERSONAL]: "Manage your private tasks, dependencies, comments, queues, and next-action recommendations",
+  [McpScope.AGENT_RUN]: "Admin-only: run coordinated public-task agents with leases and run logs",
 };
 
-export const DEFAULT_SCOPES: McpScope[] = [McpScope.TASKS_READ, McpScope.SEARCH];
+export const DEFAULT_SCOPES: McpScope[] = [McpScope.TASKS_PERSONAL];
 
-// Full-trust scope set. Stdio transport passes this explicitly. HTTP must NEVER default to it:
-// unauthenticated HTTP callers get DEFAULT_SCOPES, authenticated callers get the scopes
-// granted at consent time. The deny-by-default behavior in `hasScope` enforces this.
-export const ALL_SCOPES: McpScope[] = Object.values(McpScope) as McpScope[];
+export const ALL_SCOPES: McpScope[] = [
+  McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ADMIN,
+  McpScope.AGENT_RUN,
+];
+
+export const ADMIN_MCP_SCOPES: readonly McpScope[] = [
+  McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ADMIN,
+  McpScope.AGENT_RUN,
+];
+
+export const NON_ADMIN_MCP_SCOPES: readonly McpScope[] = [
+  McpScope.TASKS_PERSONAL,
+];
+
+export function allowedMcpScopesForUser(isAdmin: boolean): readonly McpScope[] {
+  return isAdmin ? ADMIN_MCP_SCOPES : NON_ADMIN_MCP_SCOPES;
+}
+
+export function filterAllowedMcpScopes(
+  requested: readonly McpScope[],
+  isAdmin: boolean,
+): McpScope[] {
+  const allowed = new Set<McpScope>(allowedMcpScopesForUser(isAdmin));
+  return requested.filter((scope) => allowed.has(scope));
+}
 
 // ---------------------------------------------------------------------------
 // Wire-format conversion
 //
-// The Prisma enum uses `@map("tasks:read")` so the DB stores the wire format,
-// but the generated TS type sees the identifier (`TASKS_READ`). These helpers
+// The Prisma enum uses `@map("tasks:personal")` so the DB stores the wire format,
+// but the generated TS type sees the identifier (`TASKS_PERSONAL`). These helpers
 // bridge the two at the OAuth boundary (URL params, JWT payload, OAuth
 // metadata response).
 // ---------------------------------------------------------------------------
 
 const ENUM_TO_WIRE: Record<McpScope, string> = {
-  [McpScope.TASKS_READ]: "tasks:read",
-  [McpScope.TASKS_WRITE]: "tasks:write",
   [McpScope.TASKS_PERSONAL]: "tasks:personal",
+  [McpScope.TASKS_ADMIN]: "tasks:admin",
   [McpScope.AGENT_RUN]: "agent:run",
-  [McpScope.SEARCH]: "search",
 };
 
 const WIRE_TO_ENUM: Record<string, McpScope> = Object.fromEntries(
@@ -64,7 +83,7 @@ export function scopesToWire(scopes: McpScope[]): string {
 
 export function scopesFromWire(s: string): McpScope[] {
   return s
-    .split(" ")
+    .split(/[,\s]+/)
     .filter(Boolean)
     .map(scopeFromWire)
     .filter((x): x is McpScope => x !== null);

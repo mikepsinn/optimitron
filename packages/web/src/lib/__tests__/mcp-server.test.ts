@@ -46,7 +46,6 @@ vi.mock("../tasks/agent-lease.server", () => ({
 }));
 
 vi.mock("../tasks/impact", () => ({}));
-vi.mock("../tasks/task-communications.server", () => ({}));
 vi.mock("../tasks/task-communication-endpoints.server", () => ({
   upsertPrimaryTaskCommunicationEndpoint: mocks.upsertPrimaryTaskCommunicationEndpoint,
 }));
@@ -195,7 +194,21 @@ describe("MCP server tool dispatch", () => {
 
     expect(names).not.toContain("draftTaskNotification");
     expect(names).not.toContain("sendTaskNotification");
+    expect(names).not.toContain("recordTaskCommunication");
+    expect(names).not.toContain("checkTaskCommunicationCooldown");
     expect(names).toContain("postTaskComment");
+  });
+
+  it("exposes public read and knowledge tools without legacy read/search scopes", async () => {
+    const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+    const result = await client.listTools();
+    const names = result.tools.map((tool) => tool.name);
+
+    expect(names).toContain("listTasks");
+    expect(names).toContain("getTask");
+    expect(names).toContain("searchManual");
+    expect(names).toContain("askWishonia");
   });
 
   it("hides public Earth write tools from non-admin MCP users", async () => {
@@ -208,11 +221,15 @@ describe("MCP server tool dispatch", () => {
     expect(nonAdminNames).not.toContain("proposeTaskBundle");
     expect(nonAdminNames).not.toContain("setTaskImpact");
     expect(nonAdminNames).not.toContain("addDependency");
+    expect(nonAdminNames).not.toContain("acquireLease");
+    expect(nonAdminNames).not.toContain("logAgentRun");
     expect(nonAdminNames).toContain("createTask");
 
     expect(adminNames).toContain("proposeTaskBundle");
     expect(adminNames).toContain("setTaskImpact");
     expect(adminNames).toContain("addDependency");
+    expect(adminNames).toContain("acquireLease");
+    expect(adminNames).toContain("logAgentRun");
   });
 
   describe("authentication", () => {
@@ -245,7 +262,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("returns Insufficient scope when caller lacks the required scope", async () => {
-      const client = await setup("user-1", [McpScope.SEARCH]);
+      const client = await setup("user-1", []);
 
       const result = await client.callTool({ name: "getNextAction", arguments: {} });
 
@@ -521,8 +538,8 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task writes", () => {
-    it("rejects public task creation for non-admin users even with tasks:write", async () => {
-      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE]);
+    it("rejects public task creation for non-admin users even with tasks:admin", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN]);
 
       const result = await client.callTool({
         name: "createTask",
