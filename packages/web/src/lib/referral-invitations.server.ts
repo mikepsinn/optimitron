@@ -4,6 +4,8 @@ import {
   ReferralInvitationMessageFormat,
   ReferralInvitationStatus,
   ShareSource,
+  TaskCommentKind,
+  TaskCommentSource,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +14,8 @@ import {
   verifyReferralInvitationTask,
 } from "@/lib/referral-invitation-tasks.server";
 import { recordShareAttempt } from "@/lib/share-attempts.server";
+import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import {
   buildReferralInvitationMessage,
@@ -21,8 +25,22 @@ import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const INVITE_TOKEN_SIZE = 24;
-const UNSUBSCRIBE_TOKEN_SIZE = 32;
 const CREATE_LIMIT_PER_HOUR = 50;
+
+/**
+ * Replace draft "warondisease.org" placeholders in client-composed message
+ * text with the real invitation URL. The composer pre-fills the textarea
+ * before the invitation row exists, so any URL it embeds is a placeholder
+ * — this swaps it for the real one before we store/send the message.
+ */
+function replaceDraftInviteUrlInMessage(
+  messageText: string,
+  inviteUrl: string,
+): string {
+  const draftUrlPattern = /https?:\/\/warondisease\.org|warondisease\.org/g;
+  const replaced = messageText.replace(draftUrlPattern, inviteUrl);
+  return replaced.includes(inviteUrl) ? replaced : `${replaced}\n\n${inviteUrl}`;
+}
 
 export function isValidInvitationEmail(email: string | null | undefined): boolean {
   if (!email) return false;
@@ -62,29 +80,6 @@ async function createUniqueInviteToken() {
   throw new Error("Unable to create unique invitation token.");
 }
 
-async function createUniqueRecipientUnsubscribeToken() {
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const token = nanoid(UNSUBSCRIBE_TOKEN_SIZE);
-    const existing = await prisma.referralInvitation.findUnique({
-      where: { recipientUnsubscribeToken: token },
-      select: { id: true },
-    });
-    if (!existing) return token;
-  }
-  throw new Error("Unable to create unique invitation unsubscribe token.");
-}
-
-export function buildReferralInvitationUnsubscribeUrl(input: {
-  baseUrl?: string;
-  invitationId: string;
-  token: string;
-}) {
-  const baseUrl = input.baseUrl ?? getBaseUrl();
-  const url = new URL("/api/referral-invitations/unsubscribe", baseUrl);
-  url.searchParams.set("i", input.invitationId);
-  url.searchParams.set("t", input.token);
-  return url.toString();
-}
 
 export async function createReferralInvitation(input: {
   referrerUserId: string;
@@ -163,21 +158,24 @@ export async function createReferralInvitation(input: {
   });
 
   const inviteToken = await createUniqueInviteToken();
-  const recipientUnsubscribeToken = await createUniqueRecipientUnsubscribeToken();
   const messageFormat = input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
   const inviteUrl = buildUserInviteReferralUrl(referrer, inviteToken, getBaseUrl());
   const senderName = getUserDisplayName(referrer) || "A voter";
-  const messageText = input.messageText?.trim() || null;
-  const taskContactTemplate =
-    messageText ??
-    buildDefaultReferralInvitationMessage({
-      messageFormat,
-      recipientName,
-      senderName,
-      treatyUrl: inviteUrl,
-    });
+  const rawMessageText = input.messageText?.trim() || null;
+  // If the user typed a custom message, swap any draft-URL placeholders for
+  // the real invite URL. Otherwise build the default template.
+  const messageText = rawMessageText
+    ? replaceDraftInviteUrlInMessage(rawMessageText, inviteUrl)
+    : null;
+  const defaultMessageText = buildDefaultReferralInvitationMessage({
+    messageFormat,
+    recipientName,
+    senderName,
+    treatyUrl: inviteUrl,
+  });
+  const taskContactTemplate = messageText ?? defaultMessageText;
 
-  return prisma.$transaction(async (tx) => {
+  const invitation = await prisma.$transaction(async (tx) => {
     const recipientPerson = recipientEmail
       ? await tx.person.upsert({
           where: { email: recipientEmail },
@@ -194,6 +192,13 @@ export async function createReferralInvitation(input: {
       : null;
 
     if (!linkedTaskId) {
+      const userTreatyTask = await ensureUserTreatyTask(
+        {
+          personId: referrer.person?.id ?? null,
+          userId: input.referrerUserId,
+        },
+        tx,
+      );
       linkedTaskId = await createReferralInvitationTask(tx, {
         endpoint: {
           instructions: taskContactTemplate,
@@ -201,6 +206,7 @@ export async function createReferralInvitation(input: {
         },
         inviteToken,
         ownerUserId: input.referrerUserId,
+        parentTaskId: userTreatyTask.taskId,
         recipientName,
         recipientPersonId: recipientPerson?.id ?? null,
         referendumSlug: input.referendumSlug || TREATY_REFERENDUM_SLUG,
@@ -221,10 +227,117 @@ export async function createReferralInvitation(input: {
         taskId: linkedTaskId,
         shareAttemptId: input.shareAttemptId || null,
         inviteToken,
-        recipientUnsubscribeToken,
       },
     });
   });
+  // Note: invitation creation does NOT auto-dispatch a notification email.
+  // Callers that want to email the recipient must call
+  // sendReferralInvitationMessage in a separate step, which only marks the
+  // invitation SENT after the notification is actually dispatched.
+  return invitation;
+}
+
+/**
+ * Post a new message to an existing invitation's task and, if the
+ * notification email actually dispatches, advance the invitation to SENT.
+ *
+ * Used when the user clicks "Send email" — either as the second step after
+ * createReferralInvitation, or after they copied first and now want the
+ * recipient to actually receive a fresh message.
+ *
+ * Returns a `dispatched: boolean` so callers can distinguish "email actually
+ * went out" from "comment created, email skipped (rate-limited / cooldown /
+ * recipient opted out / etc.)". When dispatch is skipped, status stays at
+ * its previous value (typically PENDING), so dashboards correctly reflect
+ * "we tried but the email did not actually go out yet."
+ */
+export async function sendReferralInvitationMessage(input: {
+  invitationId: string;
+  messageText?: string | null;
+  referrerUserId: string;
+  now?: Date;
+}): Promise<
+  | {
+      status: "ok";
+      dispatched: boolean;
+      reason?: string;
+      invitation: { id: string; status: string; sentAt: Date | null };
+    }
+  | { status: "not_found" }
+  | { status: "missing_recipient_email" }
+  | { status: "missing_task" }
+> {
+  const now = input.now ?? new Date();
+  const invitation = await prisma.referralInvitation.findFirst({
+    where: {
+      id: input.invitationId,
+      referrerUserId: input.referrerUserId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      inviteToken: true,
+      messageFormat: true,
+      recipientEmail: true,
+      recipientName: true,
+      sentAt: true,
+      status: true,
+      taskId: true,
+      referrer: { select: userDisplaySelect },
+    },
+  });
+
+  if (!invitation) return { status: "not_found" };
+  if (!invitation.recipientEmail) return { status: "missing_recipient_email" };
+  if (!invitation.taskId) return { status: "missing_task" };
+
+  const inviteUrl = buildUserInviteReferralUrl(
+    invitation.referrer,
+    invitation.inviteToken,
+    getBaseUrl(),
+  );
+  const senderName = getUserDisplayName(invitation.referrer) || "A voter";
+  const trimmed = input.messageText?.trim() || null;
+  const messageBody = trimmed
+    ? replaceDraftInviteUrlInMessage(trimmed, inviteUrl)
+    : buildDefaultReferralInvitationMessage({
+        messageFormat: invitation.messageFormat,
+        recipientName: invitation.recipientName,
+        senderName,
+        treatyUrl: inviteUrl,
+      });
+
+  const notifyResult = await postTaskCommentAndNotify({
+    authorUserId: input.referrerUserId,
+    kind: TaskCommentKind.OUTBOUND_MESSAGE,
+    message: messageBody,
+    source: TaskCommentSource.WEB,
+    taskId: invitation.taskId,
+  });
+
+  const dispatched = notifyResult.status === "sent";
+
+  // Persist the latest user-typed text either way (it's recorded as a comment
+  // already, but mirroring it on the invitation row keeps the dashboard
+  // status panel in sync). Only advance to SENT if the email actually went
+  // out — skipped/failed dispatches leave the previous status untouched.
+  const updated = await prisma.referralInvitation.update({
+    where: { id: invitation.id },
+    data: {
+      ...(trimmed ? { messageText: messageBody } : {}),
+      ...(dispatched
+        ? { sentAt: now, status: ReferralInvitationStatus.SENT }
+        : {}),
+    },
+    select: { id: true, sentAt: true, status: true },
+  });
+
+  return {
+    status: "ok",
+    dispatched,
+    ...(notifyResult.status !== "sent" ? { reason: notifyResult.status } : {}),
+    invitation: updated,
+  };
 }
 
 export async function resolveInvitationReferrer(inviteToken: string | null | undefined) {
@@ -355,8 +468,6 @@ export async function convertReferralInvitationForVote(input: {
         status: ReferralInvitationStatus.CONVERTED,
         convertedVoteId: input.voteId,
         convertedAt: now,
-        nextRecipientEmailAt: null,
-        nextSenderReminderAt: null,
       },
     });
 
@@ -386,23 +497,3 @@ export async function convertReferralInvitationForVote(input: {
   });
 }
 
-export async function unsubscribeReferralInvitationRecipient(input: {
-  invitationId: string;
-  token: string;
-  now?: Date;
-}) {
-  const now = input.now ?? new Date();
-  const updated = await prisma.referralInvitation.updateMany({
-    where: {
-      id: input.invitationId,
-      recipientUnsubscribeToken: input.token,
-      deletedAt: null,
-    },
-    data: {
-      nextRecipientEmailAt: null,
-      recipientUnsubscribedAt: now,
-    },
-  });
-
-  return updated.count > 0;
-}

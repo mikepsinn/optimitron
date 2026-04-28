@@ -31,17 +31,27 @@ export function buildReferralInvitationTaskDescription(recipientName: string) {
   ].join("\n\n");
 }
 
+const REFERRAL_INVITATION_DUE_DAYS = 3;
+
 export async function createReferralInvitationTask(
   client: ReferralInvitationTaskClient,
   input: {
+    dueAt?: Date | null;
     endpoint: { instructions: string; url: string };
     inviteToken: string;
+    now?: Date;
     ownerUserId: string;
+    parentTaskId?: string | null;
     recipientName: string;
     recipientPersonId?: string | null;
     referendumSlug: string;
   },
 ) {
+  const now = input.now ?? new Date();
+  const dueAt =
+    input.dueAt ??
+    new Date(now.getTime() + REFERRAL_INVITATION_DUE_DAYS * 24 * 60 * 60 * 1000);
+
   const task = await client.task.create({
     data: {
       assigneeAffiliationSnapshot: input.recipientName,
@@ -55,10 +65,12 @@ export async function createReferralInvitationTask(
       } satisfies Prisma.InputJsonObject,
       description: buildReferralInvitationTaskDescription(input.recipientName),
       difficulty: TaskDifficulty.TRIVIAL,
+      dueAt,
       estimatedEffortHours: 0.01,
       interestTags: ["one-percent-treaty", "war-on-disease"],
       isPublic: false,
       ownerUserId: input.ownerUserId,
+      parentTaskId: input.parentTaskId ?? null,
       roleTitle: "Referred treaty voter",
       skillTags: ["voting"],
       status: TaskStatus.ACTIVE,

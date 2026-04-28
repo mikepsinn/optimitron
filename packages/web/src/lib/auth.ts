@@ -9,7 +9,6 @@ import { createAuthAdapter } from "@/lib/auth-adapter";
 import { sendMagicLinkEmail } from "@/lib/email/magic-link-email";
 import { summarizePersonhoodVerifications } from "@/lib/personhood.server";
 import { prisma } from "@/lib/prisma";
-import { sendWelcomeReferralEmailForUser } from "@/lib/email/referral-email.server";
 
 async function getSessionIdentity(userId: string) {
   const user = await prisma.user.findUnique({
@@ -50,8 +49,6 @@ async function getSessionIdentity(userId: string) {
       },
       countryCode: true,
       referralCode: true,
-      referralEmailSequenceLastSentAt: true,
-      referralEmailSequenceStep: true,
       username: true,
     },
   });
@@ -164,18 +161,6 @@ export const authOptions: NextAuthOptions = {
         provider: account?.provider,
         NEXTAUTH_URL: serverEnv.NEXTAUTH_URL,
       });
-    },
-    async createUser({ user }) {
-      const referralUser = await getSessionIdentity(user.id);
-      if (!referralUser) {
-        return;
-      }
-
-      try {
-        await sendWelcomeReferralEmailForUser(referralUser);
-      } catch (error) {
-        console.error("[AUTH] Failed to send welcome referral email:", error);
-      }
     },
   },
   callbacks: {

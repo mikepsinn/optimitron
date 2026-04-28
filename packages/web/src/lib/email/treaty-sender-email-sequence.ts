@@ -12,7 +12,6 @@ interface TreatySenderEmailMessage {
 
 interface TreatySenderEmailBaseInput {
   dashboardUrl?: string;
-  sendUrl?: string;
   unsubscribeUrl?: string | null;
 }
 
@@ -137,118 +136,6 @@ export function buildTreatyRecipientVotedEmail(input: TreatySenderEmailBaseInput
     buttonLabel: "See your dashboard",
     buttonUrl: dashboardUrl,
     subject,
-    text: body,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-}
-
-export function buildTreatySendOneMoreReminderEmail(input: TreatySenderEmailBaseInput & {
-  confirmedLives: string;
-  pendingLives: string;
-  sentCount: number;
-  votedCount: number;
-}): TreatySenderEmailMessage {
-  const sendUrl = input.sendUrl ?? "https://warondisease.org/send";
-  const body = [
-    `You messaged ${input.sentCount} people. ${input.votedCount} of them have voted so far.`,
-    "",
-    "The chain continues past round 2 only if someone keeps assigning the next Earth optimization task.",
-    "",
-    buttonText("Assign one more Earth optimization task", sendUrl),
-    "",
-    `Your Inverse Kills Score: **${input.confirmedLives} confirmed, ${input.pendingLives} pending.**`,
-    "",
-    "— warondisease.org",
-  ].join("\n");
-
-  return buildMessage({
-    buttonLabel: "Assign one more Earth optimization task",
-    buttonUrl: sendUrl,
-    subject: "One more?",
-    text: body,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-}
-
-export function buildTreatySecondSenderReminderEmail(input: TreatySenderEmailBaseInput & {
-  pendingCount: number;
-  sentCount: number;
-}): TreatySenderEmailMessage {
-  const sendUrl = input.sendUrl ?? "https://warondisease.org/send";
-  const body = [
-    `${input.pendingCount} of your ${input.sentCount} referrals haven't voted yet.`,
-    "",
-    "You can't make them. But you can assign one more Earth optimization task and improve your odds.",
-    "",
-    buttonText("Assign one more Earth optimization task", sendUrl),
-    "",
-    "— warondisease.org",
-  ].join("\n");
-
-  return buildMessage({
-    buttonLabel: "Assign one more Earth optimization task",
-    buttonUrl: sendUrl,
-    subject: `Still ${input.pendingCount} pending`,
-    text: body,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-}
-
-export function buildTreatyMonthlyScorecardEmail(input: TreatySenderEmailBaseInput & {
-  chainDepth: number;
-  confirmedLifetimeCount: string;
-  confirmedLives: string;
-  pendingLives: string;
-  pendingNames: string;
-  sharedFurtherCount: number;
-  sentCount: number;
-  totalLives: string;
-  votedCount: number;
-}): TreatySenderEmailMessage {
-  const dashboardUrl = input.dashboardUrl ?? "https://warondisease.org/dashboard";
-  const body = [
-    "Monthly update:",
-    "",
-    `**Confirmed:** ${input.confirmedLives} lives saved, ${input.confirmedLifetimeCount} lifetimes of suffering prevented`,
-    `**Pending:** ${input.pendingLives} lives, waiting on ${input.pendingNames}`,
-    `**Your referral chain:** ${input.sentCount} people you sent to → ${input.votedCount} of them voted → ${input.sharedFurtherCount} of those shared further`,
-    "",
-    `Total chain depth from you: ${input.chainDepth} rounds`,
-    "",
-    buttonText("See full dashboard", dashboardUrl),
-    "",
-    "The chain only breaks if one human says \"later.\"",
-    "",
-    "— warondisease.org",
-  ].join("\n");
-
-  return buildMessage({
-    buttonLabel: "See full dashboard",
-    buttonUrl: dashboardUrl,
-    subject: `Your Inverse Kills Score: ${input.totalLives} lives`,
-    text: body,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-}
-
-export function buildTreatyNeverSharedReengagementEmail(input: TreatySenderEmailBaseInput = {}): TreatySenderEmailMessage {
-  const sendUrl = input.sendUrl ?? "https://warondisease.org/send";
-  const body = [
-    `You voted for the 1% Treaty yesterday. That's worth ${voterLivesText} lives and 1 lifetime of suffering prevented.`,
-    "",
-    "But only if the chain keeps going. Right now your vote is a fact with no momentum.",
-    "",
-    "It takes 15 seconds to assign one task. The message is already written for you.",
-    "",
-    buttonText("Assign one task", sendUrl),
-    "",
-    "— warondisease.org",
-  ].join("\n");
-
-  return buildMessage({
-    buttonLabel: "Assign one task",
-    buttonUrl: sendUrl,
-    subject: "You voted but didn't tell anyone",
     text: body,
     unsubscribeUrl: input.unsubscribeUrl,
   });

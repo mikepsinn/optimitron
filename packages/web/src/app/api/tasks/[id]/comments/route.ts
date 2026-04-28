@@ -5,6 +5,7 @@
 
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
+import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import {
   countUserCommentsInWindow,
   getTaskActivityTimeline,
@@ -125,6 +126,13 @@ export async function POST(
       mediaUrl,
     });
 
+    void notifyTaskCommentRecipients({
+      authorUserId: currentUser.id,
+      commentId: comment.id,
+      message,
+      taskId,
+    });
+
     // If the client asked for NDJSON streaming, return a live stream that
     // emits the user comment, then pipes Wishonia's generation chunks, then
     // a final comment object once posted.
@@ -239,6 +247,13 @@ function streamCommentResponse(args: {
           parentCommentId: args.comment.id,
           message: fullText,
           citationsJson: buildCitationsJson(prep.citations),
+        });
+
+        void notifyTaskCommentRecipients({
+          authorUserId: prep.wishoniaUserId,
+          commentId: wishoniaComment.id,
+          message: fullText,
+          taskId: args.taskId,
         });
 
         send({ type: "wishonia-done", comment: wishoniaComment });

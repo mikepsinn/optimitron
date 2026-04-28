@@ -23,8 +23,7 @@ export type ReferralInvitationUpdateAction =
   | "markCopied"
   | "decline"
   | "cancel"
-  | "senderReminderOptIn"
-  | "sendEmail";
+  | "sendMessage";
 
 interface ReferralInvitationApiPayload {
   error?: string;

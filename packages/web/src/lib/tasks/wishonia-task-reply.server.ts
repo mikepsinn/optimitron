@@ -23,6 +23,7 @@ import {
 } from "@/lib/manual-search.server";
 import { WISHONIA_VOICE_SYSTEM_PROMPT, RAG_MODEL } from "@/lib/voice-config";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
+import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import { countUserCommentsInWindow, postComment } from "@/lib/tasks/task-comments.server";
 
 const WISHONIA_MIN_COMMENT_LENGTH = 5;
@@ -306,12 +307,19 @@ export async function generateAndPostWishoniaReply(input: {
       return;
     }
 
-    await postComment({
+    const wishoniaComment = await postComment({
       taskId: input.taskId,
       authorUserId: prep.wishoniaUserId,
       parentCommentId: input.parentCommentId,
       message: fullText,
       citationsJson: buildCitationsJson(prep.citations),
+    });
+
+    void notifyTaskCommentRecipients({
+      authorUserId: prep.wishoniaUserId,
+      commentId: wishoniaComment.id,
+      message: fullText,
+      taskId: input.taskId,
     });
 
     console.log(

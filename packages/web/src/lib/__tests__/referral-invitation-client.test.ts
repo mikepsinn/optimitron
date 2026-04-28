@@ -110,12 +110,12 @@ describe("referral invitation client helpers", () => {
   });
 
   it("updates invitations through the referral invitation API", async () => {
-    const payload = { invitation, status: "sent" };
+    const payload = { invitation, status: "ok" };
     const fetcher = mockFetchResponse(payload);
 
     const result = await updateReferralInvitationRequest(
       {
-        action: "sendEmail",
+        action: "markCopied",
         id: "invite_1",
         messageText: "edited message",
       },
@@ -131,7 +131,7 @@ describe("referral invitation client helpers", () => {
       }),
     );
     expect(getFirstRequestBody(fetcher)).toEqual({
-      action: "sendEmail",
+      action: "markCopied",
       id: "invite_1",
       messageText: "edited message",
     });

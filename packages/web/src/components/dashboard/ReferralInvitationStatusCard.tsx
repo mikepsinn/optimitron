@@ -25,8 +25,6 @@ interface ReferralInvitationSummary {
   copiedAt: string | null;
   sentAt: string | null;
   convertedAt: string | null;
-  recipientEmailStep: number;
-  nextRecipientEmailAt: string | null;
 }
 
 type ReferralInvitationFilter =
@@ -239,9 +237,7 @@ export function ReferralInvitationStatusCard() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs font-bold uppercase text-muted-foreground">
-                  {invitation.recipientEmail
-                    ? `${invitation.recipientEmail} · ${invitation.recipientEmailStep}/4 task reminders`
-                    : "Copy invitation"}
+                  {invitation.recipientEmail ?? "Copy invitation"}
                   {activityDate ? ` · ${activityDate}` : ""}
                 </p>
               </div>

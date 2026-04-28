@@ -1,0 +1,225 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TaskCommentKind, TaskCommentSource } from "@optimitron/db/enums";
+
+const mocks = vi.hoisted(() => ({
+  cooldownAllowed: vi.fn(),
+  draftTaskNotification: vi.fn(),
+  getTaskAncestors: vi.fn(),
+  personFindUnique: vi.fn(),
+  recipientWithinRateLimits: vi.fn(),
+  resolveTaskRecipient: vi.fn(),
+  sendDraftTaskNotification: vi.fn(),
+  taskCommentCreate: vi.fn(),
+  taskCommunicationUpdate: vi.fn(),
+  taskFindUnique: vi.fn(),
+  userFindUnique: vi.fn(),
+}));
+
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    person: { findUnique: mocks.personFindUnique },
+    task: { findUnique: mocks.taskFindUnique },
+    taskComment: { create: mocks.taskCommentCreate },
+    taskCommunication: { update: mocks.taskCommunicationUpdate },
+    user: { findUnique: mocks.userFindUnique },
+  },
+}));
+
+vi.mock("@/lib/tasks/task-communications.server", () => ({
+  checkTaskCommunicationCooldown: mocks.cooldownAllowed,
+}));
+
+vi.mock("@/lib/tasks/task-notifications.server", () => ({
+  draftTaskNotification: mocks.draftTaskNotification,
+  sendDraftTaskNotification: mocks.sendDraftTaskNotification,
+}));
+
+vi.mock("@/lib/tasks/task-recipient-rate-limit.server", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/lib/tasks/task-recipient-rate-limit.server")
+  >("@/lib/tasks/task-recipient-rate-limit.server");
+  return {
+    ...actual,
+    recipientWithinRateLimits: mocks.recipientWithinRateLimits,
+  };
+});
+
+vi.mock("@/lib/tasks/task-recipients.server", () => ({
+  resolveTaskRecipient: mocks.resolveTaskRecipient,
+}));
+
+vi.mock("@/lib/tasks.server", () => ({
+  getTaskAncestors: mocks.getTaskAncestors,
+}));
+
+import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+
+describe("postTaskCommentAndNotify", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
+    mocks.resolveTaskRecipient.mockResolvedValue({
+      email: "joe@example.com",
+      personId: "person_2",
+    });
+    mocks.recipientWithinRateLimits.mockResolvedValue(true);
+    mocks.cooldownAllowed.mockResolvedValue({ allowed: true });
+    mocks.taskFindUnique.mockResolvedValue({
+      deletedAt: null,
+      description: "Vote on the 1% Treaty.",
+      id: "task_1",
+      title: "Get Joe to vote on the 1% Treaty",
+    });
+    mocks.getTaskAncestors.mockResolvedValue([{ id: "p", title: "Treaty" }]);
+    mocks.userFindUnique.mockResolvedValue({
+      name: "Alice",
+      person: { displayName: "Alice the Inviter" },
+    });
+    mocks.draftTaskNotification.mockResolvedValue({
+      id: "comm_1",
+      metadataJson: { unsubscribeUrl: "https://warondisease.org/unsub" },
+    });
+    mocks.sendDraftTaskNotification.mockResolvedValue({
+      communication: { id: "comm_1" },
+      status: "sent",
+    });
+  });
+
+  it("creates the comment and sends the notification on the happy path", async () => {
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "Hey Joe, please vote.",
+      taskId: "task_1",
+    });
+
+    expect(result.status).toBe("sent");
+    expect(mocks.taskCommentCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        authorUserId: "user_alice",
+        kind: TaskCommentKind.COMMENT,
+        message: "Hey Joe, please vote.",
+        source: TaskCommentSource.WEB,
+        taskId: "task_1",
+      }),
+      select: { id: true },
+    });
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipientEmail: "joe@example.com",
+        senderUserId: "user_alice",
+        subject: expect.stringContaining("Alice the Inviter"),
+      }),
+    );
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
+  });
+
+  it("uses the explicit authorNameOverride when provided", async () => {
+    mocks.userFindUnique.mockResolvedValue(null);
+
+    await postTaskCommentAndNotify({
+      authorNameOverride: "Wishonia",
+      message: "Welcome.",
+      taskId: "task_1",
+    });
+
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: expect.stringContaining("Wishonia"),
+      }),
+    );
+  });
+
+  it("creates the comment but skips notification when no recipient resolves", async () => {
+    mocks.resolveTaskRecipient.mockResolvedValue(null);
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "no one home",
+      taskId: "task_1",
+    });
+
+    expect(mocks.taskCommentCreate).toHaveBeenCalled();
+    expect(result.status).toBe("skipped");
+    expect("reason" in result && result.reason).toBe("no_recipient");
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("does not email the author when they are also the recipient", async () => {
+    mocks.resolveTaskRecipient.mockResolvedValue({
+      email: "alice@example.com",
+      userId: "user_alice",
+    });
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "talking to myself",
+      taskId: "task_1",
+    });
+
+    expect(mocks.taskCommentCreate).toHaveBeenCalled();
+    expect(result.status).toBe("skipped");
+    expect("reason" in result && result.reason).toBe("author_is_recipient");
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("skips notification when the recipient is rate-limited", async () => {
+    mocks.recipientWithinRateLimits.mockResolvedValue(false);
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "another nudge",
+      taskId: "task_1",
+    });
+
+    expect(mocks.taskCommentCreate).toHaveBeenCalled();
+    expect(result.status).toBe("skipped");
+    expect("reason" in result && result.reason).toBe("rate_limited");
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("skips notification when the per-task cooldown is active", async () => {
+    mocks.cooldownAllowed.mockResolvedValue({ allowed: false, retryAfter: new Date() });
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "cooldown test",
+      taskId: "task_1",
+    });
+
+    expect(result.status).toBe("skipped");
+    expect("reason" in result && result.reason).toBe("cooldown");
+  });
+
+  it("substitutes the unsubscribe URL into the rendered metadata before sending", async () => {
+    await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "ping",
+      taskId: "task_1",
+    });
+
+    expect(mocks.taskCommunicationUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "comm_1" },
+        data: expect.objectContaining({
+          metadataJson: expect.objectContaining({
+            html: expect.not.stringContaining("{{UNSUBSCRIBE_URL}}"),
+            text: expect.not.stringContaining("{{UNSUBSCRIBE_URL}}"),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("returns failed status when the send throws", async () => {
+    mocks.sendDraftTaskNotification.mockRejectedValue(new Error("boom"));
+
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "ping",
+      taskId: "task_1",
+    });
+
+    expect(result.status).toBe("failed");
+    expect("reason" in result && result.reason).toBe("boom");
+  });
+});

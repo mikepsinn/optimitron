@@ -447,8 +447,6 @@ describe('Auth and referral models', () => {
       genderIdentity: 'woman',
       censusNotes: 'Household includes one child.',
       censusUpdatedAt: now,
-      referralEmailSequenceStep: 0,
-      referralEmailSequenceLastSentAt: null,
       createdAt: now,
       updatedAt: now,
     };

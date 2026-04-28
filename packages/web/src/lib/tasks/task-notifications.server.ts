@@ -49,6 +49,12 @@ export interface DraftTaskNotificationInput extends TaskNotificationMessage {
   shareAttemptId?: string | null;
   skipUserSuppressionCheck?: boolean;
   step?: number;
+  /**
+   * When the caller has already created a TaskComment that represents this
+   * outbound message, pass its id here so we don't create a second AGENT
+   * audit row in `sendDraftTaskNotification`.
+   */
+  taskCommentId?: string | null;
   taskId: string;
   templateId?: string | null;
   templateVariantId?: string | null;
@@ -263,6 +269,7 @@ export async function draftTaskNotification(input: DraftTaskNotificationInput) {
       shareAttemptId: input.shareAttemptId ?? null,
       status: TaskCommunicationStatus.DRAFT,
       step: input.step ?? 0,
+      taskCommentId: input.taskCommentId ?? null,
       taskId: input.taskId,
       templateId: input.templateId ?? null,
       templateVariantId: input.templateVariantId ?? null,
@@ -440,15 +447,24 @@ export async function sendDraftTaskNotification(input: SendDraftTaskNotification
         },
       });
 
-      const comment = await tx.taskComment.create({
-        data: {
-          authorUserId: input.senderUserId ?? communication.senderUserId,
-          kind: TaskCommentKind.OUTBOUND_MESSAGE,
-          message: message.text,
-          source: TaskCommentSource.AGENT,
-          taskId: communication.taskId,
-        },
-      });
+      // Reuse the caller-provided taskCommentId if it's already set on the
+      // draft (e.g. postTaskCommentAndNotify created the user-visible comment
+      // before drafting). Otherwise create the AGENT audit-log comment so
+      // there's still a row in the task feed for outbound emails the cron
+      // sends without a pre-existing comment.
+      let auditCommentId = communication.taskCommentId;
+      if (!auditCommentId) {
+        const comment = await tx.taskComment.create({
+          data: {
+            authorUserId: input.senderUserId ?? communication.senderUserId,
+            kind: TaskCommentKind.OUTBOUND_MESSAGE,
+            message: message.text,
+            source: TaskCommentSource.AGENT,
+            taskId: communication.taskId,
+          },
+        });
+        auditCommentId = comment.id;
+      }
 
       return tx.taskCommunication.update({
         where: { id: communication.id },
@@ -458,7 +474,7 @@ export async function sendDraftTaskNotification(input: SendDraftTaskNotification
           providerMessageId: result.id,
           sentAt: now,
           status: TaskCommunicationStatus.SENT,
-          taskCommentId: comment.id,
+          taskCommentId: auditCommentId,
         },
       });
     });

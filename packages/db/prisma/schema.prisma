@@ -835,12 +835,6 @@ model User {
   /// Phone number for SMS notifications
   phoneNumber String?
 
-  /// Number of referral-sequence emails already sent to this user
-  referralEmailSequenceStep Int @default(0)
-
-  /// Timestamp of the most recent referral-sequence email
-  referralEmailSequenceLastSentAt DateTime?
-
   /// When this record was created
   createdAt DateTime @default(now())
 
@@ -906,7 +900,6 @@ model User {
   @@index([availableHoursPerWeek])
   @@index([maxTaskDifficulty])
   @@index([createdAt])
-  @@index([referralEmailSequenceStep, referralEmailSequenceLastSentAt])
   @@index([isPublic])
   @@index([deletedAt])
   @@index([unsubscribedScopes], type: Gin)
@@ -2461,9 +2454,6 @@ model ReferralInvitation {
   /// Opaque token carried in invite links
   inviteToken String @unique
 
-  /// Opaque token used for recipient one-click unsubscribe links
-  recipientUnsubscribeToken String @unique
-
   /// Sender-provided display name for the recipient
   recipientName String
 
@@ -2491,22 +2481,6 @@ model ReferralInvitation {
   /// When the invitation first converted to a verified vote
   convertedAt DateTime?
 
-  /// When the recipient unsubscribed from this invitation's reminder sequence
-  recipientUnsubscribedAt DateTime?
-
-  /// Recipient reminder state
-  recipientEmailStep              Int       @default(0)
-  nextRecipientEmailAt            DateTime?
-  lastRecipientEmailAt            DateTime?
-  recipientEmailProviderMessageId String?
-  recipientEmailErrorMessage      String?
-
-  /// Sender reminder state
-  senderReminderOptedInAt DateTime?
-  senderReminderStep      Int       @default(0)
-  nextSenderReminderAt    DateTime?
-  lastSenderReminderAt    DateTime?
-
   /// When this record was created
   createdAt DateTime @default(now())
 
@@ -2531,9 +2505,6 @@ model ReferralInvitation {
   @@index([taskId])
   @@index([shareAttemptId])
   @@index([status])
-  @@index([nextRecipientEmailAt])
-  @@index([recipientUnsubscribedAt])
-  @@index([nextSenderReminderAt])
   @@index([deletedAt])
 }
 

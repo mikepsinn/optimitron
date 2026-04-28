@@ -89,9 +89,7 @@ interface ReferralInvitationTaskCardProps {
     convertedAt: Date | null;
     copiedAt: Date | null;
     messageFormat: string;
-    nextRecipientEmailAt: Date | null;
     recipientEmail: string | null;
-    recipientEmailStep: number;
     recipientName: string;
     sentAt: Date | null;
     status: string;
@@ -110,10 +108,6 @@ function getReferralInvitationTaskStatus(status: string) {
 function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardProps) {
   const activityDate =
     invitation.convertedAt ?? invitation.sentAt ?? invitation.copiedAt ?? null;
-  const nextReminderDate =
-    invitation.nextRecipientEmailAt && invitation.status === "SENT"
-      ? formatShortDate(invitation.nextRecipientEmailAt)
-      : null;
 
   return (
     <BrutalCard bgColor="yellow" padding="lg">
@@ -141,7 +135,7 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
           Assign another
         </Link>
       </div>
-      <div className="mt-5 grid gap-3 text-xs font-black uppercase sm:grid-cols-4">
+      <div className="mt-5 grid gap-3 text-xs font-black uppercase sm:grid-cols-3">
         <div className="border-4 border-primary bg-background p-3">
           <p className="text-muted-foreground">Recipient</p>
           <p className="mt-1 break-words">
@@ -155,17 +149,9 @@ function ReferralInvitationTaskCard({ invitation }: ReferralInvitationTaskCardPr
           </p>
         </div>
         <div className="border-4 border-primary bg-background p-3">
-          <p className="text-muted-foreground">Task reminders</p>
-          <p className="mt-1">{invitation.recipientEmailStep}/4 sent</p>
-        </div>
-        <div className="border-4 border-primary bg-background p-3">
-          <p className="text-muted-foreground">Next state</p>
+          <p className="text-muted-foreground">Last activity</p>
           <p className="mt-1">
-            {nextReminderDate
-              ? `next reminder ${nextReminderDate}`
-              : activityDate
-                ? formatShortDate(activityDate)
-                : "waiting"}
+            {activityDate ? formatShortDate(activityDate) : "waiting"}
           </p>
         </div>
       </div>

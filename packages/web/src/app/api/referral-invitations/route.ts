@@ -10,14 +10,10 @@ import { requireAuth } from "@/lib/auth-utils";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import {
-  SENDER_REMINDER_DELAY_DAYS,
-  sendReferralInvitationEmail,
-} from "@/lib/email/referral-invitation-emails.server";
-import {
   createReferralInvitation,
   markReferralInvitationCopied,
+  sendReferralInvitationMessage,
 } from "@/lib/referral-invitations.server";
-import { MS_PER_DAY } from "@/lib/time";
 
 export const runtime = "nodejs";
 const log = createLogger("referral-invitations");
@@ -35,7 +31,7 @@ const createInvitationSchema = z.object({
 
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
-  action: z.enum(["markCopied", "decline", "cancel", "senderReminderOptIn", "sendEmail"]),
+  action: z.enum(["markCopied", "decline", "cancel", "sendMessage"]),
   messageText: z.string().trim().max(10_000).nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
   wasEdited: z.boolean().optional(),
@@ -112,40 +108,6 @@ export async function PATCH(request: Request) {
     const parsed = patchInvitationSchema.parse(await request.json());
     const now = new Date();
 
-    if (parsed.action === "sendEmail") {
-      const result = await sendReferralInvitationEmail({
-        invitationId: parsed.id,
-        manualInitialOnly: true,
-        messageText: parsed.messageText,
-        referrerUserId: userId,
-        now,
-      });
-
-      if (result.status === "not_found") {
-        return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
-      }
-      if (result.status === "missing_recipient_email") {
-        return NextResponse.json({ error: "This invitation has no recipient email." }, { status: 400 });
-      }
-      if (result.status === "unsubscribed") {
-        return NextResponse.json({ error: "Recipient unsubscribed from this invitation." }, { status: 409 });
-      }
-      if (result.status === "converted") {
-        return NextResponse.json({ error: "This invitation already converted." }, { status: 409 });
-      }
-      if (result.status === "inactive") {
-        return NextResponse.json({ error: "This invitation is no longer active." }, { status: 409 });
-      }
-      if (result.status === "maxed") {
-        return NextResponse.json({ error: "Recipient reminder cap reached." }, { status: 409 });
-      }
-      if (result.status === "already_sent") {
-        return NextResponse.json({ error: "This invitation email was already sent." }, { status: 409 });
-      }
-
-      return NextResponse.json(result);
-    }
-
     if (parsed.action === "markCopied") {
       const invitation = await markReferralInvitationCopied({
         invitationId: parsed.id,
@@ -163,25 +125,45 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ invitation });
     }
 
+    if (parsed.action === "sendMessage") {
+      const result = await sendReferralInvitationMessage({
+        invitationId: parsed.id,
+        messageText: parsed.messageText,
+        referrerUserId: userId,
+        now,
+      });
+
+      if (result.status === "not_found") {
+        return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+      }
+      if (result.status === "missing_recipient_email") {
+        return NextResponse.json(
+          { error: "This invitation has no recipient email." },
+          { status: 400 },
+        );
+      }
+      if (result.status === "missing_task") {
+        return NextResponse.json(
+          { error: "This invitation has no linked task." },
+          { status: 400 },
+        );
+      }
+
+      return NextResponse.json({
+        invitation: result.invitation,
+        dispatched: result.dispatched,
+        status: result.dispatched ? "sent" : "queued",
+        ...(result.reason ? { reason: result.reason } : {}),
+      });
+    }
+
     const data =
       parsed.action === "decline"
-        ? {
-            nextRecipientEmailAt: null,
-            nextSenderReminderAt: null,
-            status: ReferralInvitationStatus.DECLINED,
-          }
-        : parsed.action === "cancel"
-          ? {
-              deletedAt: now,
-              nextRecipientEmailAt: null,
-              nextSenderReminderAt: null,
-              status: ReferralInvitationStatus.CANCELLED,
-            }
-          : {
-              senderReminderOptedInAt: now,
-              nextSenderReminderAt:
-                new Date(now.getTime() + SENDER_REMINDER_DELAY_DAYS * MS_PER_DAY),
-            };
+        ? { status: ReferralInvitationStatus.DECLINED }
+        : {
+            deletedAt: now,
+            status: ReferralInvitationStatus.CANCELLED,
+          };
 
     const result = await prisma.referralInvitation.updateMany({
       where: {

@@ -32,10 +32,6 @@ vi.mock("@/lib/email/magic-link-email", () => ({
   sendMagicLinkEmail: vi.fn(),
 }));
 
-vi.mock("@/lib/email/referral-email.server", () => ({
-  sendWelcomeReferralEmailForUser: vi.fn(),
-}));
-
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
@@ -76,8 +72,6 @@ const fullIdentityRow = {
   personhoodVerifications: [],
   countryCode: "US",
   referralCode: "REF123",
-  referralEmailSequenceLastSentAt: null,
-  referralEmailSequenceStep: 0,
   username: "demo",
 };
 

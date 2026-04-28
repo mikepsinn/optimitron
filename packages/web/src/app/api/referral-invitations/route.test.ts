@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   markReferralInvitationCopied: vi.fn(),
   requireAuth: vi.fn(),
-  sendReferralInvitationEmail: vi.fn(),
+  sendReferralInvitationMessage: vi.fn(),
   taskUpdateMany: vi.fn(),
   updateMany: vi.fn(),
 }));
@@ -28,14 +28,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/email/referral-invitation-emails.server", () => ({
-  SENDER_REMINDER_DELAY_DAYS: 7,
-  sendReferralInvitationEmail: mocks.sendReferralInvitationEmail,
-}));
-
 vi.mock("@/lib/referral-invitations.server", () => ({
   createReferralInvitation: mocks.createReferralInvitation,
   markReferralInvitationCopied: mocks.markReferralInvitationCopied,
+  sendReferralInvitationMessage: mocks.sendReferralInvitationMessage,
 }));
 
 import { GET, PATCH, POST } from "./route";
@@ -190,89 +186,6 @@ describe("/api/referral-invitations", () => {
     });
   });
 
-  it("sends an owned invitation email", async () => {
-    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.sendReferralInvitationEmail.mockResolvedValue({
-      status: "sent",
-      invitation: { id: "invite_1", status: "SENT" },
-    });
-
-    const response = await PATCH(
-      makePatchRequest({
-        id: "invite_1",
-        action: "sendEmail",
-        messageText: "edited message",
-      }),
-    );
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      status: "sent",
-      invitation: { id: "invite_1", status: "SENT" },
-    });
-    expect(mocks.sendReferralInvitationEmail).toHaveBeenCalledWith({
-      invitationId: "invite_1",
-      manualInitialOnly: true,
-      messageText: "edited message",
-      referrerUserId: "user_1",
-      now: expect.any(Date),
-    });
-  });
-
-  it("rejects sending an inactive invitation", async () => {
-    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.sendReferralInvitationEmail.mockResolvedValue({
-      status: "inactive",
-    });
-
-    const response = await PATCH(
-      makePatchRequest({
-        id: "invite_1",
-        action: "sendEmail",
-      }),
-    );
-
-    expect(response.status).toBe(409);
-    await expect(response.json()).resolves.toEqual({
-      error: "This invitation is no longer active.",
-    });
-  });
-
-  it("records sender reminder opt-in seven days out", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-04-25T12:00:00.000Z"));
-    try {
-      mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-      mocks.updateMany.mockResolvedValue({ count: 1 });
-      mocks.findUnique.mockResolvedValue({
-        id: "invite_1",
-        nextSenderReminderAt: new Date("2026-05-02T12:00:00.000Z"),
-      });
-
-      const response = await PATCH(
-        makePatchRequest({
-          id: "invite_1",
-          action: "senderReminderOptIn",
-        }),
-      );
-
-      expect(response.status).toBe(200);
-      expect(mocks.updateMany).toHaveBeenCalledWith({
-        where: {
-          id: "invite_1",
-          referrerUserId: "user_1",
-          deletedAt: null,
-        },
-        data: {
-          senderReminderOptedInAt: new Date("2026-04-25T12:00:00.000Z"),
-          nextSenderReminderAt: new Date("2026-05-02T12:00:00.000Z"),
-        },
-      });
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
   it("marks a cancelled invitation task stale", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.updateMany.mockResolvedValue({ count: 1 });
@@ -298,8 +211,6 @@ describe("/api/referral-invitations", () => {
       },
       data: {
         deletedAt: expect.any(Date),
-        nextRecipientEmailAt: null,
-        nextSenderReminderAt: null,
         status: "CANCELLED",
       },
     });
@@ -345,8 +256,6 @@ describe("/api/referral-invitations", () => {
         deletedAt: null,
       },
       data: {
-        nextRecipientEmailAt: null,
-        nextSenderReminderAt: null,
         status: "DECLINED",
       },
     });
@@ -382,5 +291,99 @@ describe("/api/referral-invitations", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Invitation not found.",
     });
+  });
+
+  it("dispatches sendMessage to advance the invitation to SENT when notification fires", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({
+      status: "ok",
+      dispatched: true,
+      invitation: { id: "invite_1", status: "SENT", sentAt: new Date() },
+    });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "sendMessage",
+        messageText: "Hey Joe, please vote.",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.sendReferralInvitationMessage).toHaveBeenCalledWith({
+      invitationId: "invite_1",
+      messageText: "Hey Joe, please vote.",
+      referrerUserId: "user_1",
+      now: expect.any(Date),
+    });
+    const body = (await response.json()) as {
+      dispatched: boolean;
+      invitation: { status: string };
+      status: string;
+    };
+    expect(body.status).toBe("sent");
+    expect(body.dispatched).toBe(true);
+    expect(body.invitation.status).toBe("SENT");
+  });
+
+  it("returns 'queued' when sendMessage is rate-limited and leaves status unchanged", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({
+      status: "ok",
+      dispatched: false,
+      reason: "rate_limited",
+      invitation: { id: "invite_1", status: "PENDING", sentAt: null },
+    });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "sendMessage",
+        messageText: "Hey Joe.",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      dispatched: boolean;
+      invitation: { status: string };
+      reason?: string;
+      status: string;
+    };
+    expect(body.status).toBe("queued");
+    expect(body.dispatched).toBe(false);
+    expect(body.reason).toBe("rate_limited");
+    expect(body.invitation.status).toBe("PENDING");
+  });
+
+  it("returns 400 when sendMessage targets an invitation without a recipient email", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({ status: "missing_recipient_email" });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_1",
+        action: "sendMessage",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "This invitation has no recipient email.",
+    });
+  });
+
+  it("returns 404 when sendMessage targets a missing invitation", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({ status: "not_found" });
+
+    const response = await PATCH(
+      makePatchRequest({
+        id: "invite_missing",
+        action: "sendMessage",
+      }),
+    );
+
+    expect(response.status).toBe(404);
   });
 });

@@ -424,8 +424,6 @@ export function TreatyPostVoteShareFlow({
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [mathDialogOpen, setMathDialogOpen] = useState(false);
-  const [wantsReminderEmails, setWantsReminderEmails] = useState(false);
-  const [reminderOptInFired, setReminderOptInFired] = useState(false);
   const [contactPickerSupported, setContactPickerSupported] = useState(false);
 
   useEffect(() => {
@@ -486,7 +484,9 @@ export function TreatyPostVoteShareFlow({
     setError(null);
   }, []);
 
-  const createInvitation = useCallback(async () => {
+  const createInvitation = useCallback(async (
+    options: { messageText?: string | null } = {},
+  ) => {
     if (invitation) return invitation;
 
     const trimmedName = recipientName.trim();
@@ -504,6 +504,7 @@ export function TreatyPostVoteShareFlow({
         recipientEmail: recipientEmail.trim() || null,
         contactMethod: recipientEmail.trim() ? "EMAIL" : "COPY",
         messageFormat,
+        messageText: options.messageText ?? null,
       });
 
       setInvitation(created);
@@ -581,16 +582,8 @@ export function TreatyPostVoteShareFlow({
     setLastRecipientName(getReferralInvitationFirstName(invitation.recipientName));
     setSentCount((count) => count + 1);
 
-    if (wantsReminderEmails && !reminderOptInFired) {
-      setReminderOptInFired(true);
-      void updateReferralInvitationRequest({
-        id: invitation.id,
-        action: "senderReminderOptIn",
-      }).catch(() => undefined);
-    }
-
     advanceTo("sendImpact", { sentCount: nextSentCount });
-  }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, reminderOptInFired, sentCount, wantsReminderEmails]);
+  }, [advanceTo, completedInvitationIds, flowVariant, invitation, messageFormat, sentCount]);
 
   const handleCopy = useCallback(async () => {
     const created = await createInvitation();
@@ -636,36 +629,36 @@ export function TreatyPostVoteShareFlow({
   }, [advanceTo, createInvitation, flowVariant, message, messageEdited, messageFormat, senderName, sentCount, session?.user]);
 
   const handleSendEmail = useCallback(async () => {
-    const created = await createInvitation();
-    if (!created?.recipientEmail) return;
+    const trimmedEmail = recipientEmail.trim();
+    if (!trimmedEmail) return;
 
     setIsSending(true);
     setError(null);
     try {
-      const defaultText = buildReferralInvitationShareMessage({
-        invitation: created,
-        messageFormat,
-        senderName,
-        user: session?.user,
-      });
-      const inviteUrl = buildUserInviteReferralUrl(session?.user, created.inviteToken, getBaseUrl());
-      const outboundText = messageEdited
-        ? replaceDraftInviteUrl(message, inviteUrl)
-        : defaultText;
-      const payload = await updateReferralInvitationRequest({
-        id: created.id,
-        action: "sendEmail",
-        messageText: outboundText,
-      });
+      // Only send the user's typed text if they actually customized it. The
+      // server replaces draft-URL placeholders with the real invite URL and
+      // builds a default message when none is provided, so the recipient
+      // gets a working link in either case.
+      const customMessage = messageEdited ? message : null;
 
-      if (payload.status !== "sent") {
-        throw new Error("Could not send this invitation.");
+      let invitationId = invitation?.id ?? null;
+      if (!invitationId) {
+        const created = await createInvitation({ messageText: customMessage });
+        if (!created) {
+          return;
+        }
+        invitationId = created.id;
       }
-      if (payload.invitation) {
-        setInvitation(payload.invitation);
+
+      const payload = await updateReferralInvitationRequest({
+        id: invitationId,
+        action: "sendMessage",
+        messageText: customMessage,
+      });
+      if (payload.status !== "sent" && payload.status !== "queued") {
+        throw new Error(payload.error ?? "Could not send this invitation.");
       }
-      setMessage(outboundText);
-      setMessageEdited(false);
+
       trackTreatyPostVoteInvitationAction({
         action: "send_email",
         flowVariant,
@@ -679,11 +672,10 @@ export function TreatyPostVoteShareFlow({
     } finally {
       setIsSending(false);
     }
-  }, [advanceTo, createInvitation, flowVariant, message, messageEdited, messageFormat, senderName, sentCount, session?.user]);
+  }, [advanceTo, createInvitation, flowVariant, invitation, message, messageEdited, messageFormat, recipientEmail, sentCount]);
 
   const handlePromotion = useCallback((wantsReminder: boolean) => {
     trackTreatyPostVotePromotion({ flowVariant, wantsReminder, sentCount });
-    setWantsReminderEmails(wantsReminder);
     go("sendMessage", !wantsReminder);
   }, [flowVariant, go, sentCount]);
 
@@ -1049,7 +1041,7 @@ export function TreatyPostVoteShareFlow({
       case "sendConfirm":
         return (
           <>
-            <FlowParagraph>{`Sent to ${recipientEmail.trim()}. We'll send the first task reminder in 3 days if they haven't completed it yet.`}</FlowParagraph>
+            <FlowParagraph>{`Sent to ${recipientEmail.trim()}.`}</FlowParagraph>
             <Button className={primaryButtonClass} onClick={completeCurrentInvitation}>
               Continue
             </Button>

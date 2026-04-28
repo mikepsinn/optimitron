@@ -6,7 +6,6 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   create: vi.fn(),
   recordReferralAttributionForUser: vi.fn(),
-  sendWelcomeReferralEmailForUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({
@@ -30,10 +29,6 @@ vi.mock("@/lib/referral.server", () => ({
   recordReferralAttributionForUser: mocks.recordReferralAttributionForUser,
 }));
 
-vi.mock("@/lib/email/referral-email.server", () => ({
-  sendWelcomeReferralEmailForUser: mocks.sendWelcomeReferralEmailForUser,
-}));
-
 import { POST } from "./route";
 
 describe("signup auth route", () => {
@@ -43,7 +38,6 @@ describe("signup auth route", () => {
     mocks.findUnique.mockReset();
     mocks.create.mockReset();
     mocks.recordReferralAttributionForUser.mockReset();
-    mocks.sendWelcomeReferralEmailForUser.mockReset();
   });
 
   it("rejects passwords shorter than eight characters", async () => {
@@ -63,7 +57,7 @@ describe("signup auth route", () => {
     });
   });
 
-  it("creates the user, records attribution, and sends the welcome email", async () => {
+  it("creates the user and records attribution", async () => {
     // email check → no existing user; username uniqueness → available; referral code → available
     mocks.findUnique.mockResolvedValueOnce(null);
     mocks.hashPassword.mockResolvedValue("hashed-password");
@@ -76,8 +70,6 @@ describe("signup auth route", () => {
       username: "covert-optimizer",
       referralCode: "REFCODE1",
       newsletterSubscribed: true,
-      referralEmailSequenceLastSentAt: null,
-      referralEmailSequenceStep: 0,
       createdAt: new Date("2026-03-11T00:00:00.000Z"),
     });
 
@@ -112,12 +104,6 @@ describe("signup auth route", () => {
       "sa_123",
     );
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1");
-    expect(mocks.sendWelcomeReferralEmailForUser).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: "user_1",
-        email: "user@example.com",
-      }),
-    );
     await expect(response.json()).resolves.toEqual({
       success: true,
       userId: "user_1",

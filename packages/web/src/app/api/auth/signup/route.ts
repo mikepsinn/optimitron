@@ -3,7 +3,6 @@ import { hashPassword } from "@/lib/auth";
 import { readVercelGeo } from "@/lib/geo/vercel-geo";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
-import { sendWelcomeReferralEmailForUser } from "@/lib/email/referral-email.server";
 import { recordReferralAttributionForUser } from "@/lib/referral.server";
 import { createUniqueReferralCode, createUniqueUsername } from "@/lib/user-identity.server";
 
@@ -64,12 +63,6 @@ export async function POST(req: Request) {
     await ensurePersonForUser(user.id);
 
     await recordReferralAttributionForUser(user.id, referralCode, shareAttemptId);
-
-    try {
-      await sendWelcomeReferralEmailForUser(user);
-    } catch (error) {
-      console.error("[SIGNUP] Failed to send welcome email:", error);
-    }
 
     return NextResponse.json(
       {

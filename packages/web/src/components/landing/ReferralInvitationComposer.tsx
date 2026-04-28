@@ -67,7 +67,9 @@ export function ReferralInvitationComposer() {
     setError(null);
   }, []);
 
-  const createInvitation = useCallback(async () => {
+  const createInvitation = useCallback(async (
+    options: { messageText?: string | null } = {},
+  ) => {
     const trimmedName = recipientName.trim();
     if (!trimmedName) {
       setError("Add a first name before creating an invite.");
@@ -86,6 +88,7 @@ export function ReferralInvitationComposer() {
           recipientEmail: recipientEmail.trim() || null,
           contactMethod: recipientEmail.trim() ? "EMAIL" : "COPY",
           messageFormat,
+          messageText: options.messageText ?? null,
         }),
       });
 
@@ -187,47 +190,45 @@ export function ReferralInvitationComposer() {
   }, [createInvitation, invitation, markCopied, message, messageFormat, senderName, session?.user]);
 
   const handleEmailSend = useCallback(async () => {
-    const created = invitation ? { invitation, message } : await createInvitation();
-    if (!created?.invitation.recipientEmail) return;
+    const trimmedEmail = recipientEmail.trim();
+    if (!trimmedEmail) return;
 
     setSendState("sending");
     setError(null);
 
     try {
+      let invitationId = invitation?.id ?? null;
+      if (!invitationId) {
+        const created = await createInvitation({ messageText: message });
+        if (!created?.invitation.recipientEmail) {
+          setSendState("idle");
+          return;
+        }
+        invitationId = created.invitation.id;
+      }
+
       const response = await fetch("/api/referral-invitations", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: created.invitation.id,
-          action: "sendEmail",
-          messageText: created.message,
+          id: invitationId,
+          action: "sendMessage",
+          messageText: message,
         }),
       });
-
-      const payload = (await response.json()) as {
+      const payload = (await response.json().catch(() => ({}))) as {
         error?: string;
-        invitation?: ReferralInvitation;
         status?: string;
       };
-
-      if (!response.ok || payload.status !== "sent") {
-        throw new Error(
-          payload.error ||
-            (payload.status === "disabled"
-              ? "Email sending is not configured. Copy the message instead."
-              : "Could not send this invitation."),
-        );
-      }
-
-      if (payload.invitation) {
-        setInvitation(payload.invitation);
+      if (!response.ok || (payload.status !== "sent" && payload.status !== "queued")) {
+        throw new Error(payload.error ?? "Could not send this invitation.");
       }
       setSendState("sent");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not send this invitation.");
       setSendState("idle");
     }
-  }, [createInvitation, invitation, message]);
+  }, [createInvitation, invitation, message, recipientEmail]);
 
   return (
     <Card className="mb-6 overflow-hidden border-4 border-primary bg-background p-0 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">

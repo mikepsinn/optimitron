@@ -1,6 +1,11 @@
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { recordReferralAttributionForUser } from "@/lib/referral.server";
+import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+import {
+  buildWishoniaWelcomeComment,
+  ensureUserTreatyTask,
+} from "@/lib/tasks/user-treaty-task.server";
 
 interface PostSigninSyncInput {
   userId: string;
@@ -50,7 +55,23 @@ export async function applyPostSigninSync({
     });
   }
 
-  await ensurePersonForUser(userId);
+  const person = await ensurePersonForUser(userId);
+
+  const treatyTask = await ensureUserTreatyTask({
+    personId: person.id,
+    userId,
+  });
+
+  if (treatyTask.created) {
+    const welcome = buildWishoniaWelcomeComment();
+    await postTaskCommentAndNotify({
+      authorNameOverride: welcome.authorNameOverride,
+      kind: welcome.kind,
+      message: welcome.message,
+      source: welcome.source,
+      taskId: treatyTask.taskId,
+    });
+  }
 
   const referralRecorded = await recordReferralAttributionForUser(
     userId,

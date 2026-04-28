@@ -438,8 +438,6 @@ export const UserSchema = z.object({
   isPublic: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
   phoneNumber: z.string().nullable().optional(),
-  referralEmailSequenceStep: z.number().int().default(0),
-  referralEmailSequenceLastSentAt: nullableDateSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
