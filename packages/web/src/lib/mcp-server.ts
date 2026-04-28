@@ -4129,7 +4129,33 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      return err(message);
+      const stack = error instanceof Error ? error.stack : undefined;
+      const cause = error instanceof Error && error.cause instanceof Error ? error.cause.message : undefined;
+      // Server-side: full stack ends up in Vercel/runtime logs.
+      console.error(`[mcp] tool "${name}" threw:`, error);
+      // Wire-side: structured payload so the LLM (and humans reading the SSE
+      // stream) get the actual failure, not a generic "execution error".
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(
+              {
+                error: "tool_execution_failed",
+                tool: name,
+                message,
+                cause,
+                stack: stack ? stack.split("\n").slice(0, 10).join("\n") : undefined,
+                args: a,
+                userId: userId ?? null,
+              },
+              null,
+              2,
+            ),
+          },
+        ],
+        isError: true,
+      };
     }
     },
   );
