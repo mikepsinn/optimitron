@@ -507,6 +507,7 @@ describe("MCP server tool dispatch", () => {
         task: makeOwnedTask({
           id: "created-task",
           title: "Build product demo",
+          estimatedEffortHours: 6,
           dueAt,
           deadlinePolicy: "EXPIRES",
           contextJson: {
