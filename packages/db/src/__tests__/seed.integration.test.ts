@@ -1,6 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { assertSafeLocalTestDatabaseUrl } from "../db-cli.js";
+import { disconnectSeedClient, seedDatabase } from "../../prisma/seed.ts";
 import {
   PrismaClient,
   TaskCommunicationAudience,
@@ -13,31 +14,8 @@ const databaseUrl = process.env.DATABASE_URL
 const describeIfDatabase = databaseUrl ? describe : describe.skip;
 
 describeIfDatabase("seedDatabase", () => {
-  let seedDatabase: () => Promise<void>;
-  let disconnectSeedClient: () => Promise<void>;
   const adapter = new PrismaPg({ connectionString: databaseUrl! });
   const prisma = new PrismaClient({ adapter });
-
-  beforeAll(async () => {
-    const seed = await import("../../prisma/seed.ts");
-    const resolvedSeedDatabase = (seed.seedDatabase ??
-      seed.default?.seedDatabase) as (() => Promise<void>) | undefined;
-    const resolvedDisconnectSeedClient = (seed.disconnectSeedClient ??
-      seed.default?.disconnectSeedClient) as (() => Promise<void>) | undefined;
-
-    if (typeof resolvedSeedDatabase !== "function") {
-      throw new Error("seed integration test could not resolve seedDatabase export");
-    }
-
-    if (typeof resolvedDisconnectSeedClient !== "function") {
-      throw new Error(
-        "seed integration test could not resolve disconnectSeedClient export",
-      );
-    }
-
-    seedDatabase = resolvedSeedDatabase;
-    disconnectSeedClient = resolvedDisconnectSeedClient;
-  });
 
   afterAll(async () => {
     await prisma.$disconnect();
