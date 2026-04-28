@@ -1,8 +1,54 @@
+import { appendFile } from "node:fs/promises";
+import { join } from "node:path";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createMcpServer } from "@/lib/mcp-server";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
 import { prisma } from "@/lib/prisma";
 import type { McpScope } from "@/lib/mcp-scopes";
+
+function redactAuthorizationHeader(authHeader: string | null) {
+  if (!authHeader) return null;
+  const schemeEnd = authHeader.indexOf(" ");
+  const scheme = schemeEnd >= 0 ? authHeader.slice(0, schemeEnd + 1) : "Bearer ";
+  return `${scheme}[redacted:length=${authHeader.length}]`;
+}
+
+async function logMcpRequest(req: Request) {
+  if (process.env.NODE_ENV === "production" || process.env.MCP_DEBUG_REQUESTS !== "1") return;
+
+  const authHeader = req.headers.get("authorization");
+  const entry = {
+    at: new Date().toISOString(),
+    method: req.method,
+    url: req.url,
+    headers: {
+      accept: req.headers.get("accept"),
+      authorization: redactAuthorizationHeader(authHeader),
+      contentType: req.headers.get("content-type"),
+      lastEventId: req.headers.get("last-event-id"),
+      mcpProtocolVersion: req.headers.get("mcp-protocol-version"),
+      mcpSessionId: req.headers.get("mcp-session-id"),
+      userAgent: req.headers.get("user-agent"),
+    },
+    bodyPreview: null as string | null,
+  };
+
+  try {
+    const body = await req.clone().text();
+    entry.bodyPreview =
+      body.length > 1200
+        ? `${body.slice(0, 1200)}...[truncated:${body.length}]`
+        : body;
+  } catch (error) {
+    entry.bodyPreview = `[unavailable:${error instanceof Error ? error.message : String(error)}]`;
+  }
+
+  const line = `${JSON.stringify(entry)}\n`;
+  console.log(`[mcp-debug] ${line.trim()}`);
+  await appendFile(join(process.cwd(), ".next", "mcp-debug.log"), line, "utf8").catch(
+    () => {},
+  );
+}
 
 function getResourceMetadataUrl(req: Request): string {
   const base =
@@ -39,6 +85,8 @@ function unauthorized(req: Request, error: "missing_token" | "invalid_token"): R
 }
 
 async function handleMcpRequest(req: Request): Promise<Response> {
+  await logMcpRequest(req);
+
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return unauthorized(req, "missing_token");

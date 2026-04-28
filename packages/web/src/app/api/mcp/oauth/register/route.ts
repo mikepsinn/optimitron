@@ -35,18 +35,21 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
-      {
-        client_id: client.clientId,
-        client_name: client.clientName,
-        redirect_uris: client.redirectUris,
-        grant_types: client.grantTypes,
-        scope: client.scope,
-        client_uri: client.clientUri,
-        client_id_issued_at: Math.floor(client.createdAt.getTime() / 1000),
-      },
-      { status: 201 },
-    );
+    // RFC 7591: optional client metadata fields MUST be omitted when not
+    // present, not returned as null. The MCP SDK's response validator (and
+    // most strict OAuth clients) will reject `null` where a string is expected
+    // — Claude Code's connector failed DCR with this exact symptom.
+    const responseBody: Record<string, unknown> = {
+      client_id: client.clientId,
+      redirect_uris: client.redirectUris,
+      grant_types: client.grantTypes,
+      client_id_issued_at: Math.floor(client.createdAt.getTime() / 1000),
+    };
+    if (client.clientName) responseBody.client_name = client.clientName;
+    if (client.scope) responseBody.scope = client.scope;
+    if (client.clientUri) responseBody.client_uri = client.clientUri;
+
+    return NextResponse.json(responseBody, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
