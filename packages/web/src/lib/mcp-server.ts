@@ -67,6 +67,8 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getAIQueue: [McpScope.TASKS_PERSONAL],
   getNextAction: [McpScope.TASKS_PERSONAL],
   getQueueAudit: [McpScope.TASKS_PERSONAL],
+  getMe: [McpScope.TASKS_PERSONAL],
+  updateMyProfile: [McpScope.TASKS_PERSONAL],
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -1809,6 +1811,58 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "getMe",
+    description:
+      "Return the authenticated user's profile (User + canonical Person row). Use this to discover who you are acting as: userId, email, displayName, handle, avatar, bio, headline, website, social links, and visibility flags. No arguments — identity is taken from the OAuth bearer token.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "updateMyProfile",
+    description:
+      "Update the authenticated user's profile. Person is canonical for displayName/handle/bio; this tool writes Person first inside a transaction and mirrors the legacy User columns. Only fields you supply are changed. Pass `username: \"\"` (or null) to clear the handle. Returns the fresh profile.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string", description: "Display name shown across the app." },
+        username: {
+          type: ["string", "null"],
+          description:
+            "Player-name handle, 3–24 chars, [A-Za-z0-9_-]. Empty/null clears it. Must be unique.",
+        },
+        bio: { type: "string", description: "Short bio." },
+        headline: {
+          type: ["string", "null"],
+          description: "Optional one-line headline shown above the bio.",
+        },
+        website: {
+          type: ["string", "null"],
+          description: "Personal/profile URL.",
+        },
+        coverImage: {
+          type: ["string", "null"],
+          description: "Profile cover image URL.",
+        },
+        isPublic: {
+          type: "boolean",
+          description: "Whether the profile is publicly visible.",
+        },
+        newsletterSubscribed: {
+          type: "boolean",
+          description: "Whether to receive the newsletter.",
+        },
+        unsubscribedScopes: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Email scopes to opt out of (transactional/master scopes are filtered out server-side).",
+        },
+      },
+    },
+  },
+  {
     name: "createOrganization",
     description:
       "Create an organization (adds your user as owner) for task assignment, defaulting to pending state.",
@@ -3254,6 +3308,50 @@ export function createMcpServer(
               sourceUrl: person.sourceUrl,
             },
           });
+        }
+
+        case "getMe": {
+          if (!userId) return authRequired(name, "This tool returns the authenticated user's profile.");
+          const { getProfileIdentityData } = await import("./profile-identity.server");
+          const profile = await getProfileIdentityData(userId);
+          if (!profile) return err("User not found");
+          return ok({ userId, ...profile });
+        }
+
+        case "updateMyProfile": {
+          if (!userId) return authRequired(name, "This tool updates the authenticated user's profile.");
+          const { updateUserProfile, ProfileValidationError } = await import(
+            "./profile-identity.server"
+          );
+          try {
+            const profile = await updateUserProfile(userId, {
+              name: typeof a.name === "string" ? a.name : undefined,
+              bio: typeof a.bio === "string" ? a.bio : undefined,
+              username:
+                "username" in a ? (a.username as string | null) : undefined,
+              headline:
+                "headline" in a ? (a.headline as string | null) : undefined,
+              website: "website" in a ? (a.website as string | null) : undefined,
+              coverImage:
+                "coverImage" in a ? (a.coverImage as string | null) : undefined,
+              isPublic:
+                typeof a.isPublic === "boolean" ? a.isPublic : undefined,
+              newsletterSubscribed:
+                typeof a.newsletterSubscribed === "boolean"
+                  ? a.newsletterSubscribed
+                  : undefined,
+              unsubscribedScopes: Array.isArray(a.unsubscribedScopes)
+                ? (a.unsubscribedScopes as string[])
+                : undefined,
+            });
+            if (!profile) return err("User not found after update");
+            return ok({ userId, ...profile });
+          } catch (e) {
+            if (e instanceof ProfileValidationError) {
+              return err(e.message);
+            }
+            throw e;
+          }
         }
 
         case "createOrganization": {

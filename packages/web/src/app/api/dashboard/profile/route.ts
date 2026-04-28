@@ -1,122 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import {
-  isEmailScope,
-  isMasterScope,
-  isTransactionalScope,
-  type EmailScope,
-} from "@/lib/email/scopes";
-import { ensurePersonForUser } from "@/lib/person.server";
-import { prisma } from "@/lib/prisma";
+  ProfileValidationError,
+  updateUserProfile,
+} from "@/lib/profile-identity.server";
 
 export async function PATCH(req: NextRequest) {
   try {
     const { userId } = await requireAuth();
     const data = await req.json();
 
-    let normalizedHandle: string | null | undefined = undefined;
-
-    if ("username" in data) {
-      const raw = (data.username ?? "").trim();
-
-      if (raw === "") {
-        normalizedHandle = null;
-      } else {
-        if (raw.length < 3 || raw.length > 24) {
-          return NextResponse.json(
-            { error: "Player name must be between 3 and 24 characters." },
-            { status: 400 },
-          );
-        }
-
-        if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-          return NextResponse.json(
-            {
-              error:
-                "Player name can only include letters, numbers, hyphens, and underscores.",
-            },
-            { status: 400 },
-          );
-        }
-
-        // Handles live on Person now (canonical), so the uniqueness check
-        // queries Person.handle. The User.username column is still mirrored
-        // below for legacy callers, but is no longer the source of truth.
-        const lowered = raw.toLowerCase();
-        const collision = await prisma.person.findFirst({
-          where: {
-            handle: lowered,
-            user: { NOT: { id: userId } },
-          },
-          select: { id: true },
-        });
-
-        if (collision) {
-          return NextResponse.json(
-            { error: "That player name is already taken. Please choose another." },
-            { status: 400 },
-          );
-        }
-
-        normalizedHandle = lowered;
-      }
-    }
-
-    // Make sure a Person row exists and is linked. ensurePersonForUser is
-    // idempotent and safe to call before any Person update.
-    await ensurePersonForUser(userId);
-
-    await prisma.$transaction(async (tx) => {
-      const userRecord = await tx.user.findUniqueOrThrow({
-        where: { id: userId },
-        select: { personId: true },
-      });
-
-      // Person is canonical for displayName / handle / image. Write here first.
-      if (userRecord.personId) {
-        await tx.person.update({
-          where: { id: userRecord.personId },
-          data: {
-            ...(typeof data.name === "string"
-              ? { displayName: data.name }
-              : {}),
-            ...(normalizedHandle !== undefined ? { handle: normalizedHandle } : {}),
-            ...(typeof data.bio === "string" ? { bio: data.bio } : {}),
-          },
-        });
-      }
-
-      // Mirror displayName/handle to the legacy User columns so that any code
-      // path still reading them keeps working until Phase 3 drops the columns.
-      const unsubscribedScopesUpdate = Array.isArray(data.unsubscribedScopes)
-        ? (data.unsubscribedScopes as unknown[]).filter(
-            (s): s is EmailScope =>
-              isEmailScope(s) && !isTransactionalScope(s) && !isMasterScope(s),
-          )
-        : undefined;
-
-      await tx.user.update({
-        where: { id: userId },
-        data: {
-          name: data.name,
-          bio: data.bio,
-          isPublic: data.isPublic,
-          newsletterSubscribed: data.newsletterSubscribed,
-          website: data.website,
-          headline: data.headline,
-          coverImage: data.coverImage,
-          ...(unsubscribedScopesUpdate !== undefined
-            ? { unsubscribedScopes: unsubscribedScopesUpdate }
-            : {}),
-          ...(normalizedHandle !== undefined
-            ? { username: normalizedHandle }
-            : {}),
-        },
-      });
+    await updateUserProfile(userId, {
+      name: typeof data.name === "string" ? data.name : undefined,
+      bio: typeof data.bio === "string" ? data.bio : undefined,
+      username: "username" in data ? (data.username as string | null) : undefined,
+      headline: "headline" in data ? (data.headline as string | null) : undefined,
+      website: "website" in data ? (data.website as string | null) : undefined,
+      coverImage:
+        "coverImage" in data ? (data.coverImage as string | null) : undefined,
+      isPublic: typeof data.isPublic === "boolean" ? data.isPublic : undefined,
+      newsletterSubscribed:
+        typeof data.newsletterSubscribed === "boolean"
+          ? data.newsletterSubscribed
+          : undefined,
+      unsubscribedScopes: Array.isArray(data.unsubscribedScopes)
+        ? (data.unsubscribedScopes as string[])
+        : undefined,
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ProfileValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

@@ -25,6 +25,8 @@ const mocks = vi.hoisted(() => ({
   postComment: vi.fn(),
   notifyTaskCommentRecipients: vi.fn(),
   generateAndPostWishoniaReply: vi.fn(),
+  getProfileIdentityData: vi.fn(),
+  updateUserProfile: vi.fn(),
 }));
 
 vi.mock("../tasks.server", () => ({
@@ -58,6 +60,21 @@ vi.mock("../tasks/task-comment-notifications.server", () => ({
 }));
 vi.mock("../tasks/wishonia-task-reply.server", () => ({
   generateAndPostWishoniaReply: mocks.generateAndPostWishoniaReply,
+}));
+
+class ProfileValidationError extends Error {
+  field: string;
+  constructor(message: string, field = "other") {
+    super(message);
+    this.name = "ProfileValidationError";
+    this.field = field;
+  }
+}
+
+vi.mock("../profile-identity.server", () => ({
+  getProfileIdentityData: mocks.getProfileIdentityData,
+  updateUserProfile: mocks.updateUserProfile,
+  ProfileValidationError,
 }));
 
 vi.mock("../prisma", () => ({
@@ -703,6 +720,110 @@ describe("MCP server tool dispatch", () => {
         message: "Owner/assignee update",
         taskId: "task-1",
       });
+    });
+  });
+
+  describe("getMe / updateMyProfile", () => {
+    const profile = {
+      user: {
+        id: "user-1",
+        name: "Test User",
+        username: "testuser",
+        email: "test@example.com",
+        bio: "",
+        headline: null,
+        website: null,
+        coverImage: null,
+        isPublic: true,
+        referralCode: null,
+        image: null,
+        newsletterSubscribed: false,
+      },
+      socialAccounts: [],
+      linkedAuthProviderIds: ["google"],
+    };
+
+    it("getMe returns the profile for the authenticated user", async () => {
+      mocks.getProfileIdentityData.mockResolvedValue(profile);
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({ name: "getMe", arguments: {} });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body.userId).toBe("user-1");
+      expect(body.user).toMatchObject({ id: "user-1", email: "test@example.com" });
+      expect(mocks.getProfileIdentityData).toHaveBeenCalledWith("user-1");
+    });
+
+    it("getMe returns authentication_required when called anonymously", async () => {
+      const client = await setup(undefined, ALL_SCOPES);
+
+      const result = await client.callTool({ name: "getMe", arguments: {} });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toBe("authentication_required");
+      expect(body.tool).toBe("getMe");
+    });
+
+    it("updateMyProfile forwards only the supplied fields and returns the fresh profile", async () => {
+      mocks.updateUserProfile.mockResolvedValue(profile);
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "updateMyProfile",
+        arguments: { name: "New Name", username: "newhandle", bio: "hi" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.updateUserProfile).toHaveBeenCalledWith("user-1", {
+        name: "New Name",
+        username: "newhandle",
+        bio: "hi",
+        headline: undefined,
+        website: undefined,
+        coverImage: undefined,
+        isPublic: undefined,
+        newsletterSubscribed: undefined,
+        unsubscribedScopes: undefined,
+      });
+      const body = parseToolBody(result);
+      expect(body.user).toMatchObject({ id: "user-1" });
+    });
+
+    it("updateMyProfile maps a ProfileValidationError to a clean tool error", async () => {
+      mocks.updateUserProfile.mockRejectedValue(
+        new ProfileValidationError(
+          "That player name is already taken. Please choose another.",
+          "username",
+        ),
+      );
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "updateMyProfile",
+        arguments: { username: "taken" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toContain("already taken");
+    });
+
+    it("updateMyProfile rethrows non-validation errors so the catch block can capture the stack", async () => {
+      mocks.updateUserProfile.mockRejectedValue(new Error("DB unreachable"));
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const result = await client.callTool({
+        name: "updateMyProfile",
+        arguments: { name: "Whatever" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toBe("tool_execution_failed");
+      expect(body.message).toBe("DB unreachable");
     });
   });
 });
