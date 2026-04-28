@@ -101,7 +101,8 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
 
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
   // Deny by default. Callers must pass an explicit scopes array — stdio passes ALL_SCOPES,
-  // HTTP unauth passes DEFAULT_SCOPES, HTTP auth passes the granted scopes from the JWT.
+  // HTTP traffic always carries a Bearer token (the route 401s on missing/invalid auth) and
+  // passes the scopes granted at OAuth consent time.
   if (!grantedScopes) return false;
   const required = TOOL_SCOPES[toolName];
   if (!required) return true;
@@ -142,6 +143,55 @@ function ok(data: unknown) {
 function err(message: string) {
   return {
     content: [{ type: "text" as const, text: JSON.stringify({ error: message }) }],
+    isError: true,
+  };
+}
+
+function getMcpBaseUrl(): string {
+  return (
+    process.env.NEXTAUTH_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3001")
+  );
+}
+
+// Personal-queue tools need to know *whose* queue to fetch — they cannot run
+// anonymously. Instead of a bare "Authentication required" string, emit a
+// structured error the calling LLM can act on: OAuth discovery URL for remote
+// HTTP clients, env-var fallback for local stdio.
+function authRequired(toolName: string, reason: string) {
+  const base = getMcpBaseUrl();
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: JSON.stringify(
+          {
+            error: "authentication_required",
+            message: `Tool "${toolName}" needs an authenticated user. ${reason}`,
+            remediation: {
+              remote_http: {
+                description:
+                  "If you're connecting over HTTP (e.g. the Claude.ai connector), the server advertises OAuth via the standard well-known endpoint. Have the client fetch this URL and complete the OAuth 2.1 + PKCE flow, then retry the tool with the resulting Bearer token.",
+                resourceMetadata: `${base}/.well-known/oauth-protected-resource/mcp`,
+                authorizationServerMetadata: `${base}/.well-known/oauth-authorization-server`,
+                authorizeEndpoint: `${base}/api/mcp/oauth/authorize`,
+                tokenEndpoint: `${base}/api/mcp/oauth/token`,
+                registrationEndpoint: `${base}/api/mcp/oauth/register`,
+              },
+              local_stdio: {
+                description:
+                  "If you're running the local stdio server (Claude Code via .mcp.json), set MCP_USER_EMAIL or MCP_USER_ID in your environment and restart the server. The stdio transport has no OAuth — it identifies you by env var.",
+                envVars: ["MCP_USER_EMAIL", "MCP_USER_ID"],
+              },
+            },
+          },
+          null,
+          2,
+        ),
+      },
+    ],
     isError: true,
   };
 }
@@ -2337,9 +2387,13 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           return ok({ score: best.score, task: summarizeTask(best.task) });
         }
 
-        // ── getQueueAudit ──────────────────────────────────────
+        // ── getMyQueue ─────────────────────────────────────────
         case "getMyQueue": {
-          if (!userId) return err("Authentication required");
+          if (!userId)
+            return authRequired(
+              "getMyQueue",
+              "It returns the tasks you own ranked by sprint priority.",
+            );
 
           const { tasks, ranking } = await getTaskFunctions();
           const maxResults = parseQueueLimit(a.maxResults, 20, 100);
@@ -2360,7 +2414,11 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── getAIQueue ────────────────────────────────────────
         case "getAIQueue": {
-          if (!userId) return err("Authentication required");
+          if (!userId)
+            return authRequired(
+              "getAIQueue",
+              "It returns your AI-assigned tasks — there is no \"your\" without identity.",
+            );
 
           const { tasks, ranking } = await getTaskFunctions();
           const maxResults = parseQueueLimit(a.maxResults, 20, 100);
@@ -2384,7 +2442,11 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── getQueueAudit ──────────────────────────────────────
         case "getQueueAudit": {
-          if (!userId) return err("Authentication required");
+          if (!userId)
+            return authRequired(
+              "getQueueAudit",
+              "It audits the validity of your owned-task queue and needs to know which user's queue to inspect.",
+            );
 
           const prisma = await getPrisma();
           const { tasks, ranking } = await getTaskFunctions();
@@ -2482,7 +2544,11 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── getNextAction ──────────────────────────────────────
         case "getNextAction": {
-          if (!userId) return err("Authentication required");
+          if (!userId)
+            return authRequired(
+              "getNextAction",
+              "It returns the top-ranked task in your personal queue. For an anonymous \"what should I work on next?\", call getNextTask instead.",
+            );
           const { tasks, ranking } = await getTaskFunctions();
           const maxResults = parseQueueLimit(a.maxResults, 1, 100);
           const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
@@ -2899,7 +2965,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── createTask (always DRAFT) ──────────────────────────
         case "createTask": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
 
           const { endpoints, ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
@@ -3062,7 +3128,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
         }
 
         case "createPerson": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
           const { findOrCreatePerson } = await import("./person.server");
           const displayName = (a.displayName as string) ?? "";
           if (!displayName.trim()) {
@@ -3096,12 +3162,12 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
         }
 
         case "createOrganization": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
           const { createOrganizationWithOwner } = await import(
             "./organization.server"
           );
-          const name = (a.name as string) ?? "";
-          if (!name.trim()) return err("name is required");
+          const orgName = (a.name as string) ?? "";
+          if (!orgName.trim()) return err("name is required");
 
           const organization = await createOrganizationWithOwner(
             {
@@ -3109,7 +3175,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               description: (a.description as string) ?? null,
               jurisdictionId: (a.jurisdictionId as string) ?? null,
               logo: (a.logo as string) ?? null,
-              name,
+              name: orgName,
               website: (a.website as string) ?? null,
               type: enumValue(OrgType, a.type, OrgType.OTHER),
             },
@@ -3388,7 +3454,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── updateTask ─────────────────────────────────────────
         case "updateTask": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
 
           const { ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
@@ -3456,7 +3522,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
         }
 
         case "deleteTask": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
 
           const prisma = await getPrisma();
           const taskId = a.taskId as string;
@@ -3930,7 +3996,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── postTaskComment ────────────────────────────────────
         case "postTaskComment": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
           const {
             countUserCommentsInWindow,
             postComment,
@@ -4000,7 +4066,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── voteTaskComment ────────────────────────────────────
         case "voteTaskComment": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
           const { voteComment } = await import("./tasks/task-comments.server");
           const commentId = a.commentId as string;
           const value = a.value as number;
@@ -4017,7 +4083,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── deleteTaskComment ──────────────────────────────────
         case "deleteTaskComment": {
-          if (!userId) return err("Authentication required");
+          if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
           const { deleteComment } = await import("./tasks/task-comments.server");
           const commentId = a.commentId as string;
           if (!commentId) return err("commentId is required");

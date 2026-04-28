@@ -7,17 +7,26 @@ const VOTE_INVITE_TOKEN = "Uyn3Wl7O_OGdiVyJ4y0-fAhZ";
 
 async function completeSliderAndVote(page: Page): Promise<void> {
   const voteSection = page.locator("#vote");
-  const prelude = page.getByTestId("treaty-vote-prelude-card");
-  if (await prelude.isVisible().catch(() => false)) {
-    await prelude.locator("button").last().click();
-  }
-
   const slider = voteSection.locator('input[type="range"]');
   await expect(slider).toBeVisible({ timeout: 15_000 });
-  await slider.fill("30");
+
+  const box = await slider.boundingBox();
+  expect(box, "slider track should have geometry").not.toBeNull();
+  if (!box) return;
+
+  const y = box.y + box.height / 2;
+  const targetX = box.x + box.width * 0.3;
+  const startX = box.x + box.width / 2;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(targetX, y, { steps: 8 });
+  await page.mouse.up();
+  await slider.dispatchEvent("input");
+  await slider.dispatchEvent("change");
 
   const submit = voteSection.locator("button:has-text('SUBMIT')");
-  await expect(submit).toBeVisible({ timeout: 5_000 });
+  await expect(submit).toBeVisible({ timeout: 10_000 });
   await submit.click();
 
   const yesButton = voteSection.locator("button:has-text('YES')");
@@ -50,7 +59,6 @@ test.describe("treaty vote yes-click regression", () => {
 
     const postVoteOverlay = page.getByTestId("treaty-post-vote-overlay");
     await expect(postVoteOverlay).toBeVisible({ timeout: 15_000 });
-
     await expect(
       postVoteOverlay.getByRole("button", { name: /(Save|Verify) with Google/i }),
     ).toBeVisible({ timeout: 10_000 });
