@@ -318,10 +318,10 @@ function PromotionScreen({ onChoice }: { onChoice: (wantsReminder: boolean) => v
       </div>
       <FlowButtonRow>
         <Button className={dismissButtonClass} onClick={() => onChoice(false)}>
-          I&apos;ll remember
+          Skip for now
         </Button>
         <Button className={primaryButtonClass} onClick={() => onChoice(true)}>
-          Send me reminders
+          Send your first invite
         </Button>
       </FlowButtonRow>
     </>

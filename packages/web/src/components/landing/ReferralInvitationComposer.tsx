@@ -269,7 +269,7 @@ export function ReferralInvitationComposer() {
 
           <div className="space-y-2">
             <Label className="text-xs font-black uppercase" htmlFor="invite-recipient-email">
-              Their email (optional &mdash; we&apos;ll send task reminders so you don&apos;t have to)
+              Their email (optional)
             </Label>
             <Input
               id="invite-recipient-email"
