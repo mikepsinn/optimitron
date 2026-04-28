@@ -68,7 +68,6 @@ describe("resolveTaskRecipient", () => {
       email: "user@example.com",
       personId: "person_1",
       userId: "user_1",
-      isAdmin: false,
     });
   });
 
@@ -93,7 +92,6 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "person@example.com",
       personId: "person_1",
-      isAdmin: false,
     });
   });
 
@@ -113,7 +111,6 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "org@example.com",
       organizationId: "org_1",
-      isAdmin: false,
     });
   });
 
@@ -131,7 +128,6 @@ describe("resolveTaskRecipient", () => {
     expect(result).toEqual({
       email: "endpoint@example.com",
       endpointId: "endpoint_1",
-      isAdmin: false,
     });
   });
 
@@ -169,7 +165,7 @@ describe("resolveTaskRecipient", () => {
 
     const result = await resolveTaskRecipients("task_1");
     expect(result).toEqual([
-      { email: "owner@example.com", isAdmin: false, userId: "owner_1" },
+      { email: "owner@example.com", userId: "owner_1" },
       { email: "admin@example.com", isAdmin: true, userId: "admin_1" },
     ]);
   });
