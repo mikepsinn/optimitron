@@ -6,11 +6,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   listTasks: vi.fn(),
   getTaskDetailData: vi.fn(),
-  computeSprintPriority: vi.fn(),
+  computeTaskPriority: vi.fn(),
   rankTasksForUser: vi.fn(),
   isTaskBlocked: vi.fn(),
   isTaskLeased: vi.fn(),
+  taskCreate: vi.fn(),
+  taskUpdate: vi.fn(),
+  taskFindFirst: vi.fn(),
+  taskFindMany: vi.fn(),
+  taskEdgeCreateMany: vi.fn(),
   taskEdgeFindMany: vi.fn(),
+  taskEdgeUpdateMany: vi.fn(),
+  taskImpactEstimateSetCreate: vi.fn(),
+  taskImpactFrameEstimateCreate: vi.fn(),
+  transaction: vi.fn(),
+  upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
+  countUserCommentsInWindow: vi.fn(),
+  postComment: vi.fn(),
+  notifyTaskCommentRecipients: vi.fn(),
+  generateAndPostWishoniaReply: vi.fn(),
 }));
 
 vi.mock("../tasks.server", () => ({
@@ -19,7 +33,7 @@ vi.mock("../tasks.server", () => ({
 }));
 
 vi.mock("../tasks/rank-tasks", () => ({
-  computeSprintPriority: mocks.computeSprintPriority,
+  computeTaskPriority: mocks.computeTaskPriority,
   rankTasksForUser: mocks.rankTasksForUser,
   isTaskBlocked: mocks.isTaskBlocked,
 }));
@@ -33,11 +47,36 @@ vi.mock("../tasks/agent-lease.server", () => ({
 
 vi.mock("../tasks/impact", () => ({}));
 vi.mock("../tasks/task-communications.server", () => ({}));
-vi.mock("../tasks/task-communication-endpoints.server", () => ({}));
+vi.mock("../tasks/task-communication-endpoints.server", () => ({
+  upsertPrimaryTaskCommunicationEndpoint: mocks.upsertPrimaryTaskCommunicationEndpoint,
+}));
+vi.mock("../tasks/task-comments.server", () => ({
+  countUserCommentsInWindow: mocks.countUserCommentsInWindow,
+  postComment: mocks.postComment,
+}));
+vi.mock("../tasks/task-comment-notifications.server", () => ({
+  notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
+}));
+vi.mock("../tasks/wishonia-task-reply.server", () => ({
+  generateAndPostWishoniaReply: mocks.generateAndPostWishoniaReply,
+}));
 
 vi.mock("../prisma", () => ({
   prisma: {
-    taskEdge: { findMany: mocks.taskEdgeFindMany },
+    $transaction: mocks.transaction,
+    task: {
+      create: mocks.taskCreate,
+      findFirst: mocks.taskFindFirst,
+      findMany: mocks.taskFindMany,
+      update: mocks.taskUpdate,
+    },
+    taskEdge: {
+      createMany: mocks.taskEdgeCreateMany,
+      findMany: mocks.taskEdgeFindMany,
+      updateMany: mocks.taskEdgeUpdateMany,
+    },
+    taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
+    taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
   },
 }));
 
@@ -91,13 +130,11 @@ function makeOwnedTask(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function makeSprintPriority(overrides: Record<string, unknown> = {}) {
+function makePriority(overrides: Record<string, unknown> = {}) {
   return {
-    sprintPriority: 100,
+    priority: 100,
     realEv: 200,
     buybackRate: 1000,
-    deadlineUrgency: 1,
-    timeDiscount: 1,
     blockersCount: 0,
     blockersResolved: 0,
     unblockedBlockers: 0,
@@ -110,9 +147,53 @@ function makeSprintPriority(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
+  mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
+    callback({
+      task: {
+        create: mocks.taskCreate,
+        update: mocks.taskUpdate,
+      },
+      taskEdge: {
+        createMany: mocks.taskEdgeCreateMany,
+        updateMany: mocks.taskEdgeUpdateMany,
+      },
+      taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
+      taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
+    }),
+  );
+  mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
+  mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
+  mocks.taskUpdate.mockImplementation(async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => ({
+    id: where.id,
+    status: data.status ?? TaskStatus.ACTIVE,
+    title: data.title ?? "Updated task",
+  }));
+  mocks.taskCreate.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({
+    id: "created-task",
+    status: data.status ?? TaskStatus.ACTIVE,
+    title: data.title,
+  }));
+  mocks.taskEdgeCreateMany.mockResolvedValue({ count: 0 });
+  mocks.taskEdgeUpdateMany.mockResolvedValue({ count: 0 });
+  mocks.upsertPrimaryTaskCommunicationEndpoint.mockResolvedValue(null);
+  mocks.countUserCommentsInWindow.mockResolvedValue(0);
+  mocks.postComment.mockResolvedValue({ id: "comment-1", taskId: "task-1", message: "Comment" });
+  mocks.notifyTaskCommentRecipients.mockResolvedValue({ sentCount: 1 });
+  mocks.generateAndPostWishoniaReply.mockResolvedValue(null);
 });
 
 describe("MCP server tool dispatch", () => {
+  it("does not expose manual notification envelope tools", async () => {
+    const client = await setup("user-1", ALL_SCOPES);
+
+    const result = await client.listTools();
+    const names = result.tools.map((tool) => tool.name);
+
+    expect(names).not.toContain("draftTaskNotification");
+    expect(names).not.toContain("sendTaskNotification");
+    expect(names).toContain("postTaskComment");
+  });
+
   describe("authentication", () => {
     it("returns structured authentication_required for personal tools when userId is missing", async () => {
       const client = await setup(undefined, ALL_SCOPES);
@@ -185,14 +266,14 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getNextAction happy path", () => {
-    it("returns the top-ranked owned task with its sprint priority", async () => {
+    it("returns the top-ranked owned task with its priority", async () => {
       mocks.listTasks.mockResolvedValue([
         makeOwnedTask({ id: "task-a", title: "Lower priority" }),
         makeOwnedTask({ id: "task-b", title: "Higher priority" }),
       ]);
       mocks.isTaskBlocked.mockReturnValue(false);
-      mocks.computeSprintPriority.mockImplementation((task: { id: string }) =>
-        makeSprintPriority({ sprintPriority: task.id === "task-b" ? 999 : 1 }),
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id === "task-b" ? 999 : 1 }),
       );
 
       const client = await setup("user-1", ALL_SCOPES);
@@ -201,7 +282,9 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
       expect(body.task).toMatchObject({ id: "task-b", title: "Higher priority" });
-      expect(body.sprintPriority).toBe(999);
+      expect(body.priority).toBe(999);
+      expect(body.sprintPriority).toBeUndefined();
+      expect((body.task as Record<string, unknown>).taskPriority).toBeUndefined();
       expect(body.queueAudit).toMatchObject({ activeOwnedTasks: 2 });
     });
 
@@ -212,7 +295,7 @@ describe("MCP server tool dispatch", () => {
       mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
         (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
       );
-      mocks.computeSprintPriority.mockReturnValue(makeSprintPriority());
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({ name: "getNextAction", arguments: {} });
@@ -224,28 +307,129 @@ describe("MCP server tool dispatch", () => {
     it("returns null task with the expected envelope when the queue is empty", async () => {
       mocks.listTasks.mockResolvedValue([]);
       mocks.isTaskBlocked.mockReturnValue(false);
-      mocks.computeSprintPriority.mockReturnValue(makeSprintPriority());
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({ name: "getNextAction", arguments: {} });
 
       const body = parseToolBody(result);
       expect(body.task).toBeNull();
-      expect(body.sprintPriority).toBe(0);
+      expect(body.priority).toBe(0);
       expect(body.queueAudit).toMatchObject({ activeOwnedTasks: 0, unblockedTasks: 0 });
+    });
+
+    it("returns a required-deadline task when it has reached latest-start time even if another task has higher priority", async () => {
+      const dueSoon = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({ id: "big-upside", title: "Big upside task", estimatedEffortHours: 1 }),
+        makeOwnedTask({
+          id: "taxes",
+          title: "File taxes",
+          dueAt: dueSoon,
+          deadlinePolicy: "REQUIRED",
+          estimatedEffortHours: 2,
+          contextJson: {
+            deadline_rationale: "Taxes must be filed by the legal deadline.",
+          },
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id === "big-upside" ? 999 : 10 }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({ name: "getNextAction", arguments: {} });
+
+      const body = parseToolBody(result);
+      expect(body.task).toMatchObject({
+        id: "taxes",
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "start_now",
+        priority: 10,
+      });
+      expect(body.deadlineOverride).toBe(true);
+      expect(body.selectionReason).toBe("deadline_latest_start");
+      expect(body.priority).toBe(10);
+    });
+  });
+
+  describe("personal queues", () => {
+    it("splits self-executed tasks from AI-agent-executed tasks", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({ id: "self", title: "Self task", contextJson: { executor_type: "Self" } }),
+        makeOwnedTask({ id: "default-self", title: "Default self task", contextJson: {} }),
+        makeOwnedTask({ id: "agent", title: "Agent task", contextJson: { executor_type: "AI Agent" } }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id === "agent" ? 50 : 100 }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const myQueueResult = await client.callTool({ name: "getMyQueue", arguments: {} });
+      const aiQueueResult = await client.callTool({ name: "getAIQueue", arguments: {} });
+
+      const myQueue = parseToolBody(myQueueResult).queue as Array<Record<string, unknown>>;
+      const aiQueue = parseToolBody(aiQueueResult).queue as Array<Record<string, unknown>>;
+      expect(myQueue.map((task) => task.id)).toEqual(["self", "default-self"]);
+      expect(aiQueue.map((task) => task.id)).toEqual(["agent"]);
+      expect(myQueue[0]).toMatchObject({ priority: 100, executorType: "Self" });
+      expect(myQueue[0]?.sprintPriority).toBeUndefined();
+      expect(myQueue[0]?.taskPriority).toBeUndefined();
+    });
+
+    it("hides blocked tasks until all blockers are verified", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({ id: "blocked", blockerStatuses: [TaskStatus.ACTIVE] }),
+        makeOwnedTask({ id: "open", blockerStatuses: [TaskStatus.VERIFIED] }),
+      ]);
+      mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
+        (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
+      );
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+
+      const queue = parseToolBody(result).queue as Array<Record<string, unknown>>;
+      expect(queue.map((task) => task.id)).toEqual(["open"]);
+    });
+
+    it("hides tasks before availableAt and expired expiring opportunities", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({
+          id: "future",
+          availableAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        }),
+        makeOwnedTask({
+          id: "expired-grant",
+          deadlinePolicy: "EXPIRES",
+          dueAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+        }),
+        makeOwnedTask({ id: "open" }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({ name: "getMyQueue", arguments: {} });
+
+      const queue = parseToolBody(result).queue as Array<Record<string, unknown>>;
+      expect(queue.map((task) => task.id)).toEqual(["open"]);
     });
   });
 
   describe("getQueueAudit happy path", () => {
-    it("flags tasks with invalid sprint-priority inputs", async () => {
+    it("flags tasks with invalid priority inputs", async () => {
       mocks.listTasks.mockResolvedValue([
         makeOwnedTask({ id: "good" }),
         makeOwnedTask({ id: "bad" }),
       ]);
       mocks.taskEdgeFindMany.mockResolvedValue([]);
       mocks.isTaskBlocked.mockReturnValue(false);
-      mocks.computeSprintPriority.mockImplementation((task: { id: string }) =>
-        makeSprintPriority(
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority(
           task.id === "bad"
             ? { valid: false, validationNotes: ["missing estimatedEffortHours"] }
             : {},
@@ -277,7 +461,7 @@ describe("MCP server tool dispatch", () => {
       mocks.isTaskBlocked.mockImplementation(({ blockerStatuses }: { blockerStatuses: string[] }) =>
         (blockerStatuses ?? []).some((s) => s !== TaskStatus.VERIFIED),
       );
-      mocks.computeSprintPriority.mockReturnValue(makeSprintPriority());
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({ name: "getQueueAudit", arguments: {} });
@@ -286,6 +470,183 @@ describe("MCP server tool dispatch", () => {
       const codes = (body.issues as Array<{ code: string }>).map((i) => i.code);
       expect(codes).toContain("BLOCKED_DEPENDENCY");
       expect(codes).toContain("ORPHAN_DEPENDENCY");
+    });
+
+    it("flags deadline-policy tasks that cannot be scheduled without an hour estimate", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeOwnedTask({
+          id: "taxes",
+          dueAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          deadlinePolicy: "REQUIRED",
+          estimatedEffortHours: null,
+        }),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValue([]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({ name: "getQueueAudit", arguments: {} });
+
+      const body = parseToolBody(result);
+      const issues = body.issues as Array<{ code: string; taskId: string }>;
+      expect(issues).toContainEqual(
+        expect.objectContaining({
+          code: "DEADLINE_MISSING_HOURS",
+          taskId: "taxes",
+        }),
+      );
+    });
+  });
+
+  describe("task writes", () => {
+    it("createTask accepts personal task aliases and returns a numeric priority", async () => {
+      const dueAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      mocks.taskFindMany.mockResolvedValue([{ id: "blocker-1", isPublic: false, ownerUserId: "user-1" }]);
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeOwnedTask({
+          id: "created-task",
+          title: "Build product demo",
+          dueAt,
+          deadlinePolicy: "EXPIRES",
+          contextJson: {
+            deadline_rationale: "Grant portal closes on this date.",
+            executor_type: "Self",
+            value: 50000,
+            p_success: 0.9,
+            cash_cost: 0,
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 45000,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 6,
+            successProbabilityBase: 0.9,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 7500, realEv: 45000 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Build product demo",
+          hours: 6,
+          value: 50000,
+          p_success: 0.9,
+          cash_cost: 0,
+          executor_type: "Self",
+          due_at: dueAt.toISOString(),
+          deadline_policy: "EXPIRES",
+          deadline_rationale: "Grant portal closes on this date.",
+          depends_on: ["blocker-1"],
+        },
+      });
+
+      const body = parseToolBody(result);
+      expect(body).toMatchObject({
+        id: "created-task",
+        priority: 7500,
+        executorType: "Self",
+        hours: 6,
+        value: 50000,
+        pSuccess: 0.9,
+        cashCost: 0,
+      });
+      expect(mocks.taskCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            contextJson: expect.objectContaining({
+              deadline_rationale: "Grant portal closes on this date.",
+            }),
+            deadlinePolicy: "EXPIRES",
+            dueAt: expect.any(Date),
+            estimatedEffortHours: 6,
+            isPublic: false,
+            status: TaskStatus.ACTIVE,
+          }),
+        }),
+      );
+      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [expect.objectContaining({ fromTaskId: "blocker-1", toTaskId: "created-task" })],
+          skipDuplicates: true,
+        }),
+      );
+    });
+
+    it("updateTask replaces dependencies with depends_on", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeOwnedTask({
+            id: "task-1",
+            ownerUserId: "user-1",
+            contextJson: { executor_type: "Self" },
+            selectedImpactFrame: {
+              expectedEconomicValueUsdBase: 100,
+              estimatedCashCostUsdBase: 0,
+              estimatedEffortHoursBase: 1,
+              successProbabilityBase: 1,
+            },
+          }),
+        })
+        .mockResolvedValueOnce({ task: makeOwnedTask({ id: "task-1", contextJson: { executor_type: "Self" } }) });
+      mocks.taskFindMany.mockResolvedValue([{ id: "new-blocker", isPublic: false, ownerUserId: "user-1" }]);
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 100 }));
+
+      const client = await setup("user-1", ALL_SCOPES);
+      await client.callTool({
+        name: "updateTask",
+        arguments: { taskId: "task-1", depends_on: ["new-blocker"] },
+      });
+
+      expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ toTaskId: "task-1" }),
+          data: expect.objectContaining({ deletedAt: expect.any(Date) }),
+        }),
+      );
+      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [expect.objectContaining({ fromTaskId: "new-blocker", toTaskId: "task-1" })],
+          skipDuplicates: true,
+        }),
+      );
+    });
+  });
+
+  describe("task comments", () => {
+    it("postTaskComment creates a comment and triggers comment notifications with the author excluded", async () => {
+      mocks.postComment.mockResolvedValueOnce({
+        id: "comment-1",
+        taskId: "task-1",
+        message: "Owner/assignee update",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "postTaskComment",
+        arguments: {
+          taskId: "task-1",
+          message: "Owner/assignee update",
+        },
+      });
+
+      const body = parseToolBody(result);
+      expect(body.comment).toMatchObject({ id: "comment-1" });
+      expect(mocks.postComment).toHaveBeenCalledWith({
+        authorUserId: "user-1",
+        mediaUrl: null,
+        message: "Owner/assignee update",
+        parentCommentId: null,
+        taskId: "task-1",
+      });
+      expect(mocks.notifyTaskCommentRecipients).toHaveBeenCalledWith({
+        authorUserId: "user-1",
+        commentId: "comment-1",
+        message: "Owner/assignee update",
+        taskId: "task-1",
+      });
     });
   });
 });

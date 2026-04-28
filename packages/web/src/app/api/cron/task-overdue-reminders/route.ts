@@ -181,6 +181,15 @@ async function processOverdueReminders(now: Date): Promise<ReminderResult> {
         sendCount: nextSendCount,
         task,
       });
+      const reminderComment = await prisma.taskComment.create({
+        data: {
+          kind: TaskCommentKind.STATUS_UPDATE,
+          message: `Automated overdue reminder ${nextSendCount} queued for ${recipient.email}.`,
+          source: TaskCommentSource.SYSTEM,
+          taskId: task.id,
+        },
+        select: { id: true },
+      });
 
       const draft = await draftTaskNotification({
         audience: TaskCommunicationAudience.ASSIGNEE,
@@ -195,6 +204,7 @@ async function processOverdueReminders(now: Date): Promise<ReminderResult> {
         recipientUserId: recipient.userId ?? null,
         step: nextSendCount,
         subject: message.subject,
+        taskCommentId: reminderComment.id,
         taskId: task.id,
         text: message.text,
       });

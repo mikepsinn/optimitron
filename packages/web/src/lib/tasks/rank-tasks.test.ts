@@ -8,12 +8,114 @@ import { describe, expect, it } from "vitest";
 import {
   blockerProgress,
   canTaskAcceptMoreClaims,
+  computeTaskPriority,
   hasActiveChildTasks,
   isTaskBlocked,
   rankTasksForUser,
   scoreTaskForAccountability,
   scoreTaskForUser,
 } from "./rank-tasks";
+
+describe("computeTaskPriority", () => {
+  it("uses the exact personal task priority formula", () => {
+    const result = computeTaskPriority({
+      estimatedEffortHours: 6,
+      selectedImpactFrame: {
+        annualDiscountRate: 0.03,
+        adoptionRampYears: 0,
+        benefitDurationYears: 1,
+        customFrameLabel: null,
+        delayDalysLostPerDayBase: null,
+        delayDalysLostPerDayHigh: null,
+        delayDalysLostPerDayLow: null,
+        delayEconomicValueUsdLostPerDayBase: null,
+        delayEconomicValueUsdLostPerDayHigh: null,
+        delayEconomicValueUsdLostPerDayLow: null,
+        estimatedCashCostUsdBase: 0,
+        estimatedCashCostUsdHigh: null,
+        estimatedCashCostUsdLow: null,
+        estimatedEffortHoursBase: 6,
+        estimatedEffortHoursHigh: null,
+        estimatedEffortHoursLow: null,
+        evaluationHorizonYears: 1,
+        expectedDalysAvertedBase: null,
+        expectedDalysAvertedHigh: null,
+        expectedDalysAvertedLow: null,
+        expectedEconomicValueUsdBase: 45_000,
+        expectedEconomicValueUsdHigh: null,
+        expectedEconomicValueUsdLow: null,
+        frameKey: TaskImpactFrameKey.ONE_YEAR,
+        frameSlug: "personal-task",
+        medianHealthyLifeYearsEffectBase: null,
+        medianHealthyLifeYearsEffectHigh: null,
+        medianHealthyLifeYearsEffectLow: null,
+        medianIncomeGrowthEffectPpPerYearBase: null,
+        medianIncomeGrowthEffectPpPerYearHigh: null,
+        medianIncomeGrowthEffectPpPerYearLow: null,
+        metrics: [],
+        successProbabilityBase: 0.9,
+        successProbabilityHigh: null,
+        successProbabilityLow: null,
+        summaryStatsJson: null,
+        timeToImpactStartDays: 3650,
+      },
+    });
+
+    expect(result.priority).toBe(7500);
+    expect("sprintPriority" in result).toBe(false);
+    expect("taskPriority" in result).toBe(false);
+  });
+
+  it("converts cash cost into time through the buyback rate denominator", () => {
+    const result = computeTaskPriority(
+      {
+        estimatedEffortHours: 1,
+        selectedImpactFrame: {
+          annualDiscountRate: 0.03,
+          adoptionRampYears: 0,
+          benefitDurationYears: 1,
+          customFrameLabel: null,
+          delayDalysLostPerDayBase: null,
+          delayDalysLostPerDayHigh: null,
+          delayDalysLostPerDayLow: null,
+          delayEconomicValueUsdLostPerDayBase: null,
+          delayEconomicValueUsdLostPerDayHigh: null,
+          delayEconomicValueUsdLostPerDayLow: null,
+          estimatedCashCostUsdBase: 1000,
+          estimatedCashCostUsdHigh: null,
+          estimatedCashCostUsdLow: null,
+          estimatedEffortHoursBase: 1,
+          estimatedEffortHoursHigh: null,
+          estimatedEffortHoursLow: null,
+          evaluationHorizonYears: 1,
+          expectedDalysAvertedBase: null,
+          expectedDalysAvertedHigh: null,
+          expectedDalysAvertedLow: null,
+          expectedEconomicValueUsdBase: 5000,
+          expectedEconomicValueUsdHigh: null,
+          expectedEconomicValueUsdLow: null,
+          frameKey: TaskImpactFrameKey.ONE_YEAR,
+          frameSlug: "cash-cost",
+          medianHealthyLifeYearsEffectBase: null,
+          medianHealthyLifeYearsEffectHigh: null,
+          medianHealthyLifeYearsEffectLow: null,
+          medianIncomeGrowthEffectPpPerYearBase: null,
+          medianIncomeGrowthEffectPpPerYearHigh: null,
+          medianIncomeGrowthEffectPpPerYearLow: null,
+          metrics: [],
+          successProbabilityBase: 1,
+          successProbabilityHigh: null,
+          successProbabilityLow: null,
+          summaryStatsJson: null,
+          timeToImpactStartDays: 0,
+        },
+      },
+      { buybackRate: 1000 },
+    );
+
+    expect(result.priority).toBe(2000);
+  });
+});
 
 describe("rankTasksForUser", () => {
   const user = {

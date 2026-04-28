@@ -1,6 +1,8 @@
 # Expected Value Database
 
-This document explains the Notion expected-value task system used to rank work by dollar-denominated value, probability, time cost, downstream unblock value, deadline urgency, and revenue-path impact.
+This document explains the expected-value task system used to rank work by dollar-denominated value, probability, time cost, downstream unblock value, required/expiring deadline feasibility, and revenue-path impact.
+
+The MCP personal task engine intentionally keeps `priority` pure: `(P(success) * Value - Cash Cost) / (Hours + Cash Cost / Buyback Rate)`. Deadlines are exposed as metadata and required/expiring deadline guardrails in `getNextAction`; they are not priority multipliers.
 
 The system is centered on the `Expected Value EV Ranked Tasks` database and is supported by related Notion databases for revenue paths, execution options, people/vendors, and weekly WIG tracking.
 
@@ -13,7 +15,7 @@ The system is centered on the `Expected Value EV Ranked Tasks` database and is s
 | Execution Options | Alternative execution routes for tasks | https://www.notion.so/b396a068af53419fb7858212e90153cd |
 | People & Vendors | Reusable actors, vendors, allies, and AI resources | https://www.notion.so/7f82bfad48714910b503695eac282584 |
 | WIG Tracker | Weekly annual revenue run-rate tracker | https://www.notion.so/d22c98efad834061ae1aee41423d1b73 |
-| Revenue-path architecture note | Design note for Revenue Paths, WIG, and sprint-priority wiring | https://www.notion.so/34e63f8d1d3b81b58bb6fc2b662f8eb2 |
+| Revenue-path architecture note | Design note for Revenue Paths, WIG, and task-priority wiring | https://www.notion.so/34e63f8d1d3b81b58bb6fc2b662f8eb2 |
 | Optimization-rate note | Design note for dependency-weighted EV scheduling | https://www.notion.so/34c63f8d1d3b819f84c2efcebb99d84f |
 
 ## System Purpose
@@ -110,9 +112,9 @@ The exact Notion formula source was not available through the connector in this 
 | `EV/hr` | Confirmed by design note: `P(success) * Value / Hours`. |
 | `Optimization Rate` | Confirmed by schema description/design note: `EV/hr + (Downstream Value * 0.2 * P(success) / Hours)`. The `0.2` factor models the expected lift from completing a prerequisite. |
 | `Time Discount` | Inferred from schema/design notes. Discounts tasks whose value arrives later; the revenue-path note says sprint work should prefer a 30-day payoff over a 5-year payoff. |
-| `Deadline Urgency` | Inferred from schema description. Deadlines within 14 days receive a `2x` urgency multiplier; deadlines within 7 days receive a `3x` urgency multiplier. |
+| `Deadline Status` | MCP-derived metadata. Hard deadlines can trigger a latest-start guardrail in `getNextAction`, but they do not multiply `priority`. |
 | `Real EV/hr` | Inferred from schema/design notes. Uses revenue-path marginal EV where a task is tied to a path. |
-| `Sprint Priority` | Inferred from schema/design notes. Combines real EV per hour, time discount, deadline urgency, and related sprint factors to rank the active queue. |
+| `Task Priority` | Canonical MCP score: expected net value per hour-equivalent of effort/cash. |
 | `Uncertainty` | Inferred from schema/design notes. Represents uncertainty from value/hour/probability assumptions. |
 
 ### Main Views
@@ -124,9 +126,9 @@ The exact Notion formula source was not available through the connector in this 
 | `Today` | No advanced filters shown | `EV/hr` descending | Short-term working view. |
 | `By Boosted EV/hr` | `Done` is false | `Optimization Rate` descending | Prioritizes tasks that also unlock downstream value. |
 | `Ready to start` | No filters shown in fetched view config | `Optimization Rate` descending | Intended queue for work that is executable now. |
-| `By Sprint Priority` | `Done` is not true | `Sprint Priority` descending | Sprint-aware ranking using revenue timing and urgency. |
-| `Mike's Queue` | `Done` is not true and `Owner` is `Mike` or `Mike+AI` | `Sprint Priority` descending | Mike-owned active queue. |
-| `Claude's Queue` | `Done` is not true and `Owner` is `Claude` or `AI Agent` | `Sprint Priority` descending | AI/Claude-owned active queue. |
+| `By Task Priority` | `Done` is not true | `Task Priority` descending | Active queue sorted by expected net value per hour-equivalent. |
+| `Mike's Queue` | `Done` is not true and `Owner` is `Mike` or `Mike+AI` | `Task Priority` descending | Mike-owned active queue. |
+| `Claude's Queue` | `Done` is not true and `Owner` is `Claude` or `AI Agent` | `Task Priority` descending | AI/Claude-owned active queue. |
 
 ## Revenue Paths
 
@@ -272,7 +274,7 @@ The rationale separates implementation probability from value conditional on shi
 
 ### Completed Architecture Task
 
-The task `Build Revenue Paths table + rewire EV calculations to WIG (Annual Revenue Run Rate)` is marked done and uses `EV Math` as an implementation history note. It records that the `Revenue Paths` table, formulas, WIG tracker, task formulas, relation links, and sprint-priority views were created.
+The task `Build Revenue Paths table + rewire EV calculations to WIG (Annual Revenue Run Rate)` is marked done and uses `EV Math` as an implementation history note. It records that the `Revenue Paths` table, formulas, WIG tracker, task formulas, relation links, and task-priority views were created.
 
 This is a useful pattern for completed system tasks: `EV Math` becomes a compact audit note explaining what changed and why the task was valuable.
 

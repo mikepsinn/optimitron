@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   isAuthorizedCronRequest: vi.fn(),
   resolveTaskRecipient: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
+  taskCommentCreate: vi.fn(),
   taskCommentFindMany: vi.fn(),
   taskCommunicationAggregate: vi.fn(),
   taskCommunicationCount: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("@/lib/prisma", () => ({
       update: mocks.taskCommunicationUpdate,
     },
     taskComment: {
+      create: mocks.taskCommentCreate,
       findMany: mocks.taskCommentFindMany,
     },
   },
@@ -82,6 +84,7 @@ describe("/api/cron/task-overdue-reminders", () => {
       personId: "person_1",
     });
     mocks.getTaskAncestors.mockResolvedValue([{ id: "p", title: "Ratify the 1% Treaty" }]);
+    mocks.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
     mocks.taskCommentFindMany.mockResolvedValue([]);
     mocks.draftTaskNotification.mockResolvedValue({
       id: "comm_1",
@@ -114,8 +117,18 @@ describe("/api/cron/task-overdue-reminders", () => {
         recipientEmail: "joe@example.com",
         recipientPersonId: "person_1",
         taskId: "task_1",
+        taskCommentId: "comment_1",
         step: 1,
         subject: expect.stringContaining("[OVERDUE]"),
+      }),
+    );
+    expect(mocks.taskCommentCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          kind: "STATUS_UPDATE",
+          source: "SYSTEM",
+          taskId: "task_1",
+        }),
       }),
     );
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith(

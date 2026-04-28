@@ -368,6 +368,18 @@ enum TaskStatus {
   STALE
 }
 
+/// How a due date affects availability and next-action selection.
+enum TaskDeadlinePolicy {
+  /// No scheduling constraint.
+  NONE
+  /// Informational target date; does not override priority.
+  SOFT
+  /// Opportunity expires after dueAt.
+  EXPIRES
+  /// Required work remains visible after dueAt as missed/remediation work.
+  REQUIRED
+}
+
 /// Lifecycle state for an individual user's claim on a task.
 /// The currently exposed flow is CLAIMED -> COMPLETED -> VERIFIED, with
 /// ABANDONED/REJECTED retained for reclaim and reviewer workflows.
@@ -3590,8 +3602,14 @@ model Task {
   /// Curator-entered completion evidence for assigned-only/public tasks
   completionEvidence String?
 
+  /// Earliest time this task should enter active personal queues
+  availableAt DateTime?
+
   /// Optional due date or target completion date for accountability views
   dueAt DateTime?
+
+  /// How dueAt affects personal scheduling and expiry behavior
+  deadlinePolicy TaskDeadlinePolicy @default(NONE)
 
   /// When the task was completed
   completedAt DateTime?
@@ -3644,7 +3662,10 @@ model Task {
   @@index([claimPolicy, status])
   @@index([category])
   @@index([difficulty])
+  @@index([availableAt])
   @@index([dueAt])
+  @@index([deadlinePolicy, dueAt])
+  @@index([ownerUserId, status, availableAt])
   @@index([isPublic])
   @@index([deletedAt])
 }

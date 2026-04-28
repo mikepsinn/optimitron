@@ -213,6 +213,14 @@ export const TaskStatusSchema = z.enum([
 ]);
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 
+export const TaskDeadlinePolicySchema = z.enum([
+  'NONE',
+  'SOFT',
+  'EXPIRES',
+  'REQUIRED',
+]);
+export type TaskDeadlinePolicy = z.infer<typeof TaskDeadlinePolicySchema>;
+
 export const TaskClaimStatusSchema = z.enum([
   'CLAIMED',
   'IN_PROGRESS',
@@ -1312,7 +1320,9 @@ export const TaskSchema = z.object({
   status: TaskStatusSchema.default('ACTIVE'),
   isPublic: z.boolean().default(true),
   completionEvidence: z.string().nullable().optional(),
+  availableAt: nullableDateSchema,
   dueAt: nullableDateSchema,
+  deadlinePolicy: TaskDeadlinePolicySchema.default('NONE'),
   completedAt: nullableDateSchema,
   verifiedAt: nullableDateSchema,
   sortOrder: z.number().int().default(0),

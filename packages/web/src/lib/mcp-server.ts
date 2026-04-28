@@ -18,10 +18,6 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskCommentSource,
-  TaskCommunicationAudience,
-  TaskCommunicationChannel,
-  TaskCommunicationFormat,
-  TaskCommunicationPurpose,
   TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
@@ -40,7 +36,7 @@ import {
   ALL_SCOPES,
   McpScope,
 } from "./mcp-scopes";
-import type { RankableTask, SprintPriorityInput, SprintPriorityResult } from "./tasks/rank-tasks";
+import type { RankableTask, TaskPriorityInput, TaskPriorityResult } from "./tasks/rank-tasks";
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
@@ -77,8 +73,6 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   addDependency: [McpScope.TASKS_WRITE],
   createPerson: [McpScope.TASKS_WRITE],
   upsertOrganization: [McpScope.TASKS_WRITE],
-  draftTaskNotification: [McpScope.TASKS_WRITE],
-  sendTaskNotification: [McpScope.TASKS_WRITE],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL],
@@ -209,12 +203,6 @@ function enumValue<T extends Record<string, string>>(
 ) {
   if (typeof value !== "string") return fallback;
   return values[value as keyof T] ?? fallback;
-}
-
-function emailFromMailto(value: string | null | undefined) {
-  const trimmed = value?.trim();
-  if (!trimmed?.toLowerCase().startsWith("mailto:")) return null;
-  return trimmed.slice("mailto:".length).split("?")[0]?.trim() || null;
 }
 
 function buildAgentCapabilities(args: Record<string, unknown>) {
@@ -620,14 +608,14 @@ async function attachDirectTaskImpactEstimate(input: {
       assumptionsJson: {
         source: "mcp-create-task",
         evidenceType: "user-supplied",
-        notes: "Direct task inputs used for sprint-priority scoring.",
+        notes: "Direct task inputs used for task priority scoring.",
       },
       calculationVersion: "mcp-direct-v1",
       counterfactualKey: "status-quo",
       estimateKind: "FORECAST",
       isCurrent: true,
       methodologyKey: "agent-direct",
-      parameterSetHash: `mcp-create-task:${input.taskId}`,
+      parameterSetHash: `mcp-direct:${input.taskId}:${Date.now()}:${Math.random().toString(36).slice(2)}`,
       publicationStatus: "DRAFT",
       sourceSystem: "MANUAL",
       taskId: input.taskId,
@@ -703,20 +691,10 @@ function summarizeTask(task: SummarizableTask) {
 }
 
 const DEFAULT_PERSONAL_BUYBACK_RATE = 1000;
+const MS_PER_HOUR = 60 * 60 * 1000;
 
-type SprintPrioritySummary = {
-  blockersCount: number;
-  blockersResolved: number;
-  buybackRate: number;
-  deadlineUrgency: number;
-  evMath: string;
-  realEv: number;
-  sprintPriority: number;
-  timeDiscount: number;
-  unblockedBlockers: number;
-  valid: boolean;
-  validationNotes: string[];
-};
+type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
+type DeadlineStatus = "none" | "future" | "start_now" | "overdue" | "missed" | "expired";
 
 type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   assigneeOrganizationId?: string | null;
@@ -725,14 +703,24 @@ type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   blockersResolved: number;
   blockersResolvedPercent: number;
   evMath: string;
+  availableAt: string | null;
+  cashCost: number;
+  deadlinePolicy: DeadlinePolicy;
+  deadlineRationale: string | null;
+  deadlineStatus: DeadlineStatus;
+  hours: number | null;
+  latestStartAt: string | null;
   ownerUserId?: string | null;
+  executorType: string;
+  pSuccess: number | null;
+  priority: number;
   realEv: number;
-  sprintPriority: number;
-  timeDiscount: number;
-  deadlineUrgency: number;
   buybackRate: number;
   unblockedBlockers: number;
+  unresolvedBlockers: number;
+  timeUntilDueHours: number | null;
   valid: boolean;
+  value: number | null;
   validationNotes: string[];
 };
 
@@ -740,6 +728,9 @@ type PersonalQueueTaskRecord = Record<string, unknown> & SummarizableTask & {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
   ownerUserId?: string | null;
+  availableAt?: Date | string | null;
+  deadlinePolicy?: DeadlinePolicy | string | null;
+  contextJson?: unknown;
   selectedImpactFrame?: unknown;
   isPublic?: boolean | null;
   blockerStatuses?: TaskStatus[] | null;
@@ -751,35 +742,320 @@ function parsePositiveNumber(value: unknown, fallback: number) {
   return value;
 }
 
+function parseFiniteNumber(value: unknown, fallback?: number) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback ?? null;
+  return value;
+}
+
+function firstFiniteNumber(values: unknown[], fallback?: number) {
+  for (const value of values) {
+    const parsed = parseFiniteNumber(value);
+    if (parsed != null) return parsed;
+  }
+  return fallback ?? null;
+}
+
+const AI_EXECUTOR_TYPE = "AI Agent";
+
+function normalizeExecutorType(value: unknown) {
+  if (typeof value !== "string") return "Self";
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "ai" || normalized === "agent" || normalized === "ai agent") {
+    return AI_EXECUTOR_TYPE;
+  }
+  if (normalized === "self") return "Self";
+  return value.trim() || "Self";
+}
+
+function normalizeDeadlinePolicy(value: unknown, fallback: DeadlinePolicy = "NONE"): DeadlinePolicy {
+  if (typeof value !== "string") return fallback;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "required" || normalized === "hard" || normalized === "must" || normalized === "must_do" || normalized === "must-do") {
+    return "REQUIRED";
+  }
+  if (normalized === "expires" || normalized === "expire" || normalized === "expiring") return "EXPIRES";
+  if (normalized === "soft") return "SOFT";
+  if (normalized === "none") return "NONE";
+  return fallback;
+}
+
+function parseTaskDate(value: unknown): Date | null {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function toIsoOrNull(date: Date | null) {
+  return date ? date.toISOString() : null;
+}
+
+function getTaskContext(task: PersonalQueueTaskRecord | Record<string, unknown>) {
+  return asObject(task.contextJson) ?? {};
+}
+
+function getTaskExecutorType(task: PersonalQueueTaskRecord | Record<string, unknown>) {
+  const context = getTaskContext(task);
+  return normalizeExecutorType(
+    context.executor_type ??
+      context.executorType,
+  );
+}
+
+function isSelfExecutableTask(task: PersonalQueueTaskRecord) {
+  return getTaskExecutorType(task) !== AI_EXECUTOR_TYPE;
+}
+
+function isAIExecutableTask(task: PersonalQueueTaskRecord) {
+  return getTaskExecutorType(task) === AI_EXECUTOR_TYPE;
+}
+
+function isTaskTimeAvailable(task: PersonalQueueTaskRecord, now: Date) {
+  const availableAt = parseTaskDate(task.availableAt);
+  return !availableAt || availableAt.getTime() <= now.getTime();
+}
+
+function computeDeadlineSummary(
+  task: PersonalQueueTaskRecord,
+  hours: number | null,
+  now: Date,
+) {
+  const availableAt = parseTaskDate(task.availableAt);
+  const dueAt = parseTaskDate(task.dueAt);
+  const context = getTaskContext(task);
+  const rawPolicy = task.deadlinePolicy ?? context.deadline_policy ?? context.deadlinePolicy;
+  const deadlinePolicy = normalizeDeadlinePolicy(
+    rawPolicy,
+    dueAt ? "SOFT" : "NONE",
+  );
+  const deadlineRationale =
+    typeof context.deadline_rationale === "string"
+      ? context.deadline_rationale
+      : typeof context.deadlineRationale === "string"
+        ? context.deadlineRationale
+        : null;
+
+  if (!dueAt || deadlinePolicy === "NONE") {
+    return {
+      availableAt: toIsoOrNull(availableAt),
+      deadlinePolicy,
+      deadlineRationale,
+      deadlineStatus: "none" as DeadlineStatus,
+      dueAt: toIsoOrNull(dueAt),
+      latestStartAt: null,
+      timeUntilDueHours: dueAt ? (dueAt.getTime() - now.getTime()) / MS_PER_HOUR : null,
+    };
+  }
+
+  const usableHours = typeof hours === "number" && Number.isFinite(hours) && hours > 0 ? hours : null;
+  const latestStartAt = usableHours == null ? null : new Date(dueAt.getTime() - usableHours * MS_PER_HOUR);
+  const timeUntilDueHours = (dueAt.getTime() - now.getTime()) / MS_PER_HOUR;
+  let deadlineStatus: DeadlineStatus = "future";
+  if (timeUntilDueHours < 0) {
+    deadlineStatus =
+      deadlinePolicy === "REQUIRED"
+        ? "missed"
+        : deadlinePolicy === "EXPIRES"
+          ? "expired"
+          : "overdue";
+  } else if (
+    (deadlinePolicy === "REQUIRED" || deadlinePolicy === "EXPIRES") &&
+    latestStartAt &&
+    now.getTime() >= latestStartAt.getTime()
+  ) {
+    deadlineStatus = "start_now";
+  }
+
+  return {
+    availableAt: toIsoOrNull(availableAt),
+    deadlinePolicy,
+    deadlineRationale,
+    deadlineStatus,
+    dueAt: dueAt.toISOString(),
+    latestStartAt: toIsoOrNull(latestStartAt),
+    timeUntilDueHours,
+  };
+}
+
+function resolveTaskEconomics(args: Record<string, unknown>, existing?: {
+  contextJson?: unknown;
+  estimatedEffortHours?: number | null;
+  selectedImpactFrame?: unknown;
+}) {
+  const existingContext = asObject(existing?.contextJson) ?? {};
+  const existingFrame = asObject(existing?.selectedImpactFrame);
+  const pSuccess =
+    firstFiniteNumber([
+      args.p_success,
+      args.pSuccess,
+      args.successProbabilityBase,
+      existingContext.p_success,
+      existingContext.pSuccess,
+      existingFrame?.successProbabilityBase,
+    ], 1) ?? 1;
+  const normalizedPSuccess = Math.max(0, Math.min(1, pSuccess));
+  const grossValue = firstFiniteNumber([
+    args.value,
+    args.grossValue,
+    existingContext.value,
+    existingContext.grossValue,
+  ]);
+  const expectedEconomicValueUsdBase =
+    firstFiniteNumber([args.expectedEconomicValueUsdBase]) ??
+    (grossValue == null
+      ? firstFiniteNumber([existingFrame?.expectedEconomicValueUsdBase], 0) ?? 0
+      : grossValue * normalizedPSuccess);
+  const estimatedEffortHours =
+    firstFiniteNumber([
+      args.hours,
+      args.estimatedEffortHours,
+      existing?.estimatedEffortHours,
+      existingFrame?.estimatedEffortHoursBase,
+      existingContext.hours,
+    ], 1) ?? 1;
+  const estimatedCashCostUsdBase =
+    firstFiniteNumber([
+      args.cash_cost,
+      args.cashCost,
+      args.estimatedCashCostUsdBase,
+      existingContext.cash_cost,
+      existingContext.cashCost,
+      existingFrame?.estimatedCashCostUsdBase,
+    ], 0) ?? 0;
+  const timeToImpactStartDays =
+    firstFiniteNumber([args.timeToImpactStartDays, existingFrame?.timeToImpactStartDays], 0) ?? 0;
+
+  return {
+    estimatedCashCostUsdBase: Math.max(0, estimatedCashCostUsdBase),
+    estimatedEffortHours: Math.max(estimatedEffortHours, 0),
+    expectedEconomicValueUsdBase,
+    grossValue,
+    pSuccess: normalizedPSuccess,
+    timeToImpactStartDays: Math.max(0, timeToImpactStartDays),
+  };
+}
+
+function buildPersonalTaskContext(args: Record<string, unknown>, economics: ReturnType<typeof resolveTaskEconomics>, baseContextJson?: unknown) {
+  const contextPatch: Record<string, unknown> = {};
+  if (args.executor_type !== undefined || args.executorType !== undefined || baseContextJson == null) {
+    contextPatch.executor_type = normalizeExecutorType(args.executor_type ?? args.executorType);
+  }
+  if (economics.grossValue != null) contextPatch.value = economics.grossValue;
+  contextPatch.p_success = economics.pSuccess;
+  contextPatch.cash_cost = economics.estimatedCashCostUsdBase;
+  if (args.ev_math !== undefined || args.evMath !== undefined) {
+    contextPatch.ev_math = (args.ev_math ?? args.evMath) as string;
+  }
+  if (args.can_delegate !== undefined || args.canDelegate !== undefined) {
+    contextPatch.can_delegate = Boolean(args.can_delegate ?? args.canDelegate);
+  }
+  if (args.best_route !== undefined || args.bestRoute !== undefined) {
+    contextPatch.best_route = (args.best_route ?? args.bestRoute) as string;
+  }
+  if (args.deadline_rationale !== undefined || args.deadlineRationale !== undefined) {
+    contextPatch.deadline_rationale = (args.deadline_rationale ?? args.deadlineRationale) as string;
+  }
+
+  return mergeTaskContextJson({
+    baseContextJson,
+    patchContextJson: {
+      ...asObject(args.contextJson),
+      ...contextPatch,
+    },
+    sourceUrl: args.sourceUrl !== undefined ? ((args.sourceUrl as string) || null) : null,
+  });
+}
+
+function resolveDeadlinePolicyInput(
+  args: Record<string, unknown>,
+  dueAt: Date | null,
+  existing?: PersonalQueueTaskRecord,
+) {
+  if (args.deadline_policy !== undefined || args.deadlinePolicy !== undefined) {
+    return normalizeDeadlinePolicy(args.deadline_policy ?? args.deadlinePolicy);
+  }
+  if (existing?.deadlinePolicy) {
+    return normalizeDeadlinePolicy(existing.deadlinePolicy);
+  }
+  return dueAt ? "SOFT" : "NONE";
+}
+
+function hasEconomicsPatch(args: Record<string, unknown>) {
+  return [
+    "hours",
+    "estimatedEffortHours",
+    "value",
+    "grossValue",
+    "p_success",
+    "pSuccess",
+    "successProbabilityBase",
+    "cash_cost",
+    "cashCost",
+    "estimatedCashCostUsdBase",
+    "expectedEconomicValueUsdBase",
+  ].some((key) => args[key] !== undefined);
+}
+
 function buildPersonalQueueRows(
   tasks: unknown[],
   ranking: {
-    computeSprintPriority: (task: SprintPriorityInput, options?: { buybackRate?: number }) => SprintPriorityResult;
+    computeTaskPriority: (task: TaskPriorityInput, options?: { buybackRate?: number }) => TaskPriorityResult;
     isTaskBlocked?: (task: Pick<RankableTask, "blockerStatuses">) => boolean;
   },
   buybackRate?: number,
   options?: {
     requireUnblocked?: boolean;
     limit?: number;
+    now?: Date;
   },
 ) {
   const limit = parseQueueLimit(options?.limit, 50, Math.min(5000, tasks.length));
   const parsedBuybackRate = parsePositiveNumber(buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+  const now = options?.now ?? new Date();
   const filtered = options?.requireUnblocked
-        ? tasks.filter((task) =>
-        !(ranking.isTaskBlocked?.({
-          blockerStatuses: (task as PersonalQueueTaskRecord).blockerStatuses ?? undefined,
-        }) ?? false),
-      )
+    ? tasks.filter((task) => {
+        const sourceTask = task as PersonalQueueTaskRecord;
+        if (!isTaskTimeAvailable(sourceTask, now)) return false;
+        if (
+          ranking.isTaskBlocked?.({
+            blockerStatuses: sourceTask.blockerStatuses ?? undefined,
+          }) ?? false
+        ) {
+          return false;
+        }
+        const deadline = computeDeadlineSummary(sourceTask, null, now);
+        return !(deadline.deadlinePolicy === "EXPIRES" && deadline.deadlineStatus === "expired");
+      })
     : tasks;
 
   const ranked = filtered
     .map((task) => {
       const sourceTask = task as PersonalQueueTaskRecord;
-      const score = ranking.computeSprintPriority(sourceTask as SprintPriorityInput, {
+      const score = ranking.computeTaskPriority(sourceTask as TaskPriorityInput, {
         buybackRate: parsedBuybackRate,
       });
       const summary = summarizeTask(sourceTask);
+      const context = getTaskContext(sourceTask);
+      const selectedImpactFrame = asObject(sourceTask.selectedImpactFrame);
+      const hours = firstFiniteNumber([
+        sourceTask.estimatedEffortHours,
+        selectedImpactFrame?.estimatedEffortHoursBase,
+        context.hours,
+      ]);
+      const value = firstFiniteNumber([context.value, context.grossValue]);
+      const pSuccess = firstFiniteNumber([
+        context.p_success,
+        context.pSuccess,
+        selectedImpactFrame?.successProbabilityBase,
+      ]);
+      const cashCost = firstFiniteNumber([
+        context.cash_cost,
+        context.cashCost,
+        selectedImpactFrame?.estimatedCashCostUsdBase,
+      ], 0) ?? 0;
+      const deadline = computeDeadlineSummary(sourceTask, hours, now);
       return {
         ...summary,
         assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
@@ -789,18 +1065,29 @@ function buildPersonalQueueRows(
         blockersResolved: score.blockersResolved,
         blockersResolvedPercent:
           score.blockersCount > 0 ? (score.unblockedBlockers / score.blockersCount) * 100 : 100,
+        availableAt: deadline.availableAt,
         buybackRate: score.buybackRate,
-        deadlineUrgency: score.deadlineUrgency,
+        cashCost,
+        deadlinePolicy: deadline.deadlinePolicy,
+        deadlineRationale: deadline.deadlineRationale,
+        deadlineStatus: deadline.deadlineStatus,
+        dueAt: deadline.dueAt,
         evMath: score.evMath,
+        hours,
+        latestStartAt: deadline.latestStartAt,
+        executorType: getTaskExecutorType(sourceTask),
+        priority: score.priority,
+        pSuccess,
         realEv: score.realEv,
-        sprintPriority: score.sprintPriority,
-        timeDiscount: score.timeDiscount,
+        timeUntilDueHours: deadline.timeUntilDueHours,
         unblockedBlockers: score.unblockedBlockers,
+        unresolvedBlockers: Math.max(0, score.blockersCount - score.unblockedBlockers),
         valid: score.valid,
+        value,
         validationNotes: score.validationNotes,
       } as PersonalQueueTaskRecord & PersonalQueueRow;
     })
-    .sort((left, right) => right.sprintPriority - left.sprintPriority);
+    .sort((left, right) => right.priority - left.priority);
 
   return ranked.slice(0, limit);
 }
@@ -836,10 +1123,6 @@ function normalizeOptimalRankingTask(task: Record<string, unknown>): Record<stri
   };
 }
 
-function isAssignedToAI(task: PersonalQueueTaskRecord) {
-  return Boolean(task.assigneePersonId) || Boolean(task.assigneeOrganizationId);
-}
-
 function nextActionRecommendation(task: PersonalQueueRow | null) {
   if (!task) {
     return {
@@ -848,11 +1131,11 @@ function nextActionRecommendation(task: PersonalQueueRow | null) {
     };
   }
 
-  if (!task.valid || task.sprintPriority <= 0) {
+  if (!task.valid || task.priority <= 0) {
     return {
       label: "kill it",
       rationale: [
-        "Priority model could not compute a positive score. Treat as low-value or invalid.",
+        "Task priority model could not compute a positive score. Treat as low-value or invalid.",
       ],
     };
   }
@@ -869,16 +1152,48 @@ function nextActionRecommendation(task: PersonalQueueRow | null) {
     };
   }
 
-  if (isAssignedToAI(task)) {
+  if (task.executorType === AI_EXECUTOR_TYPE) {
     return {
       label: "delegate it",
-      rationale: ["This task has an assignee and is likely intended for delegated execution."],
+      rationale: ["This task is explicitly marked for AI-agent execution."],
     };
   }
 
   return {
     label: "do it",
-    rationale: ["This is the highest-scoring private, unblocked task."],
+    rationale: ["This is the highest-priority private, unblocked task."],
+  };
+}
+
+function selectPersonalNextAction(queue: PersonalQueueRow[]) {
+  const deadlineCriticalTasks = queue.filter(
+    (task) =>
+      (task.deadlinePolicy === "REQUIRED" &&
+        (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed")) ||
+      (task.deadlinePolicy === "EXPIRES" && task.deadlineStatus === "start_now"),
+  );
+  const selected = deadlineCriticalTasks[0] ?? queue[0] ?? null;
+  if (!selected) {
+    return {
+      deadlineOverride: false,
+      selectionReason: "empty_queue",
+      task: null,
+    };
+  }
+  if (deadlineCriticalTasks.length > 0) {
+    return {
+      deadlineOverride: true,
+      selectionReason:
+        selected.deadlineStatus === "missed"
+          ? "deadline_missed"
+          : "deadline_latest_start",
+      task: selected,
+    };
+  }
+  return {
+    deadlineOverride: false,
+    selectionReason: "highest_priority",
+    task: selected,
   };
 }
 
@@ -1200,7 +1515,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getQueueAudit",
     description:
-      "Audit active owned private tasks for missing estimates, blocked dependencies, impossible scoring inputs, and other data issues.",
+      "Audit active owned private tasks for missing estimates, blocked dependencies, impossible priority inputs, and other data issues.",
     inputSchema: { type: "object" as const, properties: {} },
     outputSchema: {
       type: "object",
@@ -1252,7 +1567,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getMyQueue",
     description:
-      "Get the authenticated user's private queue sorted by personal sprint-priority (computed score) with blockers removed.",
+      "Get the authenticated user's private queue sorted by computed task priority with blockers removed.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1263,7 +1578,7 @@ const TASK_TOOL_DEFINITIONS = [
     outputSchema: {
       type: "object",
       properties: {
-        buybackRate: { type: "number", description: "USD/hour used for score denominator cash-equivalent conversion." },
+        buybackRate: { type: "number", description: "USD/hour used for priority denominator cash-equivalent conversion." },
         queue: {
           type: "array",
           items: {
@@ -1272,12 +1587,22 @@ const TASK_TOOL_DEFINITIONS = [
               id: { type: "string", description: "Task identifier." },
               title: { type: "string", description: "Task title." },
               status: { type: "string", description: "Current task status." },
-              sprintPriority: { type: "number", description: "Computed ranking score." },
-              realEv: { type: "number", description: "Real expected value used by the ranking function." },
-              timeDiscount: { type: "number", description: "Time-to-value discount multiplier." },
-              deadlineUrgency: { type: "number", description: "Deadline urgency multiplier." },
+              priority: { type: "number", description: "Computed priority score." },
+              hours: { type: ["number", "null"], description: "Estimated hours." },
+              value: { type: ["number", "null"], description: "Gross conditional value if present." },
+              pSuccess: { type: ["number", "null"], description: "Success probability if present." },
+              cashCost: { type: "number", description: "Cash cost in USD." },
+              availableAt: { type: ["string", "null"], description: "Earliest time this task should appear in active queues." },
+              deadlinePolicy: { type: "string", enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"], description: "How dueAt should be interpreted." },
+              deadlineStatus: { type: "string", enum: ["none", "future", "start_now", "overdue", "missed", "expired"], description: "Derived deadline state. Does not alter priority." },
+              deadlineRationale: { type: ["string", "null"], description: "Freeform rationale for deadline policy." },
+              latestStartAt: { type: ["string", "null"], description: "Latest start time implied by dueAt minus estimated hours." },
+              timeUntilDueHours: { type: ["number", "null"], description: "Hours until dueAt." },
+              executorType: { type: "string", description: "Self or AI Agent." },
+              realEv: { type: "number", description: "Real expected value used by the priority formula." },
               blockersCount: { type: "number", description: "Total blockers on this task." },
               unblockedBlockers: { type: "number", description: "Number of blockers already cleared." },
+              unresolvedBlockers: { type: "number", description: "Number of blockers not yet complete." },
             },
           },
         },
@@ -1293,12 +1618,16 @@ const TASK_TOOL_DEFINITIONS = [
               id: "task_example_1",
               title: "Prepare investor update",
               status: "ACTIVE",
-              sprintPriority: 1200,
+              priority: 1200,
+              hours: 1,
+              value: 2500,
+              pSuccess: 1,
+              cashCost: 0,
+              executorType: "Self",
               realEv: 2500,
-              timeDiscount: 1,
-              deadlineUrgency: 1,
               blockersCount: 0,
               unblockedBlockers: 0,
+              unresolvedBlockers: 0,
             },
           ],
         },
@@ -1308,7 +1637,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getAIQueue",
     description:
-      "Get the authenticated user's tasks assigned to an agent/assignee, ranked by personal sprint-priority.",
+      "Get the authenticated user's AI-agent-executable private tasks ranked by computed task priority.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1319,7 +1648,7 @@ const TASK_TOOL_DEFINITIONS = [
     outputSchema: {
       type: "object",
       properties: {
-        buybackRate: { type: "number", description: "USD/hour used for score denominator cash-equivalent conversion." },
+        buybackRate: { type: "number", description: "USD/hour used for priority denominator cash-equivalent conversion." },
         queue: {
           type: "array",
           items: {
@@ -1327,12 +1656,21 @@ const TASK_TOOL_DEFINITIONS = [
             properties: {
               id: { type: "string", description: "Task identifier." },
               title: { type: "string", description: "Task title." },
-              assigneePersonId: { type: ["string", "null"], description: "Assignee person ID for AI-owned tasks." },
-              assigneeOrganizationId: { type: ["string", "null"], description: "Assignee organization ID for AI-owned tasks." },
-              sprintPriority: { type: "number", description: "Computed ranking score." },
-              realEv: { type: "number", description: "Real expected value used by the ranking function." },
-              timeDiscount: { type: "number", description: "Time-to-value discount multiplier." },
-              deadlineUrgency: { type: "number", description: "Deadline urgency multiplier." },
+              assigneePersonId: { type: ["string", "null"], description: "Assignee person ID, if any." },
+              assigneeOrganizationId: { type: ["string", "null"], description: "Assignee organization ID, if any." },
+              priority: { type: "number", description: "Computed priority score." },
+              hours: { type: ["number", "null"], description: "Estimated hours." },
+              value: { type: ["number", "null"], description: "Gross conditional value if present." },
+              pSuccess: { type: ["number", "null"], description: "Success probability if present." },
+              cashCost: { type: "number", description: "Cash cost in USD." },
+              availableAt: { type: ["string", "null"], description: "Earliest time this task should appear in active queues." },
+              deadlinePolicy: { type: "string", enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"], description: "How dueAt should be interpreted." },
+              deadlineStatus: { type: "string", enum: ["none", "future", "start_now", "overdue", "missed", "expired"], description: "Derived deadline state. Does not alter priority." },
+              deadlineRationale: { type: ["string", "null"], description: "Freeform rationale for deadline policy." },
+              latestStartAt: { type: ["string", "null"], description: "Latest start time implied by dueAt minus estimated hours." },
+              timeUntilDueHours: { type: ["number", "null"], description: "Hours until dueAt." },
+              executorType: { type: "string", description: "Self or AI Agent." },
+              realEv: { type: "number", description: "Real expected value used by the priority formula." },
             },
           },
         },
@@ -1341,15 +1679,11 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "getNextAction",
-    description: "Get the mathematically best next action, not just the next task. Audits queue sanity first, then chooses between direct execution, agent delegation, procurement prep, funding unblockers, or queue repair.",
+    description: "Get the mathematically best next action from the user's available private tasks.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        skillTags: { type: "array", items: { type: "string" }, description: "Agent's skill tags for capability matching" },
-        interestTags: { type: "array", items: { type: "string" }, description: "Agent's interest tags for capability matching" },
-        maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Max difficulty the agent can handle" },
-        availableHoursPerWeek: { type: "number", description: "Hours per week the agent can commit" },
-        agentId: { type: "string", description: "Agent identifier for future logging/correlation" },
+        buybackRate: { type: "number", description: "USD per hour used to convert cash cost into time-equivalent penalty (default 1000)" },
       },
     },
     outputSchema: {
@@ -1368,7 +1702,16 @@ const TASK_TOOL_DEFINITIONS = [
           type: ["object", "null"],
           description: "Top-scoring task to execute if available.",
         },
-        sprintPriority: { type: "number", description: "Computed sprint-priority score for the suggested task." },
+        priority: { type: "number", description: "Computed priority score for the suggested task." },
+        deadlineOverride: {
+          type: "boolean",
+          description: "True when a required or expiring deadline task overrides the highest-priority task.",
+        },
+        selectionReason: {
+          type: "string",
+          enum: ["highest_priority", "deadline_latest_start", "deadline_missed", "empty_queue"],
+          description: "Why this task was selected.",
+        },
         queueAudit: {
           type: "object",
           properties: {
@@ -1701,7 +2044,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a new task as DRAFT. Private visibility is the default (isPublic = false). " +
+      "Create a new private task. Private visibility is the default (isPublic = false). " +
       "Before adding blockers/dependents, use searchTasks to find candidate related task IDs.",
     inputSchema: {
       type: "object" as const,
@@ -1714,6 +2057,12 @@ const TASK_TOOL_DEFINITIONS = [
         difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Estimated difficulty" },
         skillTags: { type: "array", items: { type: "string" }, description: "Skills needed" },
         interestTags: { type: "array", items: { type: "string" }, description: "Related topics/causes" },
+        depends_on: {
+          type: "array",
+          items: { type: "string" },
+          description: "Alias for blockerTaskIds: existing task IDs that must be completed first.",
+          minItems: 0,
+        },
         blockerTaskIds: {
           type: "array",
           items: { type: "string" },
@@ -1731,6 +2080,11 @@ const TASK_TOOL_DEFINITIONS = [
           minItems: 0,
         },
         estimatedEffortHours: { type: "number", description: "Estimated hours to complete" },
+        hours: { type: "number", description: "Alias for estimatedEffortHours" },
+        value: { type: "number", description: "Gross conditional value if the task succeeds" },
+        p_success: { type: "number", description: "Success probability, 0-1" },
+        cash_cost: { type: "number", description: "Cash cost in USD" },
+        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task" },
         expectedEconomicValueUsdBase: {
           type: "number",
           description: "Expected economic value in USD-equivalent welfare (probability-adjusted by your model)",
@@ -1747,7 +2101,18 @@ const TASK_TOOL_DEFINITIONS = [
           type: "number",
           description: "Days until value can start being realized (for time discount)",
         },
+        available_at: { type: "string", description: "Earliest time this task should appear in active queues (ISO 8601)" },
         dueAt: { type: "string", description: "Due date (ISO 8601)" },
+        due_at: { type: "string", description: "Alias for dueAt" },
+        deadline_policy: {
+          type: "string",
+          enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"],
+          description: "Whether dueAt is ignored, a soft target, an expiring opportunity, or required work.",
+        },
+        deadline_rationale: {
+          type: "string",
+          description: "Freeform rationale for the deadline policy, e.g. taxes must be filed by a legal deadline.",
+        },
         completedAt: { type: "string", description: "Completion date (ISO 8601) for tasks that already happened" },
         verifiedAt: { type: "string", description: "Verification date (ISO 8601) for tasks confirmed as done" },
         claimPolicy: { type: "string", enum: ["ASSIGNED_ONLY", "OPEN_SINGLE", "OPEN_MANY"], description: "Who can claim this task" },
@@ -1758,21 +2123,14 @@ const TASK_TOOL_DEFINITIONS = [
         contactUrl: { type: "string", description: "URL for contacting the assignee" },
         contactLabel: { type: "string", description: "Label for the contact channel" },
         impactStatement: { type: "string", description: "Why this matters" },
+        ev_math: { type: "string", description: "Freeform rationale for value/probability/hour assumptions" },
+        can_delegate: { type: "boolean", description: "Whether an agent or contractor can do this task" },
+        best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
         isPublic: { type: "boolean", description: "Visible in public views (default false)" },
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
       },
-      required: [
-        "title",
-        "description",
-        "estimatedEffortHours",
-        "expectedEconomicValueUsdBase",
-        "successProbabilityBase",
-        "estimatedCashCostUsdBase",
-        "timeToImpactStartDays",
-        "blockerTaskIds",
-        "blockedTaskIds",
-      ],
+      required: ["title"],
     },
   },
 
@@ -1899,11 +2257,41 @@ const TASK_TOOL_DEFINITIONS = [
         sourceUrl: { type: "string", description: "URL to the source/evidence" },
         completedAt: { type: "string", description: "Completion date (ISO 8601), use empty string to clear" },
         verifiedAt: { type: "string", description: "Verification date (ISO 8601), use empty string to clear" },
+        available_at: { type: "string", description: "Earliest time this task should appear in active queues (ISO 8601), use empty string to clear" },
+        dueAt: { type: "string", description: "Due date (ISO 8601), use empty string to clear" },
+        due_at: { type: "string", description: "Alias for dueAt, use empty string to clear" },
+        deadline_policy: {
+          type: "string",
+          enum: ["NONE", "SOFT", "EXPIRES", "REQUIRED"],
+          description: "Whether dueAt is ignored, a soft target, an expiring opportunity, or required work.",
+        },
+        deadline_rationale: {
+          type: "string",
+          description: "Freeform rationale for the deadline policy.",
+        },
         contextJson: {
           ...TASK_CONTEXT_JSON_SCHEMA,
           description:
             "Rich task dossier slots — merged with existing contextJson. Mirror of TaskContextJsonSchema. See createTask for the full slot list.",
         },
+        depends_on: {
+          type: "array",
+          items: { type: "string" },
+          description: "Replace blocker dependencies with this exact list of task IDs.",
+        },
+        blockerTaskIds: {
+          type: "array",
+          items: { type: "string" },
+          description: "Replace blocker dependencies with this exact list of task IDs.",
+        },
+        hours: { type: "number", description: "Alias for estimatedEffortHours" },
+        value: { type: "number", description: "Gross conditional value if the task succeeds" },
+        p_success: { type: "number", description: "Success probability, 0-1" },
+        cash_cost: { type: "number", description: "Cash cost in USD" },
+        executor_type: { type: "string", enum: ["Self", "AI Agent"], description: "Who should execute this task" },
+        ev_math: { type: "string", description: "Freeform rationale for value/probability/hour assumptions" },
+        can_delegate: { type: "boolean", description: "Whether an agent or contractor can do this task" },
+        best_route: { type: "string", description: "Best execution route, e.g. self, agent, contractor" },
         sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
       },
       required: ["taskId"],
@@ -2123,45 +2511,6 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "draftTaskNotification",
-    description:
-      "Draft a general task notification email for an assigned person, organization, or user. Does not send; call sendTaskNotification only after explicit approval.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        taskId: { type: "string", description: "Task being assigned or reminded" },
-        recipientEmail: { type: "string", description: "Recipient email. Defaults to the task primary endpoint email when available." },
-        recipientName: { type: "string", description: "Recipient display name snapshot" },
-        recipientOrganizationId: { type: "string", description: "Recipient organization ID" },
-        recipientPersonId: { type: "string", description: "Recipient person ID" },
-        recipientUserId: { type: "string", description: "Recipient user ID" },
-        endpointId: { type: "string", description: "TaskCommunicationEndpoint ID used" },
-        audience: { type: "string", enum: ["RECIPIENT", "SENDER", "OBSERVER", "ASSIGNEE"] },
-        purpose: {
-          type: "string",
-          enum: ["INVITATION", "ASSIGNMENT", "REMINDER", "FOLLOW_UP", "EVIDENCE_REQUEST", "STATUS_UPDATE", "REPLY", "SCORECARD", "RE_ENGAGEMENT", "VOTE_CONFIRMED", "RECIPIENT_VOTED", "SHARE"],
-        },
-        format: { type: "string", enum: ["DEFAULT", "TASK_NOTIFICATION", "SINCERE"] },
-        subject: { type: "string", description: "Email subject. Defaults from the task title." },
-        message: { type: "string", description: "Plain-text message. Defaults from the task title and impact statement." },
-        nextSendAt: { type: "string", description: "Optional scheduled send time (ISO 8601)" },
-      },
-      required: ["taskId"],
-    },
-  },
-  {
-    name: "sendTaskNotification",
-    description:
-      "Send one approved draft task notification email. This is the generalized replacement for custom task-like email sends.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        communicationId: { type: "string", description: "Draft TaskCommunication ID to send" },
-      },
-      required: ["communicationId"],
-    },
-  },
-  {
     name: "checkTaskCommunicationCooldown",
     description:
       "Check whether a task communication is allowed for a task+channel, or if cooldown is active.",
@@ -2241,7 +2590,7 @@ const TASK_TOOL_DEFINITIONS = [
 - Images: ![alt](url) inline
 - Tables, lists, strikethrough, code blocks, blockquotes — all standard
 Max length: 20,000 characters. Rate limit: 5 comments per task per hour.
-Posting a comment automatically triggers a Wishonia auto-reply in the background.`,
+Posting a comment automatically sends comment notifications to task recipients and triggers a Wishonia auto-reply in the background.`,
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2253,11 +2602,6 @@ Posting a comment automatically triggers a Wishonia auto-reply in the background
         message: {
           type: "string",
           description: "Markdown body (1-20000 chars, supports math/mermaid/chart fences)",
-        },
-        sendNotification: {
-          type: "boolean",
-          description:
-            "When true (default), send/attempt email notifications to the task assignee, owner, and admin users (unless the author is the only recipient). Set false to skip notification.",
         },
         mediaUrl: {
           type: "string",
@@ -2393,7 +2737,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (!userId)
             return authRequired(
               "getMyQueue",
-              "It returns the tasks you own ranked by sprint priority.",
+              "It returns the tasks you own ranked by task priority.",
             );
 
           const { tasks, ranking } = await getTaskFunctions();
@@ -2405,7 +2749,10 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             userId,
             visibility: "owned",
           });
-          const queue = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
+          const selfTasks = (ownedTasks as unknown[]).filter((task) =>
+            isSelfExecutableTask(task as PersonalQueueTaskRecord),
+          );
+          const queue = buildPersonalQueueRows(selfTasks, ranking, buybackRate, {
             limit: maxResults,
             requireUnblocked: true,
           });
@@ -2431,7 +2778,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             visibility: "owned",
           });
           const assignedTasks = (ownedTasks as unknown[]).filter((task) =>
-            isAssignedToAI(task as PersonalQueueTaskRecord),
+            isAIExecutableTask(task as PersonalQueueTaskRecord),
           );
           const queue = buildPersonalQueueRows(assignedTasks, ranking, buybackRate, {
             limit: maxResults,
@@ -2506,10 +2853,45 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             if (!row.valid) {
               issues.push({
                 code: "INVALID_SCORE",
-                message: `Task ${task.id} has invalid sprint-priority inputs.`,
+                message: `Task ${task.id} has invalid priority inputs.`,
                 severity: "high",
                 taskId: task.id,
               });
+            }
+
+            if (row.deadlinePolicy === "REQUIRED" || row.deadlinePolicy === "EXPIRES") {
+              if (row.hours == null || row.hours <= 0) {
+                issues.push({
+                  code: "DEADLINE_MISSING_HOURS",
+                  message: `Task ${task.id} has a deadline policy but no usable hour estimate for latest-start scheduling.`,
+                  severity: "high",
+                  taskId: task.id,
+                });
+              }
+              if (row.deadlineStatus === "start_now") {
+                issues.push({
+                  code: "DEADLINE_START_NOW",
+                  message: `Task ${task.id} must start now to finish before its deadline.`,
+                  severity: "high",
+                  taskId: task.id,
+                });
+              }
+              if (row.deadlineStatus === "missed") {
+                issues.push({
+                  code: "REQUIRED_DEADLINE_MISSED",
+                  message: `Task ${task.id} is past its required deadline.`,
+                  severity: "high",
+                  taskId: task.id,
+                });
+              }
+              if (row.deadlineStatus === "expired") {
+                issues.push({
+                  code: "EXPIRING_TASK_EXPIRED",
+                  message: `Task ${task.id} is past its expiring opportunity deadline.`,
+                  severity: "medium",
+                  taskId: task.id,
+                });
+              }
             }
 
             const blockerStatuses = task.blockerStatuses ?? [];
@@ -2551,7 +2933,6 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               "It returns the top-ranked task in your personal queue. For an anonymous \"what should I work on next?\", call getNextTask instead.",
             );
           const { tasks, ranking } = await getTaskFunctions();
-          const maxResults = parseQueueLimit(a.maxResults, 1, 100);
           const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
           const ownedTasks = await tasks.listTasks({
             limit: 5000,
@@ -2559,17 +2940,32 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             userId,
             visibility: "owned",
           });
-          const queue = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
-            limit: maxResults,
+          const selfTasks = (ownedTasks as unknown[]).filter((task) =>
+            isSelfExecutableTask(task as PersonalQueueTaskRecord),
+          );
+          const queue = buildPersonalQueueRows(selfTasks, ranking, buybackRate, {
+            limit: selfTasks.length,
             requireUnblocked: true,
           });
-          const topAction = queue[0] ?? null;
-          const recommendation = nextActionRecommendation(topAction);
+          const selection = selectPersonalNextAction(queue);
+          const topAction = selection.task;
+          const recommendation = selection.deadlineOverride && topAction
+            ? {
+                ...nextActionRecommendation(topAction),
+                rationale: [
+                  topAction.deadlineStatus === "missed"
+                    ? "This required task is past its deadline; remedial action should happen before optional work."
+                    : "This task has reached its latest-start time for a required or expiring deadline.",
+                ],
+              }
+            : nextActionRecommendation(topAction);
 
           return ok({
             ...recommendation,
+            deadlineOverride: selection.deadlineOverride,
+            selectionReason: selection.selectionReason,
             task: topAction,
-            sprintPriority: topAction?.sprintPriority ?? 0,
+            priority: topAction?.priority ?? 0,
             queueAudit: {
               activeOwnedTasks: ownedTasks.length,
               unblockedTasks: queue.length,
@@ -2964,39 +3360,25 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           });
         }
 
-        // ── createTask (always DRAFT) ──────────────────────────
+        // ── createTask ────────────────────────────────────────
         case "createTask": {
           if (!userId) return authRequired(name, "This tool needs an identified user to attribute writes or fetch personal data.");
 
           const { endpoints, ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
 
-          const estimatedEffortHours = a.estimatedEffortHours as number;
-          const expectedEconomicValueUsdBase = a.expectedEconomicValueUsdBase as number;
-          const estimatedCashCostUsdBase = a.estimatedCashCostUsdBase as number;
-          const successProbabilityBase = a.successProbabilityBase as number;
-          const timeToImpactStartDays = (a.timeToImpactStartDays as number) ?? 0;
-          if (!Array.isArray(a.blockerTaskIds) || !Array.isArray(a.blockedTaskIds)) {
-            return err("blockerTaskIds and blockedTaskIds are required and must be arrays (use [] when empty).");
-          }
-          const blockerTaskIds = dedupeStrings(a.blockerTaskIds as string[]);
-          const blockedTaskIds = dedupeStrings(a.blockedTaskIds as string[]);
+          const economics = resolveTaskEconomics(a);
+          const blockerTaskIds = dedupeStrings([
+            ...(Array.isArray(a.blockerTaskIds) ? (a.blockerTaskIds as string[]) : []),
+            ...(Array.isArray(a.depends_on) ? (a.depends_on as string[]) : []),
+          ]);
+          const blockedTaskIds = dedupeStrings(
+            Array.isArray(a.blockedTaskIds) ? (a.blockedTaskIds as string[]) : [],
+          );
           const dependencyTaskIds = dedupeStrings([...blockerTaskIds, ...blockedTaskIds]);
 
-          if (typeof estimatedEffortHours !== "number" || !Number.isFinite(estimatedEffortHours) || estimatedEffortHours <= 0) {
-            return err("estimatedEffortHours is required and must be a positive number.");
-          }
-          if (typeof expectedEconomicValueUsdBase !== "number" || !Number.isFinite(expectedEconomicValueUsdBase)) {
-            return err("expectedEconomicValueUsdBase is required and must be a finite number.");
-          }
-          if (typeof estimatedCashCostUsdBase !== "number" || !Number.isFinite(estimatedCashCostUsdBase) || estimatedCashCostUsdBase < 0) {
-            return err("estimatedCashCostUsdBase is required and must be a non-negative finite number.");
-          }
-          if (typeof successProbabilityBase !== "number" || !Number.isFinite(successProbabilityBase) || successProbabilityBase < 0 || successProbabilityBase > 1) {
-            return err("successProbabilityBase is required and must be a finite number between 0 and 1.");
-          }
-          if (typeof timeToImpactStartDays !== "number" || !Number.isFinite(timeToImpactStartDays) || timeToImpactStartDays < 0) {
-            return err("timeToImpactStartDays is required and must be a non-negative finite number.");
+          if (!a.title || typeof a.title !== "string" || !a.title.trim()) {
+            return err("title is required.");
           }
 
           if (dependencyTaskIds.length > 0) {
@@ -3026,8 +3408,26 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
                   .join(", ")}`,
               );
             }
+
+            const forbiddenBlockedTaskIds = dependencyTasks
+              .filter((task) => blockedTaskIds.includes(task.id) && task.ownerUserId !== userId)
+              .map((task) => task.id);
+            if (forbiddenBlockedTaskIds.length > 0) {
+              return err(
+                `Blocked task IDs must be owned by the current user: ${forbiddenBlockedTaskIds
+                  .map((id) => JSON.stringify(id))
+                  .join(", ")}`,
+              );
+            }
           }
 
+          const isPublic = a.isPublic === true;
+          const availableAt = a.available_at !== undefined || a.availableAt !== undefined
+            ? parseTaskDate(a.available_at ?? a.availableAt)
+            : null;
+          const dueAt = a.due_at !== undefined || a.dueAt !== undefined
+            ? parseTaskDate(a.due_at ?? a.dueAt)
+            : null;
           const data: Record<string, unknown> = {
             title: a.title as string,
             description: (a.description as string) ?? "",
@@ -3037,8 +3437,10 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             difficulty: a.difficulty ? TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty] : TaskDifficulty.INTERMEDIATE,
             skillTags: (a.skillTags as string[]) ?? [],
             interestTags: (a.interestTags as string[]) ?? [],
-            estimatedEffortHours,
-            dueAt: a.dueAt ? new Date(a.dueAt as string) : null,
+            estimatedEffortHours: economics.estimatedEffortHours,
+            availableAt,
+            dueAt,
+            deadlinePolicy: resolveDeadlinePolicyInput(a, dueAt),
             completedAt: a.completedAt ? new Date(a.completedAt as string) : null,
             verifiedAt: a.verifiedAt ? new Date(a.verifiedAt as string) : null,
             claimPolicy: a.claimPolicy ? TaskClaimPolicy[a.claimPolicy as keyof typeof TaskClaimPolicy] : TaskClaimPolicy.OPEN_MANY,
@@ -3047,13 +3449,14 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             roleTitle: (a.roleTitle as string) ?? null,
             sourceUrl: (a.sourceUrl as string) ?? null,
             impactStatement: (a.impactStatement as string) ?? null,
-            isPublic: a.isPublic === true,
-            contextJson: mergeTaskContextJson({
-              patchContextJson: a.contextJson,
-              sourceUrl: (a.sourceUrl as string) ?? null,
-            }),
+            isPublic,
+            contextJson: buildPersonalTaskContext(a, economics),
             sortOrder: (a.sortOrder as number) ?? undefined,
-            status: TaskStatus.DRAFT,
+            status: a.status
+              ? TaskStatus[a.status as keyof typeof TaskStatus]
+              : isPublic
+                ? TaskStatus.DRAFT
+                : TaskStatus.ACTIVE,
           };
           data.ownerUserId = userId;
           const task = await prisma.$transaction(async (tx) => {
@@ -3063,33 +3466,35 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               url: (a.contactUrl as string) ?? null,
             });
             const { TaskEdgeType } = await import("@optimitron/db");
-            for (const blockerTaskId of blockerTaskIds.filter((id) => id !== created.id)) {
-              await tx.taskEdge.create({
-                data: {
-                  fromTaskId: blockerTaskId,
-                  toTaskId: created.id,
-                  edgeType: TaskEdgeType.BLOCKS,
-                },
-              });
+            const incomingEdges = blockerTaskIds
+              .filter((id) => id !== created.id)
+              .map((blockerTaskId) => ({
+                fromTaskId: blockerTaskId,
+                toTaskId: created.id,
+                edgeType: TaskEdgeType.BLOCKS,
+              }));
+            if (incomingEdges.length > 0) {
+              await tx.taskEdge.createMany({ data: incomingEdges, skipDuplicates: true });
             }
 
-            for (const blockedTaskId of blockedTaskIds.filter((id) => id !== created.id)) {
-              await tx.taskEdge.create({
-                data: {
-                  fromTaskId: created.id,
-                  toTaskId: blockedTaskId,
-                  edgeType: TaskEdgeType.BLOCKS,
-                },
-              });
+            const outgoingEdges = blockedTaskIds
+              .filter((id) => id !== created.id)
+              .map((blockedTaskId) => ({
+                fromTaskId: created.id,
+                toTaskId: blockedTaskId,
+                edgeType: TaskEdgeType.BLOCKS,
+              }));
+            if (outgoingEdges.length > 0) {
+              await tx.taskEdge.createMany({ data: outgoingEdges, skipDuplicates: true });
             }
             await attachDirectTaskImpactEstimate({
               prisma: tx,
               taskId: created.id,
-              estimatedEffortHours,
-              estimatedCashCostUsdBase,
-              expectedEconomicValueUsdBase,
-              successProbabilityBase,
-              timeToImpactStartDays,
+              estimatedEffortHours: economics.estimatedEffortHours,
+              estimatedCashCostUsdBase: economics.estimatedCashCostUsdBase,
+              expectedEconomicValueUsdBase: economics.expectedEconomicValueUsdBase,
+              successProbabilityBase: economics.pSuccess,
+              timeToImpactStartDays: economics.timeToImpactStartDays,
             });
             return created;
           });
@@ -3100,7 +3505,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               })
             : [];
 
-          return ok(scored[0] ?? { taskId: task.id, title: task.title, status: "DRAFT" });
+          return ok(scored[0] ?? { taskId: task.id, title: task.title, status: task.status });
         }
 
         case "upsertOrganization": {
@@ -3460,6 +3865,44 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           const { ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
           const updates: Record<string, unknown> = {};
+          const existingDetail = await tasks.getTaskDetailData(a.taskId as string, userId);
+          if (!existingDetail) return err("Task not found");
+          const existingTask = existingDetail.task as PersonalQueueTaskRecord;
+          if (existingTask.ownerUserId !== userId) {
+            return err("Forbidden: Task is not owned by current user");
+          }
+          const dependencyPatchProvided = Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
+          const blockerTaskIds = dependencyPatchProvided
+            ? dedupeStrings([
+                ...(Array.isArray(a.blockerTaskIds) ? (a.blockerTaskIds as string[]) : []),
+                ...(Array.isArray(a.depends_on) ? (a.depends_on as string[]) : []),
+              ])
+            : [];
+          if (dependencyPatchProvided && blockerTaskIds.length > 0) {
+            const dependencyTasks = await prisma.task.findMany({
+              where: { deletedAt: null, id: { in: blockerTaskIds } },
+              select: { id: true, isPublic: true, ownerUserId: true },
+            });
+            const foundDependencyIds = new Set(dependencyTasks.map((task) => task.id));
+            const missingDependencyIds = blockerTaskIds.filter((id) => !foundDependencyIds.has(id));
+            if (missingDependencyIds.length > 0) {
+              return err(
+                `Invalid dependency IDs (not found): ${missingDependencyIds.map((id) => JSON.stringify(id)).join(", ")}`,
+              );
+            }
+            const inaccessibleDependencyIds = dependencyTasks
+              .filter((task) => !task.isPublic && task.ownerUserId !== userId)
+              .map((task) => task.id);
+            if (inaccessibleDependencyIds.length > 0) {
+              return err(
+                `Dependency IDs are inaccessible private tasks: ${inaccessibleDependencyIds
+                  .map((id) => JSON.stringify(id))
+                  .join(", ")}`,
+              );
+            }
+          }
+          const economicsPatch = hasEconomicsPatch(a);
+          const economics = resolveTaskEconomics(a, existingTask);
           if (a.status) updates.status = TaskStatus[a.status as keyof typeof TaskStatus];
           if (a.title) updates.title = a.title;
           if (a.description) updates.description = a.description;
@@ -3469,6 +3912,24 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (a.taskKey) updates.taskKey = a.taskKey;
           if (a.roleTitle !== undefined) updates.roleTitle = (a.roleTitle as string) || null;
           if (a.sortOrder !== undefined) updates.sortOrder = a.sortOrder;
+          if (a.available_at !== undefined || a.availableAt !== undefined) {
+            const rawAvailableAt = a.available_at ?? a.availableAt;
+            updates.availableAt = rawAvailableAt ? parseTaskDate(rawAvailableAt) : null;
+          }
+          if (a.due_at !== undefined || a.dueAt !== undefined) {
+            const rawDueAt = a.due_at ?? a.dueAt;
+            const nextDueAt = (rawDueAt as string) ? parseTaskDate(rawDueAt) : null;
+            const existingPolicy = normalizeDeadlinePolicy(existingTask.deadlinePolicy, "NONE");
+            updates.dueAt = nextDueAt;
+            if (a.deadline_policy === undefined && a.deadlinePolicy === undefined) {
+              updates.deadlinePolicy = nextDueAt
+                ? existingPolicy === "NONE" ? "SOFT" : existingPolicy
+                : "NONE";
+            }
+          }
+          if (a.deadline_policy !== undefined || a.deadlinePolicy !== undefined) {
+            updates.deadlinePolicy = normalizeDeadlinePolicy(a.deadline_policy ?? a.deadlinePolicy);
+          }
           if (a.assigneePersonId !== undefined) {
             updates.assigneePersonId = (a.assigneePersonId as string) || null;
           }
@@ -3485,32 +3946,67 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           } else if (a.status === "VERIFIED") {
             updates.verifiedAt = new Date();
           }
-          if (a.contextJson !== undefined || a.sourceUrl !== undefined) {
-            const existing = await prisma.task.findUniqueOrThrow({
-              where: { id: a.taskId as string },
-              select: { contextJson: true },
-            });
+          if (economicsPatch) {
+            updates.estimatedEffortHours = economics.estimatedEffortHours;
+          }
+          if (
+            a.contextJson !== undefined ||
+            a.sourceUrl !== undefined ||
+            economicsPatch ||
+            a.executor_type !== undefined ||
+            a.executorType !== undefined ||
+            a.ev_math !== undefined ||
+            a.evMath !== undefined ||
+            a.can_delegate !== undefined ||
+            a.canDelegate !== undefined ||
+            a.best_route !== undefined ||
+            a.bestRoute !== undefined ||
+            a.deadline_rationale !== undefined ||
+            a.deadlineRationale !== undefined
+          ) {
             updates.contextJson = toInputJsonValue(
-              mergeTaskContextJson({
-                baseContextJson: existing.contextJson,
-                patchContextJson: a.contextJson,
-              sourceUrl: a.sourceUrl !== undefined ? ((a.sourceUrl as string) || null) : null,
-            }) ?? {},
-          );
+              buildPersonalTaskContext(a, economics, existingTask.contextJson) ?? {},
+            );
           }
 
-          const existingOwner = await prisma.task.findFirst({
-            where: { id: a.taskId as string, deletedAt: null },
-            select: { ownerUserId: true },
-          });
-          if (!existingOwner) return err("Task not found");
-          if (existingOwner.ownerUserId !== userId) {
-            return err("Forbidden: Task is not owned by current user");
-          }
-
-          const task = await prisma.task.update({
-            where: { id: a.taskId as string },
-            data: updates as any,
+          const task = await prisma.$transaction(async (tx) => {
+            const updated = await tx.task.update({
+              where: { id: a.taskId as string },
+              data: Object.keys(updates).length > 0 ? (updates as any) : { updatedAt: new Date() },
+            });
+            if (dependencyPatchProvided) {
+              const { TaskEdgeType } = await import("@optimitron/db");
+              await tx.taskEdge.updateMany({
+                where: {
+                  deletedAt: null,
+                  toTaskId: updated.id,
+                  edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
+                },
+                data: { deletedAt: new Date() },
+              });
+              const incomingEdges = blockerTaskIds
+                .filter((id) => id !== updated.id)
+                .map((blockerTaskId) => ({
+                  fromTaskId: blockerTaskId,
+                  toTaskId: updated.id,
+                  edgeType: TaskEdgeType.BLOCKS,
+                }));
+              if (incomingEdges.length > 0) {
+                await tx.taskEdge.createMany({ data: incomingEdges, skipDuplicates: true });
+              }
+            }
+            if (economicsPatch) {
+              await attachDirectTaskImpactEstimate({
+                prisma: tx,
+                taskId: updated.id,
+                estimatedEffortHours: economics.estimatedEffortHours,
+                estimatedCashCostUsdBase: economics.estimatedCashCostUsdBase,
+                expectedEconomicValueUsdBase: economics.expectedEconomicValueUsdBase,
+                successProbabilityBase: economics.pSuccess,
+                timeToImpactStartDays: economics.timeToImpactStartDays,
+              });
+            }
+            return updated;
           });
           const fresh = await tasks.getTaskDetailData(task.id, userId);
           const scored = fresh
@@ -3734,16 +4230,33 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── addDependency ──────────────────────────────────────
         case "addDependency": {
+          if (!userId) return authRequired(name, "This tool needs an identified user to update private task dependencies.");
           const prisma = await getPrisma();
           const { TaskEdgeType } = await import("@optimitron/db");
-          const edge = await prisma.taskEdge.create({
-            data: {
+          const blockedTaskId = a.blockedTaskId as string;
+          const blockerTaskId = a.blockerTaskId as string;
+          const dependencyTasks = await prisma.task.findMany({
+            where: { deletedAt: null, id: { in: [blockedTaskId, blockerTaskId] } },
+            select: { id: true, isPublic: true, ownerUserId: true },
+          });
+          const blockedTask = dependencyTasks.find((task) => task.id === blockedTaskId);
+          const blockerTask = dependencyTasks.find((task) => task.id === blockerTaskId);
+          if (!blockedTask || !blockerTask) return err("Task not found");
+          if (blockedTask.ownerUserId !== userId) {
+            return err("Forbidden: blocked task is not owned by current user");
+          }
+          if (!blockerTask.isPublic && blockerTask.ownerUserId !== userId) {
+            return err("Forbidden: blocker task is not accessible to current user");
+          }
+          await prisma.taskEdge.createMany({
+            data: [{
               fromTaskId: a.blockerTaskId as string,
               toTaskId: a.blockedTaskId as string,
               edgeType: TaskEdgeType.BLOCKS,
-            },
+            }],
+            skipDuplicates: true,
           });
-          return ok({ edgeId: edge.id });
+          return ok({ blockedTaskId, blockerTaskId, created: true });
         }
 
         // ── getBlockers ────────────────────────────────────────
@@ -3832,88 +4345,6 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             communicationId: result.communication.id,
             taskCommentId: result.comment.id,
           });
-        }
-
-        case "draftTaskNotification": {
-          const { tasks } = await getTaskFunctions();
-          const { draftTaskNotification } = await import("./tasks/task-notifications.server");
-          const result = await tasks.getTaskDetailData(a.taskId as string, userId ?? null);
-          if (!result) return err("Task not found");
-
-          const task = result.task as unknown as {
-            assigneeOrganization?: { id?: string | null; contactEmail?: string | null; name?: string | null } | null;
-            assigneePerson?: { id?: string | null; displayName?: string | null; email?: string | null } | null;
-            description?: string | null;
-            impactStatement?: string | null;
-            primaryEndpoint?: { email?: string | null; url?: string | null } | null;
-            title: string;
-          };
-          const recipientEmail =
-            (a.recipientEmail as string) ??
-            task.primaryEndpoint?.email ??
-            emailFromMailto(task.primaryEndpoint?.url) ??
-            task.assigneeOrganization?.contactEmail ??
-            task.assigneePerson?.email ??
-            null;
-          if (!recipientEmail) {
-            return err("recipientEmail is required because this task has no email endpoint.");
-          }
-
-          const recipientName =
-            (a.recipientName as string) ??
-            task.assigneePerson?.displayName ??
-            task.assigneeOrganization?.name ??
-            "there";
-          const subject = (a.subject as string) ?? `Please complete: ${task.title}`;
-          const message =
-            (a.message as string) ??
-            [
-              `Hi ${recipientName},`,
-              "",
-              `Please complete this task: ${task.title}`,
-              task.impactStatement ? `Why this matters: ${task.impactStatement}` : null,
-              task.description ? `Details: ${task.description}` : null,
-            ]
-              .filter(Boolean)
-              .join("\n");
-          const communication = await draftTaskNotification({
-            audience: enumValue(TaskCommunicationAudience, a.audience, TaskCommunicationAudience.ASSIGNEE),
-            channel: TaskCommunicationChannel.EMAIL,
-            endpointId: (a.endpointId as string) ?? null,
-            format: enumValue(TaskCommunicationFormat, a.format, TaskCommunicationFormat.DEFAULT),
-            nextSendAt: a.nextSendAt ? new Date(a.nextSendAt as string) : null,
-            purpose: enumValue(TaskCommunicationPurpose, a.purpose, TaskCommunicationPurpose.ASSIGNMENT),
-            recipientEmail,
-            recipientName,
-            recipientOrganizationId:
-              (a.recipientOrganizationId as string) ?? task.assigneeOrganization?.id ?? null,
-            recipientPersonId: (a.recipientPersonId as string) ?? task.assigneePerson?.id ?? null,
-            recipientUserId: (a.recipientUserId as string) ?? null,
-            senderUserId: userId ?? null,
-            subject,
-            taskId: a.taskId as string,
-            text: message,
-          });
-
-          return ok({
-            communicationId: communication.id,
-            preview: {
-              message,
-              recipientEmail,
-              recipientName,
-              subject,
-            },
-            status: communication.status,
-          });
-        }
-
-        case "sendTaskNotification": {
-          const { sendDraftTaskNotification } = await import("./tasks/task-notifications.server");
-          const result = await sendDraftTaskNotification({
-            communicationId: a.communicationId as string,
-            senderUserId: userId ?? null,
-          });
-          return ok(result);
         }
 
         // ── checkTaskCommunicationCooldown ────────────────────
@@ -4045,15 +4476,12 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             mediaUrl,
           });
 
-          const shouldNotify = a.sendNotification !== false;
-          if (shouldNotify) {
-            void notifyTaskCommentRecipients({
-              authorUserId: userId,
-              commentId: comment.id,
-              message,
-              taskId,
-            });
-          }
+          void notifyTaskCommentRecipients({
+            authorUserId: userId,
+            commentId: comment.id,
+            message,
+            taskId,
+          });
 
           void generateAndPostWishoniaReply({
             taskId,
