@@ -58,12 +58,12 @@ export function GameScoreBar() {
   const referralLink = buildUserReferralUrl(session.user);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-primary bg-foreground text-background">
-      <div className="max-w-7xl mx-auto px-4 py-2 sm:py-0 sm:h-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4 sm:gap-5 text-[11px] sm:text-xs font-black uppercase">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-foreground bg-background text-foreground">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:h-10 sm:flex-row sm:items-center sm:justify-between sm:py-0">
+        <div className="flex items-center gap-4 text-[11px] font-black uppercase text-muted-foreground sm:gap-5 sm:text-xs">
           <Link
             href="/dashboard#referral"
-            className="flex items-center gap-1.5 hover:text-brutal-cyan transition-colors"
+            className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title={`${POINTS} (${REFERRAL.earnOneShort})`}
           >
             <Vote className="h-3.5 w-3.5 text-brutal-cyan" />
@@ -72,7 +72,7 @@ export function GameScoreBar() {
 
           <Link
             href="/dashboard"
-            className="flex items-center gap-1.5 hover:text-brutal-pink transition-colors"
+            className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             title="Lives saved through recruitment"
           >
             <Heart className="h-3.5 w-3.5 text-brutal-pink" />
@@ -81,7 +81,7 @@ export function GameScoreBar() {
 
           <Link
             href="/agencies/dcongress/wishocracy"
-            className="hidden sm:flex items-center gap-1.5 hover:text-brutal-yellow transition-colors"
+            className="hidden items-center gap-1.5 transition-colors hover:text-foreground sm:flex"
             title="Budget comparisons completed"
           >
             <BarChart3 className="h-3.5 w-3.5 text-brutal-yellow" />
@@ -94,12 +94,12 @@ export function GameScoreBar() {
             url={referralLink}
             idleLabel="Copy Referral Link"
             copiedLabel="Referral Copied"
-            className="h-8 px-3 py-1 text-[11px] sm:text-xs font-black uppercase whitespace-nowrap"
+            className="h-8 whitespace-nowrap border-2 border-foreground bg-background px-3 py-1 text-[11px] font-black uppercase text-foreground shadow-none hover:translate-y-0 hover:bg-muted active:translate-x-0 active:translate-y-0 sm:text-xs"
           />
 
           <Link
             href="/dashboard"
-            className="text-[11px] sm:text-xs font-black uppercase hover:text-brutal-yellow transition-colors whitespace-nowrap"
+            className="whitespace-nowrap text-[11px] font-black uppercase text-muted-foreground transition-colors hover:text-foreground sm:text-xs"
           >
             Dashboard &rarr;
           </Link>

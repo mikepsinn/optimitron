@@ -28,7 +28,7 @@ export function getNavItemLinkClasses(
           : "border-transparent hover:border-primary hover:bg-brutal-cyan hover:text-brutal-cyan-foreground"
       }`;
     case "footer":
-      return "text-sm font-bold transition-colors min-h-[44px] flex items-center";
+      return "flex min-h-[44px] items-center text-sm font-bold text-muted-foreground transition-colors hover:text-foreground";
     case "custom":
       return "";
   }

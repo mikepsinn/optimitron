@@ -31,9 +31,14 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-brutal-yellow border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  "fixed z-50 gap-4 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
+      appearance: {
+        default:
+          "border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+        minimal: "border-2 border-foreground bg-background p-5 text-foreground shadow-none",
+      },
       side: {
         top: "inset-x-0 top-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
         bottom:
@@ -44,6 +49,7 @@ const sheetVariants = cva(
       },
     },
     defaultVariants: {
+      appearance: "default",
       side: "right",
     },
   },
@@ -54,13 +60,20 @@ interface SheetContentProps
     VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
-  ({ side = "right", className, children, ...props }, ref) => (
+  ({ side = "right", appearance = "default", className, children, ...props }, ref) => (
     <SheetPortal>
       <SheetOverlay />
-      <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
+      <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ appearance, side }), className)} {...props}>
         {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 border-4 border-primary bg-background p-1 hover:bg-foreground hover:text-background transition-all disabled:pointer-events-none">
-          <X className="h-6 w-6 stroke-[3px]" />
+        <SheetPrimitive.Close
+          className={cn(
+            "absolute right-4 top-4 transition-colors disabled:pointer-events-none",
+            appearance === "minimal"
+              ? "inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-background text-foreground hover:bg-muted"
+              : "border-4 border-primary bg-background p-1 hover:bg-foreground hover:text-background",
+          )}
+        >
+          <X className={cn("stroke-[3px]", appearance === "minimal" ? "h-4 w-4" : "h-6 w-6")} />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>

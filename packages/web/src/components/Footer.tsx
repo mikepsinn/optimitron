@@ -14,22 +14,22 @@ export default function Footer() {
   const site = getSiteConfig("optimitron");
 
   return (
-    <footer className="border-t-4 border-primary bg-brutal-yellow text-brutal-yellow-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="border-t-2 border-foreground bg-background text-foreground">
+      <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href={ROUTES.home} className="text-xl font-black uppercase">
+            <Link href={ROUTES.home} className="text-lg font-black uppercase tracking-tight transition-colors hover:text-muted-foreground">
               ⚡ Optimitron
             </Link>
-            <p className="text-sm mt-3 leading-relaxed font-bold">
+            <p className="mt-3 text-sm font-bold leading-relaxed text-muted-foreground">
               The Earth Optimization Machine.
             </p>
           </div>
 
           {/* App */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3">
+            <h4 className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-foreground">
               App
             </h4>
             <ul className="space-y-2">
@@ -43,7 +43,7 @@ export default function Footer() {
 
           {/* Analysis */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3">
+            <h4 className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-foreground">
               Analysis
             </h4>
             <ul className="space-y-2">
@@ -57,7 +57,7 @@ export default function Footer() {
 
           {/* Papers */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3">
+            <h4 className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-foreground">
               Papers
             </h4>
             <ul className="space-y-2">
@@ -71,7 +71,7 @@ export default function Footer() {
 
           {/* Open Source */}
           <div>
-            <h4 className="text-sm font-black uppercase mb-3">
+            <h4 className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-foreground">
               Open Source
             </h4>
             <ul className="space-y-2">
@@ -84,7 +84,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t-2 border-primary text-center text-sm font-bold">
+        <div className="mt-10 border-t border-border pt-6 text-center text-sm font-bold text-muted-foreground">
           <p>
             © 4237 Wishonia. All rights reserved in this and 6,412 adjacent
             timelines. Unauthorized reproduction of the general welfare is
@@ -93,7 +93,7 @@ export default function Footer() {
               item={githubLink}
               variant="custom"
               external
-              className="font-bold hover:underline"
+              className="font-bold text-foreground hover:underline"
             >
               Source code
             </NavItemLink>{" "}
