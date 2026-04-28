@@ -90,6 +90,18 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getTaskComments: [McpScope.TASKS_PERSONAL, McpScope.TASKS_READ],
 };
 
+const ADMIN_ONLY_PUBLIC_WRITE_TOOLS = new Set([
+  "createOrganization",
+  "proposeTaskBundle",
+  "promoteTask",
+  "setTaskImpact",
+  "recordTaskActuals",
+  "updateMilestone",
+  "addDependency",
+  "createPerson",
+  "upsertOrganization",
+]);
+
 function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): boolean {
   // Deny by default. Callers must pass an explicit scopes array — stdio passes ALL_SCOPES,
   // HTTP traffic always carries a Bearer token (the route 401s on missing/invalid auth) and
@@ -98,6 +110,10 @@ function hasScope(grantedScopes: McpScope[] | undefined, toolName: string): bool
   const required = TOOL_SCOPES[toolName];
   if (!required) return true;
   return required.some((s) => grantedScopes.includes(s));
+}
+
+function hasAdminTaskWriteAccess(scopes: McpScope[] | undefined, isAdmin: boolean) {
+  return isAdmin && !!scopes?.includes(McpScope.TASKS_WRITE);
 }
 
 // ---------------------------------------------------------------------------
@@ -2477,7 +2493,12 @@ Posting a comment automatically sends comment notifications to task recipients a
  * @param userId  Authenticated user ID (undefined = public-only access)
  * @param scopes  Granted OAuth scopes (undefined = stdio/local, no restrictions)
  */
-export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
+export function createMcpServer(
+  userId?: string,
+  scopes?: McpScope[],
+  options: { isAdmin?: boolean } = {},
+): Server {
+  const isAdmin = options.isAdmin === true;
   const server = new Server(
     { name: "optimitron-tasks", version: "1.0.0" },
     { capabilities: { tools: {} } },
@@ -2485,7 +2506,11 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
   // -- Tool listing (filtered by granted scopes) --
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: TASK_TOOL_DEFINITIONS.filter((t) => hasScope(scopes, t.name)),
+    tools: TASK_TOOL_DEFINITIONS.filter(
+      (t) =>
+        hasScope(scopes, t.name) &&
+        (!ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(t.name) || isAdmin),
+    ),
   }));
 
   // -- Tool dispatch --
@@ -2498,6 +2523,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
     // Scope check
     if (!hasScope(scopes, name)) {
       return err(`Insufficient scope for tool "${name}". Required: ${TOOL_SCOPES[name]?.join(", ")}`);
+    }
+    if (ADMIN_ONLY_PUBLIC_WRITE_TOOLS.has(name) && !isAdmin) {
+      return err(`Admin privileges are required for public/Earth task tool "${name}".`);
     }
 
     try {
@@ -3137,8 +3165,8 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           }
 
           const isPublic = a.isPublic === true;
-          if (isPublic && !scopes?.includes(McpScope.TASKS_WRITE)) {
-            return err("Creating public tasks requires the tasks:write scope.");
+          if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Creating public tasks requires an admin user with the tasks:write scope.");
           }
           const availableAt = a.available_at !== undefined || a.availableAt !== undefined
             ? parseTaskDate(a.available_at ?? a.availableAt)
@@ -3589,8 +3617,8 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (existingTask.ownerUserId !== userId) {
             return err("Forbidden: Task is not owned by current user");
           }
-          if (existingTask.isPublic && !scopes?.includes(McpScope.TASKS_WRITE)) {
-            return err("Updating public tasks requires the tasks:write scope.");
+          if (existingTask.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Updating public tasks requires an admin user with the tasks:write scope.");
           }
           const dependencyPatchProvided = Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
           const blockerTaskIds = dependencyPatchProvided
@@ -3754,8 +3782,8 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           if (existing.ownerUserId !== userId) {
             return err("Forbidden: Task is not owned by current user");
           }
-          if (existing.isPublic && !scopes?.includes(McpScope.TASKS_WRITE)) {
-            return err("Deleting public tasks requires the tasks:write scope.");
+          if (existing.isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
+            return err("Deleting public tasks requires an admin user with the tasks:write scope.");
           }
 
           await prisma.task.update({

@@ -86,8 +86,12 @@ interface ToolText {
   text: string;
 }
 
-async function setup(userId: string | undefined, scopes: McpScope[] = ALL_SCOPES) {
-  const server = createMcpServer(userId, scopes);
+async function setup(
+  userId: string | undefined,
+  scopes: McpScope[] = ALL_SCOPES,
+  options: { isAdmin?: boolean } = {},
+) {
+  const server = createMcpServer(userId, scopes, options);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
   const client = new Client({ name: "test-client", version: "1.0.0" });
@@ -192,6 +196,23 @@ describe("MCP server tool dispatch", () => {
     expect(names).not.toContain("draftTaskNotification");
     expect(names).not.toContain("sendTaskNotification");
     expect(names).toContain("postTaskComment");
+  });
+
+  it("hides public Earth write tools from non-admin MCP users", async () => {
+    const nonAdminClient = await setup("user-1", ALL_SCOPES);
+    const adminClient = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+    const nonAdminNames = (await nonAdminClient.listTools()).tools.map((tool) => tool.name);
+    const adminNames = (await adminClient.listTools()).tools.map((tool) => tool.name);
+
+    expect(nonAdminNames).not.toContain("proposeTaskBundle");
+    expect(nonAdminNames).not.toContain("setTaskImpact");
+    expect(nonAdminNames).not.toContain("addDependency");
+    expect(nonAdminNames).toContain("createTask");
+
+    expect(adminNames).toContain("proposeTaskBundle");
+    expect(adminNames).toContain("setTaskImpact");
+    expect(adminNames).toContain("addDependency");
   });
 
   describe("authentication", () => {
@@ -500,6 +521,23 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task writes", () => {
+    it("rejects public task creation for non-admin users even with tasks:write", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL, McpScope.TASKS_WRITE]);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Public Earth task",
+          isPublic: true,
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toContain("admin user");
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
     it("createTask accepts personal task aliases and returns a numeric priority", async () => {
       const dueAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       mocks.taskFindMany.mockResolvedValue([{ id: "blocker-1", isPublic: false, ownerUserId: "user-1" }]);

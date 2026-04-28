@@ -64,6 +64,15 @@ Deadline policy rules:
 
 Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, use `depends_on`.
 
+Recommended OAuth scopes for a personal life-planning AI:
+
+```text
+tasks:personal
+search
+```
+
+Do not request `tasks:write` for personal planning. `tasks:write` is reserved for admin users managing public Earth-level tasks.
+
 Example private task:
 
 ```json
@@ -137,7 +146,8 @@ Example impact frame for a subjective but useful outreach task:
 ## Tool Groups
 
 - Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
-- Task improvement: `createTask`, `updateTask`, `deleteTask`, `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`.
+- Personal task management: `createTask`, `updateTask`, `deleteTask`.
+- Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
 - Task communications: `checkTaskCommunicationCooldown`, `recordTaskCommunication`.
 - Knowledge: `searchManual`, `askWishonia`.
