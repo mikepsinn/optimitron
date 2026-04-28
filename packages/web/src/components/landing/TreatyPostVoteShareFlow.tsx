@@ -224,6 +224,43 @@ const PREVENTABLE_DEATHS_PER_MS =
   (GLOBAL_DISEASE_DEATHS_DAILY.value * EVENTUALLY_AVOIDABLE_DEATH_PCT.value) /
   86_400_000;
 
+type ContactPickerProperty = "name" | "email" | "tel" | "address" | "icon";
+
+interface ContactInfo {
+  name?: string[];
+  email?: string[];
+}
+
+interface NavigatorContacts {
+  select: (
+    properties: ContactPickerProperty[],
+    options?: { multiple?: boolean },
+  ) => Promise<ContactInfo[]>;
+}
+
+interface NavigatorWithContacts extends Navigator {
+  contacts?: NavigatorContacts;
+}
+
+function hasContactPickerSupport(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const nav = navigator as NavigatorWithContacts;
+  return Boolean(nav.contacts && typeof nav.contacts.select === "function");
+}
+
+async function pickContact(): Promise<ContactInfo | null> {
+  if (!hasContactPickerSupport()) return null;
+  const nav = navigator as NavigatorWithContacts;
+  try {
+    const contacts = await nav.contacts!.select(["name", "email"], {
+      multiple: false,
+    });
+    return contacts[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function useLivePreventableDeathCount(active: boolean): number {
   const COUNTER_WARMUP_MS = 2_000;
   const [count, setCount] = useState(() =>
@@ -389,6 +426,24 @@ export function TreatyPostVoteShareFlow({
   const [mathDialogOpen, setMathDialogOpen] = useState(false);
   const [wantsReminderEmails, setWantsReminderEmails] = useState(false);
   const [reminderOptInFired, setReminderOptInFired] = useState(false);
+  const [contactPickerSupported, setContactPickerSupported] = useState(false);
+
+  useEffect(() => {
+    setContactPickerSupported(hasContactPickerSupport());
+  }, []);
+
+  const handlePickContact = useCallback(async () => {
+    const contact = await pickContact();
+    if (!contact) return;
+    const pickedName = contact.name?.[0]?.trim() ?? "";
+    const pickedEmail = contact.email?.[0]?.trim() ?? "";
+    if (pickedName) setRecipientName(pickedName);
+    if (pickedEmail) setRecipientEmail(pickedEmail);
+    setInvitation(null);
+    setMessage("");
+    setMessageEdited(false);
+    setError(null);
+  }, []);
 
   const senderName = getReferralInvitationSenderName(session?.user);
   const firstName = getReferralInvitationFirstName(recipientName);
@@ -891,6 +946,15 @@ export function TreatyPostVoteShareFlow({
             <div className="space-y-5">
               {alt ? <FlowParagraph>One at a time. Bear with me.</FlowParagraph> : null}
               <FlowParagraph>{sentCount === 0 ? "Assign your first task. Start with your easiest yes." : "Assign the next task."}</FlowParagraph>
+              {contactPickerSupported ? (
+                <Button
+                  type="button"
+                  className={`${dismissButtonClass} w-full sm:w-auto`}
+                  onClick={() => void handlePickContact()}
+                >
+                  📇 Pick from contacts
+                </Button>
+              ) : null}
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label className="text-xs font-black uppercase" htmlFor="post-vote-recipient-name">
