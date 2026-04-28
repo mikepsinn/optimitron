@@ -712,7 +712,7 @@ export function TreatyVoteFlow({ className }: { className?: string }) {
               duration: 0.35,
               ease: [0.87, 0, 0.13, 1],
             }}
-            className="fixed inset-0 z-[70] overflow-y-auto bg-[#fbf7ee]"
+            className="fixed inset-0 z-[150] overflow-y-auto bg-[#fbf7ee]"
           >
             {status === "authenticated" ? (
               <TreatyPostVoteShareFlow
