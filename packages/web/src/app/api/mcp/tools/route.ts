@@ -2,11 +2,7 @@ import { getToolDefinitions } from "@/lib/mcp-server";
 import { ALL_SCOPES, MCP_SCOPE_DESCRIPTIONS, scopeToWire } from "@/lib/mcp-scopes";
 
 export async function GET() {
-  const tools = getToolDefinitions().map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-    inputSchema: tool.inputSchema,
-  }));
+  const tools = getToolDefinitions();
 
   // Public API — emit the OAuth wire format (`tasks:read`) keys clients expect.
   const scopes = Object.fromEntries(

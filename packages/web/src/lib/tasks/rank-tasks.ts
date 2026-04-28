@@ -34,6 +34,192 @@ export interface RankTasksOptions {
   preferLeafExecution?: boolean;
 }
 
+export interface SprintPriorityInput {
+  blockerStatuses?: TaskStatus[] | null;
+  dueAt?: Date | string | null;
+  estimatedEffortHours?: number | null;
+  selectedImpactFrame?: TaskImpactFrameSummary | null;
+}
+
+export interface SprintPriorityResult {
+  sprintPriority: number;
+  realEv: number;
+  timeDiscount: number;
+  deadlineUrgency: number;
+  buybackRate: number;
+  blockersCount: number;
+  unblockedBlockers: number;
+  blockersResolved: number;
+  evMath: string;
+  valid: boolean;
+  validationNotes: string[];
+}
+
+const DEFAULT_BUYBACK_RATE = 1000;
+const ZERO_DIVISION_GUARD = 0.0001;
+
+function finiteNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function clamp01(value: number | null) {
+  if (value == null) return null;
+  if (Number.isNaN(value)) return null;
+  if (value <= 0) return 0;
+  if (value >= 1) return 1;
+  return value;
+}
+
+function resolveDaysToValue(input: SprintPriorityInput) {
+  if (input.selectedImpactFrame?.timeToImpactStartDays != null) {
+    const days = finiteNumber(input.selectedImpactFrame.timeToImpactStartDays);
+    if (days != null) {
+      return Math.max(0, days);
+    }
+  }
+
+  if (!input.dueAt) {
+    return null;
+  }
+
+  if (input.dueAt instanceof Date) {
+    const ms = input.dueAt.getTime() - Date.now();
+    return ms / (1000 * 60 * 60 * 24);
+  }
+
+  if (typeof input.dueAt === "string" && input.dueAt.length > 0) {
+    const parsed = Date.parse(input.dueAt);
+    if (Number.isFinite(parsed)) {
+      return (parsed - Date.now()) / (1000 * 60 * 60 * 24);
+    }
+  }
+
+  return null;
+}
+
+function computeTimeDiscount(daysToValue: number | null) {
+  if (daysToValue == null) return 1;
+  if (daysToValue <= 90) return 1;
+  if (daysToValue <= 180) return 0.75;
+  if (daysToValue <= 365) return 0.5;
+  return 0.25;
+}
+
+function computeDeadlineUrgency(dueAt: Date | string | null | undefined) {
+  if (!dueAt) return 1;
+
+  let dueMs = null;
+  if (dueAt instanceof Date) {
+    dueMs = dueAt.getTime();
+  } else if (typeof dueAt === "string" && dueAt.trim().length > 0) {
+    dueMs = Date.parse(dueAt);
+  }
+
+  if (!dueMs || !Number.isFinite(dueMs)) return 1;
+
+  const daysToDeadline = (dueMs - Date.now()) / (1000 * 60 * 60 * 24);
+  if (daysToDeadline <= 7) return 3;
+  if (daysToDeadline <= 14) return 2;
+  return 1;
+}
+
+function resolveEstimatedEffortHours(input: SprintPriorityInput) {
+  return finiteNumber(
+    input.estimatedEffortHours ?? input.selectedImpactFrame?.estimatedEffortHoursBase,
+  );
+}
+
+function computeRealEv(input: SprintPriorityInput, notes: string[]) {
+  const frame = input.selectedImpactFrame;
+  const frameEv = finiteNumber(frame?.expectedEconomicValueUsdBase);
+  if (frameEv != null && frameEv > 0) {
+    return frameEv;
+  }
+
+  const frameSuccess = clamp01(finiteNumber(frame?.successProbabilityBase));
+  const grossEv = finiteNumber(input.selectedImpactFrame?.expectedEconomicValueUsdBase) ?? 0;
+  if (grossEv > 0) {
+    if (frameSuccess == null) {
+      notes.push("Missing success probability; using conservative success default 0.6.");
+      return grossEv * 0.6;
+    }
+    return grossEv * (frameSuccess ?? 0.6);
+  }
+
+  notes.push("Missing expected economic value estimate.");
+  return 0;
+}
+
+/**
+ * Compute the minimal-change sprint-priority score:
+ *  Net EV per hour × Time Discount × Deadline Urgency
+ *  where Net EV = (Real EV - cash cost) and
+ *  denominator = hours + cash / buybackRate.
+ */
+export function computeSprintPriority(
+  task: SprintPriorityInput,
+  options?: {
+    buybackRate?: number;
+  },
+): SprintPriorityResult {
+  const parsedBuyback = finiteNumber(options?.buybackRate);
+  const buybackRate = parsedBuyback == null || parsedBuyback <= 0 ? DEFAULT_BUYBACK_RATE : parsedBuyback;
+  const blockerStatuses = task.blockerStatuses ?? [];
+  const totalBlockers = blockerStatuses.length;
+  const resolvedStatuses: Set<TaskStatus> = new Set([TaskStatus.VERIFIED]);
+  const resolvedBlockers = blockerStatuses.filter((status) =>
+    resolvedStatuses.has(status),
+  ).length;
+  const daysToValue = resolveDaysToValue(task);
+  const timeDiscount = computeTimeDiscount(daysToValue);
+  const deadlineUrgency = computeDeadlineUrgency(task.dueAt);
+  const estimatedEffortHours = resolveEstimatedEffortHours(task);
+  const validationNotes: string[] = [];
+  const frame = task.selectedImpactFrame;
+  const cashCost = Math.max(0, finiteNumber(frame?.estimatedCashCostUsdBase) ?? 0);
+  const realEv = computeRealEv(task, validationNotes);
+
+  if (estimatedEffortHours == null || estimatedEffortHours <= 0) {
+    validationNotes.push("Missing or non-positive estimated effort hours.");
+  }
+
+  const effortHours = Math.max(estimatedEffortHours ?? 0, 0);
+  const denominator = effortHours + cashCost / buybackRate;
+  let valid = true;
+  if (denominator <= ZERO_DIVISION_GUARD) {
+    valid = false;
+    validationNotes.push("Invalid denominator for priority (hours + cash/buyback too small).");
+  }
+
+  const sprintPriority = valid ? (realEv - cashCost) / denominator * timeDiscount * deadlineUrgency : 0;
+  const unblockedBlockers = resolvedBlockers;
+
+  const notePieces = [
+    `realEv=${realEv.toFixed(2)}`,
+    `cashCost=${cashCost.toFixed(2)}`,
+    `hours=${effortHours.toFixed(2)}`,
+    `buyback=${buybackRate.toFixed(2)}`,
+    `timeDiscount=${timeDiscount.toFixed(2)}`,
+    `deadlineUrgency=${deadlineUrgency.toFixed(2)}`,
+  ];
+
+  const evMath = `${notePieces.join(", ")} | score=${sprintPriority.toFixed(4)}`;
+
+  return {
+    blockersCount: totalBlockers,
+    blockersResolved: resolvedBlockers,
+    buybackRate,
+    deadlineUrgency,
+    evMath,
+    realEv,
+    sprintPriority,
+    timeDiscount,
+    unblockedBlockers,
+    validationNotes,
+    valid,
+  };
+}
+
 const DIFFICULTY_ORDER: TaskDifficulty[] = [
   TaskDifficulty.TRIVIAL,
   TaskDifficulty.BEGINNER,

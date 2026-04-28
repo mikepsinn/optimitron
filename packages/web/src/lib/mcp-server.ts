@@ -39,6 +39,7 @@ import {
   ALL_SCOPES,
   McpScope,
 } from "./mcp-scopes";
+import type { RankableTask, SprintPriorityInput, SprintPriorityResult } from "./tasks/rank-tasks";
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_SCOPES, ALL_SCOPES, McpScope };
 
@@ -47,11 +48,14 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getNextTask: [McpScope.TASKS_READ],
   getQueueAudit: [McpScope.TASKS_READ],
   getNextAction: [McpScope.TASKS_READ],
+  getMyQueue: [McpScope.TASKS_READ],
+  getAIQueue: [McpScope.TASKS_READ],
   getMyOptimalNextAction: [McpScope.TASKS_PERSONAL],
   rankMyActionOptions: [McpScope.TASKS_PERSONAL],
   explainTaskRanking: [McpScope.TASKS_PERSONAL],
   evaluateTaskEconomics: [McpScope.TASKS_READ],
   listTasks: [McpScope.TASKS_READ],
+  searchTasks: [McpScope.TASKS_READ],
   getTask: [McpScope.TASKS_READ],
   getBlockers: [McpScope.TASKS_READ],
   getFundingStats: [McpScope.TASKS_READ],
@@ -59,6 +63,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   createTask: [McpScope.TASKS_WRITE],
   proposeTaskBundle: [McpScope.TASKS_WRITE],
   promoteTask: [McpScope.TASKS_WRITE],
+  deleteTask: [McpScope.TASKS_WRITE],
   updateTask: [McpScope.TASKS_WRITE],
   setTaskImpact: [McpScope.TASKS_WRITE],
   recordTaskActuals: [McpScope.TASKS_WRITE],
@@ -543,6 +548,76 @@ async function attachProposalImpactEstimate(input: {
   return estimateSet.id;
 }
 
+async function attachDirectTaskImpactEstimate(input: {
+  prisma: Awaited<ReturnType<typeof getPrisma>> | Prisma.TransactionClient;
+  taskId: string;
+  estimatedEffortHours: number;
+  estimatedCashCostUsdBase: number;
+  expectedEconomicValueUsdBase: number;
+  successProbabilityBase: number;
+  timeToImpactStartDays: number;
+}) {
+  const estimateSet = await input.prisma.taskImpactEstimateSet.create({
+    data: {
+      assumptionsJson: {
+        source: "mcp-create-task",
+        evidenceType: "user-supplied",
+        notes: "Direct task inputs used for sprint-priority scoring.",
+      },
+      calculationVersion: "mcp-direct-v1",
+      counterfactualKey: "status-quo",
+      estimateKind: "FORECAST",
+      isCurrent: true,
+      methodologyKey: "agent-direct",
+      parameterSetHash: `mcp-create-task:${input.taskId}`,
+      publicationStatus: "DRAFT",
+      sourceSystem: "MANUAL",
+      taskId: input.taskId,
+    },
+  });
+
+  await input.prisma.taskImpactFrameEstimate.create({
+    data: {
+      taskImpactEstimateSetId: estimateSet.id,
+      frameKey: TaskImpactFrameKey.FIVE_YEAR,
+      frameSlug: "five-year-direct",
+      evaluationHorizonYears: 5,
+      successProbabilityLow: null,
+      successProbabilityBase: input.successProbabilityBase,
+      successProbabilityHigh: null,
+      delayDalysLostPerDayBase: null,
+      delayDalysLostPerDayLow: null,
+      delayDalysLostPerDayHigh: null,
+      delayEconomicValueUsdLostPerDayBase: null,
+      delayEconomicValueUsdLostPerDayLow: null,
+      delayEconomicValueUsdLostPerDayHigh: null,
+      expectedDalysAvertedBase: null,
+      expectedDalysAvertedLow: null,
+      expectedDalysAvertedHigh: null,
+      expectedEconomicValueUsdBase: input.expectedEconomicValueUsdBase,
+      expectedEconomicValueUsdLow: null,
+      expectedEconomicValueUsdHigh: null,
+      estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
+      estimatedCashCostUsdLow: null,
+      estimatedCashCostUsdHigh: null,
+      estimatedEffortHoursBase: input.estimatedEffortHours,
+      estimatedEffortHoursLow: null,
+      estimatedEffortHoursHigh: null,
+      adoptionRampYears: 0,
+      annualDiscountRate: 0.03,
+      benefitDurationYears: 5,
+      timeToImpactStartDays: input.timeToImpactStartDays,
+    },
+  });
+
+  await input.prisma.task.update({
+    where: { id: input.taskId },
+    data: { currentImpactEstimateSetId: estimateSet.id },
+  });
+
+  return estimateSet.id;
+}
+
 function summarizeTask(task: SummarizableTask) {
   return {
     id: task.id,
@@ -569,6 +644,118 @@ function summarizeTask(task: SummarizableTask) {
   };
 }
 
+const DEFAULT_PERSONAL_BUYBACK_RATE = 1000;
+
+type SprintPrioritySummary = {
+  blockersCount: number;
+  blockersResolved: number;
+  buybackRate: number;
+  deadlineUrgency: number;
+  evMath: string;
+  realEv: number;
+  sprintPriority: number;
+  timeDiscount: number;
+  unblockedBlockers: number;
+  valid: boolean;
+  validationNotes: string[];
+};
+
+type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
+  assigneeOrganizationId?: string | null;
+  assigneePersonId?: string | null;
+  blockersCount: number;
+  blockersResolved: number;
+  blockersResolvedPercent: number;
+  evMath: string;
+  ownerUserId?: string | null;
+  realEv: number;
+  sprintPriority: number;
+  timeDiscount: number;
+  deadlineUrgency: number;
+  buybackRate: number;
+  unblockedBlockers: number;
+  valid: boolean;
+  validationNotes: string[];
+};
+
+type PersonalQueueTaskRecord = Record<string, unknown> & SummarizableTask & {
+  assigneeOrganizationId?: string | null;
+  assigneePersonId?: string | null;
+  ownerUserId?: string | null;
+  selectedImpactFrame?: unknown;
+  isPublic?: boolean | null;
+  blockerStatuses?: TaskStatus[] | null;
+};
+
+function parsePositiveNumber(value: unknown, fallback: number) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  if (value <= 0) return fallback;
+  return value;
+}
+
+function buildPersonalQueueRows(
+  tasks: unknown[],
+  ranking: {
+    computeSprintPriority: (task: SprintPriorityInput, options?: { buybackRate?: number }) => SprintPriorityResult;
+    isTaskBlocked?: (task: Pick<RankableTask, "blockerStatuses">) => boolean;
+  },
+  buybackRate?: number,
+  options?: {
+    requireUnblocked?: boolean;
+    limit?: number;
+  },
+) {
+  const limit = parseQueueLimit(options?.limit, 50, Math.min(5000, tasks.length));
+  const parsedBuybackRate = parsePositiveNumber(buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+  const filtered = options?.requireUnblocked
+        ? tasks.filter((task) =>
+        !(ranking.isTaskBlocked?.({
+          blockerStatuses: (task as PersonalQueueTaskRecord).blockerStatuses ?? undefined,
+        }) ?? false),
+      )
+    : tasks;
+
+  const ranked = filtered
+    .map((task) => {
+      const sourceTask = task as PersonalQueueTaskRecord;
+      const score = ranking.computeSprintPriority(sourceTask as SprintPriorityInput, {
+        buybackRate: parsedBuybackRate,
+      });
+      const summary = summarizeTask(sourceTask);
+      return {
+        ...summary,
+        assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
+        assigneePersonId: sourceTask.assigneePersonId ?? null,
+        ownerUserId: sourceTask.ownerUserId ?? null,
+        blockersCount: score.blockersCount,
+        blockersResolved: score.blockersResolved,
+        blockersResolvedPercent:
+          score.blockersCount > 0 ? (score.unblockedBlockers / score.blockersCount) * 100 : 100,
+        buybackRate: score.buybackRate,
+        deadlineUrgency: score.deadlineUrgency,
+        evMath: score.evMath,
+        realEv: score.realEv,
+        sprintPriority: score.sprintPriority,
+        timeDiscount: score.timeDiscount,
+        unblockedBlockers: score.unblockedBlockers,
+        valid: score.valid,
+        validationNotes: score.validationNotes,
+      } as PersonalQueueTaskRecord & PersonalQueueRow;
+    })
+    .sort((left, right) => right.sprintPriority - left.sprintPriority);
+
+  return ranked.slice(0, limit);
+}
+
+function parseQueueLimit(value: unknown, fallback = 20, max = 100) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return fallback;
+  }
+
+  const clamped = Math.floor(value);
+  return Math.max(1, Math.min(clamped, max));
+}
+
 function normalizeOptimalRankingTask(task: Record<string, unknown>): Record<string, unknown> {
   const directImpactFrame = asObject(task.directImpactFrame);
   const selectedImpactFrame = directImpactFrame ?? task.selectedImpactFrame ?? null;
@@ -588,6 +775,52 @@ function normalizeOptimalRankingTask(task: Record<string, unknown>): Record<stri
     ...task,
     outgoingEdges,
     selectedImpactFrame,
+  };
+}
+
+function isAssignedToAI(task: PersonalQueueTaskRecord) {
+  return Boolean(task.assigneePersonId) || Boolean(task.assigneeOrganizationId);
+}
+
+function nextActionRecommendation(task: PersonalQueueRow | null) {
+  if (!task) {
+    return {
+      label: "kill it",
+      rationale: ["No unblocked, actionable private task found."],
+    };
+  }
+
+  if (!task.valid || task.sprintPriority <= 0) {
+    return {
+      label: "kill it",
+      rationale: [
+        "Priority model could not compute a positive score. Treat as low-value or invalid.",
+      ],
+    };
+  }
+
+  if (
+    task.validationNotes.some((note) =>
+      note.toLowerCase().includes("missing") ||
+      note.toLowerCase().includes("invalid denominator")
+    )
+  ) {
+    return {
+      label: "clarify it",
+      rationale: ["Task economics are missing/ambiguous; clarify key inputs first."],
+    };
+  }
+
+  if (isAssignedToAI(task)) {
+    return {
+      label: "delegate it",
+      rationale: ["This task has an assignee and is likely intended for delegated execution."],
+    };
+  }
+
+  return {
+    label: "do it",
+    rationale: ["This is the highest-scoring private, unblocked task."],
   };
 }
 
@@ -891,11 +1124,162 @@ const TASK_TOOL_DEFINITIONS = [
         agentId: { type: "string", description: "Agent's unique identifier (to skip tasks leased by this agent)" },
       },
     },
+    outputSchema: {
+      type: "object",
+      properties: {
+        score: { type: "number", description: "Earth-level ranking score used by the legacy ranking path." },
+        task: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Task identifier." },
+            title: { type: "string", description: "Task title." },
+            blocked: { type: "boolean", description: "Whether the task still has unresolved blockers." },
+          },
+        },
+      },
+    },
   },
   {
     name: "getQueueAudit",
-    description: "Audit whether the active public queue is sane enough to trust. Returns queue issues, family coverage, and recommended system-improvement proposals when the frontier is broken.",
+    description:
+      "Audit active owned private tasks for missing estimates, blocked dependencies, impossible scoring inputs, and other data issues.",
     inputSchema: { type: "object" as const, properties: {} },
+    outputSchema: {
+      type: "object",
+      properties: {
+        summary: {
+          type: "object",
+          properties: {
+            activeOwnedTasks: { type: "number", description: "Count of active owned tasks." },
+            unblockedTasks: { type: "number", description: "How many owned tasks are currently unblocked." },
+            issueCount: { type: "number", description: "Total queue quality issues found." },
+          },
+        },
+        issues: {
+          type: "array",
+          description: "Queue issues that should be corrected before selecting the next action.",
+          items: {
+            type: "object",
+            properties: {
+              code: { type: "string", description: "Machine-readable issue code." },
+              message: { type: "string", description: "Operator-readable issue summary." },
+              severity: {
+                type: "string",
+                enum: ["high", "medium", "low"],
+                description: "Issue severity for prioritization.",
+              },
+              taskId: { type: "string", description: "Task ID associated with the issue, if any." },
+            },
+          },
+        },
+      },
+    },
+    examples: [
+      {
+        input: {},
+        output: {
+          summary: { activeOwnedTasks: 6, unblockedTasks: 3, issueCount: 1 },
+          issues: [
+            {
+              code: "MISSING_ESTIMATES",
+              message: "Task task_abc is missing required estimate inputs for scoring.",
+              severity: "medium",
+              taskId: "task_abc",
+            },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    name: "getMyQueue",
+    description:
+      "Get the authenticated user's private queue sorted by personal sprint-priority (computed score) with blockers removed.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        maxResults: { type: "number", description: "Max number of tasks to return (default 20, max 100)" },
+        buybackRate: { type: "number", description: "USD per hour used to convert cash cost into time-equivalent penalty (default 1000)" },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        buybackRate: { type: "number", description: "USD/hour used for score denominator cash-equivalent conversion." },
+        queue: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Task identifier." },
+              title: { type: "string", description: "Task title." },
+              status: { type: "string", description: "Current task status." },
+              sprintPriority: { type: "number", description: "Computed ranking score." },
+              realEv: { type: "number", description: "Real expected value used by the ranking function." },
+              timeDiscount: { type: "number", description: "Time-to-value discount multiplier." },
+              deadlineUrgency: { type: "number", description: "Deadline urgency multiplier." },
+              blockersCount: { type: "number", description: "Total blockers on this task." },
+              unblockedBlockers: { type: "number", description: "Number of blockers already cleared." },
+            },
+          },
+        },
+      },
+    },
+    examples: [
+      {
+        input: { maxResults: 2 },
+        output: {
+          buybackRate: 1000,
+          queue: [
+            {
+              id: "task_example_1",
+              title: "Prepare investor update",
+              status: "ACTIVE",
+              sprintPriority: 1200,
+              realEv: 2500,
+              timeDiscount: 1,
+              deadlineUrgency: 1,
+              blockersCount: 0,
+              unblockedBlockers: 0,
+            },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    name: "getAIQueue",
+    description:
+      "Get the authenticated user's tasks assigned to an agent/assignee, ranked by personal sprint-priority.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        maxResults: { type: "number", description: "Max number of tasks to return (default 20, max 100)" },
+        buybackRate: { type: "number", description: "USD per hour used to convert cash cost into time-equivalent penalty (default 1000)" },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        buybackRate: { type: "number", description: "USD/hour used for score denominator cash-equivalent conversion." },
+        queue: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Task identifier." },
+              title: { type: "string", description: "Task title." },
+              assigneePersonId: { type: ["string", "null"], description: "Assignee person ID for AI-owned tasks." },
+              assigneeOrganizationId: { type: ["string", "null"], description: "Assignee organization ID for AI-owned tasks." },
+              sprintPriority: { type: "number", description: "Computed ranking score." },
+              realEv: { type: "number", description: "Real expected value used by the ranking function." },
+              timeDiscount: { type: "number", description: "Time-to-value discount multiplier." },
+              deadlineUrgency: { type: "number", description: "Deadline urgency multiplier." },
+            },
+          },
+        },
+      },
+    },
   },
   {
     name: "getNextAction",
@@ -908,6 +1292,32 @@ const TASK_TOOL_DEFINITIONS = [
         maxDifficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Max difficulty the agent can handle" },
         availableHoursPerWeek: { type: "number", description: "Hours per week the agent can commit" },
         agentId: { type: "string", description: "Agent identifier for future logging/correlation" },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        label: {
+          type: "string",
+          description: "Recommended action label: do it / delegate it / clarify it / kill it.",
+        },
+        rationale: {
+          type: "array",
+          items: { type: "string" },
+          description: "Short recommendation rationale."
+        },
+        task: {
+          type: ["object", "null"],
+          description: "Top-scoring task to execute if available.",
+        },
+        sprintPriority: { type: "number", description: "Computed sprint-priority score for the suggested task." },
+        queueAudit: {
+          type: "object",
+          properties: {
+            activeOwnedTasks: { type: "number" },
+            unblockedTasks: { type: "number" },
+          },
+        },
       },
     },
   },
@@ -1033,7 +1443,7 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "createTask",
-    description: "Create a new task as DRAFT. Agent-created tasks always start as DRAFT and must be promoted to ACTIVE via a separate review process.",
+    description: "Create a new task as DRAFT. Private visibility is the default (isPublic = false).",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1045,7 +1455,37 @@ const TASK_TOOL_DEFINITIONS = [
         difficulty: { type: "string", enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"], description: "Estimated difficulty" },
         skillTags: { type: "array", items: { type: "string" }, description: "Skills needed" },
         interestTags: { type: "array", items: { type: "string" }, description: "Related topics/causes" },
+        blockerTaskIds: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Optional IDs of existing tasks that block this task (must be completed first).",
+          minItems: 0,
+        },
+        blockedTaskIds: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Optional IDs of existing tasks that are blocked by this task (tasks that depend on it).",
+          minItems: 0,
+        },
         estimatedEffortHours: { type: "number", description: "Estimated hours to complete" },
+        expectedEconomicValueUsdBase: {
+          type: "number",
+          description: "Expected economic value in USD-equivalent welfare (probability-adjusted by your model)",
+        },
+        successProbabilityBase: {
+          type: "number",
+          description: "Estimated success probability for the task outcome, 0-1",
+        },
+        estimatedCashCostUsdBase: {
+          type: "number",
+          description: "One-time cash cost expected to execute this task (USD)",
+        },
+        timeToImpactStartDays: {
+          type: "number",
+          description: "Days until value can start being realized (for time discount)",
+        },
         dueAt: { type: "string", description: "Due date (ISO 8601)" },
         completedAt: { type: "string", description: "Completion date (ISO 8601) for tasks that already happened" },
         verifiedAt: { type: "string", description: "Verification date (ISO 8601) for tasks confirmed as done" },
@@ -1057,11 +1497,33 @@ const TASK_TOOL_DEFINITIONS = [
         contactUrl: { type: "string", description: "URL for contacting the assignee" },
         contactLabel: { type: "string", description: "Label for the contact channel" },
         impactStatement: { type: "string", description: "Why this matters" },
-        isPublic: { type: "boolean", description: "Visible in public views (default true)" },
+        isPublic: { type: "boolean", description: "Visible in public views (default false)" },
         contextJson: TASK_CONTEXT_JSON_SCHEMA,
         sortOrder: { type: "number", description: "Sort priority (lower = higher)" },
       },
-      required: ["title", "description"],
+      required: [
+        "title",
+        "description",
+        "estimatedEffortHours",
+        "expectedEconomicValueUsdBase",
+        "successProbabilityBase",
+        "estimatedCashCostUsdBase",
+        "timeToImpactStartDays",
+        "blockerTaskIds",
+        "blockedTaskIds",
+      ],
+    },
+  },
+
+  {
+    name: "deleteTask",
+    description: "Delete one of your own tasks (soft delete). Deletes are scoped to the authenticated user as owner.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Task ID to delete" },
+      },
+      required: ["taskId"],
     },
   },
   {
@@ -1485,6 +1947,25 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "searchTasks",
+    description:
+      "Search your accessible tasks by title, description, task key, assignee, or organization. Useful for finding blockers and dependent task IDs.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string", description: "Search query text." },
+        limit: { type: "number", description: "Max results to return (default 20, max 100)" },
+        scope: {
+          type: "string",
+          enum: ["public", "accessible"],
+          description:
+            "What visibility to search. Use public for public tasks only, accessible for your private + public tasks.",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
     name: "postTaskComment",
     description: `Post a comment on a task. Message is GitHub-flavored markdown with these extensions:
 - Math: $inline$ or $$block$$ (rendered via KaTeX)
@@ -1636,72 +2117,175 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
         }
 
         // ── getQueueAudit ──────────────────────────────────────
+        case "getMyQueue": {
+          if (!userId) return err("Authentication required");
+
+          const { tasks, ranking } = await getTaskFunctions();
+          const maxResults = parseQueueLimit(a.maxResults, 20, 100);
+          const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+          const ownedTasks = await tasks.listTasks({
+            limit: 5000,
+            status: TaskStatus.ACTIVE,
+            userId,
+            visibility: "owned",
+          });
+          const queue = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
+            limit: maxResults,
+            requireUnblocked: true,
+          });
+
+          return ok({ buybackRate, queue });
+        }
+
+        // ── getAIQueue ────────────────────────────────────────
+        case "getAIQueue": {
+          if (!userId) return err("Authentication required");
+
+          const { tasks, ranking } = await getTaskFunctions();
+          const maxResults = parseQueueLimit(a.maxResults, 20, 100);
+          const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+          const ownedTasks = await tasks.listTasks({
+            limit: 5000,
+            status: TaskStatus.ACTIVE,
+            userId,
+            visibility: "owned",
+          });
+          const assignedTasks = (ownedTasks as unknown[]).filter((task) =>
+            isAssignedToAI(task as PersonalQueueTaskRecord),
+          );
+          const queue = buildPersonalQueueRows(assignedTasks, ranking, buybackRate, {
+            limit: maxResults,
+            requireUnblocked: true,
+          });
+
+          return ok({ buybackRate, queue });
+        }
+
+        // ── getQueueAudit ──────────────────────────────────────
         case "getQueueAudit": {
-          const { reviewEarthQueueAndBuildSystemImprovements } = await import("@optimitron/agent");
-          const allTasks = await listActivePublicEarthTasks();
-          const review = reviewEarthQueueAndBuildSystemImprovements(allTasks as any);
+          if (!userId) return err("Authentication required");
+
+          const prisma = await getPrisma();
+          const { tasks, ranking } = await getTaskFunctions();
+          const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+          const ownedTasks = (await tasks.listTasks({
+            limit: 5000,
+            status: TaskStatus.ACTIVE,
+            userId,
+            visibility: "owned",
+          })) as PersonalQueueTaskRecord[];
+          const rankedRows = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
+            limit: ownedTasks.length,
+          });
+          const unblockedCount = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
+            limit: ownedTasks.length,
+            requireUnblocked: true,
+          }).length;
+
+          const rowById = new Map(rankedRows.map((row) => [row.id, row]));
+          const issues: Array<{
+            code: string;
+            message: string;
+            severity: "high" | "medium" | "low";
+            taskId?: string;
+          }> = [];
+
+          const taskIds = ownedTasks.map((task) => task.id);
+          const dependencyEdges = await prisma.taskEdge.findMany({
+            where: { toTaskId: { in: taskIds }, deletedAt: null },
+            select: {
+              fromTaskId: true,
+              toTaskId: true,
+              fromTask: { select: { id: true, deletedAt: true, status: true } },
+            },
+          });
+          const orphanedDependencyTaskIds = new Set<string>();
+          for (const edge of dependencyEdges) {
+            if (!edge.fromTask || edge.fromTask.deletedAt != null) {
+              orphanedDependencyTaskIds.add(edge.toTaskId);
+            }
+          }
+
+          for (const task of ownedTasks) {
+            const row = rowById.get(task.id);
+            if (!row) continue;
+
+            if (row.validationNotes.some((note) => note.toLowerCase().includes("missing"))) {
+              issues.push({
+                code: "MISSING_ESTIMATES",
+                message: `Task ${task.id} is missing required estimate inputs for scoring.`,
+                severity: "medium",
+                taskId: task.id,
+              });
+            }
+
+            if (!row.valid) {
+              issues.push({
+                code: "INVALID_SCORE",
+                message: `Task ${task.id} has invalid sprint-priority inputs.`,
+                severity: "high",
+                taskId: task.id,
+              });
+            }
+
+            const blockerStatuses = task.blockerStatuses ?? [];
+            if (blockerStatuses.some((status) => status !== TaskStatus.VERIFIED)) {
+              issues.push({
+                code: "BLOCKED_DEPENDENCY",
+                message: `Task ${task.id} has unresolved blockers and is currently blocked.`,
+                severity: "low",
+                taskId: task.id,
+              });
+              continue;
+            }
+
+            if (orphanedDependencyTaskIds.has(task.id)) {
+              issues.push({
+                code: "ORPHAN_DEPENDENCY",
+                message: `Task ${task.id} is blocked by a deleted or missing dependency.`,
+                severity: "medium",
+                taskId: task.id,
+              });
+            }
+          }
+
           return ok({
-            audit: review.audit,
-            recommendedTaskKeys: review.proposal.candidates
-              .map((candidate) => candidate.taskKey)
-              .filter((value): value is string => typeof value === "string" && value.length > 0),
-            reviewSummary: review.proposal.review.summary,
+            summary: {
+              activeOwnedTasks: ownedTasks.length,
+              unblockedTasks: unblockedCount,
+              issueCount: issues.length,
+            },
+            issues,
           });
         }
 
         // ── getNextAction ──────────────────────────────────────
         case "getNextAction": {
-          const { lease } = await getTaskFunctions();
-          const { selectNextEarthAction } = await import("@optimitron/agent");
-          const { getEarthExecutionPolicy } = await import("./tasks/action-policy");
-          const policy = getEarthExecutionPolicy();
-          const agentCapabilities = buildAgentCapabilities(a);
-          const agentId = (a.agentId as string) ?? null;
-          let candidateTasks = await listActivePublicEarthTasks();
-
-          while (candidateTasks.length > 0) {
-            const decision = selectNextEarthAction({
-              agent: agentCapabilities,
-              policy,
-              tasks: candidateTasks as any,
-            });
-
-            if (!decision.task) {
-              return ok({
-                actionKind: decision.actionKind,
-                audit: decision.audit,
-                autoExecutable: decision.autoExecutable,
-                economics: decision.economics,
-                groundingRefs: decision.groundingRefs,
-                queueRepairPlan: decision.queueRepairPlan ?? null,
-                rationale: decision.rationale,
-                requiredApproval: decision.requiredApproval,
-                task: null,
-              });
-            }
-
-            const leaseStatus = await lease.isTaskLeased(decision.task.id);
-            if (!leaseStatus.leased || leaseStatus.agentId === agentId) {
-              return ok({
-                actionKind: decision.actionKind,
-                audit: decision.audit,
-                autoExecutable: decision.autoExecutable,
-                economics: decision.economics,
-                groundingRefs: decision.groundingRefs,
-                queueRepairPlan: decision.queueRepairPlan ?? null,
-                rationale: decision.rationale,
-                requiredApproval: decision.requiredApproval,
-                task: summarizeTask(decision.task),
-              });
-            }
-
-            candidateTasks = candidateTasks.filter((task) => task.id !== decision.task?.id);
-          }
+          if (!userId) return err("Authentication required");
+          const { tasks, ranking } = await getTaskFunctions();
+          const maxResults = parseQueueLimit(a.maxResults, 1, 100);
+          const buybackRate = parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE);
+          const ownedTasks = await tasks.listTasks({
+            limit: 5000,
+            status: TaskStatus.ACTIVE,
+            userId,
+            visibility: "owned",
+          });
+          const queue = buildPersonalQueueRows(ownedTasks, ranking, buybackRate, {
+            limit: maxResults,
+            requireUnblocked: true,
+          });
+          const topAction = queue[0] ?? null;
+          const recommendation = nextActionRecommendation(topAction);
 
           return ok({
-            actionKind: "QUEUE_REPAIR",
-            message: "No unleased action is currently available.",
-            task: null,
+            ...recommendation,
+            task: topAction,
+            sprintPriority: topAction?.sprintPriority ?? 0,
+            queueAudit: {
+              activeOwnedTasks: ownedTasks.length,
+              unblockedTasks: queue.length,
+            },
           });
         }
 
@@ -1833,10 +2417,32 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
           return ok(filtered.slice(0, limit).map(summarizeTask));
         }
 
+        // ── searchTasks ───────────────────────────────────────
+        case "searchTasks": {
+          const { tasks } = await getTaskFunctions();
+          const query = typeof a.query === "string" ? a.query.trim() : "";
+          if (!query) {
+            return err("query is required");
+          }
+
+          const limit = parseQueueLimit(a.limit, 20, 100);
+          const scope = a.scope === "public" ? "public" : "accessible";
+          if (scope === "accessible" && !userId) {
+            return err("Authentication required for accessible scope.");
+          }
+
+          const results = await tasks.searchTasks(query, {
+            limit,
+            userId: scope === "accessible" ? userId : null,
+          });
+
+          return ok(results);
+        }
+
         // ── getTask ────────────────────────────────────────────
         case "getTask": {
           const { tasks } = await getTaskFunctions();
-          const result = await tasks.getTaskDetailData(a.taskId as string);
+          const result = await tasks.getTaskDetailData(a.taskId as string, userId ?? null);
           if (!result) return err("Task not found");
           return ok({
             task: result.task,
@@ -1846,8 +2452,68 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── createTask (always DRAFT) ──────────────────────────
         case "createTask": {
-          const { endpoints } = await getTaskFunctions();
+          if (!userId) return err("Authentication required");
+
+          const { endpoints, ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
+
+          const estimatedEffortHours = a.estimatedEffortHours as number;
+          const expectedEconomicValueUsdBase = a.expectedEconomicValueUsdBase as number;
+          const estimatedCashCostUsdBase = a.estimatedCashCostUsdBase as number;
+          const successProbabilityBase = a.successProbabilityBase as number;
+          const timeToImpactStartDays = (a.timeToImpactStartDays as number) ?? 0;
+          if (!Array.isArray(a.blockerTaskIds) || !Array.isArray(a.blockedTaskIds)) {
+            return err("blockerTaskIds and blockedTaskIds are required and must be arrays (use [] when empty).");
+          }
+          const blockerTaskIds = dedupeStrings(a.blockerTaskIds as string[]);
+          const blockedTaskIds = dedupeStrings(a.blockedTaskIds as string[]);
+          const dependencyTaskIds = dedupeStrings([...blockerTaskIds, ...blockedTaskIds]);
+
+          if (typeof estimatedEffortHours !== "number" || !Number.isFinite(estimatedEffortHours) || estimatedEffortHours <= 0) {
+            return err("estimatedEffortHours is required and must be a positive number.");
+          }
+          if (typeof expectedEconomicValueUsdBase !== "number" || !Number.isFinite(expectedEconomicValueUsdBase)) {
+            return err("expectedEconomicValueUsdBase is required and must be a finite number.");
+          }
+          if (typeof estimatedCashCostUsdBase !== "number" || !Number.isFinite(estimatedCashCostUsdBase) || estimatedCashCostUsdBase < 0) {
+            return err("estimatedCashCostUsdBase is required and must be a non-negative finite number.");
+          }
+          if (typeof successProbabilityBase !== "number" || !Number.isFinite(successProbabilityBase) || successProbabilityBase < 0 || successProbabilityBase > 1) {
+            return err("successProbabilityBase is required and must be a finite number between 0 and 1.");
+          }
+          if (typeof timeToImpactStartDays !== "number" || !Number.isFinite(timeToImpactStartDays) || timeToImpactStartDays < 0) {
+            return err("timeToImpactStartDays is required and must be a non-negative finite number.");
+          }
+
+          if (dependencyTaskIds.length > 0) {
+            const dependencyTasks = await prisma.task.findMany({
+              where: { deletedAt: null, id: { in: dependencyTaskIds } },
+              select: {
+                id: true,
+                isPublic: true,
+                ownerUserId: true,
+              },
+            });
+            const foundDependencyIds = new Set(dependencyTasks.map((task) => task.id));
+            const missingDependencyIds = dependencyTaskIds.filter((id) => !foundDependencyIds.has(id));
+            if (missingDependencyIds.length > 0) {
+              return err(
+                `Invalid dependency IDs (not found): ${missingDependencyIds.map((id) => JSON.stringify(id)).join(", ")}`,
+              );
+            }
+
+            const inaccessibleDependencyIds = dependencyTasks
+              .filter((task) => !task.isPublic && task.ownerUserId !== userId)
+              .map((task) => task.id);
+            if (inaccessibleDependencyIds.length > 0) {
+              return err(
+                `Dependency IDs are inaccessible private tasks: ${inaccessibleDependencyIds
+                  .map((id) => JSON.stringify(id))
+                  .join(", ")}`,
+              );
+            }
+          }
+
           const data: Record<string, unknown> = {
             title: a.title as string,
             description: (a.description as string) ?? "",
@@ -1857,7 +2523,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             difficulty: a.difficulty ? TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty] : TaskDifficulty.INTERMEDIATE,
             skillTags: (a.skillTags as string[]) ?? [],
             interestTags: (a.interestTags as string[]) ?? [],
-            estimatedEffortHours: (a.estimatedEffortHours as number) ?? null,
+            estimatedEffortHours,
             dueAt: a.dueAt ? new Date(a.dueAt as string) : null,
             completedAt: a.completedAt ? new Date(a.completedAt as string) : null,
             verifiedAt: a.verifiedAt ? new Date(a.verifiedAt as string) : null,
@@ -1867,7 +2533,7 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             roleTitle: (a.roleTitle as string) ?? null,
             sourceUrl: (a.sourceUrl as string) ?? null,
             impactStatement: (a.impactStatement as string) ?? null,
-            isPublic: a.isPublic !== false,
+            isPublic: a.isPublic === true,
             contextJson: mergeTaskContextJson({
               patchContextJson: a.contextJson,
               sourceUrl: (a.sourceUrl as string) ?? null,
@@ -1875,18 +2541,52 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
             sortOrder: (a.sortOrder as number) ?? undefined,
             status: TaskStatus.DRAFT,
           };
-          if (userId) {
-            data.ownerUserId = userId;
-          }
+          data.ownerUserId = userId;
           const task = await prisma.$transaction(async (tx) => {
             const created = await tx.task.create({ data: data as any });
             await endpoints.upsertPrimaryTaskCommunicationEndpoint(tx, created.id, {
               label: (a.contactLabel as string) ?? null,
               url: (a.contactUrl as string) ?? null,
             });
+            const { TaskEdgeType } = await import("@optimitron/db");
+            for (const blockerTaskId of blockerTaskIds.filter((id) => id !== created.id)) {
+              await tx.taskEdge.create({
+                data: {
+                  fromTaskId: blockerTaskId,
+                  toTaskId: created.id,
+                  edgeType: TaskEdgeType.BLOCKS,
+                },
+              });
+            }
+
+            for (const blockedTaskId of blockedTaskIds.filter((id) => id !== created.id)) {
+              await tx.taskEdge.create({
+                data: {
+                  fromTaskId: created.id,
+                  toTaskId: blockedTaskId,
+                  edgeType: TaskEdgeType.BLOCKS,
+                },
+              });
+            }
+            await attachDirectTaskImpactEstimate({
+              prisma: tx,
+              taskId: created.id,
+              estimatedEffortHours,
+              estimatedCashCostUsdBase,
+              expectedEconomicValueUsdBase,
+              successProbabilityBase,
+              timeToImpactStartDays,
+            });
             return created;
           });
-          return ok({ taskId: task.id, title: task.title, status: "DRAFT" });
+          const fresh = await tasks.getTaskDetailData(task.id, userId);
+          const scored = fresh
+            ? buildPersonalQueueRows([fresh.task], ranking, DEFAULT_PERSONAL_BUYBACK_RATE, {
+                limit: 1,
+              })
+            : [];
+
+          return ok(scored[0] ?? { taskId: task.id, title: task.title, status: "DRAFT" });
         }
 
         case "upsertOrganization": {
@@ -2181,6 +2881,9 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
 
         // ── updateTask ─────────────────────────────────────────
         case "updateTask": {
+          if (!userId) return err("Authentication required");
+
+          const { ranking, tasks } = await getTaskFunctions();
           const prisma = await getPrisma();
           const updates: Record<string, unknown> = {};
           if (a.status) updates.status = TaskStatus[a.status as keyof typeof TaskStatus];
@@ -2217,15 +2920,56 @@ export function createMcpServer(userId?: string, scopes?: McpScope[]): Server {
               mergeTaskContextJson({
                 baseContextJson: existing.contextJson,
                 patchContextJson: a.contextJson,
-                sourceUrl: a.sourceUrl !== undefined ? ((a.sourceUrl as string) || null) : null,
-              }) ?? {},
-            );
+              sourceUrl: a.sourceUrl !== undefined ? ((a.sourceUrl as string) || null) : null,
+            }) ?? {},
+          );
           }
+
+          const existingOwner = await prisma.task.findFirst({
+            where: { id: a.taskId as string, deletedAt: null },
+            select: { ownerUserId: true },
+          });
+          if (!existingOwner) return err("Task not found");
+          if (existingOwner.ownerUserId !== userId) {
+            return err("Forbidden: Task is not owned by current user");
+          }
+
           const task = await prisma.task.update({
             where: { id: a.taskId as string },
             data: updates as any,
           });
-          return ok({ taskId: task.id, status: task.status, title: task.title });
+          const fresh = await tasks.getTaskDetailData(task.id, userId);
+          const scored = fresh
+            ? buildPersonalQueueRows([fresh.task], ranking, DEFAULT_PERSONAL_BUYBACK_RATE, {
+                limit: 1,
+              })
+            : [];
+
+          return ok(scored[0] ?? { taskId: task.id, status: task.status, title: task.title });
+        }
+
+        case "deleteTask": {
+          if (!userId) return err("Authentication required");
+
+          const prisma = await getPrisma();
+          const taskId = a.taskId as string;
+          if (!taskId) return err("taskId is required");
+
+          const existing = await prisma.task.findFirst({
+            where: { id: taskId, deletedAt: null },
+            select: { ownerUserId: true },
+          });
+          if (!existing) return err("Task not found");
+          if (existing.ownerUserId !== userId) {
+            return err("Forbidden: Task is not owned by current user");
+          }
+
+          await prisma.task.update({
+            where: { id: taskId },
+            data: { deletedAt: new Date() },
+          });
+
+          return ok({ taskId, deleted: true });
         }
 
         // ── recordTaskActuals ──────────────────────────────────

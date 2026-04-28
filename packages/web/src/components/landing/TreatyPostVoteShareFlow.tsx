@@ -70,7 +70,8 @@ import {
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
 import { embedShareAttemptId } from "@/lib/share-channels";
-import { buildUserInviteReferralUrl, getBaseUrl } from "@/lib/url";
+import { buildUserInviteReferralUrl, buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+import { ShareLinkButtons } from "@/components/shared/ShareLinkButtons";
 
 type FlowScreen =
   | "opening"
@@ -202,9 +203,23 @@ function buildDraftReferralMessage(input: {
   return buildReferralInvitationMessage({
     inviteUrl: draftInviteUrl,
     messageFormat: input.messageFormat,
+    // When the user explicitly picks "Manage humanity" on the promotion screen
+    // the recipient name is set to "humanity" and reads naturally in the
+    // template ("Hi humanity. I love you..."). When they pick "Manage a friend"
+    // the field is empty and we use "there" as a friendly placeholder until
+    // they type a real name.
     recipientName: input.recipientName.trim() || "there",
     senderName: input.senderName,
   });
+}
+
+/**
+ * Strip the draft `warondisease.org` placeholder from the editable message so
+ * we can hand the remainder to ShareLinkButtons, which appends its own URL.
+ */
+function stripDraftInviteUrl(messageText: string): string {
+  const draftUrlPattern = /\s*(?:https?:\/\/)?warondisease\.org\s*$/i;
+  return messageText.replace(draftUrlPattern, "").trim();
 }
 
 function replaceDraftInviteUrl(messageText: string, inviteUrl: string) {
@@ -286,7 +301,7 @@ function useLivePreventableDeathCount(active: boolean): number {
   return count;
 }
 
-function PromotionScreen({ onChoice }: { onChoice: (wantsReminder: boolean) => void }) {
+function PromotionScreen({ onChoice }: { onChoice: (target: "friend" | "humanity") => void }) {
   const deathCount = useLivePreventableDeathCount(true);
 
   return (
@@ -317,11 +332,11 @@ function PromotionScreen({ onChoice }: { onChoice: (wantsReminder: boolean) => v
         </FlowParagraph>
       </div>
       <FlowButtonRow>
-        <Button className={dismissButtonClass} onClick={() => onChoice(false)}>
-          Skip for now
+        <Button className={dismissButtonClass} onClick={() => onChoice("humanity")}>
+          Manage humanity
         </Button>
-        <Button className={primaryButtonClass} onClick={() => onChoice(true)}>
-          Send your first invite
+        <Button className={primaryButtonClass} onClick={() => onChoice("friend")}>
+          Manage a friend
         </Button>
       </FlowButtonRow>
     </>
@@ -674,9 +689,20 @@ export function TreatyPostVoteShareFlow({
     }
   }, [advanceTo, createInvitation, flowVariant, invitation, message, messageEdited, messageFormat, recipientEmail, sentCount]);
 
-  const handlePromotion = useCallback((wantsReminder: boolean) => {
-    trackTreatyPostVotePromotion({ flowVariant, wantsReminder, sentCount });
-    go("sendMessage", !wantsReminder);
+  const handlePromotion = useCallback((target: "friend" | "humanity") => {
+    // Analytics: keep the existing param name for backward compat — `true`
+    // when the user opted into the more committed friend-targeted flow.
+    trackTreatyPostVotePromotion({ flowVariant, wantsReminder: target === "friend", sentCount });
+    if (target === "humanity") {
+      setRecipientName("humanity");
+    } else {
+      setRecipientName("");
+    }
+    setRecipientEmail("");
+    setInvitation(null);
+    setMessage("");
+    setMessageEdited(false);
+    go("sendMessage", target === "humanity");
   }, [flowVariant, go, sentCount]);
 
   const goDashboard = useCallback(() => {
@@ -856,12 +882,12 @@ export function TreatyPostVoteShareFlow({
                 <>
                   <FlowParagraph>{"Two humans is the smallest possible amount of humans. Here:"}</FlowParagraph>
                   <FlowParagraph>Tell 2 friends. They tell 2. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} />. {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week.</FlowParagraph>
-                  <FlowParagraph>Yes, technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
+                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
                 </>
               ) : (
                 <>
-                  <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> humans. That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
-                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. This one threatens dying of a curable disease. Which is also bad luck.</FlowParagraph>
+                  <FlowParagraph>Tell 2 friends. They tell 2 friends. {FLOW_DOUBLING_ROUNDS_TO_TARGET} rounds reaches <ParameterValue param={FLOW_MAJORITY_OF_HUMANS_ON_EARTH} figures={1} /> humans (a majority of humanity). That&apos;s {FLOW_DOUBLING_ROUNDS_TO_TARGET} days at one per day, {FLOW_DOUBLING_MONTHS_AT_WEEKLY_PACE} months at one per week. Everyone else can ignore you.</FlowParagraph>
+                  <FlowParagraph>Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.</FlowParagraph>
                   <DetailsBlock
                     detailId="chain-letter-history"
                     flowVariant={flowVariant}
@@ -1011,20 +1037,48 @@ export function TreatyPostVoteShareFlow({
                 disabled={isCreating}
               />
             </div>
-            <FlowButtonRow>
-              <Button className={primaryButtonClass} onClick={() => void handleCopy()} disabled={isCreating}>
-                <Clipboard className="mr-2 h-5 w-5" aria-hidden="true" />
-                {copyState === "copied" ? "Copied" : "Copy"}
-              </Button>
-              {recipientEmail.trim() ? (
-                <Button className={dismissButtonClass} onClick={() => void handleSendEmail()} disabled={isCreating || isSending}>
-                  <Mail className="mr-2 h-5 w-5" aria-hidden="true" />
-                  <span className="min-w-0 truncate">
-                    {isSending ? "Sending..." : `Send email to ${recipientEmail.trim()} for me`}
-                  </span>
-                </Button>
-              ) : null}
-            </FlowButtonRow>
+            {(() => {
+              const trimmedName = recipientName.trim();
+              const isBroadcast = trimmedName.toLowerCase() === "humanity";
+              return isBroadcast ? (
+                <div className="space-y-3 border-t-2 border-[#23180d]/30 pt-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#5e513f]">
+                    Assign one task to humanity
+                  </p>
+                  <ShareLinkButtons
+                    url={buildUserReferralUrl(session?.user, getBaseUrl())}
+                    shareText={stripDraftInviteUrl(message)}
+                    emailSubject={
+                      messageFormat === "TASK_NOTIFICATION"
+                        ? "Overdue task: End War and Disease"
+                        : "Please don't die of a horrible disease"
+                    }
+                    onShare={() => {
+                      completeCurrentInvitation();
+                    }}
+                  />
+                </div>
+              ) : (
+                <FlowButtonRow>
+                  <Button
+                    className={primaryButtonClass}
+                    onClick={() => void handleCopy()}
+                    disabled={isCreating || trimmedName === ""}
+                  >
+                    <Clipboard className="mr-2 h-5 w-5" aria-hidden="true" />
+                    {copyState === "copied" ? "Copied" : "Copy"}
+                  </Button>
+                  {recipientEmail.trim() ? (
+                    <Button className={dismissButtonClass} onClick={() => void handleSendEmail()} disabled={isCreating || isSending || trimmedName === ""}>
+                      <Mail className="mr-2 h-5 w-5" aria-hidden="true" />
+                      <span className="min-w-0 truncate">
+                        {isSending ? "Sending..." : `Send email to ${recipientEmail.trim()} for me`}
+                      </span>
+                    </Button>
+                  ) : null}
+                </FlowButtonRow>
+              );
+            })()}
           </>
         );
 

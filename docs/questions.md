@@ -130,8 +130,6 @@ What verification enables (all of this is now guaranteed for every user in the f
 - Vote counts in the official submitted tally
 - Inverse Kills Score tracked across sessions
 - Email notification when friends vote (pending → confirmed)
-- Overdue task-reminder emails if opted in on the Promotion screen
-- Monthly scorecard
 - Full dashboard with referral tree
 
 **No skip option.** If someone won't verify, they don't enter the flow. Their vote still counts on the public counter (unverified bucket), but they don't see the share sequence.
@@ -230,7 +228,7 @@ Buttons: **[ Not neat ]** ・ **[ Neat ]**
 
 **Default:**
 
-> Tell 2 friends. They tell 2 friends. 32 rounds reaches 4 billion humans (a majority of humanity). That's 32 days at one per day, 8 months at one per week.
+> Tell 2 friends. They tell 2 friends. 32 rounds reaches 4 billion humans (a majority of humanity). That's 32 days at one per day, 8 months at one per week. Everyone else can ignore you.
 >
 > Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this chain breaks, you and everyone you love will suffer and die of curable diseases. Which is also bad luck.
 >
@@ -357,7 +355,7 @@ Button: **[ I sent it ]**
 
 **After "Send email":**
 
-> Sent to jake@example.com. We'll send the first task reminder in 3 days if they haven't completed it yet.
+> Sent to jake@example.com.
 
 Button: **[ Continue ]**
 
@@ -406,7 +404,14 @@ Renders between Per-Vote Math and the first Send Loop iteration. Wishonia bureau
 >
 > **Performance to date:** ~**[X]** preventable deaths since you started reading. Counter resets when you assign a task.
 
-Buttons: **[ I'll remember ]** ・ **[ Send me reminders ]**
+Buttons: **[ Manage humanity ]** ・ **[ Manage a friend ]**
+
+The labels offer a real choice between the two paths the composer supports — broadcast to humanity (social-share buttons) or assign to one named friend (targeted Copy/Send) — so users feel they're choosing rather than being funneled.
+
+- **Manage humanity** pre-fills the recipient name with `humanity`. The composer renders the love- or bossy-mode message with `humanity` as the recipient, hides the targeted Copy/Send buttons, and shows the X / Bluesky / LinkedIn / Facebook / Reddit / Email / Copy-link share row instead. One click broadcasts to all of the user's followers on the chosen platform.
+- **Manage a friend** leaves the recipient name empty so the user fills it in. The composer renders the love- or bossy-mode message with that friend's name and shows the targeted Copy / Send-email-for-me buttons.
+
+Either path is a valid completion. The user can switch modes from inside the composer by editing the recipient name field — typing a real name converts to friend mode, clearing it (or typing `humanity`) converts back to broadcast.
 
 The death counter is live — ticks up since screen mount at the global preventable-disease death rate. Use `GLOBAL_DISEASE_DEATHS_DAILY × EVENTUALLY_AVOIDABLE_DEATH_PCT` to compute deaths-per-second, then increment from `Date.now()` at screen mount. Format with thousands separators.
 
