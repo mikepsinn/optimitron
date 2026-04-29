@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react'; // Added useState, useEffect
 import { cn } from "@/lib/utils"; // Import cn utility
 import { ClinicalStudyCitationDisplay } from './ClinicalStudyCitationDisplay'; // Import the new component
 import type { OutcomeFooterData } from '@/lib/types/clinical-study-citation'; // Import the updated footer type
-import { getGroundedAnswerAction, type GroundedSearchResult } from '@/lib/actions/google-grounded-search'; // Added imports
+import { getGroundedAnswerAction } from '@/lib/actions/google-grounded-search';
+import type { GroundedSearchResult } from '@/lib/types/grounded-search';
 import { Loader2, AlertTriangle } from 'lucide-react'; // Added Loader2 and AlertTriangle
 
 export interface OutcomeValue {
