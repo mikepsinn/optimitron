@@ -2167,7 +2167,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 92,
         "participants": 300000,
         "safetyScore": 65,
@@ -6639,7 +6639,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 82,
         "participants": 50000,
         "safetyScore": 60,
@@ -9993,7 +9993,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 88,
         "participants": 20000,
         "safetyScore": 45,
@@ -11149,7 +11149,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 70,
         "participants": 15000,
         "safetyScore": 70,
@@ -12745,7 +12745,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 65,
         "participants": 10000,
         "safetyScore": 65,
@@ -13697,7 +13697,7 @@
     "conditions": [
       {
         "conditionName": "Parkinson's disease",
-        "conditionSlug": "parkinson-s-disease",
+        "conditionSlug": "parkinsons-disease",
         "effectiveness": 55,
         "participants": 8000,
         "safetyScore": 70,
