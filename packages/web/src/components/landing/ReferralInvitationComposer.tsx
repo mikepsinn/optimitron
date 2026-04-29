@@ -240,7 +240,7 @@ export function ReferralInvitationComposer() {
               Assign One Earth Optimization Task
             </h3>
             <p className="text-sm font-bold leading-snug">
-              When {firstName || "they"} completes the vote task: +1 lifetime of
+              When {firstName || "they"} completes the Earth Optimization Task: +1 lifetime of
               suffering prevented, +<ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved.
             </p>
           </div>
@@ -399,7 +399,7 @@ export function ReferralInvitationComposer() {
           Pending impact uses the current per-vote estimate:{" "}
           <ParameterValue param={FLOW_VOTER_SUFFERING_HOURS_PREVENTED} figures={4} /> hours of suffering
           prevented and <ParameterValue param={FLOW_VOTER_LIVES_SAVED_ROUNDED} figures={2} /> lives saved per
-          completed vote task.
+          completed Earth Optimization Task.
         </p>
       </div>
     </Card>

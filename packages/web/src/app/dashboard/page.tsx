@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { shareableSnippets } from "@optimitron/data/parameters";
 import { authOptions } from "@/lib/auth";
 import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.server";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
-import { getTaskDetailData, getTasksPageData } from "@/lib/tasks.server";
+import { getTasksPageData } from "@/lib/tasks.server";
 import { getReferendumSiteContent } from "@/content/referendum-sites";
 import type { TaskCardTask } from "@/components/tasks/task-card";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
@@ -14,7 +13,8 @@ import { ReferendumSiteDashboardClient } from "@/components/site/ReferendumSiteD
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
 import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { getSiteFromHost } from "@/lib/site";
-import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import { ensurePersonForUser } from "@/lib/person.server";
+import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -59,20 +59,23 @@ export default async function DashboardPage({
   void backfillUserLocationFromHeaders(userId, hdrs);
 
   if (site.contentKey && site.primaryReferendumSlug) {
-    const treatyParent = await getTaskDetailData(TREATY_PARENT_TASK_ID, userId);
-    const task = (treatyParent?.task ?? null) as TaskCardTask | null;
-    const subtasks = (treatyParent?.task.childTasks ?? []) as unknown as TaskCardTask[];
-    const treatyMarkdown =
-      site.key === "onePercentTreaty"
-        ? shareableSnippets.onePercentTreatyText.markdown
-        : "";
+    const person = await ensurePersonForUser(userId);
+    const treatyTask = await ensureUserTreatyTask({
+      personId: person.id,
+      userId,
+    });
+    const taskData = await getTasksPageData(userId);
+    const nextTasks = taskData.ownedPrivateTasks.filter(
+      (task) =>
+        task.id !== treatyTask.taskId &&
+        task.parentTaskId === treatyTask.taskId &&
+        task.status !== "VERIFIED" &&
+        task.status !== "STALE",
+    ) as TaskCardTask[];
 
     return (
       <ReferendumSiteDashboardClient
-        task={task}
-        subtasks={subtasks}
-        treatyMarkdown={treatyMarkdown}
-        referendumSlug={site.primaryReferendumSlug}
+        nextTasks={nextTasks}
       />
     );
   }

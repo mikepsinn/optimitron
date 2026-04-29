@@ -61,6 +61,8 @@ packages/db/src/generated/
 
 # Local scratch files
 tmp-*
+output/
+packages/web/output/
 NUL
 .vercel
 .playwright-mcp/

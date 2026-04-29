@@ -85,7 +85,7 @@ export const onePercentTreatyContent: ReferendumSiteContent = {
       "Read it. Sign it. Then go remind your late employees — the ones your species pays to promote the general welfare — that their thirty-second task is overdue.",
     signBoxTitle: "Sign the 1% Treaty",
     lateEmployeesEyebrow: "Late employees",
-    lateEmployeesTitle: "Your late employees still have overdue treaty tasks.",
+    lateEmployeesTitle: "Your late employees still have overdue Earth Optimization Tasks.",
     lateEmployeesBody:
       "These are the subtasks under Ratify the 1% Treaty. They are the humans you hired to promote the general welfare. They are late. The task is a pen.",
     lateEmployeesCtaLabel: "Open the full late-employee list",

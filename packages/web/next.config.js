@@ -11,6 +11,16 @@ const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === 'true';
 const nextConfig = {
   experimental: {
     webpackMemoryOptimizations: true,
+    // `import { Foo } from "lucide-react"` defeats tree-shaking under Next.js
+    // App Router unless the package is in this allow-list. With 83 files
+    // importing icons + 44MB of lucide source on disk, this is the single
+    // biggest "free" client-bundle win.
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "framer-motion",
+      "@radix-ui/react-icons",
+    ],
   },
   transpilePackages: ['@optimitron/data'],
   serverExternalPackages: ['@storacha/client', 'multiformats', 'pinata'],

@@ -978,85 +978,21 @@ for (const gov of GOVERNMENTS) {
 }
 
 // ---------------------------------------------------------------------------
-// Hydrate medianIncome from the canonical generated median income series,
-// replacing spotty manual entries with the best available after-tax PPP data.
+// Hydrate medianIncome from a pre-computed map (../generated/median-income-
+// hydration). The original implementation here imported the full 22,515-record
+// median-income series + helpers and ran the hydration loop at module-eval
+// time — that pulled the entire 16 MB dataset into every browser bundle that
+// transitively touched `@optimitron/data`. Now the hydration runs once at
+// build time (`scripts/generate-median-income-hydration.ts`) and the runtime
+// reads a ~3 KB lookup table instead.
 // ---------------------------------------------------------------------------
-import { getBestAvailableMedianIncomeSeries, rankMedianIncomeRecord } from './median-income-series';
-
-/**
- * Average household size by ISO3 code (UN Population Division 2023).
- * Used to convert OECD/Eurostat "per equivalised household" → per capita.
- *
- * Conversion: per_capita ≈ equivalised × (equivalised_size / household_size)
- * where equivalised_size ≈ 1 + 0.5*(adults-1) + 0.3*children
- *
- * For simplicity we precompute the ratio directly.
- * ratio = (1 + 0.5*(avg_adults-1) + 0.3*avg_children) / avg_household_size
- */
-const EQUIVALISED_TO_PER_CAPITA_RATIO: Record<string, number> = {
-  // Source: UN, OECD, national statistics (avg household size → computed ratio)
-  // Ratio = equivalised_household_size / actual_household_size
-  USA: 0.68, // HH 2.5, ~1.7 equiv
-  GBR: 0.70, // HH 2.3, ~1.6 equiv
-  DEU: 0.73, // HH 2.0, ~1.45 equiv
-  FRA: 0.71, // HH 2.2, ~1.55 equiv
-  JPN: 0.70, // HH 2.3, ~1.6 equiv
-  AUS: 0.68, // HH 2.5, ~1.7 equiv
-  CAN: 0.69, // HH 2.4, ~1.65 equiv
-  KOR: 0.70, // HH 2.3, ~1.6 equiv
-  ISR: 0.65, // HH 3.1, ~2.0 equiv
-  TUR: 0.64, // HH 3.3, ~2.1 equiv
-  RUS: 0.68, // HH 2.5, ~1.7 equiv
-  CHN: 0.67, // HH 2.6, ~1.75 equiv
-  IND: 0.64, // HH 4.4, ~2.8 equiv
-  ITA: 0.70, // HH 2.3
-  ESP: 0.69, // HH 2.5
-  NLD: 0.71, // HH 2.2
-  SWE: 0.73, // HH 2.0
-  NOR: 0.71, // HH 2.2
-  CHE: 0.71, // HH 2.2
-  POL: 0.68, // HH 2.6
-  BEL: 0.70, // HH 2.3
-  AUT: 0.71, // HH 2.2
-  CZE: 0.70, // HH 2.3
-};
-const DEFAULT_EQUIV_RATIO = 0.69; // OECD average
+import { MEDIAN_INCOME_HYDRATION } from '../generated/median-income-hydration';
 
 for (const gov of GOVERNMENTS) {
   const iso3 = getGovernmentIso3(gov.code);
   if (!iso3) continue;
-
-  // Get all PPP records for this country, pick by rank then recency
-  const records = getBestAvailableMedianIncomeSeries({
-    jurisdictions: [iso3],
-    purchasingPower: "ppp",
-  });
-
-  // Filter out implausible values (< 5% of GDP/cap = clearly broken PPP conversion)
-  const gdpCap = gov.gdpPerCapita.value;
-  const plausible = records.filter((r) => r.value > gdpCap * 0.05);
-  const best = [...(plausible.length > 0 ? plausible : records)]
-    .sort((a, b) => {
-      const rankDiff = rankMedianIncomeRecord(b) - rankMedianIncomeRecord(a);
-      if (rankDiff !== 0) return rankDiff;
-      return b.year - a.year;
-    })[0] ?? null;
-  if (best) {
-    // Convert equivalised household values to per capita
-    const isEquivalised = best.unit.includes("equivalised");
-    const ratio = isEquivalised
-      ? (EQUIVALISED_TO_PER_CAPITA_RATIO[iso3] ?? DEFAULT_EQUIV_RATIO)
-      : 1;
-    const perCapitaValue = Math.round(best.value * ratio);
-
-    const taxLabel = best.isAfterTax ? " (after-tax)" : "";
-    const welfareLabel = best.welfareType === "consumption" ? " (consumption)" : "";
-    gov.medianIncome = {
-      value: perCapitaValue,
-      source: `${best.source} ${best.year}${taxLabel}${welfareLabel} PPP per capita`,
-      url: best.sourceUrl,
-    };
-  }
+  const hydrated = MEDIAN_INCOME_HYDRATION[iso3];
+  if (hydrated) gov.medianIncome = hydrated;
 }
 
 /** Get report-card metrics for a government by ISO code */

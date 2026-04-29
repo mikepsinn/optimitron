@@ -7,6 +7,8 @@ import {
   getGovernmentDeathLedgerEntries,
   getGovernmentDeathLedgerSummary,
 } from "../../datasets/government-death-ledger";
+import { getGovernmentIso3 } from "../../datasets/government-code-map";
+import { MEDIAN_INCOME_HYDRATION } from "../../generated/median-income-hydration";
 
 describe("government report cards", () => {
   it("hydrates military death totals from the sourced ledger", () => {
@@ -46,5 +48,50 @@ describe("government report cards", () => {
     expect(getGovernmentMetrics("KR")?.deathLedgerEntries?.[0]?.sourceUrl).toContain(
       "tuoitre.vn",
     );
+  });
+
+  describe("median income hydration", () => {
+    // The hydration moved from a runtime loop over the 16 MB MEDIAN_INCOME_SERIES
+    // dataset to a build-time pre-computed lookup table at
+    // `src/generated/median-income-hydration.ts`. These tests catch:
+    //   - the generator silently producing an empty/broken map
+    //   - the hydration map and the runtime loop drifting out of sync
+    //   - someone refreshing `MEDIAN_INCOME_SERIES` without re-running the
+    //     hydration generator (now chained, but the test would catch a regression)
+    //   - generated values landing wildly outside plausible PPP ranges
+
+    it("populates medianIncome on every government that has a hydration entry", () => {
+      for (const gov of GOVERNMENTS) {
+        const iso3 = getGovernmentIso3(gov.code);
+        if (!iso3) continue;
+        const expected = MEDIAN_INCOME_HYDRATION[iso3];
+        if (!expected) continue;
+        expect(gov.medianIncome, `${gov.code} should have medianIncome`).toEqual(
+          expected,
+        );
+      }
+    });
+
+    it("hydrates major economies with plausible PPP values", () => {
+      // Sanity bounds: medianIncome should be a positive number under the
+      // country's GDP per capita (median is always below mean) but not
+      // implausibly small (< 5% of GDP/cap is the dataset's own filter).
+      for (const code of ["US", "GB", "DE", "JP", "FR"]) {
+        const gov = getGovernmentMetrics(code);
+        expect(gov, `expected ${code} in GOVERNMENTS`).toBeDefined();
+        const income = gov?.medianIncome;
+        expect(income, `${code} should have medianIncome hydrated`).not.toBeNull();
+        expect(income?.value).toBeGreaterThan(gov!.gdpPerCapita.value * 0.05);
+        expect(income?.value).toBeLessThan(gov!.gdpPerCapita.value);
+        expect(income?.source).toMatch(/PPP per capita/);
+        expect(income?.url).toMatch(/^https?:/);
+      }
+    });
+
+    it("USA hydration is non-empty (the most-used row in leaderboards)", () => {
+      const usa = getGovernmentMetrics("US");
+      expect(usa?.medianIncome?.value).toBeGreaterThan(15_000);
+      expect(usa?.medianIncome?.source).toMatch(/OECD|World Bank|Eurostat/);
+    });
   });
 });

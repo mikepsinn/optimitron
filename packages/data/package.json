@@ -5,6 +5,11 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
+  "sideEffects": [
+    "**/datasets/index.ts",
+    "**/generated/country-panel.ts",
+    "**/generated/country-panel.js"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./parameters": "./src/parameters/index.ts",
@@ -23,7 +28,8 @@
     "build": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:median-income": "tsx ./scripts/generate-median-income-series.ts",
+    "generate:median-income": "tsx ./scripts/generate-median-income-series.ts && tsx ./scripts/generate-median-income-hydration.ts",
+    "generate:median-income-hydration": "tsx ./scripts/generate-median-income-hydration.ts",
     "generate:country-panel": "tsx ./scripts/generate-country-panel.ts",
     "data:refresh": "tsx ./scripts/refresh-all.ts",
     "data:refresh:health": "tsx ./scripts/generate-health-outcomes.ts",

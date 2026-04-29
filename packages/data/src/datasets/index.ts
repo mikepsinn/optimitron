@@ -47,7 +47,11 @@ export * from './agency-supplementary';
 export * from './agency-historical-trends';
 export * from './earth-agencies';
 export * from './economic-theft-series';
-export * from './median-income-series';
+// median-income-series intentionally NOT barrel-exported. The generated
+// constant is 16.6 MB and was being shipped to every browser client that
+// imported anything from `@optimitron/data` (about half the entire client
+// bundle). Consumers who actually need this data must import it explicitly
+// via the `@optimitron/data/datasets/median-income-series` subpath export.
 export * from './country-panel';
 // Side-effect import: populates COUNTRY_PANEL via setCountryPanel() at load time.
 // Without this, getCountryPanelLatestResolved() returns [] and
